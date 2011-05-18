@@ -5558,7 +5558,7 @@
                     <cell type="field" id="5" name="description" uitype="textareabrief" rows="2" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="8"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>

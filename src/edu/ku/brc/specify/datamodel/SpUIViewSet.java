@@ -307,6 +307,16 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.persist.ViewSetIFace#isDiskBased()
+     */
+    @Override
+    public boolean isDiskBased()
+    {
+        return false;
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
     @Override

@@ -690,58 +690,58 @@
                     <cell type="field" id="7" name="email" uitype="text" colspan="9"/>
                     <cell type="field" id="mailto" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=MailTo;icon=EMail;watch=7"/>
                 </row>
-			          <row>
+                      <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="19"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="GroupPersons" id="31" name="groups" defaulttype="table" colspan="19"/>
                 </row>
-			          <row>
+                      <row>
                     <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="19"/>
-			          </row>
+                      </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="19"/>
                 </row>
                 <row>
                     <cell type="subview" id="agentAttachments" viewname="ObjectAttachment" name="agentAttachments" initialize="btn=true;icon=AgentAttachment"/>
                 </row>
-                <!--<row>
-                	<cell type="label" labelfor="19" />
+                <!--  <row>
+                    <cell type="label" labelfor="19" />
                     <cell type="field" id="19" uitype="plugin" name="this" initialize="name=PartialDateUI;df=dateOfBirth;tp=dateOfBirthPrecision" uifieldformatter="Date"/>
-                	<cell type="label" labelfor="20" />
+                    <cell type="label" labelfor="20" />
                     <cell type="field" id="20" uitype="plugin" name="this" initialize="name=PartialDateUI;df=dateOfDeath;tp=dateOfDeathPrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="11" />
-                	<cell type="field" id="11" name="guid" uitype="text"/>
-                	<cell type="label" labelfor="12" />
-                	<cell type="field" id="12" name="initials" uitype="text"/>
-                	<cell type="label" labelfor="13" />
-                	<cell type="field" id="13" name="interests" uitype="textareabrief" rows="2"/>
+                    <cell type="label" labelfor="11" />
+                    <cell type="field" id="11" name="guid" uitype="text"/>
+                    <cell type="label" labelfor="12" />
+                    <cell type="field" id="12" name="initials" uitype="text"/>
+                    <cell type="label" labelfor="13" />
+                    <cell type="field" id="13" name="interests" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="14" />
-                	<cell type="field" id="14" name="jobTitle" uitype="text"/>
-                	<cell type="label" labelfor="16" />
-                	<cell type="field" id="16" name="remarks" uitype="textareabrief" rows="2"/>
-                	<cell type="label" labelfor="17" />
-                	<cell type="field" id="17" name="url" uitype="text"/>
+                    <cell type="label" labelfor="14" />
+                    <cell type="field" id="14" name="jobTitle" uitype="text"/>
+                    <cell type="label" labelfor="16" />
+                    <cell type="field" id="16" name="remarks" uitype="textareabrief" rows="2"/>
+                    <cell type="label" labelfor="17" />
+                    <cell type="field" id="17" name="url" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
-                    <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="21"/>
+                    <cell type="field" id="21" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="22"/>
+                    <cell type="field" id="22" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
-                    <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
-                </row>-->
-	    		  </rows>
+                    <cell type="label" labelfor="23"/>
+                    <cell type="field" id="23" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="24"/>
+                    <cell type="field" id="24" name="timestampCreated" uitype="label" readonly="true"/>
+                </row> -->
+                  </rows>
         </viewdef>
-        
+                
         <viewdef
             type="formtable"
             name="AgentVariant Table"
@@ -2533,60 +2533,60 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
-    	      <rows>
+              <rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="FILENAME"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
-                	  <cell type="label" labelfor="title"  label="TITLE"/>
-                  	<cell type="field" id="title" name="attachment.title" isrequired="true"/>
+                      <cell type="label" labelfor="title"  label="TITLE"/>
+                    <cell type="field" id="title" name="attachment.title" isrequired="true"/>
                 </row>
-    		 	<!--<row>
-    		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
-    		    </row> -->
-    		        <row>
-    		            <cell type="label" labelfor="dateImaged" label="Date Imaged"/>
-    		            <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="fileCreatedDate" label="File Created Date"/>
-    		            <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="copyrightHolder" label="Copyright Holder"/>
-    		            <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="copyrightDate" label="Copyright Date"/>
-    		            <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="attachmentLocation" label="Attachment Location"/>
-    		            <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="license" label="License"/>
-    		            <cell type="field" id="license" name="attachment.license" uitype="text"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="credit" label="Credit"/>
-    		            <cell type="field" id="credit" name="attachment.credit" uitype="text"/>
-    		        </row>
-    		        <row>
-    	    	        <cell type="label" labelfor="mimeType" label="Mime Type"/>
-    		            <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
-    		        </row>
-    		        <row>
-    		          	<cell type="label" labelfor="remarks" label="Remarks"/>
-    		           	<cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
-    		        </row>
                 <!--<row>
-                   	<cell type="subview" id="imageatt" viewname="AttachmentImageAttribute" name="attachment.attachmentImageAttribute" colspan="3" />
-               	</row>-->
-    		</rows>
-		</viewdef>
-
+                    <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
+                </row> -->
+                <row>
+                    <cell type="label" labelfor="dateImaged" label="DATE_IMAGED"/>
+                    <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="fileCreatedDate" label="FILE_CREATED_DATE"/>
+                    <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="copyrightHolder" label="COPYRIGHT_HOLDER"/>
+                    <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="copyrightDate" label="COPYRIGHT_DATE"/>
+                    <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="attachmentLocation" label="ATTACHMENT_LOCATION"/>
+                    <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="license" label="LICENSE"/>
+                    <cell type="field" id="license" name="attachment.license" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="credit" label="CREDIT"/>
+                    <cell type="field" id="credit" name="attachment.credit" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME_TYPE"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="REMARKS"/>
+                    <cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
+                </row>
+                <!--<row>
+                    <cell type="subview" id="imageatt" viewname="AttachmentImageAttribute" name="attachment.attachmentImageAttribute" colspan="3" />
+                </row>-->
+            </rows>
+        </viewdef>
+        
         <viewdef
             type="form"
             name="AttachmentImageAttribute Form"
@@ -2600,35 +2600,35 @@
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
-    		        <cell type="label" labelfor="height" label="Height"/>
+    		        <cell type="label" labelfor="height" label="HEIGHT"/>
     		        <cell type="field" id="height" name="height" uitype="text"/>
     		    </row>
     		    <row>
-    		        <cell type="label" labelfor="width" label="Width"/>
+    		        <cell type="label" labelfor="width" label="WIDTH"/>
     		        <cell type="field" id="width" name="width" uitype="text"/>
     		    </row>
     		    <row>
-    		        <cell type="label" labelfor="resolution" label="Resolution"/>
+    		        <cell type="label" labelfor="resolution" label="RESOLUTION"/>
     		        <cell type="field" id="resolution" name="resolution" uitype="text"/>
     		    </row>
     		    <row>
-    		        <cell type="label" labelfor="magnification" label="Magnification"/>
+    		        <cell type="label" labelfor="magnification" label="MAGNIFICATION"/>
     		        <cell type="field" id="magnification" name="magnification" uitype="text"/>
     		    </row>
     		    <row>
-    		      	<cell type="label" labelfor="creativeCommons" label="Creative Commons"/>
+    		      	<cell type="label" labelfor="creativeCommons" label="CREATIVE_COMMONS"/>
     		       	<cell type="field" id="creativeCommons" name="creativeCommons" uitype="text"/>
     		    </row>
                 <row>
-                    <cell type="label" labelfor="mbImageId"/>
+                    <cell type="label" labelfor="mbImageId" label="MBIMAGEID"/>
                     <cell type="field" id="mbImageId" name="mbImageId" uitype="text" />
                 </row>
                 <row>
-                    <cell type="label" labelfor="timeStampLastSend"/>
+                    <cell type="label" labelfor="timeStampLastSend" label="TIMESTAMP_LAST_SEND"/>
                     <cell type="field" id="timeStampLastSend" name="timestampLastSend" uitype="text" readonly="true" uifieldformatter="Date"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="timeStampLastUpdateCheck"/>
+                    <cell type="label" labelfor="timeStampLastUpdateCheck" label="TIMESTAMP_LAST_UPDATECHECK"/>
                     <cell type="field" id="timeStampLastUpdateCheck" name="timestampLastUpdateCheck" uitype="text" readonly="true" uifieldformatter="Date"/>
                 </row>
     		    <!-- not ready for release

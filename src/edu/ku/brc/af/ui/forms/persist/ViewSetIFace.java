@@ -91,6 +91,11 @@ public interface ViewSetIFace extends Comparable<ViewSetIFace>
     public abstract boolean isSystem();
     
     /**
+     * @return true if the view was loaded from the the local file system, false if loaded from the database.
+     */
+    public abstract boolean isDiskBased();
+    
+    /**
      * Appends its XML.
      * @param sb the buffer
      */

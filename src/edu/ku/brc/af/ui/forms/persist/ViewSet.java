@@ -56,6 +56,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     protected File                       dirPath           = null;
     protected String                     i18NResourceName  = null;
 
+    protected boolean                         isDiskBased       = true;
     protected boolean                         hasLoadedViews    = false;
     protected Hashtable<String, ViewIFace>    transientViews    = null;
     protected Hashtable<String, ViewDefIFace> transientViewDefs = null;
@@ -78,6 +79,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     public ViewSet(final Element rootDOM,
                    final boolean doMapDefinitions) throws Exception
     {
+        isDiskBased = false;
         loadDOM(rootDOM, true, doMapDefinitions);
     }
 
@@ -103,7 +105,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         this.title    = title;
         this.fileName = fileName;
         this.dirPath  = dirPath;
-        //this.i18NResourceName  = i18NResourceName;
+        this.isDiskBased = true;
     }
 
     /**
@@ -120,6 +122,23 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     public void setFileName(String fileName)
     {
         this.fileName = fileName;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.persist.ViewSetIFace#isDiskBased()
+     */
+    @Override
+    public boolean isDiskBased()
+    {
+        return isDiskBased;
+    }
+
+    /**
+     * @param isDiskBased the isDiskBased to set
+     */
+    public void setDiskBased(boolean isDiskBased)
+    {
+        this.isDiskBased = isDiskBased;
     }
 
     /**
@@ -140,6 +159,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#cleanUp()
      */
+    @Override
     public void cleanUp()
     {
         if (views != null)
@@ -206,6 +226,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getView(java.lang.String)
      */
+    @Override
     public ViewIFace getView(final String nameStr)
     {
         loadViews();
@@ -216,6 +237,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getViews()
      */
+    @Override
     public Hashtable<String, ViewIFace> getViews()
     {
         loadViews();
@@ -226,6 +248,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getViewDefs()
      */
+    @Override
     public Hashtable<String, ViewDefIFace> getViewDefs()
     {
         return viewDefs;
@@ -234,6 +257,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getName()
      */
+    @Override
     public String getName()
     {
         return name;
@@ -242,6 +266,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getType()
      */
+    @Override
     public Type getType()
     {
         return type;
@@ -250,6 +275,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#setName(java.lang.String)
      */
+    @Override
     public void setName(final String name)
     {
         this.name = name;
@@ -258,6 +284,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getTitle()
      */
+    @Override
     public String getTitle()
     {
         return title;
@@ -266,14 +293,16 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getFileName()
      */
+    @Override
     public String getFileName()
     {
         return fileName;
     }
     
-    /**
-     * @return the i18NResourceName
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.persist.ViewSetIFace#getI18NResourceName()
      */
+    @Override
     public String getI18NResourceName()
     {
         return i18NResourceName;
@@ -290,6 +319,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#isSystem()
      */
+    @Override
     public boolean isSystem()
     {
         return type == Type.System;
@@ -483,6 +513,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
      */
+    @Override
     public void toXML(final StringBuilder sb)
     {
         sb.append("<viewset name=\""+name+"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
@@ -522,12 +553,14 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
      */
     protected void loadViewFile(final FileInputStream fileInputStream) throws Exception
     {
+        isDiskBased = true;
         loadDOM(XMLHelper.readFileToDOM4J(fileInputStream), false, true);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewSet)
      */
+    @Override
     public int compareTo(ViewSetIFace obj)
     {
         return name.compareTo(obj.getName());

@@ -128,6 +128,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * This class provides the current context of the Specify application. The context consists of the following:<br>
@@ -1835,7 +1836,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dirArg)
     {
         SpAppResourceDir dir = dirArg;
-        //if (debug) log.debug("Looking up ["+dir.toString()+"] ["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (debug) log.debug("Looking up ["+dir.toString()+"] ["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false); //$NON-NLS-1$
         if (reloadViews || forceReloadViews)
@@ -1887,6 +1888,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                     
                     ViewSet vs = new ViewSet(root, true);
+                    vs.setDiskBased(vso.getId() == null);
                     vs.setFileName(vso.getFileName());
                     viewSetList.add(vs);
                     
@@ -2009,13 +2011,32 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @Override
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
-        ViewIFace view = getViewInternal(viewSetName, viewName, true);
-        if (view != null)
+        //log.debug("Looking for: "+viewName);
+        ViewIFace view = null;
+        Triple<ViewIFace, Boolean, Integer> viewInfoDB = getViewInternal(viewSetName, viewName, true);
+        if (viewInfoDB != null)
         {
-            return view;
+            view = viewInfoDB.first;
+            //log.debug("viewInfoDB: "+viewInfoDB+" "+viewInfoDB.first+"  Lvl: "+viewInfoDB.third+"  Disk: "+viewInfoDB.second);
         }
         
-        return getViewInternal(viewSetName, viewName, false);
+        if (viewInfoDB == null || viewInfoDB.second) // viewInfoDB.second -> true means it was from the disk
+        {
+            Triple<ViewIFace, Boolean, Integer> viewInfo = getViewInternal(viewSetName, viewName, false);
+            if (viewInfo != null && viewInfo.first != null)
+            {
+                //log.debug("viewInfo: "+viewInfo+"  "+viewInfo.first+" Lvl:"+viewInfo.third);
+                if (viewInfoDB != null)
+                {
+                    view = viewInfoDB.third < viewInfo.third ? viewInfoDB.first : viewInfo.first;
+                } else
+                {
+                    view = viewInfo.first;
+                }
+            }
+        }
+        
+        return view;
     }
 
     /**
@@ -2024,7 +2045,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param doCheckDB
      * @return
      */
-    private ViewIFace getViewInternal(final String viewSetName, final String viewName, final boolean doCheckDB)
+    private Triple<ViewIFace, Boolean, Integer> getViewInternal(final String viewSetName, final String viewName, final boolean doCheckDB)
     {
         if (debug) log.debug("getView - viewSetName[" + viewSetName + "][" + viewName + "]");
         
@@ -2035,12 +2056,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         // We now allow "null" viewset names so it can find the first one it runs into.
         
+        int level = 0;
         for (SpAppResourceDir dir : spAppResourceList)
         {
+            if (debug) log.debug("getView - " + dir.getIdentityTitle());
+            
             if ((dir.getId() == null && !doCheckDB) || (dir.getId() != null && doCheckDB))
             {
                 //if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
-                if (debug) log.debug("getView - " + dir.getIdentityTitle());
+                if (debug) log.debug("  getView - " + dir.getIdentityTitle());
                 
                 for (ViewSetIFace vs : getViewSetList(dir))
                 {
@@ -2051,11 +2075,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         ViewIFace view = vs.getView(viewName);
                         if (view != null)
                         {
-                            return view;
+                            return new Triple<ViewIFace, Boolean, Integer>(view, vs.isDiskBased(), level);
                         }
                     }
                 }
             }
+            level++;
         }
 
         return null;
