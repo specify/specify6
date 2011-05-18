@@ -31,6 +31,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -62,6 +64,8 @@ import edu.ku.brc.util.Triple;
  */
 public class LoanPreparationBusRules extends BaseBusRules implements CommandListener
 {
+    private static final Logger log = Logger.getLogger(LoanPreparationBusRules.class);
+    
     private final String LOAN_QTY_RANGE_ERR = "LOAN_QTY_RANGE_ERR";
     
     private boolean    isFillingForm    = false;
@@ -454,8 +458,14 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 TableViewObj tvo = (TableViewObj)viewable;
                 // Make sure the Loan form knows there is a change
                 MultiView loanMV = tvo.getMVParent().getMultiViewParent();
-                loanMV.getCurrentValidator().setHasChanged(true);
-                loanMV.getCurrentValidator().validateRoot();
+                if (loanMV != null && loanMV.getCurrentValidator() != null)
+                {
+                    loanMV.getCurrentValidator().setHasChanged(true);
+                    loanMV.getCurrentValidator().validateRoot();
+                } else
+                {
+                    log.error("The Loan's Multiview should not be null!");
+                }
                 
                 // Refresh list in the grid
                 tvo.refreshDataList();
@@ -470,23 +480,29 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 LoanPreparation            loanPrep = (LoanPreparation)dataTriple.second;
                 Set<LoanReturnPreparation> lrps     = (Set<LoanReturnPreparation>)dataTriple.third;
                 
-                int quantityResolved = 0;
-                int quantityReturned = 0;
-                for (LoanReturnPreparation lrp : lrps)
+                if (loanPrep != null && lrps != null)
                 {
-                    quantityResolved += lrp.getQuantityResolved();
-                    quantityReturned += lrp.getQuantityReturned();
-                }
-                loanPrep.setQuantityResolved(quantityResolved);
-                loanPrep.setQuantityReturned(quantityReturned);
-                
-                if (formViewObj != null)
-                {
-                    Component comp = formViewObj.getControlByName("quantityResolved");
-                    if (comp instanceof JTextField && loanPrep != null)
+                    int quantityResolved = 0;
+                    int quantityReturned = 0;
+                    for (LoanReturnPreparation lrp : lrps)
                     {
-                        ((JTextField)comp).setText(Integer.toString(quantityResolved));
+                        quantityResolved += lrp.getQuantityResolved();
+                        quantityReturned += lrp.getQuantityReturned();
                     }
+                    loanPrep.setQuantityResolved(quantityResolved);
+                    loanPrep.setQuantityReturned(quantityReturned);
+                    
+                    if (formViewObj != null)
+                    {
+                        Component comp = formViewObj.getControlByName("quantityResolved");
+                        if (comp instanceof JTextField)
+                        {
+                            ((JTextField)comp).setText(Integer.toString(quantityResolved));
+                        }
+                    }
+                } else
+                {
+                    log.error("The loanPrep or lrps should not be null!");
                 }
             }
         }
