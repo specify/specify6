@@ -153,7 +153,7 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
-import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -8710,6 +8710,9 @@ public class BuildSampleDatabase
                 Element root = XMLHelper.readDOMFromConfigDir(dirName + showFieldsFileName);
                 if (root != null)
                 {
+                    StringBuilder sb    = new StringBuilder("In show_fields.xml there were the following errors:\n");
+                    boolean       isErr = false;
+                    
                     List<?> tables = root.selectNodes("/tables/table");
                     for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
                     {
@@ -8736,22 +8739,29 @@ public class BuildSampleDatabase
                                     boolean isShown = XMLHelper.getAttr(fieldEl, SHOW, true);
                                     if (StringUtils.isNotEmpty(fName))
                                     {
-                                        DBFieldInfo fld = tbl.getFieldByName(fName);
-                                        if (fld != null)
+                                        DBTableChildIFace childInfo = tbl.getItemByName(fName);
+                                        if (childInfo != null)
                                         {
-                                            setFieldVisible(localSession, tbl.getName(), fld.getName(), discipline, isShown);
+                                            setFieldVisible(localSession, tbl.getName(), childInfo.getName(), discipline, isShown);
                                         } else
                                         {
-                                            showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                            sb.append("["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]\n");
+                                            isErr = true;
                                         }
                                     }
                                 }
                             } else
                             {
-                                showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
+                                sb.append("["+disciplineDirName+"] has bad table name ["+tName+"]\n");
+                                isErr = true;
                             }
                         }
-                    }   
+                    }
+                    
+                    if (isErr)
+                    {
+                        showError(sb.toString());
+                    }
                 }
             } catch (Exception ex)
             {

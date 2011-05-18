@@ -59,12 +59,13 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.EditDeleteAddPanel;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 /**
  * @author rods
@@ -87,11 +88,14 @@ public class CollectionRelTask extends BaseTask
     private static final String  COLREL_SECURITY  = "COLRELEDIT";
     
     
-    
-    private JList leftList;
     private JList relList;
-    private JList rightList;
     private EditDeleteAddPanel edaPanel;
+    
+    private Vector<Collection>        colObjVec;
+    private Vector<CollectionRelType> relObjVec;
+    
+    private Collection srcCollection = null;
+    private Collection dstCollection = null;
     
     
     /**
@@ -169,6 +173,10 @@ public class CollectionRelTask extends BaseTask
         return new ArrayList<Object>();
     }
     
+    /**
+     * @param list
+     * @return
+     */
     private DefaultListModel fillLDM(final Vector<?> list)
     {
         DefaultListModel model = new DefaultListModel();
@@ -178,6 +186,65 @@ public class CollectionRelTask extends BaseTask
         }
         return model;
     }
+    
+    /**
+     * 
+     */
+    private void showSourceList()
+    {
+        srcCollection = null;
+        
+        ChooseFromListDlg<Collection> dlg = new ChooseFromListDlg<Collection>((Frame)getTopWindow(), 
+                getResourceString(COLREL_TITLE), getResourceString("COLREL_CHS_SRC"), CustomDialog.OKCANCEL, colObjVec);
+        dlg.setOkLabel(getResourceString("NEXT"));
+        centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            srcCollection = dlg.getSelectedObject();
+            showDestinationList();
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void showDestinationList()
+    {
+        Vector<Collection> filteredList = new Vector<Collection>();
+        for (Collection col : colObjVec)
+        {
+            if (col.getCatalogNumFormatName().equals(srcCollection.getCatalogNumFormatName()) &&
+                !col.getId().equals(srcCollection.getId()))
+            {
+                filteredList.add(col);
+            }
+        }
+        
+        if (filteredList.size() == 1)
+        {
+            dstCollection = filteredList.get(0);
+            
+        } else if (filteredList.size() > 1)
+        {
+            ChooseFromListDlg<Collection> dlg = new ChooseFromListDlg<Collection>((Frame)getTopWindow(), 
+                    getResourceString(COLREL_TITLE), getResourceString("COLREL_CHS_DST"), CustomDialog.OKCANCEL, filteredList);
+            dlg.setOkLabel(getResourceString("NEXT"));
+            centerAndShow(dlg);
+            if (!dlg.isCancelled())
+            {
+                dstCollection = dlg.getSelectedObject();   
+            } else
+            {
+                return;
+            }
+        } else
+        {
+            showLocalizedError("COLREL_NO_COL");
+            return;
+        }
+        
+        addRel();
+    }
 
     /**
      * 
@@ -185,16 +252,11 @@ public class CollectionRelTask extends BaseTask
     @SuppressWarnings("unchecked")
     private void createRelMgrUI()
     {
-        Vector<CollectionRelType> relObjVec = new Vector<CollectionRelType>((List<CollectionRelType>)getList(CollectionRelType.class));
-        Vector<Collection>        colObjVec = new Vector<Collection>((List<Collection>)getList(Collection.class));
+        colObjVec = new Vector<Collection>((List<Collection>)getList(Collection.class));
+        relObjVec = new Vector<CollectionRelType>((List<CollectionRelType>)getList(CollectionRelType.class));
         
-        leftList  = new JList(fillLDM(colObjVec));
         relList   = new JList(fillLDM(relObjVec));
-        rightList = new JList(fillLDM(colObjVec));
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:MAX(p;200px):g,10px,f:p:g", "p,2px,f:p:g,2px,p"));
-        
         ActionListener editAL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -206,7 +268,7 @@ public class CollectionRelTask extends BaseTask
             @Override
             public void actionPerformed(ActionEvent e)
             {
-               addRel(); 
+                showSourceList(); 
             }
         };
         ActionListener delAL = new ActionListener() {
@@ -219,27 +281,15 @@ public class CollectionRelTask extends BaseTask
         
         edaPanel = new EditDeleteAddPanel(editAL, delAL, addAL);
         
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:MAX(300px;p):g", "p,2px,f:p:g,2px,p"));
         
-        pb.add(UIHelper.createI18NLabel("CR_LEFT_SIDE", SwingConstants.CENTER),  cc.xy(1, 1));
-        pb.add(UIHelper.createI18NLabel("CR_REL", SwingConstants.CENTER),        cc.xy(3, 1));
-        pb.add(UIHelper.createI18NLabel("CR_RIGHT_SIDE", SwingConstants.CENTER), cc.xy(5, 1));
-
-        pb.add(UIHelper.createScrollPane(leftList), cc.xy(1, 3));
-        pb.add(UIHelper.createScrollPane(relList), cc.xy(3, 3));
-        pb.add(edaPanel, cc.xy(3, 5));
-        pb.add(UIHelper.createScrollPane(rightList), cc.xy(5, 3));
+        pb.add(createI18NLabel("CR_REL", SwingConstants.CENTER),  cc.xy(1, 1));
+        pb.add(createScrollPane(relList),                         cc.xy(1, 3));
+        pb.add(edaPanel,                                                   cc.xy(1, 5));
         pb.setDefaultDialogBorder();
         
-        ListSelectionListener lsl = new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    updateBtnUI();
-                }
-            }
-        };
+        edaPanel.getAddBtn().setEnabled(true);
         
         ListSelectionListener relLSL = new ListSelectionListener() {
             @Override
@@ -247,43 +297,20 @@ public class CollectionRelTask extends BaseTask
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    CollectionRelType crt = (CollectionRelType)relList.getSelectedValue();
-                    if (crt != null)
-                    {
-                        selectInList(leftList,  crt.getLeftSideCollection());
-                        selectInList(rightList, crt.getRightSideCollection());
-                    }
                     updateBtnUI();
                 }
             }
         };
-        leftList.addListSelectionListener(lsl);
         relList.addListSelectionListener(relLSL);
-        rightList.addListSelectionListener(lsl);
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString(COLREL_TITLE), true, CustomDialog.OK_BTN, pb.getPanel());
-        dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+        CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), getResourceString(COLREL_TITLE), true, CustomDialog.OK_BTN, pb.getPanel());
+        dlg.setOkLabel(getResourceString("CLOSE"));
         dlg.setVisible(true);
     }
     
     /**
-     * @param list
-     * @param collection
+     * 
      */
-    private void selectInList(final JList list, final Collection collection)
-    {
-        DefaultListModel model = (DefaultListModel)list.getModel();
-        for (int i=0;i<model.size();i++)
-        {
-            Collection col = (Collection)model.get(i);
-            if (collection.getId().equals(col.getId()))
-            {
-                list.setSelectedIndex(i);
-                return;
-            }
-        }
-    }
-    
     private void editRel()
     {
         CollectionRelType crt = (CollectionRelType)relList.getSelectedValue();
@@ -293,6 +320,9 @@ public class CollectionRelTask extends BaseTask
         }
     }
     
+    /**
+     * 
+     */
     private void addRel()
     {
         createRelType(null);
@@ -337,7 +367,7 @@ public class CollectionRelTask extends BaseTask
                     
                     if (key != null)
                     {
-                        UIRegistry.showLocalizedError(key);
+                        showLocalizedError(key);
                     } else
                     {
                         if (BasicSQLUtils.update("DELETE FROM collectionreltype WHERE CollectionRelTypeID = " + colRelTyp.getId()) == 1)
@@ -380,7 +410,7 @@ public class CollectionRelTask extends BaseTask
             
         } catch (Exception ex)
         {
-            session.rollback();
+            if (session != null) session.rollback();
             ex.printStackTrace();
             
         } finally
@@ -398,7 +428,7 @@ public class CollectionRelTask extends BaseTask
      */
     private CollectionRelType createRelType(final CollectionRelType crt)
     {
-        final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)UIRegistry.getMostRecentWindow(),
+        final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)getMostRecentWindow(),
                 "SystemSetup",
                 "CollectionRelType",
                 null,
@@ -419,8 +449,8 @@ public class CollectionRelTask extends BaseTask
                 JLabel     leftLbl  = fvo.getLabelById("left");
                 JLabel     rightLbl = fvo.getLabelById("right");
                 
-                Collection leftCol  = crt != null ? crt.getLeftSideCollection() : (Collection)leftList.getSelectedValue();
-                Collection rightCol = crt != null ? crt.getRightSideCollection() : (Collection)rightList.getSelectedValue();
+                Collection leftCol  = crt != null ? crt.getLeftSideCollection() : srcCollection;
+                Collection rightCol = crt != null ? crt.getRightSideCollection() : dstCollection;
                 
                 if (leftCol != null)
                 {
@@ -451,15 +481,13 @@ public class CollectionRelTask extends BaseTask
         }
         
         dlg.setData(colRelType);
-        UIHelper.centerAndShow(dlg);
+        centerAndShow(dlg);
         
         if (!dlg.isCancelled())
         {
             if (crt == null)
             {
-                Collection left  = (Collection)leftList.getSelectedValue();
-                Collection right = (Collection)rightList.getSelectedValue();
-                if (left != null && right != null)
+                if (srcCollection != null && dstCollection != null)
                 {
                     try
                     {
@@ -467,13 +495,13 @@ public class CollectionRelTask extends BaseTask
                         try
                         {
                             session = DataProviderFactory.getInstance().createSession();
-                            left  = session.get(Collection.class, left.getId());
-                            right = session.get(Collection.class, right.getId());
+                            srcCollection  = session.get(Collection.class, srcCollection.getId());
+                            dstCollection = session.get(Collection.class, dstCollection.getId());
                             
-                            colRelType.setLeftSideCollection(left);
-                            colRelType.setRightSideCollection(right);
-                            left.getLeftSideRelTypes().add(colRelType);
-                            right.getRightSideRelTypes().add(colRelType);
+                            colRelType.setLeftSideCollection(srcCollection);
+                            colRelType.setRightSideCollection(dstCollection);
+                            srcCollection.getLeftSideRelTypes().add(colRelType);
+                            dstCollection.getRightSideRelTypes().add(colRelType);
                             
                         } catch (Exception ex)
                         {
@@ -516,14 +544,9 @@ public class CollectionRelTask extends BaseTask
      */
     private void updateBtnUI()
     {
-        int leftSelectedInx  = leftList.getSelectedIndex();
-        int rightSelectedInx = rightList.getSelectedIndex();
-        
         boolean isSelected = !relList.isSelectionEmpty();
         edaPanel.getEditBtn().setEnabled(isSelected);
         edaPanel.getDelBtn().setEnabled(isSelected);
-        
-        edaPanel.getAddBtn().setEnabled(leftSelectedInx != -1 && rightSelectedInx != -1);// && leftSelectedInx != rightSelectedInx);
     }
     
     /* (non-Javadoc)
@@ -586,7 +609,7 @@ public class CollectionRelTask extends BaseTask
             (secMgr.getPermission(securityName) != null && 
              !secMgr.getPermission(securityName).hasNoPerm()))
         {
-            JMenuItem mi = UIHelper.createLocalizedMenuItem(COLREL_MENU, COLREL_MNU, COLREL_TITLE, true, null); 
+            JMenuItem mi = createLocalizedMenuItem(COLREL_MENU, COLREL_MNU, COLREL_TITLE, true, null); 
             mi.addActionListener(new ActionListener()
             {
                 @Override

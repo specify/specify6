@@ -209,8 +209,9 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             {
                 Collection collection = !isLeftSide ? leftSideCol : rightSideCol;
                 String cols = isForCount ? "COUNT(*)" : CATNUM_NAME+", collectionObjectId";
-                String sql = String.format("SELECT %s FROM CollectionObject WHERE collectionMemberId = %d AND %s LIKE '%s%c' ORDER BY catalogNumber", 
-                        cols, collection.getId(), CATNUM_NAME, searchText, '%');
+                String sql = String.format("SELECT %s FROM CollectionObject WHERE collectionMemberId = %d AND %s LIKE '%c%s%c' ORDER BY catalogNumber", 
+                        cols, collection.getId(), CATNUM_NAME, '%',searchText, '%');
+                //System.out.println(sql);
                 return sql;
             }
 
@@ -224,8 +225,9 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 Collection collection = !isLeftSide ? leftSideCol : rightSideCol;
                 String catNum = (String)dataMap.get("CatalogNumber");
                 catNum = StringUtils.remove(catNum, '#');
-                String sql = String.format("SELECT collectionObjectId, catalogNumber FROM CollectionObject WHERE collectionMemberId = %d AND catalogNumber LIKE '%s%c'", 
-                        collection.getId(), catNum, '%');
+                String sql = String.format("SELECT CollectionObjectId, CatalogNumber FROM collectionobject WHERE CollectionMemberID = %d AND CatalogNumber LIKE '%c%s%c' ORDER BY catalogNumber", 
+                        collection.getId(), '%', catNum, '%');
+                //System.out.println(sql);
                 return sql;
             }
 
@@ -336,11 +338,14 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 }
                 
                 // Force Load 
-                //tmpSession.attach(currentColObj);
-                currentColObj.getLeftSideRels().size();
-                currentColObj.getRightSideRels().size();
+                /*if (currentColObj.getId() != null)
+                {
+                    tmpSession.attach(currentColObj);
+                    currentColObj.getLeftSideRels().size();
+                    currentColObj.getRightSideRels().size();
+                }*/
                 
-                // Is the other sidw already hooked up
+                // Is the other side already hooked up
                 // if it is a different ColObj then remove the link.
                 if (otherSideColObj != null && !newOtherSide.getId().equals(otherSideColObj.getId()))
                 {
@@ -357,14 +362,15 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 }
                 
                 otherSideColObj = newOtherSide;
-                otherSideColObj.getLeftSideRels().size();
-                otherSideColObj.getRightSideRels().size();
+                //otherSideColObj.getLeftSideRels().size();
+                //otherSideColObj.getRightSideRels().size();
                 
                 if (isLeftSide)
                 {
                     collectionRel.setLeftSide(currentColObj);
                     collectionRel.setRightSide(otherSideColObj);
-                    if (isNew)
+                    
+                    if (!currentColObj.getLeftSideRels().contains(collectionRel))
                     {
                         currentColObj.getLeftSideRels().add(collectionRel);
                         otherSideColObj.getRightSideRels().add(collectionRel);
@@ -373,7 +379,8 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 {
                     collectionRel.setLeftSide(otherSideColObj);
                     collectionRel.setRightSide(currentColObj);
-                    if (isNew)
+                    
+                    if (!currentColObj.getLeftSideRels().contains(collectionRel))
                     {
                         otherSideColObj.getLeftSideRels().add(collectionRel);
                         currentColObj.getRightSideRels().add(collectionRel);
@@ -394,8 +401,6 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             try
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
-                //tmpSession.attach(collectionRel);
-                //tmpSession.attach(currentColObj);
                 otherSideColObj = tmpSession.merge(otherSideColObj);
                 
                 if (isLeftSide)
@@ -423,6 +428,11 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             {
                 if (tmpSession != null) tmpSession.close();
             }
+        }
+        
+        if (currentColObj != null)
+        {
+            System.out.println("itemSelectedInternal2: "+currentColObj.getLeftSideRels().size());
         }
     }
     
@@ -453,6 +463,11 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
         if (value instanceof CollectionObject && colRelType != null)
         {
             currentColObj   = (CollectionObject)value;
+            if (currentColObj.getId() != null)
+            {
+                currentColObj.getLeftSideRels().size();
+                currentColObj.getRightSideRels().size();
+            }
             otherSideColObj = null;
             
             Set<CollectionRelationship> collectionRels = isLeftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
@@ -463,6 +478,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                     collectionRel   = colRel;
                     otherSideColObj = isLeftSide ? colRel.getRightSide() : colRel.getLeftSide();
                     otherSideColObj.getLeftSideRels().size();
+                    otherSideColObj.getRightSideRels().size();
                     break;
                 }
             }
@@ -477,6 +493,11 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
         } else
         {
             currentColObj = null;
+        }
+        
+        if (currentColObj != null)
+        {
+            System.out.println("setValue: "+currentColObj.getLeftSideRels().size());
         }
     }
     
