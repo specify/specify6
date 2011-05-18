@@ -4993,7 +4993,7 @@ public class Uploader implements ActionListener, KeyListener
 					{
 						busRule.afterSaveCommit(rs, session);
 					}
-					if (rs.getType() != RecordSet.HIDDEN && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())
+					if (rs.getType() == RecordSet.GLOBAL && rs.getDbTableId() == root.getTable().getTableInfo().getTableId())
 					{
 						final RecordSet mergedRs = session.merge(rs);
 		        		SwingUtilities.invokeLater(new Runnable() {
