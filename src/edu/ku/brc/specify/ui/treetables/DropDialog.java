@@ -8,6 +8,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.text.View;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -258,6 +260,14 @@ public class DropDialog extends CustomDialog
 						ta.setLineWrap(true);
 						ta.setWrapStyleWord(true);
 						ta.setEditable(false);
+						//Trick to adjust size (discovered via google search)
+						View v = ta.getUI().getRootView(ta);
+						v.setSize(600, Integer.MAX_VALUE);
+						String pref = Float.toString(v.getPreferredSpan(View.Y_AXIS));
+						pref = pref.substring(0, pref.indexOf("."));
+						Integer preferredHeight = new Integer(pref);
+						ta.setPreferredSize(new Dimension(600, preferredHeight.intValue()));
+						
 						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 
 								CustomDialog.OKHELP, ta, CustomDialog.OK_BTN);
 						cd.setHelpContext(getInfoDlgHelpContext(optNo));
@@ -266,8 +276,9 @@ public class DropDialog extends CustomDialog
 						//the following size adjustments are a workaround for problems with height of cd defaulting to 9000.
 						//they work on linux. other os's may have not work so well.
 						//probably should add a scroller.
-						cd.setSize(cd.getWidth()*5, cd.getHeight());
-						cd.setSize(cd.getWidth(), cd.getWidth()/2);
+						//cd.setSize(cd.getWidth()*5, cd.getHeight());
+						//cd.setSize(cd.getWidth(), cd.getWidth()/2);
+						 
 						UIHelper.centerAndShow(cd);
 					}
         			
