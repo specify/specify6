@@ -51,6 +51,7 @@ import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
@@ -185,7 +186,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                     }
                 });
                 
-                cbx.registerQueryBuilder(createSearchQueryBuilder());
+                cbx.registerQueryBuilder(createSearchQueryBuilder(isLeftSide, leftSideCol, rightSideCol));
             }
             
         } else
@@ -197,7 +198,9 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     /**
      * @return
      */
-    private ViewBasedSearchQueryBuilderIFace createSearchQueryBuilder()
+    protected static ViewBasedSearchQueryBuilderIFace createSearchQueryBuilder(final boolean isLeftSide, 
+                                                                               final Collection leftSideCol, 
+                                                                               final Collection rightSideCol)
     {
         return new ViewBasedSearchQueryBuilderIFace()
         {
@@ -314,27 +317,80 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     }
     
     /**
+     * @param dstCatNum
+     * @return
+     */
+    public static String isColObjAlreadyUsedInDB(final int colRelId, final String dstCatNum)
+    {
+        String sql = "SELECT src.CatalogNumber FROM collectionobject AS src " +
+        		     "Left Join collectionrelationship AS cr ON src.CollectionObjectID = cr.LeftSideCollectionID " +
+        		     "Left Join collectionobject AS dst ON cr.RightSideCollectionID = dst.CollectionObjectID " +
+        		     "WHERE cr.CollectionRelTypeID = %d AND dst.CatalogNumber = '%s'";
+        sql = String.format(sql, colRelId, dstCatNum);
+        return BasicSQLUtils.querySingleObj(sql);
+    }
+    
+    /**
+     * @param colRelId
+     * @param dstId
+     * @param dstCatNum
+     * @param catNumFormatter
+     * @return
+     */
+    public static boolean isColObjAlreadyUsed(final int colRelId, 
+                                              final int dstId, 
+                                              final String dstCatNum,
+                                              final UIFieldFormatterIFace catNumFormatter)
+    {
+        final String catNum = isColObjAlreadyUsedInDB(colRelId, dstCatNum);
+        if (catNum != null)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    String otherCatNum = dstCatNum;
+                    if (StringUtils.isNotEmpty(otherCatNum))
+                    {
+                        UIFieldFormatterIFace fmt = CollectionRelOneToManyPlugin.getCatNumFormatter(dstId);
+                        otherCatNum = fmt != null ? (String)fmt.formatToUI(otherCatNum) : otherCatNum;
+                    }
+                    UIRegistry.showLocalizedError("COLREL_USED_CO", otherCatNum, catNumFormatter.formatToUI(catNum));
+                }
+            });
+            return true; // Is In Use (an error)
+        }
+        return false; // Not In Use
+    }
+    
+    /**
      * 
      */
     private void itemSelectedInternal()
     {
-        CollectionObject newOtherSide = (CollectionObject)cbx.getValue();
+        final CollectionObject newOtherSide = (CollectionObject)cbx.getValue();
         if (newOtherSide != null)
         {
+            // Make sure this no one is already pointing at it.
+            if (isColObjAlreadyUsed(colRelType.getId(), rightSideCol.getId(), newOtherSide.getCatalogNumber(), catNumFormatter))
+            {
+                cbx.setValue(null, null);
+                return;
+            }
+            
             DataProviderSessionIFace tmpSession = null;
             try
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
                 tmpSession.attach(newOtherSide);
                 
-                boolean isNew = false;
                 if (collectionRel == null && colRelType != null)
                 {
                     collectionRel = new CollectionRelationship();
                     collectionRel.initialize();
                     collectionRel.setCollectionRelType(colRelType);
                     colRelType.getRelationships().add(collectionRel);
-                    isNew = true;
                 }
                 
                 // Force Load 

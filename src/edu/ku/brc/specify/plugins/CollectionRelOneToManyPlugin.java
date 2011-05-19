@@ -23,8 +23,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -47,13 +45,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
-import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
-import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -67,7 +61,6 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.busrules.TableSearchResults;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -281,7 +274,7 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         ViewBasedSearchDialogIFace srchDlg = getViewbasedFactory().createSearchDialog(null, "CollectionObjectSearch"); //$NON-NLS-1$
         if (srchDlg != null)
         {
-            srchDlg.registerQueryBuilder(new ColRelColObjQuery(rightSideCol));
+            srchDlg.registerQueryBuilder(CollectionRelPlugin.createSearchQueryBuilder(isLeftSide, leftSideCol, rightSideCol));
             
             srchDlg.setTitle(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()));
             srchDlg.getDialog().setVisible(true);
@@ -290,6 +283,12 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                 CollectionObject colObj = (CollectionObject)srchDlg.getSelectedObject();
                 if (colObj != null)
                 {
+                    // Make sure this no one is already pointing at it.
+                    if (CollectionRelPlugin.isColObjAlreadyUsed(colRelType.getId(), rightSideCol.getId(), colObj.getCatalogNumber(), catNumFormatter))
+                    {
+                        return;
+                    }
+                    
                     if (!existsInCollectionRel(currentColObj.getLeftSideRels(), colObj))
                     {
                         CollectionRelationship collectionRel = new CollectionRelationship();
@@ -386,23 +385,37 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                                                                              null, 
                                                                              ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
             CollectionRelationship colRel = colObjs.get(rowInx);
-            DataProviderSessionIFace tmpSession = null;
-            try
-            {
+            //DataProviderSessionIFace tmpSession = null;
+            //try
+            //{
                 CollectionObject colObj = colRel.getRightSide();
-                tmpSession = DataProviderFactory.getInstance().createSession();
-                tmpSession.attach(colObj);
+                //tmpSession = DataProviderFactory.getInstance().createSession();
+                //tmpSession.attach(colObj);
                 dlg.setData(colObj);
                 
-            } catch (Exception ex)
+            /*} catch (Exception ex)
             {
                 ex.printStackTrace();
             } finally
             {
                 if (tmpSession != null) tmpSession.close();
-            }
+            }*/
             dlg.showDisplay(true);
         }
+    }
+    
+    /**
+     * gets the CatNum formatter from the cache.
+     * @param id Collection ID
+     * @return the formatter or null
+     */
+    public static UIFieldFormatterIFace getCatNumFormatter(final Integer id)
+    {
+        if (id != null)
+        {
+            return catNumFmtHash.get(id);
+        }
+        return null;
     }
     
     /**
@@ -462,8 +475,18 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         if (value != null)
         {
             currentColObj = (CollectionObject)value;
-            for (CollectionRelationship cr : currentColObj.getLeftSideRels())
+            boolean leftSide = isLeftSide;
+            if (currentColObj.getCollection().getId().equals(rightSideCol.getId()))
             {
+                leftSide = false;
+            }
+            
+            model.setLeft(leftSide);
+            
+            Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
+            for (CollectionRelationship cr : collectionRels)
+            {
+                cr.getLeftSide().getCollection().getCollectionName(); // force load of collection (only)
                 cr.getRightSide().getCollection().getCollectionName(); // force load of collection (only)
             }
             
@@ -471,7 +494,7 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
             currentColObj.getRightSideRels().size();
             
             colObjs.clear();
-            colObjs.addAll(currentColObj.getLeftSideRels());
+            colObjs.addAll(collectionRels);
             model.fireTableDataChanged();
         }
     }
@@ -617,6 +640,8 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
     //---------------------------------------------------------------------------------------------------
     class ColObjDataModel extends DefaultTableModel
     {
+        boolean isLeft = true;
+        
         /**
          * 
          */
@@ -636,7 +661,7 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
             CollectionRelationship colRel = colObjs.get(row);
             if (colRel != null)
             {
-                CollectionObject colObj = colRel.getRightSide();
+                CollectionObject colObj = isLeft ? colRel.getRightSide() : colRel.getLeftSide();
                 if (colObj != null)
                 {
                     if (column == 0)
@@ -690,51 +715,23 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         {
             return false;
         }
-    }
-    
-    class ColRelColObjQuery implements ViewBasedSearchQueryBuilderIFace
-    {
-        private Collection collection;
-        
+
         /**
-         * 
+         * @return the isLeft
          */
-        public ColRelColObjQuery(final Collection collection)
+        public boolean isLeft()
         {
-            super();
-            this.collection = collection;
+            return isLeft;
         }
 
-        /* (non-Javadoc)
-         * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
+        /**
+         * @param isLeft the isLeft to set
          */
-        @Override
-        public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames)
+        public void setLeft(boolean isLeft)
         {
-            String catNum = (String)dataMap.get("CatalogNumber");
-            catNum = StringUtils.remove(catNum, '#');
-            String sql = String.format("SELECT collectionObjectId, catalogNumber FROM CollectionObject WHERE collectionMemberId = %d AND catalogNumber LIKE '%s%c'", 
-                    collection.getId(), catNum, '%');
-            return sql;
+            this.isLeft = isLeft;
         }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.lang.String, boolean)
-         */
-        @Override
-        public String buildSQL(final String searchText, boolean isForCount)
-        {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#createQueryForIdResults()
-         */
-        @Override
-        public QueryForIdResultsIFace createQueryForIdResults()
-        {
-            ExpressResultsTableInfo esTblInfo = ExpressSearchConfigCache.getTableInfoByName("CollectionObjectSearch");
-            return new TableSearchResults(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()), esTblInfo.getCaptionInfo()); //true => is HQL
-        }
+        
+        
     }
 }
