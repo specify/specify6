@@ -90,7 +90,6 @@
    <mapID target="Reports" url="SpecifyHelp/ReportsLabels/reports.html"/>
    <mapID target="ReportRunReport" url="SpecifyHelp/ReportsLabels/reports.html"/>
    <mapID target="WorkbenchReporting" url="SpecifyHelp/Workbench/Reports.html"/>
-   <mapID target="SECURITY_SUMMARY" url="SpecifyHelp/System/SecuritySummary.html"/>
    <mapID target="WorkbenchPreferences" url="SpecifyHelp/Workbench/Preferences.html"/>
    <mapID target="PreferencesOverview" url="SpecifyHelp/Prefs/Prefs.html"/>
    <mapID target="WorkbenchSpecialTools" url="SpecifyHelp/Workbench/SpecialTools.html"/>
@@ -98,8 +97,8 @@
    <mapID target="iReport" url="SpecifyHelp/ReportsLabels/specifyireports.html"/>
    <mapID target="starting" url="SpecifyHelp/Dialogs/Login.html"/>
    <mapID target="SetupSpecifyDB" url="SpecifyHelp/Dialogs/Login.html"/>
-   <mapID target="MASTERPWD_MAIN" url="SpecifyHelp/Dialogs/Login.html"/>
-   <mapID target="MASTERPWD_GEN" url="SpecifyHelp/Dialogs/Login.html"/>
+   <mapID target="MASTERPWD_MAIN" url="SpecifyHelp/Dialogs/Login.html#paste_master"/>
+   <mapID target="MASTERPWD_GEN" url="SpecifyHelp/Dialogs/Login.html#generate_master"/>
    <mapID target="Login" url="SpecifyHelp/Dialogs/Login.html"/>
    <mapID target="Statistics" url="SpecifyHelp/Statistics/Statistics.html"/>
    <mapID target="PrefsSystem" url="SpecifyHelp/Prefs/System.html"/>
@@ -134,7 +133,9 @@
    <mapID target="wb_schema_config" url="SpecifyHelp/SchemaConfig/workbench_schema_config.html"/>
    <mapID target="wb_recordset" url="SpecifyHelp/Workbench/CreateDSfromRS.html"/>
    <mapID target="ezdb_wizard" url="SpecifyHelp/Security/Wizard_EZDB.html"/>
-   <mapID target="wizard" url="SpecifyHelp/Security/Wizard.html"/>   
+   <mapID target="wizard" url="SpecifyHelp/Security/Wizard.html"/>
+   <mapID target="it_credentials" url="SpecifyHelp/Dialogs/it_credentials.html"/>
+   <mapID target="collection_relationships" url="SpecifyHelp/Configuration/collection_relationships.html"/>   
 
 
 <!-- Index Bookmarks -->

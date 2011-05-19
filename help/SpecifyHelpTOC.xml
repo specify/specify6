@@ -71,7 +71,8 @@
                <tocitem text="Aggregate a Table" target="SC_aggregate"/>
                <tocitem text="Required Fields" target="SC_required_field"/>
                <tocitem text="Format a Field" target="SC_field_format"/>
-             </tocitem>  
+             </tocitem>
+             <tocitem text="Collection Relationships" target="collection_relationships"/>  
              <tocitem text="Web Links" target="WEBLNK_EDITOR">
                <tocitem text="Global Web Links" target="Web_Global"/>
                <tocitem text="Field Web Links" target="Web_Field"/>
