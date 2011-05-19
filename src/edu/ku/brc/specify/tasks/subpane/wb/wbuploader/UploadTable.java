@@ -3581,10 +3581,7 @@ public class UploadTable implements Comparable<UploadTable>
 					blankSeqs.clear();
 				}
 
-				if (!hasChildren && !isBlank && invalidNulls.size() != 0)
-				{
-					invalidValues.addAll(invalidNulls);
-				}
+				invalidValues.addAll(invalidNulls);
 				invalidNulls.clear();
 
 				seq++;
