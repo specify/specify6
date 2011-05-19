@@ -45,6 +45,7 @@ import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -101,8 +102,6 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     {
         super.initialize(propertiesArg, isViewModeArg);
         
-        //isUIReversed = UIHelper.getBoolean(properties.getProperty("reverseside"));
-
         String relName = propertiesArg.getProperty("relname");
         if (StringUtils.isNotEmpty(relName))
         {
@@ -157,6 +156,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                                                      COLOBJ_NAME,    // displayInfoDialogName
                                                      "");            // objTitle  
                 pb.add(textWithInfo, cc.xy(1, 1));
+                ViewFactory.changeTextFieldUIForDisplay(textWithInfo.getTextField(), false);
                 
             } else
             {
@@ -429,11 +429,6 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 if (tmpSession != null) tmpSession.close();
             }
         }
-        
-        if (currentColObj != null)
-        {
-            System.out.println("itemSelectedInternal2: "+currentColObj.getLeftSideRels().size());
-        }
     }
     
     /**
@@ -470,13 +465,19 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             }
             otherSideColObj = null;
             
-            Set<CollectionRelationship> collectionRels = isLeftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
+            boolean leftSide = isLeftSide;
+            if (currentColObj.getCollection().getId().equals(rightSideCol.getId()))
+            {
+                leftSide = false;
+            }
+            
+            Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
             for (CollectionRelationship colRel : collectionRels)
             {
                 if (colRel.getCollectionRelType().getId().equals(colRelType.getId()))
                 {
                     collectionRel   = colRel;
-                    otherSideColObj = isLeftSide ? colRel.getRightSide() : colRel.getLeftSide();
+                    otherSideColObj = leftSide ? colRel.getRightSide() : colRel.getLeftSide();
                     otherSideColObj.getLeftSideRels().size();
                     otherSideColObj.getRightSideRels().size();
                     break;
@@ -493,11 +494,6 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
         } else
         {
             currentColObj = null;
-        }
-        
-        if (currentColObj != null)
-        {
-            System.out.println("setValue: "+currentColObj.getLeftSideRels().size());
         }
     }
     

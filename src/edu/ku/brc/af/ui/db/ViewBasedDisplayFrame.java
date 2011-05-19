@@ -19,13 +19,17 @@
 */
 package edu.ku.brc.af.ui.db;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,6 +40,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -100,9 +105,29 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
     @Override
     public void createUI()
     {
+        setBackground(viewBasedPanel.getBackground());
+
+        JScrollPane scrollPane = UIHelper.createScrollPane(viewBasedPanel, true);
+        scrollPane.setBorder(BorderFactory.createLineBorder(getBackground(), 8));
+        contentPanel = scrollPane;
+        
         super.createUI();
         
-        mainPanel.add(viewBasedPanel, BorderLayout.CENTER);
+        viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn); 
+        
+        Integer width = (Integer)UIManager.get("ScrollBar.width");
+        if (width == null)
+        {
+            width = (new JScrollBar()).getPreferredSize().width;
+        }
+        
+        Dimension dim1 = getPreferredSize();
+        dim1.height += width * 2;
+        if (!UIHelper.isMacOS())
+        {
+            dim1.width += width;
+        }
+        setSize(dim1);
         
         if (cancelBtn != null)
         {
@@ -133,8 +158,6 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
         addAL(cancelBtn);
         addAL(applyBtn);
         addAL(helpBtn);
-        
-        pack();
     }
     
     /* (non-Javadoc)
