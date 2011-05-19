@@ -245,6 +245,17 @@
               </altviews>      
          </view>
         
+         <view name="CollectionObjectSubTable"
+              class="edu.ku.brc.specify.datamodel.CollectionObject"
+              usedefbusrule="false"
+              >
+              <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
+              <altviews>
+                  <altview name="COS Table Edit" viewdef="CollectionObjectSub Table" mode="edit"/>
+                  <altview name="COS Table View" viewdef="CollectionObjectSub Table" mode="view"/>
+              </altviews>      
+         </view>
+        
         <view name="CommonNameTx"
             class="edu.ku.brc.specify.datamodel.CommonNameTx"
             >

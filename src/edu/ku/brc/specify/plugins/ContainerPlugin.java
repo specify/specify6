@@ -221,21 +221,26 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
             
             setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
     
-            associatedContainerCBX.addListSelectionListener(new ListSelectionListener()
+            ListSelectionListener lsl = new ListSelectionListener()
             {
                 public void valueChanged(ListSelectionEvent e)
                 {
-                    itemSelected();
+                    if (!e.getValueIsAdjusting())
+                    {
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                itemSelected();
+                            }
+                        });
+                    }
                 }
-            });
-    
-            parentContainerCBX.addListSelectionListener(new ListSelectionListener()
-            {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    itemSelected();
-                }
-            });
+            };
+            
+            associatedContainerCBX.addListSelectionListener(lsl);
+            parentContainerCBX.addListSelectionListener(lsl);
     
             
             ActionListener rbAction = new ActionListener()
@@ -382,7 +387,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
         final ValComboBoxFromQuery qcbx = getCBX();
         
         Integer selectedId = qcbx.getTextWithQuery().getSelectedId();
-        if (selectedId != null)
+        if (!doingParent && selectedId != null)
         {
             String sql  = String.format("SELECT cn.Name, co.CatalogNumber FROM container AS cn " +
 		                                "Inner Join collectionobject AS co ON cn.ContainerID = co.ContainerID " +
