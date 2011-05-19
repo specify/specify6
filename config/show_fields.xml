@@ -7,6 +7,9 @@
     
     <table name="CollectionObject">
         <field name="timestampModified"/>
+        <field name="text1" show="false"/>
+        <field name="text2" show="false"/>
+        <field name="catalogedDatePrecision" show="false"/>
     </table>
 	
 	<table name="Deaccession">

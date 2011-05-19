@@ -68,7 +68,7 @@ import edu.ku.brc.util.Pair;
  */
 public class MasterLoginPanel extends GenericFormPanel
 {
-    private static final String HELP_CONTEXT = "securitywiz_screen1";
+    private static final String HELP_CONTEXT = "security_wiz1";
     
     protected String                  propName = "next";
     protected Boolean                 isOK     = null;

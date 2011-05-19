@@ -96,6 +96,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8693,20 +8694,15 @@ public class BuildSampleDatabase
         
         if (showFieldsFile.exists())
         {
-            /*try
-            {
-                System.out.println(FileUtils.readFileToString(showFieldsFile));
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }*/
+            Connection conn = DBConnection.getInstance().getConnection();
+            PreparedStatement tblStmt = null;
+            PreparedStatement fldStmt = null;
             
-            DataProviderSessionIFace localSession = null;
             try
             {
-                localSession = DataProviderFactory.getInstance().createSession();
-
-            
+                tblStmt = conn.prepareStatement("UPDATE splocalecontainer SET IsHidden=? WHERE DisciplineID = ? AND Name = ?");
+                fldStmt = conn.prepareStatement("UPDATE splocalecontaineritem SET IsHidden=? WHERE SpLocaleContainerItemID = ?");
+                
                 Element root = XMLHelper.readDOMFromConfigDir(dirName + showFieldsFileName);
                 if (root != null)
                 {
@@ -8728,7 +8724,10 @@ public class BuildSampleDatabase
                             {
                                 if (StringUtils.isNotEmpty(doSetTbl))
                                 {
-                                    setFieldVisible(localSession, tbl.getName(), null, discipline, isShwTbl);
+                                    tblStmt.setBoolean(1, !isShwTbl);
+                                    tblStmt.setInt(2, discipline.getId());
+                                    tblStmt.setString(3, tName);
+                                    tblStmt.executeUpdate();
                                 }
                                 
                                 List<?> fields = table.selectNodes("field");
@@ -8742,7 +8741,19 @@ public class BuildSampleDatabase
                                         DBTableChildIFace childInfo = tbl.getItemByName(fName);
                                         if (childInfo != null)
                                         {
-                                            setFieldVisible(localSession, tbl.getName(), childInfo.getName(), discipline, isShown);
+                                            String sql = String.format("SELECT ci.SpLocaleContainerItemID FROM splocalecontainer AS c " +
+                                            		                   "INNER Join splocalecontaineritem AS ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID " +
+                                            		                   "WHERE ci.Name = '%s' AND c.Name = '%s' AND c.DisciplineID = %d", fName, tName, discipline.getId());
+                                            Integer id = BasicSQLUtils.getCount(sql);
+                                            if (id != null)
+                                            {
+                                                fldStmt.setBoolean(1, !isShown);
+                                                fldStmt.setInt(2, id);
+                                                fldStmt.executeUpdate();
+                                            } else
+                                            {
+                                                sb.append("Unable to find ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]\n"); 
+                                            }
                                         } else
                                         {
                                             sb.append("["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]\n");
@@ -8770,63 +8781,12 @@ public class BuildSampleDatabase
                 
             } finally 
             {
-                if (localSession != null)
+                try
                 {
-                    localSession.close();
-                }
+                    if (tblStmt != null) tblStmt.close();
+                    if (fldStmt != null) fldStmt.close();
+                } catch (Exception ex) {}
             }
-        }
-    }
-    
-    /**
-     * Looks up a table/field and sets it to be visible.
-     * @param localSession
-     * @param tableName the table name
-     * @param fieldName the field name
-     * @param discipline
-     * @param isShown
-     * @throws Exception 
-     */
-    protected static void setFieldVisible(final DataProviderSessionIFace localSession,
-                                          final String     tableName, 
-                                          final String     fieldName,
-                                          final Discipline discipline,
-                                          final boolean    isShown) throws Exception
-    {
-        String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
-        //System.err.println(sql);
-        Object[] cols = (Object[])localSession.getData(sql);
-        if (cols != null && cols.length > 0)
-        {
-            SpLocaleContainer container = (SpLocaleContainer)cols[0];
-            if (container != null)
-            {
-                if (fieldName == null)
-                {
-                    container.setIsHidden(!isShown);
-                    localSession.beginTransaction();
-                    localSession.save(container);
-                    localSession.commit();
-                    localSession.flush();
-                } else
-                {
-                    for (SpLocaleContainerItem item : container.getItems())
-                    {
-                        //System.out.println(fieldName+" "+ item.getName());
-                        if (item.getName().equals(fieldName))
-                        {
-                            item.setIsHidden(!isShown);
-                            localSession.beginTransaction();
-                            localSession.save(item);
-                            localSession.commit();
-                            localSession.flush();
-                        }
-                    }
-                }
-            }
-        } else
-        {
-            System.err.println("Couldn't find Table ["+tableName+"] for discipline["+discipline.getId()+"]");
         }
     }
     
