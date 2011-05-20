@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
 	<table name="Accession">
-		<field name="timestampModified"/>
+		<field name="timestampModified" show="true"/>
 	</table>
 	<table name="CollectionObject">
-		<field name="text1"/>
-		<field name="timestampModified"/>
-		<field name="yesNo1"/>
+		<field name="text1" show="true"/>
+		<field name="timestampModified" show="true"/>
+		<field name="collectionObjectAttribute" show="false"/>
 	</table>
 	<table name="Deaccession">
-		<field name="timestampModified"/>
+		<field name="timestampModified" show="true"/>
 	</table>
+	
+	<table name="Determination">
+		<field name="qualifier" show="true"/>
+		<field name="addendum" show="true"/>
+		<field name="nameUsage" show="true"/>
+		<field name="remarks" show="true"/>
+	</table>
+	    
 </tables>

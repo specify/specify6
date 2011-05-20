@@ -1,33 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
 
-	<table name="Accession">
-		<field name="timestampModified"/>
-	</table>
+  	<table name="Accession">
+		    <field name="timestampModified"/>
+		    <field name="appraisals" show="false"/>
+	  </table>
+
+	  <table name="Appraisal">
+		    <field name="accession" show="true"/>
+	  </table>
     
+    <table name="CollectingEvent">
+        <field name="endDatePrecision" show="false"/>
+        <field name="startDatePrecision" show="false"/>
+        <field name="collectingEventAttribute" show="false"/>
+        <field name="collectionObjects" show="false"/>
+        <field name="verbatimDate" show="true"/>
+        <field name="startTime" show="false"/>
+        <field name="endTime" show="false"/>
+    </table>
+	
     <table name="CollectionObject">
-        <field name="timestampModified"/>
+        <field name="timestampModified" show="true"/>
+        <field name="catalogedDatePrecision" show="false"/>
         <field name="text1" show="false"/>
         <field name="text2" show="false"/>
-        <field name="catalogedDatePrecision" show="false"/>
+    </table>
+	
+    <table name="ConservDescription">
+        <field name="shortDesc" show="true"/>
+    </table>
+	
+    <table name="ConservEvent">
+        <field name="curator" show="true"/>
+        <field name="treatedByAgent" show="true"/>
+        <field name="number1" show="false"/>
+        <field name="number2" show="false"/>
+        <field name="text1" show="false"/>
+        <field name="text2" show="false"/>
+        <field name="yesNo1" show="false"/>
+        <field name="yesNo2" show="false"/>
+    </table>
+	
+    <table name="Container">
+        <field name="number" show="false"/>
     </table>
 	
 	<table name="Deaccession">
-		<field name="timestampModified"/>
+		<field name="timestampModified" show="true"/>
 	</table>
 	
 	<table name="Determination">
-		<field name="yesNo1"/>
+		<field name="yesNo1" show="false"/>
+		<field name="preferredTaxon" show="true"/>
+		<field name="determinedDatePrecision" show="false"/>
+	</table>
+	
+	<table name="DnaSequencingRun">
+		<field name="traceFileName" show="true"/>
+	</table>
+	
+	<table name="Locality">
+		<field name="originalLatLongUnit" show="false"/>
+		<field name="srcLatLongUnit" show="false"/>
+		<field name="long1text" show="false"/>
+		<field name="long2text" show="false"/>
+		<field name="lat1text" show="false"/>
+		<field name="lat2text" show="false"/>
+		<field name="latLongType" show="false"/>
 	</table>
 	    
     <table name="PaleoContext" show="false"/>
-    
+	
+    <table name="Preparation">
+        <field name="preparedDatePrecision" show="false"/>
+    </table>
+	
     <table name="RepositoryAgreement">
-        <field name="timeStampModified"/>
+        <field name="timeStampModified" show="true"/>
     </table>
     
 	<table name="Shipment">
-		<field name="numberOfPackages"/>
+		<field name="numberOfPackages" show="true"/>
 	</table>
 	
+	<table name="TreatmentEvent">
+		<field name="accession" show="true"/>
+		<field name="dateToIsolation" show="true"/>
+		<field name="location"/>
+	</table>
+	    
+	<table name="Taxon">
+		<field name="taxonCitations" show="true"/>
+		<field name="hybridParent1" show="true"/>
+		<field name="hybridParent2" show="true"/>
+	</table>
+	    
 </tables>

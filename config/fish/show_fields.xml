@@ -5,6 +5,11 @@
         <field name="timestampModified" show="true"/>
     </table>
     
+    <table name="CollectingEvent">
+        <field name="collectingEventAttribute" show="true"/>
+        <field name="collectionObjects" show="true"/>
+    </table>
+	
     <table name="CollectionObject">
         <field name="timestampModified" show="true"/>
     </table>

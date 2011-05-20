@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
 	<table name="Accession">
-		<field name="timestampModified"/>
+		<field name="timestampModified" show="true"/>
 	</table>
 	<table name="CollectionObject">
-		<field name="text1"/>
-		<field name="text2"/>
-		<field name="timestampModified"/>
+		<field name="timestampModified" show="true"/>
 	</table>
 	<table name="Deaccession">
-		<field name="timestampModified"/>
+		<field name="timestampModified" show="true"/>
 	</table>
 </tables>

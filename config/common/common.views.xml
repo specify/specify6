@@ -5567,7 +5567,7 @@
             <desc><![CDATA[Collection Data Entry Form]]></desc>
             <columnDef>115px,2px,299px,5px,120px,2px,284px,10px,p:g</columnDef>
             <columnDef os="lnx">135px,2px,200,15px,560px,10px,p:g</columnDef>
-            <columnDef os="mac">135px,2px,300px,15px,580px,10px,p:g</columnDef>
+            <columnDef os="mac">135px,2px,300px,15px,400px,10px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),15px,p:g(2),p</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
@@ -5592,7 +5592,7 @@
                     <cell type="field" id="5" name="description" uitype="textareabrief" rows="2" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="8"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="7"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>
@@ -5727,7 +5727,7 @@
                     <cell type="field" id="5" name="description" uitype="textareabrief" rows="2" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="8"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="7"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>
