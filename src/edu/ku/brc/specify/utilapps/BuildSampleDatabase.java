@@ -652,8 +652,8 @@ public class BuildSampleDatabase
         
         Agent userAgent    = AppContextMgr.getInstance().getClassObject(Agent.class);
         Agent newUserAgent = null;
-        String fromWiz = props.getProperty("fromwizard");
-        if (userAgent == null || (doFromWizard && StringUtils.isNotEmpty(fromWiz) && fromWiz.equals("true")))
+        boolean fromWiz    = UIHelper.getProperty(props, "fromwizard", false);
+        if (userAgent == null || (doFromWizard && fromWiz))
         {
             userAgent  = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
             
@@ -783,8 +783,14 @@ public class BuildSampleDatabase
             Pair<AutoNumberingScheme, AutoNumberingScheme> ansPair = localizeDisciplineSchema(division, discipline, props, isAccGlobal);
             
             // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
-            makeFieldVisible(null, discipline);
-            makeFieldVisible(disciplineType.getName(), discipline);
+            boolean fromWiz = UIHelper.getProperty(props, "fromwizard", false);
+            if (fromWiz) // means a new database
+            {
+                doShowHideTablesAndFields(null, discipline);
+            }
+            // Since we the Localization is at the Discipline level it is OK
+            // to always run this here.
+            doShowHideTablesAndFields(disciplineType.getName(), discipline);
             
             frame.setProcess(0, 17);
             frame.setProcess(++createStep);
@@ -2041,8 +2047,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
+        doShowHideTablesAndFields(null, discipline);
+        doShowHideTablesAndFields(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -2664,8 +2670,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
+        doShowHideTablesAndFields(null, discipline);
+        doShowHideTablesAndFields(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -3128,8 +3134,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
+        doShowHideTablesAndFields(null, discipline);
+        doShowHideTablesAndFields(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -4309,8 +4315,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
+        doShowHideTablesAndFields(null, discipline);
+        doShowHideTablesAndFields(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -5183,8 +5189,8 @@ public class BuildSampleDatabase
                                collChoice.getAccessionNumberingFmtName());
         commitTx();
         
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
+        doShowHideTablesAndFields(null, discipline);
+        doShowHideTablesAndFields(disciplineType.getName(), discipline);
 
         frame.setDesc("Creating Fish Trees...");
         
@@ -8683,8 +8689,8 @@ public class BuildSampleDatabase
      * @param disciplineDirName the name of the directory for the Discipline
      * @param discipline the Discipline itself
      */
-    public static void makeFieldVisible(final String disciplineDirName,
-                                        final Discipline discipline)
+    public static void doShowHideTablesAndFields(final String disciplineDirName,
+                                                 final Discipline discipline)
     {
         final String showFieldsFileName = "show_fields.xml";
         

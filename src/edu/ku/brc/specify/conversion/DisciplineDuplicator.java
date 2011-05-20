@@ -89,8 +89,8 @@ public class DisciplineDuplicator
             
             for (Discipline discipline : (List<Discipline>)session.createQuery("FROM Discipline", false).list())
             {
-                BuildSampleDatabase.makeFieldVisible(null, discipline);
-                BuildSampleDatabase.makeFieldVisible(discipline.getType(), discipline);
+                BuildSampleDatabase.doShowHideTablesAndFields(null, discipline);
+                BuildSampleDatabase.doShowHideTablesAndFields(discipline.getType(), discipline);
             }
                 
         } catch(Exception ex)
