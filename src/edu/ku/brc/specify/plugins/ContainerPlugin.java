@@ -225,7 +225,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
             {
                 public void valueChanged(ListSelectionEvent e)
                 {
-                    if (!e.getValueIsAdjusting())
+                    if (e == null || !e.getValueIsAdjusting())
                     {
                         SwingUtilities.invokeLater(new Runnable()
                         {
