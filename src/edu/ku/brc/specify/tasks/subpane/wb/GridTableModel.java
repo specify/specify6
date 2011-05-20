@@ -327,10 +327,8 @@ public class GridTableModel extends SpreadSheetModel
                 wbRow.setData("", (short)col, true);
             }
         }
-        if (!workbenchPaneSS.validateRows(rows))
-        {
-        	fireDataChanged();
-        }
+        workbenchPaneSS.validateRows(rows);
+        fireDataChanged();
     }
 
     /* (non-Javadoc)
