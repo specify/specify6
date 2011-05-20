@@ -521,11 +521,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             }
             otherSideColObj = null;
             
-            boolean leftSide = isLeftSide;
-            if (currentColObj.getCollection().getId().equals(rightSideCol.getId()))
-            {
-                leftSide = false;
-            }
+            boolean leftSide = currentColObj.getCollection().getId().equals(leftSideCol.getId());
             
             Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
             for (CollectionRelationship colRel : collectionRels)

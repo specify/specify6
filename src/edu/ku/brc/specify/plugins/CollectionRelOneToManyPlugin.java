@@ -384,22 +384,10 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                                                                              options, 
                                                                              null, 
                                                                              ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
-            CollectionRelationship colRel = colObjs.get(rowInx);
-            //DataProviderSessionIFace tmpSession = null;
-            //try
-            //{
-                CollectionObject colObj = colRel.getRightSide();
-                //tmpSession = DataProviderFactory.getInstance().createSession();
-                //tmpSession.attach(colObj);
-                dlg.setData(colObj);
-                
-            /*} catch (Exception ex)
-            {
-                ex.printStackTrace();
-            } finally
-            {
-                if (tmpSession != null) tmpSession.close();
-            }*/
+            CollectionRelationship colRel   = colObjs.get(rowInx);
+            boolean                leftSide = currentColObj.getCollection().getId().equals(leftSideCol.getId());
+            CollectionObject       colObj   = leftSide ? colRel.getRightSide() : colRel.getLeftSide();
+            dlg.setData(colObj);
             dlg.showDisplay(true);
         }
     }
@@ -475,13 +463,13 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         if (value != null)
         {
             currentColObj = (CollectionObject)value;
-            boolean leftSide = isLeftSide;
-            if (currentColObj.getCollection().getId().equals(rightSideCol.getId()))
-            {
-                leftSide = false;
-            }
+            boolean leftSide = currentColObj.getCollection().getId().equals(leftSideCol.getId());
             
             model.setLeft(leftSide);
+            
+            CollectionObject val = null;
+            System.out.println("Col: "+currentColObj.getCollection().getCollectionName()+"   Left: "+leftSide+"  "+(currentColObj != null ? currentColObj.getCatalogNumber(): "null"));
+
             
             Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
             for (CollectionRelationship cr : collectionRels)
