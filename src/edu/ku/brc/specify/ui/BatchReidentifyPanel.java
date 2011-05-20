@@ -371,7 +371,6 @@ public class BatchReidentifyPanel extends JPanel
             for (int inx : idxs)
             {
                 items.remove(inx);
-                //model.removeRow(inx);
             }
             model.fireDataChanged();
         }
