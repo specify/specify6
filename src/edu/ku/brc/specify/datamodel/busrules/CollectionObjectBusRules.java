@@ -465,6 +465,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
                     
         }
+        
+		SeriesProcCatNumPlugin batchCtrl = getBatchPlugIn();
     }
     
     /* (non-Javadoc)
@@ -728,12 +730,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             	int cnt = 0;
                 CollectionObject co = null;
                 CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
-                
+               
                 Thread.sleep(300); //Perhaps this is unnecessary, but it seems
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
-                    for (String currentCat : nums)
+                    //formViewObj.setProcessingBatch(true);
+                	for (String currentCat : nums)
                     {
                     	try
                         {
@@ -745,9 +748,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             //ditto, but doesn't so much need to be set
                             co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
                             
-                            formViewObj.getCarryFwdInfo().carryForward(formViewObj.getBusinessRules(), carryForwardCo, co);
                             co.setCatalogNumber(currentCat);
-                            formViewObj.setDataObj(co);
+                            formViewObj.setNewObject(co);
                             if (formViewObj.saveObject())
                             {
                             	objectsAdded.add(new Pair<Integer, String>(
@@ -759,7 +761,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         } catch (Exception ex)
                         {
                             log.error(ex);
-                            objectsNotAdded.add(formatter.formatToUI(co.getCatalogNumber()) + (ex.getLocalizedMessage() == null ? "" : ex.getLocalizedMessage()));
+                            objectsNotAdded.add(formatter.formatToUI(currentCat) + ": " + (ex.getLocalizedMessage() == null ? "" : ex.getLocalizedMessage()));
                         }
                         cnt++;
                         firePropertyChange(GLASSKEY, 0, cnt);
@@ -771,9 +773,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
 							.capture(Uploader.class, ex);
-                }
+                }                
                 formViewObj.setDataObj(carryForwardCo);
-                //formViewObj.getRsController().setIndex(formViewObj.getRsController().getLength()-1);
                 saveBatchObjectsToRS();
                 return objectsAdded.size();
             }
@@ -788,7 +789,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         		batchRS.setDbTableId(CollectionObject.getClassTableId());
         		String name = getResourceString(BatchRSBaseName) + " " 
     				+ formatter.formatToUI(catNumPair.getFirst()) + "-" 
-    				+ formatter.formatToUI(objectsAdded.get(objectsAdded.size()-1).getSecond());
+    				+ formatter.formatToUI(catNumPair.getSecond());
         		if (objectsNotAdded.size() > 0)
         		{
         			name += "-" + UIRegistry.getResourceString(IncompleteSaveFlag); 
