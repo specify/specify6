@@ -12,7 +12,7 @@
   </tr>
 </table>
 <h2 class="index">Create Data Set from Record Set</h2>
-<p>New in Specify 6.3, users may now create a WorkBench data set based on an existing Specify record set. The data set can then be exported as an Excel spreadsheet.</p>
+<p>New in Specify 6.3, users may now create a WorkBench data set based on an existing Specify record set. The data set can then be exported as an Excel spreadsheet and imported into other Specify databases.</p>
 <p>Before a record set can be converted to a data set a mapping must exist.  You can reuse an existing data set mapping, in which case you can go directly to <a href="../RecordSet/record_set.html#create">Create a Data Set from Record Set</a>. If a data set with a duplicate mapping does not exist then a mapping must be created by creating an empty data set.</p>
 <h3>Create a Mapping/Data Set</h3>
 <ol>
@@ -26,7 +26,7 @@
     </blockquote>
     
       <li>Click the <em>Create new Data Set mapping</em> button
-        <p>To choose  column headings for the new data set, select the <strong><em>Create new Data Set mapping</em></strong> button and click 'OK'. The Data Set Mapping Editor will appear:</p>
+        <p>To choose  column headings for the new data set, select the <strong><em>Create new Data Set mapping</em></strong> button and click the <em>OK</em> button. The Data Set Mapping Editor will appear:</p>
         <p align="center"><img src="../images/DataSetMappingEditorClear.png" alt="Data Set Mapping Editor"></p>
         <p align="center" class="imgcaption">Data Set Mapping Editor</p>
         <p align="left">&nbsp;</p>
@@ -106,8 +106,8 @@
   </ol>
   <blockquote>
     <p>In the next dialog name the new data set. </p>
-    <p><em><strong>Note:</strong></em> Data contained in all records in the record set will be used to fill the data set columns. Where necessary all data in one-to-many relationships will be parsed into the relevant fields. It is important to include these necessary fields in the original mapping. E.g. if the records in the record set all have two collectors it is important to include columns for Collector 1 First Name, Last Name and Middle Initial as well as Collector 2 First Name, Last Name, Middle Initial to ensure that all relevant information is preserved for all records. </p>
-    <p><em><strong>Note:</strong></em> When the data set opens the validation for invalid fields will be turned on. If the data set contains catalog number they will be marked as invalid and highlighted in red because Specify recognizes them as duplicates. The validation can be turned off by unchecking the <em>Highlight Invalid Cells</em> checkbox in the validation panel at the bottom of the work space.</p>
+    <p><em><strong>Note:</strong></em> Data contained in all records in the record set will be used to fill the data set columns. Where necessary all data in one-to-many relationships will be inserted into the relevant fields. It is important to include these necessary fields in the original mapping. E.g. if the records in the record set all have two collectors it is important to include columns for Collector 1 First Name, Last Name and Middle Initial as well as Collector 2 First Name, Last Name, Middle Initial to ensure that all relevant information is preserved for all records. </p>
+    <p><em><strong>Note:</strong></em> When the data set opens, the validation for invalid fields will be turned on. If the data set contains catalog number they will be marked as invalid and highlighted in red, because Specify recognizes them as duplicates. The validation can be turned off by unchecking the <em>Highlight Invalid Cells</em> checkbox in the validation panel at the bottom of the work space.</p>
     <p align="center"><img src="../../images/validation_screen.png" alt="validation" width="562" height="31" /></p>
   </blockquote>
 </ol>

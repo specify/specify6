@@ -26,7 +26,7 @@
     </h2>
     <p>
        The Data Exporter application is used to build, update and export data files for use by IPT.
-      Before a data file can be created a 'map' must first be created using the Schema Mapping
+      Before a data file can be built a 'map' must first be created using the Schema Mapping
       Editor inside Specify. For documentation explaining how to create a schema map please refer
       to <a href="../QueryBuilder/third_party.html">Web Publishing</a>.    </p>
 <p>
@@ -48,21 +48,18 @@
     <p align="center" class="imgcaption">Data Exporter Tool</p>
 <ul type="disc">
       <li>
-        The 'Mapping' column of the table indicates the name of both the mapping and table.
-      </li>
-      <li>
-        The 'Last Update' column lists the date and time of the last update of the cache.
-      </li>
-      <li>
-        The 'Status' column indicates whether the cache is out of date, and, if so, how many rows
+        The <strong>Mapping</strong> column of the table indicates the name of both the mapping and table.      </li>
+<li>
+        The <strong>Last Update</strong> column lists the date and time of the last update of the cache.      </li>
+<li>
+        The <strong>Status</strong> column indicates whether the cache is out of date, and, if so, how many rows
         are out of date. The number of out of date rows includes the number of rows that have been
         deleted from the database together with the number of rows that need to be updated due to
         changes in the database and the number of new rows in the database which must be added to
         the cache. This information reflects the database contents at the time the exporter was
         launched; it will not reflect changes to the database that occur while the exporter is
-        running.
-      </li>
-    </ul>
+        running.      </li>
+  </ul>
     <p>&nbsp;
        
     </p>

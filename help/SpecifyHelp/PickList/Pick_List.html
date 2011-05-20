@@ -33,22 +33,22 @@
        New user-defined pick lists can be created for existing fields but the field on the affected
       form will not be updated until the form itself has been edited. For this reason pick lists
       should NOT be defined until the new form containing the pick list has been imported into
-      Specify. If pick lists are defined without being included in the existing form data entered
+      Specify. If pick lists are defined without being included in the existing form, data entered
       into the existing form will not be saved in the database.
     </p>
     <p>
        At this time Specify 6 does not include a Form Editor, as was found in Specify 5. It is
       important to note that the forms have been created programmatically to be extremely flexible
       and can be exported as XML and either edited locally by an experienced XML editor, or emailed
-      to the Specify staff for customization assistance. To export a Form please refer to <a href=
+      to the Specify staff for customization assistance. To export a form please refer to <a href=
       "../Import/import_export.html">Importing/Exporting</a>. If you have an ISA agreement and wish
       to have a member of the Specify team edit the form please contact them at <a href=
       "mailto:specify@ku.edu">specify@ku.edu</a>.
     </p>
     <p>
-       pick lists that are defined within Specify are called System Pick Lists. New pick lists
-      created by the user are referred to as User Pick Lists. The following text describes the
-      steps to create a User-Defined Pick List. For information about System Pick Lists please
+       Pick lists that are defined within Specify are called system pick lists. New pick lists
+      created by the user are referred to as User- Defined Pick Lists. The following text describes the
+      steps to create a user-defined pick list. For information about system pick lists, please
       refer to <a href="../PickList/system_picklist.html">System Pick Lists.</a>    </p>
     <p>Any pick list changes are reflected in the current collection only. The release of Specify 6.3 allowed pick lists to be exported and imported, allowing quick sharing among collections and collecting communities. This feature also allows the Specify team to create and share pick lists at the same time they create custom forms. More information about <a href="../PickList/Pick_List.html#picklist_import">importing and exporting Pick Lists </a>can be found in the text below. </p>
   <p>&nbsp;
@@ -64,15 +64,13 @@
       </p>
       <p>
         Add, delete and edit the pick lists in the Pick List Editor found in <em>System &gt; Schema
-          Configuration.</em> The Schema Configuration tool is only available to users in a Manager or
-        Administrator group.
+          Configuration.</em> The Schema Configuration tool is only available to users in a manager or administrator group.
       </p>
       <ul>
         <li>
           Choose English as the language.
         </li>
-        <li><br>
-        </li>
+<br />
         <li>
           Click the <em>Edit a Schema</em> button.
         </li>
@@ -82,20 +80,17 @@
       </p>
       <ul>
         <li>
-          Choose a Table from the list of Tables.
+          Choose a table from the list of tables.
         </li>
-        <li><br>
-        </li>
+<br />
         <li>
-          Choose a Field from the list of Fields.
+          Choose a field from the list of fields.
         </li>
-        <li><br>
-        </li>
+<br />
         <li>
-          Choose <em>pick list</em> from the Format Type combo box.
+          Choose <em>pick list</em> from the format type combo box.
         </li>
-        <li><br>
-        </li>
+<br />
       </ul>
       <p>
         The following combo box and button appears:
@@ -115,7 +110,7 @@
        <strong><a name="add_picklist" id="add_picklist">Add a Pick List</a></strong>    </h3>
 <blockquote>
       <p>
-        To add a new pick from within the Pick List Editor, leave the second combo box as 'none' and click the (...) button.      </p>
+        To add a new pick from within the pick list editor, leave the second combo box as 'none' and click the (...) button.      </p>
       <ul>
         <li>
           Choose the <img height="16" alt="a" src="../../images/add.png" width="16"> (add) button.        </li>
@@ -125,62 +120,51 @@
         all with different configurations:      </p>
       <p>
         1. <u>User Defined Items</u> is a predefined list. Items in this type of pick list are either
-        created by the user (controlled vocabulary) or created as values are typed into a field.      </p>
+        created by the user (controlled vocabulary) or created when values are typed into a field.      </p>
       <blockquote>
         <p>
-          A Predefined pick list is very useful to control the exact data entered into a field. A good
-          example of this is Type Status Name in the Determinations form. Anyone entering
-          Determinations is limited to the same set of data choices.        </p>
+          A Pre-defined pick list is very useful to control the exact data entered into a field. A good
+          example of this is Type Status Name in the determinations form. Anyone entering
+          determinations is limited to the same set of data choices.        </p>
         <p>
           To create a <strong>predefined list of items</strong>:        </p>
         <ul>
           <li>
-            choose <em>User Defined Items</em> from the Type drop down menu.          </li>
-          <li><br>
-          </li>
+            choose <strong><em>User Defined Items</em></strong> from the Type drop down menu.          </li><br />
+
           <li>
-            Type a name in the Name text box.          </li>
-          <li><br>
-          </li>
+            Type a name in the <strong>Name</strong> text box.          </li><br />
+ 
           <li>
-            Check the <em>Read Only</em> check box.          </li>
-          <li><br>
-          </li>
+            Check the <strong><em>Read Only</em></strong> check box.          </li><br />
+
           <li>
             click the <img height="16" alt="a" src="../../images/add.png" width="16"> (add) button in
-            the Items section.          </li>
-          <li><br>
-          </li>
+            the Items section.          </li><br />
+
           <li>
-            Type a Title; this is how the item will appear in the pick list on the form.          </li>
-          <li><br>
-          </li>
+            <strong>Type a Title</strong>  will appear on the form.          </li>
+          <br />
+	
           <li>
-            Type a Value; this is how the entry will be stored in the data base. It is a good practice
+            <strong>Type a Value</strong>  is stored in the data base. It is a good practice
             not to use spaces. The Value exists so that at a later date the Title can be edited without
             needing to change the value in the data base.          </li>
-          <li><br>
-          </li>
+		  <br />
         </ul>
         <p>
-          A pick list that is created as values are typed into the pick list field is useful when
-          needing to create a controlled list of values for a particular field, but allowing new values
-          to be entered by all users.        </p>
+          Use a  pick list that is created as values are typed into the  field  when  a controlled list  is required but but it is also necessary to allow users to enter new values.        </p>
         <p>
           To create a <strong>pick list that is created from entered data</strong>:        </p>
         <ul>
           <li>
-            Use the steps above, but <strong>Do Not</strong> check the <strong>Read Only</strong> box.          </li>
-          <li><br>
-          </li>
-          <li>
-            Choose a size limit for the Size Limit field; this refers to how many values will be
-            included in the list. Once the list has reached this number of items the oldest value will
+            Use the steps above, but <strong>Do Not</strong> check the <strong>Read Only</strong> box.          </li><br />
+          <li><strong>Size Limit</strong> field - limits the number of values in the pick list. Once the list has reached this number of values the oldest value will
             be dropped from the list.
             <br>
       </li>
         </ul>
-      </blockquote>
+  </blockquote>
       <p>
         2. <u>Entire Table</u> allows all values in a formatted table to be listed. This is a useful
         tool when the field needs to link to an entire record but the list of values is small and a
@@ -270,11 +254,11 @@
       <p>Pick lists set up in one collection can be exported as an xml file and imported for use in a new collection. In this way they can be shared within an institution, collecting community, or between  the Specify staff (who are creating custom forms) and users. </p>
       <p>The Import and Export function is only available in the Pick List Editor found in the Schema Configuration tool. </p>
       <blockquote>
-        <p> <em><strong>Note:</strong></em> If a pick list already exists the imported pick list will replace the existing one.</p>
+        <p> <em><strong>Note:</strong></em> If a pick list already exists, the imported pick list will replace the existing one.</p>
         <p><u>Import</u></p>
         <ol>
-          <li>Click the <em><strong>Import</strong></em> button.</li>
-          <li>Choose the pick list xml file you wish to import from the file manager.</li>
+          <li>Click the <em><strong>Import</strong></em> button.</li><br />
+          <li>Choose the pick list xml file you wish to import from the file manager.</li><br />
           <li>Click the <em><strong>Open</strong></em> button.</li>
         </ol>
         <p>The pick list will either be added to the list of User Defined Pick Lists or replace the existing pick list. </p>
@@ -284,15 +268,15 @@
         <p>&nbsp;</p>
         <p><u>Export</u></p>
         <ol>
-          <li>Click the <em><strong>Export</strong></em> button</li>
-          <li>Select the pick list(s) you would like to export by checking them in the dialog.</li>
+          <li>Click the <em><strong>Export</strong></em> button</li><br />
+          <li>Select the pick list(s) you would like to export by checking them in the dialog.</li><br />
         </ol>
         <blockquote>
           <p><em><strong>Select All</strong></em> will select all the pick lists in the dialog. <em><strong>Deselect All</strong></em> will deselect all the pick lists in the dialog. </p>
         </blockquote>
         <ol>
-          <li>Click the <em><strong>OK</strong></em> button. </li>
-          <li>Choose a location for the pick list file from the file manager.</li>
+          <li>Click the <em><strong>OK</strong></em> button. </li><br />
+          <li>Choose a location for the pick list file from the file manager.</li><br />
           <li>Click the <strong><em>Save</em></strong> button.</li>
         </ol>
         <blockquote>

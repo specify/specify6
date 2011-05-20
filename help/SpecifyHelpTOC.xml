@@ -73,6 +73,7 @@
                <tocitem text="Format a Field" target="SC_field_format"/>
              </tocitem>
              <tocitem text="Collection Relationships" target="collection_relationships"/>  
+             
              <tocitem text="Web Links" target="WEBLNK_EDITOR">
                <tocitem text="Global Web Links" target="Web_Global"/>
                <tocitem text="Field Web Links" target="Web_Field"/>

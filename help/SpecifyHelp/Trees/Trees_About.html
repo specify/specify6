@@ -39,7 +39,7 @@
        Specify 6 visually presents some data types in hierarchical tree displays. These data types
       include the Taxon, Geography, (Specimen) Storage, Chronostratigraphy and Lithostratigraphy
       tables. These data types, or tables, are also included in the form system, but the tree
-      offers a more broad, visual glimpse of the data. Data can be viewed, added and edited using
+      offers a more broader visual glimpse of the data. Data can be viewed, added and edited using
       both the form and tree system.
     </p>
     <p>
@@ -81,16 +81,11 @@
        <strong><a name="trees_build" id="trees_build"></a>Building Ranks</strong>    </h3>
 <blockquote>
       <p>
-        There are two distinctions for trees; the first is the tree definition, or list of all the
-        Ranks (levels) included in each tree, the second is the nodes which reside on the tree at
-        each of these levels. The ranks must first be defined, then nodes can be added. Ranks are
-        defined and edited through the use of both the Specify Setup Wizard and the Add a Discipline
-        Wizard. They can also be edited in the <a href="../Trees/editing_tree_def.html">Tree
-          Definition</a> as well as marked to be enforced and included in the full name. The Full Name
-        field in Specify is useful to search and use in reports. For example, the Geography tree may
-        use city and state as the full name for Geography. The Full Name is also used in the Taxon
-        and Geography Query Combo Boxes on forms as a way to distinguish between two similar records.    </p>
-    </blockquote>
+        Each tree is visualy displayed as heirarchical levels. The Levels must first be defined in a tree definition, then nodes can be added. Levels are
+        defined through the use of either the Specify Setup Wizard and the Add a Discipline
+        Wizard. Levels are edited, enforced in the <a href="../Trees/editing_tree_def.html">Tree
+        Definition</a> tool. The full name is also configured in the tree definition tool. </p>
+  </blockquote>
   <p>&nbsp;
        
     </p>
@@ -112,7 +107,7 @@
         <li> Ranks for the Storage tree. </li>
       </ul>
       <p>
-        Users that do not wish to build their trees through a Specify Wizard may build their own
+        Users who do not wish to build their trees through a Specify Wizard may build their own
         trees in the following ways:
       </p>
       <ul>
@@ -178,8 +173,8 @@
       </p>
       <p>
         In the event that a tree becomes locked and the user of that tree can not be located, (which
-        may occur due to improper shutdowns of the application, or someone leaving their desk without closing a tree), the tree can be unlocked if, by clicking
-        it under the 'Unlock a Tree' heading if you hae the necessary permissions. This action will remove the original user from the tree.</p>
+        may occur due to improper shutdowns of the application, or someone leaving their desk without closing a tree), the tree can be unlocked, by clicking
+        it under the 'Unlock a Tree' heading if you have the necessary permissions. This action will remove the original user from the tree.</p>
     </blockquote>
   <p>&nbsp;
        
@@ -465,14 +460,14 @@
          set in <a href="../Prefs/Tree.html"><em>Preferences</em></a>. Synonyms also show as a tool
          tip on the node. Tool tips are displayed by holding the mouse over a rank.       </p>
        <p>
-         To undo a synonymy right-click on the node, then click <em>Undo Synonymy</em> in the
+         To undo a synonymy, right-click on the node, then click <em>Undo Synonymy</em> in the
          resulting Context Menu.       </p>
        <blockquote>
          <p>
            <strong><em>Note:</em></strong> When taxa are synonymized  in the Taxon tree,
            the Preferred Taxon field on the determination form is updated.       </p>
            </blockquote>
-       <p><strong><a name="merge_node" id="merge_node"><u>Merge</u></a></strong> parts of the tree. This is typically performed to correct parts of the tree that are duplicated. For instance; if the country of the United States of America were entered as both United States and US and both included a large number of children, a correction would require many moves. In version 6.3 and newer a Tree Merge function has been added to allow users to combine all the child information and choose the accepted form of a parent. The children of the node being dragged (unwanted node) will merge with those included in the node being targeted (remaining node) and the unwanted node will dissappear. For example; if in the example above the United States included the states of Kansas and South Dakota and the US included the states of California and Hawaii and the user dragged the US node and droppped it onto the United States node the tree will have only the United States as a country (parent) with the states (children) California, Hawaii, Kansas and South Dakota. If both nodes contain Kansas with various counties these will be combined into a single node and all counties accumulated or merged as required.</p>
+       <p><strong><a name="merge_node" id="merge_node"><u>Merge</u></a></strong> parts of the tree. This is typically performed to correct parts of the tree that are duplicated. For instance; if the country of the United States of America were entered as both United States and US and both included a large number of children, a correction would require many moves. In version 6.3 and newer a Tree Merge function has been added to allow users to combine all the child information and choose the accepted form of a parent. The children of the node being dragged (unwanted node) will merge with those included in the node being targeted (remaining node) and the unwanted node will dissappear. For example, if in the example above the United States included the states of Kansas and South Dakota and the US included the states of California and Hawaii and the user dragged the US node and droppped it onto the United States node the tree will have only the United States as a country (parent) with the states (children) California, Hawaii, Kansas and South Dakota. If both nodes contain Kansas with various counties these will be combined into a single node and all counties accumulated or merged as required.</p>
        <p>Once the node is dropped onto the accepting node a dialog will appear asking if the user
          would like to perform the appropriate task; i.e. <strong>synonymize</strong> the node (when applicable), <strong>move</strong> the node (when applicable) or <strong>merge</strong> the node and children (when applicable). </p>
        <p>
@@ -683,7 +678,7 @@
       </tr>
       <tr>
         <td><img src="../../images/check_box.png" width="14" height="14" /> Exact</td>
-        <td>Checking this box will allow Specify to searche the exact search term as entered. Specify by default uses a wildcard at the end of a search term, checking this box will terminate the wildcard and search only the term as entered into the search text box.</td>
+        <td>Checking this box will allow Specify to search the exact search term as entered. Specify by default uses a wildcard at the end of a search term. Checking this box will terminate the wildcard and search only the term as entered into the search text box.</td>
       </tr>
     </table>
     </td>
@@ -696,9 +691,9 @@
         Find and select a node by typing a few letters in a single term, or a single term, into the
         Find text box and clicking the <em>Find</em> button. Full taxon names are not accepted, so
         enter a name from a single rank, such as genus.   </p>
-      <p>By default, Specify places a wildcard at the end of a search term. Specify will also recognize an astrisk, (*),as a wildcard when typing a search term when typed in front of, or in the middle of each search term. For instance; Joh*n could be used to search for Johnson County in the Geography tree.</p>
+      <p>By default, Specify places a wildcard at the end of a search term. Specify will also recognize an astrisk (*) as a wildcard when typing a search term when typed in front of, or in the middle of each search term. For instance, Joh*n could be used to search for Johnson County in the Geography tree.</p>
       <p>
-        Click the Next button to find the next usage of the term in the tree. For instance; if
+        Click the Next button to find the next usage of the term in the tree. For instance, if
         Johnson is the name of a county in different states, typing the term in the find text box and
         clicking the <em>Find</em> button will find the first instance of Johnson in the tree.
         Clicking the <em>Find</em> button a second time will find the next instance of 'Johnson' in
