@@ -466,7 +466,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     
         }
         
-		SeriesProcCatNumPlugin batchCtrl = getBatchPlugIn();
     }
     
     /* (non-Javadoc)
@@ -735,7 +734,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
-                    //formViewObj.setProcessingBatch(true);
                 	for (String currentCat : nums)
                     {
                     	try
