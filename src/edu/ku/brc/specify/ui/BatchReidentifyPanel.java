@@ -361,9 +361,17 @@ public class BatchReidentifyPanel extends JPanel
         if (coTable.getSelectedRow() > -1)
         {
             int[] indexes = coTable.getSelectedRows();
+            Vector<Integer> idxs = new Vector<Integer>();
             for (int inx : indexes)
             {
+            	idxs.add(inx);
+            }
+            Collections.sort(idxs);
+            Collections.reverse(idxs);
+            for (int inx : idxs)
+            {
                 items.remove(inx);
+                //model.removeRow(inx);
             }
             model.fireDataChanged();
         }
