@@ -312,8 +312,9 @@
         </view>
         
         <view name="ContainerBrief"
-            class="edu.ku.brc.specify.datamodel.Container"  
-             isinternal="true">
+             class="edu.ku.brc.specify.datamodel.Container"  
+             isinternal="true"
+             busrules="edu.ku.brc.specify.datamodel.busrules.ContainerBusRules">
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="ContainerBrief View" viewdef="ContainerBrief" mode="view" default="true"/>
