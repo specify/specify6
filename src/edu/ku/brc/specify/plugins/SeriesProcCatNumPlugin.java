@@ -112,7 +112,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     public Pair<String, String> getStartAndEndCatNumbers()
     {
         String start = textFieldStart.getValue() != null ? textFieldStart.getValue().toString() : null;
-        String end = textFieldEnd.getValue() != null ? textFieldEnd.getValue().toString() : null;
+        String end = !isExpanded() ? null : (textFieldEnd.getValue() != null ? textFieldEnd.getValue().toString() : null);
         if (end == null && start != null)
         {
         	end = start;
