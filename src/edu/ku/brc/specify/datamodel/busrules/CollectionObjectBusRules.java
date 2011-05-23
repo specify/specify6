@@ -26,7 +26,6 @@ import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -71,6 +70,7 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -324,6 +324,15 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         STATUS status =  super.processBusinessRules(dataObj);
         
         CollectionObject colObj = (CollectionObject)dataObj;
+        
+        if (!processingSeries.get() && getBatchPlugIn() != null)
+        {
+   			if (colObj != null && colObj.getId() != null)
+   			{
+   				reasonList.add(getResourceString("CollectionObjectBusRules.AttemptedEditOfBatch"));
+   				status = STATUS.Error;
+   			}
+        }
         if (status == STATUS.OK && colObj.getId() == null)
         {
             DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoById(1); // don't need to check for null
@@ -736,7 +745,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 {
                 	for (String currentCat : nums)
                     {
-                    	try
+                		try
                         {
                             co = new CollectionObject();
                             co.initialize();
@@ -1009,6 +1018,15 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         return false;
     }
 
+    /**
+     * @return true if the current entry is a series. (Including series of 1 object where startCatNum = 1 and endCatNum = 1.
+     */
+    protected boolean currentEntryIsASeries()
+    {
+    	SeriesProcCatNumPlugin batchCtrl = getBatchPlugIn();
+    	return batchCtrl != null && batchCtrl.isExpanded();
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
      */
@@ -1026,8 +1044,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                                                                 (FormDataObjIFace)dataObj, 
                                                                 CollectionObject.class, 
                                                                 "collectionObjectId");
-       	//Now check series catnums, kind of awkward.
-        return  isCheckDuplicateBatchNumbersOK(!duplicateNumberStatus.equals(STATUS.OK));
+       	if (!processingSeries.get())
+       	{
+      		//Now check series catnums, kind of awkward.
+       		return  isCheckDuplicateBatchNumbersOK(!duplicateNumberStatus.equals(STATUS.OK));
+       	}
+       	
+       	return duplicateNumberStatus;
     }
 
     
