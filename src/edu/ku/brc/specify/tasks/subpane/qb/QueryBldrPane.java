@@ -173,6 +173,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
     protected static final int                               ExportSchemaPreviewSize = 120;
+    //the maximum number of times the Parent relationship can be opened for recursive relationships.
+    //This is currently only used for Containers (parent relatinoship has been unavailable for some time for Treeable tables).
+    //It is basically a workaround to prevent an apparent memory leak that occurs when the parent relationship is recursively opened.
+    protected static final int                               maxParentChainLen = 4;     
     
     protected JList                                          tableList;
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
@@ -3280,6 +3284,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         				}
         			}
         		}
+        		int parentCount = 0;
+        		while (parent != null && parentCount < maxParentChainLen)
+        		{
+        			parentCount++;
+        			TableTree grandParent = null;
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
+        			{
+        				if (parent.getField() != null && parent.getField().equals("parent"))
+        				{
+        					grandParent = parent.getParent();
+        				}
+        			}    
+        			parent = grandParent;
+        		}
+        		if (parentCount == maxParentChainLen)
+        		{
+        			return false;
+        		}
+
         	} else if (alias.getField().equals("container"))
         	{
         		if (parent != null)
