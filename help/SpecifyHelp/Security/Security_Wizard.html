@@ -24,7 +24,10 @@
 <tr><td width="20"><img src="../../images/security_wizard_32.png" width="32" height="32" /></td>
 <td ><h2>Specify DB Security Wizard</h2></td></tr>
 </table>
-<p>New in Specify 6.3! If you are having difficulty logging into Specify utilities that require the IT or Master username and password your first check should be to verify that the username and password you are using is correct. The Security Wizard provides a quick and easy mechanism to check these. It also provides a mechanism to reset the Master username and password. If you have forgotten the Master username and password the Security Wizard will allow you to reset them.</p>
+<p>New in Specify 6.3! If you are having difficulty logging into Specify utilities that require the IT or Master username and password 
+your first check should be to verify that the username and password you are using is correct. The Security Wizard provides a quick and 
+easy mechanism to check these. It also provides a mechanism to reset the Master username and password. If you have forgotten the Master 
+username and password, the Security Wizard will allow you to reset them.</p>
 <p>Types of Specify credentials include:</p>
 <ul>
   <li> User username
@@ -50,11 +53,11 @@
   
   <blockquote>
     <p><u>Correct IT Credentials</u></p>
-    <p>If your IT credentials are correct a message above the button will alert you that your <strong>Login test was successful</strong>.
+    <p>If your IT credentials are correct, a message above the button will alert you that your <strong>Login test was successful</strong>.
       </li>
     </p>
     <p><u>Incorrect IT Credentials</u></p>
-    <p>If your IT credentials are incorrect a red message will alert you that your <span class="style1">Login test was NOT successful.</span> You may try again by typing in different credentials and clicking the <em>Test IT Login</em> button. </p>
+    <p>If your IT credentials are incorrect, a red message will alert you that your <span class="style1">Login test was NOT successful.</span> You may try again by typing in different credentials and clicking the <em>Test IT Login</em> button. </p>
     <p>The security wizard requires correct IT credentials in order to progress. If you are unable to identify your correct IT credentials you may go no further in the Security Wizard tool. There are also Specify features that require the IT credentials, including creating a new Discipline or Division and using the Backup and Restore tool.</p>
   </blockquote>
 
@@ -76,16 +79,16 @@
   
   <blockquote>
     <p><u>Correct Master Credentials</u></p>
-    <p>If the Master credentials are correct a message will alert you that your <strong>Login test was successful</strong>.</p>
+    <p>If the Master credentials are correct, a message will alert you that your <strong>Login test was successful</strong>.</p>
     <p><u>Incorrect Master Credentials</u></p>
-    <p>If the Master credentials are incorrect a message will alert you that your <span class="style1">Login test was NOT successful.</span>You may try again by typing in a different username and password and clicking the <em>Test Master Login</em> button.</p>
-    <p>A new button will appear. If you unsuccessful and wish to recreate the Master crecentials you can use the <em><strong>Reset your Master Username and Password </strong></em>button.</p>
+    <p>If the Master credentials are incorrect, a message will alert you that your <span class="style1">Login test was NOT successful.</span>You may try again by typing in a different username and password and clicking the <em>Test Master Login</em> button.</p>
+    <p>A new button will appear. If you are unsuccessful and wish to recreate the Master crecentials you can use the <em><strong>Reset your Master Username and Password </strong></em>button.</p>
     <blockquote>
       <p><span class="style1">Warning:</span> If you reset the Master username and password <strong>EVERY</strong> Master Key that was configured using the old Master credentials will need to be reconfigured. That means that every user for the database(s) will require a new Master Key to be reconfigured and sent to them. Users will be required to type in the new Master Key the next time they login to the Specify database!</p>
     </blockquote>
     <a name="reset_master" id="reset_master"></a>
     <p><u><strong>Reset the Master Username and Password</strong></u></p>
-    <p>Click the Reset your Master Username and Password button to reset the Master credentials. A dialog will appear listing ALL the Specify databases available. It is important to note that this is a list of ALL the databases.</p>
+    <p>Click the <i><b>Reset your Master Username and Password</b></i> button to reset the Master credentials. A dialog will appear listing ALL the Specify databases available. It is important to note that this is a list of ALL the databases.</p>
     <p align="center"><img src="../../images/securitywizard_4.png" width="183" height="255" /></p>
     <p align="center" class="imgcaption">Specify Database List</p>
     <blockquote>
@@ -120,7 +123,7 @@
   <li>Users of 'Current Database' (bottom half)</li>
 </ul>
 <blockquote>
-  <p><strong>Accessible Databases</strong> is a list of all the databases that are accessible using the current Master username and password.</p>
+  <p><strong>Accessible Databases</strong> displays list of all the databases that are accessible using the current Master username and password.</p>
   <p>Select a database from the list to open a list of users for the database in the bottom panel (3).</p>
   <p>Select a database from the list and click the <img src="../../images/Map16x16.png" alt="move" width="16" height="16" /> to remove it from the list of Accessible Databases and into the Inaccessible Databases list. </p>
   <blockquote>
@@ -128,13 +131,13 @@
     <p><em><strong>Note:</strong></em> The Specify team does not recommend that a database be moved from the Accessible Databases panel (1) into the Inaccessible Databases panel (2). Databases moved in this way will not have their Master username and password and any attempt to login from Specify will fail until the Master is reset. Reset the master by opening the Specify DB Security Wizard and follow the steps in the Reset the Master Username and Password section above.</p>
     <p>&nbsp;</p>
   </blockquote>
-  <p><strong>Non-Accessible Databases</strong> gives a list of Specify databases that are not accessible using the current Master username and password.</p>
+  <p><strong>Non-Accessible Databases</strong> displays a list of Specify databases that are not accessible using the current Master username and password.</p>
   <p>Select a database from the list and click on the <img src="../../images/Unmap16x16.png" width="16" height="16" /> (move) button to replace the existing Master user for the database and replace it with the current Master user. </p>
   <blockquote>
     <p><span class="style1">Warning:</span> Moving a database from the Non-Accessible Databases panel to the Accessible Databases panel will reset the Master username and password for the database and <strong>EVERY</strong> user of the database will need to have a new Master Key reconfigured and sent to them. Users will be required to type in the new Master Key the next time they login to the Specify database!</p>
   </blockquote>
   <p>&nbsp;</p>
-  <p><strong>Users of Current Database'</strong> (the name of the current database will be the label for this panel) displays the users that have access to the currently selected database (in panel 1). If you have added any databases to panel 1 you will need to reconfigure the Master Key for each of the users before they can gain access to Specify. Or, if the Master credentials were reset for a database in the previous screen all the users for that database will need to have their Master Key reconfigured. This task can be completed using panel 3.  </p>
+  <p><strong>Users of 'Current Database'</strong> (the name of the current database will be the label for this panel) displays the users that have access to the currently selected database (in panel 1). If you have added any databases to panel 1 you will need to reconfigure the Master Key for each of the users before they can gain access to Specify. Or, if the Master credentials were reset for a database in the previous screen all the users for that database will need to have their Master Key reconfigured. This task can be completed using panel 3.  </p>
   <blockquote>
     <p><em><strong>Note:</strong></em> The Master Key can also be reconfigured from within the security tool in Specify as well during the login process. The user must know the Master username and password to reconfigure their Master Key during the login process. </p>
   </blockquote>
@@ -142,10 +145,10 @@
 <h3>&nbsp;</h3>
 <h3>Reconfigure the Master Key for a User</h3>
 <blockquote>
-  <p>The the Master credentials will be reset for any databases that are moved from the Inaccessible Databases panel (2) into the Accessible Databases panel (1). The users that access the database will need to have a new Master Key configured and sent to them so they may login to Specify. </p>
+  <p>The Master credentials will be reset for any databases that are moved from the Inaccessible Databases panel (2) into the Accessible Databases panel (1). The users that access the database will need to have a new Master Key configured and sent to them so they may login to Specify. </p>
   <p>Be sure that the correct database is selected in Panel 1.</p>
   <p>Click on the desired username to select the user. </p>
-  <p>Select all the text in the Password text box and delete it. At this time the column labeled 'Master Key' indicates that the Master Key is on the user's machine. Master key information is stored on the local machine and there is no way for this tool to retrieve this information and show it here; therefore, the Master Key must be reconfigured.</p>
+  <p>Select all the values (text) in the Password text box and delete it. At this time the column labeled 'Master Key' indicates that the Master Key is on the user's machine. Master key information is stored on the local machine and there is no way for this tool to retrieve this information and show it here; therefore, the Master Key must be reconfigured.</p>
   <p>Type in a new password and	press the 'tab' key. </p>
   <p>Click the <em><strong>Copy Master Key</strong></em> button at the bottom of this screen to copy the master key into the computers clipboard. You can then paste this into an email and send it to the user. The user will NOT be able to <a href="../Dialogs/Login.html#paste_master">login</a> without this new master key.</p>
 </blockquote>

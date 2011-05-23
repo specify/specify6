@@ -28,25 +28,24 @@
     </table>
     <p>
        Many web sites currently offer services that Collection Managers find useful when entering
-      or evaluating data within a collection. Specify includes a Web Links Editor that configures
+      or evaluating data within a collection. Specify includes a Web Link Editor that configures
       links to web addresses. A button can then be placed on a form that will launch a browser and connect to the web address.</p>
     <p>
        At this time web links can not be inserted into forms automatically without editing the form
       manually. To do this the form will need to be exported out of Specify, edited and imported
-      back into Specify. For this reason Web Links should NOT be defined until the new form
+      back into Specify. For this reason, Web Links should NOT be defined until the new form
       containing the Web Link has been imported into Specify.
     For help inserting the web links on a form please contact the Specify team at <a href="mailto:specify@ku.edu">specify@ku.edu</a>.</p>
 <p>
-       There are 4 types of web links. Each link requires that a button be placed on a form and
-      configures that button for one of the following types of web link.
+       There are 4 types of web links:
     </p>
     <blockquote>
       <p>
         <strong>1</strong>. A <strong>Global</strong> web link is not linked to a table or field, but offers a prompt
         for a value before launching.      </p>
       <p>
-        <strong>2.</strong> A <strong>Field</strong> link sends data from an existing field to a web service, causing
-        it to open to a specific page based on that data.      </p>
+        <strong>2.</strong> A <strong>Field</strong> link sends values from an existing field to a web service, causing
+        it to open to a specific page based on those values.      </p>
       <p>
         <strong>3.</strong> A <strong>New Field</strong> link creates a new field (not included in the Specify
         Schema) and launches the web site to a specific page based on the data in that field when the
@@ -58,8 +57,8 @@
         that a field be added to a form next to the web link button.      </p>
     </blockquote>
 <p>
-       Web links are created using the Web Link Editor. It is highly recommended that the Desc
-      (description) field in the Web Link Editor contain a description of exactly how the web link
+       Web links are configured using the Web Link Editor. It is highly recommended that the description
+      (Desc) field in the Web Link Editor contain a description of exactly how the web link
       should work. This will be very useful when editing a form to include the web link as well as
       for future reference.
     </p>
@@ -72,10 +71,10 @@
       <p>
         Web links are available for both Tables and Fields.    </p>
       <p>
-        <u>Table</u> (<em>System &gt; Schema Configuration</em>); choose a
+        <u>Table</u> (<em>System &gt; Schema Configuration</em>), choose a
         table from the Tables list and click the <em>...</em> (dialog) button next to the <em>Web Links</em>        button. This editor can create a Global, Field or New Field link.      </p>
       <p>        <u>Field</u>
-        (<em>System &gt; Schema Configuration</em>); choose a table from the Tables list and a field
+        (<em>System &gt; Schema Configuration</em>), choose a table from the Tables list and a field
         from the Fields list.Then, in the Field pane, click <em>Field Format Type</em> button and
         choose <em>Web Link</em> from the resulting list. This editor can create any of the web link
         types and is the only editor that can complete the creation of the URL Field link.      </p>
@@ -137,10 +136,9 @@
     <a name="web_field" id="web_field"></a>Field Link    </h3>
     <blockquote>
       <p>
-        A Field Link can be very useful when linking to additional information for a particular
-        specimen. This type of link is very useful for web services that return data based on data
-        that is offered. For instance, FishBase returns information about a particular specimen based
-        on genus and species information. This web link would be configured to include the genus and
+        A Field Link is used to link to web services that return data based on values
+        from within the Specify database. For instance, FishBase returns information about a particular specimen based
+        on the current genus and species information. This web link would be configured to include the genus and
         species field from a record and launch to the exact page rather than the Fish Base home page.    </p>
       <p>
         Open the Web Link Editor by one of the methods above.    </p>
@@ -184,12 +182,12 @@
     <h3>
     <a name="web_new_field" id="web_new_field"></a>New Field Link    </h3>
     <blockquote>
-      <p> Create a New Field Link by following the steps above (Field Link), with one variation.
-        Rather than typing the name of a field into the brackets type &lt;this&gt;. The name this
+      <p> Create a New Field Link by following the steps above (Field Link), with one variation,
+        Rather than typing the name of a field into the brackets type &lt;this&gt;. The name &lt;this&gt;
         will appear in the Fields window. This link is useful when a field for required link
         information is not included in the Specify Schema. This link would require that a field and
         button be added to a form. Users would type the information into the field, then click the
-        button and launch the site to a particular page, based on data sent to the site. </p>
+        button and launch the site to a particular page based on data sent to the site. </p>
       <p>
         When creating a web link using the Field Format Type an extra step exists. Once the web link
         is created it will be added to a pick list of web links in the Format Type field and must be
@@ -209,7 +207,7 @@
       <p>
         Once the Web Link Editor is open fill in a name for the web link.
       </p>
-      <p> In the Base URL text field do not type an URL, type &lt;this&gt;. 'this' will appear in the
+      <p> In the Base URL text field type type &lt;this&gt;. 'this' will appear in the
         Name field of the Fields window. Specify will then know to take whatever is typed into the
         box and use it as an URL to launch a web site. </p>
       <p>
