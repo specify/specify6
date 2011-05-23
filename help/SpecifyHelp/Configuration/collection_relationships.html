@@ -19,14 +19,19 @@
   </tr>
 </table>
 <h2>Configure Collection Relationships</h2>
-<p>New in Specify 6.3! Specimens are often found on, in, or among each other. Specify allows collection objects in two different collections to be related to one another for the purpose of documenting these types of relationships. The collections may be in different disciplines, but are required to use the same format for their catalog number. </p>
-<p>Collection relationships require that one collection be the 'Source' and the other the 'Destination'. A source may have many destinations, but a destination may not have many sources. <span class="style1">*****Can this display on a form?*****</span> Also, only the source collection can create the relationship, the destination collection can find the association, but may not change it. <span class="style1">***This is not yet decided***</span> This is important to remember when choosing which collection will be the source and which will be the destination. For instance, if a bee polinates several flowers the bee collection would be the source and the flowers would be the destination. </p>
-<p>Collection relationships can either associate two cataloged specimens or a cataloged specimen from a source collection with a taxonomic name from a destination collection. </p>
-<p>Collection relationships are not included on the Specify forms be default. Please contact Specify at <a href=
-      "mailto:specify@ku.edu">specify@ku.edu</a> to request new forms.</p>
-<h3>&nbsp;</h3>
+<p>Collection relationships in Specify allow specimens to be associated with either specimens in another collection or with a taxonomic name in another collection. Some examples of these types of relationships are tissue and voucher, plant and pollinator and host parasite, etc. Specify allows collection objects in two different collections to be related to one another for the purpose of documenting these types of relationships. The collections may be in different disciplines, but are required to use the same catalog number format. </p>
+<p>Collection relationships require that one collection be the 'Source' and the other the 'Destination'. In a single relationship, a source may have many destinations, but a destination may only have one source. This is important to remember when choosing which collection will be the source and which will be the destination. For instance, if a bee polinates several flowers the bee collection would be the source and the flowers would be the destination. </p>
+<p>Collection relationships can either associate two collection objects (cataloged specimens) or a collection object from a source collection with a taxonomic name in a destination collection. A relationship that associates two collection objects is called an Object Relationship and a relationship that associates a collection object with a taxonomic name is called a Host Taxon ID.</p>
+<p>Two steps are required to create collection relationships:</p>
+<ol>
+  <li>The relationship must be configured and named using the Collection Relationship tool in Specify</li><br />
+  <li>Forms must be edited to include controls which allow the source collection object to be associated with the destination collection object or taxonomic name. Please contact Specify at <a href=
+      "mailto:specify@ku.edu">specify@ku.edu</a> to request forms that include either of these relationships.
+    <h3>&nbsp;</h3>
+  </li>
+</ol>
 <h3>Configure Collection Relationships</h3>
-<p>To configure a collection relationship choose <em>System &gt; Configure Collection Relationships</em>.</p>
+<p>To open the collection relationship tool  choose <em>System &gt; Configure Collection Relationships</em>.</p>
 <p align="center"><img src="../../images/cr_wiz_1.png" width="338" height="275" /></p>
 <p align="center" class="imgcaption">Choose a Source Collection</p>
 <p>&nbsp;</p>
@@ -39,7 +44,7 @@
   <p>&nbsp;</p>
   <p align="center"><img src="../../images/cr_wiz_2.png" width="338" height="275" /></p>
   <p align="center">Choose a Destination Collection</p>
-  <p align="left">2. Choose a destination collection from the list of acceptable collections in Specify. Associations may not exist between collections with different catalog number formats. The collections available are limited to those that you have permission to access.</p>
+  <p align="left">2. Choose a destination collection from the list of acceptable collections in Specify. Associations may not exist between collections with different catalog number formats. The collections available are limited to those that you have permission to access and use the same catalog number format as the source collection.</p>
   <p align="center">&nbsp;</p>
   <p align="center"><img src="../../images/cr_wiz_3.png" width="570" height="213" /></p>
   <p align="center" class="imgcaption">Name the Collection Relationship</p>
@@ -49,7 +54,7 @@
 </blockquote>
 <h3>Associating Collection Objects using a Collection Object Form</h3>
 <blockquote>
-  <p>The default forms in Specify must be edited to include fields for creating relationships. The destination collection object form can also be edited to display <span class="style1">***Not Sure Yet***</span></p>
+  <p>The default forms in Specify must be edited to include fields for creating relationships. </p>
   <p>Two relationship fields are available to add to forms:</p>
   <ul>
     <li><strong>Object Relationship</strong></li><br />
@@ -61,23 +66,26 @@
   </blockquote>
   <p><u>Object Relationship</u></p>
   <blockquote>
-    <p>An object relationship associates a cataloged specimen in a source collection with a cataloged specimen in a destination collection. The object relationship field is added to the collection object form.</p>
+    <p>An object relationship associates a collection object in a source collection with a collection object in a destination collection. The object relationship field is added to the collection object form.</p>
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/one_relationship_screen.png" width="249" height="40" /></p>
     <p align="center" class="imgcaption">One Source associated with One Destination </p>
+    <p align="center" class="imgcaption">&nbsp;</p>
+    <blockquote>
+      <p align="left">Click on the  <img height="16" alt="search" src="../../images/Search-16x16.png" width="16" />  (Search) button and type in a catalog number from the destination collection. Specify will search the destination collection and show results in the dialog. Choose the correct value from the list to complete the relationship.</p>
+    </blockquote>
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/many_relationship_screen.png" width="801" height="109" /></p>
     <p align="center" class="imgcaption">One Source associated with Many Destinations</p>
-    <p>&nbsp;</p>
     <blockquote>
-      <p>Click on the <img height="16" alt="search" src="../../images/Search-16x16.png" width="16" /> (Search) button and type in a catalog number from the destination collection. Specify will search the destination collection and show results in the dialog. Choose the correct value from the list to create the relationship.</p>
-      <p>Select the <img src="../../images/remove_20.png" width="20" height="20" /> (Remove) button to remove a relationship from the list.</p>
+      <p>Click on the <img src="../../images/search_add.png" alt="searchadd" width="20" height="20" /> (Search and Add) button and type in a catalog number from the destination collection. Specify will search the destination collection and show results in the dialog. Choose the correct value from the list to add the relationship to the list.</p>
+      <p>Select the <img src="../../images/remove_20.png" width="20" height="20" /> (Remove) button to remove a relationship from the list.<img height="16" alt="search" src="../../images/Search-16x16.png" width="16" /></p>
     </blockquote>
   </blockquote>
   <p>&nbsp;</p>
   <p><u>Host Taxon ID</u></p>
   <blockquote>
-    <p>A host taxon id associates a cataloged specimen with a taxonomic name in a destination collection. It is not necessary for the destination collection to include cataloged specimens. The host taxon ID field is added to the collecting event attribute form.</p>
+    <p>A host taxon id associates a collection object with a taxonomic name in a destination collection. It is not necessary for the destination collection to include cataloged specimens. The host taxon ID field is added to the collecting event attribute form.</p>
     <p align="center"><img src="../../images/host_id.png" width="580" height="98" /></p>
     <p align="center" class="imgcaption">Host Taxon ID Field on a Collecting Event Attribute Form</p>
     <blockquote>
