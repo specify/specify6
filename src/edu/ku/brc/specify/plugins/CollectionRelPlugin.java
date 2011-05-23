@@ -146,7 +146,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             CellConstraints cc   = new CellConstraints();
             PanelBuilder    pb   = new PanelBuilder(new FormLayout("MAX(p;40px)", "p"), this);
             
-            if (isViewModeArg)
+            if (isViewModeArg || !isLeftSide)
             {
                 textWithInfo = new TextFieldWithInfo(coTI.getClassName(),
                                                      CATNUM_NAME,    // id name
