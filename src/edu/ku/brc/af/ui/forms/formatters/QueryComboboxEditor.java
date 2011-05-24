@@ -69,6 +69,10 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class QueryComboboxEditor extends CustomDialog
 {
+    private static final String UIF_NAME = "uiFieldFormatterNameCBX";
+    private static final String DOF_NAME = "dataObjFormatterNameCBX";
+    private static final String TBL_NAME = "tableCBX";
+    
     protected JList                  list;
     protected EditDeleteAddPanel     edaPanel;
     protected Vector<TypeSearchInfo> itemsList;
@@ -267,7 +271,21 @@ public class QueryComboboxEditor extends CustomDialog
         
         if (isOK)
         {
-            dlg.getMultiView().getCurrentViewAsFormViewObj().getDataFromUI();
+            FormViewObj fvo = dlg.getMultiView().getCurrentViewAsFormViewObj();
+            
+            ValComboBox uifCBX = fvo.getCompById(UIF_NAME);
+            UIFieldFormatterIFace uif = (UIFieldFormatterIFace)uifCBX.getValue();
+            tsi.setUiFieldFormatterName(uif != null ? uif.getName() : null);
+            
+            ValComboBox            dofCBX = fvo.getCompById(DOF_NAME);
+            DataObjSwitchFormatter dof    = (DataObjSwitchFormatter)dofCBX.getValue();
+            tsi.setDataObjFormatterName(dof != null ? dof.getName() : null);
+            
+            ValComboBox tableCBX = fvo.getCompById(TBL_NAME);
+            DBTableInfo tblInfo  = (DBTableInfo)tableCBX.getValue();
+            tsi.setTableId(tblInfo.getTableId());
+            
+            fvo.getDataFromUI();
         }
         
         return isOK;
@@ -292,7 +310,7 @@ public class QueryComboboxEditor extends CustomDialog
         }
 
         //----------------------- Table List -----------------------------
-        final ValComboBox         tableCBX  = fvo.getCompById("tableCBX");
+        final ValComboBox         tableCBX  = fvo.getCompById(TBL_NAME);
         final Vector<DBTableInfo> tableList = new Vector<DBTableInfo>(DBTableIdMgr.getInstance().getTables());
         Collections.sort(tableList);
         
@@ -339,7 +357,7 @@ public class QueryComboboxEditor extends CustomDialog
         });
 
         //----------------------- UI Field Formatter -----------------------------
-        final ValComboBox             uiFmtCbx = fvo.getCompById("uiFieldFormatterNameCBX");
+        final ValComboBox             uiFmtCbx = fvo.getCompById(UIF_NAME);
         Vector<UIFieldFormatterIFace> uiffList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatters());
         Collections.sort(uiffList, new Comparator<UIFieldFormatterIFace>()
         {
@@ -357,7 +375,7 @@ public class QueryComboboxEditor extends CustomDialog
             int inx = -1;
             for (UIFieldFormatterIFace dof : uiffList)
             {
-                if (dof.getName().equals(tsi.getDataObjFormatterName()))
+                if (dof.getName().equals(tsi.getUiFieldFormatterName()))
                 {
                     inx = i;
                     break;
@@ -383,7 +401,7 @@ public class QueryComboboxEditor extends CustomDialog
         {
             Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tblId).getClassObj();
             List<DataObjSwitchFormatter>   dofClsList    = DataObjFieldFormatMgr.getInstance().getFormatterList(cls); // Formatters per a Class
-            final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
+            final ValComboBox              dataObjFmtCbx = fvo.getCompById(DOF_NAME);
             Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(dofClsList);
             dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
             
