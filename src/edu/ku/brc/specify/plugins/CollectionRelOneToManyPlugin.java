@@ -37,6 +37,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -60,6 +61,8 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
@@ -76,6 +79,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIValidatable
 {
+    protected static final Logger log = Logger.getLogger(CollectionRelOneToManyPlugin.class);
+    
     private static final HashMap<Integer, UIFieldFormatterIFace> catNumFmtHash = new HashMap<Integer, UIFieldFormatterIFace>();
     
     private String[]               headers;
@@ -124,6 +129,8 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         super.initialize(propertiesArg, isViewModeArg);
         
         String relName = propertiesArg.getProperty("relname");
+        
+        
         if (StringUtils.isNotEmpty(relName))
         {
             DataProviderSessionIFace tmpSession = null;
@@ -209,6 +216,10 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                 }
             });
             updateBtns();
+        } else
+        {
+            System.err.println(propertiesArg);
+            log.error("CollectionRelOneToManyPlugin - initialize attribute for 'relname' is null and can't be!");
         }
     }
     
@@ -413,7 +424,7 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
      */
     public static UIFieldFormatterIFace getCatNumFormatter(final Collection leftSideCol, final Collection rightSideCol)
     {
-        AppContextMgr currApContextMgr = AppContextMgr.getInstance();
+        //AppContextMgr currApContextMgr = AppContextMgr.getInstance();
         if (catNumFmtHash.get(leftSideCol.getId()) == null)
         {
             catNumFmtHash.put(leftSideCol.getId(), UIFieldFormatterMgr.getInstance().getFormatter(leftSideCol.getCatalogNumFormatName()));
@@ -423,8 +434,12 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         UIFieldFormatterIFace catNumFormatter = catNumFmtHash.get(rightSideCol.getId());
         if (catNumFormatter == null)
         {
-            SpecifyUser          spUser        = currApContextMgr.getClassObject(SpecifyUser.class);
+            /*SpecifyUser          spUser        = currApContextMgr.getClassObject(SpecifyUser.class);
             SpecifyAppContextMgr appContextMgr = new SpecifyAppContextMgr();
+            
+            Division   div  = AppContextMgr.getInstance().getClassObject(Division.class);
+            Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            
             AppContextMgr.CONTEXT_STATUS status = appContextMgr.setContext(DBConnection.getInstance().getDatabaseName(), spUser.getName(), true, false, rightSideCol.getCollectionName());
             if (status == AppContextMgr.CONTEXT_STATUS.OK)
             {
@@ -438,7 +453,10 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                 }
                 ffMgr.setAppContextMgr(null);
                 appContextMgr.clear();
-            }
+            }*/
+            // For now use the left side's CatNumFmt for the rightside.
+            // The above code sets too many global items (Div, Disp, UserType etc)
+            catNumFmtHash.put(rightSideCol.getId(), UIFieldFormatterMgr.getInstance().getFormatter(leftSideCol.getCatalogNumFormatName()));
         }
         return catNumFormatter;
     }
@@ -460,30 +478,34 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
     {
         super.setValue(value, defaultValue);
         
-        if (value != null)
+        if (leftSideCol != null)
         {
-            currentColObj = (CollectionObject)value;
-            boolean leftSide = currentColObj.getCollection().getId().equals(leftSideCol.getId());
-            
-            model.setLeft(leftSide);
-            
-            CollectionObject val = null;
-            System.out.println("Col: "+currentColObj.getCollection().getCollectionName()+"   Left: "+leftSide+"  "+(currentColObj != null ? currentColObj.getCatalogNumber(): "null"));
-
-            
-            Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
-            for (CollectionRelationship cr : collectionRels)
+            if (value != null)
             {
-                cr.getLeftSide().getCollection().getCollectionName(); // force load of collection (only)
-                cr.getRightSide().getCollection().getCollectionName(); // force load of collection (only)
+                currentColObj = (CollectionObject)value;
+                boolean leftSide = currentColObj.getCollection().getId().equals(leftSideCol.getId());
+                
+                model.setLeft(leftSide);
+                
+                //System.out.println("Col: "+currentColObj.getCollection().getCollectionName()+"   Left: "+leftSide+"  "+(currentColObj != null ? currentColObj.getCatalogNumber(): "null"));
+                
+                Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
+                for (CollectionRelationship cr : collectionRels)
+                {
+                    cr.getLeftSide().getCollection().getCollectionName(); // force load of collection (only)
+                    cr.getRightSide().getCollection().getCollectionName(); // force load of collection (only)
+                }
+                
+                currentColObj.getLeftSideRels().size();
+                currentColObj.getRightSideRels().size();
+                
+                colObjs.clear();
+                colObjs.addAll(collectionRels);
+                model.fireTableDataChanged();
             }
-            
-            currentColObj.getLeftSideRels().size();
-            currentColObj.getRightSideRels().size();
-            
-            colObjs.clear();
-            colObjs.addAll(collectionRels);
-            model.fireTableDataChanged();
+        } else
+        {
+            log.error("CollectionRelOneToManyPlugin - leftSide collection is null and it can't be!");
         }
     }
 
