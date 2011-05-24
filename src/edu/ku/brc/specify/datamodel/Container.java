@@ -39,6 +39,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.UIRegistry;
+
 /**
 
  */
@@ -323,8 +330,34 @@ public class Container extends CollectionMember implements java.io.Serializable,
     @Override
     public void forceLoad()
     {
-        getCollectionObjects().size();
-        getCollectionObjectKids().size();
+        try
+        {
+            getCollectionObjects().size();
+            getCollectionObjectKids().size();
+            
+        } catch (org.hibernate.LazyInitializationException ex)
+        {
+            // This is temporary for Release 6.3.00 - rods 05/22/11
+            DataProviderSessionIFace tmpSession = null;
+            try
+            {
+                tmpSession = DataProviderFactory.getInstance().createSession();
+                tmpSession.attach(this);
+                getCollectionObjects().size();
+                getCollectionObjectKids().size();
+                    
+            } catch (Exception exx)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (tmpSession != null)
+                {
+                    tmpSession.close();
+                }
+            }
+        }
     }
 
     /* (non-Javadoc)

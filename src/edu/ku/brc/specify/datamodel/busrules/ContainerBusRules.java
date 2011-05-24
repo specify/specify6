@@ -25,17 +25,21 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
 
 /**
@@ -48,6 +52,8 @@ import edu.ku.brc.specify.datamodel.Container;
  */
 public class ContainerBusRules extends BaseBusRules
 {
+    private static final String CONTAINER_CO_USED = "CONTAINER_CO_USED";
+    
     private ValComboBoxFromQuery parentQCBX = null;
     
     /**
@@ -152,10 +158,10 @@ public class ContainerBusRules extends BaseBusRules
         if (dataObj instanceof Container)
         {
             Container container = (Container)dataObj;
+            Container parent    = container.getParent();
+            
             if (container.getId() != null)
             {
-                Container parent = container.getParent();
-                
                 for (Container child : container.getChildren())
                 {
                     if (parent != null && parent.getId().equals(child.getId()))
@@ -190,6 +196,29 @@ public class ContainerBusRules extends BaseBusRules
                     } while (true);
                 }
             }
+            
+            ArrayList<String> catNums = new ArrayList<String>();
+            for (CollectionObject coKid : container.getCollectionObjectKids())
+            {
+                String  sql = "SELECT COUNT(*) FROM collectionobject WHERE (ContainerID IS NOT NULL OR ContainerOwnerID IS NOT NULL) AND CollectionObjectID = " + coKid.getId();
+                int     cnt = BasicSQLUtils.getCountAsInt(sql);
+                if (cnt > 0)
+                {
+                    catNums.add(coKid.getCatalogNumber());
+                }
+            }
+            
+            if (catNums.size() > 0)
+            {
+                UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
+                for (String catNum : catNums)
+                {
+                    reasonList.add(getLocalizedMessage(CONTAINER_CO_USED, fmt != null ? fmt.formatToUI(catNum) : catNum));
+                }
+                
+                return STATUS.Error;
+            }
+
         } else
         {
             reasonList.add("Object is of wrong Class.");
