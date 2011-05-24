@@ -172,7 +172,7 @@
     </table>
     
     <table name="Container" >
-    	<alias name="Container" field="parent" />    	
+    	<!-- alias name="Container" field="parent" /-->    	
     	<alias name="Container" field="children" />
     	<alias name="CollectionObject" field="collectionObjectKids"/>
     	<alias name="CollectionObject" field="collectionObjects"/>
