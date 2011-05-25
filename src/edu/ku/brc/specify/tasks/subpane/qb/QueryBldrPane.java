@@ -174,9 +174,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
     protected static final int                               ExportSchemaPreviewSize = 120;
     //the maximum number of times the Parent relationship can be opened for recursive relationships.
-    //This is currently only used for Containers (parent relatinoship has been unavailable for some time for Treeable tables).
-    //It is basically a workaround to prevent an apparent memory leak that occurs when the parent relationship is recursively opened.
-    protected static final int                               maxParentChainLen = 4;     
+    //This is currently only used for Containers (parent relationship has been unavailable for some time for Treeable tables).
+    //It was originally necessary as a workaround to prevent a memory leak when the parent relationship was recursively opened, 
+    //but now is used just to limit the recursion to a sane depth
+    protected static final int                               maxParentChainLen = 7;     
     
     protected JList                                          tableList;
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
@@ -3111,15 +3112,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 TableTree kidK = tblQRI.getTableTree().getKid(k);
                 if (kidK.isAlias())
                 {
-                    if (!fixAliases(kidK, tableTreeHash))
-                    {
-                        addIt = false;
-                    }
-                    else
-                    {
-                        addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
-                                .getTableInfo());
-                    }
+//                	if (!fixAliases(kidK, tableTreeHash))
+//                    {
+//                        addIt = false;
+//                    }
+//                    else
+//                    {
+//                        addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
+//                                .getTableInfo());
+//                    }
+                	addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
+                            .getTableInfo()) && fixAliases(kidK, tableTreeHash);
                 }
                 else
                 {
@@ -3303,7 +3306,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         			return false;
         		}
 
-        	} else if (alias.getField().equals("container"))
+        	} else if (alias.getField().equals("children"))
+        	{
+        		if (parent != null)
+        		{
+        			//prevent loop back to children container from expansion of Container.parent
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
+        			{
+        				if (parent.getField() != null && parent.getField().equals("parent"))
+        				{
+        					return false;
+        				}
+        			}
+        		}
+        		
+        	}
+        	else if (alias.getField().equals("container"))
         	{
         		if (parent != null)
         		{
@@ -4406,7 +4424,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         for (int k = 0; k < tt.getKids(); k++)
                         {
-                            tbl.addKid((TableTree) tt.getKid(k).clone());
+//                            if (tblIsDisplayable(tt.getKid(k), tableTreeHash.get(tt.getKid(k).getName()).getTableInfo());
+//                        	
+//                        	if (tt.getKid(k).getTableInfo() == null)
+//                            {
+//                            	System.out.println("TableInfo is null for " + tt.getKid(k).getName() + " - " + tt.getKid(k).getField());
+//                            }
+//                            else if (tt.getKid(k).getTableInfo() != null && tblIsDisplayable(tt.getKid(k), tt.getKid(k).getTableInfo()))
+//                            {
+                            	tbl.addKid((TableTree) tt.getKid(k).clone());
+//                            } else 
+//                            {
+//                            	System.out.println("Skipping " +  tt.getKid(k).getName() + " - " + tt.getKid(k).getField());
+//                            }
                         }
                         tbl.setTableInfo(tt.getTableInfo());
                         tbl.setTableQRIClone(tt.getTableQRI());
