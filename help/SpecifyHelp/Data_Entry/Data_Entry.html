@@ -7,7 +7,8 @@
     <title>Data Entry Forms</title>
 </head>
   <body bgcolor="#ffffff">
-    <table border="0" width="100%" background="../../images/topbar.png">
+    0
+<table border="0" width="100%" background="../../images/topbar.png">
       <tr>
         <td>&nbsp;
           
@@ -107,19 +108,20 @@
   <p>&nbsp;</p>
   <blockquote>
     <h4><u><a id="container" name="container"></a>Containers</u></h4>
-    <p>New in Specify 6.3! It is now possible to name a container, catalog it and associate it with collection objects. Containers should not be confused with nodes on a storage tree. Containers can be associated with a node on a storage tree but are not the actual node. For example, a container may be a box in which mammal skins are kept. The box would not be listed in the storage tree, but would  be stored on a shelf, in a closet, in a room. The shelf, closet and room are part of the storage tree. </p>
-    <p>Containers can be either physical or logical. The box in the example above is a good example of a physical container. A logical container is one in which only associations are made. For example, a skin, jawbone and tail of an animal may exist in different storage units in a collection. Each of these is a separate record in Specify but require a logical association. A named container can be created and each of the objects associated with the container.</p>
-    <p>Physical collection objects can be used in three ways:</p>
-    <p>Multiple Collection objects</p>
-    <p>In the above example, the box would be named. If each of the mammal skins were a collection object record in Specify they would be associated with the box. </p>
-    <p>Primary Collection Object</p>
-    <p>If all of the mammal skins were not cataloged in Specify one skin would be cataloged and ???</p>
-    <p>Container Collection Object</p>
-    <p>The container itself can be entered as a collection object in Specify and given a catalog number. </p>
+    <p>New in Specify 6.3! Containers allow collection objects to be permanently 'grouped' together. Containers can be substrates or physical containment objects within a collection. For example, a microscope slide upon which one or more algal specimens (collection objects) are mounted can now be assigned a catalog number and be linked to the algal collection object records. Containers can hold specimens or other containers. A lichen specimen on the bark of a wood sample, might need to be cataloged as a collection object, with the piece of wood cataloged as a Container. A Container might also be a box of specimens (Collection Objects) that needs to be cataloged as a traceable collection artifact. A container must be linked to a collection object to be cataloged in a collection.</p>
+    <p>Containers can be either physical or logical. The above examples are all physical containers. A logical container is one in which only associations are made. For example, a skin, jawbone and tail of an animal may exist in different storage units in a collection. Each of these is a separate collection object record in Specify but require a logical association. A named container can be created and each of the objects associated with the container.</p>
+    <p>Containers should not be confused with nodes on a storage tree. Containers can be associated with a node on a storage tree but are not the actual node. The box in the example above would not be listed in the storage tree, but may  be stored on a shelf in a particular room. The shelf and room are part of the storage tree. </p>
+    <p><em><strong>Note:</strong></em> Containers and their associated collection objects must be within the same collection</p>
     <blockquote>
-      <p><em><strong>Note:</strong></em> Containers and their associated collection objects must be within the same collection.</p>
+      <p><u>Cataloged Containers</u></p>
+      <p>Containers can be cataloged by first creating a collection object and then associating it with a container. </p>
+      <p>&nbsp;</p>
+      <p><u>Subcontainers </u></p>
+      <p>A container that is contained in another container is called a subcontainer. Subcontainers may not  be cataloged.</p>
+      <p>&nbsp;</p>
     </blockquote>
-    <p>Containers can be created using a Container form  or the addition of a form control on a collection object form. Collection objects can also be associated with a container using either form.</p>
+    <p>Containers are created using a container form  or  a collection object form. The collection object form must be edited to include the container controls before containers can be created or associated through it. For more information about editing forms please contact Specify at <a href=
+      "mailto:specify@ku.edu">specify@ku.edu</a>.</p>
     <p align="center"><img src="../../images/form_container.png" alt="containerform" width="590" height="282"></p>
     <p align="center" class="imgcaption">Container Form</p>
     <p><u>Container Form</u></p>
@@ -133,11 +135,13 @@
       <li><strong>Name</strong> the container.</li>
 
       <br />
-      <li><strong>Type</strong> refers to the type of container and is a pick list. For more information  please refer to <a href="../PickList/system_picklist">system pick lists</a>. </li>
+      <li><strong>Type</strong> is a pick list that you may configure, this may include sheet, folder, box, etc. For more information  please refer to <a href="../PickList/system_picklist">system pick lists</a>. </li>
       <br />
-      <li><strong>Parent</strong> is used when the container is a subcontainer of another container. If the container is a subcontainer it may not be cataloged.      </li>
+      <li><strong>Parent</strong> is used when the container is a subcontainer. It is the name of the parent container </li>
       <br />
-      <li><strong>Collection Object</strong> - associating the container with a collection object indicates that the container is a 'physical' container..
+      <li><strong>Collection Object </strong>is
+
+        used to catalog the container. The collection object must already exist.
         <blockquote>
           <p>Select the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (Edit) button to edit a relationship.</p>
           <p>Click on the <img height="16" alt="search" src="../../images/Search-16x16.png" width="16" /> (Search) button and type in all or part of a catalog number. A matching list of available catalog numbers will display to choose from.</p>
@@ -145,13 +149,13 @@
       </li>
       <li><strong>Collection Objects in this Container</strong> lists all the collection objects associated with the current container.
         <blockquote>
-          <p>Select the <img src="../../images/remove_20.png" alt="remove" width="20" height="20" /> (Remove) button to remove a collection object from the list. </p>
+          <p>Select the <img src="../../images/remove_20.png" alt="remove" width="20" height="20" /> (Remove) button to remove a collection object from the list (it does not delete the collection object).</p>
           <p>Click the <img src="../../images/search_add.png" alt="searchadd" width="20" height="20"> (Search and Add) button and type in all or part of a catalog number. A matching list of catalog numbers will display to add to the list.</p>
         </blockquote>
       </li>
-      <li><strong>Subcontainers of this Container</strong> lists all containers associated with this container.
+      <li><strong>Subcontainers of this Container</strong> lists all containers that are held in the current container.
         <blockquote>
-          <p>Select the <img src="../../images/remove_20.png" alt="remove" width="20" height="20" /> (Remove) button to remove a container from the list. </p>
+          <p>Select the <img src="../../images/remove_20.png" alt="remove" width="20" height="20" /> (Remove) button to remove a container from the list (it does not delete the subcontainer). </p>
           <p>Click the <img src="../../images/search_add.png" alt="searchadd" width="20" height="20"> (Search and Add) button and type in all or part of a container name. A matching list of containers will display to add to the list.</p>
         </blockquote>
       </li>
@@ -170,7 +174,7 @@
       <p>&nbsp;</p>
     </blockquote>
     <ul>
-      <li>Select <em><strong>This Collection Object belongs to Container</strong></em> if the collection object is associated with this container.</li><br />
+      <li>Select <em><strong>This Collection Object belongs to Container</strong></em> if the collection object is associated with this container, or in other words, the collection object is 'inside' the container.</li><br />
       <li>Select <em><strong>This Collection Object is the Container</strong></em> if the collection object is the physical container or primary collection object used to describe the container.</li>
       <blockquote>
         <p>Buttons provide several capabilities.</p>
