@@ -180,7 +180,12 @@ public class TableTree implements Cloneable, Comparable<TableTree>
      */
     public void clearKids()
     {
-        kids.clear();
+        for (TableTree kid : kids)
+        {
+        	kid.clearKids();
+        	kid.setParent(null);
+        }
+    	kids.clear();
     }
     /**
      * @return the isAlias
