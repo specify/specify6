@@ -26,6 +26,7 @@ import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
@@ -53,6 +54,9 @@ import edu.ku.brc.specify.datamodel.Container;
 public class ContainerBusRules extends BaseBusRules
 {
     private static final String CONTAINER_CO_USED = "CONTAINER_CO_USED";
+    private static final String CONTAINER_CO_BAD  = "CONTAINER_CO_BAD";
+    	
+    private static final String GET_PARENT_SQL = "SELECT ParentID FROM container WHERE ContainerID = ";
     
     private ValComboBoxFromQuery parentQCBX = null;
     
@@ -157,6 +161,8 @@ public class ContainerBusRules extends BaseBusRules
         
         if (dataObj instanceof Container)
         {
+        	UIFieldFormatterIFace catNumFmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
+        	
             Container container = (Container)dataObj;
             Container parent    = container.getParent();
             
@@ -180,7 +186,7 @@ public class ContainerBusRules extends BaseBusRules
                     Integer id = container.getId();
                     do
                     {
-                        String  sql      = "SELECT ParentID FROM container WHERE ContainerID = " + id;
+                        String  sql      = GET_PARENT_SQL + id;
                         Integer parentId = BasicSQLUtils.getCount(sql);
                         if (parentId == null)
                         {
@@ -197,26 +203,64 @@ public class ContainerBusRules extends BaseBusRules
                 }
             }
             
-            ArrayList<String> catNums = new ArrayList<String>();
+            ArrayList<String> catNumsInError = new ArrayList<String>();
+        	HashMap<Integer, String> colObjIdsHash = new HashMap<Integer, String>(); // needed later
             for (CollectionObject coKid : container.getCollectionObjectKids())
             {
-                String  sql = "SELECT COUNT(*) FROM collectionobject WHERE (ContainerID IS NOT NULL OR ContainerOwnerID IS NOT NULL) AND CollectionObjectID = " + coKid.getId();
-                int     cnt = BasicSQLUtils.getCountAsInt(sql);
-                if (cnt > 0)
+                String  sql = "SELECT ContainerID, ContainerOwnerID FROM collectionobject WHERE (ContainerID IS NOT NULL OR ContainerOwnerID IS NOT NULL) AND CollectionObjectID = " + coKid.getId();
+                //System.err.println(sql);
+                Vector<Object[]> rows = BasicSQLUtils.query(sql);
+                if (rows.size() > 0)
                 {
-                    catNums.add(coKid.getCatalogNumber());
+                	Integer cId = container.getId();
+                	for (Object[] row : rows)
+                	{
+                		Integer containerId = (Integer)row[0];
+                		if (containerId != null && (cId == null || !containerId.equals(cId)))
+                		{
+                			catNumsInError.add(coKid.getCatalogNumber());
+                		}
+                		Integer containerOwnerId = (Integer)row[1];
+                		if (containerOwnerId != null && (cId == null || !containerOwnerId.equals(cId)))
+                		{
+                			catNumsInError.add(coKid.getCatalogNumber());
+                		}
+                	}
                 }
+                
+                colObjIdsHash.put(coKid.getId(), coKid.getCatalogNumber()); // remember for later
             }
             
-            if (catNums.size() > 0)
+            if (catNumsInError.size() > 0)
             {
-                UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
-                for (String catNum : catNums)
+                for (String catNum : catNumsInError)
                 {
-                    reasonList.add(getLocalizedMessage(CONTAINER_CO_USED, fmt != null ? fmt.formatToUI(catNum) : catNum));
+                    reasonList.add(getLocalizedMessage(CONTAINER_CO_USED, catNumFmt != null ? catNumFmt.formatToUI(catNum) : catNum));
                 }
                 
                 return STATUS.Error;
+            }
+
+            // Check to see if theContainer is being cataloged
+            // by checking the colObj data member.
+            if (container.getId() != null && container.getCollectionObject() != null)
+            {
+            	// Now check to see if it previously has one, if not this is new
+            	// and just being set and therefore not being caught by the code above.
+            	String  sql      = "SELECT CollectionObjectID FROM collectionobject WHERE ContainerID IS NOT NULL AND ContainerID = " + container.getId();
+            	//System.err.println(sql);
+            	Integer colObjId = BasicSQLUtils.getCount(sql);
+                if (colObjId == null)
+                {
+                	// Ok, it's new, so now check to see if 
+                	// this is one of the already used children
+                	String catNum = colObjIdsHash.get(container.getCollectionObject().getId());
+                	if (catNum != null)
+                	{
+                		reasonList.add(getLocalizedMessage(CONTAINER_CO_BAD, catNumFmt != null ? catNumFmt.formatToUI(catNum) : catNum));
+                		return STATUS.Error;
+                	}
+                }
             }
 
         } else
