@@ -98,9 +98,8 @@ public class IReportLauncher implements DatabaseLoginListener
                                               getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
                                               getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
             }
-        
+            System.exit(0);
         }
         //...end specify.restartApp snatch
         
