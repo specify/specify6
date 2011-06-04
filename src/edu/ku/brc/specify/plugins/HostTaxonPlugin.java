@@ -223,7 +223,9 @@ public class HostTaxonPlugin extends UIPluginBase
                 {
                     PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g",  "f:p:g"), this);
                     
-                    int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+                    // Switching to Search only for Bug 8393 - rods 6/4/11 (6.3.00 release)
+                    //int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+                    int btnOpts = ValComboBoxFromQuery.CREATE_SEARCH_BTN;
                     cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()),
                                             "fullName",
                                             "fullName",
