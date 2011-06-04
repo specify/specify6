@@ -630,7 +630,7 @@ public class BuildSampleDatabase
         
         persist(division);
         
-        String title     = props.getProperty("title",     "");
+        String title     = props.getProperty("title",     "mr");
         String firstName = props.getProperty("firstName", "Test");
         String lastName  = props.getProperty("lastName",  "User");
         String midInit   = props.getProperty("middleInitial", "A");
