@@ -56,7 +56,7 @@ public class SecuritySummaryDlg extends CustomDialog
     public SecuritySummaryDlg(final CustomDialog parentDlg) 
     {
         super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKHELP, null);
-        helpContext = "SECURITY_SUMMARY";
+        helpContext = "SecuritySummary";
         
         okLabel = getResourceString("CLOSE");
     }
