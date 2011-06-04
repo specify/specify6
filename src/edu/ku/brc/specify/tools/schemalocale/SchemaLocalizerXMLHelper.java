@@ -416,12 +416,12 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 stripMergeLocale(language, sci.getNamesSet());
                 stripMergeLocale(language, sci.getDescsSet());
             }
-            for (LocalizableItemIFace sci : container.getContainerItems())
+            /*for (LocalizableItemIFace sci : container.getContainerItems())
             {
                 System.out.println(sci.getName());
                 //stripMergeLocale(language, sci.get);
                 //stripMergeLocale(language, sci.getDescsSet());
-            }
+            }*/
         }
     }
 
@@ -1538,7 +1538,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             if (pcl != null)
             {
                 pcl.propertyChange(new PropertyChangeEvent(listItem, "count", -1, (int)cnt));
-                System.out.println(cnt);
+                //System.out.println(cnt);
             }
             cnt += inc;
         }
