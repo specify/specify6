@@ -350,7 +350,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 {
                     PickList pl = (PickList)obj;
                     pl.getPickListItems().size();
-                    System.out.println(pl.getName()+" - "+pl.getPickListItems().size());
+                    //System.out.println(pl.getName()+" - "+pl.getPickListItems().size());
                     plItems.add(pl);
                 }
                 items = plItems;
@@ -639,7 +639,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         }
         List<BldrPickList> bldrPickLists = DataBuilder.getBldrPickLists(null, file);
         
-        Integer cnt = null;
+        Integer cnt    = null;
+        boolean wasErr = false;
         
         DataProviderSessionIFace session = null;
         try
@@ -683,6 +684,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
         } catch (Exception ex)
         {
+            wasErr = true;
             if (session != null) session.rollback();
             
             ex.printStackTrace();
@@ -700,7 +702,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         loadList(sysPLList, true);
         loadList(plList, false);
         
-        UIRegistry.displayInfoMsgDlgLocalized(getI18n(cnt != null ? "PL_WASIMPORT" : "PL_ERR_IMP"), cnt);
+        String key = wasErr ? "PL_ERR_IMP" : cnt != null ? "PL_WASIMPORT" : "PL_MATCHIMP";
+        
+        UIRegistry.displayInfoMsgDlgLocalized(getI18n(key), cnt);
     }
     
     public static boolean equals(Boolean v1, Boolean v2) {
@@ -781,7 +785,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         {
             PickListItem     pli  = plis.get(i);
             BldrPickListItem bpli = bplis.get(i);
-            System.out.println("["+pli.getOrdinal()+"]["+bpli.getOrdinal()+"]["+pli.getTitle()+"]["+bpli.getTitle()+"]["+pli.getValue()+"]["+bpli.getValue()+"]");
+            //System.out.println("["+pli.getOrdinal()+"]["+bpli.getOrdinal()+"]["+pli.getTitle()+"]["+bpli.getTitle()+"]["+pli.getValue()+"]["+bpli.getValue()+"]");
             if (!StringUtils.equals(pli.getTitle(), bpli.getTitle())) return false;
             if (!StringUtils.equals(pli.getValue(), bpli.getValue())) return false;
         }
