@@ -791,9 +791,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     public Object clone() throws CloneNotSupportedException
     {
         DataModelObjBase obj  = (DataModelObjBase)super.clone();
-        obj.timestampCreated  = timestampCreated;
-        obj.timestampModified = timestampModified;
-        obj.modifiedByAgent   = modifiedByAgent;
+        obj.init();
         return obj;
     }
     

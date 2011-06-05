@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
@@ -1116,8 +1115,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         Agent obj = (Agent)super.clone();
         
         obj.agentId = null;
-        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
-        obj.timestampModified    = timestampCreated;
         
         initializeSets(obj);
         

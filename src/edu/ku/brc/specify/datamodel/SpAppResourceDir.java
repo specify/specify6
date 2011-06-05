@@ -626,6 +626,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     public Object clone() throws CloneNotSupportedException
     {
         SpAppResourceDir dir = (SpAppResourceDir)super.clone();
+        
         dir.spPersistedAppResources = new HashSet<SpAppResource>();
         dir.spPersistedViewSets     = new HashSet<SpViewSetObj>();
         dir.spAppResources          = new HashSet<SpAppResource>();

@@ -348,13 +348,12 @@ public class CommonNameTxCitation extends DataModelObjBase implements java.io.Se
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        CommonNameTxCitation cntc = (CommonNameTxCitation)super.clone();
-        cntc.init();
+        CommonNameTxCitation obj = (CommonNameTxCitation)super.clone();
         
-        cntc.commonNameTxCitationId = null;
-        cntc.referenceWork = null;
-        cntc.commonNameTx  = null;
+        obj.commonNameTxCitationId = null;
+        //obj.referenceWork = null;
+        obj.commonNameTx  = null;
         
-        return cntc;
+        return obj;
     }
 }

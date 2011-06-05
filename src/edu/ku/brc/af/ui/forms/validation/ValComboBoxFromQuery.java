@@ -170,6 +170,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultCloneAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
+    protected ViewBasedDialogFactoryIFace.FieldInitializerIFace fieldInitializer = null;
+
     protected DataProviderSessionIFace         session;
     
     /**
@@ -592,6 +594,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             defaultCloneAction = new ActionListener()
             {
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     currentMode = MODE.NewAndNotEmpty;
@@ -619,7 +622,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         String dlgName = StringUtils.isNotEmpty(searchDlgName) ? searchDlgName : tableInfo.getSearchDialog();
         
         ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), 
-                                                                                             dlgName);
+                                                                                             dlgName, fieldInitializer);
         dlg.setMultipleSelection(false);
         if (builder != null)
         {
@@ -807,13 +810,27 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             if (isCloned)
             {
-                try
+                if (dataObj != null)
                 {
-                    newDataObj = (FormDataObjIFace) dataObj.clone();
-                    
-                } catch (CloneNotSupportedException e)
+                    DataProviderSessionIFace localSession = null;
+                    try
+                    {
+                        localSession = DataProviderFactory.getInstance().createSession();
+                        localSession.attach(dataObj);
+                        newDataObj = (FormDataObjIFace) dataObj.clone();
+                        
+                    } catch (CloneNotSupportedException e)
+                    {
+                        e.printStackTrace();
+                        UIRegistry.showError("Clone is not supported for "+(dataObj != null ? dataObj.getClass().getSimpleName() : "Unknow record type"));
+                    } finally
+                    {
+                        if (localSession != null) localSession.close(); 
+                    }
+                } else
                 {
-                    e.printStackTrace();
+                    UIRegistry.showError("There isn't anything to clone.\nPlease contact customer support about this issue.");
+                    return;
                 }
             } else
             {
@@ -1318,6 +1335,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.textWithQuery.setBuilder(builderArg);
     }
 
+    /**
+     * @param fieldInitializer the fieldInitializer to set
+     */
+    public void setFieldInitializer(final ViewBasedDialogFactoryIFace.FieldInitializerIFace fieldInitializer)
+    {
+        this.fieldInitializer = fieldInitializer;
+    }    
+
     // --------------------------------------------------------
     // ListSelectionListener
     //--------------------------------------------------------
@@ -1472,7 +1497,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         try
         {
             localSession = DataProviderFactory.getInstance().createSession();
-            log.debug(tableInfo.getClassObj()+" " +tableInfo.getIdFieldName()+" " +id);
+            //log.debug(tableInfo.getClassObj()+" " +tableInfo.getIdFieldName()+" " +id);
             List<?> list = localSession.getDataList(tableInfo.getClassObj(), tableInfo.getIdFieldName(), id, DataProviderSessionIFace.CompareType.Restriction);
             if (list.size() != 0)
             {

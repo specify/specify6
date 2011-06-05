@@ -244,9 +244,9 @@ public class AgentSpecialty extends DataModelObjBase implements Serializable, Or
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        AgentSpecialty as = (AgentSpecialty) super.clone();
-        as.setAgentSpecialtyId(null);
-        return as;
+        AgentSpecialty obj = (AgentSpecialty) super.clone();
+        obj.setAgentSpecialtyId(null);
+        return obj;
     }
     
     

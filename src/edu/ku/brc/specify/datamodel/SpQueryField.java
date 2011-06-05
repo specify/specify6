@@ -774,7 +774,6 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public Object clone() throws CloneNotSupportedException
     {
         SpQueryField field = (SpQueryField)super.clone();
-        field.init();
         
         return field;
     }

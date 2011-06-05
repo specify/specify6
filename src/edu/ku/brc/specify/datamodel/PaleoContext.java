@@ -456,7 +456,6 @@ public class PaleoContext extends CollectionMember implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         PaleoContext pc = (PaleoContext)super.clone();
-        pc.init();
         
         pc.paleoContextId    = null;
         pc.collectionObjects = new HashSet<CollectionObject>();

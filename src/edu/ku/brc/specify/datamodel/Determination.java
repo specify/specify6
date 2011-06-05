@@ -666,7 +666,6 @@ public class Determination extends CollectionMember implements java.io.Serializa
     {
         Determination 
         obj = (Determination)super.clone();
-        obj.init();
         obj.determinationId        = null;
         obj.collectionObject       = null;
         obj.determinationCitations = new HashSet<DeterminationCitation>();

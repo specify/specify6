@@ -611,8 +611,8 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
     public Object clone() throws CloneNotSupportedException
     {
         CollectingEventAttribute obj = (CollectingEventAttribute)super.clone();
-        obj.collectingEventAttributeId        = null;
-        obj.collectingEvents                  = new HashSet<CollectingEvent>();
+        obj.collectingEventAttributeId = null;
+        obj.collectingEvents           = new HashSet<CollectingEvent>();
         
         return obj;
     }

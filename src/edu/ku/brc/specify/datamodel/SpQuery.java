@@ -563,7 +563,6 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         SpQuery query = (SpQuery)super.clone();
-        query.init();
         
         query.spQueryId = null;
         

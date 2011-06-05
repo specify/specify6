@@ -615,22 +615,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     {
         SpAppResource obj = (SpAppResource)super.clone();
         
-        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
-        obj.timestampModified    = timestampCreated;
-        
         obj.spAppResourceId      = null;
-        obj.level                = level;
-        obj.name                 = name;
-        obj.description          = description;
-        obj.mimeType             = mimeType;
-        obj.metaData             = metaData;
-        obj.ownerPermissionLevel = ownerPermissionLevel;
-        obj.groupPermissionLevel = groupPermissionLevel;
-        obj.allPermissionLevel   = allPermissionLevel;
-        obj.specifyUser          = specifyUser;
-        obj.group                = group;       
-        obj.fileName             = fileName;
-        obj.spAppResourceDir     = this.spAppResourceDir;
         obj.spAppResourceDatas   = new HashSet<SpAppResourceData>();
         
         return obj;

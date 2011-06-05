@@ -272,8 +272,8 @@ public class AgentVariant extends DataModelObjBase implements Serializable, Clon
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        AgentVariant av = (AgentVariant) super.clone();
-        av.setAgentVariantId(null);
-        return av;
+        AgentVariant obj = (AgentVariant) super.clone();
+        obj.setAgentVariantId(null);
+        return obj;
     }
 }

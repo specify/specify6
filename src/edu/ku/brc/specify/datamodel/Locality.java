@@ -885,44 +885,56 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         return 2;
     }
     
-    private Locality doClone(final Locality l) throws CloneNotSupportedException
+    /**
+     * @param newLocality
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    private Locality doClone(final Locality newLocality) throws CloneNotSupportedException
     {
-        l.localityCitations = new HashSet<LocalityCitation>();
-        for (LocalityCitation obj : localityCitations)
-        {
-            l.localityCitations.add((LocalityCitation)obj.clone());
-        } 
-        
-        l.localityNameAliass  = new HashSet<LocalityNameAlias>();
-        for (LocalityNameAlias obj : localityNameAliass)
-        {
-            l.localityNameAliass.add((LocalityNameAlias)obj.clone());
-        } 
-        
-        l.localityAttachments = new HashSet<LocalityAttachment>();
-        
-        
-        l.localityDetails     = new HashSet<LocalityDetail>();
+        newLocality.localityDetails = new HashSet<LocalityDetail>();
         for (LocalityDetail obj : localityDetails)
         {
-            l.localityDetails.add((LocalityDetail)obj.clone());
+            LocalityDetail ld = (LocalityDetail)obj.clone();
+            newLocality.localityDetails.add(ld);
+            ld.setLocality(newLocality);
         }
         
-        
-        l.geoCoordDetails = new HashSet<GeoCoordDetail>();
+        newLocality.geoCoordDetails = new HashSet<GeoCoordDetail>();
         for (GeoCoordDetail obj : geoCoordDetails)
         {
-            l.geoCoordDetails.add((GeoCoordDetail)obj.clone());
-        }
+            GeoCoordDetail gcd = (GeoCoordDetail)obj.clone();
+            newLocality.geoCoordDetails.add(gcd);
+            gcd.setLocality(newLocality);
+        }        
         
+        newLocality.localityCitations = new HashSet<LocalityCitation>();
+        for (LocalityCitation obj : localityCitations)
+        {
+            LocalityCitation lc = (LocalityCitation)obj.clone();
+            newLocality.localityCitations.add(lc);
+            lc.setLocality(newLocality);
+        } 
         
-        l.latLonpolygons = new HashSet<LatLonPolygon>();
+        newLocality.localityNameAliass  = new HashSet<LocalityNameAlias>();
+        for (LocalityNameAlias obj : localityNameAliass)
+        {
+            LocalityNameAlias lna = (LocalityNameAlias)obj.clone();
+            newLocality.localityNameAliass.add(lna);
+            lna.setLocality(newLocality);
+        } 
+        
+        newLocality.localityAttachments = new HashSet<LocalityAttachment>();
+        
+        newLocality.latLonpolygons = new HashSet<LatLonPolygon>();
         for (LatLonPolygon obj : latLonpolygons)
         {
-            l.latLonpolygons.add((LatLonPolygon)obj.clone());
+            LatLonPolygon llp = (LatLonPolygon)obj.clone();
+            newLocality.latLonpolygons.add(llp);
+            llp.setLocality(newLocality);
         }
         
-        return l;
+        return newLocality;
     }
 
     /* (non-Javadoc)

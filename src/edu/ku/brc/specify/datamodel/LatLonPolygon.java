@@ -219,16 +219,19 @@ public class LatLonPolygon extends DataModelObjBase implements Cloneable
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        LatLonPolygon p = (LatLonPolygon)super.clone();
+        LatLonPolygon obj = (LatLonPolygon)super.clone();
+        obj.init();
+
+        obj.latLonPolygonId = null;
         
-        p.latLonPolygonId = null;
-        
-        p.points = new HashSet<LatLonPolygonPnt>();
+        obj.points = new HashSet<LatLonPolygonPnt>();
         for (LatLonPolygonPnt pnt : points)
         {
-            p.points.add((LatLonPolygonPnt)pnt.clone());
+            LatLonPolygonPnt llpp = (LatLonPolygonPnt)pnt.clone();
+            obj.points.add(llpp);
+            llpp.setLatLonPolygon(obj);
         }
-        return p;
+        return obj;
     }
 
     

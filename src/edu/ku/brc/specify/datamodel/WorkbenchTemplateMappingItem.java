@@ -530,28 +530,12 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         WorkbenchTemplateMappingItem wbtmi = (WorkbenchTemplateMappingItem)super.clone();
         wbtmi.workbenchTemplateMappingItemId = null;
-        wbtmi.tableName             = tableName;
-        wbtmi.srcTableId            = srcTableId;
-        wbtmi.fieldName             = fieldName;
-        wbtmi.importedColName       = importedColName;
-        wbtmi.caption               = caption;
-        wbtmi.viewOrder             = viewOrder;
-        wbtmi.origImportColumnIndex = origImportColumnIndex;
-        wbtmi.dataFieldLength       = dataFieldLength;
-        wbtmi.fieldType             = fieldType;
         wbtmi.workbenchTemplate     = null;
-        wbtmi.metaData              = metaData;
-        wbtmi.xCoord                = xCoord;
-        wbtmi.yCoord                = yCoord;
-        wbtmi.carryForward          = carryForward;
-        wbtmi.isExportableToContent = isExportableToContent;
-        wbtmi.isIncludedInTitle     = isIncludedInTitle;
-        wbtmi.isRequired            = isRequired;
         wbtmi.workbenchDataItems    = new HashSet<WorkbenchDataItem>();
         
         wbtmi.timestampCreated      = new Timestamp(System.currentTimeMillis());
         wbtmi.timestampModified     = null;
-        wbtmi.modifiedByAgent          = null;
+        wbtmi.modifiedByAgent       = null;
 
         return wbtmi;
     }

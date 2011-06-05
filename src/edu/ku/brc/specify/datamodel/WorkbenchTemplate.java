@@ -400,10 +400,6 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     {
         WorkbenchTemplate wbt = (WorkbenchTemplate)super.clone();
         wbt.workbenchTemplateId = null;
-        wbt.name        = name;
-        wbt.remarks     = remarks;
-        wbt.specifyUser = specifyUser;
-        wbt.srcFilePath = srcFilePath;
         
         wbt.workbenches                   = new HashSet<Workbench>();
         wbt.workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();

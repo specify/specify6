@@ -299,6 +299,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
     public Object clone() throws CloneNotSupportedException
     {
         GroupPerson obj = (GroupPerson)super.clone();
+        obj.init();
         obj.setGroupPersonId(null);
         return obj;
     }

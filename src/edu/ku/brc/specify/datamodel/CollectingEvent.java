@@ -596,7 +596,6 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     public Object clone() throws CloneNotSupportedException
     {
         CollectingEvent obj = (CollectingEvent)super.clone();
-        obj.init();
         
         obj.collectingEventId = null;
         obj.collectionObjects            = new HashSet<CollectionObject>();
@@ -617,7 +616,9 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         obj.collectingEventAttrs        = new HashSet<CollectingEventAttr>();
         for (CollectingEventAttr cea : collectingEventAttrs)
         {
-            obj.collectingEventAttrs.add((CollectingEventAttr)cea.clone());
+            CollectingEventAttr newCEA = (CollectingEventAttr)cea.clone();
+            obj.collectingEventAttrs.add(newCEA);
+            newCEA.setCollectingEvent(obj);
         }
          
         return obj;

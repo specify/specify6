@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -210,11 +208,7 @@ public class SpAppResourceData extends DataModelObjBase implements java.io.Seria
     {
         SpAppResourceData obj  = (SpAppResourceData)super.clone();
         obj.spAppResourceDataId = null;
-        obj.timestampCreated  = new Timestamp(System.currentTimeMillis());
-        obj.timestampModified = timestampCreated;
         obj.data              = data != null ? data.clone() : null;
-        obj.spAppResource     = spAppResource;
-        obj.spViewSetObj      = spViewSetObj;
         return obj;
     }
 

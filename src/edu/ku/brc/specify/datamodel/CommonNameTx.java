@@ -299,13 +299,12 @@ public class CommonNameTx extends DataModelObjBase implements Serializable, Clon
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        CommonNameTx cnt = (CommonNameTx)super.clone();
-        cnt.init();
+        CommonNameTx obj = (CommonNameTx)super.clone();
         
-        cnt.commonNameTxId = null;
-        cnt.taxon = null;
-        cnt.citations    = new HashSet<CommonNameTxCitation>(); 
+        obj.commonNameTxId = null;
+        obj.taxon = null;
+        obj.citations    = new HashSet<CommonNameTxCitation>(); 
         
-        return cnt;
+        return obj;
     }
 }

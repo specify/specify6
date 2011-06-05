@@ -437,8 +437,6 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         GeoCoordDetail gd = (GeoCoordDetail)super.clone();
-        gd.init();
-        
         gd.geoCoordDetailId = null;
         gd.locality         = null;
         

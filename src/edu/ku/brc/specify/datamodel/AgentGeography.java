@@ -241,8 +241,8 @@ public class AgentGeography extends DataModelObjBase implements Serializable, Cl
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        AgentGeography ag = (AgentGeography) super.clone();
-        ag.setAgentGeographyId(null);
-        return ag;
+        AgentGeography obj = (AgentGeography) super.clone();
+        obj.setAgentGeographyId(null);
+        return obj;
     }
 }

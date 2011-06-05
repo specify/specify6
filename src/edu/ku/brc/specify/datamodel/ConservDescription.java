@@ -484,16 +484,15 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        ConservDescription cnt = (ConservDescription)super.clone();
-        cnt.init();
+        ConservDescription obj = (ConservDescription)super.clone();
         
-        cnt.conservDescriptionId = null;
-        cnt.collectionObject     = null;
-        cnt.division             = null;
+        obj.conservDescriptionId = null;
+        obj.collectionObject     = null;
+        obj.division             = null;
         
-        cnt.events = new HashSet<ConservEvent>();
-        cnt.conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
+        obj.events = new HashSet<ConservEvent>();
+        obj.conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
         
-        return cnt;
+        return obj;
     }
 }

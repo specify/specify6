@@ -806,7 +806,6 @@ public class LocalityDetail extends DataModelObjBase
     public Object clone() throws CloneNotSupportedException
     {
         LocalityDetail ld = (LocalityDetail)super.clone();
-        ld.init();
         
         ld.localityDetailId = null;
         ld.locality         = null;

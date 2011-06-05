@@ -797,7 +797,6 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public Object clone() throws CloneNotSupportedException
     {
         Preparation obj = (Preparation)super.clone();
-        obj.init();
         
         obj.preparationId           = null;
         obj.loanPreparations        = new HashSet<LoanPreparation>();
@@ -810,7 +809,9 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         obj.preparationAttrs        = new HashSet<PreparationAttr>();
         for (PreparationAttr pa : preparationAttrs)
         {
-            obj.preparationAttrs.add((PreparationAttr)pa.clone());
+            PreparationAttr newPA = (PreparationAttr)pa.clone();
+            obj.preparationAttrs.add(newPA);
+            newPA.setPreparation(obj);
         }
          
         return obj;
