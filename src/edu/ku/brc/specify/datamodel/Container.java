@@ -330,6 +330,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
         {
             getCollectionObjects().size();
             getCollectionObjectKids().size();
+            getChildren().size();
             
         } catch (org.hibernate.LazyInitializationException ex)
         {
@@ -341,6 +342,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
                 tmpSession.attach(this);
                 getCollectionObjects().size();
                 getCollectionObjectKids().size();
+                getChildren().size();
                     
             } catch (Exception exx)
             {
