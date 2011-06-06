@@ -170,7 +170,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultCloneAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
-    protected ViewBasedDialogFactoryIFace.FieldInitializerIFace fieldInitializer = null;
 
     protected DataProviderSessionIFace         session;
     
@@ -622,7 +621,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         String dlgName = StringUtils.isNotEmpty(searchDlgName) ? searchDlgName : tableInfo.getSearchDialog();
         
         ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), 
-                                                                                             dlgName, fieldInitializer);
+                                                                                             dlgName);
         dlg.setMultipleSelection(false);
         if (builder != null)
         {
@@ -1334,14 +1333,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.builder = builderArg;
         this.textWithQuery.setBuilder(builderArg);
     }
-
-    /**
-     * @param fieldInitializer the fieldInitializer to set
-     */
-    public void setFieldInitializer(final ViewBasedDialogFactoryIFace.FieldInitializerIFace fieldInitializer)
-    {
-        this.fieldInitializer = fieldInitializer;
-    }    
 
     // --------------------------------------------------------
     // ListSelectionListener
