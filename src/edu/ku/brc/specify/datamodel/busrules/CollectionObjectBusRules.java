@@ -1080,21 +1080,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
        	return duplicateNumberStatus;
     }
 
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
-            throws Exception
-    {
-        if (!super.beforeSaveCommit(dataObj, session))
-        {
-            return false;
-        }
-        return false;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAssociateSearchObject(java.lang.Object, java.lang.Object)
      */
