@@ -5538,7 +5538,7 @@
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>100px,2px,180px,5px,85px,2px,180px,5px,86px,2px,180px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,195px,5px,92px,2px,200px,5px,96px,2px,200px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,195px,5px,92px,2px,200px,5px,96px,2px,p:g,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,218px,5px,112px,2px,220px,5px,116px,2px,220px,15px,p:g</columnDef>
             <columnDef os="exp">100px,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            

@@ -442,7 +442,7 @@ public class CollectionBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(Object dataObj)
+    public void afterFillForm(final Object dataObj)
     {
         super.afterFillForm(dataObj);
         
@@ -452,37 +452,57 @@ public class CollectionBusRules extends BaseBusRules
         JTextField txt        = (JTextField)formViewObj.getControlById("4");
         if (txt != null && collection != null)
         {
-            
-            Discipline  discipline = collection.getDiscipline();
-            
-            Set<AutoNumberingScheme> set = collection.getNumberingSchemes();
-            if (set != null)
+            DataProviderSessionIFace session = null;
+            try
             {
-                if (set.size() > 0)
+                session = DataProviderFactory.getInstance().createSession();
+                Collection coll = session.get(Collection.class, collection.getId());
+                if (coll != null)
                 {
-                    UIFieldFormatterMgr ffMgr = null;
-                    if (discipline.getId().equals(appCntxtDiscipline.getId()))
+                    Discipline  discipline = coll.getDiscipline();
+                    Set<AutoNumberingScheme> set = coll.getNumberingSchemes();
+                    if (set != null)
                     {
-                        ffMgr = UIFieldFormatterMgr.getInstance();
-                    } else
-                    {
-                        Integer dispId = collection.getDiscipline().getId();
-                        
-                        DisciplineBasedUIFieldFormatterMgr tempFFMgr = fmtHash.get(dispId);
-                        if (tempFFMgr == null)
+                        if (set.size() > 0)
                         {
-                            tempFFMgr = new DisciplineBasedUIFieldFormatterMgr(dispId);
-                            tempFFMgr.load();
-                            fmtHash.put(dispId, tempFFMgr);
+                            UIFieldFormatterMgr ffMgr = null;
+                            if (discipline.getId().equals(appCntxtDiscipline.getId()))
+                            {
+                                ffMgr = UIFieldFormatterMgr.getInstance();
+                            } else
+                            {
+                                Integer dispId = coll.getDiscipline().getId();
+                                
+                                DisciplineBasedUIFieldFormatterMgr tempFFMgr = fmtHash.get(dispId);
+                                if (tempFFMgr == null)
+                                {
+                                    tempFFMgr = new DisciplineBasedUIFieldFormatterMgr(dispId);
+                                    tempFFMgr.load();
+                                    fmtHash.put(dispId, tempFFMgr);
+                                }
+                                ffMgr = tempFFMgr;
+                            }
+                            AutoNumberingScheme ans = set.iterator().next();
+                            if (ans != null)
+                            {
+                                UIFieldFormatterIFace fmt = ffMgr.getFormatter(ans.getFormatName());
+                                txt.setText(ans.getIdentityTitle()+ (fmt != null ? (" ("+fmt.toPattern()+")") : ""));
+                            }
                         }
-                        ffMgr = tempFFMgr;
                     }
-                    AutoNumberingScheme ans = set.iterator().next();
-                    if (ans != null)
-                    {
-                        UIFieldFormatterIFace fmt = ffMgr.getFormatter(ans.getFormatName());
-                        txt.setText(ans.getIdentityTitle()+ (fmt != null ? (" ("+fmt.toPattern()+")") : ""));
-                    }
+
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
                 }
             }
         }
