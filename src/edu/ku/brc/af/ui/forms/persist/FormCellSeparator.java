@@ -33,11 +33,20 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     protected String label;
     protected String collapseCompName;
     
+    /**
+     * 
+     */
     public FormCellSeparator()
     {
         
     }
 
+    /**
+     * @param id
+     * @param name
+     * @param label
+     * @param colspan
+     */
     public FormCellSeparator(final String id, 
                              final String name, 
                              final String label, 
@@ -46,6 +55,13 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
         this(id, name, label, null, colspan);
     }    
     
+    /**
+     * @param id
+     * @param name
+     * @param label
+     * @param collapseCompName
+     * @param colspan
+     */
     public FormCellSeparator(final String id, 
                              final String name, 
                              final String label, 
@@ -63,6 +79,7 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#getLabel()
      */
+    @Override
     public String getLabel()
     {
         return label;
@@ -71,6 +88,7 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#setLabel(java.lang.String)
      */
+    @Override
     public void setLabel(String label)
     {
         this.label = label;
@@ -79,6 +97,7 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#getCollapseCompName()
      */
+    @Override
     public String getCollapseCompName()
     {
         return collapseCompName;
@@ -90,6 +109,7 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#clone()
      */
+    @Override
     public Object clone() throws CloneNotSupportedException
     {
         FormCellSeparator cellSep = (FormCellSeparator)super.clone();
@@ -111,6 +131,7 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
      */
+    @Override
     public void toXMLAttrs(StringBuilder sb)
     {
         xmlAttr(sb, "label",     label);

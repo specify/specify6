@@ -1428,7 +1428,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         helpMenu.addSeparator();
         mi.addActionListener(new ActionListener()
         {
-            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+            @Override
             public void actionPerformed(ActionEvent ae)
             {
                 AppBase.displaySpecifyLogFiles();
@@ -2492,41 +2492,23 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 });
             }*/
 
-            if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
-            {
-                // Temp Code to Fix issues with Release 6.0.9 and below
-                SwingUtilities.invokeLater(new Runnable() 
-                {
-                    @Override
-                    public void run()
-                    {
-                        FixDBAfterLogin fixer = new FixDBAfterLogin();
-                        fixer.fixUploaderRecordsets();
-                    }
-                });
-            }
-
-            
-            if (!AppPreferences.getGlobalPrefs().getBoolean("FixNullEmbeddedCollectingEvents", false))
-            {
-                // Temp Code to Fix issues with Release 6.0.9 and below
-                SwingUtilities.invokeLater(new Runnable() 
-                {
-                    @Override
-                    public void run()
-                    {
-                        //FixDBAfterLogin fixer = new FixDBAfterLogin();
-                    	FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
-                    }
-                });
-            }
-
-            // Check for Duplicate LocalityDetail and GeoCoordDetail
+            // Temp Code to Fix issues with Release 6.0.9 and below
             SwingUtilities.invokeLater(new Runnable() 
             {
                 @Override
                 public void run()
                 {
+                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
+                    {
+                        FixDBAfterLogin fixer = new FixDBAfterLogin();
+                        fixer.fixUploaderRecordsets();
+                    }
+                    
+                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixNullEmbeddedCollectingEvents", false))
+                    {
+                        FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
+                    }
+                    
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.checkMultipleLocalities();
                 }

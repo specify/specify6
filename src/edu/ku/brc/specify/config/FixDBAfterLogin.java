@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
@@ -62,7 +61,6 @@ import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -536,7 +534,7 @@ public class FixDBAfterLogin
     public static void fixDefaultDates()
     {
         boolean doFix = !AppPreferences.getGlobalPrefs().getBoolean(FIX_DEFDATES_PREF, false);
-        log.debug("fixDefaultDates -  Going To Fix["+doFix+"]");
+        //log.debug("fixDefaultDates -  Going To Fix["+doFix+"]");
         if (doFix)
         {
             HashMap<DBTableInfo, List<FormCellFieldIFace>>  tblToFldHash = new HashMap<DBTableInfo, List<FormCellFieldIFace>>();
@@ -554,7 +552,7 @@ public class FixDBAfterLogin
                 	}
                 	nameHash.add(tableClassName);
                 	
-                	log.debug(tableClassName);
+                	//log.debug(tableClassName);
                 	
                     for (AltViewIFace avi : view.getAltViews())
                     {
@@ -570,7 +568,7 @@ public class FixDBAfterLogin
 	                                {
 	                                    if (fci instanceof FormCellFieldIFace)
 	                                    {
-		                                	log.debug(ti.getName()+" - "+fci.getIdent()+"  "+fci.getName());
+		                                	//log.debug(ti.getName()+" - "+fci.getIdent()+"  "+fci.getName());
 		                                	
 	                                        FormCellFieldIFace fcf      = (FormCellFieldIFace)fci;
 	                                        String             defValue = fcf.getDefaultValue();
@@ -613,7 +611,7 @@ public class FixDBAfterLogin
         int totalCount = 0;
         for (DBTableInfo ti : tblToFldHash.keySet())
         {
-        	log.debug("processTableDefaultDates - Fixing table "+ti.getName());
+        	//log.debug("processTableDefaultDates - Fixing table "+ti.getName());
             for (FormCellFieldIFace fci : tblToFldHash.get(ti))
             {
                 String[] names = fci.getFieldNames();
@@ -648,7 +646,7 @@ public class FixDBAfterLogin
                     	
                     	if (dataClass == java.util.Calendar.class)
                     	{
-	                       	log.debug("processTableDefaultDates - Fixing field "+fi.getColumn());
+	                       	//log.debug("processTableDefaultDates - Fixing field "+fi.getColumn());
 	                        String sql = String.format("SELECT COUNT(*) FROM %s WHERE %s IS NULL AND TimestampCreated IS NOT NULL AND TimestampCreated > TIMESTAMP('2008-06-01 00:00:00')", ti.getName(), fi.getColumn());
 	                        int    cnt = BasicSQLUtils.getCountAsInt(sql);
 	                        if (cnt > 0)

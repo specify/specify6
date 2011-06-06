@@ -915,7 +915,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
-                                session.rollback();
+                                if (session != null) session.rollback();
                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                                 
@@ -1035,10 +1035,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         
                     } catch (Exception ex)
                     {
+                        if (session != null) session.rollback();
+                        ex.printStackTrace();
+                        
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                        ex.printStackTrace();
-                        session.rollback();
                         
                     } finally
                     {
@@ -1634,6 +1635,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 FixDBAfterLogin.fixDefaultDates();
                 
+                // Reset the form system because 
+                // 'fixDefaultDates' loads all the forms.
+                FormDevHelper.clearErrors();
+                viewSetHash.clear();
+                lastLoadTime = 0;
+                
+                // Now notify everyone
                 if (prevDisciplineId != -1)
                 {
                     CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2147,12 +2155,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                if (session != null) session.rollback();
+                
                 ex.printStackTrace();
                 
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                session.rollback();
-
                 
             } finally 
             {
@@ -2611,9 +2619,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                if (session != null) session.rollback();
+                
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                session.rollback();
                 log.error(ex);
                 return false;
                 
@@ -3385,7 +3394,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
-            session.rollback();
+            if (session != null) session.rollback();
             
             ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

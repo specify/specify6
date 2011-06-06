@@ -247,7 +247,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     @Override
     public List<Locale> getLocalesFromData(final Byte schemaType, final int disciplineId)
     {
-        List<Locale> locales = new ArrayList<Locale>();
+        List<Locale> localesList = new ArrayList<Locale>();
         
         String sql = String.format("SELECT i.Language, i.Country, i.Variant FROM splocalecontainer cn INNER JOIN splocaleitemstr i ON " +
                                    "cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d GROUP BY Language, Country, Variant",
@@ -274,10 +274,10 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
             if (locale != null)
             {
-                locales.add(locale);
+                localesList.add(locale);
             }
         }
-        return locales;
+        return localesList;
     }
     
 }
