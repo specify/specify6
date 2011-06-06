@@ -71,7 +71,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.ui.DisciplineBasedUIFieldFormatterMgr;
-import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -663,7 +662,7 @@ public class CollectionBusRules extends BaseBusRules
                 Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
                 if (currCollection.getId().equals(collection.getId())) 
                 {
-                    UIRegistry.showError("You cannot delete the current Collection."); // I18N
+                    UIRegistry.showLocalizedError("CollectionBusRule.CURR_COL_ERR");
                     
                 } else
                 {
@@ -674,7 +673,20 @@ public class CollectionBusRules extends BaseBusRules
                         
                         pSession.attach(collection);
                         
+                        if (collection.getLeftSideRelTypes().size() > 0 ||
+                            collection.getRightSideRelTypes().size() > 0)
+                        {
+                            
+                            if (pSession != null && session == null)
+                            {
+                                pSession.close();
+                            }
+                            UIRegistry.showLocalizedError("CollectionBusRule.RELS_ERR");
+                            return;
+                        }
+                        
                         pSession.beginTransaction();
+                        
                         
                         Set<AutoNumberingScheme> colANSSet = collection.getNumberingSchemes();
                         for (AutoNumberingScheme ans : new Vector<AutoNumberingScheme>(colANSSet))
@@ -808,9 +820,4 @@ public class CollectionBusRules extends BaseBusRules
             mgr.shutdown();
         }
     }
-
-    //--------------------------------------------------------------------------------------------
-    //-- 
-    //--------------------------------------------------------------------------------------------
-
 }
