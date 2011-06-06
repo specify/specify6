@@ -1501,7 +1501,13 @@ public class QueryTask extends BaseTask
         				{
         					selectedRows = null;
         				}
-        				src = rsm.getRecordSet(selectedRows, false);
+        				if (selectedRows == null)
+        				{
+        					src = (RecordSet )cmdAction.getData();
+        				} else
+        				{
+        					src = rsm.getRecordSet(selectedRows, false);
+        				}
         			}
         			final CommandAction cmd = new CommandAction(
         					ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
@@ -2226,7 +2232,8 @@ public class QueryTask extends BaseTask
 	@Override
 	public PermissionEditorIFace getPermEditorPanel()
 	{
-		return new BasicPermisionPanel("QueryTask.PermTitle", "QueryTask.PermEnable", null, null, null);
+		return new BasicPermisionPanel("QueryTask.PermTitle", "QueryTask.PermEnable", null, 
+				null, null);
 	}
 
 
