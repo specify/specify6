@@ -125,8 +125,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Collection                    collection;
     protected Accession                     accession;
     protected Agent                         cataloger;
-    protected Container                     container;        // The container it belongs to
-    protected Container                     containerOwner;   // The container it is a part of
+    protected Container                     container;        // The container it belongs to   (Associated with)
+    protected Container                     containerOwner;   // The container it is a part of (Parent Container)
     protected Appraisal                     appraisal;
     protected CollectionObjectAttribute     collectionObjectAttribute; // Specify 5 Attributes table
     protected Set<CollectionObjectAttr>     collectionObjectAttrs;      // Generic Expandable Attributes
@@ -1012,9 +1012,10 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     }
 
     /**
-     *      * Preparation, Container
+     *      Container
      */
-    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = { }, fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ContainerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Container getContainer() {
         return this.container;
@@ -1027,7 +1028,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      *      * Preparation, Container
      */
-    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = { }, fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ContainerOwnerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Container getContainerOwner() {
         return this.containerOwner;

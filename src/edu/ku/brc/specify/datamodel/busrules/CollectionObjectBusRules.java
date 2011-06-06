@@ -70,6 +70,7 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -507,6 +508,32 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         return false;
                     }
                 }
+            }
+            
+            
+            if (colObj.getContainerOwner() != null)
+            {
+                Container parentContainer = colObj.getContainerOwner();
+                parentContainer.getChildren().remove(colObj);
+                colObj.setContainerOwner(null);
+                
+                if (formViewObj != null)
+                {
+                    formViewObj.getMVParent().getTopLevel().addToBeSavedItem(parentContainer);
+                }
+            }
+            
+            if (colObj.getContainer() != null)
+            {
+                Container parentContainer = colObj.getContainer();
+                parentContainer.getCollectionObjectKids().remove(colObj);
+                colObj.setContainer(null);
+                
+                if (formViewObj != null)
+                {
+                    formViewObj.getMVParent().getTopLevel().addToBeSavedItem(parentContainer);
+                }
+
             }
         }
         return ok;
@@ -1054,27 +1081,19 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
 
     
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-//     */
-//    @Override
-//    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
-//            throws Exception
-//    {
-//        if (!super.beforeSaveCommit(dataObj, session))
-//        {
-//            return false;
-//        }
-//        
-//        for (Determination det : ((CollectionObject )dataObj).getDeterminations())
-//        {
-//            if (det.isCurrent())
-//            {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
+            throws Exception
+    {
+        if (!super.beforeSaveCommit(dataObj, session))
+        {
+            return false;
+        }
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAssociateSearchObject(java.lang.Object, java.lang.Object)
