@@ -2248,9 +2248,9 @@
                     <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch;" colspan="10"/>                
                 </row>
                 <row>
-                    <cell type="label" label="Collection Object:"  initialize="align=right"/>
+                    <cell type="label" label="COLOBJ"  initialize="align=right"/>
                     <cell type="field" id="this_" name="this" uitype="plugin" initialize="name=ContainersColObjPlugin"/>                
-                    <cell type="label" label="(This container's Collection Object)" initialize="align=left" colspan="5"/>
+                    <cell type="label" label="CONTNR_COLOBJ" initialize="align=left" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="desc"/>
