@@ -1153,6 +1153,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
+                    BasicSQLUtils.update(conn, "UPDATE agent SET Title='mr' WHERE Title is NULL");
+                    
                     //-----------------------------------------------------------------------------
                     //-- LocalityDetail
                     //-----------------------------------------------------------------------------
