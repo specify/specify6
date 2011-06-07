@@ -13,8 +13,8 @@
 </table>
 <h2>Specify Setup</h2>
 <p>Specify's flexible design can accommodate a single user with a single collection, or multiple collections representing multiple disciplines within an institution - all sharing the same database. This is accomplished by creating relationships among collection data, as well as modeling how collections are organized within institutions themselves, and then configuring components within Specify specifically for each institutional level. </p>
-<p>What this means for you, the  user, is that Specify 6 can be configured to work congruently with existing collection management procedures, but it requires a thoughtful setup process. This process may vary depending on how Specify was installed. If you were a Specify 5 user and have worked with the Specify staff to convert your data, many of the setup steps will have been performed for you. However; it is still recommended that you read the help sections for each of the modules to better understand how each module can be utilized for your specific needs. </p>
-<p>If you installed Specify 6 and ran the Specify Setup Wizard to create a new, blank database the Specify 6 team recommends that you now perform the following procedures to customize the Specify setup to your particular needs. </p>
+<p>What this means for the  user, is that Specify 6 can be configured to work congruently with existing collection management procedures, but it requires a thoughtful setup process. This process may vary depending on how Specify was installed. If you were a Specify 5 user and have worked with the Specify staff to convert your data, many of the setup steps will have been performed for you. However, it is still recommended that you read the help sections for each of the modules to better understand how each module can be utilized for your specific needs. </p>
+<p>If you installed Specify 6 and ran the Specify Setup Wizard to create a new, blank database, the Specify 6 team recommends that you now perform the following procedures to customize the Specify setup to your particular needs. </p>
 
 <div id="section">
 <p>1. Add institutional levels (divisions, disciplines, collections)</p>
@@ -25,15 +25,15 @@
 <p>&nbsp;</p>
 <p>2. Add users and set user permissions</p>
 <blockquote>
-  <p>Once these institutional levels are configured users can be added to each of the collections. Specify  offers an extensive permission system which controls each user's access to both the data and tools within Specify.</p>
+  <p>Once these institutional levels are configured, users can be added to each of the collections. Specify  offers an extensive permission system which controls each user's access to both the data and tools within Specify.</p>
   <p><a href="../Security/permissions.html">Add users and set user permissions</a> using the Security tools found at <em>System &gt; System Setup &gt; Security Tools</em>.</p>
   <p>Once the institutional levels, users and permissions are complete, information specific to each discipline can be configured. </p>
 </blockquote>
 <p>&nbsp;</p>
 <p>3. Check and/or set Tree Definitions</p>
 <blockquote>
-  <p>The Wizard created a Storage tree that can be accessed by the entire institution, and  Taxon, Geography, Lithostratigraphy and Chronostratigraphy (if applicable) trees for the discipline created by the Wizard. One Storage tree is used by the entire institution; however, each discipline has its own Taxon, Geography, Lithostratigraphy and Chronostratigraphy (if applicable) trees, which are shared by each collection within the division.</p>
-  <p>The ranks in the trees as well as the Enforced ranks and Full Name configuration were also created for each tree in a division. These are considered part of the Tree Definition, and it is recommended that users check these <a href="../Trees/editing_tree_def.html">Tree D</a><a href="../Trees/editing_tree_def.html">efinitions</a> before entering data. Once data is entered the Full Name can not be changed. Tree Definitions are found by clicking the <img src="../../images/Tree-32x32.png" width="20" height="20" /> <em>Tree</em> button on the Tab Bar, then clicking the appropriate <em>Tree Definition</em> button on the side bar.</p>
+  <p>A Storage tree that can be accessed by the entire institution was created using the Setup Wizard. Taxon, Geography, Lithostratigraphy and Chronostratigraphy (if applicable) trees were also created, which are shared by each collection within the division. </p>
+  <p>The ranks in the trees as well as the Enforced ranks and Full Name configuration were also created for each tree in a division. These are considered part of the Tree Definition, and it is recommended that users check these <a href="../Trees/editing_tree_def.html">Tree D</a><a href="../Trees/editing_tree_def.html">efinitions</a> before entering data.  Tree Definitions are found by clicking the <img src="../../images/Tree-32x32.png" width="20" height="20" /> <em>Tree</em> button on the Tab Bar, then clicking the appropriate <em>Tree Definition</em> button on the side bar.</p>
 </blockquote>
 <p>&nbsp;</p>
 <p>4. Customize the Schema Configuration</p>
@@ -52,12 +52,12 @@
 </blockquote>
 <p><a href="../Intro/number_formats.html"></a>5. Customize System Pick Lists and Preparation Types</p>
 <blockquote>
-  <p>A variety of <a href="../PickList/system_picklist.html">System Pick Lists</a> exist within the Specify form system as drop-down lists on forms. These can be edited in a System Configuration module, found at <em>System &gt; System Setup &gt; Configuration.</em> System Pick Lists refer to fields that are denoted as Pick Lists within Specify itself. Fields that are not denoted as Pick Lists by Specify can be and are referred to as User-Defined Pick Lists. User-Defined Pick Lists require a change to any forms which include the field and should NOT be changed until the new form has been imported into Specify. </p>
+  <p>A variety of <a href="../PickList/system_picklist.html">System Pick Lists</a> exist within the Specify form system as drop-down lists. These can be edited in a System Configuration module, found at <em>System &gt; System Setup &gt; Configuration.</em> System Pick Lists refer to fields that are denoted as Pick Lists within Specify itself. Fields that are not denoted as Pick Lists by Specify are referred to as User-Defined Pick Lists. User-Defined Pick Lists require a change to any forms that include the field and should NOT be changed until the new form has been imported into Specify. </p>
   <p>The <a href="../Configuration/prep_type.html">Preparation Type</a> pick list ships with specific data for each discipline, which can be edited in the Configuration tool as well.</p>
 </blockquote>
 <p>6. Create Reports</p>
 <blockquote>
-  <p>It may also be useful to create <a href="../ReportsLabels/reports.html">reports</a> to be used within Specify. Reports may include labels for specimens or invoices for loans as well as reports for collection data. Each institution will have different needs but may find it helpful to have reports created before users start entering data into the database. Specify harnesses the power of iReport 3.0, an open source report writing software package, by modifying the original iReport version to  interact with Queries created in Specify 6 and data supplied from the Specify 6 database. <a href="../ReportsLabels/specifyireports.html">SpecifyiReport</a> is a separate application and must be launched separately from Specify. SpecifyiReport is located in the Specify application <em><strong>bin</strong></em> directory, which stores the executable files for Specify.</p>
+  <p><a href="../ReportsLabels/reports.html">Reports</a> can be created for use in Specify. Reports may include labels for specimens or invoices for loans as well as reports for collection data. Each institution will have different needs. It is helpful to have reports created before users start entering data into the database that are based on your specific needs. Specify harnesses the power of iReport 3.0, an open source report writing software package, by modifying the original iReport version to  interact with Queries created in Specify 6 and data supplied from the Specify 6 database. <a href="../ReportsLabels/specifyireports.html">SpecifyiReport</a> is a separate application and must be launched separately from Specify. SpecifyiReport is located in the Specify application <em><strong>bin</strong></em> directory.</p>
 </blockquote>
 <p>&nbsp;</p>
 <p>7. Customize the Backup and Restore function</p>

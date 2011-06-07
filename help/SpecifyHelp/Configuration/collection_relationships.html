@@ -3,11 +3,6 @@
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
 <title>Configure Collection Relationships</title>
-<style type="text/css">
-<!--
-.style1 {color: #990000}
--->
-</style>
 </head>
 
 
@@ -26,17 +21,34 @@
 <ol>
   <li>The relationship must be configured and named using the Collection Relationship tool in Specify</li><br />
   <li>Forms must be edited to include controls which allow the source collection object to be associated with the destination collection object or taxonomic name. Please contact Specify at <a href=
-      "mailto:specify@ku.edu">specify@ku.edu</a> to request forms that include either of these relationships.
-    <h3>&nbsp;</h3>
-  </li>
+      "mailto:specify@ku.edu">specify@ku.edu</a> to request forms that include either of these relationships.  </li>
+
 </ol>
-<h3>Configure Collection Relationships</h3>
+
+<p>&nbsp;</p>
+<p>The collection relationship tool is only available to users at the system administrator level.</p>
+<h3>&nbsp;</h3>
+<h3><a name="cr_configure" id="cr_configure"></a>Configure Collection Relationships</h3>
 <p>To open the collection relationship tool  choose <em>System &gt; Configure Collection Relationships</em>.</p>
+<p align="center"><img src="../../images/cr_open.png" width="343" height="263" /></p>
+<p align="center" class="imgcaption">Existing Collection Relationships</p>
+<blockquote>
+  <p align="center" class="imgcaption">&nbsp;</p>
+  <p>If  collection relationships exists within any of the collections in the institution the first window will display those existing relationships. Existing relationships can be edited or added using available buttons.</p>
+  <p>Select the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (Edit) button to edit a relationship.</p>
+  <p>Select the <img src="../../images/delete.png" width="16" height="16" /> (Delete) button to delete a relationship. </p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> Collection relationships with associated collection objects may not be deleted. To delete a collection relationship all collection object associations must first be removed. </p>
+  </blockquote>
+  <p>Select the <img src="../../images/add.png" alt="add" width="16" height="16" /> (Add) button to create a collection relationship.</p>
+</blockquote>
+<p>&nbsp;</p>
 <p align="center"><img src="../../images/cr_wiz_1.png" width="338" height="275" /></p>
 <p align="center" class="imgcaption">Choose a Source Collection</p>
 <p>&nbsp;</p>
 <blockquote>
-  <p>1. Choose a source collection from the list of collections in the current discipline and click the <em>Next</em> button. The collections available are limited to those that you have permission to access.</p>
+<ol>
+  <li>Choose a source collection from the list of collections in the current discipline and click the <em>Next</em> button. The collections available are limited to those that you have permission to access.</li>
   <blockquote>
     <p><em><strong>Note:</strong></em> If a collection relationship exists for the current collection the first dialog will list the collection relationships. Either choose a current collection relationship to edit or click the <img src="../../images/add.png" alt="add" width="16" height="16" /> (Add) button to add a new collection relationship.</p>
     <p>&nbsp;</p>
@@ -44,12 +56,13 @@
   <p>&nbsp;</p>
   <p align="center"><img src="../../images/cr_wiz_2.png" width="338" height="275" /></p>
   <p align="center">Choose a Destination Collection</p>
-  <p align="left">2. Choose a destination collection from the list of acceptable collections in Specify. Associations may not exist between collections with different catalog number formats. The collections available are limited to those that you have permission to access and use the same catalog number format as the source collection.</p>
-  <p align="center">&nbsp;</p>
+  <li>Choose a destination collection from the list of acceptable collections in Specify. Associations may not exist between collections with different catalog number formats. The collections available are limited to those that you have permission to access and use the same catalog number format as the source collection.</li>
+  <p align="center"><a name="cr_lastscreen" id="cr_lastscreen"></a>&nbsp;</p>
   <p align="center"><img src="../../images/cr_wiz_3.png" width="570" height="213" /></p>
   <p align="center" class="imgcaption">Name the Collection Relationship</p>
   <p>&nbsp;</p>
-  <p>3. Name the Collection Relationship.</p>
+  <li>Name the Collection Relationship. The remarks field is available for describing the relationship, which can be valuable information for colleagues or future users.</li>
+  </ol>
   <blockquote>&nbsp;</blockquote>
 </blockquote>
 <h3>Associating Collection Objects using a Collection Object Form</h3>

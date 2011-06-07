@@ -96,7 +96,7 @@
           to change the order in which the forms appear in the side bar and More Forms list. </li>
         <li> Use the <img width="16" height="16" alt="b" src="../../images/Map16x16.png"> or <img width=
         "16" height="16" alt="b" src="../../images/Unmap16x16.png"> (move) buttons to move a saved
-          query from the Favorite Queries side bar list to the Other Queries list and vice versa. </li>
+          query from the Favorite Queries side bar list to the Other Queries list and visa versa. </li>
       </ul>
       <p>&nbsp; </p>
       <p>
@@ -134,9 +134,9 @@
         will take a longer amount of time to run.      </p>
       <p>
         Specify 6 does not include default fields in a query as was found in Specify 5. For a column
-        to appear in the results it must first be represented by a field in the query. Users that
+        to appear in the results it must first be represented by a field in the query. Users who
         wish to always see a particular set of columns in their query results are encouraged to
-        create a query with those fields and save the query. When creating a future query simply
+        create a query with those fields and save the query. When creating a future query, simply
         click on the saved query first, then add to it to create the new query.      </p>
       <p>
         Specify 6 offers a grid view of results only.    </p>
@@ -154,7 +154,7 @@
       <p>
         Select a related table to be part of the search criteria by double clicking it in the list
         box. Tables are either formatted or aggregated, depending on their relationship to the
-        primary Table, and do not offer any other search criteria. Most tables in Specify have a
+        primary Table and do not offer any other search criteria. Most tables in Specify have a
         default format and aggregate setting. Formats and aggregates can be edited, created or
         deleted in <em>System &gt; Schema Configuration</em>.
       </p>
@@ -163,7 +163,7 @@
       "../../images/SingleKid.png">&nbsp;Many-to-One</strong> (Formatted Data)
       </p>
       <p>
-        A relationship involving a primary and related table in which many primary records are
+        A many-to-one relationship involves a primary and related table in which many primary records are
         linked to a single related record in the related table. For example, many Collection Object
         records might be linked to the same Locality record because they were all found at the same
         location.
@@ -181,7 +181,7 @@
       "../../images/MultiKid.png">&nbsp;One-to-Many</strong> (Aggregated Data)
       </p>
       <p>
-        A relationship involving a primary and related table in which many related records are
+        A one-to-many relationship involves a primary and related table in which many related records are
         linked to a single primary record in the related table. For example, several Collection
         Object records would be linked to a single record in the Collection Event table because all
         those specimens were collected during the same event.
@@ -211,7 +211,7 @@
       <p align="center" class="imgcaption">Query Expression Box</p>
       <blockquote>
         <p>
-          <em><strong>Note:</strong></em> Not all fields include Criteria. For instance; a Check Box
+          <em><strong>Note:</strong></em> Not all fields include Criteria. For instance, a Check Box
           does not have searchable Criteria and needs only an Operator.
         </p>
       </blockquote>
@@ -404,7 +404,7 @@
         <td valign="top">
           It is important to note that <em>Empty</em> is a Condition and not the same as a
           Condition left blank. A Condition that is left blank will be included in the results but
-          not in the search, a Condition that is <em>set to Empty</em> will only return records
+          not in the search. A Condition that is <em>set to Empty</em> will only return records
           that contain an empty field.
         </td>
         <td valign="top">
@@ -448,7 +448,7 @@
         </td>
         <td valign="top">
           Criteria are entered into this box. If the operator is 'Between' two boxes will display
-          for entering both criteria.
+          to enter both criteria.
         </td>
         <td valign="top">
           Date, Number, Text
@@ -629,7 +629,7 @@
       </tr>
     </table>
     
-      <p> When it is necessary to use an asterisk (*) as part of the literal search criteria precede
+      <p> When it is necessary to use an asterisk (*) as part of the literal search criteria, precede
         it with a "\". For example; when it is desired to find Cli*nton enter the search criteria as
         *Cli\*nton*. </p>
     </blockquote>
@@ -712,7 +712,7 @@
              Returns unique results only (no duplicates).
           </p>
           <p>
-             When the <em>Distinct</em> button is used in a query the query can not be used to
+             When the <em>Distinct</em> button is used in a query, the query can not be used to
             create record sets, view results in data entry forms, or run reports.
           </p>
           <p>
@@ -902,7 +902,7 @@
       "../../images/record_sets_dark_20.png">&nbsp;(Record Set) button to enable, then drag the
           button to an existing record set on the side bar to add the records to the existing record
           set. The existing record set and the new records must be from the same table to be
-          compatible. As the button is dragged toward the side bar any existing record sets that can
+          compatible. As the button is dragged toward the side bar, any existing record sets that can
           accept the new records will display a colored band. </p>
         <p>&nbsp; </p>
       </blockquote>
@@ -1055,7 +1055,7 @@
         <p>The query is shown above. The steps for creating the query include:</p>
         <ol>
           <li>Select either the taxon table for a list of nodes for a level of the tree or collection object table for a list of all unique nodes associated with a collection. 
-          <p>If you wish to imcnlude all items in a rank (independant of whether they are used by objects in your collection), choose the Name field from the taxon table. </p>
+          <p>If you wish to include all items in a rank (independant of whether they are used by objects in your collection), choose the Name field from the taxon table. </p>
           </li>
           <p>If you wish to only include items used in your collection, then select the approporiate rank field from the taxon table within determinations. </p>
           <li>Select <em>Taxonomic Rank &gt; Name</em> and add it to the query.</li>

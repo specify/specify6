@@ -30,7 +30,7 @@
     <p>
        Data forms are used for entering, editing and viewing collection data. Because Specify uses
       related fields to link information, most data can be entered using the Collection Object
-      form; however it may be useful to enter background information, such as Agents and Collecting
+      form, however it may be useful to enter background information, such as Agents and Collecting
       Events before entering Collection Objects.
     </p>
     <p>
@@ -91,7 +91,7 @@
         not available for the Parent field and entering Child Nodes via the tree can save time and
         energy.      </p>
       <p>
-        When adding, editing or viewing data as a tree users can also access forms for individual
+        When adding, editing or viewing data as a tree, users can also access forms for individual
         nodes by clicking either the edit (<img height="16" alt="edit" src=
       "../../images/Edit-2-16x16.png" width="16">) button or the add (<img height="16" alt="add"
       src="../../images/add.png" width="16">) button. Trees are not accessible when using the form
@@ -100,8 +100,8 @@
         <p>
           <strong><em>Note:</em></strong> Tables can not be edited simultaneously in both the Tree and
           Form mode, or by multiple users. For example, if a user is editing the Taxon Tree and wants
-          to open a Taxon Form it will open as <em>View Only</em>. In addition, if another user tries
-          to open either the Taxon Tree or Taxon Form a dialog will pop-up stating that the Tree is
+          to open a Taxon Form, it will open as <em>View Only</em>. In addition, if another user tries
+          to open either the Taxon Tree or Taxon Form, a dialog will pop-up stating that the Tree is
           locked and will open in <em>View Only</em> mode.        </p>
       </blockquote>
     </blockquote>
@@ -130,7 +130,8 @@
     </blockquote>
     <ul>
       <blockquote>
-        <p><em><strong>Note:</strong></em> At this time containers may not be deleted if collection objects are associated with it. To delete a container you must first remove all collection objects associated with the container. </p>
+        <p><em><strong>Note:</strong></em> At this time a container may not be deleted if collection objects are associated with it. To delete a container you must first remove all collection objects associated with the container. </p>
+        <p><em><strong>Note:</strong></em> A collection object that is associated with a container may not be deleted. To delete the collection object the container association must first be removed.</p>
       </blockquote>
       <li><strong>Name</strong> the container.</li>
 
@@ -479,9 +480,11 @@
         When a lat/long is entered the format is captured and displayed in the (Source) field. This
         field remains constant when formats are changed, but if the lat/long numbers are changed then
         the (Source) field will update to the new lat/long entry.      </p>
-      <p>
-        Specify does not track versions of the latitude and longitude and does not keep a verbatim
-        field!      </p>
+      <blockquote>
+        <p>
+          <em><strong>Note:</strong></em> Specify does not track versions of the latitude and longitude and does not keep a verbatim
+          field.      </p>
+      </blockquote>
       <p>
         Other data on the Locality form include a Geo Referencing Determination By and Date. These
         are for documenting how and when a georeference for the Locality occurred.      </p>
@@ -504,14 +507,14 @@
           as georeferencing. Once the Latitude and Longitude information is complete the GEOLocate
           button will become enabled. </p>
         <p>
-          When using the United States as a geographic location GEOLocate will not recognize 'United
-          States of America' or 'U.S.A.' GEOLocate prefers 'United States' but can use 'USA'.      </p>
+          Use either 'United States' or 'USA', GEOLocate does not recognize 'United
+          States of America' or 'U.S.A.'.</p>
         <p>
           More information about GEOLocate can be found at <a href=
       "http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>.      </p>
         <p>
           <img height="23" src="../../images/worldwind_button.png" width="144"> <a name=
-      "world_wind"></a>The link to NASA World Wind is available at any time in the Locality form. A
+      "world_wind"></a>The link to NASA World Wind is always available on the Locality form. A
           text box at the top of the World Wind dialog allows either a Latitude and Longitude or a
           Locality Name to be entered. The location is then displayed on a World Wind map. If either a
           Latitude and Longitude or Locality Name exists in the Locality form World Wind will
@@ -528,20 +531,21 @@
           <td>
             Pan        </td>
           <td>
-            Left-mouse button click &amp; drag - all directions        </td>
+            <p> Left-button-click &amp; drag - all directions <br>
+            Left-button-click once to center the view.</p></td>
         </tr>
         <tr>
           <td>
             Zoom        </td>
           <td>
             Use the scroll wheel on the mouse<br>
-            or Left &amp; Right mouse (both butons) click &amp; drag        </td>
+            or Left or Right-buttons-click &amp; drag        </td>
         </tr>
         <tr>
           <td>
             Tilt        </td>
           <td>
-            Right-mouse button click &amp; drag - up and down<br>
+            Right- button-click &amp; drag - up and down<br>
             or use "Page Up' and "Page Down" on the keyboard.        </td>
         </tr>
         <tr>
@@ -549,8 +553,8 @@
             Rotate        </td>
           <td>
             <p>
-              Right-mouse button click &amp; drag - left and right<br>
-              Note: Crossing the top and bottom half f the screen while rotating will change
+              Right-button-click &amp; drag - left and right<br>
+              <em><strong>Note:</strong></em> Crossing the top and bottom half f the screen while rotating will change
               direction.          </p>        </td>
         </tr>
         <tr>
@@ -582,29 +586,29 @@
           <td>
             Pan        </td>
           <td>
-            Left-mouse button click &amp; drag - all directions<br>
-            Left-mouse button click once to center view.        </td>
+            Left-button click &amp; drag - all directions<br>
+            Left-button button click once to center view.        </td>
         </tr>
         <tr>
           <td>
             Zoom        </td>
           <td>
             Hold "Ctrl" on the keyboard and<br>
-            Left-mouse button click &amp; drag - up and down.        </td>
+            Left-button click &amp; drag - up and down.        </td>
         </tr>
         <tr>
           <td>
             Tilt        </td>
           <td>
             Hold "Shift" on the keyboard and<br>
-            Left-mouse button click &amp; drag - up and down        </td>
+            Left-button click &amp; drag - up and down        </td>
         </tr>
         <tr>
           <td valign="top">
             Rotate        </td>
           <td>
             Hold "Shift" on the keyboar and<br>
-            Left-mouse buton click &amp; drag - left and right.        </td>
+            Left-button click &amp; drag - left and right.        </td>
         </tr>
         <tr>
           <td>
@@ -651,14 +655,14 @@
         number associated with each individual specimen. </p>
       <p> In the first case (traditionally used in lot based collections) the number is associated
         with the Collecting Event itself (and all its associated data) in the form of a Station or
-        Field Number and is thus associated to one or many specimens or collection objects collected
+        Field Number and is therefore associated with one or many specimens or collection objects collected
         at the same time and place by the same collectors e.g. ACB 09-01. The Station or Field number
         thus describes all specimens or Collection Objects collected at that time and place. There is
         a many-to-one relationship between specimens, or Collection Object and "Collecting Events".
         In this instance, the Collecting Event form is usually expressed as a Query Combo Box on the
-        Collection Object form so that, using the lookup option of this field type, the same
+        Collection Object form so that values can be searched, and the same
         collecting event can be used (based on the Station/Field Number) for entering information for
-        multiple specimens without having to enter it over and over each time. The data displayed
+        multiple specimens without having to enter it repeatedly. The data displayed
         within the Query Combo Box is then formatted using the Schema Localizer to display a textual
         string representing the different data elements of the Collecting Event (Field Number, Date,
         Geography and Locality information). The lookup function of the Query Combo Box will also
@@ -668,16 +672,16 @@
         individual specimen or Collection Object in the form of a Collector number - a unique number
         given to every specimen collected and usually including the Collectors acronym e.g. ACB
         12345, while the remaining data is still bound to the Collecting Event table. There is a
-        one-to-one relationship between specimens and "Collecting Events". In this instance the
+        one-to-one relationship between specimens and Collecting Events. In this instance the
         Collector number would be a field on the Collection Object form and all other fields would be
         associated with the Collecting Event which would not include a Station/Field Number and would
         be expressed as an embedded sub form on the Collection Object form and would not be able to
         be reused for subsequent specimens. </p>
       <p>
-        Disciplines traditionally use one or the other of these two methods.      </p>
+        Disciplines traditionally use one of these two methods.      </p>
       <p>
-        This decision should be made before data is entered, uploaded, or migrated into your
-        database by our staff. For our convenience in setting up forms for evaluation, we have set
+        A method should be chosen before data is entered, uploaded, or migrated into your
+        database by our staff. To facilitate our set up of forms for evaluation, we have set
         defaults for collection types and Specify ships with all Disciplines except Ichthyology using
         Collection Event as a one-to-one relationship. If the default form does not represent the way
         you process collections, and you are unable to change the setting after following the
@@ -784,7 +788,7 @@
             stores an icon for the image in the Attachment Storage Location.        </p>
         </blockquote>
         <p>
-          If a path does not exist or Specify is not able to connect to the path the Attachment button
+          If a path does not exist or Specify is not able to connect to the path, the Attachment button
           will become disabled on the forms.      </p>
         <p>
           Accepted Attachment files include:      </p>
@@ -793,13 +797,13 @@
           <li> audio </li>
           <li> binary </li>
           <li> pdf </li>
-          <li> image (jpg, png, gif, tif) </li>
+          <li> image (jpg, png, gif, tiff) </li>
           <li> html </li>
           <li> spreadsheet </li>
         </ul>
         <blockquote>
           <p>
-            <strong><em>Note:</em></strong> Specify can accept images in a tif format, but they may not
+            <strong><em>Note:</em></strong> Specify can accept images in a tiff format, but they may not
             display on the Windows and Linux operating systems.        </p>
         </blockquote>
         <p>
