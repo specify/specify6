@@ -63,7 +63,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
