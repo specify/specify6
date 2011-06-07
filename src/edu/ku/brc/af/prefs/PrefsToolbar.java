@@ -261,6 +261,7 @@ public class PrefsToolbar extends JPanel
                             PrefsPanelIFace prefPanel = (PrefsPanelIFace)comp;
                             prefPanel.setName(prefName);
                             prefPanel.setTitle(prefTitle);
+                            prefPanel.setHelpContext(hContext);
                             
                             if (!prefPanel.isOKToLoad() || (AppContextMgr.isSecurityOn() && !prefPanel.getPermissions().canView()))
                             {
@@ -274,7 +275,6 @@ public class PrefsToolbar extends JPanel
                             if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
                             {
                                 GenericPrefsPanel genericPrefsPanel = (GenericPrefsPanel)comp;
-                                genericPrefsPanel.setHelpContext(hContext);
                                 genericPrefsPanel.createForm(viewSetName, viewName);
                                 
                             } else

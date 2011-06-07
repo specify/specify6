@@ -79,7 +79,7 @@
     </section>
     
     <section title="Loans">
-        <pref name="LOANS" title="LOANS" icon="Loan" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLoans">
+        <pref name="LOANS" title="LOANS" icon="Loan" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLoan">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>
             <defperm name="LimitedAccess" perm="true,true,true,true"/>
@@ -97,7 +97,7 @@
     </section>
     
     <section title="GEOLocate">
-        <pref name="GEOLocate" title="GEOLocate" icon="GEOLocate" panelClass="edu.ku.brc.specify.prefs.GEOLocatePrefsPanel" help="PrefsLSIDs">
+        <pref name="GEOLocate" title="GEOLocate" icon="GEOLocate" panelClass="edu.ku.brc.specify.prefs.GEOLocatePrefsPanel" help="PrefsGeolocate">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>
             <defperm name="LimitedAccess" perm="true,true,true,true"/>
@@ -106,7 +106,7 @@
     </section>
     
     <section title="NETWORK_PROXY">
-        <pref name="NetworkProxy" title="NETWORK_PROXY" icon="WorldWind" panelClass="edu.ku.brc.specify.prefs.NetworkProxyPanel" help="PrefsNetworkProxy">
+        <pref name="NetworkProxy" title="NETWORK_PROXY" icon="WorldWind" panelClass="edu.ku.brc.specify.prefs.NetworkProxyPanel" help="PrefsNetwork">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>
             <defperm name="LimitedAccess" perm="true,true,true,true"/>

@@ -113,15 +113,6 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     //--------------------------------------------------------------------
     // PrefsSavable Interface
     //--------------------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
-     */
-    @Override
-    public String getHelpContext()
-    {
-        return "PrefsEMail";
-    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#savePrefs()

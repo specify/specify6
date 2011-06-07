@@ -51,15 +51,13 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         super();
         
         createForm("Preferences", "GEOLocatePrefs");
-        
-        //this.hContext = "GeoLocatePref";
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#createForm(java.lang.String, java.lang.String)
      */
     @Override
-    public void createForm(String viewSetName, String viewName)
+    public void createForm(final String viewSetName, final String viewName)
     {
         super.createForm(viewSetName, viewName);
         
@@ -115,16 +113,16 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     
     /**
      * @param cbx
-     * @param name
+     * @param prefName
      */
-    private void saveCBX(final ValCheckBox cbx, final String name)
+    private void saveCBX(final ValCheckBox cbx, final String prefName)
     {
         if (cbx.isChanged())
         {
             Object value = cbx.getValue();
             if (value != null)
             {
-                AppPreferences.getLocalPrefs().putBoolean(name, cbx.isSelected());
+                AppPreferences.getLocalPrefs().putBoolean(prefName, cbx.isSelected());
             }
         }
     }
