@@ -195,7 +195,8 @@ public class CollectionRelTask extends BaseTask
         srcCollection = null;
         
         ChooseFromListDlg<Collection> dlg = new ChooseFromListDlg<Collection>((Frame)getTopWindow(), 
-                getResourceString(COLREL_TITLE), getResourceString("COLREL_CHS_SRC"), CustomDialog.OKCANCEL, colObjVec);
+                getResourceString(COLREL_TITLE), getResourceString("COLREL_CHS_SRC"), CustomDialog.OKCANCELHELP, colObjVec);
+        dlg.setHelpContext("cr_configure");
         dlg.setOkLabel(getResourceString("NEXT"));
         centerAndShow(dlg);
         if (!dlg.isCancelled())
@@ -227,7 +228,8 @@ public class CollectionRelTask extends BaseTask
         } else if (filteredList.size() > 1)
         {
             ChooseFromListDlg<Collection> dlg = new ChooseFromListDlg<Collection>((Frame)getTopWindow(), 
-                    getResourceString(COLREL_TITLE), getResourceString("COLREL_CHS_DST"), CustomDialog.OKCANCEL, filteredList);
+                    getResourceString(COLREL_TITLE), getResourceString("COLREL_CHS_DST"), CustomDialog.OKCANCELHELP, filteredList);
+            dlg.setHelpContext("cr_configure"); 
             dlg.setOkLabel(getResourceString("NEXT"));
             centerAndShow(dlg);
             if (!dlg.isCancelled())
@@ -480,6 +482,7 @@ public class CollectionRelTask extends BaseTask
             colRelType.initialize();
         }
         
+        dlg.setHelpContext("cr_name");
         dlg.setData(colRelType);
         centerAndShow(dlg);
         
