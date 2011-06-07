@@ -34,14 +34,14 @@
     </ul>
   </ul>
   </ul>
-<p>The   Divisions, Disciplines and Collections for each institution are added and edited in the System Configuration module of Specify; <em>System &gt; Collection Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration. This tool is available to Administrators only.</p>
+<p>The   Divisions, Disciplines and Collections for each institution are added and edited in the System Configuration module of Specify;<em>Configuration at System &gt; System Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration. This tool is available to Administrators only.</p>
 <p>Collection information in Specify 6 databases is also organized at these institution levels to meet requirements for data integrity and data sharing among collections. Some data elements are commonly shared among all collections within an institution, while others are shared only among collections in the same taxonomic discipline, i.e. &quot;at the Discipline level&quot; in Specify. Before creating the institution levels it is imperative that an administrator also understand the data that is held at each level to create the correct setup.</p>
 <p align="center"><img src="../../images/disciplines.png" width="827" height="233" /> </p>
 <p>When using a database that was created using the Wizard any additional Division levels should be added first, then Discipline and then Collection. Each  is added at the level above it. For instance, Divisions are added within the Institution form. </p>
 <p>&nbsp;</p>
 <h3><a name="edit_institution" id="edit_institution"></a>Edit Institution</h3>
 <blockquote>
-  <p><a name="security_on" id="security_on"></a>Information for the Institution is edited in the Configuration tool; <em>System &gt; Collection Setup &gt; Configuration</em>. There may only be one Instituation for each instance of Specify. </p>
+  <p><a name="security_on" id="security_on"></a>Information for the Institution is edited in the Configuration tool;<em>Configuration at System &gt; System Setup &gt; Configuration</em>. There may only be one Instituation for each instance of Specify. </p>
   <p>Open the Institution form by clicking <img src="../../images/institution_16.png" width="16" height="16" /> Institution on the side bar. </p>
   <ul>
     <li><strong>Name</strong> is the official name of the institution.</li><br />
@@ -59,7 +59,7 @@
 <p>&nbsp;</p>
 <h4><strong><a name="add_division" id="add_division"></a>Add/Edit  Divisions</strong></h4>
 <blockquote>
-  <p>New divisions, disciplines and collections are added using the Configuration tool; <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
+  <p>New divisions, disciplines and collections are added using the Configuration tool;<em>Configuration at System &gt; System Setup &gt; Configuration</em>.</p>
   <p>Divisions are added within a subform on the Institution form, and can be edited either from the institution subform or the division form. </p>
   <p>1. Click the <img src="../../images/institution_16.png" width="16" height="16" /> <em>Institution</em> button on the side bar of the Configuration tool to edit the institution or add a division.</p>
   <p>At least one division should appear in the division sub form. </p>
@@ -75,20 +75,20 @@
   <blockquote>
     <p align="center"><img src="../../images/window8.png" alt="8"/></p>
     <p align="center" class="imgcaption">Create a Division</p>
-    <p align="left"><strong><u>Division</u></strong></p>
+    <p align="left"><strong><u><a name="div_enter_division" id="div_enter_division"></a>Division</u></strong></p>
     <p align="left">This window is used to create a single division within your institutional hierarchy. Additional divisions can be added later from within Specify.</p>
     <p align="left">The <strong>Name</strong> will appear on the division form and  can be queried and used in reports. A division is used to collectively name similar collections e.g. the Division of Paleontology may include Vertebrate Paleontology, Invertebrate Paleontology and Paleobotany collection. The Name is a field within the Specify database and is displayed on the Institution form. It can be edited, queried and used in reports. </p>
     <p align="left">The <strong>Code</strong> can be a short name, acronym, codon or abbreviation. If your division does not have a code, put in a placeholder, (this is a required field), this can be edited at a later date. Division codes are sometimes required for web services.</p>
     <p align="left" class="style1">&nbsp;</p>
     <p align="center" class="style1"><img src="../../images/window9.png" alt="9"/></p>
     <p align="center" class="imgcaption">Choose a Discipline Type</p>
-    <p align="left"><strong><u>Discipline</u></strong></p>
+    <p align="left"><strong><u><a name="div_choose_discipline_type" id="div_choose_discipline_type"></a>Discipline</u></strong></p>
     <p align="left">Choose a taxonomic <strong>Discipline Type</strong> from the drop-down menu. Specify uses this information to load the correct default data entry forms, trees and schema (tables and fields) based on the predefined disciplines within Specify.</p>
     <p align="left">The <strong>Name</strong> will display within Specify and can be any user specific variation of the discipline type. It can be edited, queried and used in reports. </p>
     <p align="center">&nbsp;</p>
     <p align="center"><img src="../../images/window10.png" alt="10" width="430" height="328" /></p>
     <p align="center" class="imgcaption">Configure the Taxon Tree</p>
-    <h4 align="left"><u>Taxon Tree</u></h4>
+    <h4 align="left"><u><a name="div_configure_taxon_tree" id="div_configure_taxon_tree"></a>Taxon Tree</u></h4>
     <p align="left">This table will create the tree definition for the taxon tree. The taxon tree operates at the discipline level and can be used by all collections within the discipline you created in the last window. Nodes to the taxon tree can be added later in the Wizard as well as from within Specify.</p>
     <ul>
       <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. </li><br />
@@ -108,7 +108,7 @@
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/window11.png" alt="11"/></p>
     <p align="center" class="imgcaption">Preload Taxon Records/Nodes</p>
-    <h4><u>Pre-Load Taxon Authority File</u></h4>
+    <h4><u><a name="div_preload_taxon" id="div_preload_taxon"></a>Pre-Load Taxon Authority File</u></h4>
     <p>The  Wizard not only defines the taxon tree but also allows loading of an authority file for the discipline you are creating. <span class="style2">Authority files were created using data from the </span> Catalog of Life Project for some of the disciplines within Specify. If this window does not appear, there are no existing authority files for your chosen discipline. </p>
     <p>If  you choose to load the data into your tree the Taxon tree  will be populated with hundreds of taxon nodes and all associated data. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
     <p>Please note that loading the Taxon tree will also affect the tree definition. If you load the provided Taxon authority file for your discipline the accompanying tree definition may include Levels that were not defined by you in the previous window, but are necessary to include all the predefined Taxon information.</p>
@@ -122,7 +122,7 @@
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/window12.png" alt="12"/></p>
     <p align="center" class="imgcaption">Configure and Load Geography Tree</p>
-    <h4 align="left"><u>Geography</u> </h4>
+    <h4 align="left"><u><a name="div_configure_geography_tree" id="div_configure_geography_tree"></a>Geography</u> </h4>
     <p align="left">The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. Nodes to the Geography tree can be added later in the Wizard as well as from within Specify</p>
     <ul>
       <ul>
@@ -146,13 +146,13 @@
     <p class="style2">&nbsp;</p>
     <p align="center" class="style2"><img src="../../images/window13.png" alt="13"/></p>
     <p align="center" class="imgcaption">Create a Collection</p>
-    <p align="left"><u><strong>Collection</strong></u><strong> </strong></p>
+    <p align="left"><u><strong><a name="div_create_collection" id="div_create_collection"></a>Collection</strong></u><strong> </strong></p>
     <p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a single Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
     <p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data exports and web interfaces in upcoming releases of Specify.</p>
     <p align="left">&nbsp;</p>
     <p align="center"><img src="../../images/window14.png" alt="14"/></p>
     <p align="center" class="imgcaption">Create a Catalog Number Format</p>
-    <h4><u>Catalog Number Format</u></h4>
+    <h4><u><a name="div_create_catalog_number" id="div_create_catalog_number"></a>Catalog Number Format</u></h4>
     <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
     <p>Catalog Numbers can either be unique to each Collection, shared by several collections or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
     <p>Several formats are also available within this drop-down menu list:</p>
@@ -179,7 +179,7 @@
     <p align="center">&nbsp;</p>
     <p align="center"><img src="../../images/window5.png" alt="5"/></p>
     <p align="center" class="imgcaption">Create an Accession Number Format</p>
-    <h4 align="left"><u>Accession Numbers</u></h4>
+    <h4 align="left"><u><a name="div_ass_number" id="div_ass_number"></a>Accession Numbers</u></h4>
     <blockquote>
       <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions globally your  accession number format will already be the same for each division and this screen will be inactive. If this is the case, simply click on the <em>Next</em> button to proceed in the Wizard.</p>
     </blockquote>
@@ -201,13 +201,14 @@
     <p align="left">&nbsp;</p>
     <p align="center"><img src="../../images/window_complete.png" alt="complete"/></p>
     <p align="center" class="imgcaption">Summary Window</p>
+<h4 align="left"><a name="div_summary" id="div_summary"></a><u>Summary</u></h4>
     <p align="left">Congratulations! You have finished the Specify Setup Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
   </blockquote>
 </blockquote>
 <p>&nbsp;</p>
 <h4><strong><a name="add_discipline" id="add_discipline"></a> Add/Edit Disciplines</strong></h4>
 <blockquote>
-  <p>New Divisions, Disciplines and Collections are added using the Configuration tool; <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
+  <p>New Divisions, Disciplines and Collections are added using the Configuration tool;<em>Configuration at System &gt; System Setup &gt; Configuration</em>.</p>
   <p>Click the <img src="../../images/division_16.png" width="16" height="16" /> <em>Division</em> button on the side bar. The Divison form includes a Discipline subform for adding or editing a discipline.</p>
   <p>Edit the discipline information on the division subform:</p>
   <ul>
@@ -225,13 +226,13 @@
   <blockquote>
     <p align="center" class="style1"><img src="../../images/window9.png" alt="9"/></p>
     <p align="center" class="imgcaption">Choose a Discipline Type</p>
-    <p align="left"><strong><u>Discipline</u></strong></p>
+    <p align="left"><strong><u><a name="dis_choose_discipline_type" id="dis_choose_discipline_type"></a>Discipline</u></strong></p>
     <p align="left">Choose a taxonomic <strong>Discipline Type</strong> from the drop-down menu. Specify uses this information to load the correct default data entry forms, trees and schema (tables and fields) based on the predefined disciplines within Specify.</p>
     <p align="left">The <strong>Name</strong> will display within Specify and can be any user specific variation of the discipline type. It can be edited, queried and used in reports. </p>
     <p align="center">&nbsp;</p>
     <p align="center"><img src="../../images/window10.png" alt="10" width="430" height="328" /></p>
     <p align="center" class="imgcaption">Configure the Taxon Tree</p>
-    <h4 align="left"><u>Taxon Tree</u></h4>
+    <h4 align="left"><u><a name="dis_configure_taxon_tree" id="dis_configure_taxon_tree"></a>Taxon Tree</u></h4>
     <p align="left">This table will create the tree definition for the taxon tree. The taxon tree operates at the discipline level and can be used by all collections within the discipline you created in the last window. Nodes to the taxon tree can be added later in the Wizard as well as from within Specify.</p>
     <ul>
       <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. </li><br />
@@ -249,7 +250,7 @@
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/window11.png" alt="11"/></p>
     <p align="center" class="imgcaption">Preload Taxon Records/Nodes</p>
-    <h4><u>Pre-Load Taxon Authority File</u></h4>
+    <h4><u><a name="dis_preload_taxon" id="dis_preload_taxon"></a>Pre-Load Taxon Authority File</u></h4>
     <p>The  Wizard not only defines the taxon tree but also allows loading of an authority file for the discipline you are creating. <span class="style2">Authority files were created using data from the </span> Catalog of Life Project for some of the disciplines within Specify. If this window does not appear, there are no existing authority files for your chosen discipline. </p>
     <p>If  you choose to load the data into your tree the Taxon tree  will be populated with hundreds of taxon nodes and all associated data. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
     <p>Please note that loading the Taxon tree will also affect the tree definition. If you load the provided Taxon authority file for your discipline the accompanying tree definition may include Levels that were not defined by you in the previous window, but are necessary to include all the predefined Taxon information.</p>
@@ -263,7 +264,7 @@
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/window12.png" alt="12"/></p>
     <p align="center" class="imgcaption">Configure and Load Geography Tree</p>
-    <h4 align="left"><u>Geography</u> </h4>
+    <h4 align="left"><u><a name="dis_configure_geography_tree" id="dis_configure_geography_tree"></a>Geography</u> </h4>
     <p align="left">The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. Nodes to the Geography tree can be added later in the Wizard as well as from within Specify</p>
   </blockquote>
     <ul>
@@ -290,13 +291,13 @@
       <p class="style2">&nbsp;</p>
       <p align="center" class="style2"><img src="../../images/window13.png" alt="13"/></p>
       <p align="center" class="imgcaption">Create a Collection</p>
-      <p align="left"><u><strong>Collection</strong></u><strong> </strong></p>
+      <p align="left"><u><strong><a name="dis_create_collection" id="dis_create_collection"></a>Collection</strong></u><strong> </strong></p>
       <p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a single Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
       <p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data exports and web interfaces in upcoming releases of Specify.</p>
       <p align="left">&nbsp;</p>
       <p align="center"><img src="../../images/window14.png" alt="14"/></p>
       <p align="center" class="imgcaption">Create a Catalog Number Format</p>
-      <h4><u>Catalog Number Format</u></h4>
+      <h4><u><a name="dis_create_catalog_number" id="dis_create_catalog_number"></a>Catalog Number Format</u></h4>
       <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
       <p>Catalog Numbers can either be unique to each Collection, shared by several collections or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
       <p>Several formats are also available within this drop-down menu list:</p>
@@ -328,7 +329,7 @@
       <p align="center">&nbsp;</p>
       <p align="center"><img src="../../images/window5.png" alt="5"/></p>
       <p align="center" class="imgcaption">Create an Accession Number Format</p>
-      <h4 align="left"><u>Accession Numbers</u></h4>
+      <h4 align="left"><u><a name="dis_ass_number" id="dis_ass_number"></a>Accession Numbers</u></h4>
       <blockquote>
         <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions globally your  accession number format will already be the same for each division and this screen will be inactive. If this is the case, simply click on the <em>Next</em> button to proceed in the Wizard.</p>
       </blockquote>
@@ -352,12 +353,13 @@
       <p align="left">&nbsp;</p>
       <p align="center"><img src="../../images/window_complete.png" alt="complete"/></p>
       <p align="center" class="imgcaption">Summary Window</p>
+<h4 align="left"><a name="dis_summary" id="dis_summary"></a><u>Summary</u></h4>
       <p align="left">Congratulations! You have finished the Specify Setup Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
-    </blockquote>
+  </blockquote>
 </blockquote>
 <p><strong><a name="add_collection" id="add_collection"></a>Add/Edit Collections</strong></p>
 <blockquote>
-  <p>New Divisions, Disciplines and Collections are added using the Configuration tool; <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
+  <p>New Divisions, Disciplines and Collections are added using the Configuration tool;<em>Configuration at System &gt; System Setup &gt; Configuration</em>.</p>
   <p> Click the <img src="../../images/discipline_16.png" width="16" height="16" /> <em>Discipline</em> button on the side bar to edit a Discipline or add a Collection.</p>
   <p>The Discipline information will appear at the top of the form with a Collections sub form underneath. The new Collection will be added in the Discipline that is currently displayed in the Workspace. Use the navigation control at the bottom of the window to step to the  desired Discipline before adding the new Collection.</p>
   <p align="center"><img src="../../images/next_bar.png" width="174" height="25" /></p>
@@ -368,13 +370,13 @@
   <blockquote>
     <p align="center" class="style2"><img src="../../images/window13.png" alt="13"/></p>
     <p align="center" class="imgcaption">Create a Collection</p>
-    <p align="left"><u><strong>Collection</strong></u><strong> </strong></p>
+    <p align="left"><u><strong><a name="col_create_collection" id="col_create_collection"></a>Collection</strong></u><strong> </strong></p>
     <p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a single Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
     <p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data exports and web interfaces in upcoming releases of Specify.</p>
     <p align="left">&nbsp;</p>
     <p align="center"><img src="../../images/window14.png" alt="14"/></p>
     <p align="center" class="imgcaption">Create a Catalog Number Format</p>
-    <h4><u>Catalog Number Format</u></h4>
+    <h4><u><a name="col_create_catalog_number" id="col_create_catalog_number"></a>Catalog Number Format</u></h4>
     <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
     <p>Catalog Numbers can either be unique to each Collection, shared by several collections or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
     <p>Several formats are also available within this drop-down menu list:</p>
@@ -402,7 +404,7 @@
     <p align="center">&nbsp;</p>
     <p align="center"><img src="../../images/window5.png" alt="5"/></p>
     <p align="center" class="imgcaption">Create an Accession Number Format</p>
-    <h4 align="left"><u>Accession Numbers</u></h4>
+    <h4 align="left"><u><a name="col_ass_number" id="col_ass_number"></a>Accession Numbers</u></h4>
     <blockquote>
       <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions globally your  accession number format will already be the same for each division and this screen will be inactive. If this is the case, simply click on the <em>Next</em> button to proceed in the Wizard.</p>
     </blockquote>
@@ -424,6 +426,8 @@
     <p align="left">&nbsp;</p>
     <p align="center"><img src="../../images/window_complete.png" alt="complete"/></p>
     <p align="center" class="imgcaption">Summary Window</p>
+    <p align="left">&nbsp;</p>
+<h4 align="left"><a name="col_summary" id="col_summary"></a>Summary</h4>
     <p align="left">Congratulations! You have finished the Specify Setup Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
   </blockquote>
 </blockquote>
