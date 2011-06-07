@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -58,6 +59,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.DateConverter;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Triple;
 
@@ -78,6 +80,7 @@ public class Scriptlet extends JRDefaultScriptlet
     
     
     protected UIFieldFormatterIFace catalogFormatter = AppContextMgr.getInstance().getFormatter("CollectionObject", "CatalogNumber");
+    DateConverter dateConverter = new DateConverter();
     
     protected final static String stdFormat = "yyyy-MM-dd";
     protected HashMap<String, SimpleDateFormat> dateFormatHash = new HashMap<String, SimpleDateFormat>();
@@ -691,6 +694,18 @@ public class Scriptlet extends JRDefaultScriptlet
             loanLength = String.format(UIRegistry.getResourceString("SCRPLT_MON_LEN"), monthCount);
         }
         return loanLength;
+    }
+    
+    public String dateStringDifference(String startDate, String endDate)
+    {
+    	try
+    	{
+    		return dateDifference(new java.sql.Date(dateConverter.convert(startDate).getTimeInMillis()),
+    			new java.sql.Date(dateConverter.convert(endDate).getTimeInMillis()));
+    	} catch (ParseException pex)
+    	{
+    		return UIRegistry.getResourceString("NA");
+    	}
     }
     
     /**
