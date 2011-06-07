@@ -207,6 +207,7 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -214,7 +215,6 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -243,6 +243,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final String sendStatsPrefName    = "usage_tracking.send_stats";
     private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
+    private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 1024;
@@ -1513,45 +1514,56 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void checkForUpdates()
     {
+        String  errKey     = null;
+        String  updatePath = UIRegistry.getResourceString("UPDATE_PATH");
         try
         {
-            UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
-                                                                           ApplicationDisplayMode.UNATTENDED);
-
-            UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
-
-            if (entry != null)
+            UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath, ApplicationDisplayMode.UNATTENDED);
+            if (updateDesc != null)
             {
-                Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$
-                        getResourceString("Specify.SKIP")  //$NON-NLS-1$
-                      };
-                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                             getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()),  //$NON-NLS-1$
-                                                             getResourceString("Specify.UPDATE_AVAIL_TITLE"),  //$NON-NLS-1$
-                                                             JOptionPane.YES_NO_CANCEL_OPTION,
-                                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                if (userChoice == JOptionPane.YES_OPTION)
+                UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
+    
+                if (entry != null)
                 {
-                    if (!doExit(false))
+                    Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$
+                                         getResourceString("Specify.SKIP")  //$NON-NLS-1$
+                                       };
+                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                 getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()),  //$NON-NLS-1$
+                                                                 getResourceString("Specify.UPDATE_AVAIL_TITLE"),  //$NON-NLS-1$
+                                                                 JOptionPane.YES_NO_CANCEL_OPTION,
+                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (userChoice == JOptionPane.YES_OPTION)
+                    {
+                        if (!doExit(false))
+                        {
+                            return;
+                        }
+                        
+                    } else
                     {
                         return;
                     }
-                    
                 } else
                 {
-                    return;
+                    errKey = "Specify.NO_UPDATE_AVAIL";
                 }
             } else
             {
-                UIRegistry.showLocalizedError("Specify.NO_UPDATE_AVAIL");
-                return ;
+                errKey = UPDATE_CHK_ERROR;
             }
             
         } catch (Exception ex)
         {
+            errKey = UPDATE_CHK_ERROR;
             ex.printStackTrace();
             log.error(ex);
-            UIRegistry.showLocalizedError("Specify.UPDATE_CHK_ERROR");
+        }
+        
+        if (errKey != null)
+        {
+            log.error(String.format("Update Error: %s - %s", errKey, updatePath));
+            UIRegistry.showLocalizedError(errKey);
             return;
         }
         
