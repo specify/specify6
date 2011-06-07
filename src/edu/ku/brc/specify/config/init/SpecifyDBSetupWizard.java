@@ -312,13 +312,19 @@ public class SpecifyDBSetupWizard extends JPanel
         if (wizardType == WizardType.Institution ||
             wizardType == WizardType.Division)
         {
-            panels.add(new DivisionPanel("DIV", 
-                "ENTER_DIV_INFO",
-                getHelpCntxt("wizard_enter_division"),
-                new String[] { "NAME",    "ABBREV"}, 
-                new String[] { "divName", "divAbbrev"}, 
-                new Integer[] { 255,       64}, 
-                nextBtn, backBtn, true));
+            DivisionPanel divPanel = new DivisionPanel("DIV", 
+                                            "ENTER_DIV_INFO",
+                                            getHelpCntxt("wizard_enter_division"),
+                                            new String[] { "NAME",    "ABBREV"}, 
+                                            new String[] { "divName", "divAbbrev"}, 
+                                            new Integer[] { 255,       64}, 
+                                            nextBtn, backBtn, true);
+            panels.add(divPanel);
+            
+            if (wizardType == WizardType.Division)
+            {
+                HelpMgr.registerComponent(helpBtn, divPanel.getHelpContext());
+            }
         }
         
         if (wizardType != WizardType.Institution)
@@ -349,6 +355,12 @@ public class SpecifyDBSetupWizard extends JPanel
             nextBtn.setEnabled(false);
             disciplinePanel = new DisciplinePanel(getHelpCntxt("wizard_choose_discipline_type"), nextBtn, backBtn);
             panels.add(disciplinePanel);
+            
+            if (wizardType == WizardType.Discipline)
+            {
+                HelpMgr.registerComponent(helpBtn, disciplinePanel.getHelpContext());
+            }
+
 
             taxonTDPanel = new TreeDefSetupPanel(TaxonTreeDef.class, 
                                                  getResourceString("Taxon"), 
@@ -373,13 +385,19 @@ public class SpecifyDBSetupWizard extends JPanel
             panels.add(geoTDPanel);
         }
 
-        panels.add(new CollectionPanel("COLLECTION", 
-                    "ENTER_COL_INFO",
-                    getHelpCntxt("wizard_create_collection"),
-                    new String[] { "NAME",     "PREFIX", }, 
-                    new String[] { "collName", "collPrefix", }, 
-                    new Integer[] { 50,        50}, 
-                    nextBtn, backBtn, true));
+        CollectionPanel colPanel = new CollectionPanel("COLLECTION", 
+                                                "ENTER_COL_INFO",
+                                                getHelpCntxt("wizard_create_collection"),
+                                                new String[] { "NAME",     "PREFIX", }, 
+                                                new String[] { "collName", "collPrefix", }, 
+                                                new Integer[] { 50,        50}, 
+                                                nextBtn, backBtn, true);
+        panels.add(colPanel);
+        
+        if (wizardType == WizardType.Collection)
+        {
+            HelpMgr.registerComponent(helpBtn, colPanel.getHelpContext());
+        }
         
         catNumPicker = new FormatterPickerPanel("CATNOFMT", getHelpCntxt("wizard_create_catalog_number"), nextBtn, backBtn, true, null);
         panels.add(catNumPicker);
@@ -613,16 +631,36 @@ public class SpecifyDBSetupWizard extends JPanel
     }
     
     /**
-     * @param hContext
-     * @return
+     * Returns the proper help context depedning on how the wizrd was started.
+     * @param hContext the 'base' key for the help context
+     * @return the full help context.
      */
     private String getHelpCntxt(final String hContext)
     {
-        return (UIRegistry.isEmbedded() ? "ezdb_" : "") + hContext;
+        String prefix = "";
+        switch (wizardType)
+        {
+            case Institution:
+                prefix = UIRegistry.isEmbedded() ? "ezdb_" : "";
+                break;
+                
+            case Division:
+                prefix = "div_";
+                break;
+                
+            case Discipline:
+                prefix = "dis_";
+                break;
+                
+            case Collection:
+                prefix = "col_";
+                break;
+        }
+        return prefix + hContext;
     }
     
     /**
-     * @return
+     * @return the icon name for the icon for the panel.
      */
     public static String getIconName()
     {
