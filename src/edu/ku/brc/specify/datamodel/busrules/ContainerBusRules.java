@@ -23,6 +23,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.queryForInts;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -35,10 +36,12 @@ import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
@@ -149,6 +152,29 @@ public class ContainerBusRules extends BaseBusRules
             }
         }
         return true;
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(final Object dataObjArg,
+                           final DataProviderSessionIFace sessionArg,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        reasonList.clear();
+        
+        if (deletable != null && dataObjArg instanceof FormDataObjIFace && ((FormDataObjIFace)dataObjArg).getId() != null)
+        {
+            Container container = (Container)dataObjArg;
+            if (container.getChildren().size() > 0 ||
+                container.getCollectionObjects().size() > 0 ||
+                container.getCollectionObjectKids().size() > 0)
+            {
+                showLocalizedMsg("WARNING", "CONTAINER_KIDS_ERROR");
+            }
+        }
     }
     
     /* (non-Javadoc)
