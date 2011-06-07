@@ -154,8 +154,8 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
     		String      fieldName     = fieldInfo.getName();
     		String      joins	      = tableName.equals("collectionobject")? "" : getJoins();
     		String      sql           = "SELECT " + tableName + "." + fieldName + " " + 
-    					                "FROM " + tableName + joins + " " +
-    					                (colMemIdField != null ? ("WHERE " + tableName + ".CollectionMemberID  = COLMEMID") : "");
+    					                "FROM " + tableName + joins + " WHERE " + fieldName + " IS NOT NULL " +
+    					                (colMemIdField != null ? ("AND " + tableName + ".CollectionMemberID = COLMEMID") : "");
     		sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
     		//System.out.println(sql + "\n");
     		return sql;

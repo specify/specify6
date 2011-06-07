@@ -43,6 +43,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -175,16 +176,16 @@ public class SpecifyDeleteHelper
     }
     
     /**
-     * @param worker
+     * @param workerArg
      * @param title (already localized)
      * @return a modal dialog showing the progress
      */
-    public JDialog initProgress(final SwingWorker<?, ?> worker,
+    public JDialog initProgress(final SwingWorker<?, ?> workerArg,
                                 final String title)
     {
-        this.worker = worker;
+        this.worker = workerArg;
         
-        if (worker != null)
+        if (workerArg != null)
         {
             JDialog dialog = new JDialog((Dialog)null, true);
             
@@ -199,10 +200,10 @@ public class SpecifyDeleteHelper
             pb.setDefaultDialogBorder();
             dialog.setContentPane(pb.getPanel());
             
-            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             dialog.pack();
             dialog.setSize(500, 150);
-            worker.addPropertyChangeListener(new SwingWorkerCompletionWaiter(dialog));
+            workerArg.addPropertyChangeListener(new SwingWorkerCompletionWaiter(dialog));
             return dialog;
         }
         return null;
@@ -258,8 +259,6 @@ public class SpecifyDeleteHelper
                                       final int         id,
                                       final boolean     doDeleteId) throws SQLException
     {
-        debugUpdate  = true;
-        //debug = true;
         StackItem root      = new StackItem(null, null, null);
         DBTableInfo tblInfo = tblMgr.getByShortClassName(cls.getSimpleName());
         

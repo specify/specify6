@@ -743,6 +743,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 updateUIEnabled();
                 hookFieldsTblSelectionListener();
                 fieldsPanel.getEditBtn().setEnabled(false);
+                fieldsPanel.getDelBtn().setEnabled(false);
             }
         };
     }
@@ -937,6 +938,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 if (StringUtils.isEmpty(txtFld.getText()))
                 {
                     setError(getResourceString(errMsgKey), false); 
+                    updateUIEnabled(); 
                     
                 } else if (selectedFormat == null)
                 {
@@ -1015,7 +1017,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         // If we have a field formatter sampler, then we can check if current format 
         // invalidates an existing value in database.
-        if (fieldFormatterSampler != null && selectedFormat != null) 
+        if (fieldFormatterSampler != null && selectedFormat != null && selectedFormat.getFields().size() > 0) 
         {
             try 
             {
