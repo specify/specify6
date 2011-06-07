@@ -66,10 +66,10 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.af.ui.db.TextFieldWithQuery;
+import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataObjectSettable;
 import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
@@ -596,6 +596,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
+                    dataObj     = (FormDataObjIFace)ValComboBoxFromQuery.this.getValue();
                     currentMode = MODE.NewAndNotEmpty;
                     textWithQuery.setIgnoreFocusLost(true);
                     createEditFrame(true, true, false);
