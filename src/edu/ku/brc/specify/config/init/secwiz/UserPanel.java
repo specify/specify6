@@ -748,14 +748,6 @@ public class UserPanel extends BaseSetupPanel
     /**
      * 
      */
-    private void loseAccess()
-    {
-        
-    }
-
-    /**
-     * 
-     */
     private void doUserSelected()
     {
         int index = userTable.getSelectedRow();
@@ -779,10 +771,13 @@ public class UserPanel extends BaseSetupPanel
     @Override
     public void aboutToLeave()
     {
-        String msg = UIRegistry.getResourceString("MSTR_SAVE_CHANGES");
-        if (UIRegistry.askYesNoLocalized("SAVE", "EXIT", msg, "SAVE") == JOptionPane.YES_OPTION)
+        if (userModel.isChanged())
         {
-            saveUserData();
+            String msg = UIRegistry.getResourceString("MSTR_SAVE_CHANGES");
+            if (UIRegistry.askYesNoLocalized("SAVE", "EXIT", msg, "SAVE") == JOptionPane.YES_OPTION)
+            {
+                saveUserData();
+            }
         }
         super.aboutToLeave();
     }

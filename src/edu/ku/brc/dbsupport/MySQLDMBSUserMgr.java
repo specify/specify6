@@ -601,7 +601,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             {
                 for (int i=0;i<permList.length;i++)
                 {
-                    if (rs.getString(1).equals(yes))
+                    if (rs.getString(i+1).equals(yes))
                     {
                         perms |= permList[i];
                     }
@@ -639,8 +639,6 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             // Check permissions for the user against the database
             String sql = pre + " FROM mysql.db WHERE User = ? AND Db = ?";
             int perms = getPerms(permList, sql, username, dbName);
-            
-            //log.debug("PERMS: "+perms);
             
             if (perms == PERM_NONE)
             {

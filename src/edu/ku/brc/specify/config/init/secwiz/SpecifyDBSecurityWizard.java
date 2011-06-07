@@ -26,8 +26,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.prefs.BackingStoreException;
@@ -39,7 +37,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -47,9 +44,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
@@ -58,7 +53,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
 import edu.ku.brc.specify.config.init.UserInfoPanel;
-import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
@@ -391,36 +385,6 @@ public class SpecifyDBSecurityWizard extends JPanel
     }
     
     /**
-     * @param fmt
-     * @param prefix
-     * @param fileName
-     * @return
-     */
-    protected boolean saveFormatters(final UIFieldFormatterIFace fmt, final String prefix, final String fileName)
-    {
-        if (fmt != null)
-        {
-            StringBuilder sb = new StringBuilder();
-            fmt.toXML(sb);
-            
-            String path = UIRegistry.getAppDataDir() + File.separator + (prefix != null ? (prefix + "_") : "")  + fileName;
-            try
-            {
-                FileUtils.writeStringToFile(new File(path), sb.toString());
-                return true;
-                
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-        } else
-        {
-            return true; // null fmtr doesn't mean an error
-        }
-        return false;
-    }
-    
-    /**
      * Get the values form the panels.
      */
     protected void configSetup()
@@ -488,40 +452,6 @@ public class SpecifyDBSecurityWizard extends JPanel
     public Properties getProps()
     {
         return props;
-    }
-    
-    /**
-     * 
-     */
-    public void processDataForNonBuild()
-    {
-        saveFormatters(); 
-    }
-    
-    /**
-     * 
-     */
-    protected void saveFormatters()
-    {
-        Object catNumFmtObj = props.get("catnumfmt");
-        Object accNumFmtObj = props.get("accnumfmt");
-        
-        String collectionName = props.getProperty("collName");
-        
-        Institution inst        = AppContextMgr.getInstance().getClassObject(Institution.class);
-        boolean     isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
-        
-        UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
-        UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
-        
-        if (catNumFmt != null)
-        {
-            saveFormatters(catNumFmt, collectionName, "catnumfmt.xml");
-        }
-        if (accNumFmt != null)
-        {
-            saveFormatters(accNumFmt, isAccGlobal ? null : collectionName, "accnumfmt.xml");
-        }
     }
 
     /**

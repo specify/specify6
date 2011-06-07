@@ -361,6 +361,8 @@ public class MasterLoginPanel extends GenericFormPanel
             List<String> allDBs = getSpecifyDatabases(mgr, mgr.getDatabaseList());
             
             HashSet<String> hash = new HashSet<String>(dbNamesForMaster);
+            // Look for Specify Databases that the Master doesn't have access to
+            // dbNameList will contain that list of Specify databases
             for (String dbNm : allDBs)
             {
                 if (!hash.contains(dbNm) && mgr.doesDBExists(dbNm))
@@ -368,7 +370,7 @@ public class MasterLoginPanel extends GenericFormPanel
                     try
                     {
                         mgr.getConnection().setCatalog(dbNm);
-                        if ( mgr.doesDBHaveTable("specifyuser"))
+                        if (mgr.doesDBHaveTable("specifyuser"))
                         {
                             dbNameList.add(dbNm);
                         }
@@ -387,9 +389,12 @@ public class MasterLoginPanel extends GenericFormPanel
                 
             } else
             {
+                // Now check all the databases that the Mast has access to to make sure 
+                // they have the correct permissions.
                 for (String dbn : dbNamesForMaster)
                 {
                     int perms = mgr.getPermissions(saUserName, dbn);
+                    //System.out.println(dbn+" => "+perms+"  "+DBMSUserMgr.PERM_ALL_BASIC+" ("+(perms & DBMSUserMgr.PERM_ALL_BASIC)+") => "+((perms & DBMSUserMgr.PERM_ALL_BASIC) != DBMSUserMgr.PERM_ALL_BASIC));
                     if ((perms & DBMSUserMgr.PERM_ALL_BASIC) != DBMSUserMgr.PERM_ALL_BASIC)
                     {
                         badDBs.add(dbn);
@@ -404,7 +409,7 @@ public class MasterLoginPanel extends GenericFormPanel
                     pb.add(UIHelper.createScrollPane(list), cc.xy(1, 3));
                     
                     pb.setDefaultDialogBorder();
-                    CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), "WARNING", true, pb.getPanel());
+                    CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), getResourceString("WARNING"), true, pb.getPanel());
                     dlg.setOkLabel(getResourceString("SEC_FIX_PERMS"));
                     UIHelper.centerAndShow(dlg);
                     doFix = !dlg.isCancelled();
