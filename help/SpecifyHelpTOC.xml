@@ -175,14 +175,14 @@
 			<tocitem text="Schema Mapping" target="schema_mapping" />
 			<tocitem text="Data Exporter Application" target="schema_tool" />
 		</tocitem>
-		<tocitem text="Separate Specify Applications" target="export_data">
+		<tocitem text="Separate Specify Applications" target="separate_apps">
 			<tocitem text="Specify Setup Wizard" target="wizard">
 				<tocitem text="Field Format Editor" target="field_format" />
 			</tocitem>
 			<tocitem text="Specify EZDB Setup Wizard" target="ezdb_wizard" />
 			<tocitem text="Data Exporter" target="schema_tool" />
 			<tocitem text="File Splitter" target="slicer" />
-			<tocitem text="Security Wizard" target="security_wiz1" />
+			<tocitem text="Security Wizard" target="security_wiz" />
 		</tocitem>
 		<tocitem text="WorkBench" target="WorkbenchOverview">
 			<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
