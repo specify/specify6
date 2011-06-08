@@ -119,13 +119,11 @@ username and password, the Security Wizard will allow you to reset them.</p>
 <p align="center" class="imgcaption">Specify Databases and Users</p>
 <blockquote>
   <p>The new screen displays three panels of information:</p>
-</blockquote>
-<ul>
-  <li>Accessible Databases (top left)</li>
-  <li>Inaccessible Databases (top right)</li>
-  <li>Users of 'Current Database' (bottom half)</li>
-</ul>
-<blockquote>
+  <ol>
+    <li>Accessible Databases (top left)</li>
+    <li>Inaccessible Databases (top right)</li>
+    <li>Users of 'Current Database' (bottom half)</li>
+  </ol>
   <p><strong>Accessible Databases</strong> displays list of all the databases that are accessible using the current Master username and password.</p>
   <p>Select a database from the list to open a list of users for the database in the bottom panel (3).</p>
   <p>Select a database from the list and click the <img src="../../images/Map16x16.png" alt="move" width="16" height="16" /> to remove it from the list of Accessible Databases and into the Inaccessible Databases list. </p>
@@ -146,20 +144,38 @@ username and password, the Security Wizard will allow you to reset them.</p>
   </blockquote>
 </blockquote>
 <h3>&nbsp;</h3>
-<h3>Reconfigure the Master Key for a User</h3>
 <blockquote>
-  <p>The Master credentials will be reset for any databases that are moved from the Inaccessible Databases panel (2) into the Accessible Databases panel (1). The users that access the database will need to have a new Master Key configured and sent to them so they may login to Specify. </p>
-  <p>Be sure that the correct database is selected in Panel 1.</p>
-  <p>Click on the desired username to select the user. </p>
-  <p>Select all the values (text) in the Password text box and delete it. At this time the column labeled 'Master Key' indicates that the Master Key is on the user's machine. Master key information is stored on the local machine and there is no way for this tool to retrieve this information and show it here; therefore, the Master Key must be reconfigured.</p>
-  <p>Type in a new password and	press the 'tab' key. </p>
-  <p>Click the <em><strong>Copy Master Key</strong></em> button at the bottom of this screen to copy the master key into the computers clipboard. You can then paste this into an email and send it to the user. The user will NOT be able to <a href="../Dialogs/Login.html#paste_master">login</a> without this new master key.</p>
+  <h4><u>Reconfigure the Master Key for a User</u></h4>
+  <blockquote>
+    <p>The Master credentials will be reset for any databases that are moved from the Inaccessible Databases panel (2) into the Accessible Databases panel (1). The users that access the database will need to have a new Master Key configured and sent to them so they can login to Specify. </p>
+    <ol>
+      <li>Be sure that the correct database is selected in Panel 1.</li><br />
+      <li>Click on the desired username to select the user. </li><br />
+      <li>Select all the values (text) in the Password text box and delete it. At this time the column labeled 'Master Key' indicates that the Master Key is on the user's machine. Master key information is stored on the local machine and there is no way for this tool to retrieve this information and show it here; therefore, the Master Key must be reconfigured.</li><br />
+      <li>Type in a new password and	press the 'tab' key. </li><br />
+      <li>Click the <em><strong>Copy Master Key</strong></em> button at the bottom of this screen to copy the master key into the computers clipboard. You can then paste this into an email and send it to the user. The user will NOT be able to <a href="../Dialogs/Login.html#paste_master">login</a> without this new master key.</li>
+    </ol>
+  </blockquote>
 </blockquote>
 <p>&nbsp;</p>
-<h3>Other Buttons</h3>
 <blockquote>
-  <p>Click the <em><strong>Show Summary</strong></em> button to show a summary of all the users in the currently selected database as well as their user information.</p>
-  <p>Click the <em><strong>Print</strong></em> button to print a summary of all the users in the currently selected database as well as their user information.</p>
+  <h4><u>Other Buttons</u></h4>
+  <blockquote>
+    <p>Click the <em><strong>Show Summary</strong></em> button to show a summary of all the users in the currently selected database as well as their user information.</p>
+    <p>Click the <em><strong>Print</strong></em> button to print a summary of all the users in the currently selected database as well as their user information.</p>
+
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+
+
+<h3>Fix Master Permissions</h3>
+<p>A Specify Master must include  SELECT, INSERT, UPDATE,  DELETE and TABLE LOCK privileges in MySQL. The Security Wizard checks the Master priviledges at the same time that it tests the Master credentials. If the privileges are not set correctly the Security Wizard will alert you and offer the ability to fix them.</p>
+<p align="center"><img src="../../images/sw_privscreen.png" width="288" height="246" /></p>
+<p align="center" class="imgcaption">Fix Master Priviledges</p>
+<blockquote>
+  <p>&nbsp;</p>
+  <p>Simply click the <strong><em>Fix Privileges</em></strong> button to fix the privileges for the Master. </p>
 </blockquote>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

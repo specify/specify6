@@ -319,6 +319,7 @@
    <mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
    <mapID target="third_party" url="SpecifyHelp/QueryBuilder/third_party.html#third_party"/>
    <mapID target="login_master" url="SpecifyHelp/login.html#login_master"/>
+   <mapID target="security_wiz1" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen1"/>
    <mapID target="security_wiz2" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen2"/>
    <mapID target="security_wiz3" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen3"/>
    <mapID target="security_wizreset" url="SpecifyHelp/Security/Security_Wizard.html#reset_master"/> 
