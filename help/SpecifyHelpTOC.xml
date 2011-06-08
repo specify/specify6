@@ -79,11 +79,11 @@
 			<tocitem text="Using Bar Codes" target="Barcodes" />
 			<tocitem text="Series Data Entry" target="Forms_Series_Entry" />
 			<tocitem text="Batch Identify" target="Forms_Batch_Determine" />
-			<tocitem text="Container" target="Forms_Container" />
 			<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records" />
 			<tocitem text="Data Forms" target="Data_Entry">
 				<tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar" />
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees" />
+				<tocitem text="Container" target="Forms_Container" />
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon" />
 				<tocitem text="Determinations Form" target="Data_Entry_Determinations" />
 				<tocitem text="Locality Form" target="Data_Entry_Locality" />
