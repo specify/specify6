@@ -96,6 +96,11 @@ public class ESTermParser implements SearchTermParserIFace
         
         if (searchTerm.length() > 0)
         {
+            if (StringUtils.contains(searchTerm, '\\'))
+            {
+                return false;
+            }
+            
             String[] terms;
             
             boolean startWith = searchTerm.startsWith("*");
