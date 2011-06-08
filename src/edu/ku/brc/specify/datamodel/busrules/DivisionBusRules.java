@@ -147,6 +147,42 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeFormFill()
+     */
+    @Override
+    public void beforeFormFill()
+    {
+        super.beforeFormFill();
+
+        if (formViewObj != null && formViewObj.getDataObj() != null && formViewObj.getMVParent().isTopLevel())
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+    
+                Division div = (Division)formViewObj.getDataObj();
+                session.attach(div);
+                for (Discipline disp : div.getDisciplines())
+                {
+                    disp.getCollections().size();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+    }
+    
     /**
      * @return
      */
