@@ -805,7 +805,8 @@ public class ExportMappingTask extends QueryTask
 				//XXX possibly need ui here for user to set version or remarks???
 				schema.setSchemaName(theTitle);
 				schema.setSchemaVersion(theVersion);
-				schema.setDescription(xsd.attributeValue("targetNamespace"));
+				String desc = xsd.attributeValue("targetNamespace");
+				schema.setDescription(desc.substring(0, Math.min(255, desc.length())));
 				schema.setDiscipline(AppContextMgr.getInstance().getClassObject(Discipline.class));
 				for (Object itemObj : getNodesForDef(xsd))
 				{
@@ -1055,7 +1056,8 @@ public class ExportMappingTask extends QueryTask
 				//so if there is more than one docObj earlier objects 
 				//are overwritten by later objects
 				Element docElem = (Element )docObj;
-				result.setDescription(docElem.getText());
+				String desc = docElem.getText();
+				result.setDescription(desc.substring(0, Math.min(255, desc.length())));
 			}
 		} catch (XPathException ex)
 		{
