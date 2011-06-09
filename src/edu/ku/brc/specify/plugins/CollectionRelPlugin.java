@@ -643,7 +643,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void reset()
     {
-        cbx.reset();
+        if (cbx != null)
+        {
+            cbx.reset();
+        }
     }
 
     /* (non-Javadoc)
