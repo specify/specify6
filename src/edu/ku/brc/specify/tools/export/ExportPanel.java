@@ -91,6 +91,7 @@ import edu.ku.brc.specify.tasks.subpane.qb.QueryParameterPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.TableQRI;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -1132,62 +1133,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         // Set App Name, MUST be done very first thing!
         //UIRegistry.setAppName("SchemaExporter");  //$NON-NLS-1$
         UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+        
+        AppBase.processArgs(args);
+        AppBase.setupTeeForStdErrStdOut(true, false);
 
-        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-        
-        for (String s : args)
-        {
-            String[] pairs = s.split("="); //$NON-NLS-1$
-            if (pairs.length == 2)
-            {
-                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-                {
-                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-                } 
-            } else
-            {
-                String symbol = pairs[0].substring(2, pairs[0].length());
-                System.setProperty(symbol, symbol);
-            }
-        }
-        
-        // Now check the System Properties
-        String appDir = System.getProperty("appdir");
-        if (StringUtils.isNotEmpty(appDir))
-        {
-            UIRegistry.setDefaultWorkingPath(appDir);
-        }
-        
-        String appdatadir = System.getProperty("appdatadir");
-        if (StringUtils.isNotEmpty(appdatadir))
-        {
-            UIRegistry.setBaseAppDataDir(appdatadir);
-        }
-        
-        // For Debugging Only 
-        //System.setProperty("mobile", "true");
-        //System.setProperty("embedded", "true");
-        
-        String mobile = System.getProperty("mobile");
-        if (StringUtils.isNotEmpty(mobile))
-        {
-            UIRegistry.setMobile(true);
-        }
-        
-        String embeddedStr = System.getProperty("embedded");
-        if (StringUtils.isNotEmpty(embeddedStr))
-        {
-            UIRegistry.setEmbedded(true);
-        }
-        
-        String embeddeddbdir = System.getProperty("embeddeddbdir");
-        if (StringUtils.isNotEmpty(embeddeddbdir))
-        {
-            UIRegistry.setEmbeddedDBPath(embeddeddbdir);
-        } else
-        {
-            UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-        }
         
         // Then set this
         IconManager.setApplicationClass(Specify.class);
