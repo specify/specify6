@@ -99,6 +99,7 @@ import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -3783,6 +3784,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	tbls.add(Taxon.getClassTableId());
     	tbls.add(Accession.getClassTableId());
     	tbls.add(ReferenceWork.getClassTableId());
+    	tbls.add(Agent.getClassTableId());
     	for (Integer tbl : tbls)
     	{
     		for (WorkbenchTemplateMappingItem mi : wbt.getWorkbenchTemplateMappingItems())
