@@ -228,69 +228,82 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
      * Collection Statistics about the Collection (synchronously).
      */
     @Override
-    protected Vector<NameValuePair> collectSecondaryStats()
+    protected Vector<NameValuePair> collectSecondaryStats(final boolean doSendSecondaryStats)
     {
-        Vector<NameValuePair> stats = new Vector<NameValuePair>();
-        if (hasChanged)
-        {
-            if (progress != null) progress.setIndeterminate(true);
-            if (queries.size() > 0)
-            {
-                int    count = 0;
-                double total = queries.size();
-                for (Pair<String, String> p : queries)
-                {
-                    String  statsName   = p.first;
-                    if (StringUtils.isNotEmpty(statsName))
-                    {
-                        count++;
-                        addStat(statsName, stats, p.second);
-                        if (progress != null) progress.setIndeterminate(false);
-                        worker.setProgressValue((int)(100.0 * (count / total)));
-                    }
-                }
-                worker.setProgressValue(100);
-                
-            } else
-            {
-                log.error("Couldn't find resource ["+resourceName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-        
-        SpecifyUser su = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        if (su != null)
-        {
-            stats.add(new NameValuePair("specifyuser",  fixParam(su.getName()))); //$NON-NLS-1$
-        }
-
-        // Gather Collection Counts;
-        if (collection != null)
-        {
-            Integer estSize = collection.getEstimatedSize();
-            String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
-            
-            stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
-        }
-
-        if (discipline != null)
-        {
-            stats.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
-        }
-
-        if (division != null)
-        {
-            stats.add(new NameValuePair("Division_number",  fixParam(division.getRegNumber()))); //$NON-NLS-1$
-        }
-
+        boolean isAnon = false;
         if (institution != null)
         {
-            stats.add(new NameValuePair("Institution_number",  fixParam(institution.getRegNumber()))); //$NON-NLS-1$
+            isAnon = institution.getIsAnonymous();
         }
-
-        return stats;
+        
+        if (doSendSecondaryStats || !isAnon)
+        {
+            Vector<NameValuePair> stats = new Vector<NameValuePair>();
+            if (hasChanged)
+            {
+                if (progress != null) progress.setIndeterminate(true);
+                if (queries.size() > 0)
+                {
+                    int    count = 0;
+                    double total = queries.size();
+                    for (Pair<String, String> p : queries)
+                    {
+                        String  statsName   = p.first;
+                        if (StringUtils.isNotEmpty(statsName))
+                        {
+                            count++;
+                            addStat(statsName, stats, p.second);
+                            if (progress != null) progress.setIndeterminate(false);
+                            worker.setProgressValue((int)(100.0 * (count / total)));
+                        }
+                    }
+                    worker.setProgressValue(100);
+                    
+                } else
+                {
+                    log.error("Couldn't find resource ["+resourceName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+            }
+            
+            SpecifyUser su = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            if (su != null)
+            {
+                stats.add(new NameValuePair("specifyuser",  fixParam(su.getName()))); //$NON-NLS-1$
+            }
+    
+            // Gather Collection Counts;
+            if (collection != null)
+            {
+                Integer estSize = collection.getEstimatedSize();
+                String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
+                
+                stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Collection_name",    fixParam(collection.getCollectionName()))); //$NON-NLS-1$
+            }
+    
+            if (discipline != null)
+            {
+                stats.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Discipline_name",    fixParam(discipline.getName()))); //$NON-NLS-1$
+            }
+    
+            if (division != null)
+            {
+                stats.add(new NameValuePair("Division_number",  fixParam(division.getRegNumber()))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Division_name",    fixParam(division.getName()))); //$NON-NLS-1$
+            }
+    
+            if (institution != null)
+            {
+                stats.add(new NameValuePair("Institution_number",  fixParam(institution.getRegNumber()))); //$NON-NLS-1$
+                stats.add(new NameValuePair("Institution_name",    fixParam(institution.getName()))); //$NON-NLS-1$
+            }
+            return stats;
+        }
+        return null;
     }
     
     /**

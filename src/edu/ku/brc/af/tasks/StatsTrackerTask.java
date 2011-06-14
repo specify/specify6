@@ -359,7 +359,7 @@ public class StatsTrackerTask extends BaseTask
      * Collection Statistics about the Collection (synchronously).
      * @return list of http named value pairs
      */
-    protected Vector<NameValuePair> collectSecondaryStats()
+    protected Vector<NameValuePair> collectSecondaryStats(final boolean doSendSecondaryStats)
     {
         return null;
     }
@@ -401,13 +401,10 @@ public class StatsTrackerTask extends BaseTask
             }
             postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
             
-            if (doSendSecondaryStats)
+            Vector<NameValuePair> extraStats = collectSecondaryStats(doSendSecondaryStats);
+            if (extraStats != null)
             {
-                Vector<NameValuePair> extraStats = collectSecondaryStats();
-                if (extraStats != null)
-                {
-                    postParams.addAll(extraStats);
-                }
+                postParams.addAll(extraStats);
             }
             
             // get all of the usage tracking stats
