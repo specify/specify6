@@ -244,7 +244,7 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
             return createInitialRecordInternal(conn, appVerNum, dbVersion); // fail safe, should never happen
         }
         
-        return updateRecord(conn, appVerNum, appVerNum, recVerNum, spverId);
+        return updateRecord(conn, appVerNum, dbVersion, recVerNum, spverId);
     }
 
     /**
@@ -263,6 +263,17 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
         
         return BasicSQLUtils.update(conn, sql) == 1;
         
+    }
+
+    /**
+     * The original release of 6.3.00 had a bug that set the SchemaVersion version to the AppVersion number.
+     * @param conn the current connection
+     * @return true on success
+     */
+    public static boolean fixSchemaNumber(final Connection conn)
+    {
+        String sql = "UPDATE spversion SET SchemaVersion='1.5' WHERE SchemaVersion ='6.3.00'";
+        return BasicSQLUtils.update(conn, sql) == 1;
     }
 
 }

@@ -221,6 +221,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         DBConnection dbConn = DBConnection.getInstance();
         if (dbConn != null)
         {
+            SpVersion.fixSchemaNumber(dbConn.getConnection());
+            
             DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
