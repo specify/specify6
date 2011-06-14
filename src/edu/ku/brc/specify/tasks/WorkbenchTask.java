@@ -3789,7 +3789,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	{
     		for (WorkbenchTemplateMappingItem mi : wbt.getWorkbenchTemplateMappingItems())
     		{
-    			if (mi.getSrcTableId().equals(tbl))
+    			if (mi.getSrcTableId().equals(tbl)
+    					|| (mi.getSrcTableId() == 4000 /*TaxonImportOnly*/ && tbl == Taxon.getClassTableId()))
     			{
     				return tbl;
     			}
