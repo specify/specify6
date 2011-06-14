@@ -2146,7 +2146,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         // LocalityDetail
         /////////////////////////////
         
-        getTableTitleForFrame(LocalityDetail.getClassTableId());
+        String tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
         
         boolean statusOK = true;
         String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'localitydetail' AND COLUMN_NAME = 'UtmScale' AND DATA_TYPE = 'varchar'", dbc.getDatabaseName());
@@ -2157,7 +2157,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             	                                          "FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID WHERE ld.UtmScale IS NOT NULL");
             
             update(conn, "ALTER TABLE localitydetail DROP COLUMN UtmScale");
-            String tblName = "localitydetail";
             addColumn(conn, databaseName, tblName, "UtmScale", "FLOAT",      "UtmOrigLongitude");
             addColumn(conn, databaseName, tblName, "MgrsZone", "VARCHAR(4)", "UtmScale");
 
@@ -2241,6 +2240,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     ex.printStackTrace();
                 }
             }
+        } else
+        {
+            addColumn(conn, databaseName, tblName, "UtmScale", "FLOAT",      "UtmOrigLongitude");
         }
         frame.incOverall();
 
@@ -2256,7 +2258,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             try
             {
                 // Add New Fields to Determination
-                String tblName = getTableTitleForFrame(Determination.getClassTableId());
+                tblName = getTableTitleForFrame(Determination.getClassTableId());
                 addColumn(conn, databaseName, tblName, "VarQualifer",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
                 addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifer");
                 frame.incOverall();
