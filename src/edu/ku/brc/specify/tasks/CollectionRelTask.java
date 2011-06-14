@@ -24,6 +24,8 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -281,6 +283,18 @@ public class CollectionRelTask extends BaseTask
             }
         };
         
+        relList.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount() == 2)
+                {
+                    editRel(); 
+                }
+            }
+        });
+        
         edaPanel = new EditDeleteAddPanel(editAL, delAL, addAL);
         
         CellConstraints cc = new CellConstraints();
@@ -430,6 +444,8 @@ public class CollectionRelTask extends BaseTask
      */
     private CollectionRelType createRelType(final CollectionRelType crt)
     {
+        boolean isEdit = crt != null;
+        
         final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)getMostRecentWindow(),
                 "SystemSetup",
                 "CollectionRelType",
@@ -472,7 +488,7 @@ public class CollectionRelTask extends BaseTask
         
         
         CollectionRelType colRelType;
-        if (crt != null)
+        if (isEdit)
         {
             colRelType = crt;
             
@@ -488,7 +504,7 @@ public class CollectionRelTask extends BaseTask
         
         if (!dlg.isCancelled())
         {
-            if (crt == null)
+            if (!isEdit) // it's new
             {
                 if (srcCollection != null && dstCollection != null)
                 {
@@ -529,17 +545,17 @@ public class CollectionRelTask extends BaseTask
                         ex.printStackTrace();
                     }
                     
-                } else
+                } else  if (save(colRelType))
                 {
-                    if (save(colRelType))
-                    {
-                        return colRelType;
-                    }
+                    return colRelType;
                 }
+            } else if (save(colRelType))
+            {
+                return colRelType;
             }
         }
-        
-        return null;
+
+        return colRelType;
     }
     
     /**
