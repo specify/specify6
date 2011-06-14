@@ -3849,6 +3849,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         dlg.setVisible(true); // modal (waits for answer here)
         if (!dlg.isCancelled())
         {
+        	//check size
+			if (dlg.getSelectedRecordSet().getNumItems() > AppPreferences.getRemote().getInt("MAX_ROWS", MAX_ROWS))
+			{
+				UIRegistry.showLocalizedError("WorkbenchTask.RecordSetTooLargeToExport", AppPreferences.getRemote().getInt("MAX_ROWS", MAX_ROWS));
+				return;
+			}
         	//Choose a workbench whose 'main' table matches the type of the recordset
         	List<WorkbenchTemplate> choices = getTemplatesForExport(dlg.getSelectedRecordSet());
         	if (choices.size() > 0)
@@ -3861,7 +3867,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         		wbtdlg.setVisible(true);
         		if (!wbtdlg.isCancelled())
         		{
-                	//load the data
+        			//load the data
         			try
         			{
         				Workbench workbench = createNewWorkbenchDataObj(null, (WorkbenchTemplate )wbtdlg.getSelectedObject().clone());
