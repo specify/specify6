@@ -20,16 +20,31 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.DateAccessorQRI.DATEPART;
 
 /**
@@ -242,9 +257,133 @@ public class TableQRI extends ExpandableQRI
     {
         super.setTableTree(tableTree);
         determineRel();
+        rebuildTreeLevelQRIs();
     }
 
+    protected String getDefaultHostTaxonRelName()
+    {
+    	return "Host Taxon";
+    }
+    
+    @SuppressWarnings("unchecked")     
+    protected TreeDefIface<?, ?, ?> findTreeDef()
+    {
+        SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        if (getTableTree().getField().equalsIgnoreCase("HostTaxon"))
+        {
+            //XXX See specify.plugins.HostTaxonPlugin
+        	//This stuff is copied from that class
+        	//This code assumes the Host Taxon relationship name is "Host Taxon"
+        	//There is probably a need for a more 'formal' definition of the Host Taxon relationship for a collection?
+        	TreeDefIface<?, ?, ?> result = null;
+            String sql = String.format("SELECT RightSideCollectionID FROM collectionreltype WHERE Name = \"%s\" AND LeftSideCollectionID = %d", 
+            		getDefaultHostTaxonRelName(),  spMgr.getClassObject(Collection.class).getId());
+            //System.err.println(sql);
+            Integer hostCollId = BasicSQLUtils.getCount(sql);
+            if (hostCollId != null)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session             = DataProviderFactory.getInstance().createSession();
+                    Collection rightCol = session.get(Collection.class, hostCollId);
+                    if (rightCol != null)
+                    {
+                        if (rightCol.getDiscipline() != null)
+                        {
+                            result = rightCol.getDiscipline().getTaxonTreeDef();
+                        }                     }
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+            return result;
+        }
+        else 
+        {
+            return spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )getTableInfo().getClassObj());
+        }
+    }
 
+    protected void rebuildTreeLevelQRIs()
+    {
+        if (Treeable.class.isAssignableFrom(ti.getClassObj()))
+        {
+        	for (int f = fields.size() - 1; f > -1; f--)
+        	{
+        		if (fields.get(f) instanceof TreeLevelQRI)
+        		{
+        			fields.remove(f);
+        		}
+    	}
+    	
+            try
+            {
+               TreeDefIface<?, ?, ?> treeDef = findTreeDef();
+               
+               SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
+                        new Comparator<TreeDefItemIface<?, ?, ?>>()
+                        {
+                            public int compare(TreeDefItemIface<?, ?, ?> o1,
+                                               TreeDefItemIface<?, ?, ?> o2)
+                            {
+                                Integer r1 = o1.getRankId();
+                                Integer r2 = o2.getRankId();
+                                return r1.compareTo(r2);
+                            }
+
+                        });
+                defItems.addAll(treeDef.getTreeDefItems());
+                for (TreeDefItemIface<?, ?, ?> defItem : defItems)
+                {
+                    if (defItem.getRankId() > 0)//skip root, just because.
+                    {
+                        try
+                        {
+                            //newTreeNode.getTableQRI().addField(
+                            //        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                            //                .getRankId()));
+                            addField(
+                            		new TreeLevelQRI(this, null, defItem
+                            				.getRankId(), "name", treeDef));
+                            if (defItem instanceof TaxonTreeDefItem)
+                            {
+                            	addField(
+                                    new TreeLevelQRI(this, null, defItem
+                                            .getRankId(), "author", treeDef));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // if there is no TreeDefItem for the rank then just skip it.
+                            if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
+                            {
+                                log.error(ex);
+                            }
+                            // else something is really messed up
+                            else
+                            {
+                                UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
+                ex.printStackTrace();
+            }
+        }
+
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#hasMultiChildren()
      */

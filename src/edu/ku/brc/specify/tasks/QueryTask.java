@@ -1771,12 +1771,12 @@ public class QueryTask extends BaseTask
                                 //                .getRankId()));
                                 newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                .getRankId(), "name"));
+                                                .getRankId(), "name", treeDef));
                                 if (defItem instanceof TaxonTreeDefItem)
                                 {
                                 	newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                .getRankId(), "author"));
+                                                .getRankId(), "author", treeDef));
                                 }
                             }
                             catch (Exception ex)

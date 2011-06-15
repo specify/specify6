@@ -53,43 +53,37 @@ public class TreeLevelQRI extends FieldQRI
      * @param parent
      * @param fi
      * @param rankId
-     * @throws Exception
-     */
-    public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId) throws Exception
-    {
-    	this(parent, fi, rankId, "name");
-    }
-
-    /**
-     * @param parent
-     * @param fi
-     * @param rankId
      * @param realFldName
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
-    public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId, final String realFldName)
+    public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId, final String realFldName,
+    		final TreeDefIface<?, ?, ?> treeDef )
             throws Exception
     {
         super(parent, fi);
         this.rankId = rankId;
         this.realFldName = realFldName;
-        SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
-        TreeDefIface<?, ?, ?> treeDef = spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )getTableInfo().getClassObj());
-        treeDefId = treeDef.getTreeDefId();
-        TreeDefItemIface<?, ?, ?> treeDefItem = null;
-        treeDefItem = treeDef.getDefItemByRank(rankId);
-        if (treeDefItem != null)
+        if (treeDef != null)
         {
-            title = treeDefItem.getDisplayText();
-            if (!"name".equals(realFldName))
-            {
-            	title += " " + realFldName.substring(0, 1).toUpperCase() + realFldName.substring(1);
-            }
+        	treeDefId = treeDef.getTreeDefId();
+        	TreeDefItemIface<?, ?, ?> treeDefItem = null;
+        	treeDefItem = treeDef.getDefItemByRank(rankId);
+        	if (treeDefItem != null)
+        	{
+        		title = treeDefItem.getDisplayText();
+        		if (!"name".equals(realFldName))
+        		{
+        			title += " " + realFldName.substring(0, 1).toUpperCase() + realFldName.substring(1);
+        		}
+        	}
+        	else
+        	{
+        		throw new NoTreeDefItemException(rankId);
+        	}
         }
         else
         {
-            throw new NoTreeDefItemException(rankId);
+        	throw new NoTreeDefException(realFldName);
         }
     }
     
@@ -319,6 +313,16 @@ public class TreeLevelQRI extends FieldQRI
         {
             super("No TreeDefItem for " + String.valueOf(rankId));
         }
+        
+    }
+    
+    @SuppressWarnings("serial")
+    public class NoTreeDefException extends Exception
+    {
+    	public NoTreeDefException(String fldName)
+    	{
+    		super("Unable to determine tree for " + fldName);
+    	}
     }
 
 }
