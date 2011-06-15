@@ -1083,6 +1083,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     }
 
     /**
+     * @return true is the the 'Empty' operator criteria operator is selected
+     */
+    public boolean isEmptyCriterion()
+    {
+    	return operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY);
+    }
+    
+    /**
      * @return
      */
     public String getCriteriaFormula(final TableAbbreviator ta,

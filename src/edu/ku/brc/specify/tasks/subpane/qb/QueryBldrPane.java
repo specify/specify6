@@ -1420,7 +1420,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         criteriaStr.append(" AND ");
                     }
-                    if (hqlHasSynJoins && isSynSearchable(qfi.getFieldQRI()))
+                    if (hqlHasSynJoins && isSynSearchable(qfi.getFieldQRI()) && !qfi.isEmptyCriterion())
                     {
                         criteria = adjustForSynSearch(tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTable().getTableTree()), criteria, qfi.isNegated());
                     }
