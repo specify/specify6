@@ -63,6 +63,9 @@ public abstract class DBMSUserMgr
     
     public static final int PERM_ALL          = 1023;
     
+    public static final int PERM_NO_ACCESS    = 1024;
+    
+    
     private static DBMSUserMgr instance = null;
    
     protected String hostName = null;

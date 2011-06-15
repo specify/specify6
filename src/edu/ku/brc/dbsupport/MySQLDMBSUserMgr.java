@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
@@ -45,7 +46,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class MySQLDMBSUserMgr extends DBMSUserMgr 
 {
-    //private static final Logger log = Logger.getLogger(MySQLDMBSUserMgr.class);
+    private static final Logger log = Logger.getLogger(MySQLDMBSUserMgr.class);
     
 	private DBConnection dbConnection = null;
 	private Connection   connection   = null;
@@ -511,17 +512,20 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             if (connection != null)
             {
                 stmt = connection.createStatement();
-                String sql = String.format("SHOW GRANTS FOR '%s'@'%s'", username, serverName);
+                //String sql = String.format("SHOW GRANTS FOR '%s'@'%s'", username, serverName);
+                String uNameStr = String.format("'%s'@'", username);
                 //log.debug(sql);
-                Vector<Object[]> list = BasicSQLUtils.query(connection, sql);
+                Vector<Object[]> list = BasicSQLUtils.query(connection, "SHOW GRANTS");
                 if (list != null)
                 {
                     int perms = PERM_NONE;
                     for (Object[] row : list)
                     {
-                        if (StringUtils.contains(row[0].toString(), dbName))
+                        String line = row[0].toString();
+                        if (StringUtils.contains(line, uNameStr) &&
+                            StringUtils.contains(line, dbName))
                         {
-                            String pStr = row[0].toString();
+                            String pStr = line;
                             int eInx = pStr.indexOf(" ON ");
                             if (eInx > -1)
                             {
@@ -587,6 +591,22 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         } else if (permStr.equals("INSERT"))
         {
             perms |= PERM_INSERT;
+            
+        } else if (permStr.equals("CREATE"))
+        {
+            perms |= PERM_CREATE_TABLE;
+            
+        } else if (permStr.equals("DROP"))
+        {
+            perms |= PERM_DROP_TABLE;
+            
+        } else if (permStr.equals("ALTER"))
+        {
+            perms |= PERM_ALTER_TABLE;
+            
+        } else
+        {
+            log.error("Unhandled Permission ["+permStr+"]");
         }
         return perms;
     }
@@ -623,6 +643,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             }
         } catch (SQLException ex)
         {
+            if (ex.getErrorCode() == 1142)
+            {
+                return PERM_NO_ACCESS;
+            }
             ex.printStackTrace();
             
         } finally
@@ -674,6 +698,11 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 String sql = pre + " FROM mysql.db WHERE User = ? AND Db = ?";
                 perms = getPerms(permList, sql, username, dbName);
                 
+                if (perms == PERM_NO_ACCESS)
+                {
+                    perms = getPermissionsFromInfoSchema(username, dbName);
+                }
+                
                 if (perms == PERM_NONE)
                 {
                     // the the global permissions of the user (like 'root')
@@ -687,6 +716,73 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             
         return PERM_NONE;
     }
+    
+    /**
+     * @param username
+     * @param dbName
+     * @return
+     */
+    private int getPermissionsFromInfoSchema(final String username, final String dbName)
+    {
+        BasicSQLUtils.setSkipTrackExceptions(true);
+        Statement stmt = null;
+        try
+        {
+            if (connection != null)
+            {
+                stmt  = connection.createStatement();
+                
+                Vector<Object[]> list = BasicSQLUtils.query(connection, "SELECT * FROM INFORMATION_SCHEMA.USER_PRIVILEGES");
+                if (list != null)
+                {
+                    int perms = PERM_NONE;
+                    for (Object[] row : list)
+                    {
+                        String[] toks = StringUtils.split(row[0].toString(), "'");
+                        if (toks[0].equals(username))
+                        {
+                            String yesStr = row[3].toString();
+                            if (yesStr.equalsIgnoreCase("YES"))
+                            {
+                                perms = addPerm(row[2].toString(), perms);
+                                
+                            } else if (list.size() == 1)
+                            {
+                                perms = getPermissionsUsingGrants(toks[0].toString(), toks[2].toString(), dbName);
+                            }
+                        }
+                    }
+                    //log.debug("PERMS: "+perms);
+                    
+                    if (perms == 0 && username.equalsIgnoreCase("root"))
+                    {
+                        perms = PERM_ALL;
+                    }
+                    
+                    return perms;
+                }
+            }
+            
+        } catch (SQLException ex)
+        {
+            if (ex.getErrorCode() == 1142)
+            {
+                return PERM_NO_ACCESS;
+            }
+            ex.printStackTrace();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            close(stmt);
+            BasicSQLUtils.setSkipTrackExceptions(false);
+        }
+        return PERM_NONE;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTables(java.lang.String)
