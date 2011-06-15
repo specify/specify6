@@ -341,6 +341,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     {
         return isAnonymous == null ? false : isAnonymous;
     }
+    
+    /**
+     * @return
+     */
+    @Transient
+    public boolean isSendStatsAnonymous()
+    {
+        return getIsAnonymous();
+    }
 
     /**
      * @return the hasBeenAsked

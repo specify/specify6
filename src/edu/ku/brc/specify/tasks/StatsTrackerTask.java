@@ -233,7 +233,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         boolean isAnon = false;
         if (institution != null)
         {
-            isAnon = institution.getIsAnonymous();
+            isAnon = institution.isSendStatsAnonymous();
         }
         
         if (doSendSecondaryStats || !isAnon)
