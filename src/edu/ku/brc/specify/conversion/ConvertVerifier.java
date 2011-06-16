@@ -154,7 +154,7 @@ public class ConvertVerifier extends AppBase
     //private String                                        oldUserName       = "rods";
     //private String                                        oldPassword       = "rods";
 
-    //private IdMapperMgr                                   idMapperMgr;
+    private IdMapperMgr                                   idMapperMgr;
 
     private Connection                                    oldDBConn;
     private Connection                                    newDBConn;
@@ -202,6 +202,8 @@ public class ConvertVerifier extends AppBase
         
         appIcon = new JLabel("  "); //$NON-NLS-1$
         setAppIcon(null); //$NON-NLS-1$
+        
+        this.idMapperMgr = IdMapperMgr.getInstance();
     }
 
     /**
@@ -316,6 +318,8 @@ public class ConvertVerifier extends AppBase
         newDBConn = DBConnection.getInstance().createConnection();
         newDBStmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         oldDBStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        
+        IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
         
         long startTime = System.currentTimeMillis();
 
@@ -512,7 +516,7 @@ public class ConvertVerifier extends AppBase
         if (isCOOn(DO_COLLECTORS))
         {
             tblWriter = tblWriterHash.get(DO_COLLECTORS);
-            verifyCollectors();
+            //verifyCollectors();
         }
         
         if (isCOOn(DO_AGENTS))
@@ -573,7 +577,7 @@ public class ConvertVerifier extends AppBase
         // Accessions
         //-----------------------------------------------------------------------------------------------------------
         // For Debug
-        acOptions = 0;//DO_AC_ALL;
+        acOptions = DO_AC_ALL;
         
         HashMap<Long, TableWriter> accTblWriterHash = new HashMap<Long, TableWriter>();
         for (int i=1;i<accLabels.length;i++)
@@ -970,7 +974,7 @@ public class ConvertVerifier extends AppBase
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name  " +
-                  "FROM collectionobjectcatalog cc INNER JOIN agent a ON cc.CatalogerID = a.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                  "FROM collectionobjectcatalog cc INNER JOIN agent a ON cc.CatalogerID = a.AgentID WHERE cc.SubNumber = 0 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
 	         log.debug("New SQL: "+newSQL);
@@ -997,14 +1001,14 @@ public class ConvertVerifier extends AppBase
          		"FROM collectionobject AS co " +
          		"INNER Join collectingevent AS ce ON co.CollectingEventID = ce.CollectingEventID " +
          		"INNER Join collector AS c ON ce.CollectingEventID = c.CollectingEventID " +
-         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE co.CatalogNumber =  '"+ newCatNum + "' ORDER BY OrderNumber, a.LastName";
+         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE co.CatalogNumber =  '"+ newCatNum + "' ORDER BY OrderNumber, c.TimestampCreated, a.LastName";
 
          oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name " +
          		"FROM collectionobjectcatalog AS cc " +
          		"INNER Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
          		"INNER Join collectingevent AS ce ON co.CollectingEventID = ce.CollectingEventID " +
          		"INNER Join collectors AS c ON ce.CollectingEventID = c.CollectingEventID " +
-         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE cc.CatalogNumber = " + oldCatNum+ " ORDER BY `Order`, a.LastName, a.Name";
+         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE cc.CatalogNumber = " + oldCatNum+ " ORDER BY `Order`, c.TimestampCreated, a.LastName, a.Name";
          if (debug)
          {
              log.debug("New SQL: "+newSQL);
@@ -1491,7 +1495,7 @@ public class ConvertVerifier extends AppBase
                     {
                         if (!oldColName.equals("PreparationMethod") || !newObj.equals("Misc"))
                         {
-                            String msg = idMsgStr + "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"]";
+                            String msg = idMsgStr + "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"]  New Val["+newObj+"]";
                             log.error(desc+ " - "+msg);
                             tblWriter.logErrors(oldCatNum, msg);
                             return StatusType.OLD_VAL_NULL;
@@ -1594,7 +1598,8 @@ public class ConvertVerifier extends AppBase
                             
                             if (partialDateType != null)
                             {
-                                if (Byte.parseByte(datePair.second) != partialDateType.byteValue())
+                                boolean ok = StringUtils.isNotEmpty(datePair.second) && StringUtils.isNumeric(datePair.second);
+                                if (!ok || (Byte.parseByte(datePair.second) != partialDateType.byteValue()))
                                 {
                                     errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
                                     // error partial dates don't match
@@ -1603,42 +1608,51 @@ public class ConvertVerifier extends AppBase
                             
                             cal.setTime((Date)newObj);
                             
-                            int year = Integer.parseInt(datePair.first.substring(0, 4));
-                            int mon  = Integer.parseInt(datePair.first.substring(5, 7));
-                            int day  = Integer.parseInt(datePair.first.substring(8, 10));
-                            
-                            if (mon > 0) mon--;
-                            
-                            boolean isYearOK = true;
-                            
-                            int yr = cal.get(Calendar.YEAR);
-                            if (year != yr)
+                            if (StringUtils.isNotEmpty(datePair.first) && !datePair.first.equalsIgnoreCase("null"))
                             {
-                                errSB.append("Year mismatch Old["+year+"]  New ["+yr+"] ");
-                                isYearOK = false;
-                            }
-                            
-                            if (mon != cal.get(Calendar.MONTH))
+                                int year = Integer.parseInt(datePair.first.substring(0, 4));
+                                int mon  = Integer.parseInt(datePair.first.substring(5, 7));
+                                int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                                
+                                if (mon > 0) mon--;
+                                
+                                boolean isYearOK = true;
+                                
+                                int yr = cal.get(Calendar.YEAR);
+                                if (year != yr)
+                                {
+                                    errSB.append("Year mismatch Old["+year+"]  New ["+yr+"] ");
+                                    isYearOK = false;
+                                }
+                                
+                                if (mon != cal.get(Calendar.MONTH))
+                                {
+                                    errSB.append("Month mismatch Old["+mon+"]  New ["+cal.get(Calendar.MONTH)+"] ");
+                                }
+                                
+                                if (day != cal.get(Calendar.DAY_OF_MONTH))
+                                {
+                                    errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
+                                }
+                                
+                                if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
+                                {
+                                    errSB.insert(0, oldColName+"  ");
+                                    errSB.append("[");
+                                    errSB.append(datePair);
+                                    errSB.append("][");
+                                    errSB.append(dateFormatter.format((Date)newObj));
+                                    errSB.append("]");
+                                    log.error(errSB.toString());
+                                    tblWriter.logErrors(oldNewIdStr, errSB.toString());
+                                    return StatusType.BAD_DATE;
+                                }
+                            } else
                             {
-                                errSB.append("Month mismatch Old["+mon+"]  New ["+cal.get(Calendar.MONTH)+"] ");
-                            }
-                            
-                            if (day != cal.get(Calendar.DAY_OF_MONTH))
-                            {
-                                errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
-                            }
-                            
-                            if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
-                            {
-                                errSB.insert(0, oldColName+"  ");
-                                errSB.append("[");
-                                errSB.append(datePair);
-                                errSB.append("][");
-                                errSB.append(dateFormatter.format((Date)newObj));
-                                errSB.append("]");
-                                log.error(errSB.toString());
-                                tblWriter.logErrors(oldNewIdStr, errSB.toString());
-                                return StatusType.BAD_DATE;
+                                //String msg = "Date contains the string 'NULL'";
+                                //log.error(msg);
+                                //tblWriter.logErrors(oldNewIdStr, msg);
+                                //return StatusType.BAD_DATE;
                             }
                         }                        
                     } else if (newObj instanceof Float || newObj instanceof Double)
@@ -1659,11 +1673,11 @@ public class ConvertVerifier extends AppBase
                         if (checkForAgent && StringUtils.contains(newColName, "LastName"))
                         {
                             String lastName    = oldDBRS.getString(oldColInx);
-                            String agentName   = compareTo6DBs ? "" : oldDBRS.getString(oldColInx+1); // The 'Name' Column
+                            String agentName   = oldDBRS.getString(oldColInx+1); // The 'Name' Column
                             String newLastName = newDBRS.getString(newColInx);
-                            if (!newLastName.equals(lastName) && (compareTo6DBs || !newLastName.equals(agentName)))
+                            if (!newLastName.equals(lastName) && !newLastName.equals(agentName))
                             {
-                                String msg = idMsgStr + "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
+                                String msg = idMsgStr + "Name Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                                 log.error(desc+ " - "+msg);
                                 tblWriter.logErrors(oldNewIdStr, msg);
                                 log.error(oldSQLArg+"\n"+newSQLArg);
@@ -2057,7 +2071,9 @@ public class ConvertVerifier extends AppBase
      */
     private void verifyCollectors()
     {
-    	boolean dbg = false;
+    	boolean dbg = true;
+    	
+    	IdTableMapper ceIdMapper = idMapperMgr.addTableMapper("collectingevent", "CollectingEventID", false);
     	
          oldSQL = "SELECT ce.CollectingEventID, a.FirstName,  a.LastName, a.Name, collectors.Order  " + 
          "FROM collectingevent ce INNER JOIN collectors ON ce.CollectingEventID = collectors.CollectingEventID " + 
@@ -2065,39 +2081,49 @@ public class ConvertVerifier extends AppBase
     	
     	 newSQL = "SELECT ce.CollectingEventID, a.FirstName, a.LastName, collector.OrderNumber   " + 
     	 "FROM collectingevent ce INNER JOIN collector ON ce.CollectingEventID = collector.CollectingEventID  " + 
-    	 "INNER JOIN agent a ON collector.AgentID = a.AgentID ORDER BY ce.CollectingEventID, collector.OrderNumber";
+    	 "INNER JOIN agent a ON collector.AgentID = a.AgentID WHERE ce.CollectingEventID = %d ORDER BY collector.OrderNumber ";
     	
     	int prevOldId = Integer.MAX_VALUE;
     	int prevNewId = Integer.MAX_VALUE;
     	
     	try
         {
-	        getResultSets(oldSQL, newSQL);
+    	    oldDBRS = oldDBStmt.executeQuery(oldSQL); 
 	        
 	        if (dbg)
 	        {
 	            System.out.println(oldSQL);
-	            System.out.println(newSQL);
 	        }
 	        
-	        while (true)
+	        while (oldDBRS.next())
 	        {
-	        
-	            boolean hasOldRec = oldDBRS.next();
-	            boolean hasNewRec = newDBRS.next();
-	            
-	            if (!hasOldRec || !hasNewRec)
-	            {
-	                break;
-	            }
-	            
-	            int    newId        = newDBRS.getInt(1);
-	            int    newOrder     = newDBRS.getInt(4);
-	            
-	            int    oldId        = oldDBRS.getInt(1);
-	            int    oldOrder     = oldDBRS.getInt(5);
+	            int     oldId = oldDBRS.getInt(1);
+	            Integer newId = ceIdMapper.get(oldId);
 	            
 	            String oldNewIdStr = oldId + " / "+newId;
+	            
+	            if (newId == null)
+	            {
+                    String msg = "No New Id from mapping New ["+newId+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
+	                continue;
+	            }
+	            
+	            String sql = String.format(newSQL, newId);
+	            if (dbg) System.out.println(sql);
+	            
+	            newDBRS = newDBStmt.executeQuery(sql); 
+	            if (!newDBRS.next())
+	            {
+	                String msg = "No New record  New ["+newId+"] from Old["+oldId+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
+                    continue;
+	            }
+	            
+	            int    newOrder = newDBRS.getInt(4);
+	            int    oldOrder = oldDBRS.getInt(5);
 	            
 	            if (newId == Integer.MAX_VALUE)
 	            {
@@ -2362,12 +2388,14 @@ public class ConvertVerifier extends AppBase
                 int oldId = rs.getInt(1);
                 int newId = rs.getInt(2);
                 
-                newSQL = "SELECT a.AgentType, a.LastName, a.MiddleInitial,a.FirstName, a.JobTitle, adr.Phone1,adr.Phone2,adr.Address,adr.City,adr.Country,adr.State,adr.PostalCode " +
-                         "FROM agent AS a Left Join address AS adr ON a.AgentID = adr.AgentID WHERE a.AgentID = " + newId;
-            
-                oldSQL = "SELECT a.AgentType, IF (a.LastName IS null OR LENGTH(a.LastName) = 0, a.Name, a.LastName), a.MiddleInitial,a.FirstName,aa.JobTitle,aa.Phone1,aa.Phone2,adr.Address,adr.City,adr.State,adr.Country,adr.State,adr.Postalcode FROM agent AS a " +
+                newSQL = "SELECT a.AgentType, a.LastName, a.MiddleInitial, a.FirstName, " +
+                         "adr.Phone1, adr.Phone2, adr.Address, adr.City, adr.State, adr.PostalCode, adr.Country " +
+                         "FROM agent AS a Left Join address AS adr ON a.AgentID = adr.AgentID WHERE a.AgentID = " + newId + " ORDER BY adr.Phone1, adr.Address, adr.City, adr.State, adr.PostalCode";
+   
+                oldSQL = "SELECT a.AgentType, IF (a.LastName IS null OR LENGTH(a.LastName) = 0, a.Name, a.LastName), a.MiddleInitial, a.FirstName," +
+                         "aa.Phone1, aa.Phone2 ,adr.Address, adr.City, adr.State ,adr.Postalcode, adr.Country FROM agent AS a " +
                          "Left Join agentaddress AS aa ON a.AgentID = aa.AgentID " +
-                         "Left Join address AS adr ON aa.AddressID = adr.AddressID WHERE a.AgentID = " + oldId;
+                         "Left Join address AS adr ON aa.AddressID = adr.AddressID WHERE a.AgentID = " + oldId + " ORDER BY aa.Phone1, adr.Address, adr.City, adr.State ,adr.Postalcode";
             
                 //log.info(newSQL);
                 //log.info(oldSQL);

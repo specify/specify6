@@ -24,9 +24,11 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -84,6 +86,14 @@ public class IdMapperMgr
      */
     public IdTableMapper addTableMapper(final String tableName, final String idName, final String sql, final boolean doDelete)
     {
+        if (StringUtils.isEmpty(idName))
+        {
+            String msg = String.format("The idName field is empty for table %s", tableName);
+            log.error(msg);
+            UIRegistry.showError(msg);
+            throw new RuntimeException(msg);
+        }
+        
         log.debug("addTableMapper called for table: " + tableName);
         log.debug("addTableMapper called for sql: " + sql);
         
@@ -95,6 +105,14 @@ public class IdMapperMgr
         String name = tableName.toLowerCase();
         
         List<String> fieldNames = BasicSQLUtils.getFieldNamesFromSchema(oldConn, name);
+        if (fieldNames == null || fieldNames.size() == 0)
+        {
+            String msg = String.format("There are no fields for table %s", name);
+            log.error(msg);
+            UIRegistry.showError(msg);
+            throw new RuntimeException(msg);
+        }
+        
         if (!fieldNames.get(0).equals(idName))
         {
             log.error("Table["+name+"] doesn't have first column id["+idName+"]");

@@ -55,6 +55,8 @@ public class DisciplineDuplicator
     protected ProgressFrame prgFrame;
     protected GenericDBConversion conversion;
     
+    protected IdTableMapper origGeoIdMapper = null;
+    
     
     /**
      * @param newDBConn
@@ -89,8 +91,8 @@ public class DisciplineDuplicator
             
             for (Discipline discipline : (List<Discipline>)session.createQuery("FROM Discipline", false).list())
             {
-                BuildSampleDatabase.doShowHideTablesAndFields(null, discipline);
-                BuildSampleDatabase.doShowHideTablesAndFields(discipline.getType(), discipline);
+                BuildSampleDatabase.makeFieldVisible(null, discipline);
+                BuildSampleDatabase.makeFieldVisible(discipline.getType(), discipline);
             }
                 
         } catch(Exception ex)
@@ -605,11 +607,15 @@ public class DisciplineDuplicator
                 }
                 
                 IdTableMapper geoIdMapper     = (IdTableMapper)IdMapperMgr.getInstance().get("geography", "GeographyID");
-                IdTableMapper origGeoIdMapper = new IdTableMapper("geography", "orig", false, false);
-                IdMapperMgr.getInstance().addMapper(origGeoIdMapper);
+                if (origGeoIdMapper == null)
+                {
+                    origGeoIdMapper = new IdTableMapper("geography", "orig", false, false);
+                    IdMapperMgr.getInstance().addMapper(origGeoIdMapper);
 
-                origGeoIdMapper.clearRecords();
-                geoIdMapper.copy(origGeoIdMapper);
+                    origGeoIdMapper.clearRecords();
+                    geoIdMapper.copy(origGeoIdMapper);
+                }
+                
                 geoIdMapper.clearRecords();
                 
                 int fixCnt = 0;
@@ -618,10 +624,15 @@ public class DisciplineDuplicator
                     Integer dspId   = (Integer)row[0];
                     String  dspName = (String)row[1];
                     
+                    tblWriter.log(String.format("Duplicating Geography for Disicpline '%s'", dspName));
+                    tblWriter.log("<BR>");
+                    
                     if (mainGeoDiscipline.equals(dspId)) continue;
                     
                     GeographyTreeDef geoTreeDef = conversion.createStandardGeographyDefinitionAndItems(false);
-                    BasicSQLUtils.update(String.format("UPDATE discipline SET GeographyTreeDefID=%d WHERE DisciplineID = %d",geoTreeDef.getId(), dspId));
+                    BasicSQLUtils.update(String.format("UPDATE discipline SET GeographyTreeDefID=%d WHERE DisciplineID = %d", geoTreeDef.getId(), dspId));
+                    
+                    // This refills the geoMapper
                     conversion.convertGeography(geoTreeDef, dspName, false);
                     
                     PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE locality SET GeographyID=? WHERE LocalityID=?");
@@ -632,13 +643,23 @@ public class DisciplineDuplicator
                         int locId = rs.getInt(1);
                         int geoId = rs.getInt(2);
                         
-                        Integer oldId    = origGeoIdMapper.reverseGet(geoId);
-                        Integer newGeoId = geoIdMapper.get(oldId);
-                        
-                        pStmt.setInt(1, newGeoId);
-                        pStmt.setInt(2, locId);
-                        pStmt.execute();
-                        
+                        Integer oldId = origGeoIdMapper.reverseGet(geoId);
+                        if (oldId != null)
+                        {
+                            Integer newGeoId = geoIdMapper.get(oldId);
+                            if (newGeoId != null)
+                            {
+                                pStmt.setInt(1, newGeoId);
+                                pStmt.setInt(2, locId);
+                                pStmt.execute();
+                            } else
+                            {
+                                tblWriter.log(String.format("can't find new Geography Id for Old Id '%d'", oldId));
+                            }
+                        } else
+                        {
+                            tblWriter.log(String.format("Reverse Look up of 'original mapper' New Geography Id %d didn't have an OldID", geoId));
+                        }
                         fixCnt++;
                     }
                     

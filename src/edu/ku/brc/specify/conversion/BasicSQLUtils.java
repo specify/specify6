@@ -383,22 +383,19 @@ public class BasicSQLUtils
      */
     public static Integer getInsertedId(final Statement stmt)
     {
-        Integer id = null;
         try
         {
             ResultSet resultSet = stmt.getGeneratedKeys(); 
     
             if ( resultSet != null && resultSet.next() ) 
             { 
-                id =  resultSet.getInt(1);
+                return resultSet.getInt(1); 
             }
-            resultSet.close();
-            
         } catch (SQLException ex)
         {
             ex.printStackTrace();
         }
-        return id;
+        return null;
     }
     
     /**
@@ -506,21 +503,16 @@ public class BasicSQLUtils
         Statement stmt  = null;
         try
         {
-            if (connection != null)
+            //log.debug(sql);
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next())
             {
-                //log.debug(sql);
-                stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-                if (rs.next())
-                {
-                    count = rs.getInt(1);
-                    return rs.wasNull() ? null : count;
-                }
-                rs.close();
-            } else
-            {
-                log.error("No database connection!");
+                count = rs.getInt(1);
+                return rs.wasNull() ? null : count;
             }
+            rs.close();
+            
             //log.debug(count+" - "+sql);
 
         } catch (Exception ex)
@@ -1677,7 +1669,7 @@ public class BasicSQLUtils
             case java.sql.Types.TINYINT:
             case java.sql.Types.SMALLINT:
             case java.sql.Types.INTEGER:
-        if (isStr)
+                if (isStr)
                 {
                     pStmt.setString(colInx, (String)data);
                 } else
@@ -1710,6 +1702,7 @@ public class BasicSQLUtils
                 }
                 break;
                 
+            case java.sql.Types.REAL:
             case java.sql.Types.DOUBLE:
                 if (isStr)
                 {
@@ -1752,7 +1745,13 @@ public class BasicSQLUtils
                 break;
                 
             case java.sql.Types.BIT:
-                pStmt.setBoolean(colInx, !(((Integer)data) == 0));
+                if (data instanceof Boolean)
+                {
+                    pStmt.setBoolean(colInx, (Boolean)data);
+                } else
+                {
+                    pStmt.setBoolean(colInx, !(((Integer)data) == 0));
+                }
                 break;
 
             default:

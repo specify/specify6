@@ -154,6 +154,7 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -8792,6 +8793,123 @@ public class BuildSampleDatabase
                     if (tblStmt != null) tblStmt.close();
                     if (fldStmt != null) fldStmt.close();
                 } catch (Exception ex) {}
+            }
+        }
+    }
+    
+    /**
+     * Make specific fields visible.
+     * @param disciplineDirName the name of the directory for the Discipline
+     * @param discipline the Discipline itself
+     */
+    public static void makeFieldVisible(final String disciplineDirName,
+                                        final Discipline discipline)
+    {
+        final String showFieldsFileName = "show_fields.xml";
+        
+        String dirName        = disciplineDirName != null ? disciplineDirName + File.separator : "";
+        String filePath       = XMLHelper.getConfigDirPath(dirName + showFieldsFileName);
+        File   showFieldsFile = new File(filePath);
+        
+        if (showFieldsFile.exists())
+        {
+            /*try
+            {
+                System.out.println(FileUtils.readFileToString(showFieldsFile));
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }*/
+            
+            Element root = XMLHelper.readDOMFromConfigDir(dirName + showFieldsFileName);
+            if (root != null)
+            {
+                List<?> tables = root.selectNodes("/tables/table");
+                for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
+                {
+                    Element table = (Element)iter.next();
+                    String  tName = XMLHelper.getAttr(table, "name", null);
+                    if (StringUtils.isNotEmpty(tName))
+                    {
+                        DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tName.toLowerCase());
+                        if (tbl != null)
+                        {
+                            List<?> fields = table.selectNodes("field");
+                            for (Iterator<?> fIter = fields.iterator(); fIter.hasNext(); )
+                            {
+                                Element fieldEl = (Element)fIter.next();
+                                String  fName   = XMLHelper.getAttr(fieldEl, "name", null);
+                                if (StringUtils.isNotEmpty(fName))
+                                {
+                                    DBFieldInfo fld = tbl.getFieldByName(fName);
+                                    if (fld != null)
+                                    {
+                                        setFieldVisible(tbl.getName(), fld.getName(), discipline);
+                                    } else
+                                    {
+                                        showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                    }
+                                }
+                            }
+                        } else
+                        {
+                            showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
+                        }
+                    }
+                }   
+            }
+        }
+    }
+    
+    /**
+     * Looks up a table/field and sets it to be visible.
+     * @param tableName the table name
+     * @param fieldName the field name
+     */
+    protected static void setFieldVisible(final String     tableName, 
+                                          final String     fieldName,
+                                          final Discipline discipline)
+    {
+        DataProviderSessionIFace localSession = null;
+        try
+        {
+            localSession = DataProviderFactory.getInstance().createSession();
+            String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
+            //System.err.println(sql);
+            Object[] cols = (Object[])localSession.getData(sql);
+            if (cols != null && cols.length > 0)
+            {
+                SpLocaleContainer container = (SpLocaleContainer)cols[0];
+                if (container != null)
+                {
+                    for (SpLocaleContainerItem item : container.getItems())
+                    {
+                        //System.out.println(fieldName+" "+ item.getName());
+                        if (item.getName().equals(fieldName))
+                        {
+                            item.setIsHidden(false);
+                            localSession.beginTransaction();
+                            localSession.save(item);
+                            localSession.commit();
+                            localSession.flush();
+                            return;
+                        }
+                    }
+                }
+            } else
+            {
+                System.err.println("Couldn't find Table ["+tableName+"] for discipline["+discipline.getId()+"]");
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
+            
+        } finally 
+        {
+            if (localSession != null)
+            {
+                localSession.close();
             }
         }
     }

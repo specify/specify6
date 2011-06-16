@@ -18,7 +18,7 @@
 		<field name="yesNo1"/>
 	</table>-->
 
-	<table name="PaleoContext" show="true">
+	<table name="PaleoContext">
 		<field name="text1"/>
 	</table>
 </tables>

@@ -333,7 +333,7 @@ public class ConvScopeFixer
                          "FROM determination AS d " +
                          "Inner Join collectionobjectcatalog AS cc ON d.BiologicalObjectID = cc.CollectionObjectCatalogID";
                 
-        return fixTableWithColMemId(cntSQL, qrySQL, "Determination", "DeterminationID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "Determination", "DeterminationID", "Determination", "DeterminationID");
     }
     
     /**
@@ -347,7 +347,7 @@ public class ConvScopeFixer
                          "Inner Join collectionobjectcatalog AS cc ON d.BiologicalObjectID = cc.CollectionObjectCatalogID " +
                          "Inner Join determinationcitation AS dc ON d.DeterminationID = dc.DeterminationID";
                 
-        return fixTableWithColMemId(cntSQL, qrySQL, "DeterminationCitation", "DeterminationCitationID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "DeterminationCitation", "DeterminationCitationID", "DeterminationCitation", "DeterminationCitationID");
     }
     
     /**
@@ -359,7 +359,7 @@ public class ConvScopeFixer
                 
         String qrySQL = "SELECT CollectionObjectCatalogID, CatalogSeriesID FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
                 
-        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObject", "CollectionObjectID", null, "collectionobjectcatalog_CollectionObjectCatalogID");
+        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObject", "CollectionObjectID", "CollectionObject", "CollectionObjectID", "collectionobjectcatalog_CollectionObjectCatalogID");
     }
     
     /**
@@ -375,7 +375,7 @@ public class ConvScopeFixer
                         "Inner Join collectionobjectcitation AS cit ON c.CollectionObjectCatalogID = cit.BiologicalObjectID " + 
                         "WHERE c.CollectionObjectTypeID > 8 AND c.CollectionObjectTypeID < 20";
             
-        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObjectCitation", "CollectionObjectCitationID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObjectCitation", "CollectionObjectCitationID", "CollectionObjectCitation", "CollectionObjectCitationID");
     }
 
     /**
@@ -391,8 +391,7 @@ public class ConvScopeFixer
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
                         "WHERE cc.CollectionObjectTypeID > 8 AND cc.CollectionObjectTypeID < 20";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute", null, 
-                                    "SELECT BiologicalObjectTypeID FROM biologicalobjectattributes ORDER BY BiologicalObjectTypeID ASC");
+        return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectAttributesID", "CollectionObjectAttribute", "CollectionObjectAttributeID");
     }
     
     /**
@@ -406,7 +405,7 @@ public class ConvScopeFixer
         String qrySQL = "SELECT co.CollectionObjectID, cc.CatalogSeriesID FROM collectionobject AS co Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " + 
                         "WHERE co.CollectionObjectTypeID < 9 OR co.CollectionObjectTypeID > 19";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "Preparation", "CollectionObjectID", "PreparationID", "collectionobject_CollectionObjectID");
+        return fixTableWithColMemId(cntSQL, qrySQL, "Preparation", "CollectionObjectID", "Preparation", "PreparationID", "collectionobject_CollectionObjectID");
     }
     
     /**
@@ -422,7 +421,7 @@ public class ConvScopeFixer
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
                         "WHERE cc.CollectionObjectTypeID >  8 AND cc.CollectionObjectTypeID <  20";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute");
+        return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute", "CollectionObjectAttributeID");
     }
     
     /**
@@ -436,7 +435,7 @@ public class ConvScopeFixer
         String qrySQL = "SELECT oi.OtherIdentifierID, cc.CatalogSeriesID FROM otheridentifier AS oi " + 
                         "Inner Join collectionobjectcatalog AS cc ON oi.CollectionObjectID = cc.CollectionObjectCatalogID";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "OtherIdentifier", "OtherIdentifierID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "OtherIdentifier", "OtherIdentifierID", "OtherIdentifier", "OtherIdentifierID");
     }
     
     /**
@@ -450,7 +449,7 @@ public class ConvScopeFixer
         String qrySQL = "SELECT DISTINCT p.ProjectID, cc.CatalogSeriesID FROM projectcollectionobjects AS p " + 
                         "Inner Join collectionobjectcatalog AS cc ON p.CollectionObjectID = cc.CollectionObjectCatalogID";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "Project", "ProjectID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "Project", "ProjectID", "Project", "ProjectID");
     }
     
     /**
@@ -543,7 +542,7 @@ public class ConvScopeFixer
     }
     
     /**
-     * @return
+     * @return true on success
      */
     public boolean doFixTables()
     {
@@ -567,70 +566,127 @@ public class ConvScopeFixer
     }
 
     /**
-     * @return
+     * @param cntSQL the SQL that counts how many records
+     * @param qrySQL the SQL that gets all the records (must have two columns)
+     * @param oldClassName the Sp5 table Name
+     * @param oldIdName the Sp5 primary key Column name
+     * @param newClassName the Sp6 Class Name
+     * @param newIdName the Sp6 primary key column name
+     * @return true on success
      */
-    protected boolean fixTableWithColMemId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName)
+    protected boolean fixTableWithColMemId(final String cntSQL, 
+                                           final String qrySQL, 
+                                           final String oldClassName, 
+                                           final String oldIdName, 
+                                           final String newClassName, 
+                                           final String newIdName)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID", null);
+        return fixTable(cntSQL, qrySQL, oldClassName, oldIdName, newClassName, newIdName, "CollectionMemberID", null);
     }
 
     /**
+     * @param cntSQL the SQL that counts how many records
+     * @param qrySQL the SQL that gets all the records (must have two columns)
+     * @param oldClassName the Sp5 table Name
+     * @param oldIdName the Sp5 primary key Column name
+     * @param newClassName the Sp6 Class Name
+     * @param newIdName the Sp6 primary key column name
+     * @param mapperName the name of the mapper to use
      * @return
      */
-    protected boolean fixTableWithColMemId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName, final String mapperName)
+    protected boolean fixTableWithColMemId(final String cntSQL, 
+                                           final String qrySQL, 
+                                           final String oldClassName, 
+                                           final String oldIdName, 
+                                           final String newClassName, 
+                                           final String newIdName, 
+                                           final String mapperName)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID", mapperName);
+        return fixTable(cntSQL, qrySQL, oldClassName, oldIdName, newClassName, newIdName, "CollectionMemberID", mapperName);
     }
 
     /**
+     * @param cntSQL the SQL that counts how many records
+     * @param qrySQL the SQL that gets all the records (must have two columns)
+     * @param oldClassName the Sp5 table Name
+     * @param oldIdName the Sp5 primary key Column name
+     * @param newClassName the Sp6 Class Name
+     * @param newIdName the Sp6 primary key column name
+     * @param mapperName the name of the mapper to use
+     * @param mapperSQL the SQL to use to fill the mapper
      * @return
      */
-    protected boolean fixTableWithColMemId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName, final String mapperName, final String mapperSQL)
+    protected boolean fixTableWithColMemId(final String cntSQL, 
+                                           final String qrySQL, 
+                                           final String oldClassName, 
+                                           final String oldIdName, 
+                                           final String newClassName, 
+                                           final String newIdName, 
+                                           final String mapperName, 
+                                           final String mapperSQL)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID", mapperName, mapperSQL);
+        return fixTable(cntSQL, qrySQL, oldClassName, oldIdName, newClassName, newIdName, "CollectionMemberID", mapperName, mapperSQL);
     }
 
     /**
-     * @return
+     * @param cntSQL the SQL that counts how many records
+     * @param qrySQL the SQL that gets all the records (must have two columns)
+     * @param oldClassName the Sp5 table Name
+     * @param oldIdName the Sp5 primary key Column name
+     * @param newClassName the Sp6 Class Name
+     * @param newIdName the Sp6 primary key column name
+     * @return true on success
      */
-    protected boolean fixTableWithDisciplineId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName)
+    protected boolean fixTableWithDisciplineId(final String cntSQL, 
+                                               final String qrySQL, 
+                                               final String oldClassName, 
+                                               final String oldIdName, 
+                                               final String newClassName, 
+                                               final String newIdName)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "DisciplineID", null);
+        return fixTable(cntSQL, qrySQL, oldClassName, oldIdName, newClassName, newIdName, "DisciplineID", null);
     }
 
     /**
-     * @param cntSQL
-     * @param qrySQL
-     * @param className
-     * @param idFieldName
-     * @param newIdName
-     * @param colToFix
-     * @return
+     * @param cntSQL the SQL that counts how many records
+     * @param qrySQL the SQL that gets all the records (must have two columns)
+     * @param oldClassName the Sp5 table Name
+     * @param oldIdName the Sp5 primary key Column name
+     * @param newClassName the Sp6 Class Name
+     * @param newIdName the Sp6 primary key column name
+     * @param colToFix the column in the Sp6 database that needs fixing
+     * @param mapperName the name of the mapper
+     * @return true on success
      */
     protected boolean fixTable(final String cntSQL, 
                                final String qrySQL, 
-                               final String className, 
-                               final String idFieldName, 
+                               final String oldClassName, 
+                               final String oldIdName, 
+                               final String newClassName, 
                                final String newIdName,
                                final String colToFix,
                                final String mapperName)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, colToFix, mapperName, null);
+        return fixTable(cntSQL, qrySQL, oldClassName, oldIdName, newClassName, newIdName, colToFix, mapperName, null);
     }
 
     /**
-     * @param cntSQL
-     * @param qrySQL
-     * @param className
-     * @param idFieldName
-     * @param newIdName
-     * @param colToFix
-     * @return
+     * @param cntSQL the SQL that counts how many records
+     * @param qrySQL the SQL that gets all the records (must have two columns)
+     * @param oldClassName the Sp5 Class Name
+     * @param oldIdName the Sp5 primary key Column name
+     * @param newClassName the Sp6 Class Name
+     * @param newIdName the Sp6 primary key column name
+     * @param colToFix the column in the Sp6 database that needs fixing
+     * @param mapperName the name of the mapper
+     * @param mapperSQL the SQL to fill the mapper
+     * @return true on success
      */
     protected boolean fixTable(final String cntSQL, 
                                final String qrySQL, 
-                               final String className, 
-                               final String idFieldName, 
+                               final String oldClassName, 
+                               final String oldIdName, 
+                               final String newClassName, 
                                final String newIdName,
                                final String colToFix,
                                final String mapperName,
@@ -642,17 +698,18 @@ public class ConvScopeFixer
            return true;
         }
 
-        String newIdFieldName = newIdName == null ? idFieldName : newIdName;
+        String newIdFieldName = newIdName == null ? oldIdName : newIdName;
             
-        IdMapperIFace idMapper = mapperName == null ? IdMapperMgr.getInstance().get(className, idFieldName) : IdMapperMgr.getInstance().get(mapperName);
+        IdMapperIFace idMapper = mapperName == null ? IdMapperMgr.getInstance().get(oldClassName, oldIdName) : IdMapperMgr.getInstance().get(mapperName);
         if (idMapper == null)
         {
-            idMapper = IdMapperMgr.getInstance().addTableMapper(className, idFieldName, mapperSQL, false);
+            idMapper = IdMapperMgr.getInstance().addTableMapper(oldClassName, oldIdName, mapperSQL, false);
             if (idMapper == null || idMapper.size() == 0)
             {
-                log.error("**** No Mapper for["+className+"]");
+                log.error("**** No Mapper for["+oldClassName+"_"+oldIdName+"]");
+                return false;
             }
-            return false;
+            
         }
 
         Statement         stmt  = null;
@@ -661,7 +718,7 @@ public class ConvScopeFixer
         {
             stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             
-            String pStr = String.format("UPDATE %s SET %s=? WHERE %s=?", className.toLowerCase(), colToFix, newIdFieldName);
+            String pStr = String.format("UPDATE %s SET %s=? WHERE %s=?", newClassName.toLowerCase(), colToFix, newIdFieldName);
             log.debug(pStr);
             
             pStmt = newDBConn.prepareStatement(pStr);
@@ -689,7 +746,7 @@ public class ConvScopeFixer
                                 int upCnt = pStmt.executeUpdate();
                                 if (upCnt != 1)
                                 {
-                                    msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, idFieldName, newId);
+                                    msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, oldIdName, newId);
                                 }
                             } catch (Exception ex)
                             {
@@ -698,15 +755,15 @@ public class ConvScopeFixer
                             
                         } else
                         {
-                            msg = String.format("The CatalogSeriesID %d wasn't mapped to %s for Old %s %d", rs.getInt(2), colToFix, idFieldName, rs.getInt(1));
+                            msg = String.format("The CatalogSeriesID %d wasn't mapped to %s for Old %s %d", rs.getInt(2), colToFix, oldIdName, rs.getInt(1));
                         }
                     } else
                     {
-                        msg = String.format("The old %s ID: %d wasn't mapped.", idFieldName, rs.getInt(1));
+                        msg = String.format("The old %s ID: %d wasn't mapped.", oldIdName, rs.getInt(1));
                     }
                 } else
                 {
-                    msg = String.format("The old %s ID: is NULL", idFieldName);
+                    msg = String.format("The old %s ID: is NULL", oldIdName);
                 }
                 
                 if (msg != null)
@@ -719,7 +776,7 @@ public class ConvScopeFixer
             }
             rs.close();
             
-            tblWriter.log(String.format("Updated %d records in table %s", count, className));
+            tblWriter.log(String.format("Updated %d records in table %s", count, oldClassName));
             
             return true;
             

@@ -273,12 +273,6 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         databasesDest = new ValComboBox(dbDestPickList);
         serversDest   = new ValComboBox(svDestPickList);
         
-        dbPickList.setComboBox(databasesSource);
-        svPickList.setComboBox(serversSource);
-        
-        dbDestPickList.setComboBox(databasesDest);
-        svDestPickList.setComboBox(serversDest);
-        
         setControlSize(passwordSource);
         setControlSize(passwordDest);
         setControlSize(databasesSource);
@@ -802,6 +796,19 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
             {
                 AppPreferences.getLocalPrefs().remove("convert.passwordDest");
             }
+        //}
+        
+//        protected JEditComboBox              databasesDest;
+//        protected JEditComboBox              databasesSource;
+//        protected JEditComboBox              serversDest;    
+//        protected JEditComboBox              serversSource;
+
+       // AppPreferences.getLocalPrefs().put("convert.dbdriverSource_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
+       // AppPreferences.getLocalPrefs().put("convert.dbdriverDest_selected", dbDrivers.get(dbDriverCBX2.getSelectedIndex()).getName());
+        
+        //databasesSource.getSelectedIndex()
+        //AppPreferences.getLocalPrefs().put("convert.databasesSource_selected", databasesDest.getTextField().getText());
+        //AppPreferences.getLocalPrefs().put("convert.databasesDest_selected", databasesSource.getTextField().getText());
     }
 
     /**

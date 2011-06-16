@@ -20,7 +20,8 @@
 	</table>
 	-->
 
-	<table name="PaleoContext" show="true">
+
+	<table name="PaleoContext">
 		<field name="text1"/>
 	</table>
 </tables>

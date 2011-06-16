@@ -24,6 +24,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -98,6 +100,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.config.FixDBAfterLogin;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -685,12 +688,13 @@ public class SpecifyDBConverter extends AppBase
         boolean doFixLoanPreps = false;
         if (doFixLoanPreps)
         {
+            // These really aren't working correctly
             fixLoanPreps(oldDBConn, newDBConn);
             fixGiftPreps(oldDBConn, newDBConn);
             return;
         }
         
-        boolean doGetLastEditedByNamesHashSet = true;
+        boolean doGetLastEditedByNamesHashSet = false;
         if (doGetLastEditedByNamesHashSet)
         {
             getOldEditedByStrings(oldDBConn);
@@ -743,7 +747,6 @@ public class SpecifyDBConverter extends AppBase
         {
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             IdMapperMgr.getInstance().addTableMapper("agent", "AgentID", false);
-            IdMapperMgr.getInstance().addTableMapper("address", "AddressID", false);
             
             convLogger.initialize(dbNameDest);
             convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
@@ -753,7 +756,11 @@ public class SpecifyDBConverter extends AppBase
             return;
         } 
         
-        //ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
+        boolean doCUPaleo = StringUtils.contains(dbNameDest, "cupaleo");
+        if (doCUPaleo)
+        {
+            ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
+        }
 
         boolean doFix2 = false;
         if (doFix2)
@@ -786,6 +793,20 @@ public class SpecifyDBConverter extends AppBase
             System.exit(0);
         }
         
+        boolean doFixDisciplineIntoCEs = false;
+        if (doFixDisciplineIntoCEs)
+        {
+            doSetDisciplineIntoCEs(oldDBConn, newDBConn);
+            return;
+        }
+        
+        boolean doFixDisciplineIntoLocalities = false;
+        if (doFixDisciplineIntoLocalities)
+        {
+            doSetDisciplineIntoLocalities(oldDBConn, newDBConn);
+            return;
+        }
+        
         boolean doFix3 = false;
         if (doFix3)        
         {
@@ -802,6 +823,37 @@ public class SpecifyDBConverter extends AppBase
         {
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             ConvertMiscData.moveStratFieldsToCEA(oldDBConn, newDBConn);
+            oldDBConn.close();
+            newDBConn.close();
+            return;
+        }
+        
+        boolean doFix5 = false;
+        if (doFix5)        
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            ConvertMiscData.moveGTPNameToCEText1(oldDBConn, newDBConn);
+            oldDBConn.close();
+            newDBConn.close();
+            return;
+        }
+        
+        // For KU Vert Paleo
+        boolean doFix6 = false;
+        if (doFix6)        
+        {
+            ConvertTaxonHelper.fixTaxonomicUnitType(oldDBConn);
+            
+            oldDBConn.close();
+            newDBConn.close();
+            return;
+        }
+        
+        boolean doFix7 = false;
+        if (doFix7)        
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            ConvertMiscData.moveGTPNameToLocalityVer(oldDBConn, newDBConn);
             oldDBConn.close();
             newDBConn.close();
             return;
@@ -879,7 +931,6 @@ public class SpecifyDBConverter extends AppBase
                     dbMgr.close();
                 }
 
-                
                 MySQLBackupService bkService = new MySQLBackupService();
                 
                 doBuild = !bkService.doRestore(file.getAbsolutePath(),"/usr/local/mysql/bin/mysql", dbNameDest, itUsrPwd.first, itUsrPwd.second);
@@ -1092,7 +1143,6 @@ public class SpecifyDBConverter extends AppBase
                 } else
                 {
                     idMapperMgr.addTableMapper("agent", "AgentID");
-                    idMapperMgr.addTableMapper("address", "AddressID");
                     idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
                 }
                 frame.incOverall();
@@ -1114,7 +1164,7 @@ public class SpecifyDBConverter extends AppBase
                 
                 
                 TableWriter gtpTblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
-                StratToGTP  stratToGTP   = null;//new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter);
+                StratToGTP  stratToGTP   = doCUPaleo ? new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter, conversion) : null;
 
                 
                 frame.setDesc("Converting Geography");
@@ -1136,7 +1186,7 @@ public class SpecifyDBConverter extends AppBase
                 {
                     if (stratToGTP != null)
                     {
-                        stratToGTP.createTreeDef();
+                        stratToGTP.createGTPTreeDef();
                         
                     } else
                     {
@@ -1316,9 +1366,7 @@ public class SpecifyDBConverter extends AppBase
                 conversion.updateBioLogicalObjAttrIds();;
                 conversion.updatePrepAttrIds();
 
-                //checkDisciplines();
-
-                //conversion.convertHostTaxonId();
+                conversion.convertHostTaxonId();
                 
                 if (getSession() != null)
                 {
@@ -1328,17 +1376,25 @@ public class SpecifyDBConverter extends AppBase
                 
                 setSession(HibernateUtil.getNewSession());
                 
+                if (stratToGTP != null)
+                {
+                    stratToGTP.convertStratToGTP();
+                }
+                
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
                 boolean doStrat = true;
                 if (doStrat)
                 {
                      TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
-                     
-                     conversion.convertStrat(tblWriter, conversion.isPaleo());
+                     if (stratToGTP != null)
+                     {
+                         stratToGTP.convertStrat(tblWriter, conversion.isPaleo());
+                     } else
+                     {
+                         conversion.convertStrat(tblWriter, conversion.isPaleo());
+                     }
                 }
-
-                //checkDisciplines();
 
                 //-------------------------------------------
                 // Get Discipline and Collection
@@ -1402,12 +1458,6 @@ public class SpecifyDBConverter extends AppBase
                         }
                     }
 
-                    //checkDisciplines();
-                    
-                    if (stratToGTP != null)
-                    {
-                        stratToGTP.convertStratToGTP();
-                    }
 
                     division    = dscp.getDivision();
                     localSession.lock(division, LockMode.NONE);
@@ -1433,7 +1483,7 @@ public class SpecifyDBConverter extends AppBase
                     
                     try
                     {
-                        for (CollectionInfo collInfo : CollectionInfo.getCollectionInfoList(oldDBConn))
+                        for (CollectionInfo collInfo : CollectionInfo.getCollectionInfoList(oldDBConn, true))
                         {
                             if (collInfo.getCollectionId() == null)
                             {
@@ -1478,9 +1528,6 @@ public class SpecifyDBConverter extends AppBase
                     ex.printStackTrace();
                 }
                 
-
-                //checkDisciplines();
-
                 localSession.close();
                 
                 localSession = HibernateUtil.getNewSession();
@@ -1549,6 +1596,8 @@ public class SpecifyDBConverter extends AppBase
 
                 frame.incOverall();
                 
+                doSetDisciplineIntoCEs(oldDBConn, newDBConn);
+                
                 frame.setDesc("Fixing Preferred Taxon");
                 
                 // MySQL Only ???
@@ -1593,6 +1642,8 @@ public class SpecifyDBConverter extends AppBase
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
                 convScopeFixer.checkTables();
+                
+                FixDBAfterLogin.fixUserPermissions(true);
                 
                 waitTime = 0;
                 
@@ -1658,9 +1709,14 @@ public class SpecifyDBConverter extends AppBase
                 frame.setDesc("Updating Version...");
                 updateVersionInfo(newConn);
                 
-                if (dbNameDest.startsWith("kui_fish_"))
+                if (dbNameDest.startsWith("kui_fish_") || dbNameDest.startsWith("kui_tissue"))
                 {
                     ConvertMiscData.convertKUFishCruiseData(oldDBConn, newDBConn, conversion.getCurDisciplineID());
+                    ConvertMiscData.convertKUFishObsData(oldDBConn, newDBConn);
+                    
+                } else if (dbNameDest.startsWith("ku_invert_"))
+                {
+                    ConvertMiscData.convertKUInvertsObsData(oldDBConn, newDBConn);
                 }
                 
                 // Check for mismatched Disciplines for CE and CE Attrs
@@ -1751,6 +1807,249 @@ public class SpecifyDBConverter extends AppBase
             if (getSession() != null)
             {
                 getSession().close();
+            }
+        }
+    }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     */
+    public void doSetDisciplineIntoCEs(final Connection oldDBConn, final Connection newDBConn)
+    {
+        //ProgressFrame frame = conversion.getFrame();
+        
+        //IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+        IdMapperIFace ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
+        
+        HashMap<Integer, Integer> catSeriesToDisciplineHash = new HashMap<Integer, Integer>();
+        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList())
+        {
+            catSeriesToDisciplineHash.put(ci.getCatSeriesId(), ci.getDisciplineId());
+        }
+        
+        //catSeriesToDisciplineHash.put(0, 3);
+        //catSeriesToDisciplineHash.put(-568842536, 7);
+        
+        String sql = "SELECT csd.CatalogSeriesID, ce.CollectingEventID FROM catalogseriesdefinition AS csd " +
+                     "Inner Join collectingevent AS ce ON csd.ObjectTypeID = ce.BiologicalObjectTypeCollectedID";
+        
+        PreparedStatement pStmt = null;
+        Statement         stmt  = null;
+        try
+        {
+            pStmt = newDBConn.prepareStatement("UPDATE collectingevent SET DisciplineID=? WHERE CollectingEventID=?");
+            int totalCnt = BasicSQLUtils.getNumRecords(oldDBConn, "collectingevent");
+            
+            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs   = stmt.executeQuery(sql);
+            if (frame != null)
+            {
+                frame.setProcess(0, totalCnt);
+                frame.setDesc("Setting Discipline Ids in CollectingEvents");
+            }
+
+            int count = 0;
+            while (rs.next())
+            {
+                int catSerId = rs.getInt(1);
+                int id       = rs.getInt(2);
+                
+                Integer dispId = catSeriesToDisciplineHash.get(catSerId);
+                if (dispId != null)
+                {
+                    Integer newId = ceMapper.get(id);
+                    if (newId != null)
+                    {
+                        pStmt.setInt(1, dispId);
+                        pStmt.setInt(2, newId);
+                        pStmt.executeUpdate();
+                        
+                    } else
+                    {
+                        System.err.println(String.format("Unable to map oldId %d", id));
+                    }
+                } else
+                {
+                    System.err.println(String.format("Unable to map Cat Series %d to a discipline", catSerId));
+                }
+                
+                count++;
+                if (count % 1000 == 0)
+                {
+                    if (frame != null)
+                    {
+                        frame.setProcess(count);
+                    } else
+                    {
+                        log.info(String.format("CE Records: %d / %d", count, totalCnt));
+                    }
+                }
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+                if (stmt != null) stmt.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     */
+    public void doSetDisciplineIntoLocalities(final Connection oldDBConn, final Connection newDBConn)
+    {
+        TableWriter tblWriter = convLogger.getWriter("LocalityDisciplines.html", "Setting Discipline into Localities");
+        setTblWriter(tblWriter);
+        IdHashMapper.setTblWriter(tblWriter);
+        
+        IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+        IdMapperIFace ceMapper = IdMapperMgr.getInstance().addTableMapper("locality", "LocalityID", false);
+        
+        HashMap<Integer, Integer> catSeriesToDisciplineHash = new HashMap<Integer, Integer>();
+        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList())
+        {
+            catSeriesToDisciplineHash.put(ci.getCatSeriesId(), ci.getDisciplineId());
+        }
+        
+        catSeriesToDisciplineHash.put(0, 3);
+        catSeriesToDisciplineHash.put(-568842536, 7);
+        
+        String sql = " SELECT l.LocalityName, l.LocalityID FROM locality AS l Left Join collectingevent AS ce ON l.LocalityID = ce.LocalityID WHERE ce.CollectingEventID IS NULL";
+        Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
+        tblWriter.println(String.format("Unused Localities in the Sp5 database: %d<br>", rows.size()));
+        if (rows.size() > 0)
+        {
+            tblWriter.startTable();
+            tblWriter.logHdr("Id", "Locality Name");
+            for (Object[] row : rows)
+            {
+                tblWriter.logObjRow(row);
+            }
+            tblWriter.endTable();
+        }
+        
+        HashSet<Integer> sharedLocDifObjTypeSet = new HashSet<Integer>();
+        int numSharedLocaltiesDifObjTypes = 0;
+        
+        // Find the Localities that are being shared.
+        sql = " SELECT * FROM (SELECT l.LocalityID, COUNT(l.LocalityID) cnt, l.LocalityName FROM locality AS l Left Join collectingevent AS ce ON l.LocalityID = ce.LocalityID WHERE ce.CollectingEventID IS NOT NULL GROUP BY l.LocalityID) T1 WHERE cnt > 1";
+        rows = BasicSQLUtils.query(oldDBConn, sql);
+        tblWriter.println(String.format("Localities being Shared: %d<br>", rows.size()));
+        tblWriter.println("Shared Localities with different ObjectTypes<br>");
+        if (rows.size() > 0)
+        {
+            tblWriter.startTable();
+            tblWriter.logHdr("Id", "Count", "Locality Name");
+            for (Object[] row : rows)
+            {
+                Integer localityId = (Integer)row[0];
+                sql = String.format("SELECT COUNT(*) FROM (SELECT ce.BiologicalObjectTypeCollectedID, COUNT(ce.BiologicalObjectTypeCollectedID) " +
+                                    "FROM locality AS l Left Join collectingevent AS ce ON l.LocalityID = ce.LocalityID " +
+                                    "WHERE l.LocalityID = %d GROUP BY ce.BiologicalObjectTypeCollectedID) T1", localityId);
+                int count = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+                if (count > 1)
+                {
+                    tblWriter.logObjRow(row);
+                    numSharedLocaltiesDifObjTypes++;
+                    sharedLocDifObjTypeSet.add(localityId);
+                }
+            }
+            tblWriter.endTable();
+        }
+        tblWriter.println(String.format("Number of Shared Localities with different ObjectTypes: %d<br>", numSharedLocaltiesDifObjTypes));
+        
+        
+        sql = "SELECT csd.CatalogSeriesID, l.LocalityID FROM locality AS l Left Join collectingevent AS ce ON l.LocalityID = ce.LocalityID " +
+              "Inner Join catalogseriesdefinition AS csd ON ce.BiologicalObjectTypeCollectedID = csd.ObjectTypeID WHERE ce.CollectingEventID IS NOT NULL " +
+              "GROUP BY l.LocalityID";
+        
+        PreparedStatement pStmt = null;
+        Statement         stmt  = null;
+        try
+        {
+            pStmt = newDBConn.prepareStatement("UPDATE locality SET DisciplineID=? WHERE LocalityID=?");
+            int totalCnt = BasicSQLUtils.getNumRecords(oldDBConn, "locality");
+            
+            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs   = stmt.executeQuery(sql);
+            if (frame != null)
+            {
+                frame.setProcess(0, totalCnt);
+                frame.setDesc("Setting Discipline Ids in Locality");
+            }
+
+            int count = 0;
+            while (rs.next())
+            {
+                int catSerId = rs.getInt(1);
+                int id       = rs.getInt(2);
+                
+                if (sharedLocDifObjTypeSet.contains(id))
+                {
+                    continue;
+                }
+                
+                Integer dispId = catSeriesToDisciplineHash.get(catSerId);
+                if (dispId != null)
+                {
+                    Integer newId = ceMapper.get(id);
+                    if (newId != null)
+                    {
+                        pStmt.setInt(1, dispId);
+                        pStmt.setInt(2, newId);
+                        pStmt.executeUpdate();
+                        
+                    } else
+                    {
+                        System.err.println(String.format("Unable to map oldId %d", id));
+                    }
+                } else
+                {
+                    System.err.println(String.format("Unable to map Cat Series %d to a discipline", catSerId));
+                }
+                
+                count++;
+                if (count % 1000 == 0)
+                {
+                    if (frame != null)
+                    {
+                        frame.setProcess(count);
+                    } else
+                    {
+                        log.info(String.format("CE Records: %d / %d", count, totalCnt));
+                    }
+                }
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+                if (stmt != null) stmt.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
             }
         }
     }
@@ -2085,7 +2384,7 @@ public class SpecifyDBConverter extends AppBase
         
         if (appVerStr != null)
         {
-            appVerStr = UIRegistry.getAppVersion();
+            appVerStr = UIHelper.getInstall4JInstallString();
             if (appVerStr == null)
             {
                 do
@@ -2106,7 +2405,7 @@ public class SpecifyDBConverter extends AppBase
             
         } else
         {
-            appVerStr = UIRegistry.getAppVersion();
+            appVerStr = UIHelper.getInstall4JInstallString();
             if (appVerStr == null)
             {
                 do

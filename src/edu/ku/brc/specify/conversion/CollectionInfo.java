@@ -60,6 +60,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected static final Logger           log         = Logger.getLogger(CollectionInfo.class);
     
     protected static Vector<CollectionInfo> collectionInfoList = new Vector<CollectionInfo>();
+    protected static boolean                askForFix = false;
     
     public static boolean        DOING_ACCESSSION = false;
 
@@ -96,6 +97,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected int                colObjDetTaxCnt;
     protected long               srcHostTaxonCnt;
     protected DisciplineType     disciplineTypeObj;
+
     
     protected String             determinationTaxonType = null;
     protected ArrayList<Integer> detTaxonTypeIdList     = new ArrayList<Integer>();
@@ -287,7 +289,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         int            max     = 0;
         CollectionInfo colInfo = null;
         int inx = 0;
-        for (CollectionInfo ci : getCollectionInfoList(oldDBConn))
+        for (CollectionInfo ci : getCollectionInfoList(oldDBConn, true))
         {
             if (ci.getColObjCnt() > max || DOING_ACCESSSION)
             {
@@ -305,10 +307,27 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     }
     
     /**
+     * @return the askForFix
+     */
+    public static boolean isAskForFix()
+    {
+        return askForFix;
+    }
+
+    /**
      * @param oldDBConn
      * @return
      */
     public static Vector<CollectionInfo> getCollectionInfoList(final Connection oldDBConn)
+    {
+        return getCollectionInfoList(oldDBConn, false);
+    }
+
+    /**
+     * @param oldDBConn
+     * @return
+     */
+    public static Vector<CollectionInfo> getCollectionInfoList(final Connection oldDBConn, final boolean doSkipCheck)
     {
         //collectionInfoList.clear();
         if (collectionInfoList.isEmpty())
@@ -365,10 +384,10 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             
             Statement stmt = null;
             
+            log.debug(sql);
+            
             try
             {
-                log.debug(sql);
-                
                 HashSet<Integer> taxonTypeIdHash = new HashSet<Integer>();
                 
                 stmt         = oldDBConn.createStatement();
@@ -420,61 +439,61 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     log.debug(sql);
                     
                     String detSQLStr = "SELECT ct.TaxonomyTypeID, (select distinct relatedsubtypevalues FROM usysmetacontrol c " +
-                                       "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
-                                       "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
-                                       "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
+                    	               "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                    	               "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
+                    	               "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
                     log.debug(detSQLStr);
                     
                     String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
                     
-                    
-                    Vector<Object[]> detRows = BasicSQLUtils.query(oldDBConn, detSQLStr);
-                    
-                    
-                    for (Object[] row : detRows)
+                    if (!doSkipCheck)
                     {
-                        Integer txnTypeId    = (Integer)row[0];
-                        String  detTxnTypes  = (String)row[1];
-                        if (detTxnTypes == null)
+                        Vector<Object[]> detRows = BasicSQLUtils.query(oldDBConn, detSQLStr);
+                        for (Object[] row : detRows)
                         {
-                            detTxnTypes = Integer.toString(txnTypeId);
-                        }
-                        
-                        if (StringUtils.isNotEmpty(detTxnTypes))
-                        {
-                            if (StringUtils.contains(detTxnTypes, ','))
+                            Integer txnTypeId    = (Integer)row[0];
+                            String  detTxnTypes  = (String)row[1];
+                            if (detTxnTypes == null)
                             {
-                                StringBuilder sb = new StringBuilder();
-                                String[] toks = StringUtils.split(detTxnTypes, ',');
-                                
-                                String dtName = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnTypeId);
-                                sb.append(String.format("Warning - There are %d DeterminationTaxonTypes for TaxonObjectType %d (%s) they are:\n",  toks.length, txnTypeId, dtName));
-                                for (String id : toks)
-                                {
-                                    String name = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + id);
-                                    sb.append(id);
-                                    sb.append(" - ");
-                                    sb.append(name);
-                                    sb.append("\n");
-                                }
-                                sb.append("\nThis database will need to be fixed by hand before it can be converted.");
-                                UIRegistry.showError(sb.toString());
-                                
-                                oldDBConn.close();
-                                
-                                System.exit(0);
-                                
-                            } else if (StringUtils.isNumeric(detTxnTypes.trim()))
+                                detTxnTypes = Integer.toString(txnTypeId);
+                            }
+                            
+                            if (StringUtils.isNotEmpty(detTxnTypes))
                             {
-                                Integer txnType = Integer.parseInt(detTxnTypes);
-                                if (!txnType.equals(txnTypeId))
+                                if (StringUtils.contains(detTxnTypes, ','))
                                 {
-                                    String tName  = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnType);
-                                    String dtName = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnTypeId);
                                     StringBuilder sb = new StringBuilder();
-                                    sb.append(String.format("Warning - The TaxonObjectType %d (%s) in the DeterminationTaxonTypes field\ndoesn't match the actual TaxonObjectType %d (%s)",  txnType, tName, txnTypeId, dtName));
+                                    String[] toks = StringUtils.split(detTxnTypes, ',');
+                                    
+                                    String dtName = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnTypeId);
+                                    sb.append(String.format("Warning - There are %d DeterminationTaxonTypes for TaxonObjectType %d (%s) they are:\n",  toks.length, txnTypeId, dtName));
+                                    for (String id : toks)
+                                    {
+                                        String name = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + id);
+                                        sb.append(id);
+                                        sb.append(" - ");
+                                        sb.append(name);
+                                        sb.append("\n");
+                                    }
+                                    sb.append("\nThis database will need to be fixed by hand before it can be converted.");
                                     UIRegistry.showError(sb.toString());
-                                    System.exit(0);
+                                    
+                                    askForFix = true;
+                                    return null;
+                                    
+                                } else if (StringUtils.isNumeric(detTxnTypes.trim()))
+                                {
+                                    Integer txnType = Integer.parseInt(detTxnTypes);
+                                    if (!txnType.equals(txnTypeId))
+                                    {
+                                        String tName  = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnType);
+                                        String dtName = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnTypeId);
+                                        StringBuilder sb = new StringBuilder();
+                                        sb.append(String.format("Warning - The TaxonObjectType %d (%s) in the DeterminationTaxonTypes field\ndoesn't match the actual TaxonObjectType %d (%s)",  txnType, tName, txnTypeId, dtName));
+                                        UIRegistry.showError(sb.toString());
+                                        askForFix = true;
+                                        return null;
+                                    }
                                 }
                             }
                         }

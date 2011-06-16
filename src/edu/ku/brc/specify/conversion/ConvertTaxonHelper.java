@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setFieldsToIgnoreWhenMappingNames;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer;
@@ -26,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -38,6 +41,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -59,7 +63,8 @@ public class ConvertTaxonHelper
     protected static SimpleDateFormat        dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
     protected static Timestamp               now                    = new Timestamp(System .currentTimeMillis());
     protected static String                  nowStr                 = dateTimeFormatter.format(now);
-    
+    protected static int                     taxonomicUnitTypeId    = 11111111;
+
     protected Connection                     oldDBConn;
     protected Connection                     newDBConn;
     protected String                         oldDBName;
@@ -89,17 +94,18 @@ public class ConvertTaxonHelper
     protected IdMapperIFace[] mappers       = null;
     
     protected  String[] oldCols = {"TaxonNameID", "ParentTaxonNameID", "TaxonomyTypeID", "AcceptedID", "TaxonomicUnitTypeID", "TaxonomicSerialNumber", "TaxonName", "UnitInd1", "UnitName1", 
-                        "UnitInd2", "UnitName2", "UnitInd3", "UnitName3", "UnitInd4", "UnitName4", "FullTaxonName", "CommonName", "Author", "Source", "GroupPermittedToView", 
-                        "EnvironmentalProtectionStatus", "Remarks", "NodeNumber", "HighestChildNodeNumber", "LastEditedBy", "Accepted", 
-                        "RankID", "GroupNumber", "TimestampCreated", "TimestampModified"};
+                                   "UnitInd2", "UnitName2", "UnitInd3", "UnitName3", "UnitInd4", "UnitName4", "FullTaxonName", "CommonName", "Author", "Source", "GroupPermittedToView", 
+                                   "EnvironmentalProtectionStatus", "Remarks", "NodeNumber", "HighestChildNodeNumber", "LastEditedBy", "Accepted", 
+                                   "RankID", "GroupNumber", "TimestampCreated", "TimestampModified"};
 
     protected String[] cols = {"TaxonID", "Author", "CitesStatus", "COLStatus", "CommonName", "CultivarName", "EnvironmentalProtectionStatus",
-                     "EsaStatus", "FullName", "GroupNumber", "GUID", "HighestChildNodeNumber", "IsAccepted", "IsHybrid", "IsisNumber", "LabelFormat", "Name", "NcbiTaxonNumber", "NodeNumber", "Number1", "Number2",
-                     "RankID", "Remarks", "Source", "TaxonomicSerialNumber", "Text1", "Text2", "UnitInd1", "UnitInd2", "UnitInd3", "UnitInd4", "UnitName1", "UnitName2", "UnitName3", "UnitName4", "UsfwsCode", "Visibility",
-                     "ParentID", "AcceptedID", "ModifiedByAgentID", "TaxonTreeDefItemID", "VisibilitySetByID", "CreatedByAgentID", "HybridParent1ID", "TaxonTreeDefID", "HybridParent2ID",
-                     "TimestampCreated", "TimestampModified", "Version"};
+                               "EsaStatus", "FullName", "GroupNumber", "GUID", "HighestChildNodeNumber", "IsAccepted", "IsHybrid", "IsisNumber", "LabelFormat", "Name", "NcbiTaxonNumber", "NodeNumber", "Number1", "Number2",
+                               "RankID", "Remarks", "Source", "TaxonomicSerialNumber", "Text1", "Text2", "UnitInd1", "UnitInd2", "UnitInd3", "UnitInd4", "UnitName1", "UnitName2", "UnitName3", "UnitName4", "UsfwsCode", "Visibility",
+                               "ParentID", "AcceptedID", "ModifiedByAgentID", "TaxonTreeDefItemID", "VisibilitySetByID", "CreatedByAgentID", "HybridParent1ID", "TaxonTreeDefID", "HybridParent2ID",
+                               "TimestampCreated", "TimestampModified", "Version"};
     
     protected int[] colTypes = null;
+    protected int[] colSizes = null;
     
     protected Hashtable<String, String> newToOldColMap    = new Hashtable<String, String>();
     protected Hashtable<String, String> oldToNewColMap    = new Hashtable<String, String>();
@@ -266,14 +272,18 @@ public class ConvertTaxonHelper
         
         taxonomyTypeIdInClause = " in (" + inSB.toString() + ")";
         
-        idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
+        // KU Vert Paleo
+        //taxonomyTypeIdInClause = " in (0,1,2,3,4,7)";
+        
+        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
+        //taxonomyTypeMapper.mapAllIds();
         
         //---------------------------------
         // TaxonName
         //---------------------------------
         
-        taxonFromClause = String.format(" FROM taxonname tx Inner Join taxonomicunittype tu ON tx.TaxonomicUnitTypeID = tu.TaxonomicUnitTypeID " +
-        		                        "WHERE tx.TaxonomyTypeId %s ORDER BY tx.RankID", 
+        taxonFromClause = String.format(" FROM taxonname tx INNER JOIN taxonomicunittype tu ON tx.TaxonomicUnitTypeID = tu.TaxonomicUnitTypeID " +
+        		                        "WHERE tx.RankID IS NOT NULL AND tx.TaxonomyTypeId %s ORDER BY tx.RankID", 
         		                        taxonomyTypeIdInClause);
         String sql      = "SELECT COUNT(*)" + taxonFromClause;
         log.debug(sql);
@@ -283,7 +293,7 @@ public class ConvertTaxonHelper
         log.debug(count+" - " + sql);
         
         // This mapping is used by Discipline
-        idMapper = idMapperMgr.addTableMapper("TaxonName", "TaxonNameID", sql, false);
+        idMapper = idMapperMgr.addTableMapper("TaxonName", "TaxonNameID", sql, true);
         idMapper.mapAllIdsWithSQL();
     }
     
@@ -441,7 +451,10 @@ public class ConvertTaxonHelper
             
             //tutMapper.reset();
             
-            taxonomyTypeMapper.put(taxonomyTypeId, taxonTreeDef.getId());
+            //if (taxonomyTypeMapper.get(taxonomyTypeId) == null)
+            //{
+                taxonomyTypeMapper.put(taxonomyTypeId, taxonTreeDef.getId());
+            //}
             
             for (TaxonTreeDefItem ttdi : taxonTreeDef.getTreeDefItems())
             {
@@ -471,7 +484,7 @@ public class ConvertTaxonHelper
      */
     protected CollectionInfo getCIByTaxonTypeId(final int taxonomyTypeId)
     {
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn, true))
         {
             if (ci.getTaxonomyTypeId() == taxonomyTypeId)
             {
@@ -545,6 +558,7 @@ public class ConvertTaxonHelper
         rankIdOldDBInx = oldFieldToColHash.get("RankID");
         
         String sqlStr = String.format("SELECT %s FROM taxon", newSB.toString());
+        log.debug(sqlStr);
         
         String sql = String.format("SELECT %s %s", oldSB.toString(), taxonFromClause);
         log.debug(sql);
@@ -566,9 +580,11 @@ public class ConvertTaxonHelper
             ResultSet         rs1   = stmtTx.executeQuery(sqlStr);
             ResultSetMetaData rsmd1 = rs1.getMetaData();
             colTypes = new int[rsmd1.getColumnCount()];
+            colSizes = new int[rsmd1.getColumnCount()];
             for (int i=0;i<colTypes.length;i++)
             {
                 colTypes[i] = rsmd1.getColumnType(i+1); 
+                colSizes[i] = rsmd1.getPrecision(i+1);
             }
             rs1.close();
             stmtTx.close();
@@ -816,13 +832,29 @@ public class ConvertTaxonHelper
                 case java.sql.Types.TIMESTAMP:
                 {
                     Timestamp val = rs.getTimestamp(colInx);
-                    pStmtTx.setTimestamp(newInx, !rs.wasNull() ? val : now);
+                    //if (val == null && oldName.equals("Date"))
+                    //{
+                    //    pStmtTx.setTimestamp(newInx, null);
+                    //} else
+                    //{
+                        pStmtTx.setTimestamp(newInx, !rs.wasNull() ? val : null);
+                    //}
                     break;
                 }
                 case java.sql.Types.LONGVARCHAR:
                 case java.sql.Types.VARCHAR:
                 {
+                    int    len = colSizes[newInx-1];
                     String val = rs.getString(colInx);
+                    if (val != null && val.length() > len)
+                    {
+                        String newName = oldToNewColMap.get(oldName);
+                        String msg = String.format("Concatinating field [%s] from length %d to %d String Lost:[%s]", newName, val.length(), len, val.substring(len));
+                        log.debug(msg);
+                        tblWriter.logError(msg);
+                        
+                        val = val.substring(0, len);
+                    }
                     if (!rs.wasNull()) 
                     {
                         pStmtTx.setString(newInx, val);
@@ -1256,8 +1288,170 @@ public class ConvertTaxonHelper
                 }
             }
         }
-        
         //assignTreeDefToDiscipline();
+    }
+    
+    private static String makeKey(final int taxTypeId, final int rankId)
+    {
+        return String.format("%d %d", taxTypeId, rankId);
+    }
+    
+    /**
+     * 
+     */
+    public static boolean fixTaxonomicUnitType(final Connection oldDBConn)
+    {
+        if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE RankID = 10") > 0)
+        {
+            UIRegistry.displayErrorDlg("There are already a RankID of '10', can't fix the Taxonomy.");
+            return false;
+        }
+        
+        StringBuilder      sb                 = new StringBuilder();
+        HashSet<Integer>   taxTypeIdsInUseSet = new HashSet<Integer>();
+        ArrayList<Integer> taxTypeIdsInUse    = new ArrayList<Integer>();
+        String             sql                = "SELECT DISTINCT TaxonomyTypeID FROM taxonname WHERE RankID = 0";
+        for (Object obj : BasicSQLUtils.querySingleCol(oldDBConn, sql))
+        {
+            taxTypeIdsInUse.add((Integer)obj);
+            taxTypeIdsInUseSet.add((Integer)obj);
+            sb.append(obj.toString());
+            sb.append(',');
+        }
+        sb.setLength(sb.length()-1); // chomp last comma
+        
+        // Get the Taxon Tree with the most levels
+        sql = String.format("SELECT TaxonomyTypeID, CNT FROM (SELECT TaxonomyTypeID, COUNT(TaxonomyTypeID) CNT FROM taxonomicunittype t WHERE TaxonomyTypeID in (%s) GROUP BY TaxonomyTypeID) T1 ORDER BY CNT DESC LIMIT 0,1", sb.toString());
+        int taxonomyTypeId = 0;//BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+        
+        sql = String.format("SELECT TaxonomicUnitTypeID FROM taxonomicunittype t WHERE TaxonomyTypeID = %d AND RankID = 0", taxonomyTypeId);
+        int taxonomyUnitTypeId = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+
+        sql = String.format("SELECT Kingdom FROM taxonomicunittype t WHERE TaxonomyTypeID = %d AND RankID = 0", taxonomyTypeId);
+        int initialKingdom = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+
+        sql = String.format("SELECT TaxonomicUnitTypeID FROM taxonomicunittype t WHERE TaxonomyTypeID = %d AND RankID = 10", taxonomyTypeId);
+        int kingdomTUTId = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+
+        // find an unused Id for the New Root TaxonName Record.
+        sql = String.format("SELECT TaxonNameID FROM taxonname WHERE RankID = 0 AND TaxonomyTypeID = %d AND TaxonomicUnitTypeID = %d", taxonomyTypeId, taxonomyUnitTypeId);
+        log.debug(sql);
+        Integer taxonRootId = BasicSQLUtils.getCount(oldDBConn, sql);
+        if (taxonRootId == null)
+        {
+            taxonRootId = 0;
+            do
+            {
+                if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + taxonRootId) == 0)
+                {
+                    break;
+                }
+                taxonRootId++;
+            } while (true);
+            
+            // Write the new TaxonName Root Record
+            sql = String.format("INSERT INTO taxonname (TaxonNameID, ParentTaxonNameID, TaxonomyTypeID, TaxonomicUnitTypeID, TaxonName, FullTaxonName, NodeNumber, HighestChildNodeNumber, TimestampCreated, TimestampModified, RankID) " +
+                                "VALUES(%s, NULL, %d, %d, 'Root', 'Root', 0, 0, '2011-01-01 00:00:00', NULL, 0)", taxonRootId, taxonomyTypeId, taxonomyUnitTypeId);
+            log.debug(sql);
+            BasicSQLUtils.update(oldDBConn, sql);
+        } else
+        {
+            sql = String.format("UPDATE taxonname SET TaxonName='Root' WHERE TaxonNameID = %d", taxonRootId);
+            log.debug(sql);
+            BasicSQLUtils.update(oldDBConn, sql); 
+        }
+        
+        // Now Map RankID to RecordID for TaxonomyUnitType
+        HashMap<String, Integer> rankIdToTaxUnitTypeIdHash = new HashMap<String, Integer>();
+        sql = "SELECT RankID, TaxonomicUnitTypeID FROM taxonomicunittype WHERE TaxonomyTypeID = " + taxonomyTypeId;
+        for (Object[] row : BasicSQLUtils.query(oldDBConn, sql))
+        {
+            int rankId    = (Integer)row[0];
+            int oldId     = (Integer)row[1];
+            System.out.println(String.format("Mapping taxonomyTypeId %d rankId %d to oldId %d", taxonomyTypeId, rankId, oldId));
+            rankIdToTaxUnitTypeIdHash.put(makeKey(taxonomyTypeId, rankId), oldId);
+        }
+        
+        HashMap<Integer, Integer> tutHash = new HashMap<Integer, Integer>();
+        // Now map the old TaxonomicUnitTypeId to the new Ids
+        HashMap<Integer, Integer> taxUnitTypeIdMapper = new HashMap<Integer, Integer>();
+        sql = String.format("SELECT TaxonomyTypeID, RankID, TaxonomicUnitTypeID, RankName, DirectParentRankID, RequiredParentRankID FROM taxonomicunittype WHERE TaxonomyTypeID in (%s) AND TaxonomyTypeID <> %d", sb.toString(), taxonomyTypeId);
+        log.debug(sql);
+        for (Object[] row : BasicSQLUtils.query(oldDBConn, sql))
+        {
+            int    taxTypeId = (Integer)row[0];
+            int    rankId    = (Integer)row[1];
+            int    oldId     = (Integer)row[2];
+            String rankName  = (String)row[3];
+            int    dirPrtId  = (Integer)row[4];
+            int    reqPrId   = (Integer)row[5];
+            
+            System.out.println(String.format("\nMapping taxTypeId: %d   rankId: %d   to   oldId %d", taxTypeId, rankId, oldId));
+            
+            Integer newId  = rankIdToTaxUnitTypeIdHash.get(makeKey(taxonomyTypeId, rankId));
+            if (newId == null)
+            {
+                // The Current Taxon Tree doesn't have this level
+                if (rankId != 0)
+                {
+                    sql = String.format("SELECT COUNT(*) FROM taxonname WHERE RankID = %d", rankId);
+                    if (BasicSQLUtils.getCountAsInt(oldDBConn, sql) > 0)
+                    {
+                        //UIRegistry.displayErrorDlg(String.format("The RankID %d is not in the TaxonTree that was picked.", rankId));
+                        newId = tutHash.get(rankId);
+                        if (newId == null)
+                        {
+                            newId = taxonomicUnitTypeId;
+                            taxonomicUnitTypeId++;
+                            
+                            String updateSQL1 = String.format("INSERT INTO taxonomicunittype (TaxonomicUnitTypeID, TaxonomyTypeID, RankID, Kingdom, RankName, DirectParentRankID, RequiredParentRankID) VALUES(%d, %d, %d, %d, '%s', %d, %d)", 
+                                                              newId, taxonomyTypeId, rankId, initialKingdom, rankName, dirPrtId, reqPrId);
+                            log.debug(updateSQL1);
+                            rankIdToTaxUnitTypeIdHash.put(makeKey(taxTypeId, rankId), oldId);
+                            System.out.println(String.format("Moving RankID %d from TaxonomyTypeID %d to %d", rankId, taxTypeId, taxonomyTypeId));
+                            tutHash.put(rankId, newId);
+                        }
+                    }
+                }
+            }
+            taxUnitTypeIdMapper.put(oldId, newId);
+            System.out.println(String.format("Mapping oldId %d to newId %d", oldId, newId));
+        }
+
+        // Now set all the Root Ranks to Kingdom Ranks
+        
+        String updateSQL1 = String.format("UPDATE taxonname SET RankID=10, TaxonomicUnitTypeID=%d, ParentTaxonNameID = %d WHERE RankID = 0 AND TaxonomicUnitTypeID <> %d", kingdomTUTId, taxonRootId, taxonomyUnitTypeId);
+        BasicSQLUtils.update(oldDBConn, updateSQL1);
+        
+        // Update each taxon record with the correct TaxonomicUnitTypeID
+        for (Integer oldId : taxUnitTypeIdMapper.keySet())
+        {
+            Integer newId = taxUnitTypeIdMapper.get(oldId);
+            if (newId != null)
+            {
+                sql = String.format("UPDATE taxonname SET TaxonomicUnitTypeID = %d WHERE TaxonomicUnitTypeID = %d", newId, oldId);
+                System.out.println(String.format("Seting Old TaxonomicUnitTypeID %d to new %d", oldId, newId));
+                BasicSQLUtils.update(oldDBConn, sql);
+            }
+        }
+        
+        // Set all Taxon Records to use the same TaxonomyTypeID
+        updateSQL1 = String.format("UPDATE taxonname SET TaxonomyTypeID = %d", taxonomyTypeId);
+        BasicSQLUtils.update(oldDBConn, updateSQL1);
+        
+        updateSQL1 = "UPDATE taxonname SET RankID = 0 WHERE TaxonName = 'Root'";
+        BasicSQLUtils.update(oldDBConn, updateSQL1);
+        
+        /*sql  = "SELECT TaxonomicUnitTypeID, RankID FROM taxonomicunittype WHERE TaxonomicUnitTypeID = 932413666 OR (TaxonomicUnitTypeID > 22 AND TaxonomicUnitTypeID < 44) ORDER BY TaxonomyTypeID, RankID";
+        Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
+        for (Object[] col : rows)
+        {
+            int taxonomicUnitTypeID = (Integer)col[1];
+            int rankId = (Integer)col[1];
+            BasicSQLUtils.update(oldDBConn, "UPDATE taxonname SET TaxonomicUnitTypeID = "+ taxonomicUnitTypeID + " WHERE RankID = " + rankId);
+        }*/
+        
+        return true;
     }
     
 }
