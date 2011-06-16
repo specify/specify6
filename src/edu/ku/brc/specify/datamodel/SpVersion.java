@@ -31,6 +31,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
@@ -270,10 +272,17 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
      * @param conn the current connection
      * @return true on success
      */
-    public static boolean fixSchemaNumber(final Connection conn)
+    public static boolean fixSchemaNumber(final DBConnection dbConn)
     {
-        String sql = "UPDATE spversion SET SchemaVersion='1.5' WHERE SchemaVersion ='6.3.00'";
-        return BasicSQLUtils.update(conn, sql) == 1;
+        DBMSUserMgr mgr  = DBMSUserMgr.getInstance();
+        Connection  conn = dbConn.createConnection();
+        mgr.setConnection(conn);
+        if (mgr.doesDBHaveTable("spversion"))
+        {
+            String sql = "UPDATE spversion SET SchemaVersion='1.5' WHERE SchemaVersion ='6.3.00'";
+            return BasicSQLUtils.update(conn, sql) == 1;
+        }
+        return true;
     }
 
 }
