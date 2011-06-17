@@ -26,6 +26,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -75,6 +76,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.jfree.chart.block.CenterArrangement;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -424,7 +426,12 @@ public class SpecifyDBConverter extends AppBase
             });
             
             dlg.createUI();
-            dlg.setVisible(true);
+            dlg.pack();
+            Dimension d = dlg.getPreferredSize();
+            d.height = 700;
+            dlg.setSize(d);
+            UIHelper.centerAndShow(dlg);
+            
             if (dlg.isCancelled())
             {
                 return null;
@@ -2863,9 +2870,9 @@ public class SpecifyDBConverter extends AppBase
         PanelBuilder panel = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "f:p:g"));
         panel.add(new JLabel(IconManager.getIcon("SpecifyConv")), cc.xy(1, 1));
         panel.add(pb.getPanel(), cc.xy(3, 1));
+        panel.setDefaultDialogBorder();
 
         CustomDialog dlg = new CustomDialog(null, "Specify Converter", true, panel.getPanel());
-        ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         UIHelper.centerAndShow(dlg);
         
         dlg.dispose();

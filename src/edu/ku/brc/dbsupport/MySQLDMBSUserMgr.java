@@ -287,7 +287,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 int rv = BasicSQLUtils.update(connection, "CREATE DATABASE "+dbName);
                 if (rv == 1)
                 {
-                    String sql = String.format("GRANT ALL ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'@'%s'", dbName, itUsername, hostName, itPassword, hostName);
+                    String sql = String.format("GRANT ALL ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'", dbName, itUsername, hostName, itPassword);
                     //log.debug(sql);
                     rv = BasicSQLUtils.update(connection, sql);
                     return rv == 0;
@@ -506,12 +506,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      */
     public int getPermissionsUsingGrants(final String username, final String serverName, final String dbName)
     {
-        Statement stmt = null;
         try
         {
             if (connection != null)
             {
-                stmt = connection.createStatement();
                 //String sql = String.format("SHOW GRANTS FOR '%s'@'%s'", username, serverName);
                 String uNameStr = String.format("'%s'@'", username);
                 //log.debug(sql);
@@ -525,6 +523,11 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                         if (StringUtils.contains(line, uNameStr) &&
                             StringUtils.contains(line, dbName))
                         {
+                            if (StringUtils.containsIgnoreCase(line, "GRANT ALL"))
+                            {
+                                return PERM_ALL;
+                            }
+                            
                             String pStr = line;
                             int eInx = pStr.indexOf(" ON ");
                             if (eInx > -1)
@@ -551,10 +554,6 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            
-        } finally
-        {
-            close(stmt);
         }
         return PERM_NONE;
     }
