@@ -3860,7 +3860,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "usyspreparatiocontainertype",    "PrepContainertype",
                 "usyspreparatiomedium",           "PreparatioMedium", 
                 //"usyspreparatiopreparationtype",  "PreparationType", 
-                "usysshipmentshipmentmethod",     "ShipmentMethod" };
+                "usysshipmentshipmentmethod",     "ShipmentMethod",
+                "usyslocalitylatlongmethod",      "LatLonMethod" };
 
         setProcess(0, tables.length);
 
