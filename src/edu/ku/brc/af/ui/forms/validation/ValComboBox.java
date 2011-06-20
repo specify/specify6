@@ -793,6 +793,16 @@ public class ValComboBox extends JPanel implements UIValidatable,
                     {
                         fndInx = i;
                         break;
+                        
+                    } else if (item instanceof PickListItemIFace)
+                    {
+                        PickListItemIFace pli = (PickListItemIFace)item;
+                        String pliValue = pli.getValue();
+                        if (pliValue != null && pliValue.equals(value))
+                        {
+                            fndInx = i;
+                            break;
+                        }
                     }
                 }
             }
