@@ -1515,6 +1515,42 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
+     * @param rows
+     * 
+     * Checks for invalid/new columns and adjusts validation data structures
+     */
+    protected void updateValidationStatusForDelete(final int[] rows)
+    {
+		Vector<WorkbenchRow> wbRows = workbench.getWorkbenchRowsAsList();
+		int invalids = 0;
+		int news = 0;
+    	for (int r : rows)
+    	{
+    		WorkbenchRow wbRow = wbRows.get(r);
+    		for (WorkbenchDataItem wbdi : wbRow.getWorkbenchDataItems())
+    		{
+    			short status = (short )wbdi.getEditorValidationStatus();
+    			if (status == WorkbenchDataItem.VAL_ERROR
+    					|| status == WorkbenchDataItem.VAL_ERROR_EDIT)
+    			{
+    				invalids++;
+    			} else if (status == WorkbenchDataItem.VAL_MULTIPLE_MATCH
+    					|| status == WorkbenchDataItem.VAL_NEW_DATA)
+    			{
+    				news++;
+    			}
+    		}
+    	}
+    	if (invalids > 0)
+    	{
+    		invalidCellCount.set(Math.max(0, invalidCellCount.get() - invalids));
+    	} 
+    	if (news > 0)
+    	{
+    		unmatchedCellCount.set(Math.max(0, unmatchedCellCount.get() - news));
+    	}
+    }
+    /**
      * Deletes the Selected Rows. 
      */
     protected void deleteRows()
@@ -1558,7 +1594,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         	//System.out.println("waiting for validation workers to finish");
         	//sit and wait)
         }
-        	
+
+        if (isDoIncremental())
+        {
+        	updateValidationStatusForDelete(rows);
+        }
+        
         model.deleteRows(rows);
 
         int rowCount = workbench.getWorkbenchRowsAsList().size();
