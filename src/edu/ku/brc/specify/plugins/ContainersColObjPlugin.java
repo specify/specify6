@@ -108,7 +108,7 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
             
         } else
         {
-            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+            int btnOpts = ValComboBoxFromQuery.CREATE_VIEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
             qcbx = new ValComboBoxFromQuery(coTI,
                                             CATNUM_NAME,
                                             CATNUM_NAME,
