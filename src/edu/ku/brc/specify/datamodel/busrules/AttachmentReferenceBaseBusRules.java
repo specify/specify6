@@ -106,7 +106,11 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
             try
             {
                 AttachmentUtils.getAttachmentManager().deleteAttachmentFiles(a);
-                DataProviderSessionIFace session = null;
+                
+                ////////////////////////////////////////////////////////////////////////////////////
+                // Bug 8433 - Cascade Rules take careof the deletion so this no longer needs to be done.
+                ////////////////////////////////////////////////////////////////////////////////////
+                /*DataProviderSessionIFace session = null;
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
@@ -129,7 +133,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                     {
                         session.close();
                     }
-                }
+                }*/
             }
             catch (IOException e)
             {
