@@ -834,6 +834,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                                        "INNER JOIN ctn.discipline as d " +
                                        "WHERE  d.userGroupScopeId = DSPLNID AND nms.language = '%s' AND ctn.schemaType = %d",
                                        locale.getLanguage(), schemaTypeArg);
+            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             Query   query = session.createQuery(sql);
             List<?> list  = query.list();
             return list.size() > 0;
