@@ -255,7 +255,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         }
         enableFieldAndLabel("1", isPerson, doSetOtherValues ? agent.getTitle() : null, agent);              // Title
         enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null, agent);          // First Name
-        enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null, agent);      // First Name
+        enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null, agent);      // Middle Initial
         
         enableFieldAndLabel("19", isPerson, null, agent);                                                   // date Of Birth
         enableFieldAndLabel("20", isPerson, null, agent);                                                   // date Of Death
@@ -264,9 +264,8 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         enableFieldAndLabel("13", isPerson, doSetOtherValues ? agent.getInterests() :   null, agent);       // interests
         enableFieldAndLabel("14", isPerson, doSetOtherValues ? agent.getJobTitle() :    null, agent);       // jobTitle
         
-        enableFieldAndLabel("16", true, doSetOtherValues ? agent.getMiddleInitial() :   null, agent);       // remarks
-        enableFieldAndLabel("17", true, doSetOtherValues ? agent.getMiddleInitial() :   null, agent);       // url
-        
+        enableFieldAndLabel("16", true, doSetOtherValues ? agent.getRemarks() :   null, agent);             // remarks
+        enableFieldAndLabel("17", true, doSetOtherValues ? agent.getUrl() :   null, agent);                 // url
         
         // Last Name
         String lbl = UIRegistry.getResourceString(isPerson ? "AG_LASTNAME" : "AG_NAME");
