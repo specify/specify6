@@ -40,6 +40,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -257,14 +258,39 @@ public class TableQRI extends ExpandableQRI
     {
         super.setTableTree(tableTree);
         determineRel();
-        rebuildTreeLevelQRIs();
+        if (getHostCollId(getDefaultHostTaxonRelName()) != null)
+        {
+        	rebuildTreeLevelQRIs();
+        }
     }
 
+    /**
+     * @return
+     */
+    //XXX Temporary fix. Can be dropped after adding TreeDefID to QB selected fields list, and using it in ERTICaptionInfoTreeLevel.
     protected String getDefaultHostTaxonRelName()
     {
     	return "Host Taxon";
     }
     
+    /**
+     * @param hostTaxonRelName
+     * @return
+     */
+    //XXX Temporary fix. Can be dropped after adding TreeDefID to QB selected fields list, and using it in ERTICaptionInfoTreeLevel.
+    protected Integer getHostCollId(String hostTaxonRelName)
+    {
+        SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        String sql = String.format("SELECT RightSideCollectionID FROM collectionreltype WHERE Name = \"%s\" AND LeftSideCollectionID = %d", 
+        		hostTaxonRelName,  spMgr.getClassObject(Collection.class).getId());
+        //System.err.println(sql);
+        return BasicSQLUtils.getCount(sql);
+    }
+    
+    /**
+     * @return
+     */
+    //XXX Temporary fix. Can be dropped after adding TreeDefID to QB selected fields list, and using it in ERTICaptionInfoTreeLevel.
     @SuppressWarnings("unchecked")     
     protected TreeDefIface<?, ?, ?> findTreeDef()
     {
@@ -276,10 +302,8 @@ public class TableQRI extends ExpandableQRI
         	//This code assumes the Host Taxon relationship name is "Host Taxon"
         	//There is probably a need for a more 'formal' definition of the Host Taxon relationship for a collection?
         	TreeDefIface<?, ?, ?> result = null;
-            String sql = String.format("SELECT RightSideCollectionID FROM collectionreltype WHERE Name = \"%s\" AND LeftSideCollectionID = %d", 
-            		getDefaultHostTaxonRelName(),  spMgr.getClassObject(Collection.class).getId());
             //System.err.println(sql);
-            Integer hostCollId = BasicSQLUtils.getCount(sql);
+            Integer hostCollId = getHostCollId(getDefaultHostTaxonRelName());
             if (hostCollId != null)
             {
                 DataProviderSessionIFace session = null;
@@ -309,9 +333,14 @@ public class TableQRI extends ExpandableQRI
         }
     }
 
+    /**
+     * Adjust tree levels for host taxonomy.
+     *
+     */
+    //XXX Temporary fix. Can be dropped after adding TreeDefID to QB selected fields list, and using it in ERTICaptionInfoTreeLevel.
     protected void rebuildTreeLevelQRIs()
     {
-        if (Treeable.class.isAssignableFrom(ti.getClassObj()))
+        if (Taxon.class.isAssignableFrom(ti.getClassObj()))
         {
         	for (int f = fields.size() - 1; f > -1; f--)
         	{
@@ -319,7 +348,7 @@ public class TableQRI extends ExpandableQRI
         		{
         			fields.remove(f);
         		}
-    	}
+        	}
     	
             try
             {
