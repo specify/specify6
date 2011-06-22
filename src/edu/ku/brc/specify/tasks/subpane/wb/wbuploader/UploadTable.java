@@ -71,6 +71,7 @@ import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
+import edu.ku.brc.specify.datamodel.Author;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -1869,11 +1870,18 @@ public class UploadTable implements Comparable<UploadTable>
                         				// maybe this doesn't really need to be checked?
                         				return false;
                         			}
-                        			else if (coll2.getAgent() == null || !coll1.getAgent().getId().equals(coll2.getAgent().getId()))
+                        			if (coll2.getAgent() == null || !coll1.getAgent().getId().equals(coll2.getAgent().getId()))
                         			{
                         				return false;
                         			}
-                        			else if (!coll1.getIsPrimary().equals(coll2.getIsPrimary()))
+                        			if (coll2.getRemarks() == null ^ coll1.getRemarks() == null)
+                        			{
+                        				return false;
+                        			} else if (coll2.getRemarks() != null && !coll2.getRemarks().equals(coll1.getRemarks()))
+                        			{
+                        				return false;
+                        			}
+                        			if (!coll1.getIsPrimary().equals(coll2.getIsPrimary()))
                         			{
                         				return false;
                         			}
@@ -2101,56 +2109,11 @@ public class UploadTable implements Comparable<UploadTable>
                         matchSession.close();
                     }
 
-                }
-                else if (child.getTblClass().equals(AccessionAuthorization.class))
-                {
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
-                    try
-                    {
-                        QueryIFace matchesQ = matchSession
-                                .createQuery("from AccessionAuthorization where accessionid = "
-                                        + match.getId(), false);
-                        List<?> matches = matchesQ.list();
-                        try
-						{
-							child.loadFromDataSet(wbCurrentRow);
-							int childCount = 0;
-                        	for (int c = 0; c < child.getUploadFields().size(); c++)
-                        	{
-                        		if (child.getCurrentRecord(c) != null)
-                        		{
-                        			childCount++;
-                        		}
-                        	}
-							if (matches.size() != childCount)
-							{
-								return false;
-							}
-							for (int rec = 0; rec < matches.size(); rec++)
-							{
-								AccessionAuthorization au1 = (AccessionAuthorization) matches.get(rec);
-								AccessionAuthorization au2 = (AccessionAuthorization) child.getCurrentRecord(rec);
-								if (!au1.getPermit().getId().equals(au2.getPermit().getId()))
-								{
-									return  false;
-								}
-							}
-						} finally
-						{
-							child.loadFromDataSet(child.wbCurrentRow);
-						}
-                    }
-                    finally
-                    {
-                        matchSession.close();
-                    }
-
-                }
-                else if (!result)
+                } else if (!result)
                 {
                     break;
                 }
+
             }
         }
         else if (tblClass.equals(CollectionObject.class)) //XXX Updates
@@ -2249,6 +2212,76 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                 }
             }
+        } else if (tblClass.equals(ReferenceWork.class))
+        {
+            for (UploadTable child : specialChildren)
+            {
+                logDebug(child.getTable().getName());
+                if (child.getTblClass().equals(Author.class))
+                {
+                    //System.out.println("matching collector children");
+                	DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession
+                                .createQuery("from Author where referenceworkid = "
+                                        + match.getId() + " order by orderNumber", false);
+                        List<?> matches = matchesQ.list();
+                        try
+                        {
+                        	child.loadFromDataSet(wbCurrentRow);
+                        	int childCount = 0;
+                        	for (int c = 0; c < child.getUploadFields().size(); c++)
+                        	{
+                        		if (child.getCurrentRecord(c) != null)
+                        		{
+                        			childCount++;
+                        		}
+                        	}
+                        	if (matches.size() != childCount)
+                        	{
+                        		result = false;
+                        	}
+                        	else
+                        	{
+                        		for (int rec = 0; rec < matches.size(); rec++)
+                        		{
+                        			Author auth1 = (Author) matches.get(rec);
+                        			Author auth2 = (Author) child.getCurrentRecord(rec);
+                        			if (!auth1.getOrderNumber().equals(auth2.getOrderNumber()))
+                        			{
+                        				// maybe this doesn't really need to be checked?
+                        				return false;
+                        			}
+                        			if (auth2.getAgent() == null || !auth1.getAgent().getId().equals(auth2.getAgent().getId()))
+                        			{
+                        				return false;
+                        			}
+                        			if (auth2.getRemarks() == null ^ auth1.getRemarks() == null)
+                        			{
+                        				return false;
+                        			} else if (auth2.getRemarks() != null && !auth2.getRemarks().equals(auth1.getRemarks()))
+                        			{
+                        				return false;
+                        			}
+                        		}
+                        	} 
+                        } finally
+                        {
+                        		child.loadFromDataSet(child.wbCurrentRow);
+                        }
+                    }
+                    finally
+                    {
+                        matchSession.close();
+                    }
+                } else if (!result)
+                {
+                    break;
+                }
+
+            }
         }
         else //if (!updateMatches) //XXX Updates!!!!
         // Oh no!!
@@ -2276,7 +2309,8 @@ public class UploadTable implements Comparable<UploadTable>
         		|| tblClass.equals(Accession.class)
                 || tblClass.equals(Agent.class)
         		|| tblClass.equals(CollectionObject.class) 
-                || tblClass.equals(Locality.class))
+                || tblClass.equals(Locality.class)
+                || tblClass.equals(ReferenceWork.class))
                 ;
     }
 
@@ -2310,6 +2344,10 @@ public class UploadTable implements Comparable<UploadTable>
         if (tblClass.equals(Locality.class))
         {
         	return childClass.equals(GeoCoordDetail.class) || childClass.equals(LocalityDetail.class);
+        }
+        if (tblClass.equals(ReferenceWork.class))
+        {
+        	return childClass.equals(Author.class);
         }
         return false;
     }
