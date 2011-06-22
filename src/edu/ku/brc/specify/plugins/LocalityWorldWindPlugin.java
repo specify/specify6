@@ -197,16 +197,18 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
         
         worldWindDlg.setVisible(true);
         
-        if (!worldWindDlg.isCancelled() && locality != null && latLonPlugin != null)
+        if (!worldWindDlg.isCancelled() && locality != null && latLonPlugin != null && latLonPnt != null)
         {
             FORMAT defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit());
-            
-            String latStr = ensureFormattedString(new BigDecimal(latLonPnt.getLatitude()),  locality.getLat2text(),  defaultFormat, LATLON.Latitude);
-            String lonStr = ensureFormattedString(new BigDecimal(latLonPnt.getLongitude()), locality.getLong2text(), defaultFormat, LATLON.Longitude);
-
-            latLonPlugin.setLatLon(latStr, lonStr, null, null);
-            
-            latLon = new Pair<BigDecimal, BigDecimal>(new BigDecimal(latLonPnt.getLatitude()), new BigDecimal(latLonPnt.getLongitude()));
+            if (defaultFormat != null)
+            {
+                String latStr = ensureFormattedString(new BigDecimal(latLonPnt.getLatitude()),  locality.getLat2text(),  defaultFormat, LATLON.Latitude);
+                String lonStr = ensureFormattedString(new BigDecimal(latLonPnt.getLongitude()), locality.getLong2text(), defaultFormat, LATLON.Longitude);
+    
+                latLonPlugin.setLatLon(latStr, lonStr, null, null);
+                
+                latLon = new Pair<BigDecimal, BigDecimal>(new BigDecimal(latLonPnt.getLatitude()), new BigDecimal(latLonPnt.getLongitude()));
+            }
         }
     }
     
