@@ -1079,15 +1079,19 @@ public class UploadTable implements Comparable<UploadTable>
     		}
     	}
     	
+		for (UploadTable c : specialChildren)
+		{
+			for (int s = 0; s < c.uploadFields.size(); s++)
+			{
+				c.setCurrentRecord(null, s);
+			}
+		}
+		
     	if (rec != null)
     	{
     		for (UploadTable c : specialChildren)
     		{
     			//System.out.println("loading " + c);
-    			for (int s = 0; s < c.uploadFields.size(); s++)
-    			{
-    				c.setCurrentRecord(null, s);
-    			}
     			int cSeq = 0;
     			List<DataModelObjBase> childRecs = getChildRecords(c, rec);
     			for (DataModelObjBase childRec : childRecs)
