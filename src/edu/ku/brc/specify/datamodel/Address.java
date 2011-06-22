@@ -658,4 +658,40 @@ public class Address extends DataModelObjBase implements Orderable,
        
         return obj;
     }
+    
+    /**
+     * @param o
+     * @return true if 'non-system' fields all match.
+     */
+    public boolean matches(Address o)
+    {
+        if (o == null)
+        {
+        	return false;
+        }
+        
+        //XXX not comparing agent. For current usage of this method Agent doesn't need to be compared.
+    	return
+        	((address == null && o.address == null) || ((address != null && o.address != null) && address.equals(o.address))) &&
+        	((address2 == null && o.address2 == null) || ((address2 != null && o.address2 != null) && address2.equals(o.address2))) &&
+        	((address3 == null && o.address3 == null) || ((address3 != null && o.address3 != null) && address3.equals(o.address3))) &&
+        	((address4 == null && o.address4 == null) || ((address4 != null && o.address4 != null) && address4.equals(o.address4))) &&
+        	((address5 == null && o.address5 == null) || ((address5 != null && o.address5 != null) && address5.equals(o.address5))) &&
+        	((city == null && o.city == null) || ((city != null && o.city != null) && city.equals(o.city))) &&
+        	((state == null && o.state == null) || ((state != null && o.state != null) && state.equals(o.state))) &&
+        	((country == null && o.country == null) || ((country != null && o.country != null) && country.equals(o.country))) &&
+        	((postalCode == null && o.postalCode == null) || ((postalCode != null && o.postalCode != null) && postalCode.equals(o.postalCode))) &&
+        	((remarks == null && o.remarks == null) || ((remarks != null && o.remarks != null) && remarks.equals(o.remarks))) &&
+        	((isPrimary == null && o.isPrimary == null) || ((isPrimary != null && o.isPrimary != null) && isPrimary.equals(o.isPrimary))) &&
+        	((phone1 == null && o.phone1 == null) || ((phone1 != null && o.phone1 != null) && phone1.equals(o.phone1))) &&
+        	((phone2 == null && o.phone2 == null) || ((phone2 != null && o.phone2 != null) && phone2.equals(o.phone2))) &&
+        	((fax == null && o.fax == null) || ((fax != null && o.fax != null) && fax.equals(o.fax))) &&
+        	((roomOrBuilding == null && o.roomOrBuilding == null) || ((roomOrBuilding != null && o.roomOrBuilding != null) && roomOrBuilding.equals(o.roomOrBuilding))) &&
+        	((startDate == null && o.startDate == null) || ((startDate != null && o.startDate != null) && startDate.equals(o.startDate))) &&
+        	((endDate == null && o.endDate == null) || ((endDate != null && o.endDate != null) && endDate.equals(o.endDate))) &&
+        	((positionHeld == null && o.positionHeld == null) || ((positionHeld != null && o.positionHeld != null) && positionHeld.equals(o.positionHeld))) &&
+        	((isCurrent == null && o.isCurrent == null) || ((isCurrent != null && o.isCurrent != null) && isCurrent.equals(o.isCurrent))) &&
+        	((isShipping == null && o.isShipping == null) || ((isShipping != null && o.isShipping != null) && isShipping.equals(o.isShipping))) &&
+        	((typeOfAddr == null && o.typeOfAddr == null) || ((typeOfAddr != null && o.typeOfAddr != null) && typeOfAddr.equals(o.typeOfAddr)));
+    }
 }

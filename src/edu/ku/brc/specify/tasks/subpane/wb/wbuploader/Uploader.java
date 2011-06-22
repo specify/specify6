@@ -5425,7 +5425,7 @@ public class Uploader implements ActionListener, KeyListener
     	for (UploadTable ut : uploadTables)
     	{
     		int seq = 0;
-    		boolean isOneToMany = ut.getUploadFields().size() > 1;
+    		boolean isOneToMany = ut.getUploadFields().size() > 1 || ut.getTable().getName().equalsIgnoreCase("address");
     		for (Vector<UploadField> flds : ut.getUploadFields())
     		{
 				if (ut.getCurrentRecord(seq) != null)

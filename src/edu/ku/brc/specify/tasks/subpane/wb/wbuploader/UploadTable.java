@@ -68,6 +68,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
+import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -1082,10 +1083,22 @@ public class UploadTable implements Comparable<UploadTable>
     		for (UploadTable c : specialChildren)
     		{
     			//System.out.println("loading " + c);
-    			int cSeq = 0; 
-    			for (DataModelObjBase childRec : getChildRecords(c, rec))
+    			for (int s = 0; s < c.uploadFields.size(); s++)
     			{
+    				c.setCurrentRecord(null, s);
+    			}
+    			int cSeq = 0;
+    			List<DataModelObjBase> childRecs = getChildRecords(c, rec);
+    			for (DataModelObjBase childRec : childRecs)
+    			{
+    				if (cSeq < c.uploadFields.size())
+    				{
     					c.loadRecord(childRec, cSeq++);
+    				}
+    				else
+    				{
+    					log.warn("Not loading " + c.getTblTitle() + " child "  + cSeq+1 + " into dataset because only " + c.uploadFields.size() + " children are mapped.");
+    				}
     			}
     		}
     	}
@@ -1098,15 +1111,23 @@ public class UploadTable implements Comparable<UploadTable>
     protected Method getOneToManyChildGetter(UploadTable child)
     {
     	//Assumes only 1 one-to-many child relationship per child class
-    	String name = "get" + child.getTblClass().getSimpleName() + "s";
-    	try 
+    	for (int tries = 0; tries < 2; tries++)
     	{
-    		//System.out.println("getting method " + name);
-    		return getTblClass().getMethod(name, (Class<?>[] )null);
-    	} catch (NoSuchMethodException ex)
-    	{
-    		return null;
+    		String name = "get" + child.getTblClass().getSimpleName() 
+    			+ (tries == 0 ? "s" : "es");
+    		try 
+    		{
+    			//System.out.println("getting method " + name);
+    			return getTblClass().getMethod(name, (Class<?>[] )null);
+    		} catch (NoSuchMethodException ex)
+    		{
+    			if (tries > 0)
+    			{
+    				return null;
+    			}
+    		}
     	}
+    	return null;
     }
     
     /**
@@ -2031,6 +2052,107 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
+        else if (tblClass.equals(Agent.class))
+        {
+            for (UploadTable child : specialChildren)
+            {
+                logDebug(child.getTable().getName());
+                if (child.getTblClass().equals(Address.class))
+                {
+                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession
+                                .createQuery("from Address where agentId = "
+                                        + match.getId(), false);
+                        List<?> matches = matchesQ.list();
+                        try
+						{
+							child.loadFromDataSet(wbCurrentRow);
+							int childCount = 0;
+                        	for (int c = 0; c < child.getUploadFields().size(); c++)
+                        	{
+                        		if (child.getCurrentRecord(c) != null)
+                        		{
+                        			childCount++;
+                        		}
+                        	}
+							if (matches.size() != childCount)
+							{
+								return false;
+							}
+							for (int rec = 0; rec < matches.size(); rec++)
+							{
+								Address ad1 = (Address) matches.get(rec);
+								Address ad2 = (Address) child.getCurrentRecord(rec);
+								if (!ad1.matches(ad2))
+								{
+									return false;
+								}
+							}
+						} finally
+						{
+							child.loadFromDataSet(child.wbCurrentRow);
+						}
+                    }
+                    finally
+                    {
+                        matchSession.close();
+                    }
+
+                }
+                else if (child.getTblClass().equals(AccessionAuthorization.class))
+                {
+                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession
+                                .createQuery("from AccessionAuthorization where accessionid = "
+                                        + match.getId(), false);
+                        List<?> matches = matchesQ.list();
+                        try
+						{
+							child.loadFromDataSet(wbCurrentRow);
+							int childCount = 0;
+                        	for (int c = 0; c < child.getUploadFields().size(); c++)
+                        	{
+                        		if (child.getCurrentRecord(c) != null)
+                        		{
+                        			childCount++;
+                        		}
+                        	}
+							if (matches.size() != childCount)
+							{
+								return false;
+							}
+							for (int rec = 0; rec < matches.size(); rec++)
+							{
+								AccessionAuthorization au1 = (AccessionAuthorization) matches.get(rec);
+								AccessionAuthorization au2 = (AccessionAuthorization) child.getCurrentRecord(rec);
+								if (!au1.getPermit().getId().equals(au2.getPermit().getId()))
+								{
+									return  false;
+								}
+							}
+						} finally
+						{
+							child.loadFromDataSet(child.wbCurrentRow);
+						}
+                    }
+                    finally
+                    {
+                        matchSession.close();
+                    }
+
+                }
+                else if (!result)
+                {
+                    break;
+                }
+            }
+        }
         else if (tblClass.equals(CollectionObject.class)) //XXX Updates
         {
             result = true;
@@ -2150,8 +2272,10 @@ public class UploadTable implements Comparable<UploadTable>
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
         return !skipChildrenMatching.get() &&
-        	(tblClass.equals(CollectingEvent.class) || tblClass.equals(Accession.class)
-                || tblClass.equals(CollectionObject.class) 
+        	(tblClass.equals(CollectingEvent.class) 
+        		|| tblClass.equals(Accession.class)
+                || tblClass.equals(Agent.class)
+        		|| tblClass.equals(CollectionObject.class) 
                 || tblClass.equals(Locality.class))
                 ;
     }
@@ -2161,6 +2285,10 @@ public class UploadTable implements Comparable<UploadTable>
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
         logDebug("need to add more child classes");
+        if (tblClass.equals(Agent.class))
+        {
+        	return childClass.equals(Address.class);
+        }
         if (tblClass.equals(Accession.class)) 
         { 
         	return childClass.equals(AccessionAgent.class)
