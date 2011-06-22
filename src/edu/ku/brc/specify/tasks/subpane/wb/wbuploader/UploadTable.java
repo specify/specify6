@@ -1397,12 +1397,15 @@ public class UploadTable implements Comparable<UploadTable>
             			+ " from " + getTable().getTableInfo().getName() + " where " + getTable().getTableInfo().getIdColumnName()
             			+ " = " + getCurrentRecord(seq).getId());
             	UIFieldFormatterIFace.PartialDateEnum prec = UIFieldFormatterIFace.PartialDateEnum.None;
-            	for (UIFieldFormatterIFace.PartialDateEnum pde : UIFieldFormatterIFace.PartialDateEnum.values())
+            	if (precision != null)
             	{
-            		if (pde.ordinal() == precision)
+            		for (UIFieldFormatterIFace.PartialDateEnum pde : UIFieldFormatterIFace.PartialDateEnum.values())
             		{
-            			prec = pde;
-            			break;
+            			if (pde.ordinal() == precision)
+            			{
+            				prec = pde;
+            				break;
+            			}
             		}
             	}
             	result = df.adjustForPrecisionOut(result, prec);
