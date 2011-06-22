@@ -1027,24 +1027,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             
             if (missingFlds.size() > 0)
             {
+                JList list = new JList(new Vector<String>(missingFlds));
+                CellConstraints cc = new CellConstraints();
+                PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p:g,2px,f:p:g"));
+                pb.add(UIHelper.createI18NLabel("QB_FIELDS_NOT_ADDED"), cc.xy(1, 1));
+                pb.add(UIHelper.createScrollPane(list), cc.xy(1, 3));
+                pb.setDefaultDialogBorder();
+                
                 dirty = true;
-                String fldStr = new String();
-                for (String fld : missingFlds)
-                {
-                    if (!StringUtils.isEmpty(fldStr))
-                    {
-                        fldStr += ", ";
-                    }
-                    fldStr += "'" + fld + "'";
-                }
-                if (missingFlds.size() == 1)
-                {
-                    UIRegistry.showLocalizedMsg("QB_FIELD_MISSING_TITLE", "QB_FIELD_NOT_ADDED", fldStr);
-                }
-                else
-                {
-                    UIRegistry.showLocalizedMsg("QB_FIELD_MISSING_TITLE", "QB_FIELDS_NOT_ADDED", fldStr);
-                }
+                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                                                    UIRegistry.getResourceString("QB_FIELD_MISSING_TITLE"), true, 
+                                                    CustomDialog.OK_BTN, pb.getPanel());
+                dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+                dlg.setVisible(true);
             }
         }
 
@@ -4026,9 +4021,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return a Vector of QueryFieldPanel objects for the supplied fields parameter.
      */
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final QueryFieldPanelContainerIFace container, 
-            final Set<SpQueryField> fields, final TableTree tblTree, 
-            final Hashtable<String,TableTree> ttHash,
-            final Component saveBtn, List<String> missingFlds) 
+                                                                 final Set<SpQueryField>             fields, 
+                                                                 final TableTree                     tblTree, 
+                                                                 final Hashtable<String,TableTree>   ttHash,
+                                                                 final Component                     saveBtn, 
+                                                                 final List<String>                  missingFlds) 
     {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         List<SpQueryField> orderedFlds = new ArrayList<SpQueryField>(fields);
@@ -4036,8 +4033,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         result.add(bldQueryFieldPanel(container, null, null, container.getColumnDefStr(), saveBtn));
         for (SpQueryField fld : orderedFlds)
         {
+            System.err.println(fld.getFieldName()+" - "+fld.getStringId());
         	FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
-        			fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
+        			                        fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
             if (fieldQRI != null)
             {
                 result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));
@@ -4049,15 +4047,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             else
             {
-                log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
-                        + "]");
+                String tableName = tblTree.getTableInfo() == null ? fld.getQuery().getContextName() : tblTree.getTableInfo().getTitle();
+                log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList() + "]");
                 fields.remove(fld);
                 fld.setQuery(null);
                 if (missingFlds != null)
                 {
-                    String fldText = fld.getColumnAlias() != null ? fld.getColumnAlias()
-                    		: fld.getFieldName();
-                	missingFlds.add(fldText);
+                    String fldText = fld.getColumnAlias() != null ? fld.getColumnAlias() : fld.getFieldName();
+                	missingFlds.add(String.format("%s -> %s", tableName, fldText));
                 }
             }
         }
