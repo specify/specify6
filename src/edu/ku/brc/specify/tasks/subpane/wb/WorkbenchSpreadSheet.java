@@ -79,10 +79,32 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			{
 				rows[r] = convertRowIndexToModel(pastedRows[0] + r);
 			}
-			System.out.println("validating " + rows.length + " rows.");
+			//System.out.println("validating " + rows.length + " rows.");
 			workbenchPaneSS.validateRows(rows);
 		}
 		pastedRows[0] = -1;
+	}
+
+
+
+	@Override
+	public void cutOrCopy(boolean isCut) 
+	{
+        if (!canCutOrCopy())
+        {
+        	return;
+        }
+		super.cutOrCopy(isCut);
+		if (isCut)
+		{
+			int[] selRows = getSelectedRows();
+			int[] rows = new int[selRows.length];
+			for (int r = 0; r < rows.length; r++)
+			{
+				rows[r] = convertRowIndexToModel(selRows[r]);
+			}
+			workbenchPaneSS.validateRows(rows);
+		}
 	}
 
 
