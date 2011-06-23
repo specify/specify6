@@ -31,42 +31,50 @@ will be installed on a network server and run on several computers, the Setup Wi
 <h4>MySQL requirements for creating a Specify database and Master credentials using the Specify Wizard</h4>
 <p>The first   Wizard window creates a blank Specify database within MySQL and inserts the schema (empty tables, fields and relationships) for the database. The second Wizard window creates a Specify Master username and password. The Specify Wizard can <strong>NOT</strong> be used to perform these two tasks if:</p>
 
-<blockquote>
-  <p><strong>A.</strong> The default data management engine for an existing MySQL installation is NOT InnoDB.</p>
-  <p><strong>B.</strong> The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</p>
-  <p><strong>C.</strong> You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</p>
-  <p>&nbsp;</p>
-  <p><strong>A.</strong> The default data management engine for an existing MySQL installation is NOT InnoDB.</p>
+<ol type="I">
+  <li> The default data management engine for an existing MySQL installation is NOT InnoDB.</li>
+  <li>The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</li>
+  <li>You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</li>
+  </ol>
   <blockquote>
-    <p>1. If your default MySQL engine is not InnoDB it can be changed using the guidelines found on the Specify website at: <a href="http://specifysoftware.org/content/changing-default-mysql-engine-innodb">http://specifysoftware.org/content/changing-default-mysql-engine-innodb</a>. </p>
+  <p><strong>I. </strong>The default data management engine for an existing MySQL installation is NOT InnoDB.</p>
+  
+  <ol>
+  <li>If your default MySQL engine is not InnoDB it can be changed using the guidelines found on the Specify website at: <a href="http://specifysoftware.org/content/changing-default-mysql-engine-innodb">http://specifysoftware.org/content/changing-default-mysql-engine-innodb</a>. </li>
     <p>OR</p>
     <p>If you are unable to change your default MySQL engine, you will need to create a blank Specify database   with MySQL's software tools and insert a Specify schema <em>before</em> running the Specify Setup Wizard. The Specify team provides both an explanation and script for performing these tasks from within MySQL on the Specify website at: <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
     <blockquote>
       <p><em><strong>Note:</strong></em> The MySQL step-by-step installation guide, located on the Specify web site, prompts users to designate InnoDB as the default data storage engine.  Institutions with legacy installations of MySQL may have originally configured  their system for a different data engine and may not be able to change the default storage engine to InnoDB; in this case, do not run the Wizard you have created a black Specify database using MySQL software tools and inserted a Specify schema. </p>
     </blockquote>
-    <p>2. Once a Specify database is created using the MySQL software tools and a schema inserted by running the provided script, run the  Specify Wizard  to create other necessary components of the database. </p>
-    <p>3. When running the Specify Wizard, rather than creating the database and inserting the schema in the first Wizard window, you will verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </p>
-    <p>4. When accessing the database locally, the Wizard can be used to create the Specify Master by clicking the <em>Create Master User</em> on the second Wizard window. </p>
+    <li> Once a Specify database is created using the MySQL software tools and a schema inserted by running the provided script, run the  Specify Wizard  to create other necessary components of the database. </li><br />
+    <li> When running the Specify Wizard, rather than creating the database and inserting the schema in the first Wizard window, you will verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </li><br />
+    <li>When accessing the database locally, the Wizard can be used to create the Specify Master by clicking the <em>Create Master User</em> on the second Wizard window. </li>
     <p>OR</p>
     <p>When accessing the database remotely please follow the steps in procedure #2 below.</p>
     <p>&nbsp;</p>
-  </blockquote>
-  <p><strong>B.</strong> The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</p>
-  <blockquote>
-    <p>1. If the Specify database will be accessed by other 'client' computers you will first need to manually create a Specify Master username and password in MySQL before running the Specify Wizard. Instructions for setting up the Specify Master username and password in MySQL can be found on the Specify website at: <a href="http://specifysoftware.org/content/specify-system-setup">http://specifysoftware.org/content/specify-system-setup</a>.</p>
-    <p>2. After reading the information on the website and creating the Specify Master username and password in MySQL, run the  Specify Wizard and enter the MySQL information on the first Wizard screen and click the <em>Create Specify Database</em> button to create the database and insert the schema (unless you have created a database using the MySQL tools in procedure #1 above). </p>
-    <p>3. On the second Specify Wizard window enter the Specify Master credentials, then click the <em>Test Master Login</em> button to verify that the Specify Master credentials were created from within MySQL.</p>
+    </ol>
+  
+  <p><strong>II.</strong> The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</p>
+  
+    <ol>
+    <li>If the Specify database will be accessed by other 'client' computers you will first need to manually create a Specify Master username and password in MySQL before running the Specify Wizard. Instrucions for setting up the Specify Master username and password in MySQL can be found on the Specify website at: <a href="http://specifysoftware.org/content/specify-system-setup">http://specifysoftware.org/content/specify-system-setup</a>.</li><br />
+    <li>After reading the information on the website and creating the Specify Master username and password in MySQL, run the  Specify Wizard and enter the MySQL information on the first Wizard screen and click the <em>Create Specify Database</em> button to create the database and insert the schema (unless you have created a database using the MySQL tools in procedure #1 above). </li><br />
+    <li>On the second Specify Wizard window enter the Specify Master credentials, then click the <em>Test Master Login</em> button to verify that the Specify Master credentials were created from within MySQL.</li>
+    
+    </ol>
     <p>&nbsp;</p>
-  </blockquote>
-  <p><strong>C.</strong> You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</p>
-  <blockquote>
-    <p>1. If you wish to create your own Specify database and insert a schema from within MySQL rather than using the Specify Wizard, the Specify team provides both an explanation and script for performing this task from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
-    <p>2. Once you have read the provided information and created your Specify database and inserted the schema, run the Specify Wizard. </p>
-    <p>3. On the first Wizard window, rather than creating the database and inserting the schema,  verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </p>
-    <p>4. When accessing the database locally, the Wizard can be used to create the Specify Master by clicking the <em>Create Master User</em> on the second Wizard window. </p>
+  
+  <p><strong>III.</strong> You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</p>
+  
+  <ol>
+    <li>If you wish to create your own Specify database and insert a schema from within MySQL rather than using the Specify Wizard, the Specify team provides both an explanation and script for performing this task from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </li><br />
+    <li>Once you have read the provided information and created your Specify database and inserted the schema, run the Specify Wizard. </li><br />
+    <li>On the first Wizard window, rather than creating the database and inserting the schema,  verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </li><br />
+    <li>When accessing the database locally, the Wizard can be used to create the Specify Master by clicking the <em>Create Master User</em> on the second Wizard window. </li>
     <p>OR</p>
     <p>When accessing the database remotely, please follow the steps for #2 found above.</p>
     <p>&nbsp;</p>
+    </ol>
   </blockquote>
 </blockquote>
 <h3>Running the Specify Setup Wizard</h3>
@@ -76,12 +84,9 @@ will be installed on a network server and run on several computers, the Setup Wi
 <blockquote>
   <p>The first window allows you to either create a Specify database or verify that Specify can access a database you have already created within MySQL. To create or verify a database, you must first complete the following information:</p>
   <ul>
-    <li>The <strong>IT Username</strong> and <strong>IT Password</strong> must be an existing account with full administrator privileges in the MySQL database manager. This account will be used by the Specify Setup Wizard to create your Specify database and a Specify Master account (in the next window) in MySQL. If you do not know the IT administrator (&quot;root&quot;) account username and password for MySQL, or do not have a MySQL installation, exit now. You can not go further without these.</li>
+    <li>The <strong>IT Username</strong> and <strong>IT Password</strong> must be an existing account with full administrator privileges in the MySQL database manager. This account will be used by the Specify Setup Wizard to create your Specify database and a Specify Master account (in the next window) in MySQL. If you do not know the IT administrator (&quot;root&quot;) account username and password for MySQL, or do not have a MySQL installation, exit now. You can not go further without these.    </li>
   </ul>
-  <blockquote>
-    <p><br />
-    </p>
-  </blockquote>
+
   <ul>
     <li>The <strong>Database Name</strong> will be used to name the database that the Setup Wizard is about to create. If you do not have an existing database but are using the Wizard to create one, you are creating this name as you type it into the window. Once you name the database make sure to document it so you can reference it if you need it at a later date.</li>
   </ul>
@@ -136,8 +141,10 @@ will be installed on a network server and run on several computers, the Setup Wi
 <p align="center"><img src="../../images/window3.png"/></p>
 <p align="center"><span class="imgcaption">Create Specify Manager / Administrator</span></p>
 <p>&nbsp;</p>
-<p>This account is the first Specify user account for your database, and is  created at the level of Manager, the highest  level in the  Specify permission model. The account usually represents the primary user, or administrator, of your collection database. An Administrator account will also be created within Specify using this information.    It is this username and password that will be used to log in to Specify for the first time, once this Setup Wizard is finished. At that time additional users can be added within Specify. </p>
-<p>Protect the username and make the password strong. This Specify manager level information will  also be used to create a record in the Specify database for an &lsquo;Agent&rsquo; representing the same person. </p>
+<blockquote>
+  <p>This account is the first Specify user account for your database, and is  created at the level of Manager, the highest  level in the  Specify permission model. The account usually represents the primary user, or administrator, of your collection database. An Administrator account will also be created within Specify using this information.    It is this username and password that will be used to log in to Specify for the first time, once this Setup Wizard is finished. At that time additional users can be added within Specify. </p>
+  <p>Protect the username and make the password strong. This Specify manager level information will  also be used to create a record in the Specify database for an &lsquo;Agent&rsquo; representing the same person. </p>
+</blockquote>
 <p>&nbsp;</p>
 <p><a name="create_institution" id="create_institution"></a><u><strong>Institution</strong></u></p>
 <p align="center"><img src="../../images/window_inst.png"/></p>
@@ -245,7 +252,7 @@ will be installed on a network server and run on several computers, the Setup Wi
 <blockquote>
   <p align="left">This window is used to create a single Division within your institutional hierarchy. Additional divisions can be added later from within Specify.</p>
   <ul>
-    <li>The <strong>Name</strong> will appear on the division form and  can be queried and used in reports. A division is used to collectively name similar collections e.g. the Division of Peleontology may include Vertebrate Paleontology, Invertebrate Peleontology and Peleobotany collections. The Name is a field within the Specify database and is displayed on the Institution form. It can be edited, queried and used in reports. </li>
+    <li>The <strong>Name</strong> will appear on the division form and  can be queried and used in reports. A division is used to collectively name similar collections e.g. the Division of Peleontology may include Vertebrate Paleontology, Invertebrate Peleontology and Peleobotany collections. The Name is a field within the Specify database and is displayed on the Institution form. It can be edited, queried and used in reports. </li><br />
     <li>The <strong>Code</strong> can be a short name, acronym, codon or abbreviation. If your Division does not have a Code, put in a placeholder, this can be edited at a later date. Division codes are sometimes required for web services.</li>
   </ul>
   <p align="left">&nbsp;</p>
@@ -329,7 +336,7 @@ will be installed on a network server and run on several computers, the Setup Wi
 <p align="center" class="imgcaption">Configure and Load Geography Tree</p>
 <p align="left">&nbsp;</p>
 <blockquote>
-  <p align="left">The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. Nodes to the Geography tree can be added later in the Wizard as well as from within Specify</p>
+  <p align="left">The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. Nodes to the Geography tree can be added later in the Wizard as well as from within Specify. The geography tree was created using data from Geonames.</p>
   <ul>
     <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. </li>
   </ul>
@@ -386,11 +393,11 @@ will be installed on a network server and run on several computers, the Setup Wi
   <ul>
     <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
       <blockquote>
-        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p>
-        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
-        <p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited inside Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
-        <p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited from within Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
-        <p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented  when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off.</p>
+        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p><br />
+        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p><br />
+        <p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited inside Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p><br />
+        <p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited from within Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p><br />
+        <p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented  when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off.</p><br />
         <p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters</p>
       </blockquote>
     </li>
@@ -422,10 +429,10 @@ will be installed on a network server and run on several computers, the Setup Wi
   <ul>
     <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
       <blockquote>
-        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p>
-        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
-        <p align="left"><strong>Accession Number</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
-        <p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p><br />
+        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p><br />
+        <p align="left"><strong>Accession Number</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p><br />
+        <p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p><br />
         <p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
       </blockquote>
     </li>
