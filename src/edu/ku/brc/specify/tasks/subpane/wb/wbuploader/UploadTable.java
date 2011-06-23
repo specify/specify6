@@ -1053,6 +1053,24 @@ public class UploadTable implements Comparable<UploadTable>
     	return !pte.getImportTable().specialChildren.contains(this) || !pte.getImportTable().needToMatchChild(tblClass);
     }
     
+    protected void clearCurrentRecords()
+    {
+    	for (int r = 0; r < uploadFields.size(); r++)
+    	{
+    		setCurrentRecord(null, r);
+    	}
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			if (shouldLoadParent(pte))
+    			{
+    				pte.getImportTable().clearCurrentRecords();
+    			}
+    		}
+    	}
+    }
+    
     /**
      * @param rec
      * @throws Exception
@@ -1081,10 +1099,7 @@ public class UploadTable implements Comparable<UploadTable>
     	
 		for (UploadTable c : specialChildren)
 		{
-			for (int s = 0; s < c.uploadFields.size(); s++)
-			{
-				c.setCurrentRecord(null, s);
-			}
+			c.clearCurrentRecords();
 		}
 		
     	if (rec != null)
