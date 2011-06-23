@@ -847,16 +847,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     }
     
     
-    /**
-     * @param isCut
-     * 
-     * Cut or copy selected cells into the Clipboard
-     */
-    public void cutOrCopy(final boolean isCut)
+    protected boolean canCutOrCopy()
     {
-        StringBuffer sbf = new StringBuffer();
-        // Check to ensure we have selected only a contiguous block of
-        // cells
         int   numcols      = getSelectedColumnCount();
         int   numrows      = getSelectedRowCount();
         int[] rowsselected = getSelectedRows();
@@ -866,8 +858,29 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         {
             //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
             //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
+    	return true;
+    }
+    
+    /**
+     * @param isCut
+     * 
+     * Cut or copy selected cells into the Clipboard
+     */
+    public void cutOrCopy(final boolean isCut)
+    {
+        if (!canCutOrCopy())
+        {
+        	return;
+        }
+    	StringBuffer sbf = new StringBuffer();
+        // Check to ensure we have selected only a contiguous block of
+        // cells
+        int   numcols      = getSelectedColumnCount();
+        int   numrows      = getSelectedRowCount();
+        int[] rowsselected = getSelectedRows();
+        int[] colsselected = getSelectedColumns();
         
         for (int i = 0; i < numrows; i++)
         {
