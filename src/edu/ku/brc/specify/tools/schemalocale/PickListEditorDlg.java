@@ -828,7 +828,15 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             }
         }
         
-        ToggleButtonChooserDlg<PickList> pickDlg = new ToggleButtonChooserDlg<PickList>((Dialog)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);
+        ToggleButtonChooserDlg<PickList> pickDlg;
+        if (UIRegistry.getMostRecentWindow() instanceof Dialog)
+        {
+            pickDlg = new ToggleButtonChooserDlg<PickList>((Dialog)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);   
+        } else
+        {
+            pickDlg = new ToggleButtonChooserDlg<PickList>((Frame)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);   
+        }
+         
         pickDlg.setUseScrollPane(true);
         pickDlg.setAddSelectAll(true);
         pickDlg.createUI();
