@@ -36,6 +36,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -120,6 +121,7 @@ public class CustomDialog extends JDialog
     protected int               defaultBtn       = OK_BTN;
     protected String            helpContext      = null;
     protected Component         contentPanel     = null;
+    protected JComponent        extraBtn         = null;
     
     // Custom Titlebar
     protected GradiantLabel     titleBarLabel    = null;
@@ -397,6 +399,16 @@ public class CustomDialog extends JDialog
         createButtons();
         getRootPane().setDefaultButton(findDefaultBtn());
         JPanel bb = buildButtonBar();
+        
+        if (extraBtn != null)
+        {
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
+            CellConstraints cc      = new CellConstraints();
+            builder.add(extraBtn, cc.xy(1,1));
+            builder.add(bb,       cc.xy(2,1));
+            builder.getPanel().setOpaque(false);
+            bb = builder.getPanel();
+        }
         
         if (bb != null)
         {
@@ -704,5 +716,20 @@ public class CustomDialog extends JDialog
     {
         CustomDialog.appIcon = appIcon;
     }
-    
+
+    /**
+     * @return the extraBtn
+     */
+    public JComponent getExtraBtn()
+    {
+        return extraBtn;
+    }
+
+    /**
+     * @param extraBtn the extraBtn to set
+     */
+    public void setExtraBtn(JComponent extraBtn)
+    {
+        this.extraBtn = extraBtn;
+    }
 }

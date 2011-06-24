@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -83,6 +84,7 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.CollapsableSepExtraCompFactory;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.QueryComboboxEditor;
@@ -834,7 +836,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     getStatusBar().setText(""); //$NON-NLS-1$
                     getStatusBar().setProgressDone(SYSTEMSETUPTASK);
                     
+                    JComponent videoBtn = CollapsableSepExtraCompFactory.getInstance().getComponent("Schema", "Config");
                     SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)getTopWindow(), schemaType, tableMgr);
+                    dlg.setExtraBtn(videoBtn);
                     dlg.setVisible(true);
                     if (!dlg.isCancelled())
                     {

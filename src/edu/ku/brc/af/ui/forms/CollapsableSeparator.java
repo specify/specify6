@@ -57,6 +57,7 @@ public class CollapsableSeparator extends JPanel
 {
     protected Component    innerComp        = null;
     protected JCheckBox    moreBtn;
+    protected JComponent   extraComp;
     protected ImageIcon    forwardImgIcon;
     protected ImageIcon    downImgIcon;
     
@@ -72,14 +73,20 @@ public class CollapsableSeparator extends JPanel
      * is collapsed or not. Then a component to its right that is a separator and then the panel 
      * below it.
      * @param separator this can be any component but usually it is a separator.
+     * @param includeMore
+     * @param extraComp
      */
-    public CollapsableSeparator(final Component separator, final boolean includeMore)
+    public CollapsableSeparator(final Component separator, 
+                                final boolean includeMore,
+                                final JComponent extraComp)
     {
         this.includeMore = includeMore;
+        this.extraComp = extraComp;
         
         init();
         
-        panelBldr = new PanelBuilder(new FormLayout((includeMore ? "p," : "") + "p,f:p:g", "b:p"), this);
+        String rowDef = (includeMore ? "p," : "") + "p,f:p:g" + (extraComp != null ? ",p" : "");
+        panelBldr = new PanelBuilder(new FormLayout(rowDef, "b:p"), this);
         CellConstraints cc        = new CellConstraints();
         
         int x = 1;
@@ -88,18 +95,32 @@ public class CollapsableSeparator extends JPanel
             panelBldr.add(moreBtn, cc.xy(x,1));
             x++;
         }
+        
         panelBldr.add(separator, cc.xy(x,1));
+        
+        if (extraComp != null)
+        {
+            panelBldr.add(extraComp, cc.xy(x,1));
+            x++;
+        }
     }
     
     /**
      * @param title
+     * @param includeMore
+     * @param extraComp
      */
-    public CollapsableSeparator(final String title, final boolean includeMore)
+    public CollapsableSeparator(final String title, 
+                                final boolean includeMore,
+                                final JComponent extraComp)
     {
         this.includeMore = includeMore;
+        this.extraComp = extraComp;
+        
         init();
         
-        panelBldr = new PanelBuilder(new FormLayout((includeMore ? "p," : "") +"p,p,f:p:g", "c:p"), this);
+        String rowDef = (includeMore ? "p," : "") +"p,p,f:p:g" + (extraComp != null ? ",p" : "");
+        panelBldr = new PanelBuilder(new FormLayout(rowDef, "c:p"), this);
         CellConstraints cc        = new CellConstraints();
         
         subPanel = new JPanel(cardLayout);
@@ -122,6 +143,14 @@ public class CollapsableSeparator extends JPanel
         panelBldr.add(titleLbl, cc.xy(x, 1));
         x += 2;
         panelBldr.addSeparator(" ",                cc.xy(x, 1));
+        x++;
+        
+        if (extraComp != null)
+        {
+            panelBldr.add(extraComp, cc.xy(x,1));
+            x++;
+        }
+
     }
     
     /**
@@ -137,6 +166,7 @@ public class CollapsableSeparator extends JPanel
             moreBtn.setOpaque(false);
             moreBtn.setFocusable(false);
         }
+        
         UIHelper.setControlSize(moreBtn);
         setOpaque(false);
     }

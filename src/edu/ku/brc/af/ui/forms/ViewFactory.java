@@ -1743,7 +1743,7 @@ public class ViewFactory
             Component sep = viewBldObj.createSeparator(label);
             if (isNotEmpty(collapsableName))
             {
-                CollapsableSeparator collapseSep = new CollapsableSeparator(sep, false);
+                CollapsableSeparator collapseSep = new CollapsableSeparator(sep, false, null);
                 if (bi.collapseSepHash == null)
                 {
                     bi.collapseSepHash = new HashMap<CollapsableSeparator, String>();
