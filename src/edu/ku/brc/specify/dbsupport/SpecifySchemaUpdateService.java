@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.queryForInts;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleCol;
@@ -307,6 +309,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     if (doSchemaUpdate || doInsert || doUpdateAppVer)
                     {
+                        fixDuplicatedPaleoContexts(dbConn.getConnection());
+                        
                         if (doSchemaUpdate || doInsert)
                         {
                             //SpecifySchemaUpdateService.attachUnhandledException();
@@ -394,6 +398,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             
                         } else if (doSchemaUpdate || doUpdateAppVer)
                         {
+                            fixDuplicatedPaleoContexts(dbConn.getConnection());
+                            
                             recVerNum++;
                             SpVersion.updateRecord(dbConn.getConnection(), appVerNum, dbVersion, recVerNum, spverId);
                         }
@@ -1337,6 +1343,84 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private int getCount(final String tableName)
     {
         return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM %s", tableName));
+    }
+    
+    /**
+     * @param connection
+     */
+    public void fixDuplicatedPaleoContexts(final Connection conn)
+    {
+        String sql = "SELECT PaleoContextID FROM (SELECT pc.PaleoContextID, COUNT(pc.PaleoContextID) cnt " +
+        	         "FROM paleocontext pc INNER JOIN collectionobject co ON pc.PaleoContextID = co.PaleoContextID " +
+                     "GROUP BY pc.PaleoContextID) T1 WHERE cnt > 1 ";
+        
+        String coSQL = "SELECT CollectionObjectID FROM collectionobject WHERE PaleoContextID = ";
+        
+        
+        List<String> pcFieldNames = getFieldNamesFromSchema(conn, "paleocontext");
+        String       fieldStr     = buildSelectFieldList(pcFieldNames, null);
+        fieldStr = StringUtils.remove(fieldStr, "PaleoContextID, ");
+        
+        StringBuilder sb = new StringBuilder("INSERT INTO paleocontext (");
+        sb.append(fieldStr);
+        sb.append(") SELECT ");
+        sb.append(fieldStr);
+        sb.append(" FROM paleocontext WHERE PaleoContextID = ?");
+        
+        String updateSQL = sb.toString();
+        //System.out.println(updateSQL);
+        
+        boolean           isErr  = false;
+        PreparedStatement pStmt  = null;
+        PreparedStatement pStmt2 = null;
+        try
+        {
+            pStmt  = conn.prepareStatement(updateSQL);
+            pStmt2 = conn.prepareStatement("UPDATE collectionobject SET PaleoContextID=? WHERE CollectionObjectID = ?");
+            
+            for (Integer pcId : BasicSQLUtils.queryForInts(conn, sql))
+            {
+                Vector<Integer> colObjIds = BasicSQLUtils.queryForInts(conn, coSQL + pcId);
+                for (int i=1;i<colObjIds.size();i++)
+                {
+                    pStmt.setInt(1, pcId);
+                    int rv = pStmt.executeUpdate();
+                    if (rv == 1)
+                    {
+                        Integer newPCId = BasicSQLUtils.getInsertedId(pStmt);
+                        pStmt2.setInt(1, newPCId);
+                        pStmt2.setInt(2, colObjIds.get(i));
+                        rv = pStmt2.executeUpdate();
+                        if (rv != 1)
+                        {
+                            log.error("Error updating co "+colObjIds.get(i));
+                            isErr = true;
+                        }
+                    } else
+                    {
+                        log.error("Error updating pc "+pcId);
+                        isErr = true;
+                    }
+                }
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, ex);
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+                if (pStmt2 != null) pStmt2.close();
+            } catch (SQLException ex) {}
+        }
+        
+        if (isErr)
+        {
+            UIRegistry.showError("There was an error updating the duplicated PaleoContexts\nPlease contact support.");
+        }
     }
     
     /**

@@ -63,6 +63,7 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -73,6 +74,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -1034,6 +1036,20 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             // So we need to clone it make a full copy when it is embedded.
             return AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
             
+        }
+        
+        if (fieldName.equals("paleoContext"))
+        {
+            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            if (discipline != null)
+            {
+                DisciplineType dt = DisciplineType.getByName(discipline.getType());
+                if (dt != null && dt.isPaleo())
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         
         if (fieldName.equals("collectionObjectAttribute"))
