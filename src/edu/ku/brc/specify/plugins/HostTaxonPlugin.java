@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -40,6 +41,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -54,6 +59,7 @@ import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.busrules.TableSearchResults;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -125,18 +131,6 @@ public class HostTaxonPlugin extends UIPluginBase
     {
         throw new NotImplementedException("isNotEmpty not implement!");
     }
-    
-    /**
-     * 
-     */
-    protected void adjustSQLTemplate()
-    {
-        StringBuilder sql = new StringBuilder("SELECT %s1 FROM Taxon tx inner join tx.definition ttd WHERE ttd.id = ");
-        sql.append(taxonTreeDef.getId());
-        sql.append(" AND %s2");
-        System.out.println(sql.toString());
-        cbx.setSqlTemplate(sql.toString());
-    }
 
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
@@ -168,46 +162,55 @@ public class HostTaxonPlugin extends UIPluginBase
             Collection curCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
             
             String sql = String.format("SELECT RightSideCollectionID FROM collectionreltype WHERE Name = \"%s\" AND LeftSideCollectionID = %d", relName,  curCollection.getId());
-            //System.err.println(sql);
+            System.err.println(sql);
             hostCollId = BasicSQLUtils.getCount(sql);
+            System.err.println("hostCollId: "+hostCollId+"   curColId: "+curCollection.getId());
             
-            if (hostCollId != null)
+            DataProviderSessionIFace session = null;
+            try
             {
-                DataProviderSessionIFace session = null;
-                try
+                session    = DataProviderFactory.getInstance().createSession();
+                colRelType = session.getData(CollectionRelType.class, "name", relName, DataProviderSessionIFace.CompareType.Equals);
+                if (colRelType != null)
                 {
-                    session             = DataProviderFactory.getInstance().createSession();
-                    Collection rightCol = session.get(Collection.class, hostCollId);
-                    if (rightCol != null)
+                    leftSideCol  = colRelType.getLeftSideCollection();
+                    rightSideCol = colRelType.getRightSideCollection();
+                }
+                
+                if (rightSideCol != null)
+                {
+                    hostCollId = rightSideCol.getId();
+                    System.err.println("2hostCollId: "+hostCollId+"   curColId: "+curCollection.getId());
+                    if (hostCollId != null)
                     {
-                        rightsideDiscipline = rightCol.getDiscipline();
+                        rightsideDiscipline = rightSideCol.getDiscipline();
                         if (rightsideDiscipline != null)
                         {
                             taxonTreeDef = rightsideDiscipline.getTaxonTreeDef();
                         } else
                         {
                             errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR_MSG_RSD", relName);
-                        }
+                        }                            
                     } else
                     {
-                        errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR_MSG_RSC", relName);
+                        errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR_BAD_NM", relName, curCollection.getCollectionName());
                     }
-                    
-                } catch (Exception ex)
+                } else
                 {
-                    ex.printStackTrace();
-                    errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR");
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
+                    errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR_MSG_RSC", relName);
                 }
-            } else
+                
+            } catch (Exception ex)
             {
-                errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR_BAD_NM", relName, curCollection.getCollectionName());
+                ex.printStackTrace();
+                errMsg = UIRegistry.getLocalizedMessage("HostTaxonPlugin.ERR");
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
             }
         
             if (hostCollId != null && rightsideDiscipline != null)
@@ -238,7 +241,7 @@ public class HostTaxonPlugin extends UIPluginBase
                                             btnOpts);
                     pb.add(cbx, cc.xy(1, 1));
                     
-                    adjustSQLTemplate();
+                    cbx.registerQueryBuilder(createSearchQueryBuilder());
                     
                     cbx.addListSelectionListener(new ListSelectionListener() {
                         public void valueChanged(ListSelectionEvent e)
@@ -270,6 +273,83 @@ public class HostTaxonPlugin extends UIPluginBase
             });
         }
     }
+    
+    
+    /**
+     * @return
+     */
+    protected ViewBasedSearchQueryBuilderIFace createSearchQueryBuilder()
+    {
+        return new ViewBasedSearchQueryBuilderIFace()
+        {
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.lang.String, boolean)
+             */
+            @Override
+            public String buildSQL(String searchText, boolean isForCount)
+            {
+                String cols = isForCount ? "COUNT(*)" : "tx.fullName, tx.id";
+                String sql = String.format("SELECT %s FROM Taxon tx INNER JOIN tx.definition ttd WHERE ttd.id = %d AND LOWER(tx.fullName) LIKE '%c%s%c' ORDER BY tx.fullName", 
+                                           cols, taxonTreeDef.getId(), '%',searchText, '%');
+                
+                //System.out.println("adjustSQLTemplate: "+sql.toString());
+                return sql;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
+             */
+            @Override
+            public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames)
+            {
+                String orderBy = "";
+                String fullName = (String)dataMap.get("taxon.FullName");
+                if (StringUtils.isNotEmpty(fullName))
+                {
+                    fullName = StringUtils.remove(fullName, '#');
+                    fullName = StringUtils.remove(fullName, '*');
+                    if (StringUtils.isNotEmpty(fullName))
+                    {
+                        orderBy = "FullName";
+                        fullName = String.format("LOWER(FullName) LIKE '%c%s%c'", '%', fullName.toLowerCase(), '%');  
+                    }
+                }
+                
+                String common = (String)dataMap.get("taxon.CommonName");
+                if (StringUtils.isNotEmpty(common))
+                {
+                    common = StringUtils.remove(common, '#');
+                    common = StringUtils.remove(common, '*');
+                    if (StringUtils.isNotEmpty(common))
+                    {
+                        common = (StringUtils.isNotEmpty(fullName) ? " OR " : "") + String.format("LOWER(CommonName) LIKE '%c%s%c'", '%', common.toLowerCase(), '%');
+                        if (StringUtils.isEmpty(fullName))
+                        {
+                            orderBy = "CommonName";
+                        }
+                    }
+                }
+                
+                String sql = String.format("SELECT TaxonID, FullName, CommonName FROM taxon tx INNER JOIN taxontreedef ttd ON tx.TaxonTreeDefID = ttd.TaxonTreeDefID WHERE ttd.TaxonTreeDefID = %d AND %s %s ORDER BY %s", 
+                                           taxonTreeDef.getId(), fullName == null ? "" : fullName, common == null ? "" : common, orderBy);
+                //System.out.println(sql);
+                return sql;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#createQueryForIdResults()
+             */
+            @Override
+            public QueryForIdResultsIFace createQueryForIdResults()
+            {
+                ExpressResultsTableInfo esTblInfo = ExpressSearchConfigCache.getTableInfoByName("TaxonSearch");
+                return new TableSearchResults(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()), esTblInfo.getCaptionInfo()); //true => is HQL
+            }
+            
+        };
+    }
+
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
