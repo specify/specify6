@@ -222,9 +222,12 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
             Component comp = formViewObj.getControlByName("name");
             if (comp instanceof ValTextField)
             {
+                Division division = (Division)formViewObj.getDataObj();
+                Integer  divId    = division.getId();
+                
                 String name = ((ValTextField)comp).getText();
                 int cnt = getNameCount(name);
-                if (cnt == 0)
+                if (cnt == 0 || (cnt == 1 && divId != null))
                 {
                     return true;
                 }

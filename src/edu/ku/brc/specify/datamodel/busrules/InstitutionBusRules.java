@@ -19,13 +19,18 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Component;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -72,6 +77,41 @@ public class InstitutionBusRules extends BaseBusRules
                                           Institution.MIN_PASSWORD_LEN); // val
             }
         }
+    }
+    
+    /**
+     * @param name
+     * @return
+     */
+    private int getNameCount(final String name)
+    {
+        return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM institution WHERE Name = '%s'", name));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        if (formViewObj != null)
+        {
+            Component comp = formViewObj.getControlByName("name");
+            if (comp instanceof ValTextField)
+            {
+                Institution inst   = (Institution)formViewObj.getDataObj();
+                Integer     instId = inst.getId();
+                
+                String name = ((ValTextField)comp).getText();
+                int cnt = getNameCount(name);
+                if (cnt == 0 || (cnt == 1 && instId != null))
+                {
+                    return true;
+                }
+               reasonList.add(UIRegistry.getLocalizedMessage("DIVNAME_DUP", name));
+            }
+        }
+        return false;
     }
     
     /* (non-Javadoc)
