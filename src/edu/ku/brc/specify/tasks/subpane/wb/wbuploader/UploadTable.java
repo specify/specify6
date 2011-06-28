@@ -78,7 +78,10 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.ConservDescription;
+import edu.ku.brc.specify.datamodel.ConservEvent;
 import edu.ku.brc.specify.datamodel.DNASequence;
+import edu.ku.brc.specify.datamodel.DNASequencingRun;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -226,7 +229,7 @@ public class UploadTable implements Comparable<UploadTable>
      * If true then matching records are updated with values in uploading dataset.
      * 
      */
-    protected boolean                                   updateMatches                = false;
+    protected boolean                                   updateMatches                = true;
 
     /**
      * If true then Match Status will be displayed
@@ -1270,6 +1273,14 @@ public class UploadTable implements Comparable<UploadTable>
                 else if (tblClass.equals(FieldNotebookPage.class) && setterName.equals("FieldNotebookPageSet"))
                 {
                 	setterName = "PageSet";
+                } 
+                else if (tblClass.equals(DNASequencingRun.class) && setterName.startsWith("DNA"))
+                {
+                	setterName = setterName.replace("DNA", "Dna");
+                }
+                else if (tblClass.equals(ConservEvent.class))
+                {
+                	System.out.println(setterName);
                 }
                 pt.setSetter(tblClass.getMethod("set" + setterName, parType));
                 pt.setGetter(tblClass.getMethod("get" + setterName, (Class<?>[] )null));
@@ -2361,7 +2372,8 @@ public class UploadTable implements Comparable<UploadTable>
                 .equals(Determination.class)
                 || childClass.equals(Preparation.class)
                 || childClass.equals(CollectionObjectAttribute.class)
-                || childClass.equals(DNASequence.class); 
+                || childClass.equals(DNASequence.class)
+                || childClass.equals(ConservDescription.class); 
         }
         if (tblClass.equals(Locality.class))
         {

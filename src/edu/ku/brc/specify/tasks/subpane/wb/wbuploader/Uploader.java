@@ -654,7 +654,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         if (mapping.getRelatedFields().size() > 0)
         {
-            Relationship r = null;
+            //Relationship r = null;
             Vector<Relationship> rs;
             try
             {
@@ -671,34 +671,47 @@ public class Uploader implements ActionListener, KeyListener
             // find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
             //Actually it seems the modifiedby and createdby 'system' relationships get filtered out during graph creation,
             //so the filtering isn't necessarily necessary.
-            for (Relationship rel : rs)
+            for (int r = rs.size() - 1; r > -1; r--)
             {
-            	if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid")
-                        && !rel.getRelatedField().getName().equalsIgnoreCase("createdbyagentid"))
+                if (rs.get(r).getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid")
+                            || rs.get(r).getRelatedField().getName().equalsIgnoreCase("createdbyagentid"))
                 {
-                    r = rel;
-                    break;
+                        rs.remove(r);
                 }
             }
-            if (r != null)
+
+//            for (Relationship rel : rs)
+//            {
+//            	if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid")
+//                        && !rel.getRelatedField().getName().equalsIgnoreCase("createdbyagentid"))
+//                {
+//                    r = rel;
+//                    break;
+//                }
+//            }
+            if (rs.size() > 0)
             {
-                Vector<ImportMappingRelFld> relFlds = mapping.getRelatedFields();
-                for (int relF = 0; relF < relFlds.size(); relF++)
-                {
-                    Field fld = db.getSchema().getField(t2.getName(),
-                            relFlds.get(relF).getFieldName());
-                    int fldIdx = relFlds.get(relF).getFldIndex();
-                    String wbFldName = relFlds.get(relF).getWbFldName();
-                    UploadField newFld = new UploadField(fld, fldIdx, wbFldName, r);
-                    newFld.setSequence(mapping.getSequence());
-                    uploadFields.add(newFld);
-                }
+            	for (Relationship r : rs)
+            	{
+            		if (r.getRelatedField().getName().equalsIgnoreCase(mapping.getField()))
+            		{
+            			Vector<ImportMappingRelFld> relFlds = mapping.getRelatedFields();
+            			for (int relF = 0; relF < relFlds.size(); relF++)
+            			{
+            				Field fld = db.getSchema().getField(t2.getName(),
+            						relFlds.get(relF).getFieldName());
+            				int fldIdx = relFlds.get(relF).getFldIndex();
+            				String wbFldName = relFlds.get(relF).getWbFldName();
+            				UploadField newFld = new UploadField(fld, fldIdx, wbFldName, r);
+            				newFld.setSequence(mapping.getSequence());
+            				uploadFields.add(newFld);
+            			}
+        				return;
+            		}
+            	}
             }
-            else
-            {
-                throw new UploaderException("could not find relationship for mapping.",
-                        UploaderException.ABORT_IMPORT);
-            }
+            throw new UploaderException("could not find relationship for mapping.",
+                 UploaderException.ABORT_IMPORT);
         }
     }
 
