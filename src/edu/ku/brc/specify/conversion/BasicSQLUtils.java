@@ -383,18 +383,26 @@ public class BasicSQLUtils
      */
     public static Integer getInsertedId(final Statement stmt)
     {
+        ResultSet resultSet = null;
         try
         {
-            ResultSet resultSet = stmt.getGeneratedKeys(); 
-    
+            resultSet = stmt.getGeneratedKeys(); 
             if ( resultSet != null && resultSet.next() ) 
             { 
                 return resultSet.getInt(1); 
             }
+            
         } catch (SQLException ex)
         {
             ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (resultSet != null) resultSet.close();
+            } catch (SQLException ex) {}
         }
+        
         return null;
     }
     
@@ -501,19 +509,16 @@ public class BasicSQLUtils
     {
         Integer   count = null;
         Statement stmt  = null;
+        ResultSet rs    = null;
         try
         {
-            //log.debug(sql);
             stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            rs   = stmt.executeQuery(sql);
             if (rs.next())
             {
                 count = rs.getInt(1);
                 return rs.wasNull() ? null : count;
             }
-            rs.close();
-            
-            //log.debug(count+" - "+sql);
 
         } catch (Exception ex)
         {
@@ -521,14 +526,12 @@ public class BasicSQLUtils
             
         } finally
         {
-            if (stmt != null)
+            try
             {
-                try
-                {
-                    stmt.close();
-                    
-                } catch (Exception ex) {}
-            }
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                
+            } catch (Exception ex) {}
         }
 
         return count;
@@ -2196,9 +2199,6 @@ public class BasicSQLUtils
                 
                 id = rs.getString(1);
                 
-                int x = 0;
-                x++;
-
                 // For each column in the new DB table...
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
