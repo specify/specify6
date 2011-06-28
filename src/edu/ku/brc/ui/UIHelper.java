@@ -430,10 +430,14 @@ public final class UIHelper
     /**
      * Center and make the window visible
      * @param window the window to center
+     * @param width sets the dialog to this width (can be null)
+     * @param height sets the dialog to this height (can be null)
      */
-    public static void centerAndShow(java.awt.Window window)
+    public static void centerAndShow(java.awt.Window window, 
+                                     final Integer width, 
+                                     final Integer height)
     {
-        centerWindow(window);
+        centerWindow(window, width, height);
 
         window.setVisible(true);
     }
@@ -442,11 +446,41 @@ public final class UIHelper
      * Center and make the window visible
      * @param window the window to center
      */
-    public static void centerWindow(java.awt.Window window)
+    public static void centerAndShow(java.awt.Window window)
+    {
+        centerAndShow(window, null, null);
+    }
+
+    /**
+     * Center and make the window visible
+     * @param window the window to center
+     */
+    public static void centerWindow(final java.awt.Window window)
+    {
+        centerWindow(window, null, null);
+    }
+
+    /**
+     * Center and make the window visible
+     * @param window the window to center
+     * @param width sets the dialog to this width (can be null)
+     * @param height sets the dialog to this height (can be null)
+     */
+    public static void centerWindow(final java.awt.Window window, 
+                                    final Integer width, 
+                                    final Integer height)
     {
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        Insets screenInsets = null;
-        Rectangle screenRect = null;
+        Insets    screenInsets = null;
+        Rectangle screenRect   = null;
+        
+        if (width != null || height != null)
+        {
+            Dimension s = window.getSize();
+            if (width != null) s.width = width;
+            if (height != null) s.height = height;
+            window.setSize(s);
+        }
         
         // if there is a registered TOPFRAME, and it's not the same as the window being passed in...
         if (topFrame != null && topFrame != window)

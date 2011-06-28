@@ -81,6 +81,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
@@ -104,6 +105,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.BrowseBtnPanel;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -2431,24 +2433,42 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         if (oldAgentPairs == null)
         {
-            //PrintWriter pw = null;
-            try
+            JTextField      textField = new JTextField();
+            BrowseBtnPanel  bbp       = new BrowseBtnPanel(textField, false, true);
+            CellConstraints cc        = new CellConstraints();
+            PanelBuilder    pb        = new PanelBuilder(new FormLayout("f:p:g", "p"));
+            pb.add(bbp, cc.xy(1, 1));
+            pb.setDefaultDialogBorder();
+            
+            CustomDialog    dlg       = new CustomDialog((Frame)null, "Choose Agent Mapping File", true, pb.getPanel());
+            dlg.createUI();
+            dlg.pack();
+            UIHelper.centerAndShow(dlg, 600, dlg.getHeight());
+            if (!dlg.isCancelled())
             {
-                //String[] names = {"jkluse", "leu", "SilverBiology", "Yalma",  "Yalma1",  "diane", };
-                
-                //pw = new PrintWriter(new File("agent_mappings.xml"));
-                //XStream xstream = new XStream();
-                //xstream.toXML(oldAgentPairs, pw);
-                //Object[] mappings = (String[])xstream.fromXML(new FileInputStream(new File("agent_mappings.xml")));
-                
-                XStream xstream = new XStream();
-                oldAgentPairs = (Object[])xstream.fromXML(new FileInputStream(new File("agent_mappings.xml")));
-                
-            } catch (FileNotFoundException e)
-            {
-                e.printStackTrace();
-                //if (pw != null) pw.close();
-                oldAgentPairs = new Object[] {"XXXXXXX", 0};
+                String fileName = textField.getText();
+                if (StringUtils.isNotEmpty(fileName))
+                {
+                    try
+                    {
+                        File file = new File(fileName);
+                        if (file.exists())
+                        {
+                            XStream xstream = new XStream();
+                            oldAgentPairs = (Object[])xstream.fromXML(new FileInputStream(file));
+                        } else
+                        {
+                            UIRegistry.showError("The file ["+fileName+"] does not exist!");
+                        }
+                        
+                    } catch (FileNotFoundException e)
+                    {
+                        e.printStackTrace();
+                        UIRegistry.showError("Error parsing agent XML file ["+fileName+"]");
+                        //if (pw != null) pw.close();
+                        oldAgentPairs = null;//new Object[] {"XXXXXXX", 0};
+                    }
+                }
             }
         }
     }
@@ -2459,16 +2479,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     private Integer getOldAgentIdFromName(final String nameArg)
     {
-        String name = nameArg;
-        
-        if (agentIdMapper == null)
+        if (oldAgentPairs != null)
         {
-            agentIdMapper = idMapperMgr.get("agent", "AgentID");
-        }
+            String name = nameArg;
+            
+            if (agentIdMapper == null)
+            {
+                agentIdMapper = idMapperMgr.get("agent", "AgentID");
+            }
         
-        boolean doNameLookup = true;
-        if (doNameLookup && oldAgentPairs != null)
-        {
             if (oldAgentHash.size() == 0)
             {
                 for (int i=0;i<oldAgentPairs.length;i+=2)
@@ -2476,42 +2495,42 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     oldAgentHash.put((String)oldAgentPairs[i], (Integer)oldAgentPairs[i+1]);
                 }
             }
-        }
-        
-        if (name.startsWith("'"))
-        {
-            name = name.substring(1);
-        }
-        if (name.endsWith("'"))
-        {
-            name = name.substring(0, name.length()-1);
-        }
-
-        Integer oldId = oldAgentHash.get(name);
-        if (oldId != null)
-        {
-            agentIdMapper = idMapperMgr.get("agent", "AgentID");
-            Integer newId = agentIdMapper.get(oldId);
-            if (newId == null)
-            {
-                agentIdMapper = idMapperMgr.get("agentaddress", "AgentAddressID");
-                newId = agentIdMapper.get(oldId);
-                agentIdMapper = idMapperMgr.get("agent", "AgentID");
-            }
-            if (newId != null)
-            {
-                return newId;
-            }
-            if (!oldUnmappedAgentNames.contains(name))
-            {
-                log.error(String.format("Couldn't map old Agent Name [%s] oldId[%d]", name, oldId));
-            }
-            oldUnmappedAgentNames.add(name);
             
-        } else if (!oldUnmappedAgentNames.contains(name))
-        {
-            log.error(String.format("Couldn't find old Agent Name [%s] in hash", name));
-            oldUnmappedAgentNames.add(name);
+            if (name.startsWith("'"))
+            {
+                name = name.substring(1);
+            }
+            if (name.endsWith("'"))
+            {
+                name = name.substring(0, name.length()-1);
+            }
+
+            Integer oldId = oldAgentHash.get(name);
+            if (oldId != null)
+            {
+                agentIdMapper = idMapperMgr.get("agent", "AgentID");
+                Integer newId = agentIdMapper.get(oldId);
+                if (newId == null)
+                {
+                    agentIdMapper = idMapperMgr.get("agentaddress", "AgentAddressID");
+                    newId = agentIdMapper.get(oldId);
+                    agentIdMapper = idMapperMgr.get("agent", "AgentID");
+                }
+                if (newId != null)
+                {
+                    return newId;
+                }
+                if (!oldUnmappedAgentNames.contains(name))
+                {
+                    log.error(String.format("Couldn't map old Agent Name [%s] oldId[%d]", name, oldId));
+                }
+                oldUnmappedAgentNames.add(name);
+                
+            } else if (!oldUnmappedAgentNames.contains(name))
+            {
+                log.error(String.format("Couldn't find old Agent Name [%s] in hash", name));
+                oldUnmappedAgentNames.add(name);
+            }
         }
         return null;
     }
