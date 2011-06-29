@@ -89,6 +89,27 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     }
     
     /**
+     * @param kids
+     * @return
+     */
+    private Vector<File> getFilterFileList(final File[] kids)
+    {
+        Vector<File> list = new Vector<File>();
+        if (kids != null && kids.length > 0)
+        {
+            for (File f : kids)
+            {
+                if (StringUtils.isNotEmpty(f.getName()) && 
+                    f.getName().charAt(0) != '.')
+                {
+                    list.add(f);
+                }
+            }
+        }
+        return list;
+    }
+    
+    /**
      * @param baseDir
      */
     private void initDirectories(final File baseDir)
@@ -99,11 +120,9 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         boolean doCreateNewSub = false;
         File    subDir         = null;
         
-        File[] kids = this.originalsDir.listFiles();
-        if (kids.length > 0)
+        Vector<File> files = getFilterFileList(this.originalsDir.listFiles());
+        if (files.size() > 0)
         {
-            Vector<File> files = new Vector<File>();
-            Collections.addAll(files, kids);
             Comparator<File> comp = new Comparator<File>()
             {
                 @Override
@@ -119,15 +138,14 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             //System.out.println("Newest sub Dir: " + subDir.getName());
             
             File fullPath = new File(baseDir.getAbsolutePath() + File.separator + subDir.getName() + File.separator + ORIGINAL);
-            kids = fullPath.listFiles();
-            if (kids.length >= MAX_NUMFILES_PER_SUBDIR)
+            Vector<File> kids = getFilterFileList(fullPath.listFiles());
+            if (kids.size() >= MAX_NUMFILES_PER_SUBDIR)
             {
                 doCreateNewSub = true;
             } else
             {
-                numSubDirFile = kids.length;
+                numSubDirFile = kids.size();
             }
-            
         } else
         {
             doCreateNewSub = true;
@@ -426,8 +444,9 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         
         for (File subDir : originalBase.listFiles())
         {
-            File origFile  = new File(subDir.getAbsoluteFile() + File.separator + ORIGINAL);
-            if (origFile.list() != null && origFile.list().length == 0)
+            File     origFile = new File(subDir.getAbsoluteFile() + File.separator + ORIGINAL);
+            String[] names    = origFile.list();
+            if (names != null && names.length == 0)
             {
                 try
                 {
