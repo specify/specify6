@@ -732,6 +732,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     ignoreFocusLost = true;
                     popupMenu.setInvoker(TextFieldWithQuery.this);
                     popupMenu.show(TextFieldWithQuery.this, location.x, location.y+size.height);
+                    Dimension popupSize = popupMenu.getPreferredSize();
+                    popupMenu.setPopupSize(Math.max(size.width, popupSize.width), popupSize.height);
                     popupMenu.requestFocus();
                 }
             });
