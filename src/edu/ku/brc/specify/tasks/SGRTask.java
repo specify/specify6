@@ -68,7 +68,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -81,7 +80,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -392,8 +390,7 @@ public class SGRTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-        if (AppPreferences.getRemote().getBoolean("ExportTask.OnTaskbar"+"."+ds, false))
+        if (AppPreferences.getRemote().getBoolean("ENABLE_SGR", false))
         {
             toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }
