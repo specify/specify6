@@ -49,11 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -76,7 +74,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
-import org.jfree.chart.block.CenterArrangement;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -147,6 +144,7 @@ public class SpecifyDBConverter extends AppBase
     protected static SimpleDateFormat           dateFormatter     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static StringBuffer               strBuf            = new StringBuffer("");
     protected static Calendar                   calendar          = Calendar.getInstance();
+    protected static String                     convOutputPath    = null;
     
     protected long                              startTime;
     protected long                              endTime;
@@ -450,6 +448,8 @@ public class SpecifyDBConverter extends AppBase
      */
     protected  void processDB()
     {
+        convOutputPath = UIRegistry.getUserHomeDir() + File.separator + "conversions";
+
         String inputName = null;
         if (namePairToConvert.second != null && namePairToConvert.second.startsWith("sp5_"))
         {
@@ -736,9 +736,8 @@ public class SpecifyDBConverter extends AppBase
         
         startTime = System.currentTimeMillis();
         
-        convLogger.initialize(dbNameDest);
+        convLogger.initialize(convOutputPath, dbNameDest);
         convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
-
         
         /*if (true)
         {
@@ -754,8 +753,8 @@ public class SpecifyDBConverter extends AppBase
         {
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             IdMapperMgr.getInstance().addTableMapper("agent", "AgentID", false);
-            
-            convLogger.initialize(dbNameDest);
+
+            convLogger.initialize(convOutputPath, dbNameDest);
             convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
             conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
             conversion.checkCreatedModifiedByAgents();

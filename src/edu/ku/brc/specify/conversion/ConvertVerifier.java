@@ -214,7 +214,8 @@ public class ConvertVerifier extends AppBase
     public void verifyDB(final String databaseNameSource, 
                          final String databaseNameDest) throws Exception
     {
-        convLogger.initialize("verify", databaseNameDest);
+        String path = UIRegistry.getUserHomeDir() + File.separator + "verify";
+        convLogger.initialize(path, databaseNameDest);
         
         String title = "From "+databaseNameSource+" to "+databaseNameDest;
         System.out.println("************************************************************");
@@ -2792,6 +2793,7 @@ public class ConvertVerifier extends AppBase
     {
         
         UIRegistry.setAppName("Specify");
+        AppBase.processArgs(args);
 
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {

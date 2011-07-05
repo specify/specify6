@@ -58,15 +58,6 @@ public class ConversionLogger
     }
     
     /**
-     * @param name
-     * @return
-     */
-    public boolean initialize(final String name)
-    {
-        return initialize("conversions", name);
-    }
-    
-    /**
      * @param baseDirName
      * @param dirName
      * @return
