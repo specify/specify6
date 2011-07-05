@@ -726,10 +726,10 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     @Override
     public void shutdown()
     {
-        if (GroupHashDAO.getInstance() != null)
+        /*if (GroupHashDAO.getInstance() != null)
         {
             GroupHashDAO.getInstance().cleanUp();
-        }
+        }*/
     }
 
 }

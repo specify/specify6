@@ -154,9 +154,9 @@ import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
-import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -202,18 +202,18 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -699,12 +699,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // 
         
-        if (!isReadOnly && AppPreferences.getLocalPrefs().getBoolean("SRG_PLUGIN", false))
-        {
-            // Will come from XML
-            createPlugin("edu.ku.brc.specify.plugins.sgr.SGRPluginImpl", "SGR", "WB_SHOW_IN_GOOGLE_EARTH");
-        }
-        
+        readRegisteries();
         
         // enable or disable along with Show Map and Geo Ref Convert buttons
         
@@ -4488,6 +4483,75 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
+     * 
+     */
+    private void readRegisteries()
+    {
+        HashMap<String, WBPluginInfo> plugins = new HashMap<String, WorkbenchPaneSS.WBPluginInfo>();
+        String fileName = "wb_registry.xml";
+        
+        String path = XMLHelper.getConfigDirPath(fileName);
+        readRegistry(path, plugins);
+        
+        path = AppPreferences.getLocalPrefs().getDirPath() + File.separator + fileName;
+        readRegistry(path, plugins);
+        
+        for (WBPluginInfo wbp : plugins.values())
+        {
+            String prefName = wbp.getPrefName();
+            if (StringUtils.isEmpty(prefName) || AppPreferences.getLocalPrefs().getBoolean(prefName, false))
+            {
+                createPlugin(wbp.getClassName(), wbp.getIconName(), wbp.getToolTip());
+            }
+        }
+    }
+    
+    /**
+     * @param path
+     * @param plugins
+     */
+    private void readRegistry(final String path, 
+                              final HashMap<String, WBPluginInfo> plugins)
+    {
+        File file = new File(path);
+        if (file.exists())
+        {
+            try
+            {
+                Element root = XMLHelper.readFileToDOM4J(file);
+                if (root != null)
+                {
+                    for (Iterator<?> i = root.elementIterator("plugin"); i.hasNext();) //$NON-NLS-1$
+                    {
+                        Element node = (Element) i.next();
+                        String  pluginName = node.attributeValue("name"); //$NON-NLS-1$
+                        String  className  = node.attributeValue("class"); //$NON-NLS-1$
+                        String  iconName   = node.attributeValue("icon"); //$NON-NLS-1$
+                        String  toolTip    = node.attributeValue("tooltip"); //$NON-NLS-1$
+                        String  prefName   = node.attributeValue("pref"); //$NON-NLS-1$
+                        
+                        if (StringUtils.isNotEmpty(pluginName) &&
+                            StringUtils.isNotEmpty(className) &&
+                            StringUtils.isNotEmpty(iconName))
+                        {
+                            WBPluginInfo wbp = new WBPluginInfo(pluginName, className, iconName, toolTip, prefName);
+                            plugins.put(pluginName, wbp);
+                            
+                        } else
+                        {
+                            log.error("WBPlugin in error: One of the fields (name, class, icon) is null or empty.");
+                        }
+                    }
+                }
+                
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
      * @param className
      * @param iconName
      * @param tooltipKey
@@ -5751,5 +5815,73 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 	}
 	
+    //------------------------------------------------------------------------------------------------------
+    //-- 
+    //------------------------------------------------------------------------------------------------------
+	class WBPluginInfo
+	{
+        private String pluginName;
+        private String className;
+        private String iconName;
+        private String toolTip;
+        private String prefName;
+        
+        /**
+         * @param pluginName
+         * @param className
+         * @param iconName
+         * @param toolTip
+         * @param prefName
+         */
+        public WBPluginInfo(final String pluginName, 
+                            final String className, 
+                            final String iconName, 
+                            final String toolTip, 
+                            final String prefName)
+        {
+            super();
+            this.pluginName = pluginName;
+            this.className = className;
+            this.iconName = iconName;
+            this.toolTip = toolTip;
+            this.prefName = prefName;
+        }
+        /**
+         * @return the pluginName
+         */
+        public String getPluginName()
+        {
+            return pluginName;
+        }
+        /**
+         * @return the className
+         */
+        public String getClassName()
+        {
+            return className;
+        }
+        /**
+         * @return the toolTip
+         */
+        public String getToolTip()
+        {
+            return toolTip;
+        }
+        /**
+         * @return the prefName
+         */
+        public String getPrefName()
+        {
+            return prefName;
+        }
+        /**
+         * @return the iconName
+         */
+        public String getIconName()
+        {
+            return iconName;
+        }
+	    
+	}
 }
 
