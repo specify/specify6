@@ -48,6 +48,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />
@@ -86,6 +87,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />
@@ -124,6 +126,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />
@@ -162,6 +165,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />
@@ -200,6 +204,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />
@@ -238,6 +243,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />
@@ -276,6 +282,7 @@
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
+		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
           <scanDirectory location="wwlib_64" failOnError="true" />

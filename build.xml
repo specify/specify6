@@ -24,6 +24,7 @@
 	<property name="hibernate.cfg" value="hibernate.cfg.xml" />
 	<property name="dir.dest" value="dest" />
 	<property name="hibernate.generated.code.destdir" value="generated-src" />
+	
 
 	<property name="data.dir" value="data" />
 
@@ -195,7 +196,8 @@
 		
 		<delete dir="${installer.dir}"/>
 		<mkdir dir="${installer.dir}" />
-		<mkdir dir="${installer.dir}/demo_files" />
+		<mkdir dir="${installer.dir}/demo_files"/>
+		<mkdir dir="${installer.dir}/plugins" />
 		
 		<antcall target="clean-jar"/>
 		<antcall target="dist-jar-mac"/>
