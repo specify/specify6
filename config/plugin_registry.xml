@@ -3,62 +3,56 @@
      that ID -->
 <plugins>
 	<core>
-		<plugin class="edu.ku.brc.specify.tasks.StartUpTask" addui="true" default="true"/>
+		<plugin name="StartUpTask" class="edu.ku.brc.specify.tasks.StartUpTask" addui="true" default="true"/>
 		
-		<plugin class="edu.ku.brc.specify.tasks.DataEntryTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.StorageTreeTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.LithoStratTreeTask" addui="true"/>
+		<plugin name="DataEntryTask" class="edu.ku.brc.specify.tasks.DataEntryTask" addui="true"/>
+		<plugin name="TaxonTreeTask" class="edu.ku.brc.specify.tasks.TaxonTreeTask" addui="true"/>
+		<plugin name="StorageTreeTask" class="edu.ku.brc.specify.tasks.StorageTreeTask" addui="true"/>
+		<plugin name="GeographyTreeTask" class="edu.ku.brc.specify.tasks.GeographyTreeTask" addui="true"/>
+		<plugin name="GtpTreeTask" class="edu.ku.brc.specify.tasks.GtpTreeTask" addui="true"/>
+		<plugin name="LithoStratTreeTask" class="edu.ku.brc.specify.tasks.LithoStratTreeTask" addui="true"/>
 				 
-		<plugin class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.InteractionsTask" addui="true"/>
-		<plugin class="edu.ku.brc.af.tasks.StatsTask" addui="true"/>
-		<plugin class="edu.ku.brc.specify.tasks.QueryTask" addui="true"/>
+		<plugin name="ReportsTask" class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
+		<plugin name="InteractionsTask" class="edu.ku.brc.specify.tasks.InteractionsTask" addui="true"/>
+		<plugin name="StatsTask" class="edu.ku.brc.af.tasks.StatsTask" addui="true"/>
+		<plugin name="QueryTask" class="edu.ku.brc.specify.tasks.QueryTask" addui="true"/>
 		
-		<plugin class="edu.ku.brc.specify.tasks.ExportMappingTask" addui="true"/>
+		<plugin name="ExportMappingTask" class="edu.ku.brc.specify.tasks.ExportMappingTask" addui="true"/>
 		
-		<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
+		<plugin name="RecordSetTask" class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
 		
-		<plugin class="edu.ku.brc.specify.tasks.InfoRequestTask" addui="false"/>
-		<plugin class="edu.ku.brc.specify.tasks.SystemSetupTask" addui="true"/>
+		<plugin name="InfoRequestTask" class="edu.ku.brc.specify.tasks.InfoRequestTask" addui="false"/>
+		<plugin name="SystemSetupTask" class="edu.ku.brc.specify.tasks.SystemSetupTask" addui="true"/>
 		
-        <plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
+        <plugin name="WorkbenchTask" class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
         
-        <plugin class="edu.ku.brc.specify.tasks.SGRTask" addui="true"/>
+        <plugin name="SGRTask" class="edu.ku.brc.specify.tasks.SGRTask" addui="true"/>
 
 		<!-- Remove the comments from the line below to see the security administration task on the main toolbar --> 
-		<plugin class="edu.ku.brc.specify.tasks.SecurityAdminTask" addui="true"/>
+		<plugin name="SecurityAdminTask" class="edu.ku.brc.specify.tasks.SecurityAdminTask" addui="true"/>
 		
-		<!-- 
-		<plugin class="edu.ku.brc.af.tasks.EditorTask" addui="true"/>
-		 -->
-
-        <plugin class="edu.ku.brc.specify.tasks.CollectionRelTask" addui="true"/>
+        <plugin name="CollectionRelTask" class="edu.ku.brc.specify.tasks.CollectionRelTask" addui="true"/>
         		 
-		<plugin class="edu.ku.brc.specify.tasks.PluginsTask" addui="true"/>
+		<plugin name="PluginsTask" class="edu.ku.brc.specify.tasks.PluginsTask" addui="true"/>
 		
-		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
+		<plugin name="ExpressSearchTask" class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
 		
-		<plugin class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
+		<plugin name="StatsTrackerTask" class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
 		
-        <plugin class="edu.ku.brc.specify.tasks.BackupTask" addui="true"/>
+        <plugin name="BackupTask" class="edu.ku.brc.specify.tasks.BackupTask" addui="true"/>
         
-        <plugin class="edu.ku.brc.specify.tasks.FormEditTask" addui="true"/>
+        <plugin name="FormEditTask" class="edu.ku.brc.specify.tasks.FormEditTask" addui="true"/>
         
-        <plugin class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true" prefname="visualquery"/>
-
-		
+        <plugin name="VisualQueryTask" class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true" prefname="visualquery"/>
 	</core>
 	
 	<mobilecore>
-	    <plugin class="edu.ku.brc.specify.tasks.StartUpTask" addui="true" default="true"/>
-        <plugin class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
-        <plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
-        <plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
-        <plugin class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
-        <plugin class="edu.ku.brc.specify.tasks.PluginsTask" addui="false"/>
+	    <plugin name="StartUpTask" class="edu.ku.brc.specify.tasks.StartUpTask" addui="true" default="true"/>
+        <plugin name="ReportsTask" class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
+        <plugin name="RecordSetTask" class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
+        <plugin name="WorkbenchTask" class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
+        <plugin name="StatsTrackerTask" class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
+        <plugin name="PluginsTask" class="edu.ku.brc.specify.tasks.PluginsTask" addui="false"/>
 	</mobilecore>
 	
 	<uiplugins>

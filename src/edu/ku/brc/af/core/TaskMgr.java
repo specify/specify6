@@ -27,9 +27,12 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -538,124 +541,194 @@ public class TaskMgr implements CommandListener
 
     /**
      * Reads the plugins registry and loads them
-     *
+     * @param isMobile whether it is mobile
      */
-    public static void readRegistry(final boolean isMobile)
+    public void readRegistry(final boolean isMobile)
     {
-        // Only read in the XML if there are no tasks
         if (instance.tasks.size() == 0)
         {
-            try
+            String fileName = "plugin_registry.xml";
+            
+            HashMap<String, PluginInfo> plugins = new HashMap<String, PluginInfo>();
+            HashMap<String, PluginInfo> uiPlugins = new HashMap<String, PluginInfo>();
+            
+            String path = XMLHelper.getConfigDirPath(fileName);
+            readRegistry(path, plugins, uiPlugins, isMobile);
+            
+            path = AppPreferences.getLocalPrefs().getDirPath() + File.separator + fileName;
+            readRegistry(path, plugins, uiPlugins, isMobile);
+
+            readRegistry(plugins, uiPlugins);
+        }
+    }
+
+    /**
+     * @param path
+     * @param plugins
+     * @param isMobile
+     */
+    private void readRegistry(final String path, 
+                              final HashMap<String, PluginInfo> plugins,
+                              final HashMap<String, PluginInfo> uiPlugins,
+                              final boolean isMobile)
+    {
+        try
+        {
+            File file = new File(path);
+            if (file.exists())
             {
-                Element root  = readDOMFromConfigDir("plugin_registry.xml"); //$NON-NLS-1$
+                Element root  = XMLHelper.readFileToDOM4J(file);
     
+                int order = 0;
                 List<?> boxes = root.selectNodes("/plugins/"+(isMobile ? "mobilecore" : "core") + "/plugin"); //$NON-NLS-1$
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
                     org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
     
-                    Object newObj = null;
-                    String name   = pluginElement.attributeValue("class"); //$NON-NLS-1$
-                    try
+                    String  pluginName = pluginElement.attributeValue("name"); //$NON-NLS-1$
+                    String  className  = pluginElement.attributeValue("class"); //$NON-NLS-1$
+                    Boolean addToUI    = XMLHelper.getAttr(pluginElement, "addui", false); //$NON-NLS-1$
+                    Boolean isDefault  = XMLHelper.getAttr(pluginElement, "default", false); //$NON-NLS-1$
+                    String  prefName   = pluginElement.attributeValue("prefname"); //$NON-NLS-1$
+                    
+                    if (StringUtils.isNotEmpty(pluginName) && StringUtils.isNotEmpty(className))
                     {
-    
-                        newObj = Class.forName(name).asSubclass(Taskable.class).newInstance();
-    
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                        ex.printStackTrace();
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
-                        
-                        // go to the next plugin
-                        continue;
-                        // XXX Do we need a dialog here ???
-                    }
-    
-                    if (newObj instanceof Taskable)
-                    {
-                        Taskable task = (Taskable)newObj;
-                        
-                        boolean shouldAddToUI =  getAttr(pluginElement, "addui", false);
-                        if (AppContextMgr.isSecurityOn())
+                        PluginInfo newPI = new PluginInfo(order, pluginName, className, addToUI, isDefault, prefName);
+                        PluginInfo pi    = plugins.get(pluginName);
+                        if (pi != null)
                         {
-                            PermissionIFace perm = task.getPermissions();
-                            if (perm != null)
-                            {
-                                if (!perm.canView())
-                                {
-                                    shouldAddToUI = false;
-                                    task.setEnabled(false);
-                                }
-                            }
+                            newPI.setOrder(newPI.getOrder());
                         }
-                        
-                        boolean isTaskDefault = getAttr(pluginElement, "default", false); //$NON-NLS-1$
-                        if (isTaskDefault)
-                        {
-                            if (instance.defaultTask == null)
-                            {
-                                instance.defaultTask = task;
-                            } else
-                            {
-                                log.error("More than one plugin thinks it is the default["+task.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                            }
-                        }
-                        
-                        String prefName = getAttr(pluginElement, "prefname", null); //$NON-NLS-1$
-                        if (prefName != null)
-                        {
-                            if (!AppPreferences.getLocalPrefs().getBoolean(prefName, false))
-                            {
-                                continue;
-                            }
-                        }
-
-                        register(task, shouldAddToUI); //$NON-NLS-1$
-
-                    } else
-                    {
-                        log.error("Oops, the plugin is not instance of Taskable ["+newObj+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                        // XXX Need to display an error
+                        plugins.put(pluginName, newPI);
+                        order++;
                     }
                 }
                 
                 for ( Iterator<?> iter = root.selectNodes("/plugins/uiplugins/plugin").iterator(); iter.hasNext(); ) //$NON-NLS-1$
                 {
                     Element pluginElement = (Element)iter.next();
-    
-                    String name      = XMLHelper.getAttr(pluginElement, "name", null); //$NON-NLS-1$
-                    String className = XMLHelper.getAttr(pluginElement, "class", null); //$NON-NLS-1$
-                    if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(className))
+
+                    String pluginName = XMLHelper.getAttr(pluginElement, "name", null); //$NON-NLS-1$
+                    String className  = XMLHelper.getAttr(pluginElement, "class", null); //$NON-NLS-1$
+                    if (StringUtils.isNotEmpty(pluginName) && StringUtils.isNotEmpty(className))
                     {
-                        try
-                        {
-                            Class<?> cls = Class.forName(className).asSubclass(UIPluginable.class);
-                            //log.debug("Registering ["+name+"] Class["+cls.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                            instance.uiPluginHash.put(name, cls);
-        
-                        } catch (Exception ex)
-                        {
-                            log.error(ex);
-                            ex.printStackTrace();
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
-                            
-                            // go to the next plugin
-                            continue;
-                            // XXX Do we need a dialog here ???
-                        }
+                        uiPlugins.put(pluginName, new PluginInfo(pluginName, className));
                     }
                 }
-
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
-                ex.printStackTrace();
-                log.error(ex);
             }
+            
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
+            ex.printStackTrace();
+            log.error(ex);
+        }
+    }
+
+    /**
+     * @param path
+     * @param plugins
+     * @param isMobile
+     */
+    private void readRegistry(final HashMap<String, PluginInfo> plugins,
+                              final HashMap<String, PluginInfo> uiPlugins)
+    {
+        try
+        {
+            Vector<PluginInfo> list = new Vector<TaskMgr.PluginInfo>(plugins.values());
+            Collections.sort(list);
+            
+            for (PluginInfo pi : list)
+            {
+                Object newObj = null;
+                try
+                {
+                    newObj = Class.forName(pi.getClassName()).asSubclass(Taskable.class).newInstance();
+
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
+                    
+                    // go to the next plugin
+                    continue;
+                    // XXX Do we need a dialog here ???
+                }
+
+                if (newObj instanceof Taskable)
+                {
+                    Taskable task = (Taskable)newObj;
+                    
+                    boolean shouldAddToUI = pi.getIsAddToUI();
+                    if (AppContextMgr.isSecurityOn())
+                    {
+                        PermissionIFace perm = task.getPermissions();
+                        if (perm != null)
+                        {
+                            if (!perm.canView())
+                            {
+                                shouldAddToUI = false;
+                                task.setEnabled(false);
+                            }
+                        }
+                    }
+                    
+                    boolean isTaskDefault = pi.getIsDefault();
+                    if (isTaskDefault)
+                    {
+                        if (instance.defaultTask == null)
+                        {
+                            instance.defaultTask = task;
+                        } else
+                        {
+                            log.error("More than one plugin thinks it is the default["+task.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                        }
+                    }
+                    
+                    String prefName = pi.getPrefName();
+                    if (prefName != null)
+                    {
+                        if (!AppPreferences.getLocalPrefs().getBoolean(prefName, false))
+                        {
+                            continue;
+                        }
+                    }
+
+                    register(task, shouldAddToUI); //$NON-NLS-1$
+
+                } else
+                {
+                    log.error("Oops, the plugin is not instance of Taskable ["+newObj+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                    // XXX Need to display an error
+                }
+            }
+            
+            for ( PluginInfo uiPI : uiPlugins.values())
+            {
+                try
+                {
+                    Class<?> cls = Class.forName(uiPI.getClassName()).asSubclass(UIPluginable.class);
+                    //log.debug("Registering ["+name+"] Class["+cls.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    uiPluginHash.put(uiPI.getPluginName(), cls);
+
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
+                }
+            }
+
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
+            ex.printStackTrace();
+            log.error(ex);
         }
     }
     
@@ -824,5 +897,108 @@ public class TaskMgr implements CommandListener
             task.setEnabled(true);
         }
         getInstance().disabledTasks.clear();
+    }
+    
+    //-----------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------
+    class PluginInfo implements Comparable<PluginInfo>
+    {
+        private Integer order;
+        private String  pluginName;
+        private String  className;
+        private Boolean isAddToUI;
+        private Boolean isDefault;
+        private String  prefName;
+        
+        /**
+         * @param pluginName
+         * @param className
+         */
+        public PluginInfo(String pluginName, String className)
+        {
+            this(null, pluginName, className, null, null, null);
+        }
+        
+        /**
+         * @param pluginName
+         * @param className
+         * @param isAddToUI
+         * @param isDefault
+         */
+        public PluginInfo(Integer order,
+                          String pluginName, 
+                          String className, 
+                          Boolean isAddToUI, 
+                          Boolean isDefault,
+                          String  prefName)
+        {
+            super();
+            this.order = order;
+            this.pluginName = pluginName;
+            this.className = className;
+            this.isAddToUI = isAddToUI;
+            this.isDefault = isDefault;
+            this.prefName  = prefName;
+        }
+        /**
+         * @return the pluginName
+         */
+        public String getPluginName()
+        {
+            return pluginName;
+        }
+        /**
+         * @return the className
+         */
+        public String getClassName()
+        {
+            return className;
+        }
+        /**
+         * @return the isAddToUI
+         */
+        public Boolean getIsAddToUI()
+        {
+            return isAddToUI;
+        }
+        /**
+         * @return the isDefault
+         */
+        public Boolean getIsDefault()
+        {
+            return isDefault;
+        }
+        /**
+         * @return the order
+         */
+        public Integer getOrder()
+        {
+            return order;
+        }
+        /**
+         * @param order the order to set
+         */
+        public void setOrder(Integer order)
+        {
+            this.order = order;
+        }
+        
+        /**
+         * @return the prefName
+         */
+        public String getPrefName()
+        {
+            return prefName;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(PluginInfo o)
+        {
+            return order.compareTo(o.order);
+        }
+        
     }
 }

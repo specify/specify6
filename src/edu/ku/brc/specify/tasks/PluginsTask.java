@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.helpers.XMLHelper.readDOMFromConfigDir;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
@@ -27,6 +26,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +60,7 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
@@ -71,6 +72,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -274,18 +276,24 @@ public class PluginsTask extends BaseTask
         //exportersRegistry.add(ExportToFile.class);
         //exportersRegistry.add(BGMRecordSetProcessor.class);
         
-        try
+        String fileName = "rstools_registry.xml";
+        
+        HashMap<String, Pair<String, Boolean>> rsPlugins = new HashMap<String, Pair<String, Boolean>>();
+        
+        String path = XMLHelper.getConfigDirPath(fileName);
+        readToolRegistry(path, rsPlugins);
+        
+        path = AppPreferences.getLocalPrefs().getDirPath() + File.separator + fileName;
+        readToolRegistry(path, rsPlugins);
+        
+        for (String rspName : rsPlugins.keySet())
         {
-            Element root  = readDOMFromConfigDir("rstools_registry.xml");
-            List<?> boxes = root.selectNodes("/tools/tool");
-            for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
+            Pair<String, Boolean> p = rsPlugins.get(rspName);
+            if (p != null)
             {
-                org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
-
-                String clsName = pluginElement.attributeValue("class");
                 try
                 {
-                    Class<? extends RecordSetToolsIFace> cls = Class.forName(clsName).asSubclass(RecordSetToolsIFace.class);
+                    Class<? extends RecordSetToolsIFace> cls = Class.forName(p.first).asSubclass(RecordSetToolsIFace.class);
                     toolsRegistryList.add(cls);
                     
                 } catch (Exception ex)
@@ -298,6 +306,35 @@ public class PluginsTask extends BaseTask
                     // go to the next tool
                     continue;
                     // XXX Do we need a dialog here ???
+                }
+            }
+        }
+    }
+
+    /**
+     * @param path
+     * @param rsPlugins
+     */
+    protected void readToolRegistry(final String path, final HashMap<String, Pair<String, Boolean>> rsPlugins)
+    {
+        try
+        {
+            File file = new File(path);
+            if (file.exists())
+            {
+                Element root  = XMLHelper.readFileToDOM4J(file);
+                List<?> boxes = root.selectNodes("/tools/tool");
+                for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
+                {
+                    org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
+    
+                    String  rspName = pluginElement.attributeValue("name");
+                    String  clsName = pluginElement.attributeValue("class");
+                    Boolean addToUI = XMLHelper.getAttr(pluginElement, "addui", false);
+                    if (StringUtils.isNotEmpty(rspName) && StringUtils.isNotEmpty(clsName))
+                    {
+                        rsPlugins.put(rspName, new Pair<String, Boolean>(clsName, addToUI));
+                    }
                 }
             }
             

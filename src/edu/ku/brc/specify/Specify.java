@@ -698,7 +698,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             return;
         }
  
-        TaskMgr.readRegistry(UIRegistry.isMobile());
+        TaskMgr.getInstance().readRegistry(UIRegistry.isMobile());
         
         TaskMgr.initializePlugins();
         
