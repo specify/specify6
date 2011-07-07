@@ -90,7 +90,7 @@ public class AgentConverter
     protected Pair<String, String>                          namePair   = new Pair<String, String>();
     protected Triple<String, String, String>                nameTriple = new Triple<String, String, String>();
 
-    protected TableWriter                  tblWriter;
+    protected TableWriter                                   tblWriter;
     
     // For Name Parsing
     protected List<AgentNameInfo>                           names    = new Vector<AgentNameInfo>();
@@ -318,9 +318,13 @@ public class AgentConverter
                 AgentInfo agentInfo = agentHash.get(agentId);
                 if (agentInfo == null) 
                 { 
-                    throw new RuntimeException("The AgentID [" + agentId + "] in AgentAddress table id[" + agentAddrId + "] desn't exist");
+                    String msg = "The AgentID [" + agentId + "] in AgentAddress table id[" + agentAddrId + "] desn't exist";
+                    log.error(msg);
+                    tblWriter.logError(msg);
+                } else
+                {
+                    agentInfo.add(agentAddrId, agentAddrId);    
                 }
-                agentInfo.add(agentAddrId, agentAddrId);
 
                 if (cnt % 100 == 0)
                 {
