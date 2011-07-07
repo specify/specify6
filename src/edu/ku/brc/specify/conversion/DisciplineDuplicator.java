@@ -509,7 +509,7 @@ public class DisciplineDuplicator
                                     {
                                         int newLDId = dupRecord(uStmt, "localitydetail", "LocalityDetailID", ldFldNames, ldId, "LocalityID");
                                         pGCDLoc.setInt(1, newLDId);
-                                        pGCDLoc.setInt(1, newLocID);
+                                        pGCDLoc.setInt(2, newLocID);
                                         pGCDLoc.executeUpdate();
                                         insertLDCnt++;
                                     }
