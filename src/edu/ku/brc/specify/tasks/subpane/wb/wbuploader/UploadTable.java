@@ -77,6 +77,7 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
@@ -234,7 +235,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * If true then Match Status will be displayed
      */
-    protected boolean									showMatchInfo                = false;
+    protected boolean									checkMatchInfo                = false;
     /**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
      */
@@ -2372,6 +2373,7 @@ public class UploadTable implements Comparable<UploadTable>
                 .equals(Determination.class)
                 || childClass.equals(Preparation.class)
                 || childClass.equals(CollectionObjectAttribute.class)
+                || childClass.equals(CollectionObjectCitation.class)
                 || childClass.equals(DNASequence.class)
                 || childClass.equals(ConservDescription.class); 
         }
@@ -3114,7 +3116,7 @@ public class UploadTable implements Comparable<UploadTable>
     	for (ParentMatchInfo pmi : internalResult)
     	{
     		//System.out.println(pmi.getTable() + " " + pmi.isBlank() + " " + pmi.getMatches());
-        	if (pmi.getTable().showMatchInfo)
+        	if (pmi.getTable().checkMatchInfo)
         	{
         		Vector<Integer> colIdxs = new Vector<Integer>();
         		//int adjustedRecNum = pmi.getTable().getUploadFields().size() == 0 ? 1 : recNum;
@@ -4079,7 +4081,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
@@ -5068,23 +5070,23 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
 	/**
-	 * @return showMatchInfo
+	 * @return checkMatchInfo
 	 */
-	public boolean isShowMatchInfo() 
+	public boolean isCheckMatchInfo() 
 	{
-		return showMatchInfo;
+		return checkMatchInfo;
 	}
 
 	/**
-	 * @param showMatchInfo the showMatchInfo
+	 * @param checkMatchInfo the checkMatchInfo
 	 * 
 	 */
-	public void setShowMatchInfo(boolean showMatchInfo) 
+	public void setCheckMatchInfo(boolean checkMatchInfo) 
 	{
 		//NOTE: this field needs to be set carefully. Dependencies in the upload graph
-		//must be considered. In general, I think, if a table has showMatchInfo true, then
-		//all its ancestors in the upload graph should also have showMatchInfo true.
-		this.showMatchInfo = showMatchInfo;
+		//must be considered. In general, I think, if a table has checkMatchInfo true, then
+		//all its ancestors in the upload graph should also have checkMatchInfo true.
+		this.checkMatchInfo = checkMatchInfo;
 	}
 
 	/**
