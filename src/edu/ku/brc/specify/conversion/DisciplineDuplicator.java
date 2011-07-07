@@ -56,6 +56,7 @@ public class DisciplineDuplicator
     protected GenericDBConversion conversion;
     
     protected IdTableMapper origGeoIdMapper = null;
+    protected boolean debug = true;
     
     
     /**
@@ -267,7 +268,7 @@ public class DisciplineDuplicator
                         
                         if (ceAttrID != null)
                         {
-                            int newCEAttrsId = dupRecord(uStmt, "collectingeventattribute", "CollectingEventAttributeID", ceaFldNames, ceAttrID);
+                            int newCEAttrsId = dupRecord(uStmt, "collectingeventattribute", "CollectingEventAttributeID", ceaFldNames, ceAttrID, "CollectingEventID");
                             pCECEA.setInt(1, newCEAttrsId);
                             pCECEA.setInt(1, newCEId);
                             pCECEA.executeUpdate();
@@ -354,15 +355,16 @@ public class DisciplineDuplicator
                           final String    tblName,
                           final String    idName,
                           final String    fieldNames, 
-                          final int       oldId) throws SQLException
+                          final int       oldId,
+                          final String    primaryKeyName) throws SQLException
     {
-        String insertSQL = String.format("INSERT INTO %s (%s) (SELECT %s FROM %s WHERE CollectingEventID = %d)", 
-                                          tblName, fieldNames, fieldNames, tblName, oldId);
-        //if (debug) log.debug(insertSQL);
+        String insertSQL = String.format("INSERT INTO %s (%s) (SELECT %s FROM %s WHERE %s = %d)", 
+                                          tblName, fieldNames, fieldNames, tblName, primaryKeyName, oldId);
+        if (debug) log.debug(insertSQL);
         
         uStmt.executeUpdate(insertSQL);
         int newId = BasicSQLUtils.getInsertedId(uStmt);
-        tblWriter.log(String.format("Duplicated %s Old %d to New %d", tblName, oldId, newId));
+        tblWriter.log(String.format("Duplicated %s Old %d to New %d", tblName, oldId, primaryKeyName, newId));
         return newId;
     }
     
@@ -495,7 +497,7 @@ public class DisciplineDuplicator
                                     Integer gcdId = BasicSQLUtils.getCount("SELECT GeoCoordDetailID FROM geocoorddetail WHERE LocalityID = " + localityId);
                                     if (gcdId != null)
                                     {
-                                        int newGCDId = dupRecord(uStmt, "geocoorddetail", "GeoCoordDetailID", gcdFldNames, gcdId);
+                                        int newGCDId = dupRecord(uStmt, "geocoorddetail", "GeoCoordDetailID", gcdFldNames, gcdId, "CollectingEventID");
                                         pGCDLoc.setInt(1, newGCDId);
                                         pGCDLoc.setInt(1, newLocID);
                                         pGCDLoc.executeUpdate();
@@ -505,7 +507,7 @@ public class DisciplineDuplicator
                                     Integer ldId = BasicSQLUtils.getCount("SELECT LocalityDetailID FROM localitydetail WHERE LocalityID = " + localityId);
                                     if (ldId != null)
                                     {
-                                        int newLDId = dupRecord(uStmt, "localitydetail", "LocalityDetailID", ldFldNames, ldId);
+                                        int newLDId = dupRecord(uStmt, "localitydetail", "LocalityDetailID", ldFldNames, ldId, "LocalityID");
                                         pGCDLoc.setInt(1, newLDId);
                                         pGCDLoc.setInt(1, newLocID);
                                         pGCDLoc.executeUpdate();

@@ -328,6 +328,7 @@ public class SpecifyDBConverter extends AppBase
         {
             BasicSQLUtils.setSkipTrackExceptions(true);
             
+            //String sql = String.format("SELECT DISTINCT `COLUMNS`.TABLE_SCHEMA FROM `COLUMNS` WHERE `COLUMNS`.TABLE_NAME = '%s'", doSp5DBs ? "collectionobjectcatalog" : "taxon");
             Connection conn = mgr.getConnection();
             Vector<Object[]> dbNames = BasicSQLUtils.query(conn, "show databases");
             for (Object[] row : dbNames)
@@ -363,7 +364,10 @@ public class SpecifyDBConverter extends AppBase
                         for (Object[] tblRow : tables)
                         {
                             String tableName = tblRow[0].toString();
-                            BasicSQLUtils.update(conn, "RENAME TABLE " + tableName + " TO "+ tableName.toLowerCase());
+                            if (!tableName.equals(tableName.toLowerCase()))
+                            {
+                                BasicSQLUtils.update(conn, "RENAME TABLE " + tableName + " TO "+ tableName.toLowerCase());
+                            }
                         }
                     }
                     

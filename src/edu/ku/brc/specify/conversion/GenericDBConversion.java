@@ -115,8 +115,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -351,12 +351,329 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
     
     /**
+     * 
+     */
+    private void fixIdaho()
+    {
+        try
+        {
+            String prefix = "CIDA";
+            
+            HashSet<Integer> catSeriesOldIds    = new HashSet<Integer>();
+            HashSet<Integer> catSeriesDefOldIds = new HashSet<Integer>();
+            
+            System.out.println(String.format("%11s %11s %11s %11s %11s %11s %16s %11s ", 
+                    "CatSerDef", "CatSeries", "ColObjType", 
+                    "TaxoNameId", "TaxonType", "TaxUnitType", "COT Name", "CO Cnt"));
+            
+            HashMap<String, ArrayList<CollectionInfo>> hashTaxonRootToCI = new HashMap<String, ArrayList<CollectionInfo>>();
+            for (CollectionInfo ci : collectionInfoList)
+            {
+                System.out.print(String.format("%11d %11d %11d %11d %11d %11d %16s %11d ", 
+                        ci.getCatSeriesDefId(), ci.getCatSeriesId(), ci.getColObjTypeId(), 
+                        ci.getTaxonNameId(),    ci.getTaxonomyTypeId(), ci.getTaxonomicUnitTypeID(), 
+                        ci.getColObjTypeName(), ci.getColObjCnt()));
+                
+                String key = String.format("%d,%d", ci.getTaxonNameId(), ci.getColObjTypeId());
+                //System.out.print(key);
+                
+                ArrayList<CollectionInfo> list = hashTaxonRootToCI.get(key);
+                if (list == null)
+                {
+                    list = new ArrayList<CollectionInfo>();
+                    System.out.print(key);
+                    hashTaxonRootToCI.put(key, list);
+                }
+                list.add(ci);
+                System.out.println();
+            }
+            
+            String dateStr = "2011-06-30 00:00:00";
+            
+            String sql1 = "INSERT INTO catalogseries (CatalogSeriesID, CollectionID, SeriesName, CatalogSeriesPrefix, Remarks, TimestampModified, TimestampCreated, LastEditedBy) VALUES (%d,%d,'%s','%s','%s','%s','%s','%s')";
+            String sql2 = "INSERT INTO catalogseriesdefinition (CatalogSeriesDefinitionID, CatalogSeriesID, ObjectTypeID, Remarks,TimestampModified,TimestampCreated,LastEditedBy) VALUES (%d,%d,'%s','%s','%s','%s','%s')";
+            String sql3 = "UPDATE collectionobjectcatalog SET CatalogSeriesID=%d WHERE CatalogSeriesID=%d AND CollectionObjectTypeID=%d";
+            String sql4 = "SELECT COUNT(*) FROM collectionobjectcatalog WHERE CatalogSeriesID=%d AND CollectionObjectTypeID=%d";
+            
+            int catSeriesID    = 1;
+            int catSeriesDefID = 1;
+            
+            HashMap<Integer, HashSet<Integer>> txRootToObjsIdHash = new HashMap<Integer, HashSet<Integer>>();
+            
+            for (String key : hashTaxonRootToCI.keySet())
+            {
+                ArrayList<CollectionInfo> ciList = hashTaxonRootToCI.get(key);
+                
+                int taxRootID = ciList.get(0).getTaxonNameId();
+                
+                System.out.println(String.format("\n-------------- For TaxonId: %d (%s) ---------------", ciList.get(0).getTaxonNameId(), ciList.get(0).getTaxonName()));
+                for (CollectionInfo ci : ciList)
+                {
+                    System.out.println(String.format("    %s - %s", ci.getTaxonNameId(), ci.getTaxonName()));
+                }
+                System.out.println();
+                
+                int colObjTypeID = -1;
+                StringBuilder combinedCatSeriesName = new StringBuilder();
+                String        catSeriesName         = null;
+                for (CollectionInfo ci : ciList)
+                {
+                    String sql = "SELECT CollectionObjectTypeName FROM collectionobjecttype WHERE CollectionObjectTypeID = " + ci.getColObjTypeId();
+                    //System.out.println("sql: ["+sql+"]");
+                    String objTypeName = BasicSQLUtils.querySingleObj(oldDBConn, sql);
+                    //System.out.println("objTypeName: ["+objTypeName+"]");
+                    if (combinedCatSeriesName.length() > 0) combinedCatSeriesName.append('|');
+                    combinedCatSeriesName.append(objTypeName);
+                    if (combinedCatSeriesName.length() > 50) combinedCatSeriesName.setLength(50);
+                    
+                    
+                    catSeriesOldIds.add(ci.getCatSeriesId());
+                    catSeriesDefOldIds.add(ci.getCatSeriesDefId());
+                    
+                    if (catSeriesName == null ||
+                        (!StringUtils.containsIgnoreCase(catSeriesName, "paleo") && StringUtils.containsIgnoreCase(objTypeName, "paleo")))
+                    {
+                        catSeriesName  = objTypeName;
+                        colObjTypeID   = ci.getColObjTypeId();
+                    }
+                }
+                
+                System.out.println("Combined Series Name: ["+combinedCatSeriesName+"]");
+                System.out.println("New Cat Series Name:  ["+catSeriesName+"]");
+                System.out.println("New Cat Series ID:    ["+catSeriesID+"]");
+                System.out.println("New Cat Series Def ID:["+catSeriesDefID+"]");
+                System.out.println("Col Obj Type:         ["+colObjTypeID+"]");
+                
+                String insert = String.format(sql1, catSeriesID, 0, catSeriesName, prefix, "", dateStr, dateStr, "conversion");
+                System.out.println(insert);
+                BasicSQLUtils.update(oldDBConn, insert);
+                
+                insert = String.format(sql2, catSeriesDefID, catSeriesID, colObjTypeID, "", dateStr, dateStr, "conversion");
+                System.out.println(insert);
+                BasicSQLUtils.update(oldDBConn, insert);
+                
+                HashSet<Integer> colObjIDHash = new HashSet<Integer>();
+                for (CollectionInfo ci : ciList)
+                {
+                    int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format(sql4, ci.getCatSeriesId(), ci.getColObjTypeId()));
+                    String updateStr = String.format(sql3, catSeriesID, ci.getCatSeriesId(), ci.getColObjTypeId());
+                    System.out.println("Count: "+cnt +" -> "+updateStr);
+                    BasicSQLUtils.update(oldDBConn, updateStr);
+                    
+                    colObjIDHash.add(ci.getColObjTypeId());
+                    
+                    String sql = "SELECT DISTINCT co2.CollectionObjectTypeID FROM collectionobject co1 INNER JOIN collectionobject co2 ON co1.CollectionObjectID = co2.DerivedFromID WHERE co1.CollectionObjectTypeID = " + ci.getColObjTypeId();
+                    for (Integer cotId : BasicSQLUtils.queryForInts(oldDBConn, sql))
+                    {
+                        cnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format(sql4, ci.getCatSeriesId(), cotId));
+                        updateStr = String.format(sql3, catSeriesID, ci.getCatSeriesId(), cotId);
+                        System.out.println("Count: "+cnt +" -> "+updateStr);
+                        BasicSQLUtils.update(oldDBConn, updateStr);
+                        colObjIDHash.add(cotId);
+                    }
+                }
+                
+                txRootToObjsIdHash.put(taxRootID, colObjIDHash);
+                
+                catSeriesID++;
+                catSeriesDefID++;
+            }
+            
+            duplicateTaxonTree(6,  // Old TaxonomyTypeID (to be duplicated)
+                               8,  // New TaxonomyTypeID 
+                               3,  // Kingdom
+                               17, // BiologicalObjectTypeID
+                               "PaleoBotany"); //  17, 29
+            
+            duplicateTaxonTree(7,  // Old TaxonomyTypeID (to be duplicated)
+                               9,  // New TaxonomyTypeID 
+                               5,  // Kingdom
+                               18, // BiologicalObjectTypeID 
+                               "Invert Paleo");       //       18, 30  
+            
+            for (Integer id : catSeriesDefOldIds)
+            {
+                String s = "DELETE FROM catalogseriesdefinition WHERE CatalogSeriesDefinitionID = "+id;
+                log.debug(s);
+                BasicSQLUtils.update(oldDBConn, s);
+            }
+            
+            for (Integer id : catSeriesOldIds)
+            {
+                String s = "DELETE FROM catalogseries WHERE CatalogSeriesID = "+id;
+                log.debug(s);
+                BasicSQLUtils.update(oldDBConn, s);
+            }
+            
+            CollectionInfo.getCollectionInfoList().clear();
+            collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn, false);
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * @param oldTaxonomyTypeID
+     * @param newTaxonomyTypeID
+     * @param kingdom
+     * @param curColObjTypeID
+     * @param taxonTypeName
+     */
+    private void duplicateTaxonTree(final int    oldTaxonomyTypeID, 
+                                    final int    newTaxonomyTypeID,
+                                    final int    kingdom,
+                                    final int    curColObjTypeID,
+                                    final String taxonTypeName)
+    {
+        try
+        {
+            String dateStr = "2011-06-30 00:00:00";
+
+            String postFix = Integer.toString(oldTaxonomyTypeID);
+            
+            System.out.println("----------------------------------------");
+            System.out.println(String.format("Copying 'taxonomicunittype' Old TaxonomyTypeID %d to New TaxonomyTypeID %d\n", oldTaxonomyTypeID, newTaxonomyTypeID));
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            TableDuplicator taxonomicunittypeDup = new TableDuplicator(oldDBConn, "taxonomicunittype", "TaxonomicUnitTypeID", "TaxonomyTypeID = "+oldTaxonomyTypeID, "RankID", postFix);
+            taxonomicunittypeDup.initialize();
+            taxonomicunittypeDup.duplicate();
+            
+            TableDuplicator taxonnameDup = new TableDuplicator(oldDBConn, "taxonname", "TaxonNameID", "TaxonomyTypeID = "+oldTaxonomyTypeID, "RankID", postFix);
+            taxonnameDup.initialize();
+            taxonnameDup.duplicate();
+            
+            String sql = String.format("INSERT INTO taxonomytype (TaxonomyTypeID, KingdomID, TaxonomyTypeName, TreeInfoUpToDate) VALUES(%d, %d, '%s', 1)", newTaxonomyTypeID, kingdom, taxonTypeName);
+            System.out.println(sql);
+            BasicSQLUtils.update(oldDBConn, sql);
+
+            sql = String.format("UPDATE taxonomicunittype SET TaxonomyTypeID = %d WHERE TaxonomicUnitTypeID = ?", newTaxonomyTypeID);
+            System.out.println(sql);
+            PreparedStatement pStmt = oldDBConn.prepareStatement(sql);
+            Statement         stmt  = oldDBConn.createStatement();
+            
+            sql = "SELECT NewID FROM "+taxonomicunittypeDup.getMapperName();
+            System.out.println(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                pStmt.setInt(1, rs.getInt(1));
+                
+                System.out.println(String.format("UPDATE taxonomicunittype SET TaxonomyTypeID = %d WHERE TaxonomicUnitTypeID = %d", newTaxonomyTypeID, rs.getInt(1)));
+                pStmt.executeUpdate();
+            }
+            rs.close();
+            pStmt.close();
+            
+            int cnt = 0;
+            pStmt = oldDBConn.prepareStatement(String.format("UPDATE taxonname SET TaxonomyTypeID = %d WHERE TaxonNameID = ?", newTaxonomyTypeID));
+            sql = "SELECT NewID FROM "+taxonnameDup.getMapperName();
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                pStmt.setInt(1, rs.getInt(1));
+                pStmt.executeUpdate();
+                
+                cnt++;
+                if (cnt % 2000 == 0)
+                {
+                    System.out.println(cnt);
+                    break;
+                }
+            }
+            rs.close();
+            pStmt.close();
+            
+            IdMapperIFace taxonMapper       = taxonnameDup.getMapper();
+            IdMapperIFace taxUnitTypeMapper = taxonomicunittypeDup.getMapper();
+            
+            cnt = 0;
+            pStmt = oldDBConn.prepareStatement("UPDATE taxonname SET ParentTaxonNameID=?, AcceptedID=?, TaxonomicUnitTypeID=? WHERE TaxonNameID = ?");
+            rs = stmt.executeQuery("SELECT TaxonNameID, ParentTaxonNameID, AcceptedID, TaxonomicUnitTypeID FROM taxonname WHERE TaxonomyTypeID = "+newTaxonomyTypeID);
+            while (rs.next())
+            {
+                int     taxonId  = rs.getInt(1);
+                Integer parentId = rs.getInt(2);
+                Integer acceptId = rs.getInt(3);
+                Integer tutId    = rs.getInt(4);
+                
+                if (parentId == null || parentId == 0)
+                {
+                    pStmt.setObject(1, null);
+                } else
+                {
+                    Integer newId = taxonMapper.get(parentId);
+                    if (newId != null)
+                    {
+                        pStmt.setInt(1, newId);
+                    } else
+                    {
+                        pStmt.setObject(1, null);
+                    }
+                }
+                
+                if (acceptId == null || acceptId == 0)
+                {
+                    pStmt.setObject(2, null);
+                } else
+                {
+                    Integer newId = taxonMapper.get(acceptId);
+                    if (newId != null)
+                    {
+                        pStmt.setInt(2, newId);
+                    } else
+                    {
+                        pStmt.setObject(2, null);
+                    }
+                }
+                
+                pStmt.setInt(3, taxUnitTypeMapper.get(tutId));
+                pStmt.setInt(4, taxonId);
+                
+                pStmt.executeUpdate();
+                
+                cnt++;
+                if (cnt % 2000 == 0)
+                {
+                    System.out.println(cnt);
+                    break;
+                }
+            }
+            rs.close();
+            pStmt.close();
+            
+            stmt.close();
+            
+            taxonomicunittypeDup.cleanup();
+            taxonnameDup.cleanup();
+            
+            sql = String.format("SELECT CollectionTaxonomyTypesID FROM collectiontaxonomytypes WHERE BiologicalObjectTypeID = %d AND TaxonomyTypeID = %d", curColObjTypeID, oldTaxonomyTypeID);
+            System.out.println(sql);
+            int collectiontaxonomytypesID = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+            
+            sql = String.format("UPDATE collectiontaxonomytypes SET TaxonomyTypeID = %d WHERE CollectionTaxonomyTypesID = %d", newTaxonomyTypeID, collectiontaxonomytypesID);
+            
+            //sql = String.format("INSERT INTO collectiontaxonomytypes (CollectionTaxonomyTypesID,CollectionID,BiologicalObjectTypeID,TaxonomyTypeID,TimestampModified,TimestampCreated,LastEditedBy,DisplaySubSpecificTaxaLevelIndicators) " +
+            //                    "VALUES(%d, %d, %d, %d, '%s', '%s', 'db', 1)", newColTaxTypeID, 0, newColObjTypeID, newTaxonomyTypeID, dateStr, dateStr);
+            System.out.println(sql);
+            BasicSQLUtils.update(oldDBConn, sql);
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
      * @return
      */
     public CollectionResultType initialize()
     {
 
         collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn, false);
+        //fixIdaho();
         if (collectionInfoList == null)
         {
             if (CollectionInfo.isAskForFix())
@@ -394,16 +711,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // Get a List for each type of Paleo Collection, hashed by the Root Id
             HashMap<Integer, Vector<CollectionInfo>>                  paleoColInfoHash = new HashMap<Integer, Vector<CollectionInfo>>();
             HashMap<Integer, HashSet<DisciplineType.STD_DISCIPLINES>> paleoDispTypeHash = new HashMap<Integer, HashSet<DisciplineType.STD_DISCIPLINES>>();
+            
             for (CollectionInfo colInfo : collectionInfoShortList)
             {
-                // List tracks a 'set' of CollectionInfo objects for TaxonomyType
-                HashSet<CollectionInfo> taxonomyTpeSet = taxonomyTypeHash.get(colInfo.getTaxonomyTypeId());
-                if (taxonomyTpeSet == null)
+                // Tracks a 'set' of CollectionInfo objects for each TaxonomyTypeId
+                HashSet<CollectionInfo> taxonomyTypeSet = taxonomyTypeHash.get(colInfo.getTaxonomyTypeId());
+                if (taxonomyTypeSet == null)
                 {
-                    taxonomyTpeSet = new HashSet<CollectionInfo>();
-                    taxonomyTypeHash.put(colInfo.getTaxonNameId(), taxonomyTpeSet);
+                    System.out.println("Creating TxTypeID: "+colInfo.getTaxonomyTypeId()+"  From "+colInfo.getCatSeriesName());
+                    
+                    taxonomyTypeSet = new HashSet<CollectionInfo>();
+                    taxonomyTypeHash.put(colInfo.getTaxonomyTypeId(), taxonomyTypeSet);
+                } else
+                {
+                    System.out.println("Adding TxTypeID: "+colInfo.getTaxonomyTypeId()+"  From "+colInfo.getCatSeriesName()+"  "+taxonomyTypeSet.size());
                 }
-                taxonomyTpeSet.add(colInfo);
+                taxonomyTypeSet.add(colInfo);
 
                 //---
                 DisciplineType dType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(),
@@ -432,23 +755,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     paleoCnt++;
                 }
                 System.out.println("--------------------------------------");
-                System.out.println(colInfo.toString()+"\n");
+                //System.out.println(colInfo.toString()+"\n");
             } // for loop
             
             int cnt = 0;
             StringBuilder msg = new StringBuilder();
             for (Integer taxonomyTypId : taxonomyTypeHash.keySet())
             {
-                HashSet<CollectionInfo> taxonomyTpeSet = taxonomyTypeHash.get(taxonomyTypId);
-                if (taxonomyTpeSet.size() > 1)
+                HashSet<CollectionInfo> taxonomyTypeSet = taxonomyTypeHash.get(taxonomyTypId);
+                if (taxonomyTypeSet.size() > 1)
                 {
                     msg.append(String.format("<html>TaxonomyTypeId %d has more than one Discpline/Collection:<br><OL>", taxonomyTypId));
-                    for (CollectionInfo ci : taxonomyTpeSet)
+                    for (CollectionInfo ci : taxonomyTypeSet)
                     {
-                        msg.append("<LI>");
-                        msg.append(ci.getCatSeriesName());
-                        msg.append("</LI>");
+                        msg.append(String.format("<LI>%s - %s - %s</LI>", ci.getCatSeriesName(), ci.getColObjTypeName(), ci.getTaxonomyTypeName()));
                     }
+                    msg.append("</OL>");
                     cnt++;
                 }
             }
@@ -3328,7 +3650,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 if (isEmbeddedCE && isSharingCollectingEvents)
                 {
-                    msg = "Will this Collection be using Embedded Collecting Events (sub-form)?\n(You are being asked because it is sharing\nCollecting Events which means it should use a QueryCombobox)";
+                    msg = "Will this Collection ("+info.getCatSeriesName()+") be using Embedded Collecting Events (sub-form)?\n(You are being asked because it is sharing\nCollecting Events which means it should use a QueryCombobox)";
                     isEmbeddedCE  = UIHelper.promptForAction("Embed", "Shared", "Embedded Collecting Events", msg);
                 }
 
@@ -5365,6 +5687,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             str.append(getStrValue(agentIdMapper.get(preparedById)));
                         } else
                         {
+                            str.append("NULL");
                             log.error("No Map for PreparedByID[" + preparedById + "]");
                         }
 
@@ -5608,7 +5931,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 	                    {
 	                        log.debug(str.toString());
 	                    }
-	                    //log.debug(str.toString());
+	                    log.debug(str.toString());
 	                    updateStatement.executeUpdate(str.toString());
 	
 	                } catch (Exception e)

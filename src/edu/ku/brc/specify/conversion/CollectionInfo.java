@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
@@ -61,8 +62,11 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     
     protected static Vector<CollectionInfo> collectionInfoList = new Vector<CollectionInfo>();
     protected static boolean                askForFix = false;
+    protected static PrintWriter            pw        = null;
+    protected static int                    pwPassCnt = 1;
     
     public static boolean        DOING_ACCESSSION = false;
+
 
     protected boolean            isIncluded    = true;
     protected Integer            colObjTypeId;
@@ -76,6 +80,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected String             catSeriesPrefix;
     protected String             catSeriesRemarks;
     protected String             catSeriesLastEditedBy;
+    
+    protected String             combinedCatSeries;
     
     protected Integer            taxonomyTypeId;
     protected String             taxonomyTypeName;
@@ -97,7 +103,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected int                colObjDetTaxCnt;
     protected long               srcHostTaxonCnt;
     protected DisciplineType     disciplineTypeObj;
-
     
     protected String             determinationTaxonType = null;
     protected ArrayList<Integer> detTaxonTypeIdList     = new ArrayList<Integer>();
@@ -322,6 +327,17 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         return getCollectionInfoList(oldDBConn, false);
     }
+    
+    /**
+     * @param desc
+     * @param sql
+     */
+    private static void logSQL(final String desc, final String sql)
+    {
+        pw.println(String.format("----------- %s -----------", desc));
+        pw.println(sql);
+        pw.println();
+    }
 
     /**
      * @param oldDBConn
@@ -333,42 +349,20 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         if (collectionInfoList.isEmpty())
         {        
             
-            String hostTaxonID = "SELECT Count(taxonname.TaxonomicUnitTypeID) FROM habitat " + 
-                                 "Inner Join taxonname ON habitat.HostTaxonID = taxonname.TaxonNameID WHERE taxonname.TaxonomyTypeId = ";
+            String hostTaxonID = "SELECT Count(tn.TaxonomicUnitTypeID) FROM habitat h " + 
+                                 "INNER JOIN taxonname tn ON h.HostTaxonID = tn.TaxonNameID WHERE tn.TaxonomyTypeId = ";
             
-            String sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
+            /*String sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
                          "INNER JOIN catalogseriesdefinition csd on " + 
                          "csd.ObjectTypeId = cot.CollectionObjectTypeId WHERE cot.Category = 'Biological' ORDER BY cot.CollectionObjectTypeID, csd.CatalogSeriesID";
+            */
             
             String catSeriesSQL = "SELECT SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy FROM catalogseries WHERE CatalogSeriesID = ";
             
-            /*
-            String sqlTx = "SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
-                           "FROM collectionobjecttype AS cot " +
-                           "Inner Join collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
-                           "Inner Join taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
-                           "Inner Join taxonname as tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID " + 
-                           "WHERE  cot.Category = 'Biological' AND tn.ParentTaxonNameID IS NULL AND RankID = 0 AND cot.CollectionObjectTypeID = ";
-            */
-            String cntTaxonName = "SELECT COUNT(TaxonNameID) FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId = ";
-            
-            /*String cntColObjForTaxon = "SELECT COUNT(taxonomytype.TaxonomyTypeID) FROM determination "+
-                                        "Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID "+
-                                        "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID WHERE taxonomytype.TaxonomyTypeID = ";
-            */
-            //String cntColObj = "SELECT COUNT(CollectionObjectID) FROM collectionobject WHERE CollectionObjectTypeID = ";
 
-            /*sql = " SELECT collectionobject.CollectionObjectTypeID, COUNT(collectionobject.CollectionObjectTypeID), collectionobjecttype.CollectionObjectTypeName " +
-                    "FROM collectionobject INNER JOIN collectionobjecttype ON collectionobject.CollectionObjectTypeID = collectionobjecttype.CollectionObjectTypeID " +
-                    "GROUP BY collectionobject.CollectionObjectTypeID";
-            */
+            String cntTaxonName = "SELECT COUNT(TaxonNameID) FROM taxonname WHERE TaxonName IS NOT NULL AND TaxonomyTypeId = ";
             
-            /*String colObjCountPerCatSeriesSQL = "SELECT COUNT(cs.CatalogSeriesID) FROM catalogseries cs " +
-            "INNER JOIN collectionobjectcatalog cc ON cs.CatalogSeriesID = cc.CatalogSeriesID " +
-            "INNER JOIN collectionobjecttype ct ON cc.CollectionObjectTypeID = ct.CollectionObjectTypeID " +
-            "WHERE cc.CollectionObjectTypeID > 9 AND cc.CollectionObjectTypeID < 20 AND cs.CatalogSeriesID = %d " +
-            "GROUP BY cs.CatalogSeriesID, cs.SeriesName, ct.CollectionObjectTypeID, ct.CollectionObjectTypeName";
-            */
+
             String colObjCountPerCatSeriesSQL = "SELECT COUNT(cc.CatalogSeriesID) " + //, cc.CatalogSeriesID, cs.SeriesName " +
                                                 "FROM collectionobjectcatalog cc INNER JOIN catalogseries cs ON cc.CatalogSeriesID = cs.CatalogSeriesID " +
                                                 "WHERE cs.CatalogSeriesID = %d GROUP BY cs.CatalogSeriesID";
@@ -378,43 +372,55 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                                     "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
                                                     "WHERE cc.CatalogSeriesID = %d AND d.TaxonNameID IS NOT NULL GROUP BY cc.CatalogSeriesID";
             
-            sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
-                  "INNER JOIN catalogseriesdefinition csd on csd.ObjectTypeId = cot.CollectionObjectTypeId " +
-                  "WHERE cot.Category = 'Biological' ORDER BY cot.CollectionObjectTypeID, csd.CatalogSeriesID";
+            String colObjCatSeriesSQL = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
+                                        "INNER JOIN catalogseriesdefinition csd on csd.ObjectTypeId = cot.CollectionObjectTypeId " +
+                                        "WHERE cot.Category = 'Biological' ORDER BY cot.CollectionObjectTypeID, csd.CatalogSeriesID";
             
             Statement stmt = null;
             
-            log.debug(sql);
-            
             try
             {
+                pw = new PrintWriter(String.format("sql_%d.log", pwPassCnt++));
+                
+                log.debug(colObjCatSeriesSQL);
+                logSQL("ColObj Cat Series", colObjCatSeriesSQL);
+                
                 HashSet<Integer> taxonTypeIdHash = new HashSet<Integer>();
                 
                 stmt         = oldDBConn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
+                ResultSet rs = stmt.executeQuery(colObjCatSeriesSQL);
                 while (rs.next())
                 {
                     CollectionInfo info = new CollectionInfo(oldDBConn);
                     
-                    System.err.println("CI: " + rs.getInt(1));
+                    Integer colObjTypeID = rs.getInt(1);
+                    pw.println(String.format("%d ================================================================================", colObjTypeID));
                     
-                    info.setColObjTypeId(rs.getInt(1));
+                    System.err.println("ColObjType: " + colObjTypeID);
+                    
+                    info.setColObjTypeId(colObjTypeID);
                     info.setColObjTypeName(rs.getString(2));
                     info.setCatSeriesDefId(rs.getInt(3));
                     info.setCatSeriesId(rs.getInt(4));
                     
-                    sql = String.format(colObjCountPerCatSeriesSQL, info.getCatSeriesId());
+                    String sql = String.format(colObjCountPerCatSeriesSQL, info.getCatSeriesId());
                     log.debug(sql);
+                    logSQL("ColObj Count Per Cat Series", sql);
+                    
                     int colObjCnt = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
                     info.setColObjCnt(colObjCnt);
                     
                     sql = String.format(colObjDetCountPerCatSeriesSQL, info.getCatSeriesId());
                     log.debug(sql);
+                    logSQL("ColObj Count Determinations Per Cat Series", sql);
+
                     info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, sql));
                     
-                    String s = catSeriesSQL + info.getCatSeriesId();
-                    log.debug(s);
-                    Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, s);
+                    sql = catSeriesSQL + info.getCatSeriesId();
+                    log.debug(sql);
+                    logSQL("Cat Series", sql);
+
+                    Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
                     if (rows != null && rows.size() == 1)
                     {
                         Object[] row = rows.get(0);
@@ -429,25 +435,16 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         log.error("Error getting CollectionInfo for CollectionObjectTypeID: " + rs.getInt(1)+" number of CatlogSeries: " + rows.size());
                     }
                     
-                    // This represents a mapping from what would be the Discipline (Biological Object Type) to the Taxonomic Root
-                    sql = String.format("SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tu.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
-                                        "Inner Join taxonomicunittype AS tu ON tt.TaxonomyTypeID = tu.TaxonomyTypeID " +
-                                        "Inner Join taxonname AS tn ON tu.TaxonomyTypeID = tn.TaxonomyTypeID " +
-                                        "Inner Join collectiontaxonomytypes AS ct ON tn.TaxonomyTypeID = ct.TaxonomyTypeID " +
-                                        "WHERE tu.RankID =  0 AND tn.RankID =  0 AND ct.BiologicalObjectTypeID = %d " +
-                                        "ORDER BY ct.BiologicalObjectTypeID ASC", info.getColObjTypeId());
-                    log.debug(sql);
-                    
-                    String detSQLStr = "SELECT ct.TaxonomyTypeID, (select distinct relatedsubtypevalues FROM usysmetacontrol c " +
-                    	               "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
-                    	               "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
-                    	               "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
-                    log.debug(detSQLStr);
-                    
-                    String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
-                    
                     if (!doSkipCheck)
                     {
+                        String detSQLStr = "SELECT ct.TaxonomyTypeID, (select distinct relatedsubtypevalues FROM usysmetacontrol c " +
+                                           "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                                           "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
+                                           "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
+                        log.debug(detSQLStr);
+                        logSQL("Checking USYS data", detSQLStr);
+
+
                         Vector<Object[]> detRows = BasicSQLUtils.query(oldDBConn, detSQLStr);
                         for (Object[] row : detRows)
                         {
@@ -460,6 +457,10 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                             
                             if (StringUtils.isNotEmpty(detTxnTypes))
                             {
+                                String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
+                                logSQL("Getting Taxon Type Name", txNameSQL+txnTypeId);
+
+
                                 if (StringUtils.contains(detTxnTypes, ','))
                                 {
                                     StringBuilder sb = new StringBuilder();
@@ -469,6 +470,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                     sb.append(String.format("Warning - There are %d DeterminationTaxonTypes for TaxonObjectType %d (%s) they are:\n",  toks.length, txnTypeId, dtName));
                                     for (String id : toks)
                                     {
+                                        logSQL("Getting Taxon Type Name", txNameSQL + id);
                                         String name = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + id);
                                         sb.append(id);
                                         sb.append(" - ");
@@ -505,7 +507,16 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         log.debug("ID: "+id);
                     }*/
                     
+                    // This represents a mapping from what would be the Discipline (Biological Object Type) to the Taxonomic Root
+                    sql = String.format("SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tu.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
+                                        "INNER JOIN taxonomicunittype AS tu ON tt.TaxonomyTypeID = tu.TaxonomyTypeID " +
+                                        "INNER JOIN taxonname AS tn ON tu.TaxonomyTypeID = tn.TaxonomyTypeID " +
+                                        "INNER JOIN collectiontaxonomytypes AS ct ON tn.TaxonomyTypeID = ct.TaxonomyTypeID " +
+                                        "WHERE tu.RankID =  0 AND tn.RankID =  0 AND ct.BiologicalObjectTypeID = %d " +
+                                        "ORDER BY ct.BiologicalObjectTypeID ASC", info.getColObjTypeId());
                     log.debug(sql);
+                    logSQL("Taxon -> Coll Taxon Types", sql);
+
                     rows = BasicSQLUtils.query(oldDBConn, sql);
                     if (rows != null)
                     {
@@ -522,11 +533,13 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         
                         info.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
                         
-                        log.debug("TaxonomyTypeName: "+ info.getTaxonomyTypeName()+"  TaxonName: "+info.getTaxonName()+"  TaxonomyTypeId: "+info.getTaxonomyTypeId());
+                        log.debug("TaxonomyTypeName: "+ info.getTaxonomyTypeName()+
+                                  "  TaxonName: "+info.getTaxonName()+
+                                  "  TaxonomyTypeId: "+info.getTaxonomyTypeId());
                         
-                        s = hostTaxonID + taxonomyTypeID;
-                        log.debug(s);
-                        Vector<Object> ttNames = BasicSQLUtils.querySingleCol(oldDBConn, s);
+                        sql = hostTaxonID + taxonomyTypeID;
+                        log.debug(sql);
+                        Vector<Object> ttNames = BasicSQLUtils.querySingleCol(oldDBConn, sql);
                         if (ttNames != null && ttNames.size() > 0 && ((Long)ttNames.get(0)) > 0)
                         {
                             info.setSrcHostTaxonCnt((Long)ttNames.get(0));
@@ -549,9 +562,11 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                 
                 
                 // Here we figure out whether a Taxon Tree that is used by HostTaxonID is associated with a Collection.
-                sql = "SELECT DISTINCT tt.TaxonomyTypeID, tt.TaxonomyTypeName FROM habitat AS h " +
-                      "Inner Join taxonname AS tn ON h.HostTaxonID = tn.TaxonNameID " +
-                      "Inner Join taxonomytype AS tt ON tn.TaxonomyTypeID = tt.TaxonomyTypeID";
+                String sql = "SELECT DISTINCT tt.TaxonomyTypeID, tt.TaxonomyTypeName FROM habitat AS h " +
+                             "INNER JOIN taxonname AS tn ON h.HostTaxonID = tn.TaxonNameID " +
+                             "INNER JOIN taxonomytype AS tt ON tn.TaxonomyTypeID = tt.TaxonomyTypeID";
+                logSQL("Check for HostID", sql);
+
                 Vector<Integer> txTypeIds = BasicSQLUtils.queryForInts(oldDBConn, sql);
                 
                 HashSet<Integer> txnTypeIdHashSet = new HashSet<Integer>();
@@ -579,9 +594,12 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     System.out.println(taxonomyTypeID);
                     
                     sql = "SELECT tt.TaxonomyTypeName, tn.TaxonName, tt.KingdomID, tn.TaxonNameID, tn.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
-                          "Inner Join taxonomicunittype AS tut ON tt.TaxonomyTypeID = tut.TaxonomyTypeID " +
-                          "Inner Join taxonname AS tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID AND tut.TaxonomicUnitTypeID = tn.TaxonomicUnitTypeID " +    
+                          "INNER JOIN taxonomicunittype AS tut ON tt.TaxonomyTypeID = tut.TaxonomyTypeID " +
+                          "INNER JOIN taxonname AS tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID AND tut.TaxonomicUnitTypeID = tn.TaxonomicUnitTypeID " +    
                           "WHERE tt.TaxonomyTypeID =  "+taxonomyTypeID+" AND tn.RankID =  0";
+                    log.debug(sql);
+                    logSQL("Get TaxonTypeName etc from TaxonomyTypeID and RankID = 0", sql);
+                    
                     Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
                     if (rows.size() != 1)
                     {
@@ -630,9 +648,9 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                 // Do All
                 /*String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
                                   "FROM collectionobjecttype AS cot " +
-                                  "Inner Join collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
-                                  "Inner Join taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
-                                  "Inner Join taxonname as tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID " + 
+                                  "INNER JOIN collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
+                                  "INNER JOIN taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
+                                  "INNER JOIN taxonname as tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID " + 
                                   "WHERE  cot.Category = 'Biological' AND tn.ParentTaxonNameID IS NULL";
                 
                 log.debug(sqlAllTx);
@@ -690,6 +708,10 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         stmt.close();
                     }
                 } catch (Exception e) {}
+                
+            } finally
+            {
+                if (pw != null) pw.close();
             }
         }
         
@@ -1285,6 +1307,24 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         this.collection = collection;
     }
+
+    /**
+     * @return the combinedCatSeries
+     */
+    public String getCombinedCatSeries()
+    {
+        return combinedCatSeries;
+    }
+
+
+    /**
+     * @param combinedCatSeries the combinedCatSeries to set
+     */
+    public void setCombinedCatSeries(String combinedCatSeries)
+    {
+        this.combinedCatSeries = combinedCatSeries;
+    }
+
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
