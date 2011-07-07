@@ -71,7 +71,6 @@ import org.hibernate.HibernateException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -1764,16 +1763,26 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		if (t instanceof UploadTableTree)
     		{
-    			t.setShowMatchInfo(true);
+    			t.setCheckMatchInfo(true);
     		} else if (Agent.class.isAssignableFrom(t.getTblClass()))
     		{
-    			t.setShowMatchInfo(true);
-    		} else
+    			t.setCheckMatchInfo(true);
+//    		} else if (Locality.class.isAssignableFrom(t.getTblClass())
+//    				|| LocalityDetail.class.isAssignableFrom(t.getTblClass())
+//    				|| GeoCoordDetail.class.isAssignableFrom(t.getTblClass()))
+//    		{
+//    			t.setCheckMatchInfo(true);
+    		}else
     		{
-    			t.setShowMatchInfo(false);
+    			t.setCheckMatchInfo(false);
     		}
     	}
     }
+    
+//    public void getMatchPrefs()
+//    {
+//    	List<Class<?>>
+//    }
     
     /**
      * Validates contents of all cells in dataset.
