@@ -364,7 +364,7 @@ public class DisciplineDuplicator
         
         uStmt.executeUpdate(insertSQL);
         int newId = BasicSQLUtils.getInsertedId(uStmt);
-        tblWriter.log(String.format("Duplicated %s Old %d to New %d", tblName, oldId, primaryKeyName, newId));
+        tblWriter.log(String.format("Duplicated %s Old %d to New %d", tblName, oldId, newId));
         return newId;
     }
     
