@@ -108,7 +108,7 @@ public class UploaderMatchSkipException extends UploaderException
         StringBuilder msg = new StringBuilder();
         msg.append(getResourceString("WB_ROW"));
         msg.append(" ");
-        msg.append(String.valueOf(row));
+        msg.append(String.valueOf(row+1));
         msg.append(": ");
         msg.append(getResourceString("WB_MULTIPLE_MATCH_SKIP"));
         msg.append(" (");
