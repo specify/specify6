@@ -429,64 +429,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
-     * @param sessionArg
-     * @param userArg
-     * @return
-     */
-    protected Collection getLastUSedCollection(final DataProviderSessionIFace sessionArg, 
-                                               final SpecifyUser userArg)
-    {
-        try
-        {
-            final String prefName = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
-            
-            // First get the Collections the User has access to.
-            Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct INNER JOIN ct.agents cta INNER JOIN cta.specifyUser as user INNER JOIN ct.collections as cs where user.specifyUserId = "+userArg.getSpecifyUserId(); //$NON-NLS-1$
-            for (Object obj : sessionArg.getDataList(sqlStr))
-            {
-                Collection cs = (Collection)obj; 
-                cs.getDiscipline();// force load of Discipline
-                collectionHash.put(cs.getCollectionName(), cs);
-            }
-    
-            Collection collection = null;
-            
-            AppPreferences appPrefs  = AppPreferences.getRemote();
-            String         recentIds = appPrefs.get(prefName, null);
-            if (StringUtils.isNotEmpty(recentIds))
-            {
-                List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds); //$NON-NLS-1$
-                if (list.size() == 1)
-                {
-
-                    collection = (Collection)list.get(0);
-
-                }
-                else
-                {
-                    log.debug("could NOT find recent ids"); //$NON-NLS-1$
-                }
-            }
-            
-            if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
-            {
-                return null;
-            }
-            
-            return collection;
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-            ex.printStackTrace();
-            showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
-        }
-        return null;
-    }
-    
-    /**
      * Sets up the "current" Collection by first checking prefs for the most recent primary key,
      * @param userArg the user object of the current object
      * @param promptForCollection indicates the User should always be asked which Collection to use
@@ -508,8 +450,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             String  alwaysAskPref = "ALWAYS.ASK.COLL"; //$NON-NLS-1$
             boolean askForColl    = remotePrefs.getBoolean(alwaysAskPref, false);
-            
-            String prefName    = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
+            String   prefName     = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
             
             // First get the Collections the User has access to.
             Hashtable<String, Pair<String, Integer>> collectionHash = new Hashtable<String, Pair<String, Integer>>();
