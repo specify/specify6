@@ -1767,11 +1767,11 @@ public class Uploader implements ActionListener, KeyListener
     		} else if (Agent.class.isAssignableFrom(t.getTblClass()))
     		{
     			t.setCheckMatchInfo(true);
-//    		} else if (Locality.class.isAssignableFrom(t.getTblClass())
-//    				|| LocalityDetail.class.isAssignableFrom(t.getTblClass())
-//    				|| GeoCoordDetail.class.isAssignableFrom(t.getTblClass()))
-//    		{
-//    			t.setCheckMatchInfo(true);
+    		} else if (Locality.class.isAssignableFrom(t.getTblClass())
+    				|| LocalityDetail.class.isAssignableFrom(t.getTblClass())
+    				|| GeoCoordDetail.class.isAssignableFrom(t.getTblClass()))
+    		{
+    			t.setCheckMatchInfo(true);
     		}else
     		{
     			t.setCheckMatchInfo(false);

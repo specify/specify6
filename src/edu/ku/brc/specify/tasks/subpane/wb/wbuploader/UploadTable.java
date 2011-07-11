@@ -2887,7 +2887,7 @@ public class UploadTable implements Comparable<UploadTable>
     	protected final List<DataModelObjBase> matches;
     	protected final UploadTable table;
     	protected final boolean isBlank;
-    	protected final boolean isSkipped; //true if matching was not attempted because of un-matched parent
+    	protected boolean isSkipped; //true if matching was not attempted because of un-matched parent
     	protected final int recNum;
 		/**
 		 * @param matches
@@ -2931,6 +2931,15 @@ public class UploadTable implements Comparable<UploadTable>
 		{
 			return isSkipped;
 		}
+		
+		/**
+		 * @param isSkipped
+		 */
+		public void setIsSkipped(boolean isSkipped)
+		{
+			this.isSkipped = isSkipped;
+		}
+		
 		/**
 		 * @return the recNum
 		 */
@@ -3080,13 +3089,46 @@ public class UploadTable implements Comparable<UploadTable>
 		//it to findMatch for the children...
 		// XXX this is not the final word on matchchildren matches
     	
-		for (List<ParentMatchInfo> cm : childMatches)
+    	boolean invalid = containsInvalidCol(adjustedRecNum, invalidColNums);
+    	for (List<ParentMatchInfo> cm : childMatches)
 		{
-			result.addAll(cm);
+			if (!invalid && matched)
+			{
+				result.addAll(cm);
+			} else
+			{
+				for (int i = cm.size()-1; i > -1; i--)
+				{
+					ParentMatchInfo mi = cm.get(i);
+					if (mi.getTable().isOneToOneChild())
+					{
+						if (invalid)
+						{
+							cm.remove(i);
+						} else if (!matched)
+						{
+							mi.setIsSkipped(true);
+						}
+					}
+				}
+			}
 		}
     	
     	if (!containsInvalidCol(adjustedRecNum, invalidColNums))
     	{
+//    		if (!matched)
+//    		{
+//    			for (List<ParentMatchInfo> cm : childMatches)
+//    			{
+//    				for (ParentMatchInfo mi : cm)
+//    				{
+//    					if (mi.getTable().isOneToOneChild())
+//    					{
+//    						mi.setIsSkipped(true);
+//    					}
+//    				}
+//    			}
+//    		}
     		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched, recNum));
     	}
     	
