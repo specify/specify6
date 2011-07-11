@@ -11,7 +11,7 @@
 		<attribute name="required" property="required"/>
 		<attribute name="jointable" property="joinTableName"/>
         <attribute name="save" property="save"/>
-        <attribute name="likeManyToOne" property="likeManyToOne"/>
+        <attribute name="likemanytoone" property="likeManyToOne"/>
 		<addDefaults/>
 	</element>
 </info>

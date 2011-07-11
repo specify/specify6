@@ -236,10 +236,10 @@ public class AvailableFieldsComponent
         // get fields from relationship tables recursively
         for (DBRelationshipInfo rel : currentTableInfo.getRelationships())
         {
-            if (rel.isHidden() || 
-                    (!RelationshipType.ManyToOne.equals(rel.getType()) && 
-                     !RelationshipType.OneToOne.equals(rel.getType()) &&
-                     !rel.isLikeManyToOne()))
+            boolean isToOne = RelationshipType.ManyToOne.equals(rel.getType()) || 
+                              RelationshipType.OneToOne.equals(rel.getType()) ||
+                              rel.isLikeManyToOne();
+            if (rel.isHidden() || !isToOne)
             {
                 // Relationship is not *-to-One, so we won't know how to include sets of 
                 // values into the formatted object. Let's not include this relationship.
