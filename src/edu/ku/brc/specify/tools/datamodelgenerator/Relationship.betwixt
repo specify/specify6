@@ -10,7 +10,8 @@
 		<attribute name="updatable" property="updatable"/>
 		<attribute name="required" property="required"/>
 		<attribute name="jointable" property="joinTableName"/>
-		<attribute name="save" property="save"/>
+        <attribute name="save" property="save"/>
+        <attribute name="likeManyToOne" property="likeManyToOne"/>
 		<addDefaults/>
 	</element>
 </info>

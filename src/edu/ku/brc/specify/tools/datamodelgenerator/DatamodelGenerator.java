@@ -299,16 +299,17 @@ public class DatamodelGenerator
                     + " check to see if table is listed in the file: " + DatamodelHelper.getTableIdFilePath());
         }
         
-        return new Table(className, 
-                         tableName, 
-                         null, 
-                         tableMetaData.getId(), 
-                         tableMetaData.getDisplay(),
-                         tableMetaData.getFieldAliase(), 
-                         tableMetaData.isSearchable(), 
-                         tableMetaData.getBusinessRule(),
-                         tableMetaData.getAbbrv());
-
+        Table tbl = new Table(className, 
+                              tableName, 
+                              null, 
+                              tableMetaData.getId(), 
+                              tableMetaData.getDisplay(),
+                              tableMetaData.getFieldAliase(), 
+                              tableMetaData.isSearchable(), 
+                              tableMetaData.getBusinessRule(),
+                              tableMetaData.getAbbrv());
+        tbl.setLikeManyToOneHash(tableMetaData.getLikeManyToOneHash());
+        return tbl;
     }
 
     /**
@@ -349,7 +350,7 @@ public class DatamodelGenerator
      * @param joinCol
      * @return
      */
-    public Relationship createRelationsip(final Method method, 
+    public Relationship createRelationship(final Method method, 
                                           final String type,
                                           final javax.persistence.JoinColumn joinCol,
                                           final String otherSideName,
@@ -846,7 +847,7 @@ public class DatamodelGenerator
                         if (join != null)
                         {
                             //String othersideName = typeClass == null ? "" : getOthersideName(classObj, typeClass, thisSideName, RelType.OneToMany);
-                            Relationship rel = createRelationsip(method, "many-to-one", join, otherSideName, join != null ? !join.nullable() : false);
+                            Relationship rel = createRelationship(method, "many-to-one", join, otherSideName, join != null ? !join.nullable() : false);
                             table.addRelationship(rel);
                             rel.setSave(isSave);
                             
@@ -883,7 +884,8 @@ public class DatamodelGenerator
                         isSave = !isSave ? isOKToSave(method) : isSave;
                         
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                        Relationship rel = createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        Relationship rel = createRelationship(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        rel.setLikeManyToOne(table.getIsLikeManyToOne(rel.getRelationshipName()));
                         rel.setSave(isSave);
                         
                         table.addRelationship(rel);
@@ -921,7 +923,8 @@ public class DatamodelGenerator
                         isSave = !isSave ? isOKToSave(method) : isSave;
                         
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                        Relationship rel = createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        Relationship rel = createRelationship(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        rel.setLikeManyToOne(table.getIsLikeManyToOne(rel.getRelationshipName()));
                         rel.setSave(isSave);
                         table.addRelationship(rel);
                         if (includeDesc)
@@ -953,7 +956,7 @@ public class DatamodelGenerator
                         isSave = !isSave ? isOKToSave(method) : isSave;
 
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                        Relationship rel = createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false);
+                        Relationship rel = createRelationship(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false);
                         rel.setSave(isSave);
                         table.addRelationship(rel);
                         if (includeDesc)
@@ -1073,7 +1076,7 @@ public class DatamodelGenerator
         //System.out.println(className);
         try
         {
-            Class classObj = Class.forName(packageName + "." + className);
+            Class<?> classObj = Class.forName(packageName + "." + className);
             
             Table   table       = null; 
             String  tableName   = null;
@@ -1225,7 +1228,7 @@ public class DatamodelGenerator
         //System.out.println(className);
         try
         {
-            Class classObj = Class.forName(packageName + "." + className);
+            Class<?> classObj = Class.forName(packageName + "." + className);
             
             //Table   table       = null; 
             //String  tableName   = null;
@@ -1517,13 +1520,22 @@ public class DatamodelGenerator
                     }
                     //log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
-                    tblMetaDataHash.put(tablename, new TableMetaData(id, 
-                                                                     defaultView, 
-                                                                     createDisplay(element), 
-                                                                     createFieldAliases(element),
-                                                                     isSearchable, 
-                                                                     busRule,
-                                                                     abbrv));
+                    TableMetaData tblMetaData = new TableMetaData(id, 
+                                                                  defaultView, 
+                                                                  createDisplay(element), 
+                                                                  createFieldAliases(element),
+                                                                  isSearchable, 
+                                                                  busRule,
+                                                                  abbrv);
+                    tblMetaDataHash.put(tablename, tblMetaData);
+                    
+                    for (Iterator<?> ir = element.elementIterator("relationship"); ir.hasNext();)
+                    {
+                        Element relElement = (Element)ir.next();
+                        String  relName    = relElement.attributeValue("relationshipname");
+                        boolean isLike     = XMLHelper.getAttr(relElement, "likemanytoone", false);
+                        tblMetaData.setIsLikeManyToOne(relName, isLike);
+                    }
                     
                 }
                 

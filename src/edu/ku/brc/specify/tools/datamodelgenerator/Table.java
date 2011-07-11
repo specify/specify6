@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -50,19 +51,26 @@ public class Table implements Comparable<Table>
     private Display                  display;
     private List<FieldAlias>         fieldAliases = new ArrayList<FieldAlias>();
 
+    
     // These are needed for the DataMode Tools for generating schema diagrams etc
     private LocalizedStrIFace        desc;
     private LocalizedStrIFace        nameDesc;
     
     // Transient
-    private Vector<TableIndex>       indexes = new Vector<TableIndex>();
+    private Vector<TableIndex>       indexes           = new Vector<TableIndex>();
+    private HashMap<String, Boolean> likeManyToOneHash = null;
     
     
     /**
-     * @param aName
-     * @param aTable
-     * @param aLazy
-     * @param hash
+     * @param name
+     * @param table
+     * @param lazy
+     * @param tableId
+     * @param display
+     * @param fieldAliases
+     * @param searchable
+     * @param businessRule
+     * @param abbrv
      */
     public Table(String name, 
                  String table, 
@@ -348,6 +356,28 @@ public class Table implements Comparable<Table>
     public void setFieldAliases(List<FieldAlias> fieldAliases)
     {
         this.fieldAliases = fieldAliases;
+    }
+    
+    /**
+     * @param relName
+     * @return
+     */
+    public boolean getIsLikeManyToOne(final String relName)
+    {
+        if (likeManyToOneHash != null)
+        {
+            Boolean isLike = likeManyToOneHash.get(relName);
+            return isLike != null ? isLike : false;
+        }
+        return false;
+    }
+    
+    /**
+     * @param likeManyToOneHash the likeManyToOneHash to set
+     */
+    public void setLikeManyToOneHash(HashMap<String, Boolean> likeManyToOneHash)
+    {
+        this.likeManyToOneHash = likeManyToOneHash;
     }
 
     // Comparable

@@ -42,7 +42,8 @@ public class Relationship implements Comparable<Relationship>
     protected String   otherSideName;
     protected boolean  isRequired;
     protected boolean  isUpdatable;
-    protected boolean  isSave       = false;
+    protected boolean  isSave          = false;
+    protected boolean  isLikeManyToOne;
     
     protected LocalizedStrIFace desc;
     protected LocalizedStrIFace nameDesc;
@@ -59,6 +60,7 @@ public class Relationship implements Comparable<Relationship>
         this.className = className;
         this.columnName = columnName;
         this.relationshipName = relationshipName;
+        this.isLikeManyToOne = false;
     }
 
     /**
@@ -249,6 +251,22 @@ public class Relationship implements Comparable<Relationship>
         this.isSave = isSave;
     }
     
+    /**
+     * @return the isLikeManyToOne
+     */
+    public boolean isLikeManyToOne()
+    {
+        return isLikeManyToOne;
+    }
+
+    /**
+     * @param isLikeManyToOne the isLikeManyToOne to set
+     */
+    public void setLikeManyToOne(boolean isLikeManyToOne)
+    {
+        this.isLikeManyToOne = isLikeManyToOne;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */

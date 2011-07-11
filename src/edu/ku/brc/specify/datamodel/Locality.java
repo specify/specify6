@@ -812,6 +812,16 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     }
 
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        if (localityDetails != null) localityDetails.size();
+        if (geoCoordDetails != null) geoCoordDetails.size();
+    }
+
     /**
      * @return the localityDetail
      */

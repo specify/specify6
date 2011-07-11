@@ -238,7 +238,8 @@ public class AvailableFieldsComponent
         {
             if (rel.isHidden() || 
                     (!RelationshipType.ManyToOne.equals(rel.getType()) && 
-                     !RelationshipType.OneToOne.equals(rel.getType())))
+                     !RelationshipType.OneToOne.equals(rel.getType()) &&
+                     !rel.isLikeManyToOne()))
             {
                 // Relationship is not *-to-One, so we won't know how to include sets of 
                 // values into the formatted object. Let's not include this relationship.

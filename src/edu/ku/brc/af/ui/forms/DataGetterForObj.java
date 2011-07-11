@@ -61,8 +61,9 @@ public class DataGetterForObj implements DataObjectGettable
      * @see edu.ku.brc.af.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String)
      */
     @Override
-    public Object getFieldValue(Object dataObj, String fieldName)
+    public Object getFieldValue(final Object dataObjArg, final String fieldName)
     {
+        Object dataObj = dataObjArg;
         //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
         Object value = null;
         if (dataObj != null)
@@ -115,6 +116,11 @@ public class DataGetterForObj implements DataObjectGettable
                                     return new Boolean(asg.getDblValue() != 0.0);
                                 }
                             }
+                        } else if (obj instanceof FormDataObjIFace)
+                        {
+                            dataObj = obj;
+                            break;
+                            
                         } else
                         {
                             return null;

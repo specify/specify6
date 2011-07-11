@@ -43,6 +43,7 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
     protected boolean          isRequired;
     protected boolean          isUpdatable;
     protected boolean          isSavable;
+    protected boolean          isLikeManyToOne;
     
     protected Class<?>         dataClass = null;
     
@@ -54,7 +55,8 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
                               final String joinTable, 
                               final boolean isRequired, 
                               final boolean isUpdatable, 
-                              final boolean isSavable)
+                              final boolean isSavable,
+                              final boolean isLikeManyToOne)
     {
         super(name);
         
@@ -66,6 +68,7 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
         this.isUpdatable = isUpdatable;
         this.joinTable   = joinTable;
         this.isSavable   = isSavable;
+        this.isLikeManyToOne = isLikeManyToOne;
                
         try
         {
@@ -142,6 +145,14 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
     public boolean isSavable()
     {
         return isSavable;
+    }
+
+    /**
+     * @return the isLikeManyToOne
+     */
+    public boolean isLikeManyToOne()
+    {
+        return isLikeManyToOne;
     }
 
     /**

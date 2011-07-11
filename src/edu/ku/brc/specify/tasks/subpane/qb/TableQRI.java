@@ -187,7 +187,7 @@ public class TableQRI extends ExpandableQRI
     protected DBRelationshipInfo buildLocToCollectingEventsRel()
     {
     	return new DBRelationshipInfo("collectingEvents", DBRelationshipInfo.RelationshipType.OneToMany,
-    			CollectingEvent.class.getName(), null, "locality", null, false, false, false);
+    			CollectingEvent.class.getName(), null, "locality", null, false, false, false, false);
     }
     
     /**

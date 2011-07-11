@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 
@@ -38,6 +39,7 @@ public class TableMetaData
     private String  businessRule;
     private String  abbrv;
     private Vector<FieldAlias> fieldAliase; 
+    private HashMap<String, Boolean> likeManyToOneHash = null;
 
 	/**
 	 * @param id
@@ -110,6 +112,28 @@ public class TableMetaData
     public Vector<FieldAlias> getFieldAliase()
     {
         return fieldAliase;
+    }
+    
+
+    /**
+     * @param relName
+     * @param isLike
+     */
+    public void setIsLikeManyToOne(final String relName, final boolean isLike)
+    {
+        if (likeManyToOneHash == null)
+        {
+            likeManyToOneHash = new HashMap<String, Boolean>();
+        }
+        likeManyToOneHash.put(relName, isLike);
+    }
+
+    /**
+     * @return the likeManyToOneHash
+     */
+    public HashMap<String, Boolean> getLikeManyToOneHash()
+    {
+        return likeManyToOneHash;
     }
     
 }
