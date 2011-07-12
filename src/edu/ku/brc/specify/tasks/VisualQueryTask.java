@@ -262,8 +262,7 @@ public class VisualQueryTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-        if (AppPreferences.getRemote().getBoolean("ExportTask.OnTaskbar"+"."+ds, false))
+        if (AppPreferences.getRemote().getBoolean("VISUALQUERY_TASK", false))
         {
             toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }
