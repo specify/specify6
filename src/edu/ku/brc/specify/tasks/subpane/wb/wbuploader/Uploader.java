@@ -75,6 +75,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -1753,10 +1754,12 @@ public class Uploader implements ActionListener, KeyListener
     	}
     	return null;
     }
+    
     /**
      * Sets default match status display settings.
      * 
      */
+    //XXX Need to base the 'checkMatchInfo' settings on user-prefs.
     public void setDefaultMatchStatus()
     {
     	for (UploadTable t : uploadTables)
@@ -1771,7 +1774,11 @@ public class Uploader implements ActionListener, KeyListener
     				|| LocalityDetail.class.isAssignableFrom(t.getTblClass())
     				|| GeoCoordDetail.class.isAssignableFrom(t.getTblClass()))
     		{
-    			t.setCheckMatchInfo(true);
+    	        //XXX testing!
+    			if (AppPreferences.getLocalPrefs().getBoolean("WB_HighlightNewLocRecs", false))
+    	        {
+    	        	t.setCheckMatchInfo(true);
+    	        }
     		}else
     		{
     			t.setCheckMatchInfo(false);
