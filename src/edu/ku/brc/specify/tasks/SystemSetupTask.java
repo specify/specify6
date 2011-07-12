@@ -29,6 +29,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
+import static edu.ku.brc.specify.tasks.services.PickListUtils.*;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
@@ -39,7 +40,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -100,6 +100,7 @@ import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -108,6 +109,7 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
+import edu.ku.brc.specify.tasks.services.PickListUtils;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
@@ -139,6 +141,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     private static final String SCHEMACONFIG_SECURITY    = "SCHEMACONFIG";
     private static final String WBSCHEMACONFIG_SECURITY  = "WBSCHEMACONFIG";
     private static final String CANCELLED                = "_Cancelled_";
+    private static final String PICKLIST                 = "PickList";
+    
     
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
@@ -215,15 +219,32 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             NavBox collNavBox = new NavBox(getResourceString("COLL_DATA_OBJECTS"));
             createSysNavBtn(collNavBox, PrepType.getClassTableId(), true);
-            collNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            collNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    PickListEditorDlg dlg = new PickListEditorDlg(null, false);
+                    PickListEditorDlg dlg = new PickListEditorDlg(null, false, false);
                     dlg.createUI();
                     dlg.setSize(400,500);
                     dlg.setVisible(true);
                 }
             })); 
+            
+            String title = getResourceString(getI18n("PL_EXPORT"));
+            collNavBox.add(NavBox.createBtnWithTT(title, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    PickListUtils.exportPickList(null, null);
+                }
+            })); 
+
+            title = getResourceString(getI18n("PL_IMPORT"));
+            collNavBox.add(NavBox.createBtnWithTT(title, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    PickListUtils.importPickLists(null, AppContextMgr.getInstance().getClassObject(Collection.class));
+                }
+            })); 
+
             navBoxes.add(collNavBox);
             
             /*if (AppPreferences.getLocalPrefs().getBoolean("debug.menu", false))
@@ -315,22 +336,22 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         RolloverCommand roc;
         if (pickList.getIsSystem())
         {
-            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, PICKLIST);
                 }
             });
         } /*else
         {
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, nameStr, "PickList", null, 
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, nameStr, PICKLIST, null, 
                 new CommandAction(SYSTEMSETUPTASK, DELETE_CMD_ACT, pickList.getPickListId()), 
                 true, true);// true means make it draggable
         
             roc.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, PICKLIST);
                 }
             });
             roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
@@ -376,7 +397,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             JMenuItem viewMenuItem = new JMenuItem(getResourceString("EDIT"));
             viewMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name",  roc.getName(), roc.getName(), "PickList");
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name",  roc.getName(), roc.getName(), PICKLIST);
                 }
               });
             popupMenu.add(viewMenuItem);
@@ -431,9 +452,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             if (uiComp instanceof FormPane)
             {
                 Object dataObj = ((FormPane)uiComp).getData();
-                if (dataObj instanceof Collection<?>)
+                if (dataObj instanceof java.util.Collection<?>)
                 {
-                    Collection<?> collection = (Collection<?>)dataObj;
+                    java.util.Collection<?> collection = (java.util.Collection<?>)dataObj;
                     if (collection.size() > 0)
                     {
                         dataObj = collection.iterator().next();

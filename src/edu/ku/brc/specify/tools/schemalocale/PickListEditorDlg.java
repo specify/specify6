@@ -23,19 +23,13 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
@@ -48,9 +42,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -58,9 +49,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
-import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
@@ -71,20 +60,15 @@ import edu.ku.brc.af.ui.forms.validation.ValPlainTextDocument;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.config.init.BldrPickList;
-import edu.ku.brc.specify.config.init.BldrPickListItem;
-import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
+import edu.ku.brc.specify.tasks.services.PickListUtils;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.EditDeleteAddPanel;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -121,10 +105,13 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     
     /**
      * @param localizableIO
+     * @param doAddRemoveArg indicates whether to add the 'Add' and 'Remove' picklist btns
+     * @param doAddImpExp indicates whether to add the import/export buttons
      * @throws HeadlessException
      */
     public PickListEditorDlg(final LocalizableIOIFace localizableIO,
-                             final boolean doAddRemoveArg) throws HeadlessException
+                             final boolean doAddRemoveArg,
+                             final boolean doAddImpExp) throws HeadlessException
     {
         super((Frame)getTopWindow(), 
               getResourceString("PICKLIST_EDITOR"), true, doAddRemoveArg ? OKCANCELAPPLYHELP : OKHELP, null, OK_BTN);
@@ -134,7 +121,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         this.okLabel       = getResourceString("CLOSE");
         this.doAddRemove   = doAddRemoveArg;
         
-        if (doAddRemoveArg)
+        if (doAddImpExp)
         {
             this.cancelLabel = getResourceString("Export");
             this.applyLabel  = getResourceString("Import");
@@ -322,59 +309,30 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     protected List<PickList> getPickLists(final boolean doAll, 
                                           final boolean isSystemPL)
     {
-        List<PickList> items = null;
-        
-        DataProviderSessionIFace session = null;
-        try
+        List<PickList> items = PickListUtils.getPickLists(localizableIO, doAll, isSystemPL);
+        if (items != null)
         {
-            session = DataProviderFactory.getInstance().createSession();
-            if (localizableIO != null)
+            DataProviderSessionIFace session = null;
+            try
             {
-                items = localizableIO.getPickLists(null);
-                
-            } else
-            {
-                Vector<PickList> plItems = new Vector<PickList>();
-                
-                String sysPLSQL = "";
-                if (!doAll)
-                {
-                  sysPLSQL = " AND isSystem = " + (isSystemPL ? 1 : 0);  
-                }
-                
-                String sqlStr = "FROM PickList WHERE collectionId = COLLID" + sysPLSQL;
-                String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
-                List<?> pickLists = session.getDataList(sql);
+                session = DataProviderFactory.getInstance().createSession();
     
-                for (Object obj : pickLists)
-                {
-                    PickList pl = (PickList)obj;
-                    pl.getPickListItems().size();
-                    //System.out.println(pl.getName()+" - "+pl.getPickListItems().size());
-                    plItems.add(pl);
-                }
-                items = plItems;
-            }
-            
-            java.util.Collections.sort(items);
-            
-            collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-            collection = (Collection)session.getData("FROM Collection WHERE collectionId = "+collection.getId());
-            collection.getPickLists().size();
-            
-        }  catch (Exception ex)
-        {
-            ex.printStackTrace();
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
-            //log.error(ex);
-            // XXX error dialog
-            
-        } finally
-        {
-            if (session != null)
+                collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                collection = (Collection)session.getData("FROM Collection WHERE collectionId = "+collection.getId());
+                collection.getPickLists().size();
+                
+            } catch (Exception ex)
             {
-                session.close();
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
+        
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
             }
         }
         return items;
@@ -568,47 +526,6 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         }
     }
     
-    /**
-     * @param bpl
-     * @param currCollection
-     * @return
-     */
-    protected PickList createPickList(final BldrPickList bpl, final Collection currCollection)
-    {
-        PickList pickList = DataBuilder.createPickList(bpl.getName(), bpl.getType(), bpl.getTableName(),
-                                                       bpl.getFieldName(), bpl.getFormatter(), bpl.getReadOnly(),
-                                                       bpl.getSizeLimit(), bpl.getIsSystem(), bpl.getSortType(), 
-                                                       currCollection);
-        pickList.setIsSystem(bpl.getIsSystem());
-        pickList.setTimestampCreated(bpl.getTimestampCreated());
-        pickList.setTimestampModified(bpl.getTimestampModified());
-        pickList.setVersion(bpl.getVersion());
-        pickList.setCollection(collection);
-
-        if (bpl.getItems() != null)
-        {
-            for (BldrPickListItem item : bpl.getItems())
-            {
-                PickListItem pli = (PickListItem) pickList.addItem(item.getTitle(), item.getValue(), item.getOrdinal());
-                pli.setTimestampCreated(item.getTimestampCreated());
-                pli.setTimestampModified(item.getTimestampModified());
-                pli.setVersion(item.getVersion());
-            }
-        }
-        return pickList;
-    }
-    
-    /**
-     * @return name created from discipline and collection names
-     */
-    protected String getPickListXMLName()
-    {
-        Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);   
-        Collection col = AppContextMgr.getInstance().getClassObject(Collection.class);
-        
-        return String.format("%s_%s.xml", dsp.getName(), col.getCollectionName());
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
      */
@@ -617,182 +534,12 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     {
         // Apply is Import All PickLists
         
-        FileDialog dlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), getResourceString(getI18n("PL_IMPORT")), FileDialog.LOAD);
-        dlg.setDirectory(UIRegistry.getUserHomeDir());
-        dlg.setFile(getPickListXMLName());
-        UIHelper.centerAndShow(dlg);
-        
-        String dirStr   = dlg.getDirectory();
-        String fileName = dlg.getFile();
-        if (StringUtils.isEmpty(dirStr) || StringUtils.isEmpty(fileName))
+        if (PickListUtils.importPickLists(localizableIO, collection))
         {
-            return;
+            loadList(sysPLList, true);
+            loadList(plList, false);
         }
-        
-        final String path = dirStr + fileName;
-        
-        File file = new File(path);
-        if (!file.exists())
-        {
-            UIRegistry.showLocalizedError(getI18n("PL_FILE_NOT_EXIST"), file.getAbsoluteFile());
-            return;
-        }
-        List<BldrPickList> bldrPickLists = DataBuilder.getBldrPickLists(null, file);
-        
-        Integer cnt    = null;
-        boolean wasErr = false;
-        
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-
-            HashMap<String, PickList> plHash = new HashMap<String, PickList>();
-            List<PickList> items = getPickLists(true, false);
-            
-            for (PickList pl : items)
-            {
-                plHash.put(pl.getName(), pl);
-                //System.out.println("["+pl.getName()+"]");
-            }
-            
-            for (BldrPickList bpl : bldrPickLists)
-            {
-                PickList pickList = plHash.get(bpl.getName());
-                //System.out.println("["+bpl.getName()+"]["+(pickList != null ? pickList.getName() : "null") + "]");
-                if (pickList == null)
-                {
-                    // External PickList is new
-                    pickList = createPickList(bpl, collection);
-                    session.saveOrUpdate(pickList);
-                    if (cnt == null) cnt = 0;
-                    cnt++;
-                    
-                } else if (!pickListsEqual(pickList, bpl))
-                {
-                    session.delete(pickList);
-                    collection.getPickLists().remove(pickList);
-                    pickList = createPickList(bpl, collection);
-                    session.saveOrUpdate(pickList);
-                    collection.getPickLists().add(pickList);
-                    if (cnt == null) cnt = 0;
-                    cnt++;
-                }
-            }
-            session.commit();
-            
-        } catch (Exception ex)
-        {
-            wasErr = true;
-            if (session != null) session.rollback();
-            
-            ex.printStackTrace();
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
-            
-        } finally 
-        {
-            if (session != null)
-            {
-                session.close();
-            }
-        }
-        
-        loadList(sysPLList, true);
-        loadList(plList, false);
-        
-        String key = wasErr ? "PL_ERR_IMP" : cnt != null ? "PL_WASIMPORT" : "PL_MATCHIMP";
-        
-        UIRegistry.displayInfoMsgDlgLocalized(getI18n(key), cnt);
     }
-    
-    public static boolean equals(Boolean v1, Boolean v2) {
-        return (v1 == null ? v2 == null : v1.equals(v2));
-    }
-
-    public static boolean equals(Byte v1, Byte v2) {
-        return (v1 == null ? v2 == null : v1.equals(v2));
-    }
-
-    public static boolean equals(Integer v1, Integer v2) {
-        return (v1 == null ? v2 == null : v1.equals(v2));
-    }
-
-    private Comparator<PickListItem> pliComparatorOrd = new Comparator<PickListItem>()
-    {
-        @Override
-        public int compare(PickListItem o1, PickListItem o2)
-        {
-            return o1.getOrdinal().compareTo(o2.getOrdinal());
-        }
-    };
-    
-    private Comparator<PickListItem> pliComparatorTitle = new Comparator<PickListItem>()
-    {
-        @Override
-        public int compare(PickListItem o1, PickListItem o2)
-        {
-            return o1.getTitle().compareTo(o2.getTitle());
-        }
-    };
-    
-    private Comparator<BldrPickListItem> bldrPliComparatorTitle = new Comparator<BldrPickListItem>()
-    {
-        @Override
-        public int compare(BldrPickListItem o1, BldrPickListItem o2)
-        {
-            return o1.getTitle().compareTo(o2.getTitle());
-        }
-    };
-    
-    /**
-     * @param pl
-     * @param bpl
-     * @return
-     */
-    private boolean pickListsEqual(final PickList pl, final BldrPickList bpl)
-    {
-        if (!StringUtils.equals(pl.getName(), bpl.getName())) return false;
-        if (!StringUtils.equals(pl.getTableName(), bpl.getTableName())) return false;
-        if (!StringUtils.equals(pl.getFieldName(), bpl.getFieldName())) return false;
-        if (!StringUtils.equals(pl.getFormatter(), bpl.getFormatter())) return false;
-        
-        if (!equals(pl.getType(), bpl.getType())) return false;
-        if (!equals(pl.getReadOnly(), bpl.getReadOnly())) return false;
-        if (!equals(pl.getSizeLimit(), bpl.getSizeLimit())) return false;
-        if (!equals(pl.getIsSystem(), bpl.getIsSystem())) return false;
-        if (!equals(pl.getSortType(), bpl.getSortType())) return false;
-        
-        Vector<PickListItem>     plis  = new Vector<PickListItem>(pl.getPickListItems());
-        Vector<BldrPickListItem> bplis = bpl.getItems();
-        
-        if ((plis.size() == 0) && (bplis == null || bplis.size() == 0)) return true;
-        
-        if (plis.size() != bplis.size()) return false;
-        
-        if (pl.getSortType() == PickListIFace.PL_ORDINAL_SORT)
-        {
-            Collections.sort(plis, pliComparatorOrd);
-            Collections.sort(bplis);
-        } else
-        {
-            Collections.sort(plis, pliComparatorTitle);
-            Collections.sort(bplis, bldrPliComparatorTitle);
-        }
-        
-        for (int i=0;i<plis.size();i++)
-        {
-            PickListItem     pli  = plis.get(i);
-            BldrPickListItem bpli = bplis.get(i);
-            //System.out.println("["+pli.getOrdinal()+"]["+bpli.getOrdinal()+"]["+pli.getTitle()+"]["+bpli.getTitle()+"]["+pli.getValue()+"]["+bpli.getValue()+"]");
-            if (!StringUtils.equals(pli.getTitle(), bpli.getTitle())) return false;
-            if (!StringUtils.equals(pli.getValue(), bpli.getValue())) return false;
-        }
-        
-        return true;
-    }
-    
     /**
      * @param list
      * @param hash
@@ -818,79 +565,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         fillFromModel(sysPLList, hash);
         fillFromModel(plList, hash);
         
-        List<PickList> items         = getPickLists(true, false);
-        List<PickList> selectedItems = new ArrayList<PickList>();
-        for (PickList pl : items)
-        {
-            if (hash.contains(pl.getName()))
-            {
-                selectedItems.add(pl);
-            }
-        }
-        
-        ToggleButtonChooserDlg<PickList> pickDlg;
-        if (UIRegistry.getMostRecentWindow() instanceof Dialog)
-        {
-            pickDlg = new ToggleButtonChooserDlg<PickList>((Dialog)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);   
-        } else
-        {
-            pickDlg = new ToggleButtonChooserDlg<PickList>((Frame)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);   
-        }
-         
-        pickDlg.setUseScrollPane(true);
-        pickDlg.setAddSelectAll(true);
-        pickDlg.createUI();
-        pickDlg.setSelectedObjects(selectedItems);
-        UIHelper.centerAndShow(pickDlg);
-        
-        Integer cnt = null;
-        if (!pickDlg.isCancelled())
-        {
-            items = pickDlg.getSelectedObjects();
-            
-            FileDialog dlg = new FileDialog(this, getResourceString(getI18n("RIE_ExportResource")), FileDialog.SAVE); 
-            dlg.setDirectory(UIRegistry.getUserHomeDir());
-            dlg.setFile(getPickListXMLName());
-            
-            UIHelper.centerAndShow(dlg);
-            
-            String dirStr   = dlg.getDirectory();
-            String fileName = dlg.getFile();
-            
-            if (StringUtils.isNotEmpty(dirStr) && StringUtils.isNotEmpty(fileName))
-            {
-                String ext = FilenameUtils.getExtension(fileName);
-                if (StringUtils.isEmpty(ext) || !ext.equalsIgnoreCase("xml"))
-                {
-                    fileName += ".xml";
-                }
-
-                try
-                {
-                    File xmlFile  = new File(dirStr + File.separator + fileName);
-                    
-                    ArrayList<BldrPickList> bldrPickLists = new ArrayList<BldrPickList>();
-                    for (PickList pl : items)
-                    {
-                        bldrPickLists.add(new BldrPickList(pl));
-                    }
-                    DataBuilder.writePickListsAsXML(xmlFile, bldrPickLists);
-                    cnt = bldrPickLists.size();
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                UIRegistry.displayInfoMsgDlgLocalized(getI18n(cnt != null ? "PL_WASEXPORT" : "PL_ERR_IMP"), cnt);
-            }
-        }
+        PickListUtils.exportPickList(localizableIO, hash);
     }
     
-    private String getI18n(final String s)
-    {
-        return "SystemSetupTask." + s;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace#doDeleteDataObj(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, boolean)
      */

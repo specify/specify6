@@ -499,7 +499,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 
                 PickList selectedItem = (PickList)pickListCBX.getSelectedItem();
                 
-                PickListEditorDlg dlg = new PickListEditorDlg(localizableIO.hasUpdatablePickLists() ? null : localizableIO, true);
+                PickListEditorDlg dlg = new PickListEditorDlg(localizableIO.hasUpdatablePickLists() ? null : localizableIO, true, true);
                 dlg.setTableInfo(tableInfo);
                 dlg.setFieldInfo(fieldInfo);
                 dlg.createUI();
