@@ -46,7 +46,6 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -194,7 +193,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         if (textField != null)
         {
             textField.setEnabled(true);
-        } else
+            
+        } else if (StringUtils.isEmpty(watchId))
         {
             log.error("Error");
         }
@@ -511,9 +511,17 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
     {
         super.setEnabled(enabled);
         
-        String urlToLaunch = buildURL(false);
-        boolean enbl = (webLinkDef != null || StringUtils.isNotEmpty(urlToLaunch)) && enabled;
+        boolean isTextFieldOK = true;
+        if (enabled && 
+            StringUtils.isNotEmpty(watchId) &&
+            textField != null)
+        {
+            isTextFieldOK = StringUtils.isNotEmpty(textField.getText());
+        }
         
+        String urlToLaunch = buildURL(false);
+        boolean enbl = (webLinkDef != null || StringUtils.isNotEmpty(urlToLaunch)) && enabled && isTextFieldOK;
+
         launchBtn.setEnabled(enbl);
         if (editBtn != null)
         {
@@ -572,6 +580,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         {
             dataObj  = null;
             provider = null;
+            setEnabled(false);
             
         } else
         {
@@ -746,15 +755,24 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         notifyChangeListeners(new ChangeEvent(this));
         
         String text = textField.getText();
-        if (dataObj == null && text != null)
+        if (((dataObj instanceof String && StringUtils.isEmpty((String)dataObj)) || dataObj == null) && text != null)
         {
             launchBtn.setEnabled(true);
             dataObj = text;
             
-        } else if (dataObj != null && text != null && text.length() == 0)
+        } else if (dataObj != null && text != null)
         {
-            launchBtn.setEnabled(false);
-            dataObj = null;
+            if (launchBtn != null)
+            {
+                if (text.length() == 0)
+                {
+                    launchBtn.setEnabled(false);
+                    dataObj = null;
+                } else if (!launchBtn.isEnabled() && text.length() > 0)
+                {
+                    launchBtn.setEnabled(true);
+                }
+            }
         } else
         {
             dataObj = text;
