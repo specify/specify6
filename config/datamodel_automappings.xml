@@ -53,17 +53,32 @@
 		<class>edu.ku.brc.specify.datamodel.CollectionObject</class>
 		<field>catalogedDate</field>
 	</mapping>
-	<mapping>
-		<regex>^[Cc]atalog\s*[Nn]um.*</regex>
-		<regex>^[Cc]atalog\s*[Nn]o.*</regex>
-		<regex>^[Cc]at\s*[Nn]o.*</regex>
-		<regex>^[Cc]at\s*[Nn]um.*</regex>
-		<regex>^[Nn]umber$</regex>
-		<regex>^[Nn]um$</regex>
-		<regex locale="en_gb">^[Cc]atalog(ue)?\s*[Nn]um.*</regex>
-		<regex locale="en_gb">^[Cc]atalog(ue)?\s*[Nn]o.*</regex>
-		<class>edu.ku.brc.specify.datamodel.CollectionObject</class>
-		<field>catalogNumber</field>
-	</mapping>
-	
+    <mapping>
+        <regex>^[Cc]atalog\s*[Nn]um.*</regex>
+        <regex>^[Cc]atalog\s*[Nn]o.*</regex>
+        <regex>^[Cc]at\s*[Nn]o.*</regex>
+        <regex>^[Cc]at\s*[Nn]um.*</regex>
+        <regex>^[Nn]umber$</regex>
+        <regex>^[Nn]um$</regex>
+        <regex locale="en_gb">^[Cc]atalog(ue)?\s*[Nn]um.*</regex>
+        <regex locale="en_gb">^[Cc]atalog(ue)?\s*[Nn]o.*</regex>
+        <class>edu.ku.brc.specify.datamodel.CollectionObject</class>
+        <field>catalogNumber</field>
+    </mapping>
+    <mapping>
+        <regex>^[Ff]amily</regex>
+        <class>edu.ku.brc.specify.datamodel.Determination</class>
+        <field>family1</field>
+    </mapping>
+    <mapping>
+        <regex>^[Gg]enus</regex>
+        <class>edu.ku.brc.specify.datamodel.Determination</class>
+        <field>genus1</field>
+    </mapping>
+    <mapping>
+        <regex>^[Ss]pecies</regex>
+        <class>edu.ku.brc.specify.datamodel.Determination</class>
+        <field>species1</field>
+    </mapping>
+    
 </automappings>

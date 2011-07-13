@@ -1309,7 +1309,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true" cols="40"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>

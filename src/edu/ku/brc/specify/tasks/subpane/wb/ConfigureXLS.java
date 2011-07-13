@@ -162,13 +162,13 @@ public class ConfigureXLS extends ConfigureExternalDataBase
     {
         //firstRowHasHeaders = determineFirstRowHasHeaders();
 		DataImportDialog dlg = new DataImportDialog(this, firstRowHasHeaders);
-		if (dlg.hasTooManyRows)
+		if (!dlg.init() || dlg.hasTooManyRows)
 		{
 			status = Status.Cancel;
 			return;
 		}
 		
-		UIHelper.centerAndShow(dlg);
+		UIHelper.centerAndShow(dlg, 800, null);
 
 		if (!dlg.isCancelled())
 		{

@@ -199,7 +199,6 @@ public class DataImportDialog extends JDialog implements ActionListener
         highestColumnCount = 0;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
-        createUiForCSV();
         
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
         if (appIcon != null)
@@ -223,7 +222,6 @@ public class DataImportDialog extends JDialog implements ActionListener
         this.doesFirstRowHaveHeaders = doesHaveHeaders;
         myDisplayTable = null;
         model = new PreviewTableModel();
-        createUiForXLS();
         
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
         if (appIcon != null)
@@ -231,6 +229,14 @@ public class DataImportDialog extends JDialog implements ActionListener
             setIconImage(appIcon.getImage());
         }
 	}
+    
+    /**
+     * @return false means the dialog should not be shown.
+     */
+    public boolean init()
+    {
+        return createUiForXLS();
+    }
 
     /**
      * Initialize UI for a csv import
@@ -253,14 +259,19 @@ public class DataImportDialog extends JDialog implements ActionListener
      * 
      * void
      */
-    private void createUiForXLS()
+    private boolean createUiForXLS()
     {
     	JPanel p = createConfigPanelForXLS();
-    	setContentPane(p);
-    	if(!hasTooManyRows)
+    	if (p != null)
     	{
-    		init(getResourceString("IMPORT_XLS"));    
+        	setContentPane(p);
+        	if(!hasTooManyRows)
+        	{
+        		init(getResourceString("IMPORT_XLS"));    
+        	}
+        	return true;
     	}
+    	return false;
     }
     
     /**
@@ -269,7 +280,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @param title - the title of the dialog
      * void
      */
-    private void init(String title)
+    private void init(final String title)
     {
         setTitle(title);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -363,6 +374,10 @@ public class DataImportDialog extends JDialog implements ActionListener
         
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,8,4));
         myDisplayTable = setXLSTableData(myDisplayTable);
+        if (myDisplayTable == null)
+        {
+            return null;
+        }
         builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,10,3));
         builder.add         (errorPanel,                            cc.xyw(3,12,4));  
         builder.add         (buttonpanel,                           cc.xyw(2,14,4)); 
@@ -1032,28 +1047,31 @@ public class DataImportDialog extends JDialog implements ActionListener
             model.fireTableStructureChanged();
             return result;
         } 
-        catch (IOException ex)
+        catch (Exception ex)
         {
-        	UIRegistry.displayStatusBarErrMsg(UIRegistry.getResourceString("WB_ERROR_READING_IMPORT_FILE"));
-        	String[] columnNames = {};
-        	String[][] blankData = {{}};
-            model = new PreviewTableModel(columnNames, blankData);
-            table.setModel(model);
-            table.setColumnSelectionAllowed(false);
-            table.setRowSelectionAllowed(false);
-            table.setCellSelectionEnabled(false);
-            table.getTableHeader().setReorderingAllowed(false);
-            table.setPreferredScrollableViewportSize(new Dimension(500, 100));
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
-            model.fireTableDataChanged();
-            model.fireTableStructureChanged();
-            return table;
+        	UIRegistry.displayErrorDlgLocalized(UIRegistry.getResourceString("WB_ERROR_READING_IMPORT_FILE"));
+        	if (table != null)
+        	{
+            	String[] columnNames = {};
+            	String[][] blankData = {{}};
+                model = new PreviewTableModel(columnNames, blankData);
+                table.setModel(model);
+                table.setColumnSelectionAllowed(false);
+                table.setRowSelectionAllowed(false);
+                table.setCellSelectionEnabled(false);
+                table.getTableHeader().setReorderingAllowed(false);
+                table.setPreferredScrollableViewportSize(new Dimension(500, 100));
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+                model.fireTableDataChanged();
+                model.fireTableStructureChanged();
+                return table;
+        	}
             //log.error("Error attempting to parse input xls file:" + ex);
             //ex.printStackTrace();
         }
 
-        //return null;       
+        return null;       
     }
     
     private void showTooManyRowsErrorDialog()
