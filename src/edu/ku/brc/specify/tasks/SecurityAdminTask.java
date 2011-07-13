@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 
@@ -243,6 +244,9 @@ public class SecurityAdminTask extends BaseTask
                         if (StringUtils.isNotEmpty(encryptedMasterUP))
                         {
                             AppPreferences.getLocalPrefs().put(UserAndMasterPasswordMgr.getInstance().getMasterPrefPath(true), encryptedMasterUP);
+                            UIHelper.setTextToClipboard(encryptedMasterUP);
+                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "INFORMATION", "SPUSR_KEYGEN");
+                            
                         } else
                         {
                             UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_RTRV")), Color.RED);
