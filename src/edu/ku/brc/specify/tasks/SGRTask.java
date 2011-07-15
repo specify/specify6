@@ -406,7 +406,7 @@ public class SGRTask extends BaseTask
     {
         menuItems = new Vector<MenuItemDesc>();
         
-        if (AppPreferences.getLocalPrefs().getBoolean("SRG_PLUGIN", false))
+        if (AppPreferences.getLocalPrefs().getBoolean("ENABLE_SGR", false))
         {
             String menuDesc = "Specify.SYSTEM_MENU";
             

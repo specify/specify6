@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugins>
-    <plugin name="SGR" class="edu.ku.brc.specify.plugins.sgr.SGRPluginImpl" icon="SGR" tooltip="" pref="SRG_PLUGIN"/>
+    <plugin name="SGR" class="edu.ku.brc.specify.plugins.sgr.SGRPluginImpl" icon="SGR" tooltip="" pref="ENABLE_SGR"/>
 </plugins>
