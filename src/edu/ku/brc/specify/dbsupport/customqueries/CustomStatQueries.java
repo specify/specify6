@@ -237,19 +237,11 @@ public class CustomStatQueries implements CustomQueryIFace
             
         Session  session  = HibernateUtil.getNewSession();
         
-        Calendar endDate = Calendar.getInstance();
-        Calendar today   = Calendar.getInstance();
-        endDate.clear();
-        endDate.set(Calendar.YEAR,         today.get(Calendar.YEAR));
-        endDate.set(Calendar.MONTH,        today.get(Calendar.MONTH));
-        endDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
-        
-        endDate.add(Calendar.MONTH, 6);
-        //System.out.println(endDate);
+        Calendar today = Calendar.getInstance();
         
         Criteria criteria = session.createCriteria(Loan.class);
         criteria.add(Restrictions.isNotNull("currentDueDate"));
-        criteria.add(Restrictions.lt("currentDueDate", endDate));
+        criteria.add(Restrictions.lt("currentDueDate", today));
         
         Criteria dsp = criteria.createCriteria("discipline");
         dsp.add(Restrictions.eq("disciplineId", AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId()));
