@@ -223,38 +223,11 @@ public class UserAndMasterPasswordMgr
     }
 
     /**
-     * @param usersPassword
-     */
-    public void setUsersPasswordX(String usersPassword)
-    {
-        this.usersPassword = usersPassword;
-        clear();
-    }
-
-    /**
-     * @param usersUserName
-     */
-    public void setUsersUserNameX(final String usersUserName)
-    {
-        this.usersUserName = usersUserName;
-        clear();
-    }
-
-    /**
      * @return the databaseName
      */
     public String getDatabaseName()
     {
         return databaseName;
-    }
-
-    /**
-     * @param databaseName the databaseName to set
-     */
-    public void setDatabaseNameX(String databaseName)
-    {
-        this.databaseName = databaseName;
-        clear();
     }
 
     /**
@@ -433,8 +406,23 @@ public class UserAndMasterPasswordMgr
         final JLabel     urlLbl      = createI18NFormLabel("URL");
         final JButton    createBtn   = createI18NButton("CREATE_KEY");
         
-        final JButton    copyCBBtn   = createIconBtn("ClipboardCopy", IconManager.STD_ICON_SIZE.Std24, "CPY_TO_CB_TT", null);
-        final JButton    pasteCBBtn  = createIconBtn("ClipboardPaste", IconManager.STD_ICON_SIZE.Std24, "CPY_FROM_CB_TT", null);
+        final JButton    copyCBBtn   = createIconBtn("ClipboardCopy", IconManager.IconSize.Std24, "CPY_TO_CB_TT", null);
+        final JButton    pasteCBBtn  = createIconBtn("ClipboardPaste", IconManager.IconSize.Std24, "CPY_FROM_CB_TT", null);
+        
+        // retrieves the encrypted key for the current settings in the dialog
+        String dbNameFromForm = AppPreferences.getLocalPrefs().get("login.databases_selected", null);
+        if (isNotEmpty(dbNameFromForm) && isNotEmpty(usersUserName))
+        {
+            String masterKey = getMasterPrefPath(usersUserName, dbNameFromForm, true);
+            if (isNotEmpty(masterKey))
+            {
+                String encryptedKey = AppPreferences.getLocalPrefs().get(masterKey, null);
+                if (isNotEmpty(encryptedKey))
+                {
+                    keyTxt.setText(encryptedKey);
+                }
+            }
+        }
         
         CellConstraints cc = new CellConstraints(); 
         
@@ -453,7 +441,7 @@ public class UserAndMasterPasswordMgr
         pb.add(urlLbl,    cc.xy(1, y)); 
         pb.add(urlTxt,    cc.xy(3, y));  y += 2;
         
-        boolean isEditMode = isLocal != null && StringUtils.isNotEmpty(masterPath);
+        boolean isEditMode = isLocal != null && isNotEmpty(masterPath);
         if (isEditMode)
         {
             isPrefBasedRB.setSelected(isLocal);
@@ -642,7 +630,7 @@ public class UserAndMasterPasswordMgr
                                  !((JTextField)dbPwdTxt).getText().isEmpty() &&
                                  !usrText.getText().isEmpty() &&
                                  !((JTextField)pwdText).getText().isEmpty();
-                if (enable && StringUtils.isNotEmpty(dbUserStr) && dbUserStr.equalsIgnoreCase("root"))
+                if (enable && isNotEmpty(dbUserStr) && dbUserStr.equalsIgnoreCase("root"))
                 {
                     loadAndPushResourceBundle("masterusrpwd");
                     UIRegistry.showLocalizedError("MASTER_NO_ROOT");
@@ -875,7 +863,7 @@ public class UserAndMasterPasswordMgr
         Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         
         String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(masterPwd.first, masterPwd.second, newPwd);
-        if (StringUtils.isNotEmpty(encryptedMasterUP))
+        if (isNotEmpty(encryptedMasterUP))
         {
             AppPreferences.getLocalPrefs().put(getMasterPrefPath(true), encryptedMasterUP);
             spUser.setPassword(newPwd);
