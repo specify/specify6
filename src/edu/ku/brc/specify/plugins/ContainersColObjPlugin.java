@@ -35,6 +35,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.forms.SessionListenerIFace;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -105,6 +106,7 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
                                                  COLOBJ_NAME,    // displayInfoDialogName
                                                  "");            // objTitle  
             pb.add(textWithInfo, cc.xy(1, 1));
+            ViewFactory.changeTextFieldUIForDisplay(textWithInfo.getTextField(), false);
             
         } else
         {
@@ -199,9 +201,18 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
         Integer selectedId = qcbx.getTextWithQuery().getSelectedId();
         if (selectedId != null)
         {
-            final String clause = String.format(" FROM collectionobject WHERE CollectionObjectId = %d AND ContainerID IS NOT NULL", selectedId);
+            StringBuilder clauseSB = new StringBuilder(String.format(" FROM collectionobject WHERE CollectionObjectId = %d AND ContainerID IS NOT NULL", selectedId));
+            if (container.getId() != null)
+            {
+                clauseSB.append(String.format(" AND ContainerID <> %d", container.getId()));
+            }
+            
+            final String clause = clauseSB .toString();
             String sql = "SELECT COUNT(*)" + clause;
-           //System.err.println("ContainersColObjPlugin: "+sql+" -> "+BasicSQLUtils.getCountAsInt(sql));
+            
+            System.err.println(sql);
+            
+            //System.err.println("ContainersColObjPlugin: "+sql+" -> "+BasicSQLUtils.getCountAsInt(sql));
             
             if (BasicSQLUtils.getCountAsInt(sql) > 0)
             {
