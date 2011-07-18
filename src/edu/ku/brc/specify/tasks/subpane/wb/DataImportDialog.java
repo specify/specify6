@@ -239,18 +239,28 @@ public class DataImportDialog extends JDialog implements ActionListener
     }
 
     /**
+     * @return true if ui creation succeeds, else false
+     */
+    public boolean initForCSV()
+    {
+    	return createUiForCSV();
+    }
+    
+    /**
      * Initialize UI for a csv import
      * 
      * void
      */
-    private void createUiForCSV()
+    private boolean createUiForCSV()
     {
     	JPanel p = createConfigPanelForCSV();
     	setContentPane(p);  
     	if(!hasTooManyRows)
     	{
     		init(getResourceString("IMPORT_CVS"));    
+    		return true;
     	}
+    	return false;
     }
       
 
