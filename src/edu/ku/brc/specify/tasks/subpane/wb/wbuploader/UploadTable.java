@@ -4123,7 +4123,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
