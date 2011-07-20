@@ -1,4 +1,4 @@
-/* Copyright (C) 2011, University of Kansas Center for Research
+/* Copyright (C) 2009, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -21,15 +21,13 @@ package edu.ku.brc.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -43,15 +41,11 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class FileStoreAttachmentManager implements AttachmentManagerIface
 {
-    private static int MAX_NUMFILES_PER_SUBDIR;
-    
     private static final Logger  log   = Logger.getLogger(FileStoreAttachmentManager.class);
     
     private static final String ORIGINAL   = "originals";
     private static final String THUMBNAILS = "thumbnails";
     
-    /** The base directory path of where the files will be stored. */
-    protected File originalBase;
     
     /** The base directory path of where the files will be stored. */
     protected String baseDirectory;
@@ -61,17 +55,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     
     /** The directory inside the base that will store the thumbnail files. */
     protected File thumbsDir;
-    
-    /** The last directory used to save an attachments */
-    protected File currentSaveSubDir = null;
-    
-    /** Current number of attachments in the current directory */
-    protected int numSubDirFile = 0;
-    
-    static 
-    {
-        MAX_NUMFILES_PER_SUBDIR = AppPreferences.getLocalPrefs().getInt("MAX_NUMFILES_PER_SUBDIR", 1000);
-    }
     
     /** 
      * A collection of all files created by calls to setStorageLocationIntoAttachment
@@ -86,82 +69,72 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public FileStoreAttachmentManager(final File baseDirectory) throws IOException
     {
         setDirectory(baseDirectory);
+        flattenDirStructure();
     }
     
     /**
-     * @param kids
-     * @return
+     * 
      */
-    private Vector<File> getFilterFileList(final File[] kids)
+    private void flattenDirStructure()
     {
-        Vector<File> list = new Vector<File>();
-        if (kids != null && kids.length > 0)
+        ArrayList<File> subDirs = new ArrayList<File>();
+        File            baseDir = new File(baseDirectory);
+        for (File file : baseDir.listFiles())
         {
-            for (File f : kids)
+            String fileName = file.getName();
+            if (file.isDirectory() && !fileName.equals(ORIGINAL) && !fileName.equals(THUMBNAILS))
             {
-                if (StringUtils.isNotEmpty(f.getName()) && 
-                    f.getName().charAt(0) != '.')
-                {
-                    list.add(f);
-                }
+                subDirs.add(file);
             }
         }
-        return list;
+        
+        for (File subDir : subDirs)
+        {
+            moveFiles(subDir, ORIGINAL);
+            moveFiles(subDir, THUMBNAILS);
+            
+            if (subDir.list().length == 0)
+            {
+                subDir.delete();
+            }
+        }
     }
     
     /**
-     * @param baseDir
+     * @param subDir
+     * @param dirName
      */
-    private void initDirectories(final File baseDir)
+    private void moveFiles(final File subDir, final String dirName) 
     {
-        this.baseDirectory = baseDir.getAbsolutePath();
-        this.originalsDir  = new File(baseDirectory);
         
-        boolean doCreateNewSub = false;
-        File    subDir         = null;
-        
-        Vector<File> files = getFilterFileList(this.originalsDir.listFiles());
-        if (files.size() > 0)
+        File subSubDir = new File(subDir + File.separator + dirName);
+        for (File srcFile : subSubDir.listFiles())
         {
-            Comparator<File> comp = new Comparator<File>()
+            if (srcFile.length() > 0)
             {
-                @Override
-                public int compare(File o1, File o2)
+                File destDir = new File(baseDirectory + File.separator + dirName + File.separator + srcFile.getName());
+                //System.err.println("\n"+attFile.getAbsolutePath());
+                //System.err.println(destDir.getAbsolutePath());
+                try
                 {
-                    Long l1 = o1.lastModified();
-                    Long l2 = o2.lastModified();
-                    return l2.compareTo(l1);
+                    FileUtils.copyFile(srcFile, destDir);
+                    srcFile.delete();
+                    
+                } catch (IOException ex)
+                {
+                    ex.printStackTrace();
                 }
-            };
-            Collections.sort(files, comp);
-            subDir = files.get(0);
-            //System.out.println("Newest sub Dir: " + subDir.getName());
-            
-            File fullPath = new File(baseDir.getAbsolutePath() + File.separator + subDir.getName() + File.separator + ORIGINAL);
-            Vector<File> kids = getFilterFileList(fullPath.listFiles());
-            if (kids.size() >= MAX_NUMFILES_PER_SUBDIR)
-            {
-                doCreateNewSub = true;
             } else
             {
-                numSubDirFile = kids.size();
+                srcFile.delete();
             }
-        } else
-        {
-            doCreateNewSub = true;
         }
         
-        if (doCreateNewSub || subDir == null)
+        if (subSubDir.list().length == 0)
         {
-            subDir = new File(Long.toString(System.currentTimeMillis()));
-            numSubDirFile = 0;
+            subSubDir.delete();
         }
         
-        this.baseDirectory = baseDir.getAbsolutePath() + File.separator + subDir.getName();
-        this.originalsDir  = new File(baseDirectory + File.separator + ORIGINAL);
-        this.thumbsDir     = new File(baseDirectory + File.separator + THUMBNAILS);
-        
-        log.debug("baseDirectory: "+baseDirectory+"  originalsDir: "+originalsDir+"  thumbsDir: "+thumbsDir);
     }
     
     /**
@@ -170,9 +143,9 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public void setDirectory(final File baseDir) throws IOException
     {
-        this.originalBase = baseDir;
-        
-        initDirectories(baseDir);
+        this.baseDirectory = baseDir.getAbsolutePath();
+        this.originalsDir  = new File(baseDirectory + File.separator + ORIGINAL);
+        this.thumbsDir     = new File(baseDirectory + File.separator + THUMBNAILS);
         
         // create the directories, if they don't already exist
         if (!originalsDir.exists() && !originalsDir.mkdirs())
@@ -213,18 +186,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     @Override
     public boolean setStorageLocationIntoAttachment(final Attachment attachment, final boolean doDisplayErrors)
     {
-        if (numSubDirFile >= MAX_NUMFILES_PER_SUBDIR)
-        {
-            try
-            {
-                setDirectory(this.originalBase);
-                
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        
         String attName    = attachment.getOrigFilename();
         int    lastPeriod = attName.lastIndexOf('.');
         String suffix     = ".att";
@@ -253,12 +214,10 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             {
                 attachment.setAttachmentLocation(storageFile.getName());
                 unfilledFiles.add(attachment.getAttachmentLocation());
-                numSubDirFile++;
-                
                 return true;
             }
-            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", storageFile.getAbsolutePath());
-            log.error("storageFile doesn't exist["+storageFile.getAbsolutePath()+"]");
+            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", (storageFile != null ? storageFile.getAbsolutePath() : "(missing file name)"));
+            log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
         }
         catch (IOException e)
         {
@@ -284,7 +243,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(edu.ku.brc.specify.datamodel.Attachment)
      */
-    @Override
     public File getOriginal(final Attachment attachment)
     {
         String fileLoc = attachment.getAttachmentLocation();
@@ -305,7 +263,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
      */
-    @Override
     public File getThumbnail(final Attachment attachment)
     {
         String fileLoc = attachment.getAttachmentLocation();
@@ -327,7 +284,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
      */
-    @Override
     public void storeAttachmentFile(final Attachment attachment, final File attachmentFile, final File thumbnail) throws IOException
     {
         // copy the original into the storage system
@@ -352,8 +308,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#replaceOriginal(edu.ku.brc.specify.datamodel.Attachment, java.io.File)
      */
-    @Override
-   public void replaceOriginal(final Attachment attachment, final File newOriginal, final File newThumbnail) throws IOException
+    public void replaceOriginal(final Attachment attachment, final File newOriginal, final File newThumbnail) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
         File origFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
@@ -396,7 +351,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#deleteAttachmentFiles(edu.ku.brc.specify.datamodel.Attachment)
      */
-    @Override
     public void deleteAttachmentFiles(final Attachment attachment) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
@@ -405,21 +359,14 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             File   origFile  = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
             File   thumbFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
             
-            //System.out.println("Del: "+origFile.getAbsolutePath());
             if (origFile.exists())
             {
-                if (!origFile.delete())
-                {
-                    UIRegistry.showError("Unable to delete["+origFile.getAbsolutePath()+"]");
-                }
+                origFile.delete();
             }
             
             if (thumbFile.exists())
             {
-                if (!thumbFile.delete())
-                {
-                    UIRegistry.showError("Unable to delete["+thumbFile.getAbsolutePath()+"]");
-                }
+                thumbFile.delete();
             }
             
         } else
@@ -431,7 +378,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#cleanup()
      */
-    @Override
     public void cleanup()
     {
         // delete all of the temp files we created that were never used for storing
@@ -440,24 +386,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         {
             File f = new File(originalsDir.getAbsolutePath() + File.separator + unusedFile);
             f.delete();
-        }
-        
-        for (File subDir : originalBase.listFiles())
-        {
-            File     origFile = new File(subDir.getAbsoluteFile() + File.separator + ORIGINAL);
-            String[] names    = origFile.list();
-            if (names != null && names.length == 0)
-            {
-                try
-                {
-                    log.debug("Deleteing Dir["+subDir.getAbsoluteFile()+"]");
-                    FileUtils.deleteDirectory(subDir);
-                    
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
