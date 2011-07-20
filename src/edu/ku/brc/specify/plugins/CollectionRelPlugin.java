@@ -74,6 +74,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     private final static String COLOBJ_NAME    = "CollectionObject";
 
     private boolean                isLeftSide      = true;
+    private boolean                isRightOverride = false;
     private CollectionRelType      colRelType      = null;
     private Collection             leftSideCol     = null;
     private Collection             rightSideCol    = null;
@@ -103,7 +104,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     {
         super.initialize(propertiesArg, isViewModeArg);
         
-        String relName = propertiesArg.getProperty("relname");
+        String  relName   = propertiesArg.getProperty("relname");
+        String  rightSide = propertiesArg.getProperty("rightside");
+        isRightOverride   = StringUtils.isNotEmpty(rightSide) && rightSide.equalsIgnoreCase("true");
+        
         if (StringUtils.isNotEmpty(relName))
         {
             DataProviderSessionIFace tmpSession = null;
@@ -121,6 +125,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                     
                     Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
                     isLeftSide = currCollection.getId().equals(leftSideCol.getId());
+                    if (isLeftSide && isRightOverride)
+                    {
+                        isLeftSide = false;
+                    }
                     
                     catNumFormatter = CollectionRelOneToManyPlugin.getCatNumFormatter(leftSideCol, rightSideCol);
                     
@@ -327,6 +335,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
         		     "Left Join collectionobject AS dst ON cr.RightSideCollectionID = dst.CollectionObjectID " +
         		     "WHERE cr.CollectionRelTypeID = %d AND dst.CatalogNumber = '%s'";
         sql = String.format(sql, colRelId, dstCatNum);
+        System.out.println("["+BasicSQLUtils.querySingleObj(sql)+"] "+sql);
         return BasicSQLUtils.querySingleObj(sql);
     }
     
@@ -522,6 +531,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             otherSideColObj = null;
             
             boolean leftSide = currentColObj.getCollection().getId().equals(leftSideCol.getId());
+            if (leftSide && isRightOverride)
+            {
+                leftSide = false;
+            }
             
             Set<CollectionRelationship> collectionRels = leftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
             for (CollectionRelationship colRel : collectionRels)

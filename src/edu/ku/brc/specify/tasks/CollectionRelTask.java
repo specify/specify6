@@ -49,6 +49,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -213,13 +214,21 @@ public class CollectionRelTask extends BaseTask
      */
     private void showDestinationList()
     {
-        Vector<Collection> filteredList = new Vector<Collection>();
-        for (Collection col : colObjVec)
+        Vector<Collection> filteredList;
+        boolean allowSelfRefColRel = AppPreferences.getLocalPrefs().getBoolean("SELF_COLREL", false);
+        if (allowSelfRefColRel)
         {
-            if (col.getCatalogNumFormatName().equals(srcCollection.getCatalogNumFormatName()) &&
-                !col.getId().equals(srcCollection.getId()))
+            filteredList = new Vector<Collection>(colObjVec);
+        } else
+        {
+            filteredList = new Vector<Collection>();
+            for (Collection col : colObjVec)
             {
-                filteredList.add(col);
+                if (col.getCatalogNumFormatName().equals(srcCollection.getCatalogNumFormatName()) &&
+                    !col.getId().equals(srcCollection.getId()))
+                {
+                    filteredList.add(col);
+                }
             }
         }
         
