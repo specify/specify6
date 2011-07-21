@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JFrame;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -379,10 +381,10 @@ public class PickListUtils
         ToggleButtonChooserDlg<PickList> pickDlg;
         if (isDialog)
         {
-            pickDlg = new ToggleButtonChooserDlg<PickList>((Dialog)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);   
+            pickDlg = new ToggleButtonChooserDlg<PickList>((Dialog)window, getI18n("PL_EXPORT"), items);   
         } else
         {
-            pickDlg = new ToggleButtonChooserDlg<PickList>((Frame)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);   
+            pickDlg = new ToggleButtonChooserDlg<PickList>((JFrame)window, getI18n("PL_EXPORT"), items);   
         }
          
         pickDlg.setUseScrollPane(true);
