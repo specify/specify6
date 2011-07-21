@@ -21,7 +21,6 @@ package edu.ku.brc.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
@@ -69,72 +68,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public FileStoreAttachmentManager(final File baseDirectory) throws IOException
     {
         setDirectory(baseDirectory);
-        flattenDirStructure();
-    }
-    
-    /**
-     * 
-     */
-    private void flattenDirStructure()
-    {
-        ArrayList<File> subDirs = new ArrayList<File>();
-        File            baseDir = new File(baseDirectory);
-        for (File file : baseDir.listFiles())
-        {
-            String fileName = file.getName();
-            if (file.isDirectory() && !fileName.equals(ORIGINAL) && !fileName.equals(THUMBNAILS))
-            {
-                subDirs.add(file);
-            }
-        }
-        
-        for (File subDir : subDirs)
-        {
-            moveFiles(subDir, ORIGINAL);
-            moveFiles(subDir, THUMBNAILS);
-            
-            if (subDir.list().length == 0)
-            {
-                subDir.delete();
-            }
-        }
-    }
-    
-    /**
-     * @param subDir
-     * @param dirName
-     */
-    private void moveFiles(final File subDir, final String dirName) 
-    {
-        
-        File subSubDir = new File(subDir + File.separator + dirName);
-        for (File srcFile : subSubDir.listFiles())
-        {
-            if (srcFile.length() > 0)
-            {
-                File destDir = new File(baseDirectory + File.separator + dirName + File.separator + srcFile.getName());
-                //System.err.println("\n"+attFile.getAbsolutePath());
-                //System.err.println(destDir.getAbsolutePath());
-                try
-                {
-                    FileUtils.copyFile(srcFile, destDir);
-                    srcFile.delete();
-                    
-                } catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
-            } else
-            {
-                srcFile.delete();
-            }
-        }
-        
-        if (subSubDir.list().length == 0)
-        {
-            subSubDir.delete();
-        }
-        
     }
     
     /**
