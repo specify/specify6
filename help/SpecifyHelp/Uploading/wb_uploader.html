@@ -38,14 +38,13 @@
   <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in the Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the users.</li><br />
   <li>In a multi-collection database the WorkBench is unable to verify the data sets for an appropriate collection. It is up to the user to ensure that the data set is being uploaded to the correct Collection.</li><br />
  <li> When uploading data sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order: Collection Object, Accession, Taxon, Collecting Event and then Locality. </li><br/>
- <li>The WorkBench has a limit of 2000 records that can be uploaded at one time. MS Excel files that include more than 2000 records can be separated using the <a href="../Uploading/splitter.html">Specify File Slicer</a> application that ships with Specify. </li>
+ <li>The WorkBench has a limit of 4000 records that can be uploaded at one time. MS Excel files that include more than 4000 records can be separated using the <a href="../Uploading/splitter.html">Specify File Slicer</a> application that ships with Specify. </li>
 </ul>
 <p>&nbsp;</p>
 <h3><a name="uploader_validate" id="uploader_validate"></a>Validate Data</h3>
 <blockquote>
   <p>The validation tool compares the  data in the data set  to the required fields and field formats of the Specify fields to which they are mapped. It then indicates which  cells violate requirements, don't match formats, or will create new data in taxon, geography and agent  tables. </p>
-  <p>The first time a data set is opened the validation tool automatically checks for invalid and new values and highlights them. Thereafter, the WorkBench remembers the settings for the validation tool and will open a data set using its last settings.</p>
-  <p>A validation panel can be hidden and shown using the <img src="../../images/validate_workbench_20.png" alt="validate" width="20" height="20" /> (validation) icon. </p>
+  <p>When a dataset is opened the validation panel is not automatically displayed. Simply click the <img src="../../images/validate_workbench_20.png" alt="validate" width="20" height="20" /> (validation) icon to show or hide the panel.</p>
   <p align="center"><img src="../../images/validation_screen.png" alt="validation screen"/></p>
   <p align="center" class="imgcaption">Validation Panel</p>
   <p>Check the <em><strong> Highlight Invalid Cells</strong></em>  to turn the validation off and on. This type of validation compares the values in each cell of the WorkBench with the values in Specify fields and highlights cells that contain invalid values in <span class="style1">red</span>. The number of invalid cells will be shown in the validation panel. </p>
