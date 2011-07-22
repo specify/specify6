@@ -56,6 +56,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -259,6 +260,9 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected boolean 									isUploadRoot = false;
     
+    protected boolean                                   plugHoles = true;    //if false then blank one-to-many records are allowed. 
+    											                             //Eg. Prep2 fields are allowed to contain data when all prep1 fields are blank.
+    
     /**
      * @author timbo
      *
@@ -349,6 +353,7 @@ public class UploadTable implements Comparable<UploadTable>
         relatedClassDefaults = null;
         dateConverter = new DateConverter();
         matchSetting = new UploadMatchSetting();
+        plugHoles = !AppPreferences.getLocalPrefs().getBoolean("WB_UnPlugManyHoles", false);
     }
 
     /**
@@ -3811,7 +3816,7 @@ public class UploadTable implements Comparable<UploadTable>
 				{
 					gotABlank = true;
 					blankSeqs.add(seq);
-				} else if (!isBlank && gotABlank)
+				} else if (!isBlank && gotABlank && plugHoles)
 				{
 					for (Integer blank : blankSeqs)
 					{
