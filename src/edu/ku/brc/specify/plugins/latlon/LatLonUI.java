@@ -731,7 +731,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             }
             choosenFormat = defaultFormat;
             
-            srcFormat         = choosenFormat;//convertIntToFORMAT(locality.getSrcLatLongUnit());
+            srcFormat         = convertIntToFORMAT(locality.getSrcLatLongUnit());
             srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getLat1text(),  defaultFormat, LATLON.Latitude);
             srcLatLon1.second = ensureFormattedString(locality.getLongitude1(), locality.getLong1text(), defaultFormat, LATLON.Longitude);
             
@@ -809,7 +809,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             locality.setLat2text(locality.getLat2() != null ? prevPanel2.getSrcLatitudeStr() : null);
             locality.setLong2text(locality.getLong2() != null ? prevPanel2.getSrcLongitudeStr() : null);
             
-            log.debug("srcFormat "+srcFormat);
+            //log.debug("srcFormat "+srcFormat);
             locality.setSrcLatLongUnit((byte)srcFormat.ordinal());
         }
         return locality;

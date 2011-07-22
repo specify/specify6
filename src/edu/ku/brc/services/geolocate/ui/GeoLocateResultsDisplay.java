@@ -302,6 +302,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                                             String country, 
                                             GeorefResultSet georefResults)
     {
+        userDefGeoRef = null;
+        lastClickPos  = null;
         localityStringField.setText(localityString);
         localityStringField.setCaretPosition(0);
         countyField.setText(county);
