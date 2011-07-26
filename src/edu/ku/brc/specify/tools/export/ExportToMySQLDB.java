@@ -184,6 +184,7 @@ public class ExportToMySQLDB
 				sql.append(getFieldDef(col));
 			}
 			sql.append(")");
+			sql.append(" CHARSET=utf8");
 			stmt.execute(sql.toString());
 		} finally
 		{
