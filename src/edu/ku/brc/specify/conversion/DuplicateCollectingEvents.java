@@ -92,10 +92,10 @@ public class DuplicateCollectingEvents
     private String getQueryPostfix()
     {
         return " FROM (SELECT ce.CollectingEventID, COUNT(ce.CollectingEventID) AS cnt FROM collectingevent ce " +
-        "INNER JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID " +
-        "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
-        "WHERE co.CollectionObjectTypeID > 8 AND co.CollectionObjectTypeID < 20 AND cc.SubNumber >= 0 " +
-        "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1 ";
+                "INNER JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID " +
+                "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
+                "WHERE co.CollectionObjectTypeID > 8 AND co.CollectionObjectTypeID < 20 AND cc.SubNumber >= 0 " +
+                "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1 ";
     }
 
     /**
@@ -259,6 +259,9 @@ public class DuplicateCollectingEvents
         int divId  = BasicSQLUtils.getCountAsInt("SELECT DivisionID FROM discipline WHERE DisciplineID = " + dispId);
 
         Statement stmt2 = null;
+        ResultSet coRS  = null;
+        ResultSet rs    = null;
+        ResultSet ceaRS = null;
         try
         {
             stmt2 = newDBConn.createStatement();
@@ -266,7 +269,7 @@ public class DuplicateCollectingEvents
             int cnt = 0;
             
             //log.debug(selectCEStr);
-            ResultSet         rs   = stmtCE.executeQuery(selectCEStr);
+            rs  = stmtCE.executeQuery(selectCEStr);
             ResultSetMetaData rsmd = rs.getMetaData();
             
             int dispInx = getColumnIndex(rsmd, "DisciplineID");
@@ -278,9 +281,9 @@ public class DuplicateCollectingEvents
             {
                 Integer ceaId = rs.getObject(ceaInx) != null ? rs.getInt(ceaInx) : null; // get the CollectingEventAttribute
                 
-                String    sql  = "SELECT CollectionObjectID FROM collectionobject WHERE CollectingEventID = " + ceID;
+                String sql = "SELECT CollectionObjectID FROM collectionobject WHERE CollectingEventID = " + ceID;
                 //log.debug(sql);
-                ResultSet coRS = stmt2.executeQuery(sql);
+                coRS = stmt2.executeQuery(sql);
                 if (coRS.next()) // skip the first one, that one is already hooked up.
                 {
                     while (coRS.next())
@@ -310,8 +313,8 @@ public class DuplicateCollectingEvents
                         // Now duplicate CollectingEventAttribute
                         if (ceaId != null)
                         {
-                            ResultSet ceaRS      = stmtCEA.executeQuery(String.format(selectCEAStr, ceaId));
-                            int       dispCEAInx = getColumnIndex(ceaRS.getMetaData(), "DisciplineID");
+                            ceaRS = stmtCEA.executeQuery(String.format(selectCEAStr, ceaId));
+                            int dispCEAInx = getColumnIndex(ceaRS.getMetaData(), "DisciplineID");
                             if (ceaRS.next())
                             {
                                 for (int i=1;i<=ceaRS.getMetaData().getColumnCount();i++)
@@ -337,6 +340,7 @@ public class DuplicateCollectingEvents
                                 }
                             }
                             ceaRS.close();
+                            ceaRS = null;
                         }
                         
                         if (doCollectors)
@@ -366,8 +370,10 @@ public class DuplicateCollectingEvents
                     } 
                 }
                 coRS.close();
+                coRS = null;
             }
             rs.close();
+            rs = null;
             
             return cnt;
             
@@ -380,7 +386,10 @@ public class DuplicateCollectingEvents
         {
             try
             {
+                if (coRS != null) coRS.close();
+                if (rs != null) rs.close();
                 if (stmt2 != null) stmt2.close();
+                
             } catch (SQLException ex){}
         }
         return 0;
@@ -1047,15 +1056,15 @@ public class DuplicateCollectingEvents
             IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
         }
         
-        Vector<Integer> collectionsIds = BasicSQLUtils.queryForInts("SELECT CollectionID FROM collection WHERE IsEmbeddedCollectingEvent <> 0");
-        if (collectionsIds == null || collectionsIds.size() == 0)
+        int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collection WHERE IsEmbeddedCollectingEvent <> 0");
+        if (count == 0)
         {
             return;
         }
         
         if (progressFrame != null) progressFrame.setDesc("Fixing Collecting Events...");
         
-        int count = duplicateCollectingEvents();
+        count = duplicateCollectingEvents();
         
         addCEsForCOWithNone();
         

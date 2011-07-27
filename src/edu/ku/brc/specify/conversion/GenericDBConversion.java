@@ -115,8 +115,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -3972,6 +3972,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         try
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
+
             String sqlStr = "select distinct Type from permit where Type is not null";
 
             log.info(sqlStr);
@@ -4096,6 +4098,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         try
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             String sqlStr = "select * from " + usysTableName + " where InterfaceID is not null";
 
             log.info(sqlStr);
@@ -4638,6 +4641,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         try
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
 
             // grab the field and their type from the old schema
             List<FieldMetaData> oldFieldMetaData = new ArrayList<FieldMetaData>();
@@ -4923,6 +4927,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         try
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             StringBuilder str = new StringBuilder();
 
             List<String> oldFieldNames = getFieldNamesFromSchema(oldDBConn, "loan");
@@ -4940,7 +4945,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             if (doingGifts && loanIdMapper == null)
             {
-                StringBuilder mapSQL = new StringBuilder("SELECT LoanID FROM  loan WHERE loan.Category = ");
+                StringBuilder mapSQL = new StringBuilder("SELECT LoanID FROM loan WHERE loan.Category = ");
                 mapSQL.append(doingGifts ? "1" : "0");
                 mapSQL.append(" ORDER BY loan.LoanID");
                 log.info(mapSQL.toString());
@@ -5460,6 +5465,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         try
         {
             Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             StringBuilder str  = new StringBuilder();
 
             List<String> oldFieldNames = new ArrayList<String>();
@@ -5519,6 +5525,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
 
             Statement prepStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            prepStmt.setFetchSize(Integer.MIN_VALUE);
 
             IdTableMapper prepIdMapper = idMapperMgr.addTableMapper("CollectionObject", "CollectionObjectID", doDeleteAllMappings);
             
@@ -5535,7 +5542,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String    insertStmtStr        = null;
             boolean   shouldCheckPrepAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM preparation WHERE PreparedByID IS NOT NULL OR PreparedDate IS NOT NULL") > 0;
             Statement prepTypeStmt         = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            
+            prepTypeStmt.setFetchSize(Integer.MIN_VALUE);
+
             Pair<String, String> datePair = new Pair<String, String>();
             
             prepIdMapper.setShowLogErrors(false);
@@ -5688,7 +5696,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         } else
                         {
                             str.append("NULL");
-                            log.error("No Map for PreparedByID[" + preparedById + "]");
+                            //log.error("No Map for PreparedByID[" + preparedById + "]");
                         }
 
                     } else if (newFieldName.equals("PreparedDate"))
@@ -5931,7 +5939,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 	                    {
 	                        log.debug(str.toString());
 	                    }
-	                    log.debug(str.toString());
+	                    //log.debug(str.toString());
 	                    updateStatement.executeUpdate(str.toString());
 	
 	                } catch (Exception e)
@@ -6071,7 +6079,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         try
         {
-            Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            
             List<String>  oldFieldNames = new ArrayList<String>();
 
             StringBuilder sql = new StringBuilder("SELECT ");
@@ -6612,6 +6622,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         try
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             StringBuilder str = new StringBuilder();
             
             List<String> oldFieldNames = new ArrayList<String>();
@@ -6655,7 +6666,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             String tableName = "collectionobject";
 
-            Statement newStmt   = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement newStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            newStmt.setFetchSize(Integer.MIN_VALUE);
             ResultSet rsLooping = newStmt.executeQuery("SELECT OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
 
             if (hasFrame)
@@ -6686,6 +6698,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Pair<String, String> datePair = new Pair<String, String>();
             
             Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt2.setFetchSize(Integer.MIN_VALUE);
 
             int catNumInx       = oldNameIndex.get("CatalogNumber");
             int catDateInx      = oldNameIndex.get("CatalogedDate");
@@ -7186,7 +7199,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             Map<String, String> colNewToOldMap = createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID", });
 
-            Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             StringBuilder str  = new StringBuilder();
 
             List<String> oldFieldNames = new ArrayList<String>();
@@ -7508,7 +7522,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             Map<String, String> colNewToOldMap = createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID"});
 
-            Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             StringBuilder str  = new StringBuilder();
 
             List<String> oldFieldNames = new ArrayList<String>();
@@ -8018,6 +8033,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Hashtable<String, Boolean> usedFieldHash = new Hashtable<String, Boolean>();
 
             Statement stmt      = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             Integer   countRows = getCount("select count(LocalityID) from locality,geography where locality.GeographyID = geography.GeographyID");
             if (countRows != null)
             {
@@ -8328,6 +8344,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             IdMapperIFace locMapper = idMapperMgr.get("locality_LocalityID");
             pStmt = newDBConn.prepareStatement("UPDATE locality SET LocalityName=?, NamedPlace=?, RelationToNamedPlace=?, Remarks=? WHERE LocalityID=?");
             stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            
             ResultSet rs = stmt.executeQuery(sql);
             int cnt = 0;
             while (rs.next())
@@ -8375,8 +8393,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             try
             {
-                stmt.close();
-                pStmt.close();
+                if (stmt != null) stmt.close();
+                if (pStmt != null) pStmt.close();
                 
             } catch (SQLException ex)
             {
@@ -8413,18 +8431,30 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
     }
     
+    
+    //-------------------------------------------------------------------------------------------------
+    //
+    //-------------------------------------------------------------------------------------------------
+    private static final HashMap<Integer, Agent> agentHash = new HashMap<Integer, Agent>();
     /**
-     * @param session
+     * @param sessionArg
      * @param agtId
      * @return
      */
-    private Agent getAgentObj(final Session session, final Integer agtId)
+    private Agent getAgentObj(final Session sessionArg, final Integer agtId)
     {
         if (agtId != null)
         {
-            List<?> list = session.createQuery("FROM Agent WHERE id = "+agtId).list();
+            Agent agent = agentHash.get(agtId);
+            if (agent != null)
+            {
+                return agent;
+            }
+            
+            List<?> list = sessionArg.createQuery("FROM Agent WHERE id = "+agtId).list();
             if (list != null && list.size() == 1)
             {
+                agentHash.put(agtId, (Agent)list.get(0));
                 return (Agent)list.get(0);
             }
         }
@@ -8432,31 +8462,31 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
 
     /**
-     * @param session
+     * @param sessionArg
      * @param agtId
      * @return
      */
-    private Agent getCreatedByAgent(final Session session, final Integer agtId)
+    private Agent getCreatedByAgent(final Session sessionArg, final Integer agtId)
     {
-        Agent agent = getAgentObj(session, agtId);
+        Agent agent = getAgentObj(sessionArg, agtId);
         if (agent == null)
         {
-            agent = getAgentObj(session, getCurAgentCreatorID());
+            agent = getAgentObj(sessionArg, getCurAgentCreatorID());
         }
         return null;
     }
     
     /**
-     * @param session
+     * @param sessionArg
      * @param agtId
      * @return
      */
-    private Agent getModifiedByAgent(final Session session, final Integer agtId)
+    private Agent getModifiedByAgent(final Session sessionArg, final Integer agtId)
     {
-        Agent agent = getAgentObj(session, agtId);
+        Agent agent = getAgentObj(sessionArg, agtId);
         if (agent == null)
         {
-            agent = getAgentObj(session, getCurAgentModifierID());
+            agent = getAgentObj(sessionArg, getCurAgentModifierID());
         }
         return null;
     }
@@ -8520,8 +8550,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         HibernateUtil.beginTransaction();
 
         // get all of the old records
-        String    sql           = "SELECT GeographyID,ContinentOrOcean,Country,State,County,LastEditedBy FROM geography";
-        Statement statement     = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        String    sql       = "SELECT GeographyID,ContinentOrOcean,Country,State,County,LastEditedBy FROM geography";
+        Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        statement.setFetchSize(Integer.MIN_VALUE);
+        
         ResultSet oldGeoRecords = statement.executeQuery(sql);
         
         fixGeography("ContinentOrOcean");
@@ -9066,6 +9098,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sql  = String.format("SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s ORDER BY s.StratigraphyID", srcTableName);
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs   = stmt.executeQuery(sql);
             
             int stratsWithNoGTP       = 0;
@@ -9180,7 +9213,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             // Create a PaleoContext for each ColObj
             stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            
+            stmt.setFetchSize(Integer.MIN_VALUE);
+
             int processCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject WHERE CollectingEventID IS NOT NULL");
             if (frame != null) 
             {
@@ -9679,6 +9713,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // get all of the old records
         String sql = "SELECT RankCode, RankName from geologictimeperiod";
         Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        statement.setFetchSize(Integer.MIN_VALUE);
+
         ResultSet oldGtpRecords = statement.executeQuery(sql);
 
         Session localSession = HibernateUtil.getCurrentSession();
@@ -9791,6 +9827,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         String    sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
         Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        statement.setFetchSize(Integer.MIN_VALUE);
         ResultSet rs        = statement.executeQuery(sql);
 
         Session localSession = HibernateUtil.getCurrentSession();
@@ -10004,7 +10041,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             ex.printStackTrace();
         } finally
         {
-            lclSession.close();
+            if (lclSession != null) lclSession.close();
         }
     }
 

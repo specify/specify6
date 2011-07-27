@@ -24,6 +24,8 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 
 import java.awt.Dimension;
@@ -693,6 +695,13 @@ public class SpecifyDBConverter extends AppBase
         
         if (!isOldDBOK(oldDBConn))
         {
+            return;
+        }
+        
+        boolean doUserAgents = false;
+        if (doUserAgents)
+        {
+            fixupUserAgents(newDBConn);
             return;
         }
         
@@ -1700,15 +1709,22 @@ public class SpecifyDBConverter extends AppBase
                 
                 fixHibernateHiLo(newDBConn);
                 
-                frame.setDesc("Discipline Duplicator...");
-                DisciplineDuplicator d = new DisciplineDuplicator(conversion.getOldDBConn(), conversion.getNewDBConn(), tblWriter, frame, conversion);
-                d.doShowFieldsForDiscipline();
-                frame.setDesc("Duplicating Collecting Events...");
-                d.duplicateCollectingEvents();
-                frame.setDesc("Duplicating Localities...");
-                d.duplicateLocalities();
-                frame.setDesc("Duplicating Geography...");
-                d.duplicateGeography();
+                try
+                {
+                    frame.setDesc("Discipline Duplicator...");
+                    DisciplineDuplicator d = new DisciplineDuplicator(conversion.getOldDBConn(), conversion.getNewDBConn(), tblWriter, frame, conversion);
+                    d.doShowFieldsForDiscipline();
+                    frame.setDesc("Duplicating Collecting Events...");
+                    d.duplicateCollectingEvents();
+                    frame.setDesc("Duplicating Localities...");
+                    d.duplicateLocalities();
+                    frame.setDesc("Duplicating Geography...");
+                    d.duplicateGeography();
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
                 
                 frame.setDesc("Running Table Checker to report on fields with data.");
                 TableWriter      tDSTblWriter   = convLogger.getWriter("TableDataSummary.html", "Table Data Summary", true);
@@ -1852,6 +1868,7 @@ public class SpecifyDBConverter extends AppBase
             int totalCnt = BasicSQLUtils.getNumRecords(oldDBConn, "collectingevent");
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             ResultSet rs   = stmt.executeQuery(sql);
             if (frame != null)
             {
@@ -1995,6 +2012,7 @@ public class SpecifyDBConverter extends AppBase
             int totalCnt = BasicSQLUtils.getNumRecords(oldDBConn, "locality");
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             ResultSet rs   = stmt.executeQuery(sql);
             if (frame != null)
             {
@@ -2319,7 +2337,61 @@ public class SpecifyDBConverter extends AppBase
         System.out.println(String.format("Total: %d  Fixed: %d  Skipped: %d  NotFnd: %d", totalCnt, fixCnt, skippedCnt, notFndCnt));
     }
     
-
+    
+    /**
+     * 
+     */
+    public void fixupUserAgents(final Connection newDBConn)
+    {
+        List<String> agentFieldNames = getFieldNamesFromSchema(newDBConn, "agent");
+        String       fieldNameStr    = buildSelectFieldList(agentFieldNames, null);
+        
+        fieldNameStr = StringUtils.replace(fieldNameStr, "AgentID, ", "");
+        
+        String dupSQL = String.format("INSERT INTO agent (%s) SELECT (%s) WHERE AgentID = ", fieldNameStr, fieldNameStr);
+        
+        String sql = "SELECT DivisionID FROM division";
+        Vector<Integer>  divs    = BasicSQLUtils.queryForInts(newDBConn, sql);
+        
+        sql = "SELECT AgentID, SpecifyUserID, DivisionID FROM agent WHERE SpecifyUserID IS NOT NULL";
+        Vector<Object[]> existingUserAgent = BasicSQLUtils.query(newDBConn, sql);
+        if (existingUserAgent.size() == 1)
+        {
+            Object[] existingRow = existingUserAgent.get(0);
+            Integer refAgentId  = (Integer)existingRow[0];
+            Integer refSpUserId = (Integer)existingRow[1];
+            Integer refDivId    = (Integer)existingRow[2];
+            
+            for (Integer divId : divs)
+            {
+                if (divId.equals(refDivId))
+                {
+                    sql = String.format("SELECT AgentID FROM agent WHERE SpecifyUserID = %d AND DivisionID = %d", refSpUserId, divId);
+                    Vector<Integer> agents = BasicSQLUtils.queryForInts(newDBConn, sql);
+                    if (agents == null || agents.size() == 0)
+                    {
+                        String updateSQL = dupSQL + refAgentId;
+                        System.out.println(updateSQL);
+                        
+                        int rv = BasicSQLUtils.update(newDBConn, dupSQL);
+                        System.out.println("rv: "+rv);
+                        
+                        int newId = BasicSQLUtils.getHighestId(newDBConn, "AgentID", "agent");
+                        
+                        updateSQL = String.format("UPDATE agent SET DivisionID = %d WHERE AgentID = %d", divId, newId);
+                        System.out.println(updateSQL);
+                        
+                        rv = BasicSQLUtils.update(newDBConn, updateSQL);
+                        System.out.println("rv: "+rv);
+                    }
+                }
+            }
+            
+        } else
+        {
+            UIRegistry.displayErrorDlg("There is more than one SpecifyUser / Division and shouldn't be!");
+        }
+    }
     
     /**
      * 

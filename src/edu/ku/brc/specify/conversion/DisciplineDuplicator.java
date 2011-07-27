@@ -202,6 +202,11 @@ public class DisciplineDuplicator
             stmt3 = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             uStmt = newDBConn.createStatement();
             
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt2.setFetchSize(Integer.MIN_VALUE);
+            stmt3.setFetchSize(Integer.MIN_VALUE);
+            uStmt.setFetchSize(Integer.MIN_VALUE);
+            
             String sql;
             
             String ceFldNames  = getFieldNameList(newDBConn, "collectingevent");
@@ -397,6 +402,11 @@ public class DisciplineDuplicator
             stmt3 = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             uStmt = newDBConn.createStatement();
             
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt2.setFetchSize(Integer.MIN_VALUE);
+            stmt3.setFetchSize(Integer.MIN_VALUE);
+            uStmt.setFetchSize(Integer.MIN_VALUE);
+
             String sql;
             int cnt = 0;
             
@@ -574,6 +584,7 @@ public class DisciplineDuplicator
      */
     public void duplicateGeography()
     {
+        
         String sql = " SELECT collectionobjectcatalog.CollectionObjectTypeID, Count(collectionobjectcatalog.CollectionObjectTypeID), collectionobjecttype.CollectionObjectTypeName FROM collectionobjectcatalog " +
                         "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
                         "Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
@@ -594,6 +605,8 @@ public class DisciplineDuplicator
         {
             try
             {
+                newDBConn.setAutoCommit(false);
+                
                 Integer mainGeoDiscipline = null;
                 
                 sql = "SELECT DISTINCT d.UserGroupScopeId FROM discipline d Inner Join geographytreedef gtd ON d.GeographyTreeDefID = gtd.GeographyTreeDefID Inner Join geography g ON gtd.GeographyTreeDefID = g.GeographyTreeDefID";
@@ -620,6 +633,9 @@ public class DisciplineDuplicator
                 
                 geoIdMapper.clearRecords();
                 
+                PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE locality SET GeographyID=? WHERE LocalityID=?");
+                Statement         stmt  = newDBConn.createStatement();
+                
                 int fixCnt = 0;
                 for (Object[] row : BasicSQLUtils.query("SELECT DisciplineID, Name FROM discipline ORDER BY DisciplineID"))
                 {
@@ -637,9 +653,7 @@ public class DisciplineDuplicator
                     // This refills the geoMapper
                     conversion.convertGeography(geoTreeDef, dspName, false);
                     
-                    PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE locality SET GeographyID=? WHERE LocalityID=?");
-                    Statement         stmt  = newDBConn.createStatement();
-                    ResultSet         rs    = stmt.executeQuery("SELECT LocalityID, GeographyID FROM locality WHERE DisciplineID = " + dspId);
+                    ResultSet rs = stmt.executeQuery("SELECT LocalityID, GeographyID FROM locality WHERE DisciplineID = " + dspId);
                     while (rs.next())
                     {
                         int locId = rs.getInt(1);
@@ -666,7 +680,12 @@ public class DisciplineDuplicator
                     }
                     
                     rs.close();
+                    
+                    newDBConn.commit();
                 }
+                
+                pStmt.close();
+                stmt.close();
                 
                 tblWriter.log(String.format("There were %d Locality records changed.", fixCnt));
                 tblWriter.log("<BR>");
@@ -705,7 +724,18 @@ public class DisciplineDuplicator
 
             } catch (SQLException ex)
             {
+                try
+                {
+                    newDBConn.rollback();
+                } catch (SQLException e) {}
+                
                 ex.printStackTrace();
+            } finally
+            {
+                try
+                {
+                    newDBConn.setAutoCommit(true);
+                } catch (SQLException ex) {}
             }
         }
     }
