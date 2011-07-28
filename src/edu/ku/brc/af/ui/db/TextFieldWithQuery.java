@@ -956,9 +956,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         } else
         {
             Dimension dim  = getSize();
-            Font      font = getFont();
             if (fontMetrics == null)
             {
+                Font font = getFont();
                 BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
                 fontMetrics = bi.getGraphics().getFontMetrics(font);
             }
