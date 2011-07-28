@@ -4033,7 +4033,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         result.add(bldQueryFieldPanel(container, null, null, container.getColumnDefStr(), saveBtn));
         for (SpQueryField fld : orderedFlds)
         {
-            System.err.println(fld.getFieldName()+" - "+fld.getStringId());
+            //System.out.println(fld.getFieldName()+" - "+fld.getStringId());
         	FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
         			                        fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
             if (fieldQRI != null)
@@ -4047,7 +4047,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             else
             {
-                String tableName = tblTree.getTableInfo() == null ? fld.getQuery().getContextName() : tblTree.getTableInfo().getTitle();
+                String tableName = null;
+                if (tblTree.getTableInfo() == null && fld.getContextTableIdent() != null)
+                {
+                	tableName = DBTableIdMgr.getInstance().getTitleForId(fld.getContextTableIdent());
+                } 
+                else
+                {
+                	tableName = tblTree.getTableInfo() == null ? fld.getQuery().getContextName() : tblTree.getTableInfo().getTitle();
+                }
                 log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList() + "]");
                 fields.remove(fld);
                 fld.setQuery(null);

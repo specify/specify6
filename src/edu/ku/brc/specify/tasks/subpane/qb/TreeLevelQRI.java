@@ -46,6 +46,7 @@ public class TreeLevelQRI extends FieldQRI
     protected final int rankId;
     protected final int treeDefId;
     protected final String realFldName;
+    protected final String rankName;
 
     protected String    tableAlias = null;
     
@@ -71,6 +72,7 @@ public class TreeLevelQRI extends FieldQRI
         	if (treeDefItem != null)
         	{
         		title = treeDefItem.getDisplayText();
+        		rankName = treeDefItem.getName();
         		if (!"name".equals(realFldName))
         		{
         			title += " " + realFldName.substring(0, 1).toUpperCase() + realFldName.substring(1);
@@ -112,7 +114,20 @@ public class TreeLevelQRI extends FieldQRI
     	return realFldName;
     }
     
-    /* (non-Javadoc)
+    
+    @Override
+	protected String getFieldNameForStringId() 
+    {
+		String result = rankName;
+		if (!"name".equals(realFldName))
+		{
+			result += " " + realFldName.substring(0, 1).toUpperCase() + realFldName.substring(1);
+		}
+
+		return result;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getTableInfo()
      */
     @Override

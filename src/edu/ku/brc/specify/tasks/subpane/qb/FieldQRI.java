@@ -186,10 +186,18 @@ public class FieldQRI extends BaseQRI
     }
     
     /**
+     * @return name for use in getStringId()
+     */
+    protected String getFieldNameForStringId()
+    {
+    	return getFieldName();
+    }
+    
+    /**
      * @return a string identifier unique to this field within the query that is independent of the field's title.
      */
     public String getStringId()
     {
-        return getTableTree().getPathFromRootAsString() + "." + getTableInfo().getName() + "." + getFieldName();
+        return getTableTree().getPathFromRootAsString() + "." + getTableInfo().getName() + "." + getFieldNameForStringId();
     }
 }
