@@ -27,6 +27,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -44,6 +46,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -157,6 +160,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected String                           prevEnteredText     = null;
     protected String                           cachedPrevText      = null;
     protected String                           searchedForText     = null;
+    protected FontMetrics                      fontMetrics         = null;
     
     protected ExternalQueryProviderIFace      externalQueryProvider = null;
     
@@ -951,6 +955,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
         } else
         {
+            Dimension dim  = getSize();
+            Font      font = getFont();
+            if (fontMetrics == null)
+            {
+                BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+                fontMetrics = bi.getGraphics().getFontMetrics(font);
+            }
+            
             boolean isFirst = true;
             duplicatehash.clear();
             for (Object obj : dataObjList)
@@ -997,19 +1009,26 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                                 } else if (val instanceof Date)
                                 {
                                     val = scrDateFormat.format((Date)val);
-                                    
-                                } else if (val instanceof String)
-                                {
-                                    String str = val.toString();
-                                    if (str.length() > 25)
-                                    {
-                                        val = str.substring(0, 25) + "...";
-                                    }
                                 }
                                 values[i] = val != null ? val : ""; //$NON-NLS-1$
                             }
                             
                             String valStr = (String)UIHelper.getFormattedValue(format, values);
+                            
+                            if (fontMetrics.stringWidth(valStr) > dim.width)
+                            {
+                                int len = valStr.length() - 5;
+                                while (len > 25)
+                                {
+                                    valStr = valStr.substring(0, len);
+                                    if (fontMetrics.stringWidth(valStr) < dim.width)
+                                    {
+                                        valStr = valStr + "...";
+                                        break;
+                                    }
+                                    len -= 5;
+                                }
+                            }
                             
                             // Minor hack for Bug 5824 for names with no first name
                             // In the future we may want to do a strip of spaces form the end first
