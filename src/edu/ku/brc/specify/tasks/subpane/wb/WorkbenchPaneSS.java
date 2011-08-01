@@ -50,6 +50,7 @@ import java.io.File;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -537,8 +538,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             });
         }
         
-        // NOTE: This needs to be done after the creation of the saveBtn
-        initColumnSizes(spreadSheet, saveBtn);
         
         Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
@@ -1095,6 +1094,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
         	buildValidator();
         }
+        
+        int c = 0;
+        Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
+        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(headers);
+        for (WorkbenchTemplateMappingItem mi : headers)
+        {
+        	//using the workbench data model table. Not the actual specify table the column is mapped to.
+        	//This MIGHT be less confusing
+        	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
+        	spreadSheet.getColumnModel().getColumn(c++).setHeaderRenderer(new WbTableHeaderRenderer(mi.getTableName()));
+        }
+        
+        // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
+        initColumnSizes(spreadSheet, saveBtn);
     }
     
     /**
@@ -3110,7 +3124,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         int         headerWidth = 0;
         int         cellWidth   = 0;
         
-        TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
         
         Element uploadDefs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
         
@@ -3125,6 +3138,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         columnMaxWidths = new Integer[tableArg.getColumnCount()];
         for (int i = 0; i < tableArg.getColumnCount(); i++) 
         {
+            TableCellRenderer headerRenderer = tableArg.getColumnModel().getColumn(i).getHeaderRenderer();
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
             
             // Now go retrieve the data length
@@ -5392,6 +5406,63 @@ public class WorkbenchPaneSS extends BaseSubPane
 		
 		
     }
+    
+    /**
+     * @author timo
+     * 
+     * Column header renderer that adds icon for the specify table that contains the field the column is mapped to.
+     *
+     */
+    public class WbTableHeaderRenderer extends DefaultTableCellRenderer implements TableCellRenderer {
+        
+    	private final ImageIcon icon;
+    	
+    	/**
+    	 * @param tableName the name of the table containing column's data field
+    	 */
+    	public WbTableHeaderRenderer(final String tableName)
+    	{
+            super();
+            if (tableName != null)
+            {
+            	icon = IconManager.getIcon(tableName, IconManager.IconSize.Std16);
+            } else
+            {
+            	icon = null;
+            }
+            	
+    	}
+    	
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
+         */
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
+            // 'value' is column header value of column 'vColIndex'
+            // rowIndex is always -1
+            // isSelected is always false
+            // hasFocus is always false
+
+            setIcon(icon != null ? icon : IconManager.getIcon("Blank",
+                    IconManager.IconSize.Std16));
+
+            // Configure the component with the specified value
+            setText(value.toString());
+
+            // Set tool tip if desired
+            //setToolTipText((String)value);
+
+            // Since the renderer is a component, return itself
+            return this;
+        }
+
+        // The following methods override the defaults for performance reasons
+        public void validate() {}
+        public void revalidate() {}
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
+    }
+
     
     //------------------------------------------------------------
     // TableCellRenderer for showing the proper Icon when there 
