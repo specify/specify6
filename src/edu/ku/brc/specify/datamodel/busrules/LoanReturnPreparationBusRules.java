@@ -36,6 +36,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -172,14 +173,11 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                 JButton newBtn = formViewObj.getRsController().getNewRecBtn();
                 newBtn.setEnabled(qtyToBeReturned > 0);
                 
-                if (loanRetPrep != null)
-                {
-                    ValSpinner quantityReturned = (ValSpinner)comp;
-                    quantityReturned.setRange(0, qtyRetLPR+qtyToBeReturned, qtyRetLPR);
-                    
-                    ValSpinner quantityResolved = (ValSpinner)formViewObj.getControlByName("quantityResolved");
-                    quantityResolved.setRange(0, qtyResLPR+qtyToBeResolved, qtyResLPR);
-                }
+                ValSpinner quantityReturned = (ValSpinner)comp;
+                quantityReturned.setRange(0, qtyRetLPR+qtyToBeReturned, qtyRetLPR);
+                
+                ValSpinner quantityResolved = (ValSpinner)formViewObj.getControlByName("quantityResolved");
+                quantityResolved.setRange(0, qtyResLPR+qtyToBeResolved, qtyResLPR);
             }
         }
         
@@ -191,124 +189,130 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
      */
     protected void updateLoanPrepQuantities(final LoanReturnPreparation loanRetPrepArg, final ChangeEvent e)
     {
-        if (formViewObj != null && formViewObj.getValidator().hasChanged())
+        if (formViewObj != null && formViewObj.getValidator() != null)
         {
-            loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
-            loanFVO     = loanPrepFVO.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
-
-            Component comp = formViewObj.getControlByName("quantityResolved");
-            if (comp instanceof ValSpinner)
+            if (formViewObj.getValidator().hasChanged())
             {
-                LoanReturnPreparation loanRetPrep = loanRetPrepArg != null ? loanRetPrepArg : (LoanReturnPreparation)formViewObj.getDataObj();
-                LoanPreparation       loanPrep    = (LoanPreparation)loanPrepFVO.getDataObj();
-                Loan                  loan        = (Loan)loanFVO.getDataObj();
-                
-                if (loanRetPrep != null)
+                loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                loanFVO     = loanPrepFVO.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+    
+                Component comp = formViewObj.getControlByName("quantityResolved");
+                if (comp instanceof ValSpinner)
                 {
-                    final ValSpinner lrpResolvedVS  = (ValSpinner)comp;
-                    int              lrpResolvedQty = (Integer)lrpResolvedVS.getValue();
+                    LoanReturnPreparation loanRetPrep = loanRetPrepArg != null ? loanRetPrepArg : (LoanReturnPreparation)formViewObj.getDataObj();
+                    LoanPreparation       loanPrep    = (LoanPreparation)loanPrepFVO.getDataObj();
+                    Loan                  loan        = (Loan)loanFVO.getDataObj();
                     
-                    final ValSpinner lrpReturnedVS  = (ValSpinner)formViewObj.getControlByName("quantityReturned");
-                    int              lrpReturnedQty = (Integer)lrpReturnedVS.getValue();
-                    
-                    if (e != null)
+                    if (loanRetPrep != null)
                     {
-                        if (e.getSource() == lrpResolvedVS)
+                        final ValSpinner lrpResolvedVS  = (ValSpinner)comp;
+                        int              lrpResolvedQty = (Integer)lrpResolvedVS.getValue();
+                        
+                        final ValSpinner lrpReturnedVS  = (ValSpinner)formViewObj.getControlByName("quantityReturned");
+                        int              lrpReturnedQty = (Integer)lrpReturnedVS.getValue();
+                        
+                        if (e != null)
                         {
-                            if (lrpResolvedQty < lrpReturnedQty)
+                            if (e.getSource() == lrpResolvedVS)
                             {
-                                lrpReturnedQty = lrpResolvedQty;
-                                final int qty = lrpReturnedQty;
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    @Override
-                                    public void run()
-                                    {
-                                        lrpReturnedVS.setValue(qty);
-                                    }
-                                });
-                            }
-                        } else if (e.getSource() == lrpReturnedVS)
-                        {
-                            if (lrpReturnedQty > lrpResolvedQty)
+                                if (lrpResolvedQty < lrpReturnedQty)
+                                {
+                                    lrpReturnedQty = lrpResolvedQty;
+                                    final int qty = lrpReturnedQty;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run()
+                                        {
+                                            lrpReturnedVS.setValue(qty);
+                                        }
+                                    });
+                                }
+                            } else if (e.getSource() == lrpReturnedVS)
                             {
-                                lrpResolvedQty = lrpReturnedQty;
-                                final int qty = lrpReturnedQty;
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    @Override
-                                    public void run()
-                                    {
-                                        lrpResolvedVS.setValue(qty);
-                                    }
-                                });
+                                if (lrpReturnedQty > lrpResolvedQty)
+                                {
+                                    lrpResolvedQty = lrpReturnedQty;
+                                    final int qty = lrpReturnedQty;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run()
+                                        {
+                                            lrpResolvedVS.setValue(qty);
+                                        }
+                                    });
+                                }
                             }
                         }
+                        loanRetPrep.setQuantityResolved(lrpResolvedQty);
+                        loanRetPrep.setQuantityReturned(lrpReturnedQty);
                     }
-                    loanRetPrep.setQuantityResolved(lrpResolvedQty);
-                    loanRetPrep.setQuantityReturned(lrpReturnedQty);
-                }
-                
-                int qtyRes = 0;
-                int qtyRet = 0;
-                
-                int i = 0;
-                if (loanRetPrep != null)
-                {
-                    LoanPreparation lrpLoanPrep = loanRetPrep.getLoanPreparation();
-                    if (lrpLoanPrep != null && lrpLoanPrep.getLoanReturnPreparations().size() > 0)
-                    {
-                            for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations())
-                            {
-                                qtyRes += getInt(lrp.getQuantityResolved()); 
-                                qtyRet += getInt(lrp.getQuantityReturned());
-                                i++;
-                            }
-                    }
-                }
-                
-                // We need to do a 'doClick' so the form thinks the user clicked it.
-                ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
-                if (qtyRes == loanPrep.getQuantity() != isResolved.isSelected())
-                {
-                    isResolved.doClick();
-                }
-        
-                comp = loanPrepFVO.getControlByName("quantityResolved");
-                if (comp instanceof JTextField)
-                {
-                    final JTextField qtyReturnedVS = (JTextField)loanPrepFVO.getControlByName("quantityReturned");
-                    final JTextField qtyResolvedVS = (JTextField)comp;
                     
-                    qtyReturnedVS.setText(Integer.toString(qtyRet));
-                    qtyResolvedVS.setText(Integer.toString(qtyRes));
-                                       
-                    loanPrep.setQuantityReturned(qtyRet);
-                    loanPrep.setQuantityResolved(qtyRes);
+                    int qtyRes = 0;
+                    int qtyRet = 0;
+                    
+                    int i = 0;
+                    if (loanRetPrep != null)
+                    {
+                        LoanPreparation lrpLoanPrep = loanRetPrep.getLoanPreparation();
+                        if (lrpLoanPrep != null && lrpLoanPrep.getLoanReturnPreparations().size() > 0)
+                        {
+                                for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations())
+                                {
+                                    qtyRes += getInt(lrp.getQuantityResolved()); 
+                                    qtyRet += getInt(lrp.getQuantityReturned());
+                                    i++;
+                                }
+                        }
+                    }
+                    
+                    // We need to do a 'doClick' so the form thinks the user clicked it.
+                    ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
+                    if (qtyRes == loanPrep.getQuantity() != isResolved.isSelected())
+                    {
+                        isResolved.doClick();
+                    }
+            
+                    comp = loanPrepFVO.getControlByName("quantityResolved");
+                    if (comp instanceof JTextField)
+                    {
+                        final JTextField qtyReturnedVS = (JTextField)loanPrepFVO.getControlByName("quantityReturned");
+                        final JTextField qtyResolvedVS = (JTextField)comp;
+                        
+                        qtyReturnedVS.setText(Integer.toString(qtyRet));
+                        qtyResolvedVS.setText(Integer.toString(qtyRes));
+                                           
+                        loanPrep.setQuantityReturned(qtyRet);
+                        loanPrep.setQuantityResolved(qtyRes);
+                    }
+                    
+                    int qQnt    = 0;
+                    int qQntRes = 0;
+                    for (LoanPreparation lp : loan.getLoanPreparations())
+                    {
+                        qQnt    += getInt(lp.getQuantity());
+                        qQntRes += getInt(lp.getQuantityResolved());
+                    }
+                    
+                    isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
+                    isResolved.setSelected(qQnt == qQntRes);
+                    
+                    qQnt   = 0;
+                    qtyRes = 0;
+                    
+                    for (LoanPreparation lp : loan.getLoanPreparations())
+                    {
+                        qQnt   += getInt(lp.getQuantity());
+                        qtyRes += getInt(lp.getQuantityResolved());
+                    }
+                    
+                    isResolved = (ValCheckBox)loanFVO.getControlByName("isClosed");
+                    isResolved.setSelected(qQnt == qQntRes);
+                    loan.setIsClosed(qQnt == qQntRes);
                 }
-                
-                int qQnt    = 0;
-                int qQntRes = 0;
-                for (LoanPreparation lp : loan.getLoanPreparations())
-                {
-                    qQnt    += getInt(lp.getQuantity());
-                    qQntRes += getInt(lp.getQuantityResolved());
-                }
-                
-                isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
-                isResolved.setSelected(qQnt == qQntRes);
-                
-                qQnt   = 0;
-                qtyRes = 0;
-                
-                for (LoanPreparation lp : loan.getLoanPreparations())
-                {
-                    qQnt   += getInt(lp.getQuantity());
-                    qtyRes += getInt(lp.getQuantityResolved());
-                }
-                
-                isResolved = (ValCheckBox)loanFVO.getControlByName("isClosed");
-                isResolved.setSelected(qQnt == qQntRes);
-                loan.setIsClosed(qQnt == qQntRes);
             }
+        } else
+        {
+            UIRegistry.showError("The formViewObj or or the formViewObj's validator was null and shouldn't been!");
         }
     }
     
