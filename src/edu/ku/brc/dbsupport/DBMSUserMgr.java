@@ -265,6 +265,13 @@ public abstract class DBMSUserMgr
     public abstract boolean canGrantPemissions(String hostMachineName, String username);
     
     /**
+     * Checks to see which permissions a user has.
+     * @param userName the user
+     * @return the mask of premissions
+     */
+    public abstract int getPermissionsForUser(String userName);
+    
+    /**
      * @param hostName the host name to connect to
      */
     public void setHostName(String hostName) 

@@ -411,15 +411,18 @@ public class DatabasePanel extends BaseSetupPanel
         {
             if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
             {
-                if (mgr.canGrantPemissions(hostName, dbUserName))
+                if (!mgr.canGrantPemissions(hostName, dbUserName))
                 {
-                    return true;
+                    UIRegistry.showLocalizedError("SEC_NO_GRANT", dbUserName, hostName);
+                    return false;
                 }
-                UIRegistry.showLocalizedError("SEC_NO_GRANT", dbUserName, hostName);
-            } else
-            {
-                UIRegistry.showLocalizedError("SEC_UNEX_ERR_LGN");
+                
+                int perms = mgr.getPermissionsForUser(dbUserName);
+                return perms == DBMSUserMgr.PERM_ALL;
             }
+            
+            UIRegistry.showLocalizedError("SEC_UNEX_ERR_LGN");
+            
         } finally
         {
             mgr.close();

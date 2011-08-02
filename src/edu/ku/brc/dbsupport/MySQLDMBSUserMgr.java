@@ -673,27 +673,16 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             if (username.equalsIgnoreCase("root"))
             {
                 return PERM_ALL;
-                /*
-                String   sql      = String.format("SELECT PRIVILEGE_TYPE FROM information_schema.USER_PRIVILEGES " +
-                                                  "WHERE GRANTEE = \"'%s'@'%s'\" AND TABLE_CATALOG IS NULL AND IS_GRANTABLE = \"YES\"", 
-                                                  username, hostName);
-                System.out.println(sql);
-                Vector<Object> rows = BasicSQLUtils.querySingleCol(connection, sql);
-                if (rows != null)
-                {
-                    for (Object privObj : rows)
-                    {
-                        perms = addPerm((String)privObj, perms);
-                    }
-                }*/
-                
-            } else
+            }
+            
+            int[]  permList = {PERM_SELECT, PERM_INSERT, PERM_UPDATE, PERM_DELETE, PERM_LOCK_TABLES, PERM_ALTER_TABLE, PERM_CREATE_TABLE, PERM_DROP_TABLE, };
+            String columns  = "Select_priv, Insert_priv, Update_priv, Delete_priv, Lock_tables_priv, Alter_priv, Create_priv, Drop_priv ";
+            
+            String pre = "SELECT " + columns + " ";
+            // Check permissions for the user against the database
+            
+            if (StringUtils.isNotEmpty(dbName))
             {
-                int[]  permList = {PERM_SELECT, PERM_INSERT, PERM_UPDATE, PERM_DELETE, PERM_LOCK_TABLES, PERM_ALTER_TABLE, PERM_CREATE_TABLE, PERM_DROP_TABLE, };
-                String columns  = "Select_priv, Insert_priv, Update_priv, Delete_priv, Lock_tables_priv, Alter_priv, Create_priv, Drop_priv ";
-                
-                String pre = "SELECT " + columns + " ";
-                // Check permissions for the user against the database
                 String sql = pre + " FROM mysql.db WHERE User = ? AND Db = ?";
                 perms = getPerms(permList, sql, username, dbName);
                 
@@ -701,13 +690,13 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 {
                     perms = getPermissionsFromInfoSchema(username, dbName);
                 }
-                
-                if (perms == PERM_NONE)
-                {
-                    // the the global permissions of the user (like 'root')
-                    sql = pre + "FROM mysql.user WHERE User = ? AND Host = ?";
-                    perms = getPerms(permList, sql, username, hostName);
-                }
+            }
+            
+            if (perms == PERM_NONE)
+            {
+                // the the global permissions of the user (like 'root')
+                String sql = pre + "FROM mysql.user WHERE User = ? AND Host = ?";
+                perms = getPerms(permList, sql, username, hostName);
             }
                 
             return perms;
@@ -716,6 +705,17 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         return PERM_NONE;
     }
     
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#getPermissionsForUser(java.lang.String, java.lang.String)
+     */
+    @Override
+    public int getPermissionsForUser(String userName)
+    {
+        return getPermissions(userName, null);
+    }
+
     /**
      * @param username
      * @param dbName
