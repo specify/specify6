@@ -970,41 +970,50 @@ public class DatabaseLoginPanel extends JTiledPanel
     {
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
 
-        databases.saveControlData();
-        servers.saveControlData();
+        if (databases != null) databases.saveControlData();
+        if (servers != null) servers.saveControlData();
 
         if (doSaveUPPrefs)
         {
-            String dbName = null;
-            if (databases.getComboBox().getSelectedItem() instanceof PickListItemIFace)
+            if (databases != null)
             {
-                PickListItemIFace pli = (PickListItemIFace)databases.getComboBox().getSelectedItem();
-                if (pli != null)
+                String dbName = null;
+                if (databases.getComboBox().getSelectedItem() instanceof PickListItemIFace)
                 {
-                    dbName = pli.getValue();
+                    PickListItemIFace pli = (PickListItemIFace)databases.getComboBox().getSelectedItem();
+                    if (pli != null)
+                    {
+                        dbName = pli.getValue();
+                    }
+                } else
+                {
+                    dbName = (String)databases.getComboBox().getSelectedItem();
                 }
-            } else
-            {
-                dbName = (String)databases.getComboBox().getSelectedItem();
+                
+                if (dbName != null)
+                {
+                    if (rememberUsernameCBX.isSelected())
+                    {
+                        localPrefs.put(getUserPrefPath(dbName, true), username.getText()); //$NON-NLS-1$
+                    }
+            
+                    if ( (!UIRegistry.isRelease() || localPrefs.getBoolean("pwd.save", false)))
+                    {
+                        localPrefs.put(getPasswordPrefPath(username.getText(), dbName, true), Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
+                    }
+                }
             }
             
             localPrefs.putBoolean("login.rememberuser", rememberUsernameCBX.isSelected()); //$NON-NLS-1$
-
-            if (rememberUsernameCBX.isSelected())
-            {
-                localPrefs.put(getUserPrefPath(dbName, true), username.getText()); //$NON-NLS-1$
-            }
-    
-            if (!UIRegistry.isRelease() || localPrefs.getBoolean("pwd.save", false))
-            {
-                localPrefs.put(getPasswordPrefPath(username.getText(), dbName, true), Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
-            }
         }
         
-        localPrefs.put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
-        if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
+        if (dbDrivers != null && dbDriverCBX != null && portSpinner.getValue() != null)
         {
-            localPrefs.put(LOGIN_PORT, portSpinner.getValue().toString()); //$NON-NLS-1$
+            localPrefs.put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
+            if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
+            {
+                localPrefs.put(LOGIN_PORT, portSpinner.getValue().toString()); //$NON-NLS-1$
+            }
         }
     }
 
