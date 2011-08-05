@@ -1175,10 +1175,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 		{
 			buildValidator();
 		}
-		setMatchStatusForUploadTables();
-		validateAll(null);
+		if (workbenchValidator != null)
+		{
+			setMatchStatusForUploadTables();
+			validateAll(null);
 		
-		AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName + "." + workbench.getId(), doIncrementalMatching);
+			AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName + "." + workbench.getId(), doIncrementalMatching);
+		}
 	}
 
 	/**
