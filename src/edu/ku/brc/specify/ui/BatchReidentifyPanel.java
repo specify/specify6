@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -73,6 +74,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -527,6 +529,8 @@ public class BatchReidentifyPanel extends JPanel
                             }
                             newDet.setCollectionObject(co);
                             co.getDeterminations().add(newDet);
+                            co.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                            co.setModifiedByAgent(Agent.getUserAgent());
                             //It looks like it is ok to skip business rule processing...
                             session.beginTransaction();
                             tranOpen = true;
