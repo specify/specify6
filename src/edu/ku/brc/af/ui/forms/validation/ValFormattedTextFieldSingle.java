@@ -1141,12 +1141,19 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
 
             } else if (field.getType() == UIFieldFormatterField.FieldType.numeric)
             {
-                char decSep = formatSymbols.getDecimalSeparator();
-                
-                // we really need to check to make sure this is a Double, Float or BigDecimal
-                String s = StringUtils.remove(str, decSep);
-                s = StringUtils.remove(str, decSep);
-                return s.length() == 0 || StringUtils.isNumericSpace(s);
+                char   decSep = formatSymbols.getDecimalSeparator();
+                String str1   = StringUtils.remove(str, decSep);
+                String str2   = StringUtils.remove(str1, '-');
+                if (StringUtils.isNumeric(str2))
+                {
+                    Class<?> cls = formatter.getDataClass();
+                    if (cls == java.lang.Integer.class || cls == java.lang.Long.class || cls == java.lang.Short.class || cls == java.lang.Byte.class)
+                    {
+                        return str1.length() == str.length(); 
+                    }
+                    return str2.length() == 0 || StringUtils.isNumericSpace(str2);
+                } 
+                return false;
             }
             return true;
         }

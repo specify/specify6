@@ -82,7 +82,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected Boolean              hasDash  = null;
     
     // Transient
-
+    private Integer                fieldLength = null;
+    
     /**
      * Default constructor
      */
@@ -199,6 +200,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public void addField(UIFieldFormatterField field)
     {
+        fieldLength = null;
     	if (fields == null) 
     	{
     		resetFields();
@@ -212,6 +214,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public void resetFields()
     {
+        fieldLength = null;
    		fields = new Vector<UIFieldFormatterField>();
     }
 
@@ -437,12 +440,16 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public int getLength()
     {
-        int len = 0;
-        for (UIFieldFormatterField field : fields)
+        if (fieldLength == null)
         {
-            len += field.getSize();
+            int len = 0;
+            for (UIFieldFormatterField field : fields)
+            {
+                len += field.getSize();
+            }
+            fieldLength = len;
         }
-        return len;
+        return fieldLength;
     }
     
     /* (non-Javadoc)
@@ -904,13 +911,22 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                             String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
                             switch (field.getType())
                             {
-                                case numeric:
-                                    if (!StringUtils.isNumeric(val))
-                                    {
-                                        return false;
-                                    }
-                                    break;
+                                case numeric: {
+                                    String str1 = StringUtils.remove(val, '.');
+                                    String str2 = StringUtils.remove(str1, '-');
                                     
+                                    if (StringUtils.isNumeric(str2))
+                                    {
+                                        Class<?> cls = formatter.getDataClass();
+                                        if (cls == java.lang.Integer.class || cls == java.lang.Long.class || cls == java.lang.Short.class || cls == java.lang.Byte.class)
+                                        {
+                                            return str1.length() == val.length();
+                                        } 
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                                
                                 case alphanumeric:
                                     if (!isAlphanumeric(val))
                                     {
@@ -964,6 +980,10 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public boolean isLengthOK(int lengthOfData)
     {
+        if (type == FormatterType.numeric)
+        {
+            return lengthOfData < getLength();
+        }
         return lengthOfData == getLength();
     }
 
