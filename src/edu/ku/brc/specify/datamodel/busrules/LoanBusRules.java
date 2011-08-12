@@ -147,6 +147,15 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     public void setDoCreateLoanNoPreps(boolean doCreateLoanNoPreps)
     {
         this.doCreateLoanNoPreps = doCreateLoanNoPreps;
+        
+        if (doCreateLoanNoPreps)
+        {
+            Component loanPreparations = formViewObj.getControlByName("loanPreparations");
+            if (loanPreparations != null)
+            {
+                loanPreparations.setVisible(false);
+            }
+        }
     }
 
     /* (non-Javadoc)
