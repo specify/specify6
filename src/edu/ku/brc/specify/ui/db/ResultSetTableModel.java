@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -69,7 +69,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class ResultSetTableModel extends AbstractTableModel implements SQLExecutionListener, CustomQueryListener
+public class ResultSetTableModel extends DefaultTableModel implements SQLExecutionListener, CustomQueryListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ResultSetTableModel.class);
@@ -216,6 +216,15 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
+     */
+    @Override
+    public boolean isCellEditable(int arg0, int arg1)
+    {
+        return false;
+    }
+
     /**
      * Cleans up internal data members.
      */
@@ -414,7 +423,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public int getRowCount()
     {
-        return cache.size();
+        return cache == null ? 0 : cache.size();
     }
     
     /**

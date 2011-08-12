@@ -42,15 +42,22 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
@@ -173,8 +180,6 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         this.isEditable    = results.isEditingEnabled();
         
         table = new JTable();
-        //BiColorTableCellRenderer cellRenderer = new BiColorTableCellRenderer();
-        //table.setDefaultRenderer(String.class, cellRenderer);
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(results.isMultipleSelection() ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
@@ -277,9 +282,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         tablePane = new JPanel(new BorderLayout());
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
         
-        Component comp = AppPreferences.getLocalPrefs().getBoolean("ss.usescrollbars", false) ? UIHelper.createScrollPane(table) : table;
+        Component comp = table.getColumnCount() > 3 ?new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) : table;
         tablePane.add(comp, BorderLayout.CENTER);
-        //tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         
         if (isEditable)
         {
@@ -423,7 +427,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             setDisplayRows(rowCount, Integer.MAX_VALUE);
         }
-
+        
         invalidate();
         doLayout();
         UIRegistry.forceTopFrameRepaint();
@@ -493,12 +497,11 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             }
         });
         
-        BiColorTableCellRenderer bi = new BiColorTableCellRenderer();
-        table.setDefaultRenderer(String.class, bi);
+        // Horizontal Alignment is set later
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)
         {
-            tableColModel.getColumn(i).setCellRenderer(bi);
+            tableColModel.getColumn(i).setCellRenderer(new BiColorTableCellRenderer());
         }
     }
     
@@ -880,6 +883,96 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     {
         return this;
     }
+    
+    /**
+     * @param table
+     * @param model
+     */
+    private void autoResizeColWidth(final JTable table, final DefaultTableModel model)
+    {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setModel(model);
+
+        int margin = 5;
+        
+        DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
+        
+        int   preferredWidthTotal = 0;
+        int   renderedWidthTotal  = 0;
+        int[] colWidths           = new int[table.getColumnCount()];
+        int[] strWidths          = new int[table.getColumnCount()];
+        for (int i = 0; i < table.getColumnCount(); i++)
+        {
+            int                     vColIndex = i;
+            TableColumn             col       = colModel.getColumn(vColIndex);
+            int                     width     = 0;
+
+            TableCellRenderer headerRenderer = col.getHeaderRenderer();
+            if (headerRenderer instanceof JLabel)
+            {
+                ((JLabel)headerRenderer).setHorizontalAlignment(SwingConstants.CENTER);
+            }
+
+            // Get width of column header
+            TableCellRenderer renderer = col.getCellRenderer();
+            if (renderer == null)
+            {
+                renderer = table.getTableHeader().getDefaultRenderer();
+            }
+
+            Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(),
+                                                                    false, false, 0, 0);
+
+            width = comp.getPreferredSize().width;
+
+            // Get maximum width of column data
+            int     strWidth = 0;
+            boolean isString = model.getColumnClass(i) == String.class;
+            for (int r=0;r<table.getRowCount();r++)
+            {
+                renderer = table.getCellRenderer(r, vColIndex);
+                Object objVal = table.getValueAt(r, vColIndex);
+                if (isString && objVal != null)
+                {
+                    strWidth = Math.max(strWidth, ((String)objVal).length());
+                }
+                comp = renderer.getTableCellRendererComponent(table, objVal, false, false, r, vColIndex);
+                width = Math.max(width, comp.getPreferredSize().width);
+            }
+
+            // Add margin
+            width += 2 * margin;
+
+            preferredWidthTotal += col.getPreferredWidth();
+            colWidths[i] = width;
+            strWidths[i] = strWidth;
+            
+            renderedWidthTotal += width;
+        }
+        
+        if (renderedWidthTotal > preferredWidthTotal)
+        {
+            for (int i = 0; i < table.getColumnCount(); i++)
+            {
+                TableColumn       col      = colModel.getColumn(i);
+                TableCellRenderer renderer = col.getCellRenderer();
+                if (renderer != null)
+                {
+                    ((JLabel)renderer).setHorizontalAlignment(strWidths[i] > 20 ? SwingConstants.LEFT : SwingConstants.CENTER);
+                }
+                
+                if (model.getColumnCount() > 3)
+                {
+                    col.setPreferredWidth(colWidths[i]);
+                }
+            }
+        }
+
+        ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+
+        // table.setAutoCreateRowSorter(true);
+        table.getTableHeader().setReorderingAllowed(false);
+    }
 
     
     //--------------------------------------------------------------
@@ -914,15 +1007,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             if (propChangeListener != null) 
             {
                 propChangeListener.propertyChange(new PropertyChangeEvent(this, "loaded", rowCount, rowCount));
-            }                
-            
-            BiColorTableCellRenderer bi = new BiColorTableCellRenderer();
-            table.setDefaultRenderer(String.class, bi);
-            TableColumnModel tableColModel = table.getColumnModel();
-            for (int i=0;i<tableColModel.getColumnCount();i++)
-            {
-                tableColModel.getColumn(i).setCellRenderer(bi);
             }
+            
+            autoResizeColWidth(table, (DefaultTableModel)table.getModel());
         }
     }
 
