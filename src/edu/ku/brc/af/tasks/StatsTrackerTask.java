@@ -289,12 +289,13 @@ public class StatsTrackerTask extends BaseTask
             httpClient.executeMethod(postMethod);
             
             // get the server response
+            @SuppressWarnings("unused")
             String responseString = postMethod.getResponseBodyAsString();
             
-            if (StringUtils.isNotEmpty(responseString))
-            {
-                System.err.println(responseString);
-            }
+            //if (StringUtils.isNotEmpty(responseString))
+            //{
+            //    System.err.println(responseString);
+            //}
 
         } catch (java.net.UnknownHostException ex)
         {
@@ -352,7 +353,7 @@ public class StatsTrackerTask extends BaseTask
                 return 0;
             }
         }
-        return count != null ? count : 0;
+        return count;
     }
     
     /**
@@ -425,9 +426,9 @@ public class StatsTrackerTask extends BaseTask
         
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, ex);
-            ex.printStackTrace();
         }
         return null;
     }
