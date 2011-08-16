@@ -358,9 +358,15 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         {
             // This is kind lame, but it works
             String nines = "99999999999999999999";
-            String mask = nines.substring(0, precision-scale)+"."+nines.substring(0, scale);
-            //System.err.println(mask);
-            maxValue = new BigDecimal(Double.parseDouble(mask));
+            if (precision > 0 && (precision-scale) > 0)
+            {
+                String mask = nines.substring(0, precision-scale)+"."+nines.substring(0, scale);
+                //System.err.println(mask);
+                maxValue = new BigDecimal(Double.parseDouble(mask));
+            } else
+            {
+                maxValue = Double.MAX_VALUE;
+            }
         }
         return maxValue;
     }
@@ -372,7 +378,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     {
         if (minValue == null && dataClass == BigDecimal.class)
         {
-            minValue = 0;
+            minValue = Double.MAX_VALUE;
         }
         return minValue;
     }
