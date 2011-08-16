@@ -1491,6 +1491,12 @@ public class Uploader implements ActionListener, KeyListener
     		{
     			result = false;
     		}
+    	} else if (t.getName().equalsIgnoreCase("determination"))
+    	{
+    		if (r.getRelatedField().getName().equalsIgnoreCase("PreferredTaxonID"))
+    		{
+    			result = false;
+    		}
     	}
     	if (!result)
     	{

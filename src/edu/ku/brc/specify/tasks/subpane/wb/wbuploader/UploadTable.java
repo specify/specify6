@@ -3116,6 +3116,7 @@ public class UploadTable implements Comparable<UploadTable>
 						}
 					}
 				}
+				result.addAll(cm);
 			}
 		}
     	
