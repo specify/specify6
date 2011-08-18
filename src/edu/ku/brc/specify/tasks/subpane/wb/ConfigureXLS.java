@@ -43,6 +43,8 @@ import org.apache.poi.hpsf.MarkUnsupportedException;
 import org.apache.poi.hpsf.NoPropertySetStreamException;
 import org.apache.poi.hpsf.PropertySet;
 import org.apache.poi.hpsf.UnexpectedPropertySetTypeException;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -50,9 +52,6 @@ import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.RichTextString;
-import org.apache.poi.ss.usermodel.Row;
 
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.UIHelper;
@@ -111,7 +110,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                     {
                         firstRowCells.add(false);
                     }
-                    else if (row.getCell(col).getCellType() == Cell.CELL_TYPE_STRING)
+                    else if (row.getCell(col).getCellType() == HSSFCell.CELL_TYPE_STRING)
                     {
                         firstRowCells.add(true);
                     }
@@ -230,6 +229,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         catch (FileNotFoundException ex)
         {
             // There is no document summary information. 
+            result = null;
         }
         /*
          * just returning null if anything weird happens. If there is a problem with the xls file,
@@ -240,30 +240,35 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             log.debug(ex);
+            result = null;
         }
         catch (NoPropertySetStreamException ex)
         {
             //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             log.debug(ex);
+            result = null;
         }
         catch (MarkUnsupportedException ex)
         {
             //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             log.debug(ex);
+            result = null;
         }
         catch (UnexpectedPropertySetTypeException ex)
         {
             //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             log.debug(ex);
+            result = null;
         }
         catch (IllegalPropertySetDataException ex)
         {
             //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             log.debug(ex);
+            result = null;
         }
         return result;
     }
@@ -339,8 +344,11 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             }
             
             // Iterate over each row in the sheet
-            for (Row row : sheet)
+            @SuppressWarnings("unchecked")
+            Iterator<HSSFRow> rows =  sheet.rowIterator();
+            while (rows.hasNext())
             {
+                HSSFRow row = rows.next();
                 if (firstRow || numRows == 1)
                 {
                     // Iterate over each cell in the row and print out the cell's content
@@ -353,7 +361,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             ImportColumnInfo.ColumnType disciplinee = ImportColumnInfo.ColumnType.Integer;
                             String value = null;
                             boolean skip = false;
-                            Cell cell = row.getCell(colNum);
+                            HSSFCell cell = row.getCell(colNum);
                             if (cell == null)
                             {
                                 //assuming numRows == 1 or not firstRowHasHeaders.
@@ -363,21 +371,21 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             }
                             else switch (cell.getCellType())
                             {
-                                case Cell.CELL_TYPE_NUMERIC:
+                                case HSSFCell.CELL_TYPE_NUMERIC:
                                     double numeric = cell.getNumericCellValue();
                                     value = Double.toString(numeric);
                                     disciplinee = ImportColumnInfo.ColumnType.Double;
                                     break;
-                                case Cell.CELL_TYPE_STRING:
-                                    RichTextString richVal = cell.getRichStringCellValue();
+                                case HSSFCell.CELL_TYPE_STRING:
+                                    HSSFRichTextString richVal = cell.getRichStringCellValue();
                                     value = richVal.getString().trim();
                                     disciplinee = ImportColumnInfo.ColumnType.String;
                                     break;
-                                case Cell.CELL_TYPE_BLANK:
+                                case HSSFCell.CELL_TYPE_BLANK:
                                     value = "";
                                     disciplinee = ImportColumnInfo.ColumnType.String;
                                     break;
-                                case Cell.CELL_TYPE_BOOLEAN:
+                                case HSSFCell.CELL_TYPE_BOOLEAN:
                                     boolean bool = cell.getBooleanCellValue();
                                     value = Boolean.toString(bool);
                                     disciplinee = ImportColumnInfo.ColumnType.Boolean;
