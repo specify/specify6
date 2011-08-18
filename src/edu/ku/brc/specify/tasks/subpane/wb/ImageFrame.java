@@ -419,7 +419,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
      */
     protected void importImages()
     {
-        workbenchTask.importCardImages(workbench);
+        workbenchTask.importCardImages(workbench, true);
     }
     
     /**
@@ -808,6 +808,9 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         loadImagesTask.start();
     }
     
+    /**
+     * 
+     */
     public void replaceImage()
     {
         UsageTracker.incrUsageCount("WB.EditWBRowImage");
@@ -818,7 +821,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             return;
         }
         
-        log.debug("replaceImage: " + ((imageFile!=null) ? imageFile.getAbsolutePath() : "NULL"));
+        log.debug("replaceImage: " + imageFile.getAbsolutePath());
         try
         {
             row.setImage(imageIndex, imageFile);

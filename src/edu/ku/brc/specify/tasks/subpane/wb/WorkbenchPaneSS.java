@@ -50,7 +50,6 @@ import java.io.File;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -155,9 +154,9 @@ import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
-import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -203,18 +202,18 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -264,6 +263,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               uploadDatasetBtn       = null;
     protected JButton				showHideUploadToolBtn  = null;
     protected UploadToolPanel	    uploadToolPanel        = null;
+    protected JButton               importImagesBtn        = null;
+
     
     protected DropDownButtonStateful ssFormSwitcher        = null;  
     protected List<JButton>         selectionSensitiveButtons  = new Vector<JButton>();
@@ -282,6 +283,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected CardLayout            cpCardLayout               = null;
     
     protected ImageFrame            imageFrame                 = null;
+    protected ImageImportFrame      imageImportFrame           = null;
     protected boolean               imageFrameWasShowing       = false;
     protected ListSelectionListener workbenchRowChangeListener = null;
     
@@ -665,6 +667,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         toggleImageFrameBtn.setEnabled(true);
         
+        importImagesBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                toggleImportImageFrameVisible();
+            }
+        });
+        importImagesBtn.setEnabled(true);
+        
         showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.NonStd, "WB_SHOW_MAP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -852,6 +863,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         // setup the JFrame to show images attached to WorkbenchRows
         imageFrame = new ImageFrame(mapSize, this, this.workbench, (WorkbenchTask)task, isReadOnly);
         
+        // setup the JFrame to show images attached to WorkbenchRows
+        imageImportFrame = new ImageImportFrame(this, this.workbench, (WorkbenchTask)task);
+        
         setupWorkbenchRowChangeListener();
         
         // setup window minimizing/maximizing listener
@@ -968,7 +982,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // This works
         setLayout(new BorderLayout());
-        JComponent[] ctrlCompArray = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
+        
+        boolean doDnDImages = AppPreferences.getLocalPrefs().getBoolean("WB_DND_IMAGES", false);
+        JComponent[] ctrlCompArray1 = {importImagesBtn, toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
+        JComponent[] ctrlCompArray2 = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher}; 
+        JComponent[] ctrlCompArray  = doDnDImages ? ctrlCompArray1 : ctrlCompArray2;
+        
         Vector<Pair<JComponent, Integer>> ctrlComps = new Vector<Pair<JComponent, Integer>>();
         for (JComponent c : ctrlCompArray)
         {
@@ -1025,14 +1044,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 ctrlBtns.add(c.getFirst(), cc.xy(c.getSecond(), 1));
             }
         }
-        
-        //PanelBuilder    ctrlBtns   = new PanelBuilder(new FormLayout("p,4px,p,6px,6px,6px,p,7px,6px,p", "c:p:g"));
-//        ctrlBtns.add(toggleImageFrameBtn, cc.xy(1,1));
-//        ctrlBtns.add(carryForwardBtn,     cc.xy(3,1));
-//        ctrlBtns.add(sep1,                cc.xy(5,1));
-//        ctrlBtns.add(saveBtn,             cc.xy(7,1));
-//        ctrlBtns.add(sep2,                cc.xy(9,1));
-//        ctrlBtns.add(ssFormSwitcher,    cc.xy(10,1));
         
         add(mainPanel, BorderLayout.CENTER);
         
@@ -1918,9 +1929,37 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Shows / Hides the Image Window. 
      */
+    public void toggleImportImageFrameVisible()
+    {
+        if (spreadSheet.getCellEditor() != null)
+        {
+            spreadSheet.getCellEditor().stopCellEditing();
+        }
+
+        boolean isVisible = imageImportFrame.isVisible();
+        
+        setImageFrameVisible(!isVisible, imageImportFrame, toggleImageFrameBtn, "WB_SHOW_IMG_WIN", "WB_HIDE_IMG_WIN", "WorkbenchWorkingWithImages");
+    }
+    
+    /**
+     * Shows / Hides the Image Window. 
+     */
     public void setImageFrameVisible(boolean visible)
     {
-        if (visible == imageFrame.isVisible())
+        setImageFrameVisible(visible, imageFrame, toggleImageFrameBtn, "WB_SHOW_IMG_WIN", "WB_HIDE_IMG_WIN", "WorkbenchWorkingWithImages");
+    }
+    
+    /**
+     * Shows / Hides the Image Window. 
+     */
+    public void setImageFrameVisible(final boolean visible, 
+                                     final JFrame imgFrame, 
+                                     final JButton toolBtn,
+                                     final String ttHelpVisible,
+                                     final String ttHelpHidden,
+                                     final String helpContext)
+    {
+        if (visible == imgFrame.isVisible())
         {
             return;
         }
@@ -1933,47 +1972,52 @@ public class WorkbenchPaneSS extends BaseSubPane
         // and add or remove the ListSelectionListener (to avoid loading images when not visible)
         if (!visible)
         {
+            spreadSheet.setTransferHandler(null);
+
             // hide the image window
             
             // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
-            if (imageFrame.isAlwaysOnTop())
+            if (imgFrame.isAlwaysOnTop())
             {
-                imageFrame.setAlwaysOnTop(false);
+                imgFrame.setAlwaysOnTop(false);
             }
             // if the image frame is minimized or iconified, set it to fully visible before doing anything else
-            if (imageFrame.getState() == Frame.ICONIFIED)
+            if (imgFrame.getState() == Frame.ICONIFIED)
             {
-                imageFrame.setState(Frame.NORMAL);
+                imgFrame.setState(Frame.NORMAL);
             }
-            toggleImageFrameBtn.setToolTipText(getResourceString("WB_SHOW_IMG_WIN"));
+            toolBtn.setToolTipText(getResourceString(ttHelpVisible));
 
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             
             // set the image window and the image column invisible
-            imageFrame.setVisible(false);
+            imgFrame.setVisible(false);
             imageColExt.setVisible(false);
         }
         else
         {
+            spreadSheet.setTransferHandler(new WBImageTransferable());
+
             // show the image window
             
-            UIHelper.positionFrameRelativeToTopFrame(imageFrame);
+            UIHelper.positionFrameRelativeToTopFrame(imgFrame);
             
             // when a user hits the "show image" button, for some reason the selection gets nullified
             // so we'll grab it here, then set it at the end of this method
 
-            toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMG_WIN"));
+            toolBtn.setToolTipText(getResourceString(ttHelpHidden));
+
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
-            HelpMgr.setHelpID(this, "WorkbenchWorkingWithImages");
+            HelpMgr.setHelpID(this, helpContext);
             
             // set the image window and the image column visible
-            imageFrame.setVisible(true);
+            imgFrame.setVisible(true);
             imageColExt.setVisible(true);
 
             // if the image frame is minimized or iconified, set it to fully visible before doing anything else
-            if (imageFrame.getState() == Frame.ICONIFIED)
+            if (imgFrame.getState() == Frame.ICONIFIED)
             {
-                imageFrame.setState(Frame.NORMAL);
+                imgFrame.setState(Frame.NORMAL);
             }
 
             showCardImageForSelectedRow();
@@ -1988,8 +2032,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             
             TableColumn column = spreadSheet.getTableHeader().getColumnModel()
-					.getColumn(
-							spreadSheet.getTableHeader().getColumnModel()
+					.getColumn(spreadSheet.getTableHeader().getColumnModel()
 									.getColumnCount() - 1);
 			column.setCellRenderer(new WbCellRenderer());
             spreadSheet.repaint();
@@ -2886,7 +2929,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             short  viewOrder = item.getViewOrder();
             String title     = null;
-            if (viewOrder == -1)
+            if (viewOrder == -1 && genus != null && species != null)
             {
                 title = row.getData(genus.getViewOrder()) + " " + 
                         row.getData(species.getViewOrder()) +
@@ -3206,6 +3249,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbtmi
      * @return
      */
+    @SuppressWarnings("static-access")
     protected GridCellEditor getCellEditor(WorkbenchTemplateMappingItem wbtmi, int fieldWidth, JButton theSaveBtn, Element uploadDefs)
     {
     	PickListDBAdapterIFace pickList = null;
@@ -4644,7 +4688,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		private final AtomicBoolean cancelledByUser = new AtomicBoolean(false);
 		
 		//Vectors are thread safe?? Right??
-		private final Vector<Integer> deletedRows = new Vector<Integer>();
+		//private final Vector<Integer> deletedRows = new Vector<Integer>();
 		
 		
     	/**
@@ -4667,7 +4711,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		 * @param row
 		 * @return row adjusted to account for deletes. Or -1 if the row has been deleted.
 		 */
-		private int adjustRow(int row)
+		/*private int adjustRow(int row)
 		{
 			int result = row;
 			//Not sure what happens if deletedRows is added to during the following loop.
@@ -4685,7 +4729,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 				}
 			} 
 			return result;
-		}
+		}*/
+		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -5036,6 +5081,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 	}
 
     
+	/**
+	 * @param startRow
+	 * @param endRow
+	 * @param rows
+	 * @param check
+	 * @return
+	 */
 	protected List<Integer> setCatNumValues(int startRow, int endRow, int[] rows, boolean check)
 	{
 		List<Integer> result = check ? new Vector<Integer>() : null;
@@ -5889,6 +5941,54 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 	}
 	
+    //------------------------------------------------------------------------------------------------------
+    //-- 
+    //------------------------------------------------------------------------------------------------------
+
+    class WBImageTransferable extends ImageTransferable
+    {
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.ImageTransferable#processImages(java.util.Vector)
+         */
+        @Override
+        protected void processImages(final Vector<File> fileList)
+        {
+            
+            final SwingWorker worker = new SwingWorker()
+            {
+                protected boolean isOK = false;
+                
+                @Override
+                public Object construct()
+                {
+                    // import the images into the Workbench, creating new rows (and saving the WB if it is brand new)
+                    isOK = ((WorkbenchTask)task).importImages(workbench, fileList, WorkbenchPaneSS.this, false, imageImportFrame.isOneImagePerRow());
+                    
+                    return null;
+                }
+
+                @SuppressWarnings("synthetic-access")
+                @Override
+                public void finished()
+                {
+                    UIRegistry.clearGlassPaneMsg();
+                    
+                    if (isOK)
+                    {
+                        setChanged(true);
+
+                        setImageFrameVisible(true);
+
+                        // scrolls to the last row
+                        newImagesAdded();
+                    }
+                }
+            };
+            worker.start();
+
+        }
+    }
+
     //------------------------------------------------------------------------------------------------------
     //-- 
     //------------------------------------------------------------------------------------------------------

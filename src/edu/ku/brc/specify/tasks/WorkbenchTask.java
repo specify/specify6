@@ -3599,16 +3599,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     /**
      * Imports a list if images and creates the rows.
      * @param workbench the current workbench
-     * @param imageFilter the filter for deciding what images
-     * @param fileList the list of files with 
-     * @param pane
+     * @param fileList the list of image files to be added
+     * @param pane the visible pane containing the spreadsheet (workbench)
      * @param isNew if the passed in workbench is unsaved (and should be saved)
+     * @param doOneImagePerRow whether to add all the images to a single row or not
      * @return
      */
-    protected boolean importImages(final Workbench       workbench, 
-                                       final Vector<File>    fileList,
-                                       final WorkbenchPaneSS pane,
-                                       final boolean         isNew)
+    public boolean importImages(final Workbench       workbench, 
+                                final Vector<File>    fileList,
+                                final WorkbenchPaneSS pane,
+                                final boolean         isNew,
+                                final boolean         doOneImagePerRow)
     {
         boolean                  isOK    = false;
         DataProviderSessionIFace session = null;
@@ -3625,28 +3626,57 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 session.beginTransaction();
             }
             
-            for (int i=0;i<fileList.size();i++)
+            if (doOneImagePerRow)
             {
-                File         file = fileList.get(i);
+                for (int i=0;i<fileList.size();i++)
+                {
+                    File         file = fileList.get(i);
+                    WorkbenchRow row  = workbench.addRow();
+                    if (pane != null)
+                    {
+                        //pane.addRowAfter();
+                        pane.addRowToSpreadSheet();
+                    }
+                    int inx = row.addImage(file);
+                    if (inx > -1)
+                    {
+                        if (i % 5 == 0)
+                        {
+                            final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run()
+                                {
+                                    
+                                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
+                                }
+                            });
+                        }
+                    }
+                }
+            } else
+            {
                 WorkbenchRow row  = workbench.addRow();
                 if (pane != null)
                 {
-                    //pane.addRowAfter();
                     pane.addRowToSpreadSheet();
                 }
-                int inx = row.addImage(file);
-                if (inx > -1)
+                
+                for (int i=0;i<fileList.size();i++)
                 {
-                    if (i % 5 == 0)
+                    int inx = row.addImage(fileList.get(i));
+                    if (inx > -1)
                     {
-                        final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run()
-                            {
-                                
-                                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
-                            }
-                        });
+                        if (i % 5 == 0)
+                        {
+                            final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run()
+                                {
+                                    
+                                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -3897,8 +3927,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * given {@link Workbench} is <code>null</code>, a new {@link Workbench} is created.
      * 
      * @param workbenchArg the {@link Workbench} to append rows to, or <code>null</code> if a new {@link Workbench} should be created
+     * @param doOneImagePerRow indicates whether the images are assign to a single row or not.
      */
-    public void importCardImages(final Workbench workbenchArg)
+    public void importCardImages(final Workbench workbenchArg, final boolean doOneImagePerRow)
     {
         // ask the user to select the files to import
         final ImageFilter imageFilter = new ImageFilter();
@@ -3997,59 +4028,71 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 workbenchPane = (WorkbenchPaneSS)SubPaneMgr.getInstance().getCurrentSubPane();
             }
             
-            // create the subpane to display the Workbench data
-            final WorkbenchPaneSS wbPaneSS = workbenchPane;
+            doImageImport(importWB, workbenchPane, fileList, workbenchArg == null, doOneImagePerRow);
             
-            final SwingWorker worker = new SwingWorker()
-            {
-                protected boolean isOK = false;
-                
-                @Override
-                public Object construct()
-                {
-                    boolean isNew = (workbenchArg == null);
-                    
-                    // import the images into the Workbench, creating new rows (and saving the WB if it is brand new)
-                    isOK = importImages(importWB, fileList, wbPaneSS, isNew);
-                    
-                    return null;
-                }
-
-                @SuppressWarnings("synthetic-access")
-                @Override
-                public void finished()
-                {
-                    UIRegistry.clearGlassPaneMsg();
-                    
-                    if (isOK)
-                    {
-                        if (workbenchArg == null) // meaning a brand new Workbench was created (and saved already)
-                        {
-                            // add a new button to the NavBox
-                            RolloverCommand roc = addWorkbenchToNavBox(importWB);
-                            roc.setEnabled(false);
-                            
-                            // show the WorkbenchPaneSS
-                            addSubPaneToMgr(wbPaneSS);
-                            
-                            // the importImages() call will save the wb if it was just created
-                            wbPaneSS.setChanged(false);
-                        }
-                        else // the Workbench already existed and a pane was already showing
-                        {
-                            // update the "Save" button state
-                            wbPaneSS.setChanged(true);
-                        }
-
-                        wbPaneSS.setImageFrameVisible(true);
-
-                        // scrolls to the last row
-                        wbPaneSS.newImagesAdded();
-                    }
-                }
-            };
-            worker.start();
         }
+    }
+    
+    /**
+     * @param importWB
+     * @param wbPaneSS
+     * @param fileList
+     * @param isNew
+     * @param doOneImagePerRow
+     */
+    protected void doImageImport(final Workbench       importWB, 
+                                 final WorkbenchPaneSS wbPaneSS, 
+                                 final Vector<File>    fileList, 
+                                 final boolean         isNew, 
+                                 final boolean         doOneImagePerRow)
+    {
+        final SwingWorker worker = new SwingWorker()
+        {
+            protected boolean isOK = false;
+            
+            @Override
+            public Object construct()
+            {
+                // import the images into the Workbench, creating new rows (and saving the WB if it is brand new)
+                isOK = importImages(importWB, fileList, wbPaneSS, isNew, doOneImagePerRow);
+                
+                return null;
+            }
+
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void finished()
+            {
+                UIRegistry.clearGlassPaneMsg();
+                
+                if (isOK)
+                {
+                    if (isNew) // meaning a brand new Workbench was created (and saved already)
+                    {
+                        // add a new button to the NavBox
+                        RolloverCommand roc = addWorkbenchToNavBox(importWB);
+                        roc.setEnabled(false);
+                        
+                        // show the WorkbenchPaneSS
+                        addSubPaneToMgr(wbPaneSS);
+                        
+                        // the importImages() call will save the wb if it was just created
+                        wbPaneSS.setChanged(false);
+                    }
+                    else // the Workbench already existed and a pane was already showing
+                    {
+                        // update the "Save" button state
+                        wbPaneSS.setChanged(true);
+                    }
+
+                    wbPaneSS.setImageFrameVisible(true);
+
+                    // scrolls to the last row
+                    wbPaneSS.newImagesAdded();
+                }
+            }
+        };
+        worker.start();
     }
     
     /**
@@ -4506,7 +4549,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             if (isClickedOn)
             {
-                importCardImages(null);
+                importCardImages(null, true);
             }
             
         } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE)) // XXX This can be removed
