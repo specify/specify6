@@ -33,18 +33,6 @@ public class DateExportFormatter extends ExportFieldFormatter
 			calendar = new GregorianCalendar();
 			calendar.setTime((java.util.Date )data[0]);
 		}
-		int num = calendar.get(Calendar.MONTH)+1;
-		String monStr = String.valueOf(num);
-		if (num < 10)
-		{
-			monStr = "0" + monStr; 
-		}
-		num = Calendar.DAY_OF_MONTH;
-		String numStr = String.valueOf(num);
-		if (num < 10)
-		{
-			numStr = "0" + numStr;
-		}
-		return calendar.get(Calendar.YEAR) + "-" + monStr + "-" + numStr;
+		return calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
 	}
 }
