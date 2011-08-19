@@ -449,8 +449,8 @@ public class CollectionBusRules extends BaseBusRules
         Collection  collection         = (Collection)dataObj;
         Discipline  appCntxtDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
         
-        JTextField txt        = (JTextField)formViewObj.getControlById("4");
-        if (txt != null && collection != null)
+        JTextField txt = (JTextField)formViewObj.getControlById("4");
+        if (txt != null && collection != null && collection.getId() != null)
         {
             DataProviderSessionIFace session = null;
             try

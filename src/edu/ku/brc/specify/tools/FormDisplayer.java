@@ -29,8 +29,11 @@ import static edu.ku.brc.ui.UIRegistry.setBaseFont;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -44,8 +47,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -53,6 +58,10 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -75,6 +84,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.utilapps.ERDVisualizer;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
@@ -107,9 +117,11 @@ public class FormDisplayer
     
     protected List<Pair<String, File>> entries = new Vector<Pair<String, File>>();
     protected List<ViewIFace> viewList;
-    protected int             viewInx = 0;
-    protected JFrame          frame   = null;
+    protected AtomicBoolean   okToProc   = new AtomicBoolean(true);
+    protected int             viewInx    = 0;
+    protected JFrame          frame      = null;
 
+    protected CustomDialog    cancelDlg;
     
     /**
      * 
@@ -156,13 +168,9 @@ public class FormDisplayer
      */
     public void generateFormImages()
     {
-        if (true)
+        if (setup())
         {
-            if (setup())
-            {
-                createFormImagesIndexFile();
-            }
-            //return;
+            createFormImagesIndexFile();
         }
         
         int userChoice = JOptionPane.showConfirmDialog(getTopWindow(), 
@@ -189,6 +197,41 @@ public class FormDisplayer
                 }
             });
         }
+        
+        JButton stopBtn = UIHelper.createButton("Stop Generating Images");
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p", "p"));
+        pb.add(stopBtn, (new CellConstraints()).xy(1, 1));
+        pb.setDefaultDialogBorder();
+        cancelDlg = new CustomDialog((Frame)null, "Stop Image Generation", false, CustomDialog.OK_BTN, pb.getPanel());
+        cancelDlg.setOkLabel(getResourceString("CLOSE"));
+        
+        cancelDlg.setAlwaysOnTop(true);
+        cancelDlg.setVisible(true);
+        
+        //Insets    screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(cancelDlg.getGraphicsConfiguration());;
+        Rectangle screenRect = cancelDlg.getGraphicsConfiguration().getBounds();
+        int y = screenRect.height - (cancelDlg.getSize().height*2);
+        cancelDlg.setLocation(screenRect.x, y);
+        
+        stopBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        synchronized (okToProc)
+                        {
+                            okToProc.set(false);
+                            viewInx  = viewList.size();
+                        }
+                    }
+                });
+            }
+        });
     }
     
     /**
@@ -196,85 +239,103 @@ public class FormDisplayer
      */
     protected void showView()
     {
-        if (frame != null)
-        {
-            generateViewImage(viewList.get(viewInx));
-            frame.dispose();
-        }
+        boolean done = false;
         
-        viewInx++;
-        ViewIFace view = viewList.get(viewInx);
-        System.out.println(view.getName());
-        
-        if (!view.getViewSetName().equals("Editor")) //$NON-NLS-1$
+        synchronized (okToProc)
         {
-            Object data = null;
-            try
+            if (okToProc.get())
             {
-                ViewDefIFace viewDef = view.getAltViews().get(0).getViewDef();
-                if (!(viewDef.getDataGettable() instanceof edu.ku.brc.af.ui.forms.DataGetterForHashMap))
+                if (frame != null)
                 {
-                    Class<?> dataCls = Class.forName(viewDef.getClassName());
-                    if (dataCls != null)
-                    {
-                        System.err.println(dataCls);
-                        data = dataCls.newInstance();
-                        if (data instanceof FormDataObjIFace)
-                        {
-                            ((FormDataObjIFace)data).initialize();
-                        }
-                    }
+                    generateViewImage(viewList.get(viewInx));
+                    frame.dispose();
                 }
-            } catch (Exception ex) {}
             
-            if (data instanceof Discipline)
-            {
-                ((Discipline)data).setType("fish");
-            }
-            FormPane formPane = new FormPane(view.getName(), null, null, view.getName(), "edit", data, MultiView.IS_NEW_OBJECT | MultiView.HIDE_SAVE_BTN, true); //$NON-NLS-1$
-            frame = new JFrame();
-            frame.setContentPane(formPane);
-            frame.setSize(1024, 768);
-            frame.setVisible(true);
-            
-            frame.setLocation(0, 0);
-            
-            Dimension size = frame.getContentPane().getPreferredSize();
-            size.height += 40;
-            size.width  += 30;
-            frame.setSize(size);
-            
-            String str = String.format("%d of %d", viewInx+1, viewList.size());
-            System.out.println(str); //$NON-NLS-1$
-            getStatusBar().setText(str); //$NON-NLS-1$
-   
-        } else if (frame != null)
-        {
-            frame.setVisible(false);
-            frame.dispose();
-            frame = null;
-        }
-        
-        if (viewInx < viewList.size()-1)
-        {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run()
+                viewInx++;
+                
+                ViewIFace view = viewList.get(viewInx);
+                System.out.println(view.getName());
+                
+                if (!view.getViewSetName().equals("Editor")) //$NON-NLS-1$
                 {
+                    Object data = null;
                     try
                     {
-                        Thread.sleep(500);
-                    } catch (Exception ex)
+                        ViewDefIFace viewDef = view.getAltViews().get(0).getViewDef();
+                        if (!(viewDef.getDataGettable() instanceof edu.ku.brc.af.ui.forms.DataGetterForHashMap))
+                        {
+                            Class<?> dataCls = Class.forName(viewDef.getClassName());
+                            if (dataCls != null)
+                            {
+                                System.err.println(dataCls);
+                                data = dataCls.newInstance();
+                                if (data instanceof FormDataObjIFace)
+                                {
+                                    ((FormDataObjIFace)data).initialize();
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {}
+                    
+                    if (data instanceof Discipline)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
-                        
+                        ((Discipline)data).setType("fish");
                     }
-                    showView();
+                    FormPane formPane = new FormPane(view.getName(), null, null, view.getName(), "edit", data, MultiView.IS_NEW_OBJECT | MultiView.HIDE_SAVE_BTN, true); //$NON-NLS-1$
+                    frame = new JFrame();
+                    frame.setFocusable(false);
+                    frame.setContentPane(formPane);
+                    frame.setSize(1024, 768);
+                    frame.setVisible(true);
+                    
+                    frame.setLocation(0, 0);
+                    
+                    Dimension size = frame.getContentPane().getPreferredSize();
+                    size.height += 40;
+                    size.width  += 30;
+                    frame.setSize(size);
+                    
+                    String str = String.format("%d of %d", viewInx+1, viewList.size());
+                    System.out.println(str); //$NON-NLS-1$
+                    getStatusBar().setText(str); //$NON-NLS-1$
+           
+                } else if (frame != null)
+                {
+                    frame.setVisible(false);
+                    frame.dispose();
+                    frame = null;
                 }
-            });
-        } else
+                
+                if (viewInx < viewList.size()-1)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(500);
+                            } catch (Exception ex)
+                            {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
+                            }
+                            showView();
+                        }
+                    });
+                } else
+                {
+                    done = true;
+                }
+            } else
+            {
+                done = true;
+            }
+        }
+        
+        if (done) 
         {
+            if (cancelDlg != null) cancelDlg.setVisible(false);
             if (frame != null)
             {
                 frame.setVisible(false);
