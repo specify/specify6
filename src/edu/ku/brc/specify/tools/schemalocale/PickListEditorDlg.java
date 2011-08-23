@@ -46,7 +46,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
@@ -312,28 +311,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         List<PickList> items = PickListUtils.getPickLists(localizableIO, doAll, isSystemPL);
         if (items != null)
         {
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-    
-                collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                collection = (Collection)session.getData("FROM Collection WHERE collectionId = "+collection.getId());
-                collection.getPickLists().size();
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
-        
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
+            collection = PickListUtils.getCollectionFromAppContext();
         }
         return items;
     }

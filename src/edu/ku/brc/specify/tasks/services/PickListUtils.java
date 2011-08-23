@@ -168,13 +168,14 @@ public class PickListUtils
         }
         return pickList;
     }
-
     
     /**
      * @param localizableIO
+     * @param collection
+     * @return
      */
     public static boolean importPickLists(final LocalizableIOIFace localizableIO,
-                                       final Collection collection)
+                                          final Collection collection)
     {
         // Apply is Import All PickLists
         
@@ -208,6 +209,7 @@ public class PickListUtils
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
+            
 
             HashMap<String, PickList> plHash = new HashMap<String, PickList>();
             List<PickList> items = getPickLists(localizableIO, true, false);
@@ -265,6 +267,38 @@ public class PickListUtils
         UIRegistry.displayInfoMsgDlgLocalized(getI18n(key), cnt);
         
         return true;
+    }
+    
+    /**
+     * @return a 'refreshed' Collection object from the AppContext
+     */
+    public static Collection getCollectionFromAppContext()
+    {
+        Collection collection = null;
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+
+            collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            collection = (Collection)session.getData("FROM Collection WHERE collectionId = "+collection.getId());
+            collection.getPickLists().size();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
+    
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return collection;
     }
     
     public static boolean equals(Boolean v1, Boolean v2) {

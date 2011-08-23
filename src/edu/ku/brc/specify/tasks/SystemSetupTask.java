@@ -241,7 +241,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             collNavBox.add(NavBox.createBtnWithTT(title, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    PickListUtils.importPickLists(null, AppContextMgr.getInstance().getClassObject(Collection.class));
+                    Collection collection = PickListUtils.getCollectionFromAppContext();
+                    if (PickListUtils.importPickLists(null, collection))
+                    {
+                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                    }
                 }
             })); 
 
