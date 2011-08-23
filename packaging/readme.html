@@ -1,53 +1,30 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-
-
+<html>
+<head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>Release Notes</title>
-</head><body>
+</head>
+<body>
 <h3>Release Notes<br>
-Specify 6.3.03<br>
-27 July 2011<br>
+Specify 6.3.04<br>
+23 August 2011<br>
 Specify Software Project</h3>
 <br>
 <br>
-<h4>List of changes in Specify 6.3.03<br>
+<h4>List of changes in Specify 6.3.04<br>
 </h4>
-<ol>
-<li>Georeferencing a series of Collection Objects now allows user 
-defined points on more than just the first Collection Object in the 
-series.  2011-07-22  (Bugzilla #8486)</li>
-<li>In the Locality data form, converting from Decimal Degrees to 
-Degrees Minutes Decimal Seconds no longer leaves the second field blank.
-  2011-07-22  (8485)</li>
-<li>Exporting a pick list from the schema configuration no longer generates an exception.&nbsp;&nbsp;2011-07-22&nbsp;&nbsp;(8484)</li>
-<li>Associating two Containers to the same Collection Object no longer 
-prevents linking the second Container to other available Collection 
-Objects.&nbsp;&nbsp;2011-07-21&nbsp;&nbsp;(8482)</li>
-<li>An issue has been resolved that sometimes disabled the email button on the Agent form.&nbsp;&nbsp;2011-07-21&nbsp;&nbsp;(8472)</li>
-<li>The statistics on the Welcome page now displays the correct number of overdue Loans.&nbsp;&nbsp;2011-07-21&nbsp;&nbsp;(7100)</li>
-<li>CSV (Comma Separated Value) files now import into the WorkBench without error.&nbsp;&nbsp;2011-07-20&nbsp;&nbsp;(8481)</li>
-<li>Clicking Help-&gt;Change Password now copies a newly-generated 
-Master Key to the user’s 
-clipboard.&nbsp;&nbsp;2011-07-20&nbsp;&nbsp;(8475)</li>
-<li>Certain Loan records no longer fail to be returned by the Return Loan button.&nbsp;&nbsp;2011-07-20&nbsp;&nbsp;(8473)</li>
-<li>The Statistics page and Welcome screen now keep more accurate track 
-of the Data Entry statistics.&nbsp;&nbsp;2011-07-20&nbsp;&nbsp;(8471)</li>
-<li>An issue has been resolved that caused Collection Object uploads 
-with data in Collection Object Citation columns either to fail to upload
- or to create additional Reference Work 
-records.&nbsp;&nbsp;2011-07-12&nbsp;&nbsp;(8465)</li>
-<li>The About menu no longer indicates that unregistered collections are registered.&nbsp;&nbsp;2011-07-07&nbsp;&nbsp;(7180)</li>
-<li>A more informative error message now appears when a user attempt to 
-delete a Container which has Subcontainers assigned to 
-it.&nbsp;&nbsp;2011-06-30&nbsp;&nbsp;(8389)</li>
-<li>An issue has been fixed that prevented the deletion of Collection 
-Objects created by the WorkBench 
-Uploader.&nbsp;&nbsp;2011-06-30&nbsp;&nbsp;(8062)</li>
-<li>Editing Address on the Division data form no longer generates an 
-error when clicking Done.&nbsp;&nbsp;2011-06-28&nbsp;&nbsp;(8438)</li>
+<ol><li>Importing pick lists through the configuration page no longer causes handled exceptions.  2011-08-23  (8518)</li>
+<li>A problem causing all dates that have been exported to format incorrectly has been fixed.  2011-08-23  (8516)</li>
+<li>When uploading new data to the WorkBench, fields now highlight correctly.  2011-08-23  (8506)</li>
+<li>Having non-standard titles for tree levels no longer causes problems loading saved queries.  2011-08-23  (8492)</li>
+<li>Numeric integer fields now refuse to accept periods for decimals points.  2011-08-16  (8507)</li>
+<li>An exception is no longer created when dropping a record set that includes a record without geography information into GeoLocate.  2011-08-16  (8496)</li>
+<li>An exception caused by clicking the Return Preparation button while in view mode has been fixed.  2011-08-16  (8495)</li>
+<li>Loan w/o Preps can now be used with out preparations for collection objects.  2011-08-15  (8502)</li>
+<li>Values in the query comboboxes no longer get cut off if they are long.  2011-08-15  (8491)</li>
 </ol><br>
 <br>
 <br>
 <br>
-</body></html>
+</body>
+</html>
