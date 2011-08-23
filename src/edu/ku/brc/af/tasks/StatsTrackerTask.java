@@ -301,10 +301,10 @@ public class StatsTrackerTask extends BaseTask
             @SuppressWarnings("unused")
             String responseString = postMethod.getResponseBodyAsString();
             
-            if (StringUtils.isNotEmpty(responseString))
-            {
-                System.err.println(responseString);
-            }
+            //if (StringUtils.isNotEmpty(responseString))
+            //{
+            //    System.err.println(responseString);
+            //}
 
         } catch (java.net.UnknownHostException ex)
         {
@@ -418,6 +418,8 @@ public class StatsTrackerTask extends BaseTask
                     postParams.add(new NameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
                 } catch (UnknownHostException e) {}
             }
+            
+            postParams.add(new NameValuePair("tester", AppPreferences.getLocalPrefs().getBoolean("tester", false) ? "true" : "false")); //$NON-NLS-1$
             
             String resAppVersion = UIRegistry.getAppVersion();
             if (StringUtils.isEmpty(resAppVersion))

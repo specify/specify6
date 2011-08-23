@@ -240,7 +240,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     {
         super.sendStats();
         sendCollectionStats();
-        sendActivityStats(true);
+        sendActivityStats(false);
     }
 
     /**
