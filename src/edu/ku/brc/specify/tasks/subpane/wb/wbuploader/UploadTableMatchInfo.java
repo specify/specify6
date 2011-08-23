@@ -19,6 +19,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class UploadTableMatchInfo
 {
+	protected final String tblTitle;
 	protected final Vector<Integer> colIdxs;
 	protected final int numberOfMatches;
 	protected final boolean isBlank;
@@ -29,15 +30,23 @@ public class UploadTableMatchInfo
 	 * @param match
 	 * @param uploadTable
 	 */
-	public UploadTableMatchInfo(int numberOfMatches, Vector<Integer> colIdxs, boolean isBlank, boolean isSkipped)
+	public UploadTableMatchInfo(String tblTitle, int numberOfMatches, Vector<Integer> colIdxs, boolean isBlank, boolean isSkipped)
 	{
 		super();
+		this.tblTitle = tblTitle;
 		this.numberOfMatches = numberOfMatches;
 		this.colIdxs = colIdxs;
 		this.isBlank = isBlank;
 		this.isSkipped = isSkipped;
 	}
 	
+	/**
+	 * @return the tblTitle
+	 */
+	public String getTblTitle()
+	{
+		return tblTitle;
+	}
 	/**
 	 * @return the colIdxs
 	 */
@@ -77,14 +86,16 @@ public class UploadTableMatchInfo
 	{
 		if (numberOfMatches == 0)
 		{
-			return UIRegistry.getResourceString("UploadTableMatchInfo.NoMatch");
+			return String.format(UIRegistry.getResourceString("UploadTableMatchInfo.NoMatch"), tblTitle);
 		}
 		
 		if (numberOfMatches == 1)
 		{
-			return UIRegistry.getResourceString("UploadTableMatchInfo.Matched");
+			return String.format(UIRegistry.getResourceString("UploadTableMatchInfo.Matched"), 
+					tblTitle);
 		}
 		
-		return String.format(UIRegistry.getResourceString("UploadTableMatchInfo.MultipleMatches"), numberOfMatches);
+		return String.format(UIRegistry.getResourceString("UploadTableMatchInfo.MultipleMatches"), 
+				numberOfMatches, tblTitle);
 	}
 }

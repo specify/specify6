@@ -106,7 +106,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     {
         if (cause == null) 
         { 
-            return null; 
+        	return msg;
         }
         if (cause instanceof UploaderException)
         {

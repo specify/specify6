@@ -3176,7 +3176,7 @@ public class UploadTable implements Comparable<UploadTable>
         				colIdxs.add(uf.getIndex());
         			}
         		}
-        		result.add(new UploadTableMatchInfo(pmi.matches.size(), colIdxs, pmi.isBlank(), pmi.isSkipped()));
+        		result.add(new UploadTableMatchInfo(pmi.getTable().getTblTitle(), pmi.matches.size(), colIdxs, pmi.isBlank(), pmi.isSkipped()));
         	}
     	}
     	return result;

@@ -57,6 +57,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     protected JButton			    prevUnmatchedCellBtn   = null;
     protected JButton				nextUnmatchedCellBtn   = null;
     protected JLabel				unmatchedCellCountLbl  = null;
+    protected JButton				helpBtn                = null;
 
     protected final WorkbenchPaneSS	wbSS;
     
@@ -164,13 +165,15 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 		nextUnmatchedCellBtn.setVisible(wbSS.isDoIncrementalMatching());
 		unmatchedCellCountLbl.setVisible(wbSS.isDoIncrementalMatching());
 
+		helpBtn = UIHelper.createHelpIconButton("uploading");
+		
         CellConstraints cc = new CellConstraints();
         
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
 
         JComponent[] compsArray = {autoValidateChk, invalidCellCountLbl,
                                    prevInvalidCellBtn,  nextInvalidCellBtn, sep1, autoMatchChk,
-                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn};
+                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn, helpBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length);
         for (JComponent c : compsArray)
         {
