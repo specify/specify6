@@ -3167,8 +3167,8 @@ public class UploadTable implements Comparable<UploadTable>
         	if (pmi.getTable().checkMatchInfo)
         	{
         		Vector<Integer> colIdxs = new Vector<Integer>();
-        		//int adjustedRecNum = pmi.getTable().getUploadFields().size() == 0 ? 1 : recNum;
-        		int adjustedRecNum = pmi.getRecNum();
+        		int adjustedRecNum = pmi.getTable().getUploadFields().size() == 1 ? 0 : 
+        			(pmi.getRecNum() == -1 ? 0 : pmi.getRecNum());
         		for (UploadField uf : pmi.getTable().getUploadFields().get(adjustedRecNum))
         		{
         			if (uf.getIndex() != -1)
