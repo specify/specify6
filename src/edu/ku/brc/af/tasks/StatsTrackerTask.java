@@ -265,23 +265,32 @@ public class StatsTrackerTask extends BaseTask
     /**
      * Connects to the update/usage tracking server to get the latest version info and/or send the usage stats.
      * 
-     * @return a list of modules that have a different version number than the currently installed software
      * @throws Exception if an IO error occured or the response couldn't be parsed
      */
     protected void sendStats() throws Exception
     {
+        sendStats(getVersionCheckURL(), createPostParameters(isSendSecondaryStatsAllowed), getClass().getName());
+    }
+    
+    /**
+     * Connects to the update/usage tracking server to get the latest version info and/or send the usage stats.
+     * @param url
+     * @param postParams
+     * @param userAgentName
+     * @throws Exception if an IO error occurred or the response couldn't be parsed
+     */
+    public static void sendStats(final String url, 
+                                 final Vector<NameValuePair> postParams, 
+                                 final String userAgentName) throws Exception
+    {
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
-        httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+        httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
         
-        // get the URL of the website to check, with usage info appended, if allowed
-        String versionCheckURL = getVersionCheckURL();
-        
-        PostMethod postMethod = new PostMethod(versionCheckURL);
+        PostMethod postMethod = new PostMethod(url);
         
         // get the POST parameters (which includes usage stats, if we're allowed to send them)
-        NameValuePair[] postParams = createPostParameters(isSendSecondaryStatsAllowed);
-        postMethod.setRequestBody(postParams);
+        postMethod.setRequestBody(buildNamePairArray(postParams));
         
         // connect to the server
         try
@@ -292,10 +301,10 @@ public class StatsTrackerTask extends BaseTask
             @SuppressWarnings("unused")
             String responseString = postMethod.getResponseBodyAsString();
             
-            //if (StringUtils.isNotEmpty(responseString))
-            //{
-            //    System.err.println(responseString);
-            //}
+            if (StringUtils.isNotEmpty(responseString))
+            {
+                System.err.println(responseString);
+            }
 
         } catch (java.net.UnknownHostException ex)
         {
@@ -308,9 +317,8 @@ public class StatsTrackerTask extends BaseTask
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
             throw new ConnectionException(e);
         }
-        
     }
-    
+
     /**
      * Gets the URL of the version checking / usage tracking server.
      * 
@@ -360,9 +368,25 @@ public class StatsTrackerTask extends BaseTask
      * Collection Statistics about the Collection (synchronously).
      * @return list of http named value pairs
      */
-    protected Vector<NameValuePair> collectSecondaryStats(final boolean doSendSecondaryStats)
+    protected Vector<NameValuePair> collectSecondaryStats(@SuppressWarnings("unused") final boolean doSendSecondaryStats)
     {
         return null;
+    }
+    
+    /**
+     * Builds NamePair array from list.
+     * @param postParams the list 
+     * @return the array
+     */
+    public static NameValuePair[] buildNamePairArray(final Vector<NameValuePair> postParams)
+    {
+        // create an array from the params
+        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+        for (int i = 0; i < paramArray.length; ++i)
+        {
+            paramArray[i] = postParams.get(i);
+        }
+        return paramArray;
     }
     
     /**
@@ -371,7 +395,7 @@ public class StatsTrackerTask extends BaseTask
      * @param doSendSecondaryStats if true, the POST parameters include usage stats
      * @return an array of POST parameters
      */
-    protected NameValuePair[] createPostParameters(final boolean doSendSecondaryStats)
+    protected Vector<NameValuePair> createPostParameters(final boolean doSendSecondaryStats)
     {
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         try
@@ -415,14 +439,7 @@ public class StatsTrackerTask extends BaseTask
                 postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
             }
             
-            // create an array from the params
-            NameValuePair[] paramArray = new NameValuePair[postParams.size()];
-            for (int i = 0; i < paramArray.length; ++i)
-            {
-                paramArray[i] = postParams.get(i);
-            }
-            
-            return paramArray;
+            return postParams;
         
         } catch (Exception ex)
         {
@@ -433,7 +450,6 @@ public class StatsTrackerTask extends BaseTask
         return null;
     }
     
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
      */

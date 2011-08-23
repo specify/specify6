@@ -25,7 +25,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URLEncoder;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -36,9 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -85,7 +82,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     private Collection                   collection          = null;  
     private Discipline                   discipline          = null;  
     private Division                     division            = null;  
-    private Institution                  institution          = null;  
+    private Institution                  institution         = null;  
     
     /**
      * Constructor.
@@ -243,6 +240,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     {
         super.sendStats();
         sendCollectionStats();
+        sendActivityStats(true);
     }
 
     /**
@@ -260,6 +258,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         if (doSendSecondaryStats || !isAnon)
         {
             Vector<NameValuePair> stats = new Vector<NameValuePair>();
+            appendBasicCollStats(stats);
+            
             if (hasChanged)
             {
                 if (progress != null) progress.setIndeterminate(true);
@@ -286,46 +286,53 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
                 }
             }
             
-            SpecifyUser su = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-            if (su != null)
-            {
-                stats.add(new NameValuePair("specifyuser",  fixParam(su.getName()))); //$NON-NLS-1$
-            }
-    
-            // Gather Collection Counts;
-            if (collection != null)
-            {
-                Integer estSize = collection.getEstimatedSize();
-                String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
-                
-                stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Collection_name",    fixParam(collection.getCollectionName()))); //$NON-NLS-1$
-            }
-    
-            if (discipline != null)
-            {
-                stats.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Discipline_name",    fixParam(discipline.getName()))); //$NON-NLS-1$
-            }
-    
-            if (division != null)
-            {
-                stats.add(new NameValuePair("Division_number",  fixParam(division.getRegNumber()))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Division_name",    fixParam(division.getName()))); //$NON-NLS-1$
-            }
-    
-            if (institution != null)
-            {
-                stats.add(new NameValuePair("Institution_number",  fixParam(institution.getRegNumber()))); //$NON-NLS-1$
-                stats.add(new NameValuePair("Institution_name",    fixParam(institution.getName()))); //$NON-NLS-1$
-            }
-            
             return stats;
         }
         return null;
+    }
+    
+    /**
+     * adds the basic stats about the Institution ... Collection
+     * @param stats the list of stats
+     */
+    protected void appendBasicCollStats(final Vector<NameValuePair> stats)
+    {
+        SpecifyUser su = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        if (su != null)
+        {
+            stats.add(new NameValuePair("specifyuser",  fixParam(su.getName()))); //$NON-NLS-1$
+        }
+
+        // Gather Collection Counts;
+        if (collection != null)
+        {
+            Integer estSize = collection.getEstimatedSize();
+            String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
+            
+            stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_name",    fixParam(collection.getCollectionName()))); //$NON-NLS-1$
+        }
+
+        if (discipline != null)
+        {
+            stats.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Discipline_name",    fixParam(discipline.getName()))); //$NON-NLS-1$
+        }
+
+        if (division != null)
+        {
+            stats.add(new NameValuePair("Division_number",  fixParam(division.getRegNumber()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Division_name",    fixParam(division.getName()))); //$NON-NLS-1$
+        }
+
+        if (institution != null)
+        {
+            stats.add(new NameValuePair("Institution_number",  fixParam(institution.getRegNumber()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Institution_name",    fixParam(institution.getName()))); //$NON-NLS-1$
+        }
     }
     
     /**
@@ -378,7 +385,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     /**
      * @param stats
      */
-    private void getCollectingStats(final Vector<NameValuePair> stats)
+    private void appendCollectingStats(final Vector<NameValuePair> stats)
     {
         final String ALL_YEAR_CATS      = "ALL_YEAR_CATS_STAT"; 
         final String LAST_COL_YEAR_STAT = "LAST_COL_YEAR_STAT"; 
@@ -462,69 +469,50 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     }
     
     /**
-     * @return
-     */
-    protected NameValuePair[] createPostParametersForCollections()
-    {
-        Vector<NameValuePair> postParams = new Vector<NameValuePair>();
-        Collections.addAll(postParams, createPostParameters(false));
-        getCollectingStats(postParams);
-            
-        // create an array from the params
-        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
-        for (int i = 0; i < paramArray.length; ++i)
-        {
-            paramArray[i] = postParams.get(i);
-        }
-        
-        return paramArray;
-    }
-
-    
-    /**
      * @throws Exception
      */
     private void sendCollectionStats() throws Exception
     {
-        // check the website for the info about the latest version
-        HttpClient httpClient = new HttpClient();
-        httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        
-        // get the URL of the website to check, with usage info appended, if allowed
         String collStatsCheckURL =  getResourceString("StatsTrackerTask.COLLSTATSURL"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(collStatsCheckURL))
         {
-            PostMethod postMethod = new PostMethod(collStatsCheckURL);
+            Vector<NameValuePair> stats = createPostParameters(false);
+            appendCollectingStats(stats);
+            sendStats(collStatsCheckURL, stats, getClass().getName());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private void sendActivityStats(final boolean isLoggingIn) throws Exception
+    {
+        String url =  getResourceString("StatsTrackerTask.ACTIVITYSURL"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(url))
+        {
+            Vector<NameValuePair> stats = createPostParameters(false);
+            appendBasicCollStats(stats);
+            stats.add(new NameValuePair("Type",  isLoggingIn ? "0" : "1")); //$NON-NLS-1$
             
-            // get the POST parameters (which includes usage stats, if we're allowed to send them)
-            NameValuePair[] postParams = createPostParametersForCollections();
-            postMethod.setRequestBody(postParams);
-            
-            // connect to the server
+            sendStats(url, stats, getClass().getName());
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT) ||
+            cmdAction.isAction(APP_START_ACT))
+        {
             try
             {
-                httpClient.executeMethod(postMethod);
-                
-                // get the server response
-                @SuppressWarnings("unused")
-                String responseString = postMethod.getResponseBodyAsString();
-                
-                /*if (StringUtils.isNotEmpty(responseString))
-                {
-                    System.err.println(responseString);
-                }*/
-    
-            } catch (java.net.UnknownHostException ex)
-            {
-                log.debug("Couldn't reach host.");
-                
-            } catch (Exception e)
-            {
-                //e.printStackTrace();
-                //UsageTracker.incrHandledUsageCount();
-                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
-                throw new ConnectionException(e);
-            }
+                sendActivityStats(true);
+            } catch (Exception ex) {}
         }
     }
 
