@@ -1007,7 +1007,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             localPrefs.putBoolean("login.rememberuser", rememberUsernameCBX.isSelected()); //$NON-NLS-1$
         }
         
-        if (dbDrivers != null && dbDriverCBX != null && portSpinner.getValue() != null)
+        if (dbDrivers != null && dbDriverCBX != null && portSpinner != null && portSpinner.getValue() != null)
         {
             localPrefs.put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
             if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
@@ -1521,7 +1521,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         if (dbDriverCBX.getSelectedIndex() > -1) 
         { 
             DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
-            if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
+            if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile() && portSpinner != null)
             {
                 drvInfo.setPort((Integer)portSpinner.getValue());
             }
