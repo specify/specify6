@@ -5,6 +5,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -19,6 +20,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.plaf.BorderUIResource;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -26,7 +28,7 @@ import org.jdesktop.animation.timing.TimingTarget;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.tasks.subpane.wb.*;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -64,9 +66,12 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     public UploadToolPanel(final WorkbenchPaneSS wbSS, int startingMode)
     {
     	this.wbSS = wbSS;
-    	autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
+    	//autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
+    	autoValidateChk = UIHelper.createI18NCheckBox(null);
         autoValidateChk.setSelected(wbSS.isDoIncrementalValidation());
-        autoValidateChk.setBackground(CellRenderingAttributes.errorBackground);
+//        autoValidateChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.errorBackground);
+//        autoValidateChk.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.errorBorder));
+//        autoValidateChk.setBorderPainted(true);
         autoValidateChk.addActionListener(new ActionListener() {
         	
 			@Override
@@ -90,6 +95,16 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 			}
         	
         });
+
+    	JPanel autoValidatePanel = new JPanel(new BorderLayout());
+    	autoValidatePanel.add(autoValidateChk, BorderLayout.WEST);
+    	JLabel autoValidateLbl = UIHelper.createLabel(UIRegistry.getResourceString("WorkbenchPaneSS.AutoValidateChk"));
+    	autoValidateLbl.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.errorBorder));
+    	autoValidateLbl.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.errorBackground);
+    	autoValidateLbl.setOpaque(true);
+    	autoValidatePanel.add(autoValidateLbl, BorderLayout.CENTER);
+
+        
         Action prevErrAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F5, "PrevErr", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -114,9 +129,12 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         nextInvalidCellBtn.setVisible(wbSS.isDoIncrementalValidation());
         invalidCellCountLbl.setVisible(wbSS.isDoIncrementalValidation());
 
-    	autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
+    	//autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
+    	autoMatchChk = UIHelper.createI18NCheckBox(null);
     	autoMatchChk.setSelected(wbSS.isDoIncrementalMatching());
-    	autoMatchChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
+    	//autoMatchChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
+    	//autoMatchChk.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
+    	//autoMatchChk.setBorderPainted(true);
     	autoMatchChk.addActionListener(new ActionListener() {
         	
 			@Override
@@ -140,6 +158,14 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 			}
         	
         });
+
+    	JPanel autoMatchPanel = new JPanel(new BorderLayout());
+    	autoMatchPanel.add(autoMatchChk, BorderLayout.WEST);
+    	JLabel autoMatchLbl = UIHelper.createLabel(UIRegistry.getResourceString("WorkbenchPaneSS.AutoMatchChk"));
+    	autoMatchLbl.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
+    	autoMatchLbl.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
+    	autoMatchLbl.setOpaque(true);
+    	autoMatchPanel.add(autoMatchLbl, BorderLayout.CENTER);
 
         Action prevUnmatchedAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F7, "PrevUnMatched", new AbstractAction()
         {
@@ -171,8 +197,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
 
-        JComponent[] compsArray = {autoValidateChk, invalidCellCountLbl,
-                                   prevInvalidCellBtn,  nextInvalidCellBtn, sep1, autoMatchChk,
+        JComponent[] compsArray = {/*autoValidateChk*/autoValidatePanel, invalidCellCountLbl,
+                                   prevInvalidCellBtn,  nextInvalidCellBtn, sep1, /*autoMatchChk*/autoMatchPanel,
                                    unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn, helpBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length);
         for (JComponent c : compsArray)
@@ -190,6 +216,10 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         	add(c, cc.xy(x,2));
             x += 2;
             c.setFont(c.getFont().deriveFont(c.getFont().getSize() + 2.0F));
+            for (Component sc : c.getComponents())
+            {
+            	sc.setFont(sc.getFont().deriveFont(sc.getFont().getSize() + 2.0F));
+            }
         }
 
         mode = startingMode;
