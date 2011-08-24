@@ -3241,13 +3241,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			TreeDefItemIface<T,D,I> draggedDef = treeDef.getDefItemByRank(draggedNode.getRank());
 			if (droppedOnNode.getRank() < draggedNode.getRank()) 
 			{
-				if (draggedDef.getIsEnforced())
+				if (draggedDef.getIsEnforced() != null && draggedDef.getIsEnforced())
 				{
 					return false;
 				}
 				for (TreeDefItemIface<T,D,I> di : sortedTreeDefItems)
 				{
-					if (di.getIsEnforced() && di.getRankId() > droppedOnNode.getRank() && di.getRankId() < draggedNode.getRank())
+					if (draggedDef.getIsEnforced() != null && draggedDef.getIsEnforced() && di.getRankId() > droppedOnNode.getRank() && di.getRankId() < draggedNode.getRank())
 					{
 						return false;
 					}
