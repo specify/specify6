@@ -3124,7 +3124,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	    if (rankLevel == -1 || (draggedRankId >= rankLevel && droppedRankId >= rankLevel)
     	    		|| draggedRankId == droppedRankId)
             {
-                boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
+                //given the above condition on the draggedNode's children, this call must return false...
+    	    	boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
 //                if (!descendant)
 //                {
 //                    // check the other way as well
