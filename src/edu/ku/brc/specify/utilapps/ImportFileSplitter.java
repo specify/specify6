@@ -43,6 +43,8 @@ import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFName;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -393,6 +395,7 @@ public class ImportFileSplitter extends CustomDialog
 				        HSSFWorkbook workBookOut  = null;
 				        HSSFSheet    sheetOut = null;
 				        int rowNum = 0;
+				        short styleIdxOffset = 0;
 				        String firstLine = null;
 				        boolean wroteHeaders = false;
 						while (rows.hasNext())
@@ -413,6 +416,24 @@ public class ImportFileSplitter extends CustomDialog
 							        }
 								}
 						        workBookOut = new HSSFWorkbook();
+						        styleIdxOffset = workBookOut.getNumCellStyles();
+						        for (short s = 0; s < workBook.getNumCellStyles(); s++)
+						        {
+						        	workBookOut.createCellStyle();
+						        	workBookOut.getCellStyleAt(s).cloneStyleFrom(workBook.getCellStyleAt(s));
+						        }
+						        //Block below was added to try fix sporadic bug with copying formulas
+						        //but it didn't help.
+//						        for (int r = 0; r < workBook.getNumberOfNames(); r++)
+//						        {
+//						        	workBookOut.createName();
+//						        	HSSFName name = workBookOut.getNameAt(r);
+//						        	name.setNameName(workBook.getNameAt(r).getNameName());
+//						        	if (workBook.getNameAt(r).getReference() !=  null)
+//						        	{
+//						        		name.setReference(workBook.getNameAt(r).getReference());
+//						        	}
+//						        }
 						        sheetOut = workBookOut.createSheet();		
 					            newFile = false;
 						        rowNum = 0;
@@ -440,6 +461,27 @@ public class ImportFileSplitter extends CustomDialog
 		                    	HSSFCell cellOut = rowOut.createCell(cellNum);
 		                    	cellNum++;
 		                        cellOut.setCellType(cellIn.getCellType());
+		                        short styleIdx = -1;
+		                        HSSFCellStyle inStyle = cellIn.getCellStyle();
+		                        for (short s = 0; s < workBook.getNumCellStyles(); s++)
+		                        {
+		                        	if (workBook.getCellStyleAt(s).equals(inStyle))
+		                        	{
+		                        		styleIdx = (short)(s + styleIdxOffset);
+		                        		break;
+		                        	}
+		                        }
+		                        if (styleIdx != -1)
+		                        {
+		                        	try
+		                        	{
+		                        		cellOut.setCellStyle(workBookOut.getCellStyleAt(styleIdx));
+		                        	} catch (Exception ex)
+		                        	{
+		                        		//That didn't work. HSSF in action.
+		                        		log.error("Failed to set cell style at file " + fileNum + " row " + rowNum + " cell " + cellNum);
+		                        	}
+		                        }
 		                    	switch (cellIn.getCellType())
 		                        {
 		                        	case HSSFCell.CELL_TYPE_NUMERIC:
@@ -455,7 +497,14 @@ public class ImportFileSplitter extends CustomDialog
 		                        		break;
 		                        		
 		                        	case HSSFCell.CELL_TYPE_FORMULA:
-		                        		cellOut.setCellFormula(cellIn.getCellFormula());
+		                        		try 
+		                        		{
+		                        			cellOut.setCellFormula(cellIn.getCellFormula());
+		                        		} catch (Exception ex)
+		                        		{
+			                        		//That didn't work. HSSF in action.
+			                        		log.error("Failed to set formula at file " + fileNum + " row " + rowNum + " cell " + cellNum);
+		                        		}
 		                        		break;
 		                        		
 		                        	case HSSFCell.CELL_TYPE_ERROR:
