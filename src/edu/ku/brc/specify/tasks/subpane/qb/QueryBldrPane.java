@@ -2555,7 +2555,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 String searchLbl = schemaMapping == null ? getResourceString("QB_SEARCH") : getResourceString("QB_EXPORT_PREVIEW");
                 QueryBldrPane.this.searchBtn.setText(searchLbl); 
-                UIRegistry.getStatusBar().setProgressDone(query.getName());
+                if (query !=  null)
+                {
+                	UIRegistry.getStatusBar().setProgressDone(query.getName());
+                }
                 UIRegistry.displayStatusBarText("");
             }
         });
