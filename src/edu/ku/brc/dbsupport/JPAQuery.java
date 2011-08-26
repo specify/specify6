@@ -27,11 +27,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.exception.JDBCConnectionException;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -48,6 +51,7 @@ import edu.ku.brc.util.Pair;
 public class JPAQuery implements CustomQueryIFace
 {
     private static final Logger log = Logger.getLogger(JPAQuery.class);
+    private static long lastErrorTime = 0;
     
     protected QueryExecutor             queryExecutor;
     protected String                    sqlStr;
@@ -174,6 +178,23 @@ public class JPAQuery implements CustomQueryIFace
         
         return !inError;
     }
+    
+    /**
+     * @return
+     */
+    private boolean dispatchError()
+    {
+        long    now       = System.currentTimeMillis(); 
+        boolean showError = now - lastErrorTime > 2000;
+        lastErrorTime = now;
+        if (showError)
+        {
+            inError = true;
+            CommandDispatcher.dispatch(new CommandAction("ERRMSG", "DISPLAY", this, null, "BAD_CONNECTION"));
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @return
@@ -218,11 +239,24 @@ public class JPAQuery implements CustomQueryIFace
                 
             } catch (JDBCConnectionException ex)
             {
+                if (dispatchError())
+                {
+                    inError = true;
+                    return false;
+                }
+                
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
-                HibernateUtil.rebuildSessionFactory();
-                Query localQuery = session.createQuery(sqlStr);
-                resultsList = localQuery.list();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
+                try
+                {
+                    HibernateUtil.rebuildSessionFactory();
+                    Query localQuery = session.createQuery(sqlStr);
+                    resultsList = localQuery.list();
+                    
+                } catch (JDBCConnectionException ex2)
+                {
+                    dispatchError();
+                }
             }
             
             inError = resultsList == null;
@@ -235,8 +269,9 @@ public class JPAQuery implements CustomQueryIFace
         } catch (Exception ex)
         {
             log.error(ex);
+            dispatchError();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
             log.error("** In Exception ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             ex.printStackTrace();
             inError = true;
@@ -245,7 +280,10 @@ public class JPAQuery implements CustomQueryIFace
         {
             if (session != null)
             {
-                session.close();
+                try
+                {
+                    session.close();
+                } catch (HibernateException he) {}
             }
         }
         

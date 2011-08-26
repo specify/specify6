@@ -26,6 +26,11 @@ import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
+import com.mysql.jdbc.CommunicationsException;
+
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+
 
 /**
  * Constructs a an object to execute an SQL statement and then notify the listener and it is done. Any exception in the
@@ -39,6 +44,8 @@ import org.apache.log4j.Logger;
 public class SQLExecutionProcessor
 {
     private static final Logger log = Logger.getLogger(SQLExecutionProcessor.class);
+    
+    private static long            lastErrorTime = 0;
 
     protected SQLExecutionListener listener;
     protected String               sqlStr;
@@ -263,9 +270,26 @@ public class SQLExecutionProcessor
 
         } catch (java.sql.SQLException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
-            log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            long    now       = System.currentTimeMillis(); 
+            boolean showError = now - lastErrorTime > 2000;
+            lastErrorTime = now;
+            
+            if (showError)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                if (ex instanceof CommunicationsException)
+                {
+                    CommandDispatcher.dispatch(new CommandAction("ERRMSG", "DISPLAY", this, null, "BAD_CONNECTION"));
+                    return;
+                    
+                }
+                
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
+                log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
+                return;
+            }
+            
             if (listener != null)
             {
                 listener.executionError(this, ex);
@@ -274,8 +298,15 @@ public class SQLExecutionProcessor
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
-            log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            long    now       = System.currentTimeMillis(); 
+            boolean showError = now - lastErrorTime > 2000;
+            lastErrorTime = now;
+            if (showError)
+            {
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
+                log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
+            }
             if (listener != null)
             {
                 listener.executionError(this, ex);

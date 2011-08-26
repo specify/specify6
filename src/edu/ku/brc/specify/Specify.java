@@ -244,6 +244,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
+    private static final String ERRMSG               = "ERRMSG";
     
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 1024;
@@ -539,6 +540,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         adjustLocaleFromPrefs();
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
+        
+        CommandDispatcher.register(ERRMSG, this);
         
         DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
         {
@@ -2799,6 +2802,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     System.exit(0);
                 }
             }
+        } else if (cmdAction.isType(ERRMSG) && cmdAction.isAction("DISPLAY"))
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    UIRegistry.displayErrorDlgLocalized((String)cmdAction.getData());
+                }
+            });
         }
     }
 
