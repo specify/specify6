@@ -173,6 +173,10 @@ public class XLSImport extends DataImport implements DataImportIFace
                             continue;
                         }
                         int      type    = cell.getCellType();
+                        if (type == HSSFCell.CELL_TYPE_FORMULA)
+                        {
+                        	type = cell.getCachedFormulaResultType();
+                        }
                         String   value   = "";
                         boolean  skip    = false;
     

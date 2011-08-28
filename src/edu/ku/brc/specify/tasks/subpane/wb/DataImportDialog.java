@@ -917,7 +917,9 @@ public class DataImportDialog extends JDialog implements ActionListener
                         }
                         else
                         {
-                            switch (cell.getCellType())
+                            int type = cell.getCellType();
+
+                        	switch (type)
                             {
                                 case HSSFCell.CELL_TYPE_NUMERIC:
                                     // The best I can do at this point in the app is to guess if a
@@ -937,11 +939,12 @@ public class DataImportDialog extends JDialog implements ActionListener
                                     // This function checks the format against a few internal
                                     // formats to decide the issue,
                                     // but by its very nature it is prone to false negatives.
-                                    if (HSSFDateUtil.isCellDateFormatted(cell))
+                                	if (HSSFDateUtil.isCellDateFormatted(cell))
                                     {
                                         value = scrDateFormat.getSimpleDateFormat().format(
                                                 cell.getDateCellValue());
-                                    }
+                                        //value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
+                                                                            }
                                     else
                                     {
                                         double numeric = cell.getNumericCellValue();
@@ -961,6 +964,10 @@ public class DataImportDialog extends JDialog implements ActionListener
                                     value = Boolean.toString(cell.getBooleanCellValue());
                                     break;
 
+                                case HSSFCell.CELL_TYPE_FORMULA:
+                                	value = UIRegistry.getResourceString("WB_FORMULA_IMPORT_NO_PREVIEW");
+                                	break;
+                                	
                                 default:
                                     value = "";
                                     log.error("unsuported cell type");
