@@ -187,7 +187,7 @@ public class GraphBuilder
             {
                 log.debug(rel.getName() + ": one of the fields is null."); 
             }
-            return new Relationship(oneSideFld, manySideFld, "OneToMany");
+            return new Relationship(oneSideFld, manySideFld, Relationship.REL_ONETOMANY);
         }
         catch (RuntimeException ex)
         {

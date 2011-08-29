@@ -1208,7 +1208,7 @@ public class Uploader implements ActionListener, KeyListener
                 if (parentTbl != null)
                 {
                     Relationship rankRel = new Relationship(parentTbl.getKey(), rankTbl
-                            .getField(treeMap.getParentField()), "OneToMany");
+                            .getField(treeMap.getParentField()), Relationship.REL_ONETOMANY);
                     uploadGraph.addEdge(parentTbl.getName(), rankTbl.getName(), rankRel);
                 }
             }
@@ -3987,6 +3987,40 @@ public class Uploader implements ActionListener, KeyListener
         // || op.equals(Uploader.SUCCESS)
                 // || op.equals(Uploader.INITIAL_STATE)
                 || op.equals(Uploader.FAILURE);
+    }
+
+    /**
+     * @return all tables whose ParentTableEntries contain parent
+     */
+    public List<UploadTable> getChildren(final UploadTable parent)
+    {
+    	Vector<UploadTable> result = new Vector<UploadTable>();
+    	for (UploadTable ut : uploadTables)
+    	{
+    		//Assuming this method is called by UploadTable created by this Uploader
+    		//so pointer comparisons are OK.
+    		if (ut != parent)
+    		{
+    			for (Vector<ParentTableEntry> ptes : ut.getParentTables())
+    			{
+    				boolean broke = false;
+    				for (ParentTableEntry pte : ptes)
+    				{
+    					if (pte.getImportTable() == parent)
+    					{
+    						result.add(ut);
+    						broke = true;
+    						break;
+    					}
+    				}
+    				if (broke)
+    				{
+    					break;
+    				}
+    			}
+    		}
+    	}
+    	return result;
     }
 
     /**

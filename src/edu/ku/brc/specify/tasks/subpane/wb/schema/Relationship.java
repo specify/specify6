@@ -28,6 +28,8 @@ package edu.ku.brc.specify.tasks.subpane.wb.schema;
  */
 public class Relationship
 {
+	public static final String REL_ONETOMANY = "OneToMany";
+	
     /**
      * The field on the 'from' side of the relatinoship.
      */

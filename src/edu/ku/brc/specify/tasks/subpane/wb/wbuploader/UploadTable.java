@@ -54,6 +54,7 @@ import org.hibernate.exception.ConstraintViolationException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -93,7 +94,6 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
@@ -111,9 +111,9 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DateConverter;
 import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * @author timbo
@@ -3573,37 +3573,89 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean shouldEnforceNonNullConstraint(final int row, final UploadData uploadData, final int seq)
     {
-    	
-    	//This is a rather lame implementation.
     	//Generally, if all fields in a table are blank, and related tables don't require a record,
     	//then there is no need to enforce not-null constraints.
     	if (tblClass.equals(PrepType.class)) 
     	{
     		return !uploader.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
     	}
-    	if (hasChildren &&
-    			(tblClass.equals(Accession.class) || tblClass.equals(Permit.class) || tblClass.equals(Locality.class) 
-    			|| tblClass.equals(CollectingEvent.class) || tblClass.equals(FieldNotebookPage.class))) 
+    	
+    	if (!isBlankRow(row, uploadData, seq))
     	{
-    		boolean isBlank = isBlankRow(row, uploadData, seq);
-        	//XXX Really need to access the upload graph to do this correctly - what about (CO-COAttribute, CE-CEAttr, ...
-    		if (isBlank && tblClass.equals(Locality.class))
-    		{
-    			UploadTable locDetail = uploader.getUploadTableByName("LocalityDetail");
-    			if (locDetail != null)
-    			{
-    				isBlank = locDetail.isBlankRow(row, uploadData, seq);
-    			}
-    		}
-    		if (!isBlank)
+    		return true;
+    	}
+    	
+    	if (iAmRequiredByARelationship())
+    	{
+    		return true;
+    	}
+    	
+    	List<UploadTable> chillun = uploader.getChildren(this);
+    	for (UploadTable chile : chillun)
+    	{
+    		if (iControlTheChild(chile) && !chile.isBlankRow(row, uploadData, seq))
     		{
     			return true;
     		}
-    		return parentTableIsNonBlank(row, uploadData);
     	}
-    	return true;
+    	
+    	return false;
+    	
     }
     
+    /**
+     * @param child
+     * @return true if this UploadTable "owns" child.
+     */
+    protected boolean iControlTheChild(UploadTable child)
+    {
+		if (specialChildren.contains(child))
+		{
+			return true;
+		}
+		
+    	DBTableInfo tblInfo = child.getTable().getTableInfo();
+		if (tblInfo != null)
+		{
+			for (DBRelationshipInfo relInfo : tblInfo.getRelationships())
+			{
+				if (relInfo.getDataClass().equals(tblClass))
+				{
+					if (relInfo.isRequired())
+					{
+						return true;
+					}
+				}
+			}
+		}
+    	return false;
+    }
+    
+    /**
+     * @return return true if there is a relationship in the upload graph that requires this UploadTable
+     */
+    protected boolean iAmRequiredByARelationship()
+    {
+    	for (Vector<ParentTableEntry> parents : parentTables)
+    	{
+    		for (ParentTableEntry pte : parents)
+    		{
+    			DBTableInfo tblInfo = pte.getImportTable().getTable().getTableInfo();
+    			if (tblInfo != null)
+    			{
+    				for (DBRelationshipInfo relInfo : tblInfo.getRelationships())
+    				{
+    					if (relInfo.getDataClass().equals(tblClass) /*&& don't think the colname matters here*/ 
+    							&& relInfo.isRequired())
+    					{
+    						return true;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return false;
+    }
     /**
      * @param row
      * @param uploadData
