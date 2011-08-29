@@ -756,7 +756,7 @@
     <field column="Prep YesNo 2" name="prepYesNo2" type="boolean" />
     <field column="Prep Text1 2" name="prep2Text1" type="java.lang.String" length="500"/>
     <field column="Prep Text2 2" name="prep2Text2" type="java.lang.String" length="500"/>
-    <field column="Prep Description 2" name="prepDescription1" type="java.lang.String" length="255"/>
+    <field column="Prep Description 2" name="prepDescription2" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 2" name="prepRemarks2" type="text" length="4096"/>
     <field column="Building 2" name="building2" type="java.lang.String" length="64"/>
     <field column="Collection 2" name="collection2" type="java.lang.String" length="64"/>
