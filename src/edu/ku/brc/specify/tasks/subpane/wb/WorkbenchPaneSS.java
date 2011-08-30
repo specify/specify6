@@ -1059,30 +1059,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         add(builder.getPanel(), BorderLayout.SOUTH);
         
-        // See if we need to make the Image Frame visible
-        // Commenting this out for now because it is so annoying.
-        
-        if (showImageView || hasOneOrMoreImages)
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    toggleImageFrameVisible();
-
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            final Frame f = (Frame)UIRegistry.get(UIRegistry.FRAME);
-                            f.toFront();
-                            f.requestFocus();
-                        }
-                    });
-                }
-            });
-        }
-        
         resultsetController.addListener(new ResultSetControllerListener() {
             public boolean indexAboutToChange(int oldIndex, int newIndex)
             {
@@ -1120,6 +1096,30 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
         initColumnSizes(spreadSheet, saveBtn);
+        
+        // See if we need to make the Image Frame visible
+        // Commenting this out for now because it is so annoying.
+        
+        if (showImageView || hasOneOrMoreImages)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    toggleImageFrameVisible();
+
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            final Frame f = (Frame)UIRegistry.get(UIRegistry.FRAME);
+                            f.toFront();
+                            f.requestFocus();
+                        }
+                    });
+                }
+            });
+        }
     }
     
     /**
