@@ -230,6 +230,11 @@ public class WorkbenchTask extends BaseTask
         {
         	log.debug("security off");
         }
+        
+        if (WorkbenchDataItem.getMaxWBCellLength() == null)
+        {
+            WorkbenchDataItem.setMaxWBCellLength(AppPreferences.getLocalPrefs().getInt("MAX_WBCELL_LENGTH", 512));
+        }
 	}
 
     /* (non-Javadoc)
@@ -1069,8 +1074,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             session.close();
         }
         
-        selection = null;
-
         Vector<Object> result = new Vector<Object>();
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)

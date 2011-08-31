@@ -59,7 +59,7 @@ public class DataImport
                                          final int row,
                                          final WorkbenchTemplateMappingItem wbtmi)
     {
-        int maxLen = WorkbenchDataItem.getCellDataLength();
+        int maxLen = WorkbenchDataItem.getMaxWBCellLength();
         if (/*wbtmi.getFieldInfo().getLength()*/wbtmi.getDataFieldLength() != null && wbtmi.getDataFieldLength() != -1 && /*wbtmi.getFieldInfo().getLength()*/ wbtmi.getDataFieldLength() < maxLen)
         {
             maxLen = wbtmi.getDataFieldLength()/*wbtmi.getFieldInfo().getLength()*/;

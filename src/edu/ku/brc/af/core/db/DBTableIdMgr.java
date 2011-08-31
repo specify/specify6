@@ -44,6 +44,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -253,6 +254,10 @@ public class DBTableIdMgr
                         if (StringUtils.isNotEmpty(lenStr) && StringUtils.isNumeric(lenStr))
                         {
                             len = Integer.parseInt(lenStr);
+                            if (!UIRegistry.isMobile() && len > 256) // length over 255 are memo/text fields in MySQL and do not need to be constrained
+                            {
+                                len = Integer.MAX_VALUE;
+                            }
                         }
                         DBFieldInfo fieldInfo = new DBFieldInfo(tblInfo,
                                                                 irNode.attributeValue("column"), //$NON-NLS-1$

@@ -1257,10 +1257,10 @@ public class DataImportDialog extends JDialog implements ActionListener
             {
             	//WorkbenchDataItem.class.getDeclaredMethod("getCellData", null).getDeclaredAnnotations();
                 String str = data[i][j];
-                if (!isStringShorterThan(WorkbenchDataItem.getCellDataLength(), str))
+                if (!isStringShorterThan(WorkbenchDataItem.getMaxWBCellLength(), str))
                 {
                     String msg = "The value in cell Row=" + i + ", Column=" + headers[j] + " is too long to be inserted into the database.  It will be truncated.\n"
-                    + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, WorkbenchDataItem.getCellDataLength()-1);
+                    + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, WorkbenchDataItem.getMaxWBCellLength()-1);
                     log.warn(msg);
                     listModel.addElement(msg);
                 }

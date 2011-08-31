@@ -3188,7 +3188,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
             
             // Now go retrieve the data length
-            int fieldWidth = WorkbenchDataItem.cellDataLength;
+            int fieldWidth = WorkbenchDataItem.getMaxWBCellLength();
             DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
             if (ti != null)
             {
@@ -3199,7 +3199,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     //System.out.println(fi.getName()+"  "+fi.getLength()+"  "+fi.getType());
                     if (RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0)
                     {
-                        fieldWidth = Math.min(fi.getLength(), WorkbenchDataItem.cellDataLength);
+                        fieldWidth = Math.min(fi.getLength(), WorkbenchDataItem.getMaxWBCellLength());
                     }
                 } else
                 {

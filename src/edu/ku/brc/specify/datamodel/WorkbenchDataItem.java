@@ -57,7 +57,9 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public static final short VAL_MULTIPLE_MATCH 	= 5;
     public static final short VAL_NOT_MATCHED 		= 6; //match not attempted, 
     													//most likely due to un-matched parent
-       
+    
+    private static Integer maxWBCellLength = null;
+
     // Fields
     protected Integer      workbenchDataItemId;
     protected String       cellData;
@@ -123,7 +125,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     @GeneratedValue
     @Column(name = "WorkbenchDataItemID")
     public Integer getWorkbenchDataItemId()
-    {
+    {    
         return this.workbenchDataItemId;
     }
 
@@ -154,7 +156,6 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         this.workbenchDataItemId = workbenchDataItemId;
     }
 
-    public static int cellDataLength = 512;
     /**
      * 
      */
@@ -266,14 +267,23 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         return 0;
     }
 
+    
 	/**
-	 * @return the cellDataLength
-	 */
-	public static int getCellDataLength()
-	{
-		return cellDataLength;
-	}
-	
+     * @return the maxWBCellLength
+     */
+    public static Integer getMaxWBCellLength()
+    {
+        return maxWBCellLength;
+    }
+
+    /**
+     * @param maxWBCellLength the maxWBCellLength to set
+     */
+    public static void setMaxWBCellLength(final Integer maxWBCellLen)
+    {
+        WorkbenchDataItem.maxWBCellLength = maxWBCellLen;
+    }
+
 	/**
 	 * @return the statusText
 	 */
