@@ -233,7 +233,12 @@ public class WorkbenchTask extends BaseTask
         
         if (WorkbenchDataItem.getMaxWBCellLength() == null)
         {
-            WorkbenchDataItem.setMaxWBCellLength(AppPreferences.getLocalPrefs().getInt("MAX_WBCELL_LENGTH", 512));
+            int max = Math.min(AppPreferences.getLocalPrefs().getInt("MAX_WBCELL_LENGTH", 512), 32767);
+            if (UIRegistry.isMobile())
+            {
+                max = Math.min(max, 512);
+            }
+            WorkbenchDataItem.setMaxWBCellLength(max);
         }
 	}
 

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -255,7 +256,7 @@ public class GridTableModel extends SpreadSheetModel
      * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
      */
     @Override
-    public void setValueAt(Object value, int row, int column)
+    public void setValueAt(final Object value, final int row, final int column)
     {
         if (isInImageMode && column == headers.size() - 1)
         {
@@ -271,7 +272,14 @@ public class GridTableModel extends SpreadSheetModel
             	getWorkbench().getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column, isUserEdit);
             	if (!batchMode)
             	{
-            		fireTableCellUpdated(row, column);
+            	    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            fireTableCellUpdated(row, column);
+                        }
+                    });
             	}
             }
         }

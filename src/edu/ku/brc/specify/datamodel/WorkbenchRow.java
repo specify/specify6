@@ -49,6 +49,8 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -78,6 +80,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public static final byte UPLD_SUCCESS = 1;
     public static final byte UPLD_SKIPPED = 2;
     public static final byte UPLD_FAILED = 3;
+    
+    private static long lastTruncErrorMilli = 0;
     
     protected Integer                workbenchRowId;
     protected Short                  rowNumber;
@@ -156,11 +160,6 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         for (WorkbenchDataItem item : getWorkbenchDataItems())
         {
             item.getCellData();
-        }
-
-        if (getWorkbenchRowImages() != null)
-        {
-            getWorkbenchRowImages().size();
         }
     }
     
@@ -627,7 +626,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         this.workbenchDataItems = workbenchDataItems;
     }
 
-    @OneToMany(mappedBy = "workbenchRow")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workbenchRow")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchRowImage> getWorkbenchRowImages()
     {
@@ -729,28 +728,49 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public WorkbenchDataItem setData(final String dataStr, final short col, final boolean updateGeoRefInfo, final boolean isRequired)
     {
+        String data;
+        if (StringUtils.isNotEmpty(dataStr) && dataStr.length() > WorkbenchDataItem.getMaxWBCellLength())
+        {
+            data = dataStr.substring(0, WorkbenchDataItem.getMaxWBCellLength());
+            
+            // I hate having to do this here, but otherwise it would involve changing too much code.
+            // I dispatch the error so there is no UI code here in the data model class.
+            if (CommandDispatcher.getInstance() != null)
+            {
+                long now = System.currentTimeMillis();
+                if (now - lastTruncErrorMilli > 4000) // this stops there from being a bunch of errors being displayed. (4 seconds is arbitrary)
+                {
+                    CommandDispatcher.dispatch(new CommandAction("ERRMSG", "DISPLAY", "WB_ERR_DATA_TRUNC"));
+                    lastTruncErrorMilli = now;
+                }
+            }
+        } else
+        {
+            data = dataStr;
+        }
+        
         WorkbenchDataItem wbdi = getItems().get(col);
         if (wbdi != null)
         {
             // remove the item if it is set to empty and is not required
-            if (StringUtils.isEmpty(dataStr) && (wbdi.isRequired()))
+            if (StringUtils.isEmpty(data) && (wbdi.isRequired()))
             {
                 items.remove(col);
                 workbenchDataItems.remove(wbdi);
             }
             //if nothing has changed return null. (Mostly to prevent unnecessary updates of Georef texts).
-            else if (dataStr.equals(wbdi.getCellData()))
+            else if (data.equals(wbdi.getCellData()))
             {
                 return null;
             }
             
-            wbdi.setCellData(dataStr);
+            wbdi.setCellData(data);
         } else // the cell doesn't exist so create one
         {
-        	if (StringUtils.isNotEmpty(dataStr) || isRequired)
+        	if (StringUtils.isNotEmpty(data) || isRequired)
             {
         		Short inx = (short)col;
-                wbdi = new WorkbenchDataItem(this, workbench.getMappingFromColumn(col), dataStr, rowNumber); // adds it to the row also
+                wbdi = new WorkbenchDataItem(this, workbench.getMappingFromColumn(col), data, rowNumber); // adds it to the row also
                 if (isRequired)
                 {
                 	wbdi.setRequired(true);
