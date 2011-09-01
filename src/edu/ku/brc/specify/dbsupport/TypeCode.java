@@ -22,6 +22,7 @@ package edu.ku.brc.specify.dbsupport;
 import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
@@ -242,6 +243,20 @@ public class TypeCode implements PickListDBAdapterIFace, ComboBoxModel
     {
         // certainly not
     }
-    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#addChangeListener(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public void addChangeListener(ChangeListener l)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#removeChangeListener(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public void removeChangeListener(ChangeListener l)
+    {
+    }
 }

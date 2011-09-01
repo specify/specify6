@@ -22,7 +22,8 @@ package edu.ku.brc.af.ui.db;
 import java.util.Collections;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -57,7 +58,8 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
     protected PickListIFace             pickList = null;
     protected boolean                   doAutoSaveOnAdd = true;
-    
+    protected Vector<ChangeListener>    changeListeners = new Vector<ChangeListener>();
+
     /**
      * Default Constructor.
      */
@@ -220,6 +222,12 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             {
                 save();
             }
+            
+            for (ChangeListener cl : changeListeners)
+            {
+                cl.stateChanged(new ChangeEvent(this));
+            }
+            
             return item;
             
         }
@@ -313,5 +321,25 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
     {
         return PickListDBAdapterIFace.Type.Item;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#addChangeListener(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public void addChangeListener(ChangeListener l)
+    {
+        if (l != null) changeListeners.add(l);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#removeChangeListener(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public void removeChangeListener(ChangeListener l)
+    {
+        if (l != null) changeListeners.remove(l);
+    }
+
 
 }

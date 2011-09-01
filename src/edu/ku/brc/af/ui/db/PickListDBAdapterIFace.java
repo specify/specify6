@@ -21,6 +21,8 @@ package edu.ku.brc.af.ui.db;
 
 import java.util.Vector;
 
+import javax.swing.event.ChangeListener;
+
 /**
  * There are three types of PickLists:<br>
  * 1) A PickList that uses values from the PickListItems table meaning the PickList object is managing all the items.<br>
@@ -117,4 +119,7 @@ public interface PickListDBAdapterIFace
      * @return the type of adapter.
      */
     public abstract Type getType();
+    
+    public abstract void addChangeListener(ChangeListener l);
+    public abstract void removeChangeListener(ChangeListener l);
 }

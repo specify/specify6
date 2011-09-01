@@ -175,6 +175,18 @@ public class ValComboBox extends JPanel implements UIValidatable,
         if (!adapter.isReadOnly())
         {
             Java2sAutoComboBox cbx = new Java2sAutoComboBox(adapter.getList());
+            adapter.addChangeListener(new ChangeListener()
+            {
+                @Override
+                public void stateChanged(ChangeEvent e)
+                {
+                    if (ValComboBox.this.comboBox instanceof Java2sAutoComboBox)
+                    {
+                        Java2sAutoComboBox c = (Java2sAutoComboBox)ValComboBox.this.comboBox;
+                        c.setDataList(adapter.getList());
+                    }
+                }
+            });
             comboBox = cbx;
             setControlSize(comboBox);
             cbx.setStrict(false);

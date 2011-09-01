@@ -25,6 +25,8 @@ import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.MutableComboBoxModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +35,7 @@ import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
@@ -60,6 +63,8 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     
     protected Object                    selectedObject  = null;
     protected boolean                   doAutoSaveOnAdd = true;
+    protected boolean                   needsToBeSaved  = false;
+    protected Vector<ChangeListener>    changeListeners = new Vector<ChangeListener>();
      
     
     /**
@@ -80,6 +85,34 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     {
         this.pickList = pickList;
         
+        loadItems(false);
+        
+        super.fireContentsChanged(this, 0, items.size()-1);
+    }
+    
+    /**
+     * 
+     */
+    protected void loadItems(final boolean doReload)
+    {
+        if (doReload)
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                pickList = session.get(PickList.class, pickList.getId());
+    
+            } catch (Exception e) 
+            {
+                
+            } finally 
+            {
+                if (session != null)session.close();
+            } 
+        }
+        
+        items.clear();
         for (PickListItemIFace pli : pickList.getItems())
         {
             items.add(pli); 
@@ -87,7 +120,6 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
          
         // Always keep the list sorted
         Collections.sort(items);
-        super.fireContentsChanged(this, 0, items.size()-1);
     }
     
     /**
@@ -158,6 +190,20 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         int index = Collections.binarySearch(items, searchablePLI);
         if (index < 0)
         {
+            needsToBeSaved = true;
+            
+            System.out.println(pickList.getItems().size());
+            //if (doAutoSaveOnAdd)
+            {
+                int version = BasicSQLUtils.getCount("SELECT Version FROM picklist WHERE PickListID = " + pickList.getId());
+                if (version != pickList.getVersion())
+                {
+                    loadItems(true);
+                }
+            }
+            
+            System.out.println(pickList.getItems().size());
+
             // find oldest item and remove it
             if (items.size() >= sizeLimit && sizeLimit > 0) 
             {
@@ -184,12 +230,17 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             }
             
             Collections.sort(items);
-            
-            super.fireContentsChanged(this, 0, items.size()-1);
 
             if (doAutoSaveOnAdd)
             {
                 save();
+            }
+            
+            super.fireContentsChanged(this, 0, items.size()-1);
+            
+            for (ChangeListener cl : changeListeners)
+            {
+                cl.stateChanged(new ChangeEvent(this));
             }
 
             return item;
@@ -204,36 +255,36 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
      */
     public void save()
     {
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            
-            session.saveOrUpdate(pickList);
-            
-            session.commit();
-            
+log.debug("Listeners: "+getListDataListeners().length);
 
-        } catch (Exception e) 
+        if (needsToBeSaved)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListDBAdapter.class, e);
-            // ignoring warning about 'null'
-            if (session != null)
+            DataProviderSessionIFace session = null;
+            try
             {
-                session.rollback();
-            }
-            
-            e.printStackTrace();
-            
-        } finally 
-        {
-            if (session != null)
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                session.saveOrUpdate(pickList);
+                session.commit();
+                needsToBeSaved = false;
+                
+            } catch (Exception e) 
             {
-                session.close();
-            }
-        } 
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListDBAdapter.class, e);
+                // ignoring warning about 'null'
+                if (session != null)
+                {
+                    session.rollback();
+                }
+                
+                e.printStackTrace();
+                
+            } finally 
+            {
+                if (session != null) session.close();
+            } 
+        }
     }
     
     /* (non-Javadoc)
@@ -266,6 +317,24 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         throw new RuntimeException("Unknown picklist type["+pickList.getType()+"]");
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#addChangeListener(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public void addChangeListener(ChangeListener l)
+    {
+        if (l != null) changeListeners.add(l);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#removeChangeListener(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public void removeChangeListener(ChangeListener l)
+    {
+        if (l != null) changeListeners.remove(l);
+    }
+    
     //------------------------------------------------------------------------
     //-- Default
     //------------------------------------------------------------------------
@@ -296,6 +365,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
      */
     public Object getElementAt(int index)
     {
+        if (pickList.getId() == 28) log.debug("getElementAt"+items.size()+"  index: "+index);
         //return selectedIndex > -1 && selectedIndex < items.size() ? items.get(selectedIndex) : null;
         //System.out.println("Getting Item at["+index+"]["+items.get(index)+"]");
         if ( index >= 0 && index < items.size() )
@@ -310,6 +380,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
      */
     public int getSize()
     {
+        if (pickList.getId() == 28) log.debug("Size: "+items.size()+"  Id: "+pickList.getId());
         return items.size();
     }
 
@@ -424,7 +495,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     //-------------------------------------------------
     // Interface AutoCompComboBoxModelIFace
     //-------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.AutoCompComboBoxModelIFace#add(java.lang.Object)
      */

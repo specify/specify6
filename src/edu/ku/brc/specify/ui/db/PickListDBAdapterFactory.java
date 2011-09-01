@@ -30,6 +30,7 @@ import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
@@ -133,8 +134,15 @@ public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdap
         
         if (hash != null)
         {
+            boolean doLoad = true;
             pickList = hash.get(name);
-            if (pickList == null)
+            if (pickList != null)
+            {
+                int version = BasicSQLUtils.getCount("SELECT Version FROM picklist WHERE PickListID = " + pickList.getId());
+                doLoad = version != pickList.getVersion();
+            }
+            
+            if (doLoad)
             {
                 DataProviderSessionIFace session = null;
                 try
