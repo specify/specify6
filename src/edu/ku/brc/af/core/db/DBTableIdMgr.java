@@ -256,7 +256,7 @@ public class DBTableIdMgr
                             len = Integer.parseInt(lenStr);
                             if (!UIRegistry.isMobile() && len > 256) // length over 255 are memo/text fields in MySQL and do not need to be constrained
                             {
-                                len = 32768;
+                                len = 32767;
                             }
                         }
                         DBFieldInfo fieldInfo = new DBFieldInfo(tblInfo,
