@@ -44,7 +44,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFName;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -479,39 +478,55 @@ public class ImportFileSplitter extends CustomDialog
 		                        	} catch (Exception ex)
 		                        	{
 		                        		//That didn't work. HSSF in action.
-		                        		log.error("Failed to set cell style at file " + fileNum + " row " + rowNum + " cell " + cellNum);
+		                        		String msg = String.format(UIRegistry.getResourceString("ImportFileSplitter.CellStyleCopyErrMsg"),
+		                        				rowNum+1, cellNum+1, fileNum, ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+			                        	log.error(msg);
+			                        	result.setProblems(true);
+			                        	result.getReport().add(msg);
 		                        	}
 		                        }
-		                    	switch (cellIn.getCellType())
-		                        {
+	                        	switch (cellIn.getCellType())
+	                        	{
 		                        	case HSSFCell.CELL_TYPE_NUMERIC:
-		                               cellOut.setCellValue(cellIn.getNumericCellValue());
-		                               break;
-
-		                        	case HSSFCell.CELL_TYPE_STRING:
-		                        		cellOut.setCellValue(cellIn.getRichStringCellValue());
+		                        		cellOut.setCellValue(cellIn.getNumericCellValue());
 		                        		break;
 
-		                        	case HSSFCell.CELL_TYPE_BOOLEAN:
-		                        		cellOut.setCellValue(cellIn.getBooleanCellValue());
-		                        		break;
+	                        		case HSSFCell.CELL_TYPE_STRING:
+	                        			cellOut.setCellValue(cellIn.getRichStringCellValue());
+	                        			break;
+
+	                        		case HSSFCell.CELL_TYPE_BOOLEAN:
+	                        			cellOut.setCellValue(cellIn.getBooleanCellValue());
+	                        			break;
 		                        		
-		                        	case HSSFCell.CELL_TYPE_FORMULA:
-		                        		try 
-		                        		{
-		                        			cellOut.setCellFormula(cellIn.getCellFormula());
-		                        		} catch (Exception ex)
-		                        		{
-			                        		//That didn't work. HSSF in action.
-			                        		log.error("Failed to set formula at file " + fileNum + " row " + rowNum + " cell " + cellNum);
-		                        		}
-		                        		break;
-		                        		
+	                        		case HSSFCell.CELL_TYPE_FORMULA:
+	    	                        	try
+	    	                        	{
+	    	                        		cellOut.setCellFormula(cellIn.getCellFormula());
+	    	                        	}
+	    	                        	catch (Exception ex)
+	    	                        	{
+	    		                        	//That didn't work. HSSF in action.
+	    	                        		String msg = String.format(UIRegistry.getResourceString("ImportFileSplitter.FormulaCellCopyErrMsg"),
+	    	                        				rowNum+1, cellNum+1, fileNum, ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+	    		                        	log.error(msg);
+	    		                        	result.setProblems(true);
+	    		                        	result.getReport().add(msg);
+	    	                        	}
+	    	                        	break;
+	    	                        	
 		                        	case HSSFCell.CELL_TYPE_ERROR:
 		                        		cellOut.setCellErrorValue(cellIn.getErrorCellValue());
 		                        		break;
 		                        		
-		                        }
+		                        	case HSSFCell.CELL_TYPE_BLANK:
+		                        		break;
+		                        		
+		                        	default:
+		                        		throw new Exception(String.format(
+		                        			UIRegistry.getResourceString("ImportFileSplitter.UnrecognizedCellTypeNotCopied"),
+		                        			cellIn.getCellType()));
+	                        	} 
 		                    }
 		                    if ((rowNum == 0 && !hasHeaders) || (rowNum == 1 && hasHeaders))
 		                    {
@@ -703,7 +718,23 @@ public class ImportFileSplitter extends CustomDialog
 					{
 						if (result.isSuccess())
 						{
-							UIRegistry.displayInfoMsgDlgLocalized("ImportFileSplitter.Success");
+							String msg = UIRegistry.getResourceString("ImportFileSplitter.Success");
+							if (result.areProblems())
+							{
+					        	String logName = toChunk.getAbsolutePath();
+					            String ext = "." + FilenameUtils.getExtension(logName);
+					            logName = logName.substring(0, logName.lastIndexOf(ext)) + ".log";
+								try
+								{
+									FileUtils.writeLines(new File(logName), result.getReport());
+								} catch (IOException ex)
+								{
+									logName = UIRegistry.getResourceString("ImportFileSplitter.LogFileSaveError"); 
+								}
+								msg += "\n\n" + String.format(UIRegistry.getResourceString("ImportFileSplitter.CheckLogFile"),
+										logName);
+							}
+							UIRegistry.displayInfoMsgDlg(msg);	
 						}
 						else if (!result.isCancelled())
 						{
@@ -862,6 +893,7 @@ public class ImportFileSplitter extends CustomDialog
 		protected int rows = 0;
 		protected int chunks = 0;
 		protected Vector<String> report = new Vector<String>();
+		protected boolean problems = false;
 		protected boolean success = false;
 		protected String message = null;
 		protected boolean cancelled = false;
@@ -963,6 +995,22 @@ public class ImportFileSplitter extends CustomDialog
 		public void setCancelled(boolean cancelled)
 		{
 			this.cancelled = cancelled;
+		}
+
+		/**
+		 * @return problems
+		 */
+		public boolean areProblems() 
+		{
+			return problems;
+		}
+
+		/**
+		 * @param problems the problems to set
+		 */
+		public void setProblems(boolean problems) 
+		{
+			this.problems = problems;
 		}
 		
 		
