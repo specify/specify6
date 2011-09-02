@@ -22,6 +22,7 @@ package edu.ku.brc.af.ui.db;
 import java.util.Collections;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -223,10 +224,17 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
                 save();
             }
             
-            for (ChangeListener cl : changeListeners)
+            SwingUtilities.invokeLater(new Runnable()
             {
-                cl.stateChanged(new ChangeEvent(this));
-            }
+                @Override
+                public void run()
+                {
+                    for (ChangeListener cl : changeListeners)
+                    {
+                        cl.stateChanged(new ChangeEvent(PropertiesPickListAdapter.this));
+                    }
+                }
+            });
             
             return item;
             

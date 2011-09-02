@@ -37,6 +37,7 @@ package edu.ku.brc.ui;
 import java.awt.event.ItemEvent;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 /**
@@ -206,8 +207,33 @@ public class Java2sAutoComboBox extends JComboBox
      */
     public void setDataList(java.util.List<?> list)
     {
+        Object edtItem = editor.getItem(); // get the current item in the edit field
+        
         autoTextFieldEditor.getAutoTextFieldEditor().setDataList(list);
         setModel(new DefaultComboBoxModel(list.toArray()));
+        
+        // Now try to re-select the previously selected itme
+        // and do this by value
+        if (edtItem != null)
+        {
+            int index = 0;
+            for (Object obj : list.toArray())
+            {
+                if (obj.toString().equals(edtItem.toString()))
+                {
+                    final int cbxIndex = index;
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            Java2sAutoComboBox.this.setSelectedIndex(cbxIndex);
+                        }
+                    });
+                }
+                index++;
+            }
+        }
     }
 
     //------------------------------------------------------------------------------

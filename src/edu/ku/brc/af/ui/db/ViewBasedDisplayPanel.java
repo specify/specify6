@@ -227,7 +227,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         this.okBtn     = okBtn;
         this.cancelBtn = cancelBtn;
         
-        if (doRegOKBtn)
+        if (doRegOKBtn && multiView != null)
         {
             for (Viewable v : multiView.getViewables())
             {
