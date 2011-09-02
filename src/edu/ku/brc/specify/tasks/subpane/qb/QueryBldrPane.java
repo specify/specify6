@@ -669,7 +669,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         					}
         					query.setCountOnly(countOnly);
         					query.setSelectDistinct(distinctChk.isSelected());
-        					saveBtn.setEnabled(queryFieldItems.size() > 0);
+        					saveBtn.setEnabled(thereAreItems());
         					return null;
         				}
         			}.start();
@@ -714,7 +714,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         }
                         query.setCountOnly(countOnly);
                         query.setSelectDistinct(distinctChk.isSelected());
-                        saveBtn.setEnabled(queryFieldItems.size() > 0);
+                        saveBtn.setEnabled(thereAreItems());
                         return null;
                     }
                 }.start();
@@ -745,7 +745,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             UsageTracker.incrUsageCount("QB.SearchSynonymyOn");
                         }
                         query.setSearchSynonymy(searchSynonymy);
-                        saveBtn.setEnabled(queryFieldItems.size() > 0);
+                        saveBtn.setEnabled(thereAreItems());
                         return null;
                     }
                 }.start();
@@ -1871,7 +1871,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static boolean isSynSearchable(final FieldQRI fld)
     {
         //XXX It would be good to have a way of knowing if synonymy is actually supported for a tree or treeable class.   
-    	System.out.println("isSynSearchble " + fld.getTitle());
+    	//System.out.println("isSynSearchble " + fld.getTitle());
         if (!Treeable.class.isAssignableFrom(fld.getTableInfo().getClassObj()))
         {
             return false;
@@ -1884,7 +1884,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         if (treeDef.isSynonymySupported())
         {
-        	System.out.println(fld.getFieldName() + "  --  " + fld.getClass().getSimpleName());
+        	//System.out.println(fld.getFieldName() + "  --  " + fld.getClass().getSimpleName());
         	return fld.getFieldName().equalsIgnoreCase("name") || fld.getFieldName().equalsIgnoreCase("fullname") || fld instanceof TreeLevelQRI;
         }
         return false;
@@ -2053,7 +2053,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	continue;
             }
             
-            System.out.println(qfp.getFieldQRI().getFieldName());
+            //System.out.println(qfp.getFieldQRI().getFieldName());
             
         	DBFieldInfo fi = qfp.getFieldInfo();
             DBTableInfo ti = null;
@@ -3676,7 +3676,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             if (isTablePickList((TableQRI )qri))
             {
-            	System.out.println(((TableQRI )qri).getTableInfo().getName() + " is a table picklist.");
+            	//System.out.println(((TableQRI )qri).getTableInfo().getName() + " is a table picklist.");
             	return buildFieldQRIForTablePickList((TableQRI )qri);
             	
             } else
@@ -3821,8 +3821,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					log.error(ex);
 				}
 				queryFieldsPanel.repaint();
-				saveBtn
-						.setEnabled(QueryBldrPane.this.queryFieldItems.size() > 0
+				saveBtn.setEnabled(thereAreItems()
 								&& canSave());
 				updateSearchBtn();
 				UIRegistry.displayStatusBarText(null);
@@ -3830,6 +3829,27 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		});
 	}
 
+    /**
+     * @return true if query or schemamapping contains fields.
+     * 
+     */
+    protected boolean thereAreItems()
+    {
+    	if (exportSchema == null)
+    	{
+    		return thereAreItems();
+    	}
+    	
+    	for (QueryFieldPanel qfp : queryFieldItems)
+    	{
+    		if (qfp.getFieldQRI() != null)
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     /**
      * @return path from root treeTable to treeTable for rightmost displayed list.
      */
@@ -4683,7 +4703,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void updateSearchBtn()
     {
-        searchBtn.setEnabled(queryFieldItems.size() > 0);
+        searchBtn.setEnabled(thereAreItems());
     }
 
     /* (non-Javadoc)
