@@ -69,6 +69,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.Java2sAutoComboBox;
 import edu.ku.brc.ui.Java2sAutoTextField;
+import edu.ku.brc.ui.TitleValueIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -740,7 +741,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
             ComboBoxModel  model = comboBox.getModel();
             boolean isFormObjIFace = value instanceof FormDataObjIFace;
 
-            if (comboBox.getModel() instanceof PickListDBAdapterIFace)
+            if (adapter != null)
             {
                 for (int i=0;i<comboBox.getItemCount();i++)
                 {
@@ -774,7 +775,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
                 }
                 
                 // Decided to just let non-existent vales pass on by
-                if (fndInx == -1 && comboBox.getModel() instanceof PickListDBAdapterIFace)
+                if (fndInx == -1 && adapter != null)
                 {
                     PickListDBAdapterIFace pla      = (PickListDBAdapterIFace)comboBox.getModel();
                     PickListIFace          pickList = pla.getPickList();
@@ -825,7 +826,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
                 
             } else
             {
-                this.valState = (comboBox.getModel() instanceof PickListDBAdapterIFace && isRequired) || isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+                this.valState = (adapter != null && isRequired) || isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
             }
         } else
         {
@@ -918,9 +919,14 @@ public class ValComboBox extends JPanel implements UIValidatable,
         Object selectedObj = comboBox.getSelectedItem();
         if (selectedObj != null)
         {
-            if (comboBox.getModel() instanceof PickListDBAdapterIFace)
+            if (adapter != null)
             {
                 return selectedObj instanceof PickListItemIFace ? ((PickListItem)selectedObj).getValueObject() : selectedObj;
+            } 
+            
+            if (selectedObj instanceof TitleValueIFace)
+            {
+                return ((TitleValueIFace)selectedObj).getValue();
             }
         }
         return selectedObj;

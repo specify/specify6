@@ -71,10 +71,9 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
         dataObj = value;
-        
         
         if (value != null)
         {
@@ -134,6 +133,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                     } else if (item.getValue() != null && value != null && item.getValue().equals(value.toString()))
                     {
                         setText(item.getTitle());
+                        fnd = true;
                         break;
                     }
                 }

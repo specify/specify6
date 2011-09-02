@@ -85,10 +85,12 @@ public class Java2sAutoComboBox extends JComboBox
     public Object getSelectedItem()
     {
         Object obj = super.getSelectedItem();
-        if (obj instanceof TitleValueIFace)
+        /*if (obj instanceof TitleValueIFace)
         {
+            TitleValueIFace t = (TitleValueIFace)obj;
+            System.out.println("["+t.getTitle()+"]["+t.getValue()+"]");
             return ((TitleValueIFace)obj).getValue();
-        }
+        }*/
         return obj;
     }
 
