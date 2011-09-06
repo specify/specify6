@@ -627,6 +627,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     @Override
     public void setValue(final Object value, final String defaultValue)
     {
+        boolean doCloseSession = true;
+        
         dataObj = value;
         
         // See if there is a current session
@@ -636,10 +638,13 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         {
             comp = comp.getParent();
         }
+        
+        
+        FormViewObj fvo = null;
         if (comp instanceof MultiView)
         {
             MultiView   mv = (MultiView)comp;
-            FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+            fvo = mv.getCurrentViewAsFormViewObj();
             hasSession = fvo != null && fvo.getSession() != null;
         }
         
@@ -647,7 +652,14 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         DataProviderSessionIFace sessionLocal = null;
         try
         {
-            sessionLocal = hasSession ? null : DataProviderFactory.getInstance().createSession();
+            if (fvo != null)
+            {
+                sessionLocal = fvo.getSession();
+                doCloseSession = false;
+            } else
+            {
+                sessionLocal = hasSession ? null : DataProviderFactory.getInstance().createSession();
+            }
             if (!isSkippingAttach && sessionLocal != null && parentObj != null && parentObj.getId() != null)
             {
                 // I really really hate doing this: Catch an exception (dirty exception)
@@ -683,7 +695,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             
         } finally
         {
-            if (sessionLocal != null)
+            if (doCloseSession && sessionLocal != null)
             {
                 sessionLocal.close();
             }
