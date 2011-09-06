@@ -376,12 +376,12 @@ public class ConvertMiscData
     /**
      * 
      */
-    public void convertObservations(final Connection oldDBConn, final Connection newDBConn, final int disciplineID)
+    public static void convertObservations(final Connection oldDBConn, final Connection newDBConn, final int disciplineID)
     {
         IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);        
         
+        String sql     = "SELECT cc.CollectionObjectCatalogID, o.ObservationID, o.Text1, o.Text2, o.Number1, o.Remarks ";
         String baseSQL = " FROM collectionobjectcatalog AS cc Inner Join observation AS o ON cc.CollectionObjectCatalogID = o.BiologicalObjectID"; 
-        String sql     = "SELECT cc.CollectionObjectCatalogID, o.ObservationID, o.ObservationMethod, o.Remarks ";
         String ORDERBY = " ORDER BY cc.CollectionObjectCatalogID";
         
         Calendar cal = Calendar.getInstance();
@@ -403,8 +403,8 @@ public class ConvertMiscData
         try
         {
             pStmt        = newDBConn.prepareStatement("SELECT co.CollectionObjectAttributeID FROM collectionobject AS co WHERE co.CollectionObjectID = ? AND co.CollectionObjectAttributeID IS NOT NULL");
-            updateStmt   = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET Text1=? WHERE CollectionObjectAttributeID = ?");
-            insertStmt   = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Version, TimestampCreated, CollectionMemberID, CreatedByAgentID, Text1, Remarks) VALUES(0, ?, ?, ?, ?, ?)");
+            updateStmt   = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET Text1=?, Text2=?, Number1=?, Remarks=? WHERE CollectionObjectAttributeID = ?");
+            insertStmt   = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Version, TimestampCreated, CollectionMemberID, CreatedByAgentID, Text1, Text2, Number1, Remarks) VALUES(0, ?, ?, ?, ?, ?, ?, ?)");
             updateCOStmt = newDBConn.prepareStatement("UPDATE collectionobject SET CollectionObjectAttributeID=? WHERE CollectionObjectID = ?");
             
             int cnt = 0;
@@ -413,10 +413,12 @@ public class ConvertMiscData
             ResultSet rs = stmt.executeQuery(sql + baseSQL + ORDERBY);
             while (rs.next())
             {
-                int     ccId      = rs.getInt(1);
-                String  obsMethod = rs.getString(3);
-                String  remarks   = rs.getString(4);
-                               Integer newId     = coMapper.get(ccId);
+                int     ccId     = rs.getInt(1);
+                String  text1    = rs.getString(3);
+                String  text2    = rs.getString(4);
+                Integer number1  = rs.getInt(5);
+                String  remarks  = rs.getString(6);
+                Integer newId    = coMapper.get(ccId);
                 if (newId == null)
                 {
                     log.error("Old Co Id ["+ccId+"] didn't map to new ID.");
@@ -427,8 +429,11 @@ public class ConvertMiscData
                 ResultSet rs2 = pStmt.executeQuery();
                 if (rs2.next())
                 {
-                    updateStmt.setString(1, obsMethod);
-                    updateStmt.setInt(2, rs2.getInt(1));
+                    updateStmt.setString(1, text1);
+                    updateStmt.setString(2, text2);
+                    updateStmt.setInt(3, number1);
+                    updateStmt.setString(4, remarks);
+                    updateStmt.setInt(5, rs2.getInt(1));
                     if (updateStmt.executeUpdate() != 1)
                     {
                         log.error("Error updating collectionobjectattribute");
@@ -439,8 +444,10 @@ public class ConvertMiscData
                     insertStmt.setTimestamp(1, tsCreated);
                     insertStmt.setInt(2, memId);
                     insertStmt.setInt(3, 1);   // Created By Agent
-                    insertStmt.setString(4, obsMethod);
-                    insertStmt.setString(5, remarks);
+                    insertStmt.setString(4, text1);
+                    insertStmt.setString(5, text2);
+                    insertStmt.setInt(6, number1);
+                    insertStmt.setString(7, remarks);
                     
                     if (insertStmt.executeUpdate() != 1)
                     {

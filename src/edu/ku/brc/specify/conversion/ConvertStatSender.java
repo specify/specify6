@@ -61,7 +61,7 @@ public class ConvertStatSender extends FeedBackSender
         return UIRegistry.getResourceString("CGI_BASE_URL") + "/" + cgiScript;
     }
     
-    public void senConvertInfo(final String collectionName, final int numColObj, final int convTime)
+    public void sendConvertInfo(final String collectionName, final int numColObj, final int convTime)
     {
         try
         {
@@ -79,7 +79,7 @@ public class ConvertStatSender extends FeedBackSender
         }
     }
 
-    public void senVerifyInfo(final String collectionName, 
+    public void sendVerifyInfo(final String collectionName, 
                               final int numColObj, 
                               final int convTime, 
                               final int numErrors)

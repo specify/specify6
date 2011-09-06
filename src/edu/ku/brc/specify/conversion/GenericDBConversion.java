@@ -3861,6 +3861,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
             
+            for (Integer catSeriesId : catSeriesToNewCollectionID.keySet())
+            {
+                Vector<Integer> colList = catSeriesToNewCollectionID.get(catSeriesId);
+                if (colList.size() > 1)
+                {
+                    UIRegistry.showError("There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
+                    return false;
+                }
+            }
+            
             return true;
 
         } catch (SQLException e)

@@ -19,6 +19,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,12 +28,14 @@ import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -144,6 +147,44 @@ public class StratToGTP
     }
     
     /**
+     * @param tblWriter
+     */
+    public void createGTPTreeDefKUINVP() throws SQLException
+    {
+        deleteAllRecordsFromTable("geologictimeperiodtreedef", BasicSQLUtils.myDestinationServerType);
+        deleteAllRecordsFromTable("geologictimeperiodtreedefitem", BasicSQLUtils.myDestinationServerType);
+        
+        Session localSession = HibernateUtil.getCurrentSession();
+        HibernateUtil.beginTransaction();
+
+        geoLogTmTreeDef = createGeologicTimePeriodTreeDef("GeologicTimePeriod");
+        localSession.saveOrUpdate(geoLogTmTreeDef);
+        
+                                      era       = createGeologicTimePeriodTreeDefItem(geoLogTmTreeDef, "Era",           0, false);
+        GeologicTimePeriodTreeDefItem superGrp  = createGeologicTimePeriodTreeDefItem(era,             "System",      100, false);
+        GeologicTimePeriodTreeDefItem lithoGrp  = createGeologicTimePeriodTreeDefItem(superGrp,        "Series",      200, false);
+        GeologicTimePeriodTreeDefItem eml       = createGeologicTimePeriodTreeDefItem(lithoGrp,        "Stage",       300, false);
+        localSession.saveOrUpdate(era);
+        
+        // setup the root Geography record (planet Earth)
+        eraNode = new GeologicTimePeriod();
+        eraNode.initialize();
+        eraNode.setName("Era");
+        eraNode.setFullName("Era");
+        eraNode.setNodeNumber(1);
+        eraNode.setHighestChildNodeNumber(1);
+        eraNode.setRankId(0);
+        eraNode.setDefinition(geoLogTmTreeDef);
+        eraNode.setDefinitionItem(era);
+        era.getTreeEntries().add(eraNode);
+        localSession.saveOrUpdate(eraNode);
+
+        HibernateUtil.commitTransaction();
+
+        log.info("Finished inferring GTP tree definition and items");
+    }
+    
+    /**
      * @throws SQLException
      */
     public void convertStratToGTP() throws SQLException
@@ -230,7 +271,7 @@ public class StratToGTP
                 }
                 
                 // create a new Geography object from the old data
-                GeologicTimePeriod newStrat = convertOldStratRecord(period, epoch, eml, age, emlAge, text1, text2, remarks, eraNode, localSession);
+                GeologicTimePeriod newStrat = convertOldStratRecord(localSession, eraNode, text1, text2, remarks, period, epoch, eml, age, emlAge);
     
                 counter++;
     
@@ -276,6 +317,129 @@ public class StratToGTP
         // Now in this Step we Add the PaleoContext to the Collecting Events
         
     }
+
+    /**
+     * @throws SQLException
+     */
+    public void convertStratToGTPKUIVP() throws SQLException
+    {
+        Statement stmt = null;
+        ResultSet rs   = null;
+        
+        try
+        {
+            // get a Hibernate session for saving the new records
+            Session localSession = HibernateUtil.getCurrentSession();
+            HibernateUtil.beginTransaction();
+    
+            int count = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM stratigraphy");
+            if (count < 1) return;
+            
+            if (hasFrame)
+            {
+                setProcess(0, count);
+            }
+            
+            IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+            
+            Hashtable<Integer, Integer> ceToNewStratIdHash = new Hashtable<Integer, Integer>();
+            
+            IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
+
+            // get all of the old records
+            //  Future GTP                           System        Series       Stage
+            String sql  = "SELECT s.StratigraphyID, s.Formation, s.SuperGroup, s.Text1 FROM stratigraphy s ORDER BY s.StratigraphyID";
+            
+            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rs   = stmt.executeQuery(sql);
+    
+            int counter = 0;
+            // for each old record, convert the record
+            while (rs.next())
+            {
+                if (counter % 500 == 0)
+                {
+                    if (hasFrame)
+                    {
+                        setProcess(counter);
+    
+                    } else
+                    {
+                        log.info("Converted " + counter + " Stratigraphy records");
+                    }
+                }
+    
+                // grab the important data fields from the old record
+                int oldStratId = rs.getInt(1);
+                String system  = rs.getString(2);
+                String series  = rs.getString(3);
+                String stage   = rs.getString(4);
+                
+                if (StringUtils.isNotEmpty(stage))
+                {
+                    if (StringUtils.isNotEmpty(series))
+                    {
+                        series += ' ' + stage;
+                        
+                    } else
+                    {
+                        series = stage;
+                    }
+                }
+                
+                if (StringUtils.isEmpty(series))
+                {
+                    series = "(Empty)";
+                }
+                
+                // create a new Geography object from the old data
+                GeologicTimePeriod newStrat = convertOldStratRecord(localSession, eraNode, null, null, null, system, series, stage);
+
+                counter++;
+    
+                // Map Old GeologicTimePeriod ID to the new Tree Id
+                gtpIdMapper.put(oldStratId, newStrat.getGeologicTimePeriodId());
+                
+                // Convert Old CEId to new CEId, then map the new CEId -> new StratId
+                Integer ceId = ceMapper.get(oldStratId);
+                if (ceId != null)
+                {
+                    ceToNewStratIdHash.put(ceId, newStrat.getGeologicTimePeriodId());
+                } else
+                {
+                    String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
+                    tblWriter.logError(msg);
+                    log.error(msg);
+                }
+            }
+            stmt.close();
+    
+            if (hasFrame)
+            {
+                setProcess(counter);
+    
+            } else
+            {
+                log.info("Converted " + counter + " Stratigraphy records");
+            }
+    
+            TreeHelper.fixFullnameForNodeAndDescendants(eraNode);
+            eraNode.setNodeNumber(1);
+            fixNodeNumbersFromRoot(eraNode);
+            rs.close();
+            
+            HibernateUtil.commitTransaction();
+            log.info("Converted " + counter + " Stratigraphy records");
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        // Now in this Step we Add the PaleoContext to the Collecting Events
+        
+    }
+
 
     
     /**
@@ -501,18 +665,13 @@ public class StratToGTP
      * @param localSession
      * @return  period, epoch, eml, age, emlAge
      */
-    private GeologicTimePeriod convertOldStratRecord(final String     period,
-                                                     final String     epoch,
-                                                     final String     eml,
-                                                     final String     age,
-                                                     final String     emlAge, 
+    private GeologicTimePeriod convertOldStratRecord(final Session    localSession,
+                                                     final GeologicTimePeriod stratRoot,
                                                      final String     text1, 
                                                      final String     text2, 
                                                      final String     remarks,
-                                                     final GeologicTimePeriod stratRoot,
-                                                     final Session    localSession)
+                                                     final String...levelNames)
     {
-        String levelNames[] = { period, epoch, eml, age, emlAge};
         int levelsToBuild = 0;
         for (int i = levelNames.length; i > 0; --i)
         {
@@ -522,12 +681,12 @@ public class StratToGTP
                 break;
             }
         }
-
+        
         for (int i = 0; i < levelsToBuild; i++)
         {
             if (StringUtils.isEmpty(levelNames[i]))
             {
-                levelNames[i] = "(Empty)";
+                levelNames[i] = "Placeholder";
             }
         }
 
@@ -535,9 +694,10 @@ public class StratToGTP
         for (int i = 0; i < levelsToBuild; ++i)
         {
             GeologicTimePeriod newLevelStrat = buildGeologicTimePeriodLevel(levelNames[i], prevLevelGeo, localSession);
-            newLevelStrat.setText1(text1);
-            newLevelStrat.setText2(text2);
-            newLevelStrat.setRemarks(remarks);
+            
+            if (StringUtils.isNotEmpty(text1)) newLevelStrat.setText1(text1);
+            if (StringUtils.isNotEmpty(text2)) newLevelStrat.setText2(text2);
+            if (StringUtils.isNotEmpty(remarks)) newLevelStrat.setRemarks(remarks);
             
             if (localSession != null)
             {
@@ -706,6 +866,201 @@ public class StratToGTP
             lclSession.close();
         }
     }
+
+    /**
+     * @param stratTblWriter
+     */
+    public void convertStratKUINVP(final TableWriter stratTblWriter, final boolean isPaleo) throws SQLException
+    {
+        convStratGTPToStratKUINVP();
+        
+        Transaction trans  = null;
+        Session lclSession = null;
+        try
+        {
+            // empty out any pre-existing records
+            deleteAllRecordsFromTable(newDBConn, "lithostrat", BasicSQLUtils.myDestinationServerType);
+            
+            lclSession = HibernateUtil.getNewSession();
+            
+            List<?>  disciplineeList = lclSession.createQuery("FROM Discipline").list();
+            
+            for (Object obj : disciplineeList)
+            {
+                trans = lclSession.beginTransaction();
+                
+                Discipline discipline = (Discipline)obj;
+                LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+                
+                lithoStratTreeDef.getDisciplines().add(discipline);
+                discipline.setLithoStratTreeDef(lithoStratTreeDef);
+                
+                lclSession.saveOrUpdate(lithoStratTreeDef);
+                lclSession.saveOrUpdate(discipline);
+                
+                LithoStratTreeDefItem earth      = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth",         0, false);
+                LithoStratTreeDefItem superGroup = createLithoStratTreeDefItem(earth,             "Super Group", 100, false);
+                LithoStratTreeDefItem group      = createLithoStratTreeDefItem(superGroup,        "Group",       200, false);
+                LithoStratTreeDefItem formation  = createLithoStratTreeDefItem(group,             "Formation",   300, false);
+                LithoStratTreeDefItem member     = createLithoStratTreeDefItem(formation,         "Member",      400, false);
+                                                   createLithoStratTreeDefItem(member,            "Unit",        500, false);
+                lclSession.saveOrUpdate(earth);
+                
+                // setup the root Geography record (planet Earth)
+                LithoStrat earthNode = new LithoStrat();
+                earthNode.initialize();
+                earthNode.setName("Earth");
+                earthNode.setFullName("Earth");
+                earthNode.setNodeNumber(1);
+                earthNode.setHighestChildNodeNumber(1);
+                earthNode.setRankId(0);
+                earthNode.setDefinition(lithoStratTreeDef);
+                earthNode.setDefinitionItem(earth);
+                earth.getTreeEntries().add(earthNode);
+                lclSession.saveOrUpdate(earthNode);
+                
+                trans.commit();
+                
+                if (isPaleo)
+                {
+                    conversion.convertLithoStrat(lithoStratTreeDef, earthNode, stratTblWriter, "stratigraphy2", false);
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            if (trans != null)
+            {
+                trans.rollback();
+            }
+            
+            ex.printStackTrace();
+        } finally
+        {
+            lclSession.close();
+        }
+    }
+    
+    /**
+     * @param oldDBConn
+     * @return
+     */
+    private boolean convStratGTPToStratKUINVP()
+    {
+        PreparedStatement pStmt1 = null;
+        try
+        {
+            String sqlCreate = "CREATE TABLE `stratigraphy2` (  `StratigraphyID` int(10) NOT NULL,  `GeologicTimePeriodID` int(10) DEFAULT NULL,  `SuperGroup` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Group` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Formation` varchar(50) CHARACTER SET utf8 DEFAULT NULL, " + 
+                              "`Member` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Bed` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Remarks` longtext,  `Text1` varchar(300) CHARACTER SET utf8 DEFAULT NULL,  `Text2` varchar(300) CHARACTER SET utf8 DEFAULT NULL,  `Number1` double DEFAULT NULL, " +
+                              "`Number2` double DEFAULT NULL,  `TimestampCreated` datetime DEFAULT NULL,  `TimestampModified` datetime DEFAULT NULL,  `LastEditedBy` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `YesNo1` smallint(5) DEFAULT NULL,  `YesNo2` smallint(5) DEFAULT NULL,  PRIMARY KEY (`StratigraphyID`) " +
+                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+            
+            DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+            dbMgr.setConnection(oldDBConn);
+            if (dbMgr.doesDBHaveTable("stratigraphy2"))
+            {
+                try
+                {
+                    BasicSQLUtils.update(oldDBConn, "DROP TABLE stratigraphy2");
+                } catch (Exception ex) {}
+            }
+            dbMgr.setConnection(null);
+            
+            BasicSQLUtils.update(oldDBConn, sqlCreate);
+
+            String postfix = " FROM collectingevent AS ce " +
+                             "Inner Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +    
+                             "Left Join geologictimeperiod AS g ON s.GeologicTimePeriodID = g.GeologicTimePeriodID " +
+                             "WHERE s.`Group` IS NOT NULL AND g.Name IS NOT NULL AND s.Member IS NOT NULL AND s.Bed IS NULL AND g.GeologicTimePeriodID IS NOT NULL";
+            
+            String sql = "SELECT ce.CollectingEventID, s.`Group`, g.Name, s.Member, s.Bed, s.TimestampCreated, s.TimestampModified " + postfix;
+            log.debug(sql);
+            
+            String cntSQL = "SELECT COUNT(*) " + postfix;
+            int    habCnt = BasicSQLUtils.getCountAsInt(oldDBConn, cntSQL);
+            
+            log.debug("****** Startigraphy Count: "+habCnt);
+
+            //Timestamp now = new Timestamp(System .currentTimeMillis());
+            //              
+            String placeholder = "Placeholder";
+            		
+            pStmt1 = oldDBConn.prepareStatement("INSERT INTO stratigraphy2 (StratigraphyID, SuperGroup, `Group`, Formation, Member, Bed, TimestampCreated, TimestampModified) VALUES(?,?,?,?,?,?,?,?)");
+            
+            int cnt = 0;
+            Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
+            for (Object[] row : rows)
+            {
+                Integer   ceID      = (Integer)row[0];
+                String    superGrp  = placeholder;
+                String    group     = (String)row[1];
+                String    formation = (String)row[2];
+                String    member    = (String)row[3];
+                String    bed       = (String)row[4];
+                Timestamp crTS      = (Timestamp)row[5];      
+                Timestamp mdTS      = (Timestamp)row[6];      
+                
+                /*if (StringUtils.isNotEmpty(formation))
+                {
+                    if (StringUtils.isEmpty(group)) group = placeholder;
+                }
+
+                if (StringUtils.isNotEmpty(member))
+                {
+                    if (StringUtils.isEmpty(group)) group = placeholder;
+                    if (StringUtils.isEmpty(formation)) formation = placeholder;
+                }*/
+                
+                if (StringUtils.isNotEmpty(bed))
+                {
+                    //if (StringUtils.isEmpty(group)) group = placeholder;
+                    //if (StringUtils.isEmpty(formation)) formation = placeholder;
+                    //if (StringUtils.isEmpty(member)) member = placeholder;
+                    if (bed.length() > 50)   
+                    {
+                        bed = bed.substring(0, 50);
+                    }
+                } else
+                {
+                    //bed = placeholder;
+                }
+                
+                if (ceID != null)
+                {
+                    pStmt1.setInt(1, ceID);
+                    pStmt1.setString(2,    superGrp);
+                    pStmt1.setString(3,    group);
+                    pStmt1.setString(4,    formation);
+                    pStmt1.setString(5,    member);
+                    pStmt1.setString(6,    bed);
+                    pStmt1.setTimestamp(7, crTS);
+                    pStmt1.setTimestamp(8, mdTS);
+                    pStmt1.execute();
+                    cnt++;
+                    if (cnt % 100 == 0)
+                    {
+                        log.debug(cnt + " / " + habCnt);
+                    }
+                }
+            }
+            return true;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt1 != null) pStmt1.close();
+                
+            } catch (Exception ex) {}
+        }
+        
+        return false;
+    }
+
 
     //-----------------------------------------------------------------------------------------------------
     // Misc

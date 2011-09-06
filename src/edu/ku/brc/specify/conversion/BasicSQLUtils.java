@@ -2680,6 +2680,18 @@ public class BasicSQLUtils
      * @param list the list of names (or field names)
      * @return the string of comma separated names
      */
+    public static String buildSelectFieldList(final List<String> list)
+    {
+        return buildSelectFieldList(list, null);
+    }
+
+    
+    /**
+     * Takes a list of names and creates a string with the names comma separated
+     * @param list the list of names (or field names)
+     * @param tableName table prefix
+     * @return the string of comma separated names
+     */
     public static String buildSelectFieldList(final List<String> list, final String tableName)
     {
         StringBuffer str = new StringBuffer();

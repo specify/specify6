@@ -180,6 +180,123 @@ public class ConvScopeFixer
      */
     protected boolean fixCollectingEventAttributes()
     {
+        String sql = "SELECT ce.DisciplineID, cea.CollectingEventAttributeID FROM collectingevent AS ce " +
+                     "Inner Join collectingeventattribute AS cea ON ce.CollectingEventAttributeID = cea.CollectingEventAttributeID " +    
+                     "WHERE ce.DisciplineID <> cea.DisciplineID";    
+        
+        Statement         stmt  = null;
+        PreparedStatement pStmt = null;
+        try
+        {
+            stmt  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            pStmt = newDBConn.prepareStatement("UPDATE collectingeventattribute SET DisciplineID=? WHERE CollectingEventAttributeID=?");
+            log.debug(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            int count = 0;
+            while (rs.next())
+            {
+                String msg = null;
+                pStmt.setInt(1, rs.getInt(1));
+                pStmt.setInt(2, rs.getInt(2));
+                if (pStmt.executeUpdate() != 1)
+                {
+                    msg = String.format("Error updating CollectingEventAttributeID %d for Discipline %d", rs.getInt(2), rs.getInt(1));
+                }
+                
+                if (msg != null)
+                {
+                    log.error(msg);
+                    tblWriter.logError(msg);
+                }
+                
+                count++;
+            }
+            rs.close();  
+            
+            log.debug("fixCollectingEventAttributes - Fixed: "+count);
+            
+            return true;
+            
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (stmt != null) stmt.close();
+                if (pStmt != null) pStmt.close();
+            } catch (SQLException ex){}
+        }
+        return false;
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean fixCollectingObjectAttributesAfterConv()
+    {
+        String sql = "SELECT co.CollectionMemberID, coa.CollectionObjectAttributeID FROM collectionobject AS co " +
+                     "Inner Join collectionobjectattribute AS coa ON co.CollectionObjectAttributeID = coa.CollectionObjectAttributeID " +    
+                     "WHERE co.CollectionMemberID <> coa.CollectionMemberID"; 
+        
+        Statement         stmt  = null;
+        PreparedStatement pStmt = null;
+        try
+        {
+            stmt  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            pStmt = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET CollectionMemberID=? WHERE CollectionObjectAttributeID=?");
+            log.debug(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            int count = 0;
+            while (rs.next())
+            {
+                String msg = null;
+                pStmt.setInt(1, rs.getInt(1));
+                pStmt.setInt(2, rs.getInt(2));
+                if (pStmt.executeUpdate() != 1)
+                {
+                    msg = String.format("Error updating CollectionObjectAttributeID %d for CollectionMemberID %d", rs.getInt(2), rs.getInt(1));
+                }
+                
+                if (msg != null)
+                {
+                    log.error(msg);
+                    tblWriter.logError(msg);
+                }
+                
+                count++;
+            }
+            rs.close();  
+            
+            log.debug("fixCollectingObjectAttributesAfterConv - Fixed: "+count);
+            
+            return true;
+            
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (stmt != null) stmt.close();
+                if (pStmt != null) pStmt.close();
+            } catch (SQLException ex){}
+        }
+        return false;
+    }
+    
+
+    /**
+     * @return
+     */
+    protected boolean fixCollectingEventAttributesHabitat()
+    {
         int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM habitat");
         if (cnt == 0)
         {
@@ -548,7 +665,9 @@ public class ConvScopeFixer
     {
         int cnt = 0;
         
-        //if (fixCollectingEventAttributes()) cnt++;
+        if (fixCollectingObjectAttributesAfterConv()) cnt++;
+        /*if (fixCollectingEventAttributes()) cnt++;
+        //if (fixCollectingEventAttributesHabitat()) cnt++;
         if (fixCollectionObjectAttributes()) cnt++;
         if (fixCollectionObjectCitations()) cnt++;
         if (fixCollectionObjects()) cnt++;
@@ -561,7 +680,7 @@ public class ConvScopeFixer
         if (fixPaleoContext()) cnt++;
         
         if (fixProjects()) cnt++;
-        
+        */
         return cnt == 0;
     }
 

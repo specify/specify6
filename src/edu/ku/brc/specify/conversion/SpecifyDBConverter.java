@@ -705,6 +705,13 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
         
+        boolean doObs = false;
+        if (doObs)
+        {
+            ConvertMiscData.convertObservations(oldDBConn, newDBConn, 3);
+            return;
+        }
+        
         boolean doFixLoanPreps = false;
         if (doFixLoanPreps)
         {
@@ -730,6 +737,20 @@ public class SpecifyDBConverter extends AppBase
             dce.fixCollectorsForCollectingEvents2();
             //dce.removeUnneededCEs();
             return;
+        }
+        
+        boolean doCEAttrFIx = false;
+        if (doCEAttrFIx)
+        {
+            frame.setDesc("Fixing Scope....");
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            convLogger.initialize(convOutputPath, dbNameDest);
+            TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
+            ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
+            convScopeFixer.doFixTables();
+            oldDBConn.close();
+            newDBConn.close();
+            System.exit(0);
         }
         
         if (!System.getProperty("user.name").equals("rods"))
@@ -775,6 +796,7 @@ public class SpecifyDBConverter extends AppBase
             return;
         } 
         
+        boolean doKUINVP  = StringUtils.contains(dbNameDest, "kuinvp4_dbo");
         boolean doCUPaleo = StringUtils.contains(dbNameDest, "cupaleo");
         if (doCUPaleo)
         {
@@ -1134,7 +1156,10 @@ public class SpecifyDBConverter extends AppBase
                 boolean convertDiscipline = true;
                 if (convertDiscipline)
                 {
-                    conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent);
+                    if (!conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent))
+                    {
+                        return;
+                    }
 
                 } else
                 {
@@ -1183,7 +1208,7 @@ public class SpecifyDBConverter extends AppBase
                 
                 
                 TableWriter gtpTblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
-                StratToGTP  stratToGTP   = doCUPaleo ? new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter, conversion) : null;
+                StratToGTP  stratToGTP   = doCUPaleo || doKUINVP ? new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter, conversion) : null;
 
                 
                 frame.setDesc("Converting Geography");
@@ -1205,7 +1230,13 @@ public class SpecifyDBConverter extends AppBase
                 {
                     if (stratToGTP != null)
                     {
-                        stratToGTP.createGTPTreeDef();
+                        if (doCUPaleo)
+                        {
+                            stratToGTP.createGTPTreeDef();
+                        } else if (doKUINVP)
+                        {
+                            stratToGTP.createGTPTreeDefKUINVP();
+                        }
                         
                     } else
                     {
@@ -1397,18 +1428,30 @@ public class SpecifyDBConverter extends AppBase
                 
                 if (stratToGTP != null)
                 {
-                    stratToGTP.convertStratToGTP();
+                    if (doCUPaleo)
+                    {
+                        stratToGTP.convertStratToGTP();
+                    } else if (doKUINVP)
+                    {
+                        stratToGTP.convertStratToGTPKUIVP();
+                    }
                 }
                 
-                frame.setDesc("Converting Straigraphy");
-                log.info("Converting Straigraphy");
+                frame.setDesc("Converting Stratigraphy");
+                log.info("Converting Stratigraphy");
                 boolean doStrat = true;
                 if (doStrat)
                 {
                      TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
                      if (stratToGTP != null)
                      {
-                         stratToGTP.convertStrat(tblWriter, conversion.isPaleo());
+                         if (doCUPaleo)
+                         {
+                             stratToGTP.convertStrat(tblWriter, conversion.isPaleo());
+                         } else if (doKUINVP)
+                         {
+                             stratToGTP.convertStratKUINVP(tblWriter, conversion.isPaleo());
+                         }
                      } else
                      {
                          conversion.convertStrat(tblWriter, conversion.isPaleo());
@@ -1703,7 +1746,7 @@ public class SpecifyDBConverter extends AppBase
                 
                 int               colObjCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject");
                 ConvertStatSender sender    = new ConvertStatSender();
-                sender.senConvertInfo(dbNameDest, colObjCnt, convertTimeInSeconds);
+                sender.sendConvertInfo(dbNameDest, colObjCnt, convertTimeInSeconds);
                 
                 frame.incOverall();
                 
