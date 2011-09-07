@@ -3585,13 +3585,18 @@ public class UploadTable implements Comparable<UploadTable>
     		return true;
     	}
     	
+    	if (parentTableIsNonBlank(row, uploadData, true))
+    	{
+    		return true;
+    	}
+    	
     	if (iAmRequiredByARelationship())
     	{
     		return true;
     	}
     	
     	List<UploadTable> chillun = uploader.getChildren(this);
-    	for (UploadTable chile : chillun)
+    	for (UploadTable chile : chillun) 	
     	{
     		if (iControlTheChild(chile) && !chile.isBlankRow(row, uploadData, seq))
     		{
@@ -3656,6 +3661,7 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     	return false;
     }
+    
     /**
      * @param row
      * @param uploadData
@@ -3663,11 +3669,27 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData)
     {
+    	return parentTableIsNonBlank(row, uploadData, false);
+    }
+
+    
+    /**
+     * @param row
+     * @param uploadData
+     * @param ignorControllingParents
+     * @return
+     */
+    protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData, final Boolean ignoreControllingParents)
+    {
     	for (Vector<ParentTableEntry> parents : parentTables)
     	{
     		for (ParentTableEntry pte : parents)
     		{
     			UploadTable ut = pte.getImportTable();
+    			if (ignoreControllingParents && ut.specialChildren != null && ut.specialChildren.contains(this))
+    			{
+    				break;
+    			}
     			for (int seq = 0; seq < ut.getUploadFields().size(); seq++)
     			{
     				if (!ut.isBlankRow(row, uploadData, seq))
