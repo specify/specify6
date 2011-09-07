@@ -40,6 +40,8 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.subpane.wb.GridTableHeader;
 
 /**
  * Items are sorted by ViewOrder
@@ -49,7 +51,7 @@ import edu.ku.brc.helpers.XMLHelper;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "workbenchtemplatemappingitem")
 @SuppressWarnings("serial")
-public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplateMappingItem>
+public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, GridTableHeader
 {
     public final static short UNKNOWN         = 0;
     public final static short TEXTFIELD       = 1;
@@ -447,9 +449,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(WorkbenchTemplateMappingItem obj)
+    public int compareTo(GridTableHeader obj)
     {
-        return viewOrder.compareTo(obj.viewOrder);
+        return viewOrder.compareTo(obj.getViewOrder());
     }
     
     
@@ -607,5 +609,11 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return importedColNameMaxLength;
     }
+
+	@Transient
+	@Override
+	public Class<?> getDataType() {
+		return WorkbenchTask.getDataType(this);
+	}
     
 }

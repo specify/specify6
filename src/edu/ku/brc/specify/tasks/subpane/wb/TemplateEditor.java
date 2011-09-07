@@ -1462,6 +1462,38 @@ public class TemplateEditor extends CustomDialog
         
         FieldInfo fieldInfo  = null;
         
+        // If we had no luck then just loop through everything looking for it.
+        // Actually we should do this search first since it is more specific.
+        if (fieldInfo == null)
+        {
+            Vector<TableInfo> tbls = getTablesForAutoMapping(); 
+            for (TableInfo tblInfo : tbls)
+            {
+                for (FieldInfo fi : tblInfo.getFieldItems())
+                {
+                    DBFieldInfo dbFieldInfo = fi.getFieldInfo();
+
+                    String tblFieldName = dbFieldInfo.getName().toLowerCase();
+                    String tblColumnName = dbFieldInfo.getColumn().toLowerCase();
+
+                    // System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
+                    if (tblFieldName.equals(fieldNameLower) || tblColumnName.equals(fieldNameLower)
+                            || tblColumnName.equals(fieldNameLowerNoWS)
+                            || tblFieldName.equals(fieldNameLowerNoWS)
+                            || tblFieldName.startsWith(fieldNameLower)
+                            || tblColumnName.startsWith(fieldNameLower)) 
+                    { 
+                        fieldInfo = fi;
+                        break;
+                    }
+                }
+                if (fieldInfo != null)
+                {
+                    break;
+                }
+            }
+        }
+        
         // find the mapping that matches this column name
         for (Pair<String, TableFieldPair> mapping: automappings)
         {
@@ -1492,37 +1524,7 @@ public class TemplateEditor extends CustomDialog
             if (fieldInfo != null) break;
         }
         
-        // If we had no luck then just loop through everything looking for it.
-        if (fieldInfo == null)
-        {
-            Vector<TableInfo> tbls = getTablesForAutoMapping(); 
-        	for (TableInfo tblInfo : tbls)
-            {
-        		for (FieldInfo fi : tblInfo.getFieldItems())
-                {
-                    DBFieldInfo dbFieldInfo = fi.getFieldInfo();
 
-                    String tblFieldName = dbFieldInfo.getName().toLowerCase();
-                    String tblColumnName = dbFieldInfo.getColumn().toLowerCase();
-
-                    // System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
-                    if (tblFieldName.equals(fieldNameLower) || tblColumnName.equals(fieldNameLower)
-                            || tblColumnName.equals(fieldNameLowerNoWS)
-                            || tblFieldName.equals(fieldNameLowerNoWS)
-                            || tblFieldName.startsWith(fieldNameLower)
-                            || tblColumnName.startsWith(fieldNameLower)) 
-                    { 
-                        fieldInfo = fi;
-                        break;
-                    }
-                }
-                if (fieldInfo != null)
-                {
-                    break;
-                }
-            }
-        }
-        
         //check to see if a mapping to fieldInfo has already been made.
         if (fieldInfo != null && previouslyMapped.add(fieldInfo))
         {

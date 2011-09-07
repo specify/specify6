@@ -19,16 +19,27 @@
 */
 package edu.ku.brc.specify.plugins.sgr;
 
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Frame;
-import java.util.List;
-import java.util.Vector;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
-import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
+import javax.swing.JDialog;
+import javax.swing.WindowConstants;
+
+import org.jdesktop.swingx.decorator.ColorHighlighter;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
+
+import com.google.common.base.Function;
+
+import edu.ku.brc.sgr.MatchResults;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.ui.tmanfe.SpreadSheet;
 
 /**
  * @author rods
@@ -38,203 +49,102 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 27, 2010
  *
  */
-public class SGRResultsChooser extends CustomDialog
+public class SGRResultsChooser extends JDialog implements WindowListener
 {
-    protected SGRResultsDisplay        resultsDisplayPanel;
-    protected List<DataResultsRow>     rowsAndResults;
-    protected Vector<RawData>          chosenResults;
-    protected boolean                  hasBeenShown;
-    protected int                      rowIndex;
-    
+    private SGRResultsDisplay          resultsDisplayPanel;
+    private final Function<Void, Void> finished;
+
+    private final SpreadSheet          spreadSheet;
+    private final ColorHighlighter     highlighter;
+
     /**
      * @param parent
-     * @param rowsAndResults
+     * @param queue
+     * @param spreadSheet 
+     * @param finished 
      */
-    public SGRResultsChooser(final Frame parent, 
-                             final List<DataResultsRow> rowsAndResults)
+    public SGRResultsChooser(final Frame parent, final WorkbenchRow row, MatchResults results, 
+                             SpreadSheet spreadSheet, Function<Void, Void> finished)
     {
-        super(parent, "", true, CustomDialog.OKCANCELAPPLYHELP, null);
+        super(parent);//parent, "", false, CustomDialog.NONE_BTN, null);
         
-        this.rowsAndResults = rowsAndResults;
-        this.hasBeenShown   = false;
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
-        if (rowsAndResults.size() == 0)
-        {
-            throw new IllegalArgumentException("WorkbenchRow set must be non-empty"); //$NON-NLS-1$
-        }
+        addWindowListener(this);
         
-        // create a vector for all of the user choices
-        chosenResults = new Vector<RawData>(rowsAndResults.size());
-        // make sure it's the same size as the incoming list of rows
-        for (int i = 0; i < rowsAndResults.size(); ++i)
-        {
-            chosenResults.add(null);
-        }
+        this.finished = finished;
+        this.spreadSheet = spreadSheet;
         
-        resultsDisplayPanel = new SGRResultsDisplay(GroupHashDAO.getInstance().getConnection());
-        resultsDisplayPanel.createUI();
+        Rectangle r = spreadSheet.getCellRect(row.getRowNumber(), 0, false);
+        Point p = spreadSheet.getLocationOnScreen();
+        Container ssParent = spreadSheet.getParent();
+        p.translate(r.x, r.y + r.height + 10);
+        setLocation(p);
         
-        setContentPanel(resultsDisplayPanel);
+        resultsDisplayPanel = new SGRResultsDisplay(ssParent.getWidth(), results);
+        setContentPane(resultsDisplayPanel);
+        pack();
         
-        this.cancelLabel = getResourceString("GeoLocateResultsChooser.SKIP"); //$NON-NLS-1$
-        this.applyLabel  = getResourceString("GeoLocateResultsChooser.ACCEPT"); //$NON-NLS-1$
-        this.okLabel     = getResourceString("GeoLocateResultsChooser.QUIT"); //$NON-NLS-1$
+        highlighter = new ColorHighlighter(
+                new HighlightPredicate()
+                {
+                    @Override
+                    public boolean isHighlighted(Component arg0, ComponentAdapter arg1)
+                    {
+                        return row.getRowNumber() == arg1.row;
+                    }
+                }, Color.YELLOW, Color.BLACK);
         
-        rowIndex = -1;
+        spreadSheet.addHighlighter(highlighter); 
+        spreadSheet.clearSelection();
+        //setUndecorated(true);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#createUI()
-     */
-    @Override
-    public void createUI()
-    {
-        super.createUI();
-        
-        applyBtn.setEnabled(false);
-        
-        resultsDisplayPanel.setAcceptBtn(applyBtn);
-    }
 
-    /**
-     * @return
-     */
-    public List<RawData> getResultsChosen()
-    {
-        if (!hasBeenShown)
-        {
-            pack();
-            setVisible(true);
-        }
-        
-        return chosenResults;
-    }
+//  WindowListener Implementation    
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#setVisible(boolean)
-     */
     @Override
-    public void setVisible(boolean visible)
+    public void windowActivated(WindowEvent e)
     {
-        if (hasBeenShown == false && visible)
-        {
-            hasBeenShown = true;
-            createUI();
-
-            HelpMgr.registerComponent(this.helpBtn, "WorkbenchSpecialTools"); //$NON-NLS-1$
-
-            showNextRecord();
-
-            pack();
-            setSize(1024, 800);
-            UIHelper.centerWindow(this);
-            
-            resultsDisplayPanel.beforeDisplay();
-        }
-
-        super.setVisible(visible);
+        // TODO Auto-generated method stub
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
-     */
     @Override
-    protected void applyButtonPressed()
+    public void windowClosed(WindowEvent e)
     {
-        // Remember, we're using the 'Apply' button for "Accept" to move
-        // to the next record in the list and accept the currently selected result
-        
-        super.applyButtonPressed();
-        
-        if (resultsDisplayPanel.hasData())
-        {
-            RawData rawData = (RawData)resultsDisplayPanel.getDataRow();
-            if (rawData != null)
-            {
-                chosenResults.remove(rowIndex);
-                chosenResults.insertElementAt(rawData, rowIndex);
-            }
-        }
-        
-        // if this was the last record, close the window
-        // otherwise, move on to the next record
-        if (onLastRecord())
-        {
-            resultsDisplayPanel.shutdown();
-            
-            super.okButtonPressed();
-        } else
-        {
-            showNextRecord();
-        }
+        // TODO Auto-generated method stub
+        spreadSheet.removeHighlighter(highlighter);
+        spreadSheet.repaint();
+        finished.apply(null);
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
-     */
     @Override
-    protected void okButtonPressed()
+    public void windowClosing(WindowEvent e)
     {
-        resultsDisplayPanel.shutdown();
-        
-        // remember, we're using the 'OK' button for "Dismiss" to accept the
-        // currently selected result and hide the dialog
-
-        // right now we're NOT storing the user selection when "Dismiss" is pressed
-        // to enable storing of the user selection, just uncomment the following lines...
-
-        
-        super.okButtonPressed();
+        // TODO Auto-generated method stub
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
-     */
+
     @Override
-    protected void cancelButtonPressed()
+    public void windowDeactivated(WindowEvent e)
     {
-        // remember, we're using the 'Cancel' button for "skip" to skip the
-        // currently selected result and move onto the next one
-
-        // if this was the last record, close the window
-        // otherwise, move on to the next record
-        if (onLastRecord())
-        {
-            resultsDisplayPanel.shutdown();
-            
-            super.okButtonPressed();
-        }
-        else
-        {
-            showNextRecord();
-        }
+        // TODO Auto-generated method stub
     }
 
-    /**
-     * 
-     */
-    protected void showNextRecord()
+    @Override
+    public void windowDeiconified(WindowEvent e)
     {
-        rowIndex++;
-        
-        // skip any records with no results
-        DataResultsRow dataResRow = rowsAndResults.get(rowIndex);
-        if (dataResRow.getRawData() == null)
-        {
-            System.out.println("");
-        }
-
-        setTitle(String.format("Results %d / %d", (rowIndex+1), rowsAndResults.size()));
-        //setTitle(getLocalizedMessage("SGRResultsChooser.TITLE", (rowIndex+1), rowsAndResults.size())); //$NON-NLS-1$
-        
-        resultsDisplayPanel.setGroupData(dataResRow);
+        // TODO Auto-generated method stub
     }
-    
-    /**
-     * @return
-     */
-    protected boolean onLastRecord()
+
+    @Override
+    public void windowIconified(WindowEvent e)
     {
-        return (rowIndex == rowsAndResults.size()-1) ? true : false;
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
     }
 }

@@ -117,6 +117,7 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.decorator.SortOrder;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -125,6 +126,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -176,6 +178,7 @@ import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
 import edu.ku.brc.specify.tasks.PluginsTask;
+import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
@@ -257,6 +260,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               showMapBtn             = null;
     protected JButton               controlPropsBtn        = null;
     protected JButton               exportKmlBtn           = null;
+    protected JButton               sgrOverviewBtn         = null;
     protected JButton               geoRefToolBtn          = null;
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
@@ -270,7 +274,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected List<JButton>         selectionSensitiveButtons  = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
-    protected FormPane              formPane;
+    protected FormPaneWrapper       formPane;
     protected ResultSetController   resultsetController;
     
     protected CardLayout            cardLayout                 = null;
@@ -322,6 +326,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected boolean               isReadOnly;
         
     protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
+	private TableColumnExt sgrColExt;
     
     /**
      * Constructs the pane for the spreadsheet.
@@ -442,7 +447,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         findPanel = spreadSheet.getFindReplacePanel();
         UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
-        
+
         spreadSheet.setShowGrid(true);
         JTableHeader header = spreadSheet.getTableHeader();
         header.addMouseListener(new ColumnHeaderListener());
@@ -455,6 +460,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         imageColExt = spreadSheet.getColumnExt(imageColIndex);
         imageColExt.setVisible(false);
 
+	    int sgrColIndex = model.getSgrHeading().getViewOrder();
+	    sgrColExt = spreadSheet.getColumnExt(sgrColIndex);
+	    
+        // Start off with the SGR score column hidden
+        showHideSgrCol(false);
+        
         model.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e)
             {
@@ -861,10 +872,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 
         // setup the JFrame to show images attached to WorkbenchRows
-        imageFrame = new ImageFrame(mapSize, this, this.workbench, (WorkbenchTask)task, isReadOnly);
+        imageFrame = new ImageFrame(mapSize, this, this.workbench, task, isReadOnly);
         
         // setup the JFrame to show images attached to WorkbenchRows
-        imageImportFrame = new ImageImportFrame(this, this.workbench, (WorkbenchTask)task);
+        imageImportFrame = new ImageImportFrame(this, this.workbench);
         
         setupWorkbenchRowChangeListener();
         
@@ -912,7 +923,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, 
+        JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn,
                                    geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, showHideUploadToolBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginBtns.size());
         for (JComponent c : compsArray)
@@ -937,7 +948,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // Create the Form Pane
-        formPane = new FormPane(this, workbench, isReadOnly);
+        if (task instanceof SGRTask)
+        {
+            formPane = new SGRFormPane(this, workbench, isReadOnly);
+        }
+        else
+        {
+            formPane = new FormPane(this, workbench, isReadOnly);
+        }
         
         // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
@@ -969,7 +987,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // Add the Form and Spreadsheet to the CardLayout
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        mainPanel.add(formPane.getScrollPane(),    PanelType.Form.toString());
+        mainPanel.add(formPane.getPane(),    PanelType.Form.toString());
         
         // The controllerPane is a CardLayout that switches between the Spreadsheet control bar and the Form Control Bar
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
@@ -1068,7 +1086,15 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 if (imageFrame != null)
                 {
-                    imageFrame.setRow(newIndex > -1 ? workbench.getRow(newIndex) : null);
+                    if (newIndex > -1)
+                    {
+                        int index = spreadSheet.convertRowIndexToModel(newIndex);
+                        imageFrame.setRow(workbench.getRow(index));
+                    }
+                    else 
+                    { 
+                        imageFrame.setRow(null); 
+                    }
                 }
             }
             public void newRecordAdded()
@@ -1120,6 +1146,17 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             });
         }
+    }
+    
+    public void showHideSgrCol(boolean show)
+    {
+	    sgrColExt.setVisible(show);
+    }
+    
+    public void sgrSort()
+    {
+        int sgrColIndex = model.getSgrHeading().getViewOrder();
+        spreadSheet.setSortOrder(sgrColIndex, SortOrder.DESCENDING);
     }
     
     /**
@@ -1743,7 +1780,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
 
         log.debug("Showing image for row " + selectedIndex);
-        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
+        int index = spreadSheet.convertRowIndexToModel(selectedIndex);
+        
+        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(index);
         imageFrame.setRow(row);
     }
     
@@ -1806,14 +1845,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (currentPanelType == PanelType.Spreadsheet)
         {
             selectedInx = spreadSheet.getSelectedRow();
-            if (selectedInx > -1)
-            {
-                selectedInx = spreadSheet.convertRowIndexToModel(selectedInx);
-            }
         } else
         {
             selectedInx = resultsetController.getCurrentIndex();
         }
+        
+//        if (selectedInx > -1)
+//        {
+//            selectedInx = spreadSheet.convertRowIndexToModel(selectedInx);
+//        }
+    
         return selectedInx;
     }
     
@@ -1880,6 +1921,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             // Enable the "Find" action in the Edit menu when a spreadsheet is shown
             UIRegistry.enableFind(findPanel, true);
 
+            NavBoxMgr.getInstance().adjustSplitter();
         } else
         {
             // About to Show Form and hiding Spreadsheet
@@ -1898,6 +1940,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             // Disable the ctrl-F from the edit menu
             UIRegistry.disableFindFromEditMenu();
+            
+            if(task instanceof SGRTask)
+                NavBoxMgr.getInstance().closeSplitter();
         }
         
              
@@ -3182,7 +3227,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
         
         columnMaxWidths = new Integer[tableArg.getColumnCount()];
-        for (int i = 0; i < tableArg.getColumnCount(); i++) 
+        for (int i = 0; i < wbtmis.size() /*tableArg.getColumnCount()*/; i++) 
         {
             TableCellRenderer headerRenderer = tableArg.getColumnModel().getColumn(i).getHeaderRenderer();
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
@@ -3588,7 +3633,12 @@ public class WorkbenchPaneSS extends BaseSubPane
               
         if (retStatus)
         {
-            ((WorkbenchTask)task).closing(this);
+            try
+            {
+                ((WorkbenchTask)task).closing(this);
+            }
+            catch (ClassCastException e) {}
+            
             if (spreadSheet != null)
             {
                 spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
@@ -3605,7 +3655,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     @Override
     public void shutdown()
     {
-        //Check to see if background tasks accessing the Workbanch are active.
+        //Check to see if background tasks accessing the Workbench are active.
         if (shutdownLock.get() > 0)
         {
             return;
@@ -3715,6 +3765,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         currentPanelType = null;
         cardLayout       = null;
         cpCardLayout     = null;
+        uploadToolPanel  = null;
+        workBenchPlugins = null;
         
         super.shutdown();
     }
@@ -4624,6 +4676,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             final Class<?>             wbPluginCls = Class.forName(className);
             final WorkBenchPluginIFace wbPlugin    = (WorkBenchPluginIFace) wbPluginCls.newInstance();
             
+            wbPlugin.setWorkbenchPaneSS(this);
             wbPlugin.setSpreadSheet(spreadSheet);
             wbPlugin.setWorkbench(workbench);
             workBenchPlugins.put(wbPluginCls.getSimpleName(), wbPlugin);
@@ -4642,7 +4695,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                             });
                         }
                     });
-            workBenchPluginBtns.add(btn);
+//            workBenchPluginBtns.add(btn);
+            wbPlugin.setButton(btn);
             
             List<String> missingFields = wbPlugin.getMissingFieldsForPlugin();
             if (missingFields != null && missingFields.size() > 0)
@@ -4672,6 +4726,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             e.printStackTrace();
         }
+    }
+    
+    public WorkBenchPluginIFace getPlugin(String clsName)
+    {
+    	return workBenchPlugins.get(clsName);
     }
     
     //----------------------------------------------------------------------------------------

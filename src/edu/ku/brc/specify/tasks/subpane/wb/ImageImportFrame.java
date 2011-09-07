@@ -53,7 +53,6 @@ public class ImageImportFrame extends CustomFrame
 {
     protected WorkbenchPaneSS   wbPane;
     protected Workbench         workbench;
-    protected WorkbenchTask     workbenchTask;
     protected boolean           allowCloseWindow = true;
     protected JRadioButton      oneImagePerRow;
 
@@ -61,8 +60,7 @@ public class ImageImportFrame extends CustomFrame
      * Constructor. 
      */
     public ImageImportFrame(final WorkbenchPaneSS wbPane, 
-                            final Workbench workbench, 
-                            final WorkbenchTask workbenchTask)
+                            final Workbench workbench)
     {
         super("Import Images", CustomFrame.OK_BTN, null);
         
@@ -70,7 +68,6 @@ public class ImageImportFrame extends CustomFrame
         
         this.wbPane           = wbPane;
         this.workbench        = workbench;
-        this.workbenchTask    = workbenchTask;
         
         setIconImage(IconManager.getImage("AppIcon").getImage());
         

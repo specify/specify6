@@ -79,6 +79,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.ImageFilter;
@@ -159,12 +160,21 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
     /**
      * Constructor. 
      */
-    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench, final WorkbenchTask workbenchTask,
+    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench, final Taskable task,
                       final boolean isReadOnly)
     {
         this.wbPane           = wbPane;
         this.workbench        = workbench;
-        this.workbenchTask    = workbenchTask;
+        
+        try
+        {
+            this.workbenchTask    = (WorkbenchTask) task;
+        }
+        catch (ClassCastException e)
+        {
+            this.workbenchTask = null;
+        }
+        
         this.allowCloseWindow = true;
         this.defaultThumbIcon = IconManager.getIcon("image", IconSize.Std32);
         
@@ -419,7 +429,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
      */
     protected void importImages()
     {
-        workbenchTask.importCardImages(workbench, true);
+        if (workbenchTask != null)
+        {
+            workbenchTask.importCardImages(workbench, true);
+        }
     }
     
     /**

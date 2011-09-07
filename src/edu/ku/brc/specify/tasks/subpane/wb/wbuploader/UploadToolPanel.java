@@ -403,5 +403,4 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 		autoValidateChk.setSelected(false);
 		autoMatchChk.setSelected(false);
     }
-
 }

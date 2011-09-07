@@ -24,7 +24,6 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.TableSearcher;
 import edu.ku.brc.ui.TableSearcherCell;
@@ -206,8 +205,8 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      */
     protected Comparator<String> getComparatorForCol(final int colIdx)
     {
-    	WorkbenchTemplateMappingItem mapping = ((GridTableModel )model).getColMapping(colIdx);
-    	Class<?> dataClass = WorkbenchTask.getDataType(mapping);
+    	GridTableHeader mapping = ((GridTableModel )model).getColMapping(colIdx);
+    	Class<?> dataClass = mapping.getDataType(); //WorkbenchTask.getDataType(mapping);
     	if (dataClass.equals(Calendar.class))
     	{
     		return new DateColumnComparator();
@@ -241,7 +240,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      * @param mapping
      * @return true if mapping refers to a Geo-reference
      */
-    protected boolean isGeoRefMapping(final WorkbenchTemplateMappingItem mapping)
+    protected boolean isGeoRefMapping(final GridTableHeader mapping)
     {
     	return mapping.getFieldName().equalsIgnoreCase("latitude1")
     	  || mapping.getFieldName().equalsIgnoreCase("latitude2")

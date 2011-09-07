@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -49,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -127,7 +129,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 18;
+    private final int OVERALL_TOTAL = 25;
     private static final String TINYINT4 = "TINYINT(4)";
     
     private static final String APP                     = "App";
@@ -1287,8 +1289,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
-                    frame.incOverall();
+                    frame.incOverall(); // #24
                     
+                    createSGRTables(conn);
+                    frame.incOverall(); // #25
+
                     return true;
                     
                 } catch (Exception ex)
@@ -1315,6 +1320,66 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
+    public static void createSGRTables(Connection conn) throws SQLException
+    {
+        DatabaseMetaData meta = conn.getMetaData();
+        ResultSet rs = meta.getTables(null, null, null, new String [] {"TABLE"});
+        Set<String> tables = new HashSet<String>();
+        while (rs.next())
+            tables.add(rs.getString("TABLE_NAME"));
+        rs.close();
+
+        if (!tables.contains("sgrMatchConfiguration"))
+        {
+            String sql = "CREATE TABLE `sgrMatchConfiguration` (" +
+                            "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
+                            "`name`                     varchar(128)    NOT NULL, " +
+                            "`similarityFields`         text            NOT NULL, " +
+                            "`serverUrl`                text            NOT NULL, " +
+                            "`filterQuery`              varchar(128)    NOT NULL, " +
+                            "`queryFields`              text            NOT NULL, " +
+                            "`remarks`                  text            NOT NULL, " +
+                            "`boostInterestingTerms`    tinyint(1)      NOT NULL, " +
+                            "`nRows`                    int(11)         NOT NULL, " +
+                            "PRIMARY KEY (`id`) " +
+                            ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+            update(conn, sql);
+        }
+        
+        if (!tables.contains("sgrBatchMatchResultSet"))
+        {
+            String sql = "CREATE TABLE `sgrBatchMatchResultSet` (" +
+                        "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
+                        "`insertTime`               timestamp       NOT NULL, " +
+                        "`name`                     varchar(128)    NOT NULL, " +
+                        "`recordSetID`              bigint(20)      DEFAULT NULL, " +
+                        "`matchConfigurationId`     bigint(20)      NOT NULL, " +
+                        "`query`                    text            NOT NULL, " +
+                        "`remarks`                  text            NOT NULL, " +
+                        "`dbTableId`                int(11)         DEFAULT NULL, " +
+                        "PRIMARY KEY (`id`), " +
+                        "KEY `sgrBatchMatchResultSetFK2` (`matchConfigurationId`), " +
+                        "CONSTRAINT `sgrBatchMatchResultSetFK2` FOREIGN KEY (`matchConfigurationId`) REFERENCES `sgrMatchConfiguration` (`id`) " +
+                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+            update(conn, sql);
+        }
+        
+        if (!tables.contains("sgrBatchMatchResultItem"))
+        {
+            String sql = "CREATE TABLE `sgrBatchMatchResultItem` ( " +
+                        "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
+                        "`matchedId`                varchar(128)    NOT NULL, " +
+                        "`maxScore`                 float           NOT NULL, " +
+                        "`batchMatchResultSetId`    bigint(20)      NOT NULL, " +
+                        "`qTime`                    int(11)         NOT NULL, " +
+                        "PRIMARY KEY (`id`), " +
+                        "KEY `sgrBatchMatchResultItemFK1` (`batchMatchResultSetId`), " +
+                        "CONSTRAINT `sgrBatchMatchResultItemFK1` FOREIGN KEY (`batchMatchResultSetId`) REFERENCES `sgrBatchMatchResultSet` (`id`) ON DELETE CASCADE " +
+                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+            update(conn, sql);
+        }
+    }
+
     /**
      * Creates error message with all the field names and adds it to the error list.
      * @param tableName table name

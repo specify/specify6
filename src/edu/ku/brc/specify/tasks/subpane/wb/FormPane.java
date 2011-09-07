@@ -72,7 +72,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValTextArea;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -103,8 +102,7 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
  *
  */
 @SuppressWarnings("serial")
-public class FormPane extends JPanel implements ResultSetControllerListener, 
-                                                GhostActionable
+public class FormPane extends JPanel implements FormPaneWrapper
 {
     private static final Logger log = Logger.getLogger(FormPane.class);
     
@@ -362,12 +360,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
     
-    /**
-     * Sets in a new Workbench and all the WBTMI have different object pointer because of the merge
-     * that was done with the session. So we need to match up Record Ids and replace all the old WBTMIs
-     * with the new ones.
-     * @param workbench the new wb
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#setWorkbench(edu.ku.brc.specify.datamodel.Workbench)
      */
+    @Override
     public void setWorkbench(final Workbench workbench)
     {
         this.workbench = workbench;
@@ -413,31 +409,38 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         return initialSize;
     }
 
-    public JScrollPane getScrollPane()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#getScrollPane()
+     */
+    @Override
+    public JScrollPane getPane()
     {
         return scrollPane;
     }
 
-    /**
-     * @return the WorkbenchPaneSS
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#getWorkbenchPane()
      */
+    @Override
     public WorkbenchPaneSS getWorkbenchPane()
     {
         return workbenchPane;
     }
 
-    /**
-     * @return the controlPropsBtn
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#getControlPropsBtn()
      */
+    @Override
     public JButton getControlPropsBtn()
     {
         return controlPropsBtn;
     }
 
 
-    /**
-     * Clean up and listeners etc.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#cleanup()
      */
+    @Override
     public void cleanup()
     {
         removeAll();
@@ -776,11 +779,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     	return getValues(wbtmi) != null;
     }
     
-    /**
-     * Swaps out a TextField for a TextArea and vs.
-     * @param inputPanel the InputPanel that hold the text component
-     * @param fieldLen the length of the text field component (columns)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#swapTextFieldType(edu.ku.brc.specify.tasks.subpane.wb.InputPanel, short)
      */
+    @Override
     public void swapTextFieldType(final InputPanel inputPanel, final short fieldLen)
     {
         JTextComponent oldComp;
@@ -871,10 +873,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
 
-    /**
-     * Tells the form it is being hidden.
-     * @param show true - show, false hide
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#aboutToShowHide(boolean)
      */
+    @Override
     public void aboutToShowHide(final boolean show)
     {
         if (!show)
@@ -898,10 +900,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
     
-    /**
-     * Tells the pane whether it is about to show or not when the parent pane is being shown or not.
-     * @param show true show, false hide
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#showingPane(boolean)
      */
+    @Override
     public void showingPane(final boolean show)
     {
         if (show)
@@ -921,9 +923,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
     
-    /**
-     * Copies the data from the form into the row.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#copyDataFromForm()
      */
+    @Override
     public void copyDataFromForm()
     {
         copyDataFromForm(currentIndex);
@@ -988,7 +991,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         changesInForm = false;
         
-        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);
+        int modelIndex = workbenchPane.getSpreadSheet().convertRowIndexToModel(index);
+        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(modelIndex);
         for (InputPanel p : uiComps)
         {
         	copyDataFromForm(p, wbRow);
@@ -1053,7 +1057,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         ignoreChanges = true; // turn off change notification
         
-        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);
+        int modelIndex = workbenchPane.getSpreadSheet().convertRowIndexToModel(index);
+        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(modelIndex);
         for (InputPanel p : uiComps)
         {
             int col = p.getWbtmi().getViewOrder();
@@ -1271,9 +1276,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
     
-    /**
-     * Updates validation status display for all controls.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.FormPaneWrapper#updateValidationUI()
      */
+    @Override
     public void updateValidationUI()
     {
     	updateValidationUI(workbench.getWorkbenchRowsAsList().get(currentIndex));

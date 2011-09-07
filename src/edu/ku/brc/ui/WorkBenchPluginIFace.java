@@ -21,9 +21,12 @@ package edu.ku.brc.ui;
 
 import java.util.List;
 
+import javax.swing.JButton;
+
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 
 /**
@@ -53,6 +56,8 @@ public interface WorkBenchPluginIFace
     /**
      * @param ss
      */
+    public abstract void setWorkbenchPaneSS(WorkbenchPaneSS wbpss);
+    
     public abstract void setSpreadSheet(SpreadSheet ss);
     
     /**
@@ -69,5 +74,7 @@ public interface WorkBenchPluginIFace
      * 
      */
     public abstract void shutdown();
+
+    public abstract void setButton(JButton btn);
     
 }

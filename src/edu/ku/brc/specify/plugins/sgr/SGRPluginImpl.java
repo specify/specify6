@@ -19,38 +19,38 @@
 */
 package edu.ku.brc.specify.plugins.sgr;
 
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-
 import java.awt.Frame;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
 import java.util.List;
-import java.util.Vector;
 
-import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Function;
 
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.sgr.MatchResults;
+import edu.ku.brc.sgr.SGRMatcher;
+import edu.ku.brc.sgr.SGRMatcher.Factory;
+import edu.ku.brc.sgr.SGRRecord;
+import edu.ku.brc.sgr.datamodel.BatchMatchResultSet;
+import edu.ku.brc.sgr.datamodel.DataModel;
+import edu.ku.brc.sgr.datamodel.MatchConfiguration;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.plugins.sgr.RawData.DataIndexType;
-import edu.ku.brc.ui.DateParser;
-import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
-import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 
 /**
@@ -63,64 +63,146 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
  */
 public class SGRPluginImpl implements WorkBenchPluginIFace
 {
-    private static final ArrayList<DateParser> sdFormats  = new ArrayList<DateParser>();
-    private static final Calendar            calender     = Calendar.getInstance();
-    protected static String[]                dateArray    = new String[3];
+    private SpreadSheet        spreadSheet;
+    private Workbench          workbench;
 
-    protected static final String GENUS      = "genus1";
-    protected static final String SPECIES    = "species1";
-    protected static final String SUBSPECIES = "subspecies1";
-    protected static final String COLLNUM    = "fieldnumber";
-    protected static final String FIELDNUM   = "stationfieldnumber";
-    protected static final String COUNTRY    = "country";
-    protected static final String STARTDATE  = "startdate";
-    protected static final String LOCALITY   = "localityname";
-    protected static final String LATITUDE   = "latitude1";
-    protected static final String LONGITUDE  = "longitude1";
-    protected static final String STATE      = "state";
-    protected static final String COUNTY     = "county";
-    protected static final String FIRSTNAME = "firstname1";
-    protected static final String LASTNAME  = "lastname1";
-    
-    protected static final String COLFIRSTNAME = "collectorfirstname1";
-    protected static final String COLLASTNAME  = "collectorlastname1";
-    protected static final String COLMIDNAME   = "collectormiddlename1";
-    
-    protected static String[] COLNAMES   = {GENUS, SPECIES, SUBSPECIES, COLLNUM, FIELDNUM, COUNTRY, STARTDATE, LOCALITY, LATITUDE, LONGITUDE, STATE, COUNTY, LASTNAME, FIRSTNAME, };
+    private SGRMatcher         matcher;
+    private final JPopupMenu   popupMenu;
+    private MatchConfiguration matcherConfiguration;
+    private WorkbenchColorizer colorizer;
+    private WorkbenchPaneSS    workbenchPaneSS;
 
-    protected Integer                       collNumIndex;
-    protected Integer                       fieldNumIndex;
-    protected Integer                       startDateIndex;
-    
-    protected SubPaneIFace                  subPane;
-    protected SpreadSheet                   spreadSheet;
-    protected Workbench                     workbench;
-    protected WorkbenchTemplate             template;
-    
-    protected HashMap<Integer, DBFieldInfo> indexToFieldInfo = new HashMap<Integer, DBFieldInfo>();
-    protected HashMap<DBFieldInfo, Integer> fieldInfoToIndex = new HashMap<DBFieldInfo, Integer>();
-    protected HashMap<String, Integer>      nameToIndex      = new HashMap<String, Integer>();
-    
-    static {
-        String[] defaultFormatters = {"yyyy/MM/dd",  "yyyy/M/dd",  "yyyy/MM/d",  "yyyy/M/d", 
-                "MM/dd/yyyy",  "M/dd/yyyy",  "MM/d/yyyy",  "M/d/yyyy",
-                "yyyy-MM-dd",  "yyyy-M-dd",  "yyyy-MM-d",  "yyyy-M-d", 
-                "MM-dd-yyyy",  "M-dd-yyyy",  "MM-d-yyyy",  "M-d-yyyy",
-                "yyyy.MM.dd",  "yyyy.M.dd",  "yyyy.MM.d",  "yyyy.M.d", 
-                "MM.dd.yyyy",  "M.dd.yyyy",  "MM.d.yyyy",  "M.d.yyyy"};
-          
-        for (String defaultFormat : defaultFormatters)
-        {
-            sdFormats.add(new DateParser(defaultFormat));
-        }
-    }
-       
-    /**
-     * 
-     */
+    private SubPaneIFace       subPane;
+    private Workbench2SGR      workbench2SGR;
+   
     public SGRPluginImpl()
     {
         super();
+
+        popupMenu = createPopupMenu();
+    }
+
+    private JPopupMenu createPopupMenu()
+    {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem mi = new JMenuItem();
+        mi.setText("Colorize WB...");
+        mi.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<BatchMatchResultSet> resultSets = 
+                    DataModel.getBatchMatchResultSetsFor(
+                            (long)workbench.getId(), workbench.getDbTableId());
+                
+                ChooseFromListDlg<BatchMatchResultSet> dlg = 
+                    new ChooseFromListDlg<BatchMatchResultSet>(
+                            (Frame)UIRegistry.get(UIRegistry.FRAME), 
+                            "Choose Match Configuration", resultSets);
+                
+                UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    BatchMatchResultSet resultSetForColors = dlg.getSelectedObject();
+                    if (matcherConfiguration == null)
+                    {
+                        setMatcherConfiguration(resultSetForColors.getMatchConfiguration());
+                        colorizer.setBatchResults(resultSetForColors);
+                        workbenchPaneSS.showHideSgrCol(true);
+                    }
+                    else if (resultSetForColors.matchConfigurationId() != matcherConfiguration.id())
+                    {
+                        CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                                "Confirm SGR Matcher", true, 
+                                CustomDialog.OKCANCEL, null, 
+                                CustomDialog.OK_BTN);
+                        
+                        MatchConfiguration rsMc = resultSetForColors.getMatchConfiguration();
+                        
+                        String msg = "<html><p>The selected Batch Result set used a different " +
+                        " SGR Matcher than is currently selected. Do you wish to switch to the " +
+                        " Matcher that was used for the Batch run and continue?</p> " +
+                        "<table><tr><th>Batch Matcher:</th><td>" + rsMc.name() + "</td></tr>" +
+                        "<tr><th>Current Matcher:</th><td>" + matcherConfiguration.name() +
+                        "</td></tr></table></html>";
+                        
+                        dlg2.setContentPanel(new JLabel(msg));
+                        
+                        UIHelper.centerAndShow(dlg2);
+                        if (!dlg2.isCancelled())
+                        {
+                            setMatcherConfiguration(resultSetForColors.getMatchConfiguration());
+                            colorizer.setBatchResults(resultSetForColors);
+                            workbenchPaneSS.showHideSgrCol(true);
+                        }
+                    }
+                    else // matchers are consistent
+                    {
+                        colorizer.setBatchResults(resultSetForColors);
+                        workbenchPaneSS.showHideSgrCol(true);
+                    }
+                }                
+            }
+        });
+        menu.add(mi);
+        
+        mi = new JMenuItem();
+        mi.setText("Select Matcher...");
+        mi.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
+                
+                ChooseFromListDlg<MatchConfiguration> dlg = 
+                    new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                            "Choose Match Configuration", mcs);
+                
+                UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    colorizer.stopColoring();
+                    setMatcherConfiguration(dlg.getSelectedObject());        
+                }
+            }
+        });
+        menu.add(mi);
+        
+        mi = new JMenuItem();
+        mi.setText("Stop coloring.");
+        mi.addActionListener(new ActionListener()
+        {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                colorizer.stopColoring();
+                workbenchPaneSS.showHideSgrCol(false);
+            }
+        });
+        menu.add(mi);
+       
+        return menu;
+    }
+    
+    public void setMatcherConfiguration(MatchConfiguration mc)
+    {
+        matcherConfiguration = mc;
+
+        Factory matcherFactory = matcherConfiguration.createMatcherFactory();
+        matcherFactory.docSupplied = true;
+        matcherFactory.debugQuery = true;
+        try
+        {
+            matcher = matcherFactory.build();
+        } catch (MalformedURLException ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
 
     /* (non-Javadoc)
@@ -129,513 +211,63 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     @Override
     public boolean process(final List<WorkbenchRow> rows)
     {
-        final String PROG = "PROG";
+        if (rows.size() < 1)
+            return true;
         
         UIRegistry.loadAndPushResourceBundle("specify_plugins");
         
-        SwingWorker<Integer, Integer> dataGetter = new SwingWorker<Integer, Integer>()
+        if (!isReady())
         {
-            protected Vector<DataResultsRow> items  = new Vector<DataResultsRow>();
-            protected String collectorNumber = null;
-            protected String fieldNumber     = null;
-            protected String startDate       = null;
-            protected String genus           = null;
+            String msg = "You must select a match configuration before using SGR in the Workbench.";
             
-            /* (non-Javadoc)
-             * @see javax.swing.SwingWorker#doInBackground()
-             */
-            @Override
-            protected Integer doInBackground() throws Exception
-            {
-                Integer genusInx = nameToIndex.get(GENUS);
-                
-                int rowCnt = 0;
-                for (WorkbenchRow row : rows)
-                {
-                    try
-                    {
-                        int colNumInx   = collNumIndex != null ? collNumIndex : fieldNumIndex;
-                        collectorNumber = row.getData(collNumIndex);
-                        fieldNumber     = row.getData(colNumInx);
-                        startDate       = row.getData(startDateIndex);
-                        genus           = row.getData(genusInx);
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                        //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DbLoginCallbackHandler.class, ex);
-                        //log.error("Exception: " + e.getMessage()); //$NON-NLS-1$
-                    }
-                    
-                    fieldNumber = StringUtils.isNotEmpty(collectorNumber) && StringUtils.isEmpty(fieldNumber) ? collectorNumber : fieldNumber;
-                    
-                    if (StringUtils.isNotEmpty(fieldNumber) &&
-                        StringUtils.isNotEmpty(startDate) &&
-                        StringUtils.isNotEmpty(genus))
-                    {
-                        String[] ymd = parseForDate(startDate); // returns Year, Month as strings
-                        if (ymd != null)
-                        {
-                            String  year  = ymd[0];
-                            String  month = ymd[1];
-                            
-                            if (year != null)
-                            {
-                                DataResultsRow rowItem = null;
-                                try
-                                {
-                                    GroupingColObjData gcd = GroupHashDAO.getInstance().getGroupingData(collectorNumber, genus, year, month);
-                                    if (gcd != null)
-                                    {
-                                        //System.out.println(gcd.toString());
-                                        
-                                        RawData rawData = GroupHashDAO.getInstance().getRawDataObj(); // return an empty recycled object
-                                        loadRawData(row, rawData);
-                                        
-                                        rowItem = new DataResultsRow(gcd, rawData);
-                                        items.add(rowItem);
-                                        
-                                        //System.out.println((items.size()-1)+ rawData.toString());
-                                        
-                                    }
-                                    
-                                    gcd = GroupHashDAO.getInstance().getSNIBData(collectorNumber, genus, year, month);
-                                    if (gcd != null)
-                                    {
-                                        //System.out.println(gcd.toString());
-                                        
-                                        RawData rawData = GroupHashDAO.getInstance().getRawDataObj(); // return an empty recycled object
-                                        loadSNIBData(row, rawData);
-                                        
-                                        if (rowItem == null)
-                                        {
-                                            rowItem = new DataResultsRow(null, gcd, rawData);
-                                            items.add(rowItem);
-                                            
-                                        } else
-                                        {
-                                            rowItem.setGrpSNIBData(gcd);
-                                        }
-                                        //System.out.println((items.size()-1)+ rawData.toString());
-                                    }
-
-                                } catch (Exception ex)
-                                {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-                    
-                    rowCnt++;
-                    firePropertyChange(PROG, 0, rowCnt);
-                }
-                return null;
-            }
-
-            @Override
-            protected void done()
-            {
-                super.done();
-                
-                UIRegistry.clearSimpleGlassPaneMsg();
-                
-                if (items.size() > 0)
-                {
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            SGRResultsChooser chooser = new SGRResultsChooser((Frame)UIRegistry.getTopWindow(), items);
-                            chooser.createUI();
-                            chooser.setVisible(true); // Centers 
-                            
-                            if (!chooser.isCancelled())
-                            {
-                                transferData(chooser.getResultsChosen());
-                            }
-                        }
-                    });
-                    
-                } else if (rows.size() > 1)
-                {
-                    UIRegistry.showLocalizedError("SGR_NO_RESULTS_MLT");
-                } else
-                {
-                    UIRegistry.showLocalizedError("SGR_NO_RESULTS", fieldNumber, startDate, genus);
-                }
-                UIRegistry.popResourceBundle();
-            }
-        };
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                    "No Matcher Selected", true, CustomDialog.OK_BTN, new JLabel(msg));
+            
+            UIHelper.centerAndShow(dlg);
+            return true;
+        }
         
-        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("SGR_GET_GRP_DATA"), 24);
-        glassPane.setProgress(0);
-        
-        dataGetter.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    public  void propertyChange(final PropertyChangeEvent evt) {
-                        if (PROG.equals(evt.getPropertyName())) 
-                        {
-                            Integer value   = (Integer)evt.getNewValue();
-                            int     percent = (int)((value / (double)rows.size()) * 100.0);
-                            String  msg     = String.format("%d%c", percent, '%');
-                            glassPane.setText(msg);
-                            glassPane.setProgress(percent);
-                        }
-                    }
-                });
-        dataGetter.execute();
+        final WorkbenchRow row = rows.get(0);
+        final MatchResults results =  doQuery(row);
+   
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                SGRResultsChooser chooser = new SGRResultsChooser(
+                        (Frame)UIRegistry.getTopWindow(), row,
+                        results, spreadSheet, new Finished());
+                
+                //chooser.createUI();
+                chooser.setVisible(true); // Centers 
+            }
+        });
+        UIRegistry.popResourceBundle();        
         
         return true;
     }
     
-    /**
-     * @param dateStr
-     * @return
-     */
-    public static String[] parseForDate(final String dateStr)
+    public boolean isReady()
     {
-        dateArray[0] = null;
-        dateArray[1] = null;
-        dateArray[2] = null;
-        
-        for (DateParser dateParser : sdFormats)
+        return matcherConfiguration != null;
+    }
+  
+    private class Finished implements Function<Void, Void>
+    {
+        @Override
+        public Void apply(Void arg0)
         {
-            Date date = dateParser.parseDate(dateStr);
-            if (date != null)
-            {
-                calender.setTime(date);
-                
-                Integer yearInt = calender.get(Calendar.YEAR);
-                Integer monInt  = calender.get(Calendar.MONTH) + 1;
-                Integer dayInt  = calender.get(Calendar.DAY_OF_MONTH);
-                
-                dateArray[0] = yearInt.toString();
-                dateArray[1] = monInt.toString();
-                dateArray[2] = dayInt.toString();
-                
-                return dateArray;
-            }
+            return null;
         }
-        return null;
     }
     
-    /**
-     * @param wbRow
-     * @param rowData
-     */
-    protected void loadRawData(final WorkbenchRow wbRow, 
-                               final RawData rawData)
+    public MatchResults doQuery(WorkbenchRow row)
     {
-        String[] extraCollNameCols = {COLLASTNAME, LASTNAME, COLFIRSTNAME, FIRSTNAME};
-        
-        String lastName  = null;
-        String firstName = null;
-        
-        int colInx = 0;
-        for (DataIndexType dataInxTyp : DataIndexType.values())
-        {
-            String  columnName = RawData.getColumnName(dataInxTyp);
-            Integer dataIndex  = nameToIndex.get(columnName);
-            
-            //System.out.println("dataIndex: "+dataIndex+"  dataInxTyp: "+dataInxTyp+"  columnName["+columnName+"]");
-           
-            if (DataIndexType.eCollector_num == dataInxTyp)
-            {
-                int collNumInx = collNumIndex != null ? collNumIndex : fieldNumIndex;
-                
-                Object val = wbRow.getData(collNumInx);
-                rawData.setData(dataInxTyp, val);
-                
-            } else if (DataIndexType.eCollector_name == dataInxTyp)
-            {
-                if (dataIndex != null)
-                {
-                    Object val = wbRow.getData(dataIndex);
-                    rawData.setData(dataInxTyp, val);
-                } else
-                {
-                    int i = 0;
-                    for (String key : extraCollNameCols)
-                    {
-                        Integer inx = nameToIndex.get(key);
-                        if (inx != null)
-                        {
-                            if (i < 2)
-                            {
-                                lastName = (String)wbRow.getData(inx);
-                                if (lastName == null) lastName = "";
-                                break;
-                            } else
-                            {
-                                firstName = (String)wbRow.getData(inx);
-                                if (firstName == null) firstName = ""; 
-                                break;
-                            }
-                        }
-                        i++;
-                    }
-                }
-            } else if (columnName.equals(STARTDATE))
-            {
-                Object val = wbRow.getData(dataIndex);
-                if (StringUtils.isNotEmpty((String)val))
-                {
-                    
-                    String[] ymd = parseForDate((String)val);
-                    if (ymd != null)
-                    {
-                        rawData.setData(DataIndexType.eYear,  ymd[0]);
-                        rawData.setData(DataIndexType.eMonth, ymd[1]);
-                        rawData.setData(DataIndexType.eDay,   ymd[2]);
-                        StringBuilder sb = new StringBuilder();
-                        if (StringUtils.isNotEmpty(ymd[0]))
-                        {
-                            sb.append(ymd[0]);
-                            if (StringUtils.isNotEmpty(ymd[1]) && StringUtils.isNumeric(ymd[1]))
-                            {
-                                sb.append(String.format("-%02d", Integer.parseInt(ymd[1])));
-                                if (StringUtils.isNotEmpty(ymd[2]) && StringUtils.isNumeric(ymd[2]))
-                                {
-                                    sb.append(String.format("-%02d", Integer.parseInt(ymd[2])));
-                                }
-                            }
-                        }
-                        rawData.setData(DataIndexType.eStartDate,  sb.toString());
-                    } else
-                    {
-                        System.err.println("Couldn't parse date["+val+"]");
-                        rawData.setData(DataIndexType.eStartDate,  (String)val);
-                    }
-
-                }
-            } else  if (dataIndex != null)
-            {
-                Object val = wbRow.getData(dataIndex);
-                rawData.setData(dataInxTyp, val);
-                
-            } else
-            {
-                //System.err.println("No index for Standard Column for ["+columnName+"]");
-            }
-            colInx++;
-        }
-        
-        String fullName  = null;
-        if (lastName != null || firstName != null)
-        {
-            if (StringUtils.isNotEmpty(lastName) && StringUtils.isNotEmpty(firstName))
-            {
-                fullName = lastName + ", "+firstName;
-                
-            } else if (StringUtils.isNotEmpty(lastName))
-            {
-                fullName = lastName;
-            } else
-            {
-                fullName = firstName;
-            }
-            rawData.setData(DataIndexType.eCollector_name, fullName);
-        }
-        
-        rawData.setImgIcon(getImage(wbRow));
-        
-        //System.out.println(rawData.toString());
+        assert isReady();
+        SGRRecord doc = workbench2SGR.row2SgrRecord(row);
+        return matcher.match(doc.asMatchable());
     }
-
-    /**
-     * @param wbRow
-     * @param rowData
-     */
-    protected void loadSNIBData(final WorkbenchRow wbRow, 
-                                final RawData rawData)
-    {
-        
-        String[] extraCollNameCols = {COLLASTNAME, LASTNAME, COLFIRSTNAME, FIRSTNAME};
-        
-        String lastName  = null;
-        String firstName = null;
-        
-        int colInx = 0;
-        for (DataIndexType dataInxTyp : DataIndexType.values())
-        {
-            String  columnName = RawData.getColumnName(dataInxTyp);
-            Integer dataIndex  = nameToIndex.get(columnName);
-            
-            //System.out.println("dataIndex: "+dataIndex+"  dataInxTyp: "+dataInxTyp+"  columnName["+columnName+"]");
-           
-            if (DataIndexType.eCollector_num == dataInxTyp)
-            {
-                int collNumInx = collNumIndex != null ? collNumIndex : fieldNumIndex;
-                
-                Object val = wbRow.getData(collNumInx);
-                rawData.setData(dataInxTyp, val);
-                
-            } else if (DataIndexType.eCollector_name == dataInxTyp)
-            {
-                if (dataIndex != null)
-                {
-                    Object val = wbRow.getData(dataIndex);
-                    rawData.setData(dataInxTyp, val);
-                } else
-                {
-                    int i = 0;
-                    for (String key : extraCollNameCols)
-                    {
-                        Integer inx = nameToIndex.get(key);
-                        if (inx != null)
-                        {
-                            if (i < 2)
-                            {
-                                lastName = (String)wbRow.getData(inx);
-                                if (lastName == null) lastName = "";
-                                break;
-                            } else
-                            {
-                                firstName = (String)wbRow.getData(inx);
-                                if (firstName == null) firstName = ""; 
-                                break;
-                            }
-                        }
-                        i++;
-                    }
-                }
-            } else if (columnName.equals(STARTDATE))
-            {
-                Object val = wbRow.getData(dataIndex);
-                if (StringUtils.isNotEmpty((String)val))
-                {
-                    
-                    String[] ymd = parseForDate((String)val);
-                    if (ymd != null)
-                    {
-                        rawData.setData(DataIndexType.eYear,  ymd[0]);
-                        rawData.setData(DataIndexType.eMonth, ymd[1]);
-                        rawData.setData(DataIndexType.eDay,   ymd[2]);
-                        StringBuilder sb = new StringBuilder();
-                        if (StringUtils.isNotEmpty(ymd[0]))
-                        {
-                            sb.append(ymd[0]);
-                            if (StringUtils.isNotEmpty(ymd[1]) && StringUtils.isNumeric(ymd[1]))
-                            {
-                                sb.append(String.format("-%02d", Integer.parseInt(ymd[1])));
-                                if (StringUtils.isNotEmpty(ymd[2]) && StringUtils.isNumeric(ymd[2]))
-                                {
-                                    sb.append(String.format("-%02d", Integer.parseInt(ymd[2])));
-                                }
-                            }
-                        }
-                        rawData.setData(DataIndexType.eStartDate,  sb.toString());
-                    } else
-                    {
-                        System.err.println("Couldn't parse date["+val+"]");
-                        rawData.setData(DataIndexType.eStartDate,  (String)val);
-                    }
-
-                }
-            } else  if (dataIndex != null)
-            {
-                Object val = wbRow.getData(dataIndex);
-                rawData.setData(dataInxTyp, val);
-                
-            } else
-            {
-                //System.err.println("No index for Standard Column for ["+columnName+"]");
-            }
-            colInx++;
-        }
-        
-        String fullName  = null;
-        if (lastName != null || firstName != null)
-        {
-            if (StringUtils.isNotEmpty(lastName) && StringUtils.isNotEmpty(firstName))
-            {
-                fullName = lastName + ", "+firstName;
-                
-            } else if (StringUtils.isNotEmpty(lastName))
-            {
-                fullName = lastName;
-            } else
-            {
-                fullName = firstName;
-            }
-            rawData.setData(DataIndexType.eCollector_name, fullName);
-        }
-        
-        rawData.setImgIcon(getImage(wbRow));
-        
-        //System.out.println(rawData.toString());
-    }
-    
-
-    /**
-     * @param wbRow
-     * @return
-     */
-    protected ImageIcon getImage(final WorkbenchRow wbRow)
-    {
-        if (wbRow != null)
-        {
-            if (StringUtils.isNotEmpty(wbRow.getCardImageFullPath()))
-            {
-                if (wbRow.getCardImage() == null)
-                {
-                    File imgFile = new File(wbRow.getCardImageFullPath());
-                    return imgFile.exists() ? new ImageIcon(GraphicsUtils.readImage(wbRow.getCardImageFullPath())) : null;
-                }
-                return wbRow.getCardImage();
-                
-            } else if (wbRow.getWorkbenchRowImages().size() > 0)
-            {
-                for (WorkbenchRowImage wbi : wbRow.getWorkbenchRowImages())
-                {
-                    ImageIcon imgIcon = wbi.getFullSizeImage(); 
-                    if (imgIcon != null)
-                    {
-                        return imgIcon;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * @param rawResList
-     */
-    protected void transferData(final List<RawData> rawResList)
-    {
-        if (rawResList.size() > 0)
-        {
-            int[] selRowsIndexes = spreadSheet.getSelectedRows();
-            int rowCnt = 0;
-            for (RawData rawData : rawResList)
-            {
-                if (rawData != null)
-                {
-                    int rowInx = selRowsIndexes[rowCnt];
-                    for (String nm : COLNAMES)
-                    {
-                        Integer index = nameToIndex.get(nm);
-                        if (index == null)
-                        {
-                            continue;
-                        }
-                    
-                        Object val = rawData.getData(nm);
-                        if (val != null)
-                        {
-                            spreadSheet.setValueAt(val, rowInx, index);
-                        }
-                    }
-                }
-                rowCnt++;
-            }
-        }
-    }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#setSubPanel(edu.ku.brc.af.core.SubPaneIFace)
@@ -645,7 +277,6 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     {
         this.subPane = parent;
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#setSpreadSheet(edu.ku.brc.ui.tmanfe.SpreadSheet)
@@ -665,44 +296,15 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         this.workbench = workbench;
         if (workbench != null)
         {
-            this.template = workbench.getWorkbenchTemplate();
-            
-            for (WorkbenchTemplateMappingItem wbtmi : this.template.getWorkbenchTemplateMappingItems())
-            {
-                Short       viewOrderIndex = wbtmi.getViewOrder();
-                DBFieldInfo fieldInfo      = wbtmi.getFieldInfo();
-                
-                String  stdColName = fieldInfo.getName().toLowerCase();
-                
-                boolean override = false;
-                if (stdColName.equalsIgnoreCase(COLLASTNAME) ||
-                    stdColName.equalsIgnoreCase(COLFIRSTNAME) ||
-                    stdColName.equalsIgnoreCase(LASTNAME) ||
-                    stdColName.equalsIgnoreCase(FIRSTNAME) ||
-                    stdColName.equalsIgnoreCase(STARTDATE))
-                {
-                    override = true;
-                }
-                
-                Integer index = RawData.getIndex(stdColName);
-                if (index != null || override)
-                {
-                    indexToFieldInfo.put(viewOrderIndex.intValue(), fieldInfo);
-                    fieldInfoToIndex.put(fieldInfo, viewOrderIndex.intValue());
-                    nameToIndex.put(fieldInfo.getName().toLowerCase(), viewOrderIndex.intValue());
-                    
-                    //System.out.println("Name Mapping: "+fieldInfo.getName().toLowerCase()+" => "+viewOrderIndex.intValue());
-                    
-                } else
-                {
-                    System.err.println("Name Mapping Error:"+fieldInfo.getName()+" was not a standard column name");
-                }
-            }
-            
-            collNumIndex   = nameToIndex.get(COLLNUM);
-            fieldNumIndex  = nameToIndex.get(FIELDNUM);
-            startDateIndex = nameToIndex.get(STARTDATE);
+            workbench2SGR = new Workbench2SGR(workbench);
         }
+        
+        if (colorizer != null)
+        {
+            colorizer.cleanup();
+        }
+        
+        colorizer = new WorkbenchColorizer(workbench, spreadSheet);
     }
 
     /* (non-Javadoc)
@@ -711,12 +313,12 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     @Override
     public List<String> getMissingFieldsForPlugin()
     {
-        ArrayList<String> list = new ArrayList<String>();
-        if (collNumIndex == null && fieldNumIndex == null)
-        {
-            return list;
-        }
-        
+//        ArrayList<String> list = new ArrayList<String>();
+//        if (collNumIndex == null && fieldNumIndex == null)
+//        {
+//            return list;
+//        }
+//        
         return null;
     }
 
@@ -726,10 +328,52 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     @Override
     public void shutdown()
     {
-        /*if (GroupHashDAO.getInstance() != null)
+        if (colorizer != null)
         {
-            GroupHashDAO.getInstance().cleanUp();
-        }*/
+            colorizer.cleanup();
+        }
+        
+        workbench = null;
+        workbenchPaneSS = null;
     }
 
+    @Override
+    public void setButton(JButton btn)
+    {
+        btn.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent e)            
+            {
+                super.mousePressed(e);
+                if (e.isPopupTrigger())
+                    doPopup(e);
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                super.mouseReleased(e);
+                if (e.isPopupTrigger())
+                    doPopup(e);
+            }
+        });
+    }
+
+    private void doPopup(MouseEvent e)
+    {
+        if (!popupMenu.isShowing()) 
+            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+    }
+    
+    public WorkbenchColorizer getColorizer()
+    {
+    	return colorizer;
+    }
+
+	@Override
+	public void setWorkbenchPaneSS(WorkbenchPaneSS wbpss)
+	{
+		workbenchPaneSS = wbpss;
+	}
 }

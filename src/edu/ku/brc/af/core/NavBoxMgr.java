@@ -196,6 +196,14 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
         }        
     }
     
+    public void closeSplitter()
+    {
+        if (splitPane != null)
+        {
+            splitPane.setDividerLocation(0.0);
+        }
+    }
+    
     /**
      * Unregisters a Task's NavBoxes into the Manager.
      */

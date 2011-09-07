@@ -21,72 +21,64 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+import java.util.WeakHashMap;
 
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
-import javax.swing.SwingWorker;
+import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartMouseEvent;
-import org.jfree.chart.ChartMouseListener;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.entity.CategoryItemEntity;
-import org.jfree.chart.entity.ChartEntity;
-import org.jfree.chart.entity.EntityCollection;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer3D;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
+import com.google.common.base.Function;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.sgr.datamodel.BatchMatchResultSet;
+import edu.ku.brc.sgr.datamodel.DataModel;
+import edu.ku.brc.sgr.datamodel.MatchConfiguration;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.plugins.sgr.BatchResultPropertyEditor;
+import edu.ku.brc.specify.plugins.sgr.BatchResultsMgr;
+import edu.ku.brc.specify.plugins.sgr.HistogramChart;
+import edu.ku.brc.specify.plugins.sgr.RecordSetBatchMatch;
+import edu.ku.brc.specify.plugins.sgr.SGRBatchScenario;
+import edu.ku.brc.specify.plugins.sgr.SGRMatcherUI;
+import edu.ku.brc.specify.plugins.sgr.SGRPluginImpl;
+import edu.ku.brc.specify.plugins.sgr.WorkBenchBatchMatch;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.ui.dnd.Trash;
 
 /**
  * @author rods
@@ -96,50 +88,45 @@ import edu.ku.brc.ui.dnd.SimpleGlassPane;
  * Mar 17, 2011
  *
  */
-@SuppressWarnings("serial")
 public class SGRTask extends BaseTask
 {
-    //private static final Logger log = Logger.getLogger(SGRTask.class);
-    public static final int    GLASSPANE_FONT_SIZE   = 20;
-    public static final String STATISTICS            = "Statistics"; //$NON-NLS-1$
+    private static class NavBoxMapping extends WeakHashMap<SubPaneIFace, Set<NavBoxItemIFace>> {}
     
-    // Static Data Members
-    public static final DataFlavor TOOLS_FLAVOR = new DataFlavor(SGRTask.class, "SGRTask");
-    public static final String SGR = "SGR";
+    public static final int           GLASSPANE_FONT_SIZE  = 20;
 
-    public static final String EXPORT_RS     = "ExportRecordSet";
-    public static final String EXPORT_LIST   = "ExportList";
-    public static final String EXPORT_JTABLE = "ExportJTable";
+    public static final DataFlavor    TOOLS_FLAVOR         = new DataFlavor(SGRTask.class,
+                                                                   "SGRTask");
+    public static final DataFlavor    BATCH_RESULTS_FLAVOR = new DataFlavor(
+                                                                   BatchMatchResultSet.class,
+                                                                   "Batch Match Results");
+    private static final DataFlavor   MATCHER_FLAVOR       = new DataFlavor(
+                                                                   MatchConfiguration.class,
+                                                                   "SGR Matcher");
 
-    // Data Members
-    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
-    protected ToolBarDropDownBtn      toolBarBtn       = null;
-    
-    /**
-     * A {@link Vector} or the registered export formats/targets.
-     */
-    protected Vector<NavBoxItemIFace> toolsNavBoxList    = new Vector<NavBoxItemIFace>();
-    
-    /**
-     * Constructor.
-     */
+    public static final String        SGR                  = "SGR";
+
+    public static final String        EXPORT_RS            = "ExportRecordSet";
+    public static final String        EXPORT_LIST          = "ExportList";
+    public static final String        EXPORT_JTABLE        = "ExportJTable";
+    private static final String       SGR_PROCESS          = "SGR.Process";
+
+    protected Vector<NavBoxIFace>     extendedNavBoxes     = new Vector<NavBoxIFace>();
+    protected ToolBarDropDownBtn      toolBarBtn           = null;
+
+    protected Vector<NavBoxItemIFace> toolsNavBoxList      = new Vector<NavBoxItemIFace>();
+    private NavBox                    batchMatchResultsBox;
+    private NavBox                    matchersNavBox;
+    protected NavBox                  workbenchNavBox;
+
+    private final NavBoxMapping       selectedNavBoxItems  = new NavBoxMapping();
+
     public SGRTask()
     {
         super(SGR, getResourceString("SGR"));
         
         CommandDispatcher.register(SGR, this);
-        //CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#isSingletonPane()
-     */
-    public boolean isSingletonPane()
-    {
-        return true;
-    }
-
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -150,167 +137,126 @@ public class SGRTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
+            DataModel.startDbSession(new Function<Object, Connection>() {
+                @Override public Connection apply(Object arg0) {
+                    return DBConnection.getInstance().createConnection();
+            }});
+            
             // create an instance of each registered exporter
             toolsNavBoxList.clear();
 
             // if visible, create a nav box button for each exporter
             if (isVisible)
             {
+                UIRegistry.loadAndPushResourceBundle("specify_plugins");
+                
                 extendedNavBoxes.clear();
-                NavBox navBox = new NavBox(getResourceString("Actions"));
                 
-                navBox.add(NavBox.createBtnWithTT(getResourceString("Upload"), "Upload", "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        uploadCollection();
-                    }
-                }));
+//                navBoxes.add(makeActionsNavBox());
                 
-                navBox.add(NavBox.createBtnWithTT(getResourceString("Process"), "SGR", "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        processCollection();
-                    }
-                })); 
-                navBoxes.add(navBox);
+                matchersNavBox = makeMatchersNavBox();
+                navBoxes.add(matchersNavBox);
                 
-                navBox.add(NavBox.createBtnWithTT(getResourceString(STATISTICS), STATISTICS, "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        sgrStats();
-                    }
-                })); 
-                navBoxes.add(navBox);
+                batchMatchResultsBox = makeBatchResultsNavBox();
+                navBoxes.add(batchMatchResultsBox);
+                
+                WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);
+                workbenchNavBox = wbTask.datasetNavBoxMgr.createWorkbenchNavBox(SGR);
+                
+                UIRegistry.popResourceBundle();
             }
         }
+        isShowDefault = true;
     }
     
-    /**
-     * 
-     */
-    private void uploadCollection()
+    private NavBox makeMatchersNavBox()
     {
-        doWork("Uploading Collection...", "Collection Upload Complete.");
-    }
-    
-    /**
-     * 
-     */
-    private void doWork(final String procMsg, final String finiMsg)
-    {
-        final String TIME = "time";
+        NavBox matchersBox = new NavBox(getResourceString("SGR_MATCHERS_TITLE"));
+        List<MatchConfiguration> matchers = DataModel.getMatcherConfigurations();
         
-        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(procMsg, GLASSPANE_FONT_SIZE);
-        
-        SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
+        for (MatchConfiguration mc : matchers)
         {
-            int progress = 0;
+             NavBoxItemIFace nbi = addMatcherToNavBox(mc, matchersBox, true);
+        }
+        
+        final RolloverCommand roc = 
+            (RolloverCommand)makeDnDNavBtn(matchersBox, 
+                    getResourceString("SGR_CREATE_MATCHER"), "PlusSign", 
+                    new CommandAction(SGR, "new_matcher"), 
+                    null, false, false);
+        
+        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        roc.addDropDataFlavor(WorkbenchTask.DATASET_FLAVOR);
+        return matchersBox;
+    }
             
-            @Override
-            protected Integer doInBackground() throws Exception
-            {
-                try
-                {
-                    while (progress < 100)
-                    {
-                        Thread.sleep(200);
-                        progress += 3;
-                        firePropertyChange(TIME, 0, progress);
-                    }
-                    
-                } catch (Exception ex) {}
-                return null;
-            }
+    private NavBoxItemIFace addMatcherToNavBox(MatchConfiguration mc, NavBox nb, boolean addSorted)
+    {
+        final NavBoxItemIFace nbi = makeDnDNavBtn(nb, mc.name(), "SGR", null,
+                new CommandAction("SGR", SGR_PROCESS, mc, null, mc), null, true, 0, addSorted);
+        
+        nbi.setData(mc);
 
-            @Override
-            protected void done()
-            {
-                super.done();
-                UIRegistry.clearSimpleGlassPaneMsg();
-            }
-        };
-        worker.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    public  void propertyChange(final PropertyChangeEvent evt) {
-                        if (TIME.equals(evt.getPropertyName())) 
+        ((RolloverCommand) nbi).addDragDataFlavor(MATCHER_FLAVOR);
+        
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        UIHelper.createLocalizedMenuItem(popupMenu, "SGR_EDIT_MATCH_CONFIGURATION", "", null, true, 
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        final SGRMatcherUI mui = 
+                            SGRMatcherUI.dialogForEditing((Frame)UIRegistry.getTopWindow(), nbi);
+                        
+                        SwingUtilities.invokeLater(new Runnable()
                         {
-                            int value = (Integer)evt.getNewValue();
-                            glassPane.setProgress(value);
-                        }
+                            @Override
+                            public void run()
+                            {
+                                mui.setVisible(true);
+                            }
+                        });
                     }
-                });
-        worker.execute();
-    }
-    
-    /**
-     * 
-     */
-    private void processCollection()
-    {
-        doWork("Analyizing Collection...", "Collection Analyzed.");
-    }
-    
-    /**
-     * 
-     */
-    @SuppressWarnings("unchecked")
-    private void sgrStats()
-    {
-        try
+        });
+        
+        if (permissions == null || permissions.canDelete())
         {
-            // create a dataset...
-            String cat = "";
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-            
-            String path = "demo_files/sgr_histo.dat";
-            File histoDataFile = new File(path); // dev path
-            if (!histoDataFile.exists())
-            {
-                histoDataFile = new File("../"+path); // release path
-                if (!histoDataFile.exists())
-                {
-                    return;
-                }
-            }
-            
-            int cnt = 0;
-            for (String line : (List<String>)FileUtils.readLines(histoDataFile))
-            {
-                String[] tokens = StringUtils.split(line, ',');
-                dataset.addValue(Double.parseDouble(tokens[3]), tokens[0], cat);
-                cnt++;
-            }
-    
-            // create the chart...
-            JFreeChart chart = ChartFactory.createBarChart3D(
-                    "Quality of Matches",      // chart title
-                    "Bins",                     // domain axis label
-                    "Number of Matches",       // range axis label
-                    dataset,    // data
-                    PlotOrientation.VERTICAL,
-                    true,       // include legend
-                    true,       // tooltips?
-                    false       // URLs?
-                );
-            
-            final CategoryItemRenderer renderer = new CustomRenderer(cnt);
-            chart.getCategoryPlot().setRenderer(renderer);
-            
-            // create and display a frame...
-            ChartPanel chartPanel = new ChartPanel(chart, true, true, true, true, true);
-            SimpleDescPane pane = new SimpleDescPane("SGR Stats", this, new ChartBoundingPanel(chartPanel));
-            
-            addSubPaneToMgr(pane);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
+            CommandAction delCmdAction = new CommandAction("SGR", DELETE_CMD_ACT, nbi);
+            ((NavBoxButton) nbi).setDeleteCommandAction(delCmdAction);            
+            ((RolloverCommand) nbi).addDragDataFlavor(Trash.TRASH_FLAVOR);
         }
+        
+        ((RolloverCommand) nbi).setPopupMenu(popupMenu);
+        
+        ((RolloverCommand) nbi).addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        ((RolloverCommand) nbi).addDropDataFlavor(WorkbenchTask.DATASET_FLAVOR);
+        
+        return nbi;
+    }
+    
+    private NavBox makeBatchResultsNavBox()
+    {
+        NavBox batchResultsBox = new NavBox(getResourceString("SGR_BATCH_RESULTS"));
+        
+        List<BatchMatchResultSet> resultSets = DataModel.getBatchMatchResultSets();
+        
+        for (BatchMatchResultSet rs: resultSets)
+        {
+            NavBoxItemIFace nbi = new BatchResultsMgr(rs, permissions);
+            batchResultsBox.insertSorted(nbi);
+            
+            String toolTip = "" + rs.nItems() + " " + getResourceString("SGR_BATCH_ITEMS");
+            
+            nbi.setToolTip(toolTip);
+        }
+
+        return batchResultsBox;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#requestContext()
      */
+    @Override
     public void requestContext()
     {
         ContextMgr.requestContext(this);
@@ -323,19 +269,38 @@ public class SGRTask extends BaseTask
         {
             SubPaneMgr.getInstance().showPane(starterPane);
         }
+        
+        UsageTracker.incrUsageCount("SGR.StartSGR");
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
-     */
-    public void subPaneRemoved(final SubPaneIFace subPane)
+    @Override
+    public void subPaneShown(SubPaneIFace subPane) 
     {
-        super.subPaneRemoved(subPane);
-        
+        super.subPaneShown(subPane);
         if (subPane == starterPane)
         {
-            starterPane = null;
+            updateNavBoxes(new HashSet<NavBoxItemIFace>(0));
         }
+        else
+        {
+            Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(subPane);
+            if (nbis != null)
+                updateNavBoxes(nbis);
+        }
+    }
+    
+    @Override
+    public void subPaneRemoved(SubPaneIFace subPane) 
+    {
+        if (subPane == starterPane) 
+            starterPane = null;
+    }
+    
+    @Override
+    protected SubPaneIFace addSubPaneToMgr(SubPaneIFace subPane) 
+    {
+        selectedNavBoxItems.put(subPane, new HashSet<NavBoxItemIFace>());
+        return super.addSubPaneToMgr(subPane);
     }
 
     /* (non-Javadoc)
@@ -368,13 +333,14 @@ public class SGRTask extends BaseTask
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
 
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
-        if (nbs != null)
-        {
-            extendedNavBoxes.addAll(nbs);
-        }
-        
+//        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+//        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+//        if (nbs != null)
+//        {
+//            extendedNavBoxes.addAll(nbs);
+//        }
+//        
+        extendedNavBoxes.add(workbenchNavBox);
         return extendedNavBoxes;
     }
 
@@ -390,7 +356,7 @@ public class SGRTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        if (AppPreferences.getRemote().getBoolean("ENABLE_SGR", false))
+        if (AppPreferences.getLocalPrefs().getBoolean("ENABLE_SGR", false))
         {
             toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }
@@ -451,39 +417,111 @@ public class SGRTask extends BaseTask
     /**
      * @param cmdAction the command to be processed
      */
-    protected void processToolRecordSet(final CommandAction cmdAction)
+    protected void processCommand(CommandAction cmdAction)
     {
-        /*RecordSetToolsIFace tool = getTool(cmdAction);
-
-        if (tool != null)
+        SGRBatchScenario scenario = null;
+        if (cmdAction.getData() instanceof RecordSetIFace)
         {
-            Object data = cmdAction.getData();
-            
-            if (data instanceof CommandAction && ((CommandAction)data) == cmdAction) // means it was clicked on
+            RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+            MatchConfiguration matchConfig = (MatchConfiguration)cmdAction.getSrcObj();
+            scenario = RecordSetBatchMatch.newScenario(recordSet, matchConfig);
+        }
+        else if (cmdAction.getData() instanceof CommandAction)
+        {
+            CommandAction internal = (CommandAction)cmdAction.getData();
+            if (internal.getAction().equals(WorkbenchTask.SELECTED_WORKBENCH))
             {
-                RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
-                List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
-                
-                // XXX Probably need to also get RSs with Localisties and or CollectingEvents
+                RecordSetIFace recordSet = (RecordSetIFace)internal.getProperty("workbench");
+                MatchConfiguration matchConfig = (MatchConfiguration)cmdAction.getSrcObj();
+                scenario = WorkBenchBatchMatch.newScenario(recordSet, matchConfig);
+            }
+        }
+        else if (cmdAction.getData() instanceof MatchConfiguration)
+        {
+            MatchConfiguration selectedMatcher = (MatchConfiguration)cmdAction.getData();
+            SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
 
-                data = getRecordSetOfDataObjs(null, CollectionObject.class, "catalogNumber", colObjRSList.size());
+            Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(subPane);
+            if (nbis == null) return;
+            for (NavBoxItemIFace nbi : nbis)
+                if (nbi.getData() == selectedMatcher)
+                    return;
+            
+            nbis.clear();
+            addNbiForMatcher(nbis, selectedMatcher);
+            
+            WorkbenchPaneSS workbenchPane = null;
+            try
+            {
+                workbenchPane = (WorkbenchPaneSS)subPane;
+            } catch (ClassCastException e) {}
+            
+            if (workbenchPane != null)
+            {
+                SGRPluginImpl sgr = 
+                    (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class.getSimpleName());
+                sgr.setMatcherConfiguration(selectedMatcher);
+                sgr.getColorizer().stopColoring();
+                workbenchPane.showHideSgrCol(false);
+                
+                addNbiForWorkbench(nbis, workbenchPane.getWorkbench());
             }
             
-            processToolDataFromRecordSet(data, cmdAction.getProperties(), tool);
-        }*/
+            updateNavBoxes(nbis);
+        }
+            
+        if (scenario != null)
+        {
+            BatchMatchResultSet resultSet = scenario.getResultSet(); 
+            scenario.start();
+            NavBoxItemIFace nbi = new BatchResultsMgr(resultSet, scenario, permissions);
+            batchMatchResultsBox.insertSorted(nbi);
+            
+            final BatchResultPropertyEditor editor = new BatchResultPropertyEditor(nbi);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    editor.setVisible(true);
+                }
+            });
+            
+            UsageTracker.incrUsageCount("SGR.BatchMatch");
+        }
     }
     
-    /**
-     * @param cmdAction the command to be processed
-     */
-    protected void processToolList(final CommandAction cmdAction)
+    protected void deleteBatchMatchResultSet(final NavBoxItemIFace nbi)
     {
-        /*RecordSetToolsIFace tool = getTool(cmdAction);
-        
-        if (tool != null)
+        BatchMatchResultSet rs = (BatchMatchResultSet) nbi.getData();
+        rs.delete();
+        for (NavBoxIFace nb : navBoxes)
         {
-            //processToolDataFromList(cmdAction.getData(), cmdAction.getProperties(), tool);
-        }*/
+            if (nb.getName().equals(getResourceString("SGR_BATCH_RESULTS")))
+                    deleteDnDBtn(nb, nbi);
+        }
+    }
+    
+    protected void deleteMatchConfiguration(final NavBoxItemIFace nbi)
+    {
+        MatchConfiguration mc = (MatchConfiguration) nbi.getData();
+        mc.delete();
+        for (NavBoxIFace nb : navBoxes)
+        {
+            if (nb.getName().equals(getResourceString("SGR_MATCHERS_TITLE")))
+                    deleteDnDBtn(nb, nbi);
+        }
+    }
+    
+
+    public void addHistogram(BatchMatchResultSet resultSet, SGRBatchScenario scenario, float f)
+    {
+        SubPaneIFace histoPane = new HistogramChart(resultSet.name(), this, resultSet, scenario, f);
+        addSubPaneToMgr(histoPane);
+        Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(histoPane);
+        addNbisForResultSet(nbis, resultSet);
+        updateNavBoxes(nbis);
+        UsageTracker.incrUsageCount("SGR.Histogram");
     }
     
     /**
@@ -538,296 +576,219 @@ public class SGRTask extends BaseTask
     {
         if (cmdAction.isType(SGR))
         {
-            if (cmdAction.isAction(EXPORT_RS))
+            if (cmdAction.isAction(SGR_PROCESS))
             {
-                processToolRecordSet(cmdAction);
+                processCommand(cmdAction);
+            } 
+            else if (cmdAction.isAction(DELETE_CMD_ACT))
+            {
+                NavBoxItemIFace nbi = (NavBoxItemIFace) cmdAction.getData();
+                Object toDelete = nbi.getData();
+                if (toDelete instanceof BatchMatchResultSet)
+                {
+                    deleteBatchMatchResultSet(nbi);
+                }
+                else if (toDelete instanceof MatchConfiguration)
+                {
+                    deleteMatchConfiguration(nbi);
+                }
             }
-            else if (cmdAction.isAction(EXPORT_LIST))
+            else if (cmdAction.isAction("new_matcher"))
             {
-                processToolList(cmdAction);
-                
+                final SGRMatcherUI mui = 
+                    SGRMatcherUI.dialogForNewConfig((Frame)UIRegistry.getTopWindow(), 
+                        new SGRMatcherUIFinished(cmdAction));
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        mui.setVisible(true);
+                    }
+                });
+                UsageTracker.incrUsageCount("SGR.NewMatcher");
+            }
+            else if (cmdAction.isAction(WorkbenchTask.SELECTED_WORKBENCH))
+            {
+                Object cmdData = cmdAction.getData();
+                Workbench workbench = null;
+                if (cmdData instanceof RecordSetIFace)
+                {
+                    workbench = WorkbenchTask.loadWorkbench((RecordSetIFace)cmdData);
+                } else 
+                {
+                    // This is for when the user clicks directly on the workbench
+                    workbench = WorkbenchTask.loadWorkbench(
+                            (RecordSetIFace)cmdAction.getProperty("workbench"));
+                }                
+                if (workbench != null)
+                {
+                    createEditorForWorkbench(workbench, null, false, true);
+                }
+            }
+            else if (cmdAction.isAction("selected_resultset"))
+            {
+                BatchMatchResultSet resultSet = (BatchMatchResultSet) cmdAction.getData();
+                Workbench workbench = WorkbenchTask.loadWorkbench(
+                        (int)(long)resultSet.getRecordSetId(), null);
+                if (workbench != null)
+                {
+                    createEditorForWorkbench(workbench, null, false, true, resultSet);
+                }
             }
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
         {
             prefsChanged(cmdAction);
         } 
     }
-    
-    //---------------------------------------------------------------------------------------------------
-    //--- 
-    //---------------------------------------------------------------------------------------------------
-    class ChartBoundingPanel extends JPanel implements ChartMouseListener
+
+    /**
+     * Creates the Pane for editing a Workbench.
+     * @param workbench the workbench to be edited
+     * @param session a session to use to load the workbench (can be null)
+     * @param showImageView shows image window when first showing the window
+     */
+    protected void createEditorForWorkbench(final Workbench workbench, 
+                                            final DataProviderSessionIFace session,
+                                            final boolean showImageView,
+                                            final boolean doInbackground)
     {
-        private ChartPanel  chartPanel;
-        private Rectangle   rect = null;
-        
-        private Rectangle[]          boundings     = null;
-        private CategoryItemEntity[] currEntities  = null;
-        private ImageIcon            thumb         = IconManager.getIcon("TTV_ToParent");
-        private BasicStroke          lineStroke    = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-        
-        private CategoryItemEntity            currEntity         = null;
-        private Integer                       currEntityIndex    = null;
-        private ArrayList<CategoryItemEntity> entities           = null;
-        
-        private int                           maxHeight          = 0;
-        private int                           maxY               = 0;
-        
-        /**
-         * 
-         */
-        public ChartBoundingPanel(final ChartPanel chartPanel)
-        {
-            super(new BorderLayout());
-            this.chartPanel = chartPanel;
-            
-            add(chartPanel, BorderLayout.CENTER);
-            
-            chartPanel.addChartMouseListener(this);
-            
-            
-            chartPanel.addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mousePressed(MouseEvent e)
-                {
-                    //System.out.println("mousePressed        " + currEntityIndex+"  "+e.getPoint());
-                    
-                    if (currEntityIndex != null)
-                    {
-                        //System.err.println("Setting Index: "+currEntityIndex+"  to "+currEntity.hashCode());
-                        
-                        currEntities[currEntityIndex] = currEntity;
-                        currEntityIndex    = null;
-                        
-                    } else
-                    {
-                        
-                        if (currEntity != null)
-                        {
-                            for (int i=0;i<currEntities.length;i++)
-                            {
-                                System.out.println(i+"  "+currEntities[i].hashCode());
-                            }
-                            
-                            Number val2 = currEntity.getDataset().getValue(currEntity.getRowKey(), currEntity.getColumnKey());
-                            for (int i=0;i<currEntities.length;i++)
-                            {
-                                Number val1 = currEntities[i].getDataset().getValue(currEntities[i].getRowKey(), currEntities[i].getColumnKey());
-                                //System.out.println(i+" "+currEntity+"  "+currEntities[i]);
-                                //System.out.println(i+" "+val1+"  "+val2);
-                                if (val1.doubleValue() == val2.doubleValue())
-                                //if (currEntity.equals(currEntities[i]))
-                                {
-                                    //System.out.println("FND: "+i+" "+currEntity.hashCode()+"  "+currEntities[i].hashCode());
-                                    currEntityIndex    = i;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        protected Rectangle adjustRect(final Rectangle rect)
-        {
-            //Rectangle2D r2d  = chartPanel.getScreenDataArea();
-            //Rectangle2D r2dX = chartPanel.getChartRenderingInfo().getPlotInfo().getPlotArea();
-            //int x = (int)r2d.getX() + (int)r2dX.getX() + (int)(rect.getWidth() / 2);
-            
-            int x = rect.x + (int)(rect.getWidth() / 2);
-            x = (int) ((double)x * chartPanel.getScaleX());
-            
-            //System.out.println(rect);
-            
-            rect.x      = x;
-            rect.width  = (int)((double)rect.width * chartPanel.getScaleX());
-            
-            rect.y      = (int)((double)rect.y * chartPanel.getScaleY());
-            rect.height = (int)((double)rect.height * chartPanel.getScaleY());
-            //System.err.println(rect+"\n");
-            return rect;
-        }
-        
-        /* (non-Javadoc)
-         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-         */
-        @Override
-        public void paint(Graphics g)
-        {
-            super.paint(g);
-            
-            if (rect != null)
-            {
-                Graphics2D g2d = (Graphics2D)g;
-                g2d.setColor(Color.RED);
-                
-                adjustRect(rect);
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setStroke(lineStroke);
-                
-                if (boundings == null)
-                {
-                    boundings = new Rectangle[4];
-                    
-                    if (entities == null)
-                    {
-                        entities = new ArrayList<CategoryItemEntity>();
-                        EntityCollection         entCol   = chartPanel.getChartRenderingInfo().getEntityCollection();
-                        for (int i=0;i<entCol.getEntityCount();i++)
-                        {
-                            ChartEntity ce = (ChartEntity)entCol.getEntity(i);
-                            if (ce instanceof CategoryItemEntity)
-                            {
-                                CategoryItemEntity cie = (CategoryItemEntity)ce;
-                                Rectangle r = adjustRect(cie.getArea().getBounds());
-                                if (r.height > maxHeight)
-                                {
-                                    maxHeight =(int)cie.getArea().getBounds().getHeight();
-                                    maxY      = r.y;
-                                }
-                                entities.add(cie);
-                            }
-                        }
-                    }
-                    
-                    int half = (entities.size() - 1) / 2;
-                    boundings[0] = getEntityPoint(entities, 0);
-                    boundings[1] = getEntityPoint(entities, half);
-                    boundings[2] = getEntityPoint(entities, half+1);
-                    boundings[3] = getEntityPoint(entities, entities.size()-1);
-                    
-                    int[] inxs = new int[] {0, half, half+1, entities.size()-1};
-                    currEntities = new CategoryItemEntity[4];
-                    for (int i=0;i<inxs.length;i++)
-                    {
-                        currEntities[i] = entities.get(inxs[i]);
-                        //System.out.println("START: "+i+"  "+currEntities[i]);
-                    }
-                }
-                
-                for (Rectangle r : boundings)
-                {
-                    g.drawImage(thumb.getImage(), r.x-(thumb.getIconWidth()/2)+2, r.y+r.height-thumb.getIconHeight(), null);
-                }
-                
-                int x = (int)((double)boundings[0].x * 1);//chartPanel.getScaleX());
-                int w = (int)((double)(boundings[1].x - boundings[0].x) * 1);//chartPanel.getScaleX());
-                
-                //int y = (int)((double)maxY * chartPanel.getScaleY());
-                int h = (int)((double)maxHeight * chartPanel.getScaleY());
+        createEditorForWorkbench(workbench, session, showImageView, doInbackground, null);   
+    }
+    
+    protected void createEditorForWorkbench(final Workbench workbench, 
+                                            final DataProviderSessionIFace session,
+                                            final boolean showImageView,
+                                            final boolean doInbackground,
+                                            final BatchMatchResultSet resultSet)
+    {
+        if (workbench == null) return;
 
-                g2d.setColor(new Color(255, 255, 255, 64));
-                g2d.fillRect(x+2, maxY, w, h);
-                
-                x = (int)((double)boundings[2].x * 1);//chartPanel.getScaleX());
-                w = (int)((double)(boundings[3].x - boundings[2].x) * 1);//chartPanel.getScaleX());
-                
-                g2d.setColor(new Color(255, 255, 255, 64));
-                g2d.fillRect(x+2, maxY, w, h);
-                
-            }
-        }
+        final SimpleGlassPane glassPane = doInbackground ? 
+                UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                        getResourceString("WB_LOADING_DATASET"), 
+                        new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) : null;
+
+        WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);   
         
-        /**
-         * @param entities
-         * @param index
-         * @return
-         */
-        private Rectangle getEntityPoint(final ArrayList<CategoryItemEntity> entities, final int index)
+        WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
+                session, showImageView, this, !wbTask.isPermitted())
         {
-            CategoryItemEntity cie = entities.get(index);
-            Rectangle          r   = (Rectangle)cie.getArea().getBounds().clone();
-            adjustRect(r);
-            return r;
-        }
-
-        /* (non-Javadoc)
-         * @see org.jfree.chart.ChartMouseListener#chartMouseClicked(org.jfree.chart.ChartMouseEvent)
-         */
-        @Override
-        public void chartMouseClicked(ChartMouseEvent ev)
-        {
-            repaint();
-        }
-
-        /* (non-Javadoc)
-         * @see org.jfree.chart.ChartMouseListener#chartMouseMoved(org.jfree.chart.ChartMouseEvent)
-         */
-        @Override
-        public void chartMouseMoved(ChartMouseEvent ev)
-        {
-            currEntity = null;
-            ChartEntity ce = ev.getEntity();
-            if (ce instanceof CategoryItemEntity)
+            @Override
+            public void progressUpdated(java.util.List<Integer> chunks) 
             {
-                CategoryItemEntity cie = (CategoryItemEntity)ce;
-                currEntity = cie;
-                
-                Shape shape = ce.getArea();
-                rect = shape.getBounds();
-                repaint();
+                if (glassPane != null)
+                    glassPane.setProgress(chunks.get(chunks.size() - 1));
             }
             
-            if (currEntityIndex != null && currEntity != null)
+            @Override
+            public void completed(WorkbenchPaneSS workbenchPane)
             {
-                boundings[currEntityIndex] = adjustRect((Rectangle)currEntity.getArea().getBounds().clone());
-                //System.out.println("mouseMoved" + boundings[currEntityIndex]);
-                repaint();
-            }
+                addSubPaneToMgr(workbenchPane);
+                Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(workbenchPane);
+                addNbiForWorkbench(nbis, workbench);
+                
+                if (resultSet != null)
+                {
+                    SGRPluginImpl sgr = 
+                        (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class.getSimpleName());
+                    sgr.setMatcherConfiguration(resultSet.getMatchConfiguration());
+                    sgr.getColorizer().setBatchResults(resultSet);
+                    workbenchPane.showHideSgrCol(true);
+                    workbenchPane.sgrSort();
+                    
+                    addNbisForResultSet(nbis, resultSet);
+                }
+                
+                if (glassPane != null)
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
+                
+                updateNavBoxes(nbis);
+             }
+        };
+        
+        if (doInbackground)
+            wbec.runInBackground();
+        else
+            wbec.runInForeground();
+    }
+    
+    private void addNbiForWorkbench(Set<NavBoxItemIFace> nbis, Workbench workbench)
+    {
+        NavBoxItemIFace wbnbi = 
+            (NavBoxItemIFace) WorkbenchTask.getNavBtnById(workbenchNavBox, 
+                    workbench.getWorkbenchId(), "workbench");
+        
+        if (wbnbi != null)
+        {
+            nbis.add(wbnbi);
         }
     }
     
-    class CustomRenderer extends BarRenderer3D {
-
-        /** The colors. */
-        private Paint[] colors;
-
-        /**
-         * Creates a new renderer.
-         *
-         * @param colors  the colors.
-         */
-        public CustomRenderer(final int numColorsArg) 
+    private void addNbisForResultSet(Set<NavBoxItemIFace> nbis, BatchMatchResultSet resultSet)
+    {
+        for (NavBoxItemIFace nbi : batchMatchResultsBox.getItems())
+            if (nbi.getData() == resultSet)
+                 nbis.add(nbi);
+ 
+        addNbiForMatcher(nbis, resultSet.getMatchConfiguration());
+    }
+    
+    private void addNbiForMatcher(Set<NavBoxItemIFace> nbis, MatchConfiguration matcher)
+    {
+        for (NavBoxItemIFace nbi : matchersNavBox.getItems())
         {
-            int numColors = numColorsArg + 1;
-            BufferedImage image = new BufferedImage(numColors, 2, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2 = (Graphics2D)image.getGraphics();
-            
-            int halfBW = numColors / 2;
-            GradientPaint bg = new GradientPaint(new Point(0, 0), Color.RED, new Point(halfBW,0), Color.YELLOW);            
-            g2.setPaint(bg);
-            
-            g2.fillRect(0, 0, halfBW, 2);
-            
-            // Second Half
-            bg = new GradientPaint(new Point(halfBW, 0), Color.YELLOW,
-                                   new Point(numColors, 0), Color.GREEN);
-            g2.setPaint(bg);
-            g2.fillRect(halfBW, 0, halfBW, 2);
-            
-            colors = new Paint[numColors];
-            for (int i=0;i<numColors;i++)
+            MatchConfiguration matcherInBox;
+            try 
             {
-                Color c = new Color(image.getRGB(i, 0));
-                //System.out.println(i+" - "+c);
-                colors[i] = c;
+                matcherInBox = (MatchConfiguration) nbi.getData();
+            } catch (ClassCastException e) { continue; }
+            
+            if (matcherInBox.id() == matcher.id())
+                nbis.add(nbi);
+        }
+    }
+    
+    private void updateNavBoxes(Set<NavBoxItemIFace> nbis)
+    {
+        updateNavBox(matchersNavBox, nbis);
+        updateNavBox(workbenchNavBox, nbis);
+        updateNavBox(batchMatchResultsBox, nbis);
+    }
+    
+    private void updateNavBox(NavBox nb, Set<NavBoxItemIFace> nbis)
+    {
+        for (NavBoxItemIFace nbi : nb.getItems())
+            if (nbis.contains(nbi))
+            {
+                nbi.getUIComponent().setBackground(Color.LIGHT_GRAY);
             }
+            else
+            {
+                nbi.getUIComponent().setBackground(Color.WHITE);
+            }
+    }
+
+    private class SGRMatcherUIFinished implements Function<MatchConfiguration, Void>
+    {
+        private final CommandAction cmdAction;
+
+        public SGRMatcherUIFinished(CommandAction cmdAction)
+        {
+            this.cmdAction = cmdAction;
         }
 
-        /**
-         * Returns the paint for an item.  Overrides the default behaviour inherited from
-         * AbstractSeriesRenderer.
-         *
-         * @param row  the series.
-         * @param column  the category.
-         *
-         * @return The item color.
-         */
-        public Paint getItemPaint(final int row, final int column) 
+        @Override
+        public Void apply(MatchConfiguration matchConfiguration)
         {
-            return this.colors[row % this.colors.length];
+            addMatcherToNavBox(matchConfiguration, matchersNavBox, false);
+            NavBox.refresh(matchersNavBox);
+            // kludgie
+            cmdAction.setSrcObj(matchConfiguration);
+            processCommand(cmdAction);
+            return null;
         }
     }
 }

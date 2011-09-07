@@ -499,8 +499,10 @@ public class ResultSetController implements ValidationListener
     /**
      * 
      */
-    private void prevRecord()
+    public void prevRecord()
     {
+        if (currentInx < 1) return;
+        
         if (notifyListenersAboutToChangeIndex(currentInx, currentInx-1))
         {
             // Note: notifyListenersAboutToChangeIndex sometimes can call a method
@@ -516,8 +518,10 @@ public class ResultSetController implements ValidationListener
 
     }
     
-    private void nextRecord()
+    public void nextRecord()
     {
+        if (currentInx > numRecords-2) return;
+            
         if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
         {
             currentInx++;

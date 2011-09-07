@@ -22,12 +22,9 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Connection;
@@ -38,18 +35,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
-
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
@@ -113,7 +107,6 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
@@ -146,7 +139,6 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
-import edu.ku.brc.ui.dnd.Trash;
 
 /**
  * Placeholder for additional work.
@@ -208,6 +200,8 @@ public class WorkbenchTask extends BaseTask
     // Temporary until we get a Workbench Icon
     protected boolean                     doingStarterPane = false;
 
+    public final DatasetNavBoxMgr datasetNavBoxMgr;
+
     //for batch upload hack
     //protected boolean testingJUNK = false;
 
@@ -230,6 +224,8 @@ public class WorkbenchTask extends BaseTask
         {
         	log.debug("security off");
         }
+        
+        datasetNavBoxMgr = new DatasetNavBoxMgr(this);
         
         if (WorkbenchDataItem.getMaxWBCellLength() == null)
         {
@@ -284,29 +280,7 @@ public class WorkbenchTask extends BaseTask
             
             navBoxes.add(navBox);
             
-            int dataSetCount = 0;
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"),false,true);
-                List<?> list    = session.getDataList("From Workbench where SpecifyUserID = " + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()+" order by name");
-                dataSetCount    = list.size();
-                for (Object obj : list)
-                {
-                    addWorkbenchToNavBox((Workbench)obj);
-                }
-                
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                log.error(ex);
-                ex.printStackTrace();
-                
-            } finally
-            {
-                session.close();    
-            }
+            workbenchNavBox = datasetNavBoxMgr.createWorkbenchNavBox(WORKBENCH);
 
             
             // Then add
@@ -383,11 +357,15 @@ public class WorkbenchTask extends BaseTask
             // TEMPLATES navBoxes.addElement(templateNavBox);
             navBoxes.add(workbenchNavBox);
             
-            updateNavBoxUI(dataSetCount);
+            updateNavBoxUI(workbenchNavBox.getCount());
         }
         //AppPreferences.getRemote().putInt("MAX_ROWS", MAX_ROWS);
         MAX_ROWS = AppPreferences.getRemote().getInt("MAX_ROWS", MAX_ROWS);
         isShowDefault = true;
+    }
+    
+    public NavBox getDatasetNavBox() {
+        return workbenchNavBox;
     }
     
     /**
@@ -433,113 +411,7 @@ public class WorkbenchTask extends BaseTask
         
         return schema;
     }
-    
-    /**
-     * Adds a WorkbenchTemplate to the Left Pane NavBox
-     * @param workbench the workbench to be added
-     */
-    protected RolloverCommand addWorkbenchToNavBox(final Workbench workbench)
-    {
-        CommandAction cmd = new CommandAction(WORKBENCH, SELECTED_WORKBENCH, Workbench.getClassTableId());
-        RecordSet     rs  = new RecordSet();
-        rs.initialize();
-        rs.set(workbench.getName(), Workbench.getClassTableId(), RecordSet.GLOBAL);
 
-        rs.addItem(workbench.getWorkbenchId());
-        cmd.setProperty("workbench", rs);
-        CommandAction deleteCmd = null;
-        //if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
-        if (isPermitted())
-        {
-            deleteCmd = new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs);
-        }
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), "DataSet16", cmd, 
-                                                                   deleteCmd, 
-                                                                   true, true);// true means make it draggable
-        //if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
-        if (isPermitted())
-        {
-            roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
-        }
-        
-        // Drag Flavors
-        if (deleteCmd != null)
-        {
-            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        }
-        roc.addDragDataFlavor(DATASET_FLAVOR);
-        
-        // Drop Flavors
-        //if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
-        if (isPermitted())	
-        {
-            roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
-        }
-        
-        if (canViewReports())
-        {
-            roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
-        }
-        
-        
-        JPopupMenu popupMenu = new JPopupMenu();
-        String menuTitle = "WB_EDIT_PROPS";
-        String mneu = "WB_EDIT_PROPS_MNEU";
-        UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                editWorkbenchProps(roc);
-                UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
-            }
-        });
-        menuTitle = "WB_EDIT_DATASET_MAPPING";
-        mneu = "WB_EDIT_DATASET_MAPPING_MNEU";
-        UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
-            @SuppressWarnings("synthetic-access")
-            public void actionPerformed(ActionEvent e)
-            {
-                Workbench wb = getWorkbenchFromCmd(roc.getData(), "WorkbenchEditMapping");
-                if (wb != null)
-                {
-                    UsageTracker.incrUsageCount("WB.EditMappings");
-                    editTemplate(wb.getWorkbenchTemplate());
-                }
-            }
-        });
-
-        //if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
-        if (isPermitted())
-        {
-            popupMenu.addSeparator();
-            menuTitle = "Delete";
-            mneu = "DELETE_MNEU";
-            UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true,
-                    new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            UsageTracker.incrUsageCount("WB.DeletedWorkbench");
-                            Object cmdActionObj = roc.getData();
-                            if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
-                            {
-                                CommandAction subCmd = (CommandAction) cmdActionObj;
-                                RecordSetIFace recordSet = (RecordSetIFace) subCmd
-                                        .getProperty("workbench");
-                                if (recordSet != null)
-                                {
-                                    deleteWorkbench(recordSet);
-                                }
-                            }
-                        }
-                    });
-        }
-        roc.setPopupMenu(popupMenu);
-
-        NavBox.refresh(workbenchNavBox);
-        
-        return roc;
-    }
-    
     protected boolean canViewReports()
     {
         Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
@@ -622,7 +494,7 @@ public class WorkbenchTask extends BaseTask
      * @param cmdAttrName the attr name to use when checking CommandActions
      * @return the rollover command that matches
      */
-    protected RolloverCommand getNavBtnById(final NavBox navBox, final Integer recordId, final String cmdAttrName)
+    public static RolloverCommand getNavBtnById(final NavBox navBox, final Integer recordId, final String cmdAttrName)
     {
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
@@ -2110,7 +1982,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          session.commit();
                          session.flush();
                          
-                         addWorkbenchToNavBox(workbench);
+                         datasetNavBoxMgr.addWorkbench(workbench);
                          
                          updateNavBoxUI(null);
                          
@@ -2392,228 +2264,62 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 //    		uploadWorkbenches(wbIds);
 //    	} 
 //    	else 
-    	{
-        if (workbench != null)
-        {
-            final SimpleGlassPane glassPane = doInbackground ? 
-            		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) :
-            		null;
-            
-            // Make sure we have a session but use an existing one if it is passed in
-            DataProviderSessionIFace tmpSession = session;
-            if (tmpSession == null)
-            {
-                tmpSession = DataProviderFactory.getInstance().createSession();
-            }
-            
-            final WorkbenchTask            thisTask    = this;
-            final DataProviderSessionIFace finiSession = tmpSession;
-            final WorkbenchEditorCreatorWorker worker = new WorkbenchEditorCreatorWorker(workbench,
-            		session, showImageView, thisTask, finiSession, glassPane);
-            worker.start();
-            if (!doInbackground)
-            {
-            	worker.get();
-            }
-        }
-    	}
-    }
-    
-    private class WorkbenchEditorCreatorWorker extends SwingWorker
-    {
-    	final Workbench workbench; 
-        final DataProviderSessionIFace session;
-        final boolean showImageView;        
-        final WorkbenchTask            thisTask;
-        final DataProviderSessionIFace finiSession;
-        final SimpleGlassPane glassPane;
-        WorkbenchPaneSS workbenchPane = null;
+//    	{
+        if (workbench == null) return;
+
+        final SimpleGlassPane glassPane = doInbackground ? 
+        		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) :
+        		null;
         
+
+        WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
+                session, showImageView, this, !isPermitted())
+        {
+            @Override
+            public void progressUpdated(java.util.List<Integer> chunks) 
+            {
+                if (glassPane != null)
+                    glassPane.setProgress(chunks.get(chunks.size() - 1));
+            }
+            
+            @Override
+            public void completed(WorkbenchPaneSS workbenchPane)
+            {
+                if (glassPane != null)
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
+                
+                addSubPaneToMgr(workbenchPane);
+                RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+                if (roc != null)
+                {
+                    roc.setEnabled(false);
+                    
+                } else
+                {
+                    WorkbenchTask.log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+                }
+
+                updateNavBoxUI(null);
+            }
+        };
         
-    	/**
-		 * @param workbench
-		 * @param session
-		 * @param showImageView
-		 * @param thisTask
-		 * @param finiSession
-		 * @param glassPane
-		 */
-		public WorkbenchEditorCreatorWorker(Workbench workbench,
-				DataProviderSessionIFace session, boolean showImageView,
-				WorkbenchTask thisTask, DataProviderSessionIFace finiSession,
-				SimpleGlassPane glassPane)
-		{
-			super();
-			this.workbench = workbench;
-			this.session = session;
-			this.showImageView = showImageView;
-			this.thisTask = thisTask;
-			this.finiSession = finiSession;
-			this.glassPane = glassPane;
-		}
-
-		@SuppressWarnings("synthetic-access")
-        @Override
-        public Object construct()
-        {
-             try
-             {
-                 if (session == null)
-                 {
-                     finiSession.attach(workbench);
-                 }
-                 final int rowCount = workbench.getWorkbenchRows().size() + 1;
-                 /*SwingUtilities.invokeLater(new Runnable() {
-                     public void run()
-                     {
-                         UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
-                         UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
-                     }
-                 });*/
-                 
-                 //force load the workbench here instead of calling workbench.forceLoad() because
-                 //is so time-consuming and needs progress bar.
-                 //workbench.getWorkbenchTemplate().forceLoad();
-                 workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
-                 //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                 int count = 1;
-                 // Adjust paint increment for number of rows in DataSet
-                 int mod;
-                 if (rowCount < 50) mod = 1;
-                 else if (rowCount < 100) mod = 10;
-                 else if (rowCount < 500) mod = 20;
-                 else  if (rowCount < 1000) mod = 40;
-                 else mod = 50;
-                 for (WorkbenchRow row : workbench.getWorkbenchRows())
-                 {
-                     row.forceLoad();
-                     //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                     
-                     if (glassPane != null)
-                     {                     	 
-                    	 if (count % mod == 0)
-                    	 {
-                    		 glassPane.setProgress((int)( (100.0 * count) / rowCount));
-                    	 }
-                    	 count++;
-                     }
-                 }
-                 if (glassPane != null)
-                 {
-                	 glassPane.setProgress(100);
-                 }
-                 
-                 // do the conversion code right here!
-                 boolean convertedAnImage = false;
-                 Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-                 if (rows != null)
-                 {
-                     for (WorkbenchRow row: rows)
-                     {
-                         // move any single images over to the wb row image table
-                         Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
-                         if (rowImages == null)
-                         {
-                             rowImages = new HashSet<WorkbenchRowImage>();
-                             row.setWorkbenchRowImages(rowImages);
-                         }
-                         if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
-                         {
-                             // create the WorkbenchRowImage record
-                             WorkbenchRowImage rowImage = new WorkbenchRowImage();
-                             rowImage.initialize();
-                             rowImage.setCardImageData(row.getCardImageData());
-                             rowImage.setCardImageFullPath(row.getCardImageFullPath());
-                             rowImage.setImageOrder(0);
-                             
-                             // clear the fields holding the single-image data
-                             row.setCardImageData(null);
-                             row.setCardImageFullPath(null);
-
-                             // connect the image and the row
-                             rowImage.setWorkbenchRow(row);
-                             rowImages.add(rowImage);
-                             
-                             convertedAnImage = true;
-                         }
-                     }
-                 }
-                 
-                 workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-                         !isPermitted());
-                 addSubPaneToMgr(workbenchPane);
-                 
-                 if (convertedAnImage)
-                 {
-                     Component topFrame = UIRegistry.getTopWindow();
-                     String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
-                     String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
-                     JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
-                     workbenchPane.setChanged(true);
-                 }
-
-                 RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-                 if (roc != null)
-                 {
-                     roc.setEnabled(false);
-                     
-                 } else
-                 {
-                     log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-                 }
-                 
-             } catch (Exception ex)
-             {
-                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                 log.error(ex);
-                 ex.printStackTrace();
-             } 
-             finally
-             {
-                 if (session == null && finiSession != null)
-                 {
-                     try
-                     {
-                         finiSession.close();
-                         
-                     } catch (Exception ex)
-                     {
-                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                         log.error(ex);
-                     }
-                 }
-                 updateNavBoxUI(null);
-             }
-            return null;
-        }
-
-        //Runs on the event-dispatching thread.
-        @Override
-        public void finished()
-        {
-            if (glassPane != null)
-            {
-            	UIRegistry.clearSimpleGlassPaneMsg();
-            }
-            if (workbenchPane != null && workbenchPane.isDoIncremental())
-            {
-            	workbenchPane.validateAll(null);
-            }
-            //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
-        }
+        if (doInbackground)
+            wbec.runInBackground();
+        else
+            wbec.runInForeground();
     }
     
     /**
      * Tells the task theat a Workbench Pane is being closed.
      * @param pane the pane being closed.
      */
-    public void closing(final WorkbenchPaneSS pane)
+    public void closing(final SubPaneIFace pane)
     {
         if (pane != null)
         {
-            Workbench workbench = pane.getWorkbench();
+            Workbench workbench = ((WorkbenchPaneSS)pane).getWorkbench();
             if (workbench != null)
             {
                 RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
@@ -2730,47 +2436,39 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         UIRegistry.getStatusBar().setText(String.format(UIRegistry.getResourceString("WB_DELETING"), workbench.getName()));
                     }
                 });
-                final NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
-                if (nbi != null)
-                {
 
+                try
+                {
+                    session.beginTransaction();
+                    session.delete(workbench);
+              
+                    session.commit();
+                    session.flush();
+                    UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                    
+                    datasetNavBoxMgr.removeWorkbench(workbench);
+                    updateNavBoxUI(null);
+                    
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                    ex.printStackTrace();
+                    
+                } finally 
+                {
                     try
                     {
-                        session.beginTransaction();
-                        session.delete(workbench);
-                  
-                        session.commit();
-                        session.flush();
-                        UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                        
-                        deleteDnDBtn(workbenchNavBox, nbi);
-                        
-                        updateNavBoxUI(null);
+                        session.close();
                         
                     } catch (Exception ex)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                        ex.printStackTrace();
-                        
-                    } finally 
-                    {
-                        try
-                        {
-                            session.close();
-                            
-                        } catch (Exception ex)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                            log.error(ex);
-                        }
+                        log.error(ex);
                     }
-                    log.info("Deleted a Workbench ["+workbench.getName()+"]");
-                } else
-                {
-                    log.error("couldn't find nbi for Workbench ["+workbench.getName()+"]");
                 }
+                log.info("Deleted a Workbench ["+workbench.getName()+"]");
                     
                 return null;
             }
@@ -4078,8 +3776,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     if (isNew) // meaning a brand new Workbench was created (and saved already)
                     {
                         // add a new button to the NavBox
-                        RolloverCommand roc = addWorkbenchToNavBox(importWB);
-                        roc.setEnabled(false);
+                        datasetNavBoxMgr.addWorkbench(importWB);
+                        getBoxByTitle(workbenchNavBox, importWB.getName()).setEnabled(false);
                         
                         // show the WorkbenchPaneSS
                         addSubPaneToMgr(wbPaneSS);
@@ -4092,7 +3790,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         // update the "Save" button state
                         wbPaneSS.setChanged(true);
                     }
-
+                    
                     wbPaneSS.setImageFrameVisible(true);
 
                     // scrolls to the last row
@@ -4141,7 +3839,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param recordSet the RecordSet containing thew ID
      * @return the workbench or null
      */
-    protected Workbench loadWorkbench(final RecordSetIFace recordSet)
+    public static Workbench loadWorkbench(final RecordSetIFace recordSet)
     {
         if (recordSet != null)
         {
@@ -4154,7 +3852,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param workbenchId
      * @return workbench with matching id or null
      */
-    protected Workbench loadWorkbench(final Integer workbenchId, final DataProviderSessionIFace session)
+    public static Workbench loadWorkbench(final Integer workbenchId, final DataProviderSessionIFace session)
     {
     	DataProviderSessionIFace mySession = session != null ? session :
     		DataProviderFactory.getInstance().createSession();

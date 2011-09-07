@@ -36,6 +36,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
@@ -145,6 +146,7 @@ public class SpecifySchemaGenerator
                 if (!doUpdate)
                 {
                     fixFloatFields(dbConnForDatabase);
+                    SpecifySchemaUpdateService.createSGRTables(dbConnForDatabase.getConnection());
                 }
                 dbConnForDatabase.close();
                 

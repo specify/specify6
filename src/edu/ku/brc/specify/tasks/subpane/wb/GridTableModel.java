@@ -36,6 +36,8 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.plugins.sgr.SGRPluginImpl;
+import edu.ku.brc.specify.plugins.sgr.WorkbenchColorizer;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
@@ -62,10 +64,16 @@ public class GridTableModel extends SpreadSheetModel
     protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
     protected ImageIcon          imageIcon = IconManager.getIcon("CardImage", IconManager.IconSize.Std16);
     
-    protected Vector<WorkbenchTemplateMappingItem> headers          = new Vector<WorkbenchTemplateMappingItem>();
-    protected WorkbenchTemplateMappingItem         imageMappingItem = null;
+    protected Vector<GridTableHeader>      headers          = new Vector<GridTableHeader>();
+    protected WorkbenchTemplateMappingItem imageMappingItem = null;
 
-    /**
+	private GridTableHeader sgrHeading;
+
+    public GridTableHeader getSgrHeading() {
+		return sgrHeading;
+	}
+
+	/**
      * @param workbenchPaneSS
      */
     public GridTableModel(final WorkbenchPaneSS workbenchPaneSS)
@@ -85,6 +93,10 @@ public class GridTableModel extends SpreadSheetModel
         headers.clear();
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
+        
+        sgrHeading = new SgrHeading((short) headers.size());
+
+        headers.add(sgrHeading);
         
         if (imageMappingItem != null)
         {
@@ -183,6 +195,7 @@ public class GridTableModel extends SpreadSheetModel
     {
         return getWorkbench() != null ? getWorkbench().getWorkbenchRows().size() : 0;
     }
+    
 
     /* (non-Javadoc)
      * @see javax.swing.table.TableModel#getValueAt(int, int)
@@ -190,7 +203,7 @@ public class GridTableModel extends SpreadSheetModel
     public Object getValueAt(int row, int column)
     {
         // if this is the image column...
-        if (isInImageMode && column == headers.size() - 1)
+        if (headers.get(column) == imageMappingItem)
         {
             WorkbenchRow rowObj = getWorkbench().getRow(row);
             Set<WorkbenchRowImage> images = rowObj.getWorkbenchRowImages();
@@ -208,6 +221,14 @@ public class GridTableModel extends SpreadSheetModel
             }
             // else
             return "";
+        }
+        
+        if (headers.get(column) == sgrHeading)
+        {
+            SGRPluginImpl sgr = (SGRPluginImpl) workbenchPaneSS.getPlugin("SGRPluginImpl");
+            WorkbenchColorizer colorizer = sgr.getColorizer();
+            Float score = colorizer.getScoreForRow(workbenchPaneSS.getWorkbench().getRow(row), true);
+            return score != null ? "" + Math.round(100*score) : "";
         }
         
         // otherwise...
@@ -534,31 +555,31 @@ public class GridTableModel extends SpreadSheetModel
      * @param column
      * @return mapping for column
      */
-    public WorkbenchTemplateMappingItem getColMapping(int column)
+    public GridTableHeader getColMapping(int column)
     {
     	return headers.get(column);
     }
 
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#isBatchMode()
-	 */
-	@Override
-	public boolean isBatchMode()
-	{
-		return batchMode;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#setBatchMode(boolean)
-	 */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#isBatchMode()
+     */
+    @Override
+    public boolean isBatchMode()
+    {
+        return batchMode;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#setBatchMode(boolean)
+     */
     /**
      * Caller must take responsibility clearing this flag and
      * calling fireTableChanged or other necessary methods
      * when batch operation is completed.
      */
-	@Override
-	public void setBatchMode(boolean value)
-	{
-		batchMode = value;
-	}
+    @Override
+    public void setBatchMode(boolean value)
+    {
+        batchMode = value;
+    }
 }

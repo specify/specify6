@@ -191,7 +191,7 @@ public class DataObjTableModel extends DefaultTableModel
     
     /**
      * @param cmpRow
-     * @param rs
+     * @param items
      * @throws SQLException
      */
     protected void processColumns(final Object[] cmpRow)
