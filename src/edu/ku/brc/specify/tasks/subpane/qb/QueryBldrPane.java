@@ -3837,7 +3837,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
     	if (exportSchema == null)
     	{
-    		return thereAreItems();
+    		return queryFieldItems.size() > 0;
     	}
     	
     	for (QueryFieldPanel qfp : queryFieldItems)
