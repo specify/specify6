@@ -28,13 +28,13 @@
             </altviews>
         </view>
         
-        <view name="collectingEventAttribute"
+        <view name="CollectingEventAttribute"
             class="edu.ku.brc.specify.datamodel.CollectingEventAttribute"
             resourcelabels="false">
             <desc><![CDATA[CollectingEventAttribute Form]]></desc>
             <altviews>
-                <altview name="collectingEventAttribute View" viewdef="collectingEventAttribute" mode="view" default="true"/>
-                <altview name="collectingEventAttribute Edit" viewdef="collectingEventAttribute" mode="edit"/>
+                <altview name="CollectingEventAttribute View" viewdef="CollectingEventAttribute" mode="view" default="true"/>
+                <altview name="CollectingEventAttribute Edit" viewdef="CollectingEventAttribute" mode="edit"/>
             </altviews>
         </view>
         
@@ -737,7 +737,7 @@
                     <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="collectingEventAttribute" colspan="13"/>
+                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="13" rows="3"/>
@@ -752,7 +752,7 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="13" initialize="btn=true;icon=CollectingEventAttachment"/>
                 </row>
                 <!--<row>
-                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="collectingEventAttribute" colspan="13"/>
+                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="10"/>
@@ -787,7 +787,7 @@
                 
         <viewdef
             type="form"
-            name="collectingEventAttribute"
+            name="CollectingEventAttribute"
             class="edu.ku.brc.specify.datamodel.CollectingEventAttribute"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
