@@ -2010,11 +2010,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                 }
                 //XXX - should only use left joins when necessary (see 4th param below)
-                String extraJoin = QueryAdjusterForDomain.getInstance().getJoinClause(tt.getTableInfo(), true, alias, true);
-                
-                if (StringUtils.isNotEmpty(extraJoin))
+                boolean skipExtraJoin = level > 1;// && tt.getTableInfo().getTableId() == Agent.getClassTableId();
+                if (!skipExtraJoin)
                 {
-                    sqlStr.append(extraJoin + " ");
+                	String extraJoin = QueryAdjusterForDomain.getInstance().getJoinClause(tt.getTableInfo(), true, alias, true);
+                
+                	if (StringUtils.isNotEmpty(extraJoin))
+                	{
+                		sqlStr.append(extraJoin + " ");
+                	}
                 }
             }
             else if (qri instanceof RelQRI && isSchemaExport && exportTimestamp != null)
