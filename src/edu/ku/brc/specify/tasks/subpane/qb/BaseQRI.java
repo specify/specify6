@@ -57,7 +57,7 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
      */
     public Boolean getIsInUse()
     {
-        return isInUse;
+        return isInUse();
     }
 
     /* (non-Javadoc)

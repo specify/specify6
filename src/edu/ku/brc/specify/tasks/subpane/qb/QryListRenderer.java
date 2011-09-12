@@ -108,7 +108,7 @@ public class QryListRenderer implements ListCellRenderer
         }
         else
         {
-            icon = qri.getIsInUse() == null ? IconManager.getIcon(qri.getIconName(), iconSize) :
+        	icon = qri.getIsInUse() == null ? IconManager.getIcon(qri.getIconName(), iconSize) :
                    (qri.getIsInUse() ? IconManager.getIcon("Checkmark", IconManager.IconSize.Std16) : blankIcon);
         }
         iconLabel.setIcon(icon != null ? icon : blankIcon);

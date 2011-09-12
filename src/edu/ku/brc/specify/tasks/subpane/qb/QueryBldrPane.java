@@ -787,7 +787,55 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		QueryFieldPanel newQfp = null;
     		if (qfp.getFieldQRI() != null)
     		{
-    			qfp.getFieldQRI().setIsInUse(false);
+    			if (qfp.getFieldQRI().isInUse())
+    			{
+    				BaseQRI qfpqri = qfp.getFieldQRI();
+    				try
+    				{
+    					BaseQRI qri = qfpqri instanceof RelQRI ? ((RelQRI )qfpqri).getTable() : qfpqri;
+    					//BaseQRI qri = qfp.getFieldQRI(); 
+    					boolean done = false;
+    					for (JList lb : listBoxList)
+    					{
+    						if (lb.isVisible())
+    						{
+    							for (int i = 0; i < ((DefaultListModel) lb
+    									.getModel()).getSize(); i++)
+    							{
+    								BaseQRI qriI = (BaseQRI )((DefaultListModel) lb.getModel()).getElementAt(i);
+    								if (qriI != null)
+    								{
+    									boolean match = qriI == qri;
+    									if (!match)
+    									{
+    										match = buildFieldQRI(qri)
+    												.getStringId().equals(
+    														buildFieldQRI(qriI)
+    																.getStringId());
+    									}
+    									if (match)
+    									{
+    										qriI.setIsInUse(false);
+    										lb.repaint();
+    										done = true;
+    										break;
+    									}
+    								}
+    							}
+    						}
+    						if (done)
+    						{
+    							break;
+    						}
+    					}
+    				} catch (Exception ex)
+    				{
+    					UsageTracker.incrHandledUsageCount();
+    					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+    							.capture(QueryBldrPane.class, ex);
+    					log.error(ex);
+    				}
+    			}
     		}
     		if (qfp.getQueryField() != null)
     		{
