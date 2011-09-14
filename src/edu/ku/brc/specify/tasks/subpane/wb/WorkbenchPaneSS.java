@@ -946,8 +946,23 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheetControlBar.add(c, cc.xy(x,1));
             x += 2;
         }
+
+        int h = 0;
+        Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
+        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(headers);
+        for (WorkbenchTemplateMappingItem mi : headers)
+        {
+        	//using the workbench data model table. Not the actual specify table the column is mapped to.
+        	//This MIGHT be less confusing
+        	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
+        	spreadSheet.getColumnModel().getColumn(h++).setHeaderRenderer(new WbTableHeaderRenderer(mi.getTableName()));
+        }
         
-        // Create the Form Pane
+        // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
+        initColumnSizes(spreadSheet, saveBtn);
+
+        // Create the Form Pane  -- needs to be done after initColumnSizes - which also sets cell editors for collumns
         if (task instanceof SGRTask)
         {
             formPane = new SGRFormPane(this, workbench, isReadOnly);
@@ -1005,7 +1020,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         JComponent[] ctrlCompArray1 = {importImagesBtn, toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
         JComponent[] ctrlCompArray2 = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher}; 
         JComponent[] ctrlCompArray  = doDnDImages ? ctrlCompArray1 : ctrlCompArray2;
-        
+   
         Vector<Pair<JComponent, Integer>> ctrlComps = new Vector<Pair<JComponent, Integer>>();
         for (JComponent c : ctrlCompArray)
         {
@@ -1108,20 +1123,20 @@ public class WorkbenchPaneSS extends BaseSubPane
         	buildValidator();
         }
         
-        int c = 0;
-        Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
-        Collections.sort(headers);
-        for (WorkbenchTemplateMappingItem mi : headers)
-        {
-        	//using the workbench data model table. Not the actual specify table the column is mapped to.
-        	//This MIGHT be less confusing
-        	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
-        	spreadSheet.getColumnModel().getColumn(c++).setHeaderRenderer(new WbTableHeaderRenderer(mi.getTableName()));
-        }
-        
-        // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
-        initColumnSizes(spreadSheet, saveBtn);
+//        int c = 0;
+//        Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
+//        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+//        Collections.sort(headers);
+//        for (WorkbenchTemplateMappingItem mi : headers)
+//        {
+//        	//using the workbench data model table. Not the actual specify table the column is mapped to.
+//        	//This MIGHT be less confusing
+//        	//System.out.println("setting header renderer for " + mi.getTableName() + "." + mi.getFieldName()); 
+//        	spreadSheet.getColumnModel().getColumn(c++).setHeaderRenderer(new WbTableHeaderRenderer(mi.getTableName()));
+//        }
+//        
+//        // NOTE: This needs to be done after the creation of the saveBtn. And after the creation of the header renderes.
+//        initColumnSizes(spreadSheet, saveBtn);
         
         // See if we need to make the Image Frame visible
         // Commenting this out for now because it is so annoying.
