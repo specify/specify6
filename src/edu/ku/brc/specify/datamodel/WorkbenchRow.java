@@ -160,6 +160,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         for (WorkbenchDataItem item : getWorkbenchDataItems())
         {
             item.getCellData();
+
+            if (getWorkbenchRowImages() != null)
+            {
+                getWorkbenchRowImages().size();
+            }
         }
     }
     
@@ -626,7 +631,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         this.workbenchDataItems = workbenchDataItems;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workbenchRow")
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "workbenchRow")
+    @OneToMany( mappedBy = "workbenchRow")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchRowImage> getWorkbenchRowImages()
     {
