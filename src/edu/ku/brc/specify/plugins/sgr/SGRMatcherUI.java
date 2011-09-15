@@ -87,7 +87,7 @@ public class SGRMatcherUI extends CustomDialog
         String title = UIRegistry.getResourceString("SGR_CREATE_MATCHER");
         UIRegistry.popResourceBundle();
         
-        SGRMatcherUI dialog = new SGRMatcherUI(parent, title, onFinished);
+        SGRMatcherUI dialog = new SGRMatcherUI(parent, title, new SGRMatcherUIPanel(null), onFinished);
         return dialog;
     }
     
@@ -97,19 +97,19 @@ public class SGRMatcherUI extends CustomDialog
         String title = UIRegistry.getResourceString("SGR_EDIT_MATCHER");
         UIRegistry.popResourceBundle();
 
-        SGRMatcherUI dialog = new SGRMatcherUI(parent, title, null);
+        SGRMatcherUI dialog = new SGRMatcherUI(parent, title, new SGRMatcherUIPanel(nbi), null);
         dialog.nbi = nbi;
         return dialog;
     }
     
-    private SGRMatcherUI(Frame frame, String title, Function<MatchConfiguration, Void> finished) 
+    private SGRMatcherUI(Frame frame, String title, SGRMatcherUIPanel uiPanel,
+                         Function<MatchConfiguration, Void> finished) 
         throws HeadlessException
     {
-        super(frame, title, true, CustomDialog.OKCANCELHELP, 
-                new SGRMatcherUIPanel(null));
+        super(frame, title, true, CustomDialog.OKCANCELHELP, uiPanel); 
         
         this.finished = finished;
-        uiPanel = (SGRMatcherUIPanel) getContentPanel();
+        this.uiPanel = uiPanel;
         pack();
     }
     
