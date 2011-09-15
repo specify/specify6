@@ -46,6 +46,6 @@ class SgrHeading implements GridTableHeader {
 
 	@Override
 	public String getCaption() {
-		return "SGR score";
+		return "SGR Score";
 	}
 }
