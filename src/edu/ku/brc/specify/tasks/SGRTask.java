@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
+import java.util.regex.Pattern;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -495,22 +496,28 @@ public class SGRTask extends BaseTask
     {
         BatchMatchResultSet rs = (BatchMatchResultSet) nbi.getData();
         rs.delete();
-        for (NavBoxIFace nb : navBoxes)
-        {
-            if (nb.getName().equals(getResourceString("SGR_BATCH_RESULTS")))
-                    deleteDnDBtn(nb, nbi);
-        }
+        deleteDnDBtn(batchMatchResultsBox, nbi);
     }
     
     protected void deleteMatchConfiguration(final NavBoxItemIFace nbi)
     {
         MatchConfiguration mc = (MatchConfiguration) nbi.getData();
-        mc.delete();
-        for (NavBoxIFace nb : navBoxes)
+        try
         {
-            if (nb.getName().equals(getResourceString("SGR_MATCHERS_TITLE")))
-                    deleteDnDBtn(nb, nbi);
+            mc.delete();
         }
+        catch (RuntimeException e)
+        {
+            if (!Pattern.compile("foreign key constraint fails").matcher(e.getMessage()).find())
+            {
+                throw e;
+            }
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            UIRegistry.showLocalizedError("SGR_CANT_DELETE_MATCHER");
+            UIRegistry.popResourceBundle();
+            return;
+        }
+        deleteDnDBtn(matchersNavBox, nbi);
     }
     
 
