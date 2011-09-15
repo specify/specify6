@@ -783,7 +783,10 @@ public class SGRTask extends BaseTask
         @Override
         public Void apply(MatchConfiguration matchConfiguration)
         {
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
             addMatcherToNavBox(matchConfiguration, matchersNavBox, false);
+            UIRegistry.popResourceBundle();
+            
             NavBox.refresh(matchersNavBox);
             // kludgie
             cmdAction.setSrcObj(matchConfiguration);

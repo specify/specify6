@@ -66,10 +66,10 @@ public class SGRMatcherUI extends CustomDialog
 {
     public static enum WeightChoice
     {
-        Normal,
         Ignore,
+        Low,
+        Normal,
         High,
-        Low
     }
     
     public static final String [] availableFields = 
@@ -186,7 +186,9 @@ public class SGRMatcherUI extends CustomDialog
             
             for (String field : availableFields)
             {
-                similarityFields.put(field, new JComboBox(WeightChoice.values()));
+                JComboBox comboBox = new JComboBox(WeightChoice.values());
+                comboBox.setSelectedItem(WeightChoice.Normal);
+                similarityFields.put(field, comboBox);
             }
             
             if (nbi != null)
