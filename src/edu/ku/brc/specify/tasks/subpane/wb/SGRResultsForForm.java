@@ -68,7 +68,7 @@ public class SGRResultsForForm extends JPanel
         this.workbench = workbench;
         this.workbenchPaneSS = workbenchPaneSS;
         
-        sgrPlugin = (SGRPluginImpl) workbenchPaneSS.getPlugin("SGRPluginImpl");
+        sgrPlugin = (SGRPluginImpl) workbenchPaneSS.getPlugin(SGRPluginImpl.class);
         
         scrollPane = new JScrollPane(this);
     }
@@ -87,6 +87,12 @@ public class SGRResultsForForm extends JPanel
     public void indexChanged(final int newIndex)
     {
         if (newIndex == currentIndex) return;
+        currentIndex = newIndex;
+        refresh();
+    }
+    
+    public void refresh()
+    {
         removeAll();
         repaint();
         
@@ -94,10 +100,9 @@ public class SGRResultsForForm extends JPanel
             return;
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        currentIndex = newIndex;
         new SwingWorker<MatchResults, Void>()
         {
-            private int index = newIndex;
+            private int index = currentIndex;
 
             @Override
             protected MatchResults doInBackground() throws Exception
@@ -110,6 +115,7 @@ public class SGRResultsForForm extends JPanel
             @Override
             protected void done() 
             {
+                // if we changed indexes in the meantime, don't show this result.
                 if (index != currentIndex) return;
                 //removeAll();
                 
@@ -187,7 +193,7 @@ public class SGRResultsForForm extends JPanel
                     x += 2;
                 }
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                validate();                
+                getParent().validate();                
             }
         }.execute();
         UsageTracker.incrUsageCount("SGR.MatchRow");

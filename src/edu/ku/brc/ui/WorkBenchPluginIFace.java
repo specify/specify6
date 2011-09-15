@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.ui;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -76,5 +77,9 @@ public interface WorkBenchPluginIFace
     public abstract void shutdown();
 
     public abstract void setButton(JButton btn);
+
+    public abstract Collection<? extends JButton> getSSButtons();
+
+    public abstract Collection<? extends JButton> getFormButtons();
     
 }

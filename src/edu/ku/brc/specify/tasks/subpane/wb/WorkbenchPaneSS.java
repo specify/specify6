@@ -237,7 +237,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     final public static String wbAutoValidatePrefName = "WB.AutoValidatePref";
     final public static String wbAutoMatchPrefName = "WB.AutoMatchPref";
     
-    private enum PanelType {Spreadsheet, Form}
+    public enum PanelType {Spreadsheet, Form}
     
     protected SearchReplacePanel    findPanel              = null;
     protected SpreadSheet           spreadSheet;
@@ -260,7 +260,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               showMapBtn             = null;
     protected JButton               controlPropsBtn        = null;
     protected JButton               exportKmlBtn           = null;
-    protected JButton               sgrOverviewBtn         = null;
     protected JButton               geoRefToolBtn          = null;
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
@@ -298,8 +297,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected CustomDialog          geoRefConvertDlg           = null;
     
-    protected Vector<JButton>                        workBenchPluginBtns = new Vector<JButton>();
-    protected HashMap<String, WorkBenchPluginIFace>  workBenchPlugins    = new HashMap<String, WorkBenchPluginIFace>();
+    private static class WorkbenchPluginMap extends HashMap<Class<?>, WorkBenchPluginIFace> {}
+    
+    protected WorkbenchPluginMap    workBenchPlugins        = new WorkbenchPluginMap();
+    protected Vector<JButton>       workBenchPluginSSBtns   = new Vector<JButton>();
+    protected Vector<JButton>       workBenchPluginFormBtns = new Vector<JButton>();
     
     /**
      * The currently active Uploader. 
@@ -326,7 +328,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected boolean               isReadOnly;
         
     protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
-	private TableColumnExt sgrColExt;
+    private TableColumnExt          sgrColExt;
     
     /**
      * Constructs the pane for the spreadsheet.
@@ -925,7 +927,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn,
                                    geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, showHideUploadToolBtn};
-        Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginBtns.size());
+        Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginSSBtns.size());
         for (JComponent c : compsArray)
         {
             if (c != null)
@@ -933,7 +935,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 availableComps.add(c);
             }
         }
-        for (JComponent c : workBenchPluginBtns)
+        for (JComponent c : workBenchPluginSSBtns)
         {
             availableComps.add(c);
         }
@@ -988,14 +990,27 @@ public class WorkbenchPaneSS extends BaseSubPane
 //        }
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
         
-        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel  
-        PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g, p", "c:p:g"));
+        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel
+        String colspec = "f:p:g, p, f:p:g, p";
+        for (int i = 0; i < workBenchPluginFormBtns.size(); i++)
+        {
+            colspec = colspec + ", f:p, p";
+        }
+        
+        PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout(colspec, "c:p:g"));
         // Now put the two panel into the single row panel
         resultSetPanel.add(rsPanel.getPanel(), cc.xy(2,1));
         if (!isReadOnly)
         {
             resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
         }
+        int ccx = 6;
+        for (JComponent c : workBenchPluginFormBtns)
+        {
+            resultSetPanel.add(c, cc.xy(ccx, 1));
+            ccx += 2;
+        }
+
         
         // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
@@ -1913,51 +1928,55 @@ public class WorkbenchPaneSS extends BaseSubPane
         cardLayout.show(mainPanel, currentPanelType.toString());
         cpCardLayout.show(controllerPane, currentPanelType.toString());
         
-        boolean isSpreadsheet = currentPanelType == PanelType.Spreadsheet;
-        if (isSpreadsheet)
+        switch (currentPanelType)
         {
-            formPane.aboutToShowHide(false);
-            
-            // Showing Spreadsheet and hiding form
-            if (model.getRowCount() > 0)
-            {
-                spreadSheet.setRowSelectionInterval(currentRow, currentRow);
-                spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
-                spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
+            case Spreadsheet:
+                formPane.aboutToShowHide(false);
                 
-                SwingUtilities.invokeLater(new Runnable()
+                // Showing Spreadsheet and hiding form
+                if (model.getRowCount() > 0)
                 {
-                    public void run()
-                    {            
-                        spreadSheet.requestFocus();
-                    }
-                });
-            }
-            // Enable the "Find" action in the Edit menu when a spreadsheet is shown
-            UIRegistry.enableFind(findPanel, true);
-
-            NavBoxMgr.getInstance().adjustSplitter();
-        } else
-        {
-            // About to Show Form and hiding Spreadsheet
-            
-            // cancel any editing in a cell in the spreadsheet
-            checkCurrentEditState(); 
-            
-            // Tell the form we are switching and that it is about to be shown
-            formPane.aboutToShowHide(true);
-            
-            // -1 will tell the form to disable
-            resultsetController.setIndex(model.getRowCount() > 0 ? currentRow : -1);
-            
-            // Hide the find/replace panel when you switch to form view
-            findPanel.getHideFindPanelAction().hide();
-            
-            // Disable the ctrl-F from the edit menu
-            UIRegistry.disableFindFromEditMenu();
-            
-            if(task instanceof SGRTask)
-                NavBoxMgr.getInstance().closeSplitter();
+                    spreadSheet.setRowSelectionInterval(currentRow, currentRow);
+                    spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
+                    spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
+                    
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {            
+                            spreadSheet.requestFocus();
+                        }
+                    });
+                }
+                // Enable the "Find" action in the Edit menu when a spreadsheet is shown
+                UIRegistry.enableFind(findPanel, true);
+    
+                NavBoxMgr.getInstance().adjustSplitter();
+                ssFormSwitcher.setCurrentIndex(1);
+                break;
+            case Form:
+                // About to Show Form and hiding Spreadsheet
+                
+                // cancel any editing in a cell in the spreadsheet
+                checkCurrentEditState(); 
+                
+                // Tell the form we are switching and that it is about to be shown
+                formPane.aboutToShowHide(true);
+                
+                // -1 will tell the form to disable
+                resultsetController.setIndex(model.getRowCount() > 0 ? currentRow : -1);
+                
+                // Hide the find/replace panel when you switch to form view
+                findPanel.getHideFindPanelAction().hide();
+                
+                // Disable the ctrl-F from the edit menu
+                UIRegistry.disableFindFromEditMenu();
+                
+                if(task instanceof SGRTask)
+                    NavBoxMgr.getInstance().closeSplitter();
+                
+                ssFormSwitcher.setCurrentIndex(0);
+                break;
         }
         
              
@@ -1966,7 +1985,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (c != null)
             {
-                c.setVisible(isSpreadsheet);
+                c.setVisible(currentPanelType == PanelType.Spreadsheet);
             }
         }
     }
@@ -3130,7 +3149,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @return
      */
-    protected List<WorkbenchRow> getSelectedRows()
+    public List<WorkbenchRow> getSelectedRows()
     {
         // get the indexes into the model for all of the selected rows
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
@@ -4349,7 +4368,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         	showHideUploadToolBtn.setEnabled(enabled);
         }
 
-    	for (JButton btn : workBenchPluginBtns)
+    	for (JButton btn : workBenchPluginSSBtns)
     	{
     	    btn.setEnabled(enabled);
     	}
@@ -4690,47 +4709,33 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             final Class<?>             wbPluginCls = Class.forName(className);
             final WorkBenchPluginIFace wbPlugin    = (WorkBenchPluginIFace) wbPluginCls.newInstance();
+            workBenchPlugins.put(wbPluginCls, wbPlugin);
             
             wbPlugin.setWorkbenchPaneSS(this);
             wbPlugin.setSpreadSheet(spreadSheet);
             wbPlugin.setWorkbench(workbench);
-            workBenchPlugins.put(wbPluginCls.getSimpleName(), wbPlugin);
+
+            workBenchPluginSSBtns.addAll(wbPlugin.getSSButtons());
+            workBenchPluginFormBtns.addAll(wbPlugin.getFormButtons());
             
-            JButton btn = createIconBtn(iconName, IconManager.IconSize.Std20,
-                    tooltipKey, false, new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            SwingUtilities.invokeLater(new Runnable()
-                            {
-                                public void run()
-                                {
-                                    wbPlugin.process(getSelectedRows());
-                                }
-                            });
-                        }
-                    });
-//            workBenchPluginBtns.add(btn);
-            wbPlugin.setButton(btn);
-            
-            List<String> missingFields = wbPlugin.getMissingFieldsForPlugin();
-            if (missingFields != null && missingFields.size() > 0)
-            {
-                btn.setEnabled(false);
-                String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
-                for (String reqdField : missingFields)
-                {
-                    ttText += "<li>" + reqdField + "</li>";
-                }
-                ttText += "</ul>";
-                String origTT = btn.getToolTipText();
-                btn.setToolTipText("<html>" + origTT + ttText);
-            }
-            else
-            {
-                btn.setEnabled(true);
-            }
-            
+//            List<String> missingFields = wbPlugin.getMissingFieldsForPlugin();
+//            if (missingFields != null && missingFields.size() > 0)
+//            {
+//                btn.setEnabled(false);
+//                String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
+//                for (String reqdField : missingFields)
+//                {
+//                    ttText += "<li>" + reqdField + "</li>";
+//                }
+//                ttText += "</ul>";
+//                String origTT = btn.getToolTipText();
+//                btn.setToolTipText("<html>" + origTT + ttText);
+//            }
+//            else
+//            {
+//                btn.setEnabled(true);
+//            }
+//            
         } catch (ClassNotFoundException e)
         {
             e.printStackTrace();
@@ -4743,9 +4748,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
-    public WorkBenchPluginIFace getPlugin(String clsName)
+    public WorkBenchPluginIFace getPlugin(Class<?> cls)
     {
-    	return workBenchPlugins.get(clsName);
+    	return workBenchPlugins.get(cls);
     }
     
     //----------------------------------------------------------------------------------------
@@ -5847,6 +5852,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 			
 		}
 		return null;
+	}
+	
+	public FormPaneWrapper getFormPane()
+	{
+	    return formPane;
 	}
 	/**
 	 * @author timo

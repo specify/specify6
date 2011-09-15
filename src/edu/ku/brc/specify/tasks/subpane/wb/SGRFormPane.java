@@ -80,6 +80,11 @@ public class SGRFormPane extends JPanel implements FormPaneWrapper
         workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_PAGE_DOWN, 
                 "next_record", nextRecord, InputEvent.SHIFT_DOWN_MASK);
     }
+    
+    public void refreshResults()
+    {
+        sgrPanel.refresh();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)

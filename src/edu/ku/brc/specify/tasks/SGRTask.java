@@ -440,35 +440,7 @@ public class SGRTask extends BaseTask
         else if (cmdAction.getData() instanceof MatchConfiguration)
         {
             MatchConfiguration selectedMatcher = (MatchConfiguration)cmdAction.getData();
-            SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-
-            Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(subPane);
-            if (nbis == null) return;
-            for (NavBoxItemIFace nbi : nbis)
-                if (nbi.getData() == selectedMatcher)
-                    return;
-            
-            nbis.clear();
-            addNbiForMatcher(nbis, selectedMatcher);
-            
-            WorkbenchPaneSS workbenchPane = null;
-            try
-            {
-                workbenchPane = (WorkbenchPaneSS)subPane;
-            } catch (ClassCastException e) {}
-            
-            if (workbenchPane != null)
-            {
-                SGRPluginImpl sgr = 
-                    (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class.getSimpleName());
-                sgr.setMatcherConfiguration(selectedMatcher);
-                sgr.getColorizer().stopColoring();
-                workbenchPane.showHideSgrCol(false);
-                
-                addNbiForWorkbench(nbis, workbenchPane.getWorkbench());
-            }
-            
-            updateNavBoxes(nbis);
+            setMatcher(selectedMatcher);
         }
             
         if (scenario != null)
@@ -490,6 +462,39 @@ public class SGRTask extends BaseTask
             
             UsageTracker.incrUsageCount("SGR.BatchMatch");
         }
+    }
+    
+    public void setMatcher(MatchConfiguration matcher)
+    {
+        SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+
+        Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(subPane);
+        if (nbis == null) return;
+        for (NavBoxItemIFace nbi : nbis)
+            if (nbi.getData() == matcher)
+                return;
+        
+        nbis.clear();
+        addNbiForMatcher(nbis, matcher);
+        
+        WorkbenchPaneSS workbenchPane = null;
+        try
+        {
+            workbenchPane = (WorkbenchPaneSS)subPane;
+        } catch (ClassCastException e) {}
+        
+        if (workbenchPane != null)
+        {
+            SGRPluginImpl sgr = 
+                (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
+            sgr.setMatcherConfiguration(matcher);
+            sgr.getColorizer().stopColoring();
+            workbenchPane.showHideSgrCol(false);
+            
+            addNbiForWorkbench(nbis, workbenchPane.getWorkbench());
+        }
+        
+        updateNavBoxes(nbis);
     }
     
     protected void deleteBatchMatchResultSet(final NavBoxItemIFace nbi)
@@ -698,7 +703,7 @@ public class SGRTask extends BaseTask
                 if (resultSet != null)
                 {
                     SGRPluginImpl sgr = 
-                        (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class.getSimpleName());
+                        (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
                     sgr.setMatcherConfiguration(resultSet.getMatchConfiguration());
                     sgr.getColorizer().setBatchResults(resultSet);
                     workbenchPane.showHideSgrCol(true);

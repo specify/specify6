@@ -19,12 +19,15 @@
 */
 package edu.ku.brc.specify.plugins.sgr;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
+
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -34,7 +37,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.sgr.MatchResults;
 import edu.ku.brc.sgr.SGRMatcher;
@@ -45,9 +50,13 @@ import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.tasks.SGRTask;
+import edu.ku.brc.specify.tasks.subpane.wb.SGRFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS.PanelType;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
@@ -67,121 +76,102 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     private Workbench          workbench;
 
     private SGRMatcher         matcher;
-    private final JPopupMenu   popupMenu;
+    private final JPopupMenu   popupMenuGrid;
+    private final JPopupMenu   popupMenuForm;
     private MatchConfiguration matcherConfiguration;
     private WorkbenchColorizer colorizer;
     private WorkbenchPaneSS    workbenchPaneSS;
 
     private SubPaneIFace       subPane;
     private Workbench2SGR      workbench2SGR;
+    private List<JButton>      ssButtons;
+    private List<JButton>      formButtons;
+    protected Integer nResults;
    
     public SGRPluginImpl()
     {
         super();
 
-        popupMenu = createPopupMenu();
+        popupMenuGrid = createPopupMenuForGrid();
+        popupMenuForm = createPopupMenuForForm();
     }
 
-    private JPopupMenu createPopupMenu()
+    private JPopupMenu createPopupMenuForGrid()
     {
         JPopupMenu menu = new JPopupMenu();
         JMenuItem mi = new JMenuItem();
-        mi.setText("Colorize WB...");
-        mi.addActionListener(new ActionListener()
-        {
-            
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                List<BatchMatchResultSet> resultSets = 
-                    DataModel.getBatchMatchResultSetsFor(
-                            (long)workbench.getId(), workbench.getDbTableId());
-                
-                ChooseFromListDlg<BatchMatchResultSet> dlg = 
-                    new ChooseFromListDlg<BatchMatchResultSet>(
-                            (Frame)UIRegistry.get(UIRegistry.FRAME), 
-                            "Choose Match Configuration", resultSets);
-                
-                UIHelper.centerAndShow(dlg);
-                if (!dlg.isCancelled())
-                {
-                    BatchMatchResultSet resultSetForColors = dlg.getSelectedObject();
-                    if (matcherConfiguration == null)
-                    {
-                        setMatcherConfiguration(resultSetForColors.getMatchConfiguration());
-                        colorizer.setBatchResults(resultSetForColors);
-                        workbenchPaneSS.showHideSgrCol(true);
-                    }
-                    else if (resultSetForColors.matchConfigurationId() != matcherConfiguration.id())
-                    {
-                        CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                                "Confirm SGR Matcher", true, 
-                                CustomDialog.OKCANCEL, null, 
-                                CustomDialog.OK_BTN);
-                        
-                        MatchConfiguration rsMc = resultSetForColors.getMatchConfiguration();
-                        
-                        String msg = "<html><p>The selected Batch Result set used a different " +
-                        " SGR Matcher than is currently selected. Do you wish to switch to the " +
-                        " Matcher that was used for the Batch run and continue?</p> " +
-                        "<table><tr><th>Batch Matcher:</th><td>" + rsMc.name() + "</td></tr>" +
-                        "<tr><th>Current Matcher:</th><td>" + matcherConfiguration.name() +
-                        "</td></tr></table></html>";
-                        
-                        dlg2.setContentPanel(new JLabel(msg));
-                        
-                        UIHelper.centerAndShow(dlg2);
-                        if (!dlg2.isCancelled())
-                        {
-                            setMatcherConfiguration(resultSetForColors.getMatchConfiguration());
-                            colorizer.setBatchResults(resultSetForColors);
-                            workbenchPaneSS.showHideSgrCol(true);
-                        }
-                    }
-                    else // matchers are consistent
-                    {
-                        colorizer.setBatchResults(resultSetForColors);
-                        workbenchPaneSS.showHideSgrCol(true);
-                    }
-                }                
-            }
-        });
-        menu.add(mi);
-        
-        mi = new JMenuItem();
+
         mi.setText("Select Matcher...");
         mi.addActionListener(new ActionListener()
         {
-            
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
-                
-                ChooseFromListDlg<MatchConfiguration> dlg = 
-                    new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                            "Choose Match Configuration", mcs);
-                
-                UIHelper.centerAndShow(dlg);
-                if (!dlg.isCancelled())
-                {
-                    colorizer.stopColoring();
-                    setMatcherConfiguration(dlg.getSelectedObject());        
-                }
-            }
+            public void actionPerformed(ActionEvent e) { selectMatcher(); }
+        });
+        menu.add(mi);
+        
+//        mi = new JMenuItem();
+//        mi.setText("Stop coloring.");
+//        mi.addActionListener(new ActionListener()
+//        {
+//            
+//            @Override
+//            public void actionPerformed(ActionEvent e)
+//            {
+//                colorizer.stopColoring();
+//                workbenchPaneSS.showHideSgrCol(false);
+//            }
+//        });
+//        menu.add(mi);
+       
+        return menu;
+    }
+    
+    private void selectMatcher()
+    {
+        List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
+        
+        ChooseFromListDlg<MatchConfiguration> dlg = 
+            new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                    "Choose Matcher", mcs);
+        
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            SGRTask sgrTask = (SGRTask) ContextMgr.getTaskByClass(SGRTask.class);
+            sgrTask.setMatcher(dlg.getSelectedObject());
+        }
+    }    
+    
+    private JPopupMenu createPopupMenuForForm()
+    {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem mi = new JMenuItem();
+
+        mi.setText("Select Matcher...");
+        mi.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e) { selectMatcher(); }
         });
         menu.add(mi);
         
         mi = new JMenuItem();
-        mi.setText("Stop coloring.");
+        mi.setText("Set number of results...");
         mi.addActionListener(new ActionListener()
         {
-            
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                colorizer.stopColoring();
-                workbenchPaneSS.showHideSgrCol(false);
+                List<Integer> choices = ImmutableList.of(1, 2, 5, 10, 20);
+                
+                ChooseFromListDlg<Integer> dlg = 
+                    new ChooseFromListDlg<Integer>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                            "Choose", choices);
+                
+                UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    nResults = dlg.getSelectedObject();
+                    refreshFormPane();
+                }
             }
         });
         menu.add(mi);
@@ -266,7 +256,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     {
         assert isReady();
         SGRRecord doc = workbench2SGR.row2SgrRecord(row);
-        return matcher.match(doc.asMatchable());
+        return matcher.match(doc.asMatchable(), nResults);
     }
 
     /* (non-Javadoc)
@@ -340,30 +330,13 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     @Override
     public void setButton(JButton btn)
     {
-        btn.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mousePressed(MouseEvent e)            
-            {
-                super.mousePressed(e);
-                if (e.isPopupTrigger())
-                    doPopup(e);
-            }
-            
-            @Override
-            public void mouseReleased(MouseEvent e)
-            {
-                super.mouseReleased(e);
-                if (e.isPopupTrigger())
-                    doPopup(e);
-            }
-        });
+
     }
 
-    private void doPopup(MouseEvent e)
+    private void doPopup(MouseEvent e, JPopupMenu popup)
     {
-        if (!popupMenu.isShowing()) 
-            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+        if (!popup.isShowing()) 
+            popup.show(e.getComponent(), e.getX(), e.getY());
     }
     
     public WorkbenchColorizer getColorizer()
@@ -376,4 +349,109 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
 	{
 		workbenchPaneSS = wbpss;
 	}
+
+    @Override
+    public Collection<JButton> getSSButtons()
+    {
+        if (ssButtons != null)
+            return ssButtons;
+        
+        if (workbenchPaneSS.getTask() instanceof SGRTask)
+        {
+            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, null, false,
+                    new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            workbenchPaneSS.showPanel(PanelType.Form);
+                        }
+                    });
+            
+            button.addMouseListener(new MouseAdapter()
+            {
+                @Override
+                public void mousePressed(MouseEvent e)            
+                {
+                    super.mousePressed(e);
+                    if (e.isPopupTrigger())
+                        doPopup(e, popupMenuGrid);
+                }
+                
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    super.mouseReleased(e);
+                    if (e.isPopupTrigger())
+                        doPopup(e, popupMenuGrid);
+                }
+            });
+            
+            button.setEnabled(true);
+            ssButtons = ImmutableList.of(button);
+        }
+        else
+        {
+            ssButtons = ImmutableList.of();
+        }
+        
+        return ssButtons;
+    }
+
+    @Override
+    public Collection<JButton> getFormButtons()
+    {
+        if (formButtons != null)
+            return formButtons;
+
+        if (workbenchPaneSS.getTask() instanceof SGRTask)
+        {
+            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, null, false,
+                    new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            refreshFormPane();
+                        }
+                    });
+            
+            button.addMouseListener(new MouseAdapter()
+            {
+                @Override
+                public void mousePressed(MouseEvent e)            
+                {
+                    super.mousePressed(e);
+                    if (e.isPopupTrigger())
+                        doPopup(e, popupMenuForm);
+                }
+                
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    super.mouseReleased(e);
+                    if (e.isPopupTrigger())
+                        doPopup(e, popupMenuForm);
+                }
+            });
+            
+            button.setEnabled(true);
+            formButtons = ImmutableList.of(button);
+        }
+        else
+        {
+            formButtons = ImmutableList.of();
+        }            
+        return formButtons;
+    }
+
+    private void refreshFormPane()
+    {
+        SGRFormPane sgrFormPane;
+        try
+        {
+            sgrFormPane = (SGRFormPane) workbenchPaneSS.getFormPane();
+        }
+        catch (ClassCastException e) { return; }
+        sgrFormPane.copyDataFromForm();
+        sgrFormPane.refreshResults();        
+    }
 }
