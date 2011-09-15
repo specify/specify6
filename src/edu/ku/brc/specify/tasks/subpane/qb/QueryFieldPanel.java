@@ -822,6 +822,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 						SpQueryField.OperatorType.DONTCARE,
 						SpQueryField.OperatorType.TRUE,
 						SpQueryField.OperatorType.FALSE,
+						SpQueryField.OperatorType.TRUEORNULL,
+						SpQueryField.OperatorType.FALSEORNULL,
 						SpQueryField.OperatorType.EMPTY };
 			}
 			if (classObj.equals(java.sql.Timestamp.class))
@@ -1105,7 +1107,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         
         if (hasCriteria())
         {
-            Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
+            boolean addNullConjunction = false;
+        	Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
             String criteriaFormula = "";
             String operStr = operatorCBX.getSelectedItem().toString();
             if (!(criteriaStrs[0] instanceof String))
@@ -1121,14 +1124,20 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 if (fieldQRI.getDataClass().equals(Boolean.class))
                 {
                     if (operStr.equals(SpQueryField.OperatorType
-                            .getString(SpQueryField.OperatorType.TRUE.getOrdinal())))
+                            .getString(SpQueryField.OperatorType.TRUE.getOrdinal())) ||
+                            operStr.equals(SpQueryField.OperatorType
+                                    .getString(SpQueryField.OperatorType.TRUEORNULL.getOrdinal())) )
                     {
                         criteriaFormula = "true";
                     }
-                    else
+                    else 
                     {
                         criteriaFormula = "false";
                     }
+                    addNullConjunction = operStr.equals(SpQueryField.OperatorType
+                                    .getString(SpQueryField.OperatorType.FALSEORNULL.getOrdinal())) ||
+                            operStr.equals(SpQueryField.OperatorType
+                                    .getString(SpQueryField.OperatorType.TRUEORNULL.getOrdinal()));
                     operStr = "=";
                 }
                 else if (fieldQRI.getDataClass().equals(String.class) && !isNumericCatalogNumber())
@@ -1304,10 +1313,10 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     str.append(")");
                 }
                 String result =  str.toString();
-                if (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && conditionForSchema)
+                if (addNullConjunction || (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && conditionForSchema))
                 {
                 	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " is null)";
-                }
+                }                
                 return result;
             }
         }
