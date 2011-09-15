@@ -45,7 +45,6 @@ import edu.ku.brc.sgr.MatchResults;
 import edu.ku.brc.sgr.SGRMatcher;
 import edu.ku.brc.sgr.SGRMatcher.Factory;
 import edu.ku.brc.sgr.SGRRecord;
-import edu.ku.brc.sgr.datamodel.BatchMatchResultSet;
 import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
 import edu.ku.brc.specify.datamodel.Workbench;

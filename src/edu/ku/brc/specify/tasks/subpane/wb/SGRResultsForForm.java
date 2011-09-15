@@ -43,6 +43,8 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.sgr.Match;
 import edu.ku.brc.sgr.MatchResults;
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.plugins.sgr.SGRColors;
 import edu.ku.brc.specify.plugins.sgr.SGRColumnOrdering;
 import edu.ku.brc.specify.plugins.sgr.SGRPluginImpl;
@@ -129,8 +131,8 @@ public class SGRResultsForForm extends JPanel
             protected MatchResults doInBackground() throws Exception
             {
                 int modelIndex = workbenchPaneSS.getSpreadSheet().convertRowIndexToModel(index);
-                
-                return sgrPlugin.doQuery(workbench.getRow(modelIndex));
+                WorkbenchRow row = workbench.getRow(modelIndex);
+                return isEmpty(row) ? null : sgrPlugin.doQuery(row);
             }
             
             @Override
@@ -152,7 +154,7 @@ public class SGRResultsForForm extends JPanel
                 }
                 
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                if (results.matches.size() < 1)
+                if (results == null || results.matches.size() < 1)
                 {
                     showMessage("SGR_NO_RESULTS");
                     return;                   
@@ -240,5 +242,16 @@ public class SGRResultsForForm extends JPanel
         scrollPane.removeAll();
         workbench = null;
         workbenchPaneSS = null;
+    }
+    
+    private boolean isEmpty(WorkbenchRow row)
+    {
+        for (WorkbenchDataItem item : row.getItems().values())
+        {
+            if (!StringUtils.isBlank(item.getCellData())) 
+                return false;
+        }
+        
+        return true;
     }
 }
