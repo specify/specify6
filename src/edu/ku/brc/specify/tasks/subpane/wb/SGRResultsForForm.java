@@ -17,14 +17,19 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
@@ -71,6 +76,7 @@ public class SGRResultsForForm extends JPanel
         sgrPlugin = (SGRPluginImpl) workbenchPaneSS.getPlugin(SGRPluginImpl.class);
         
         scrollPane = new JScrollPane(this);
+        setLayout(new BorderLayout());
     }
 
     public void setWorkbench(Workbench workbench)
@@ -91,13 +97,28 @@ public class SGRResultsForForm extends JPanel
         refresh();
     }
     
+    private void showMessage(String key)
+    {
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+        String msg = UIRegistry.getResourceString(key);
+        UIRegistry.popResourceBundle();
+        
+        setLayout(new BorderLayout());
+        JLabel label = createLabel(msg, SwingConstants.CENTER);
+        add(label, BorderLayout.CENTER);
+        getParent().validate();
+    }
+    
     public void refresh()
     {
         removeAll();
         repaint();
         
         if (!sgrPlugin.isReady())
+        {
+            showMessage("SGR_NO_MATCHER");
             return;
+        }
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         new SwingWorker<MatchResults, Void>()
@@ -128,6 +149,13 @@ public class SGRResultsForForm extends JPanel
                     sgrFailed(e);
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     return;
+                }
+                
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                if (results.matches.size() < 1)
+                {
+                    showMessage("SGR_NO_RESULTS");
+                    return;                   
                 }
                 
                 float maxScore = sgrPlugin.getColorizer().getMaxScore();
@@ -192,7 +220,6 @@ public class SGRResultsForForm extends JPanel
                     }
                     x += 2;
                 }
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 getParent().validate();                
             }
         }.execute();

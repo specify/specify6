@@ -138,6 +138,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         {
             SGRTask sgrTask = (SGRTask) ContextMgr.getTaskByClass(SGRTask.class);
             sgrTask.setMatcher(dlg.getSelectedObject());
+            refreshFormPane();
         }
     }    
     
