@@ -1326,10 +1326,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         ResultSet rs = meta.getTables(null, null, null, new String [] {"TABLE"});
         Set<String> tables = new HashSet<String>();
         while (rs.next())
-            tables.add(rs.getString("TABLE_NAME"));
+            tables.add(rs.getString("TABLE_NAME").toLowerCase());
         rs.close();
 
-        if (!tables.contains("sgrMatchConfiguration"))
+        if (!tables.contains("sgrmatchconfiguration"))
         {
             String sql = "CREATE TABLE `sgrMatchConfiguration` (" +
                             "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
@@ -1346,7 +1346,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             update(conn, sql);
         }
         
-        if (!tables.contains("sgrBatchMatchResultSet"))
+        if (!tables.contains("sgrbatchmatchresultset"))
         {
             String sql = "CREATE TABLE `sgrBatchMatchResultSet` (" +
                         "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
@@ -1364,7 +1364,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             update(conn, sql);
         }
         
-        if (!tables.contains("sgrBatchMatchResultItem"))
+        if (!tables.contains("sgrbatchmatchresultitem"))
         {
             String sql = "CREATE TABLE `sgrBatchMatchResultItem` ( " +
                         "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
