@@ -104,7 +104,9 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         BETWEEN(9),
         IN(10),
         CONTAINS(11),
-        EMPTY(12);
+        EMPTY(12),
+        TRUEORNULL(13),
+        FALSEORNULL(14);
         
         OperatorType(final int ord)
         { 
@@ -117,7 +119,9 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
             " ", UIRegistry.getResourceString("QB_BETWEEN"),
             UIRegistry.getResourceString("QB_IN"),
             UIRegistry.getResourceString("QB_CONTAINS"),
-            UIRegistry.getResourceString("QB_EMPTY")};
+            UIRegistry.getResourceString("QB_EMPTY"),
+            UIRegistry.getResourceString("QB_TRUEORNULL"),
+            UIRegistry.getResourceString("QB_FALSEORNULL")};
 
         public  byte getOrdinal()         { return ord; }
         public  void set(final byte  ord) { this.ord = ord; }
