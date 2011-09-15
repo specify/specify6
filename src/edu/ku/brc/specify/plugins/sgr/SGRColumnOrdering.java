@@ -44,7 +44,8 @@ public class SGRColumnOrdering
             "determiner", "determination_date",
             "date_collected", "latitude", "longitude", "locality",
             "municipality_name", "county_name", "state_name",
-            "country_name", "institution_code", "source", "score"};
+            "country_name", "institution_code", "collection_code", 
+            "source", "score"};
     
     private static final Map<String, String> fieldHeadings = new HashMap<String, String>();
     static 
@@ -65,6 +66,7 @@ public class SGRColumnOrdering
         fieldHeadings.put("state_name", "State");
         fieldHeadings.put("country_name", "Country");
         fieldHeadings.put("institution_code", "Institution");
+        fieldHeadings.put("collection_code", "Collection");
         fieldHeadings.put("source", "Source");
         fieldHeadings.put("score", "Score");
     }
