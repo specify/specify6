@@ -240,9 +240,9 @@ public class SGRMatcherUI extends CustomDialog
             }
             else
             {
-                filterQuery.setText("-institution_code:" +
+                filterQuery.setText("-institution_code:\"" +
                         AppContextMgr.getInstance().getClassObject(Institution.class).getCode()
-                        );
+                        + "\"");
             }
             
             int rows = availableFields.length + 6;
