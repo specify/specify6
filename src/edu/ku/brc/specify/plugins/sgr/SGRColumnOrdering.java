@@ -51,11 +51,11 @@ public class SGRColumnOrdering
     {
         fieldHeadings.put("id", "ID");
         fieldHeadings.put("catalog_number", "Catalog #");
-        fieldHeadings.put("collector_number", "Collector #");
+        fieldHeadings.put("collector_number", "Coll. / Field #");
         fieldHeadings.put("collectors", "Collectors");
         fieldHeadings.put("scientific_name", "Taxon Name");
         fieldHeadings.put("determiner", "Determiner");
-        fieldHeadings.put("determination_date", "Determination Date");
+        fieldHeadings.put("determination_date", "Det. Date");
         fieldHeadings.put("date_collected", "Date");
         fieldHeadings.put("latitude", "Latitude");
         fieldHeadings.put("longitude", "Longitude");
