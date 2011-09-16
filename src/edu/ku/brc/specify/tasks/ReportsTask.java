@@ -142,6 +142,7 @@ public class ReportsTask extends ReportsBaseTask
                         ((SpecifyAppContextMgr) AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                                 true,    // startOver
+                                false,   // is First Time
                                 false);  // promptForCollection
                         
                         AppPreferences.getRemote().putBoolean(alwaysAskPref, askForColl);

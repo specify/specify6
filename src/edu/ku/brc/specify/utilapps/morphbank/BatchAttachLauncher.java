@@ -65,7 +65,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
         }
         
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
-        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseName, userName, true, true);
+        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseName, userName, true, true, true);
        // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         

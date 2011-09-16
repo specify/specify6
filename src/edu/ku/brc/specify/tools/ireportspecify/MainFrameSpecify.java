@@ -675,7 +675,7 @@ public class MainFrameSpecify extends MainFrame
         //concurrently running instance of Specify. 
         ((SpecifyAppContextMgr )AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
-                true, false);
+                true, true, false);
 
         if (AppContextMgr.isSecurityOn())
         {

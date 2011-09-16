@@ -584,7 +584,7 @@ public class SpecifyExplorer extends HttpServlet
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
             localPrefs.setDirPath(UIRegistry.getAppDataDir());
             
-            AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(DATABASE_NAME, "testuser", false, false);
+            AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(DATABASE_NAME, "testuser", false, true, false);
             if (status == AppContextMgr.CONTEXT_STATUS.OK)
             {
                 if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)

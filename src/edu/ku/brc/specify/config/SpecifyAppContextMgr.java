@@ -1159,9 +1159,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
                                      final boolean startingOver,
+                                     final boolean isFirstTime,
                                      final boolean doPrompt)
     {
-        return setContext(databaseName, userName, startingOver, doPrompt, null);
+        return setContext(databaseName, userName, startingOver, doPrompt, isFirstTime, null);
     }
 
     /**
@@ -1176,10 +1177,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final String  userName,
                                      final boolean startingOver,
                                      final boolean doPrompt,
+                                     final boolean isFirstTime,
                                      final String collectionName)
     {
-        boolean isFirstTime = collectionName == null;
-        
         if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         this.databaseName = databaseName;

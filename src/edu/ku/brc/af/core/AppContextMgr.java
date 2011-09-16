@@ -176,6 +176,7 @@ public abstract class AppContextMgr
     public abstract CONTEXT_STATUS setContext(final String databaseName, 
                                               final String userName,
                                               final boolean startingOver,
+                                              final boolean isFirstTime,
                                               final boolean doPrompt);
     
     /**

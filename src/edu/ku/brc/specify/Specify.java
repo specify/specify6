@@ -2380,7 +2380,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //
         // NOTE: AppPreferences.startup(); is called inside setContext's implementation.
         //
-        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver, !firstTime);
+        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver, firstTime, !firstTime);
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
             // XXX Temporary Fix!
@@ -2645,7 +2645,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
     {
         log.debug("loggedIn - database["+databaseNameArg+"] username["+ userNameArg +"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        boolean firstTime = this.databaseName == null;
+        
+        boolean firstTime = this.databaseName == null; // shouldn't be null and switching collection
         
         this.databaseName = databaseNameArg;
         this.userName     = userNameArg;
