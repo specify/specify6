@@ -1052,7 +1052,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param props the properties object to be filled in.
      * @return true if everything was asked for and received.
      */
-    public boolean getExportInfo(final Properties props, final String defaultFileName)
+    public static boolean getExportInfo(final Properties props, final String defaultFileName)
     {
         String extension = "";
         //String fileTypeCaption = "";
@@ -3311,7 +3311,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param doOneImagePerRow whether to add all the images to a single row or not
      * @return
      */
-    public boolean importImages(final Workbench       workbench, 
+    public static boolean importImages(final Workbench       workbench, 
                                 final Vector<File>    fileList,
                                 final WorkbenchPaneSS pane,
                                 final boolean         isNew,

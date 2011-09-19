@@ -2773,7 +2773,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         Properties props = new Properties();
 
-        if (!((WorkbenchTask) task).getExportInfo(props, workbench.getName()))
+        if (!WorkbenchTask.getExportInfo(props, workbench.getName()))
         {
             return;
         }
@@ -6046,7 +6046,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 public Object construct()
                 {
                     // import the images into the Workbench, creating new rows (and saving the WB if it is brand new)
-                    isOK = ((WorkbenchTask)task).importImages(workbench, fileList, WorkbenchPaneSS.this, false, imageImportFrame.isOneImagePerRow());
+                    isOK = WorkbenchTask.importImages(workbench, fileList, WorkbenchPaneSS.this, false, imageImportFrame.isOneImagePerRow());
                     
                     return null;
                 }
