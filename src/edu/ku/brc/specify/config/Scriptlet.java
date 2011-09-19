@@ -46,11 +46,13 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -300,7 +302,8 @@ public class Scriptlet extends JRDefaultScriptlet
                                    LatLonConverter.DEGREES_FORMAT.Symbol, 
                                    LatLonConverter.DECIMAL_SIZES[originalLatLongUnit]);
         }
-        return "";
+        //return "";
+        return null;
     }
 
     /**
@@ -394,6 +397,96 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
+     * Retrieves info about agents associated with a loan.
+     * See getByRole.
+     * 
+     * @param loanNumber - the LoanNumber 
+     * @param role - the agent role
+     * @param fld - the name of the field to retrieve
+     * @return
+     * @throws Exception
+     */
+    public String getByLoanAgentRole(final String loanNumber, final String role, final String fld)
+    	throws Exception
+    {
+    	return getByRole("loan", "LoanNumber", loanNumber, "loanagent", role, fld);
+    }
+    
+    /**
+     * Retrieves info about agents associated with interactions tables.
+     * See getByLoanAgentRole for example of usage.
+     * 
+     * @param transTbl the name of the interaction table
+     * @param transNumberFld the name of the visible id for the table
+     * @param transNumber the current value of transNumberFld
+     * @param roleTbl the name of the role table
+     * @param role - the current role
+     * @param fld - the field to retrieve. e.g. "Remarks", "agent.LastName",
+     * 	"address.City".
+     * @return the value of 'fld' for the given value of transNumber and role.
+     * @throws Exception
+     */
+    public String getByRole(final String transTbl, final String transNumberFld, final String transNumber,
+    		final String roleTbl, final String role, final String fld) throws Exception
+    {
+    	String fldTbl = roleTbl;
+    	String fldName = fld;
+    	String[] chunks = fld.split("\\.");
+    	if (chunks.length > 1)
+    	{
+    		fldTbl = chunks[0];
+    		fldName = chunks[1];
+    	}
+    	if (!fldTbl.equals("address") && !fldTbl.equals("agent") && !fldTbl.equals(roleTbl))
+    	{
+    		throw new Exception("unsupported table: " + fldTbl);
+    	}
+    	DBTableInfo transInfo = DBTableIdMgr.getInstance().getInfoByTableName(transTbl);
+    	if (transInfo == null)
+    	{
+    		throw new Exception("unrecognized table: " + transTbl);
+    	}
+    	if (transInfo.getFieldByColumnName(transNumberFld, true) == null)
+    	{
+    		throw new Exception("unrecognized field: " + transTbl + "." + transNumberFld);    		
+    	}
+    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(fldTbl);
+    	if (tblInfo == null)
+    	{
+    		throw new Exception("unrecognized table: " + roleTbl);
+    	}
+    	if (tblInfo.getFieldByColumnName(fldName, true) == null)
+    	{
+    		throw new Exception("unrecognized field: " + fldTbl + "." + fldName);    		
+    	}
+    		
+    	//hoping that roleTbl's foreign key name is the same as transTbl's primaryKey
+    	//could/should use relationship info
+    	String sql = "select " + fldTbl + "." + fldName + " from " + transTbl +
+    		" inner join " + roleTbl + " on " + roleTbl + "." + transInfo.getPrimaryKeyName() +
+    		" = " + transTbl + "." + transInfo.getPrimaryKeyName(); 
+    	if (!fldTbl.equals(roleTbl))
+    	{
+    		sql += " inner join agent on agent.AgentID = " + roleTbl + ".AgentID";
+        	//But which address? ... Current?, Primary?, Shipping? ??
+        	if (!fldTbl.equals("agent"))
+        	{
+        		sql += " inner join address on address.AgentID = agent.AgentID";
+        	}
+    	}
+    	//Also assuming the name of the 'Role' field
+    	sql += " where " + transTbl + "." + transNumberFld + " = '" + transNumber + "' and " +
+    		roleTbl + ".Role = '" + role + "'" ; 	
+    	Vector<Object> match = BasicSQLUtils.querySingleCol(sql);
+    	if (match == null || match.size() == 0)
+    	{
+    		return null;
+    	}
+    	
+    	return match.get(0) == null ? null : match.get(0).toString();
+    	
+    }
+    /**
      * @param text
      * @return text with characters such as '&' replaced by their html codes.
      * 
@@ -457,7 +550,21 @@ public class Scriptlet extends JRDefaultScriptlet
         	session.close();
         }
     }
-    
+ 
+    /**
+     * @param catalogNumber
+     * @return for specimen indicated by catalogNumber, the Collector with the lowest orderNumber in the default Collector format.
+     */
+    public String getCurrentDeterminationFullName(final Object catalogNumber)
+    {
+    	UIFieldFormatterIFace formatter = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber").getFormatter();
+        Object dbCatNum = formatter.formatFromUI(catalogNumber);
+        String sql = "select t.FullName from taxon t inner join determination d on d.PreferredTaxonID = t.TaxonID"
+          	+ " inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID where d.IsCurrent"
+           	+ " and co.CatalogNumber = '" + dbCatNum + "'";
+        return BasicSQLUtils.querySingleObj(sql);
+    }
+
     /**
      * @param catalogNumber
      * @return for specimen indicated by catalogNumber, the Collectors (excluding the first Collector formatted by the default Collector aggregator.
