@@ -605,7 +605,6 @@ public class ExportMappingTask extends QueryTask
                 		{
                 			for (SpExportSchemaMapping mapping : spExportSchema.getSpExportSchemaMappings())
                 			{
-                				//XXX add condition after SpExportMapping is scoped to Collection
                 				if (mapping.getCollectionMemberId().equals(collId))
                 				{
                 					result.add(mapping.getMappings().iterator().next()
@@ -842,11 +841,19 @@ public class ExportMappingTask extends QueryTask
 		return false;
 	}
 	
-	protected boolean includeGroup(@SuppressWarnings("unused") String substitutionGroupName)
+	/**
+	 * @param substitutionGroupName
+	 * @return
+	 */
+	protected boolean includeGroup(String substitutionGroupName)
 	{
 		return true;
 	}
 	
+	/**
+	 * @param term
+	 * @return
+	 */
 	protected boolean includeTerm(Element term)
 	{
 		return term.attributeValue("type", null) != null

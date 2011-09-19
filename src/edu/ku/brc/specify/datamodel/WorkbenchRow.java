@@ -92,6 +92,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected Set<WorkbenchRowImage> workbenchRowImages;
     protected Workbench              workbench;
     protected Byte                   uploadStatus;
+    protected Byte                   sgrStatus;
     protected String                 lat1Text;
     protected String                 lat2Text;
     protected String                 long1Text;
@@ -1184,6 +1185,23 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
     
     /**
+	 * @return the sgrStatus
+	 */
+    @Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getSgrStatus() 
+	{
+		return sgrStatus;
+	}
+
+	/**
+	 * @param sgrStatus the sgrStatus to set
+	 */
+	public void setSgrStatus(Byte sgrStatus) 
+	{
+		this.sgrStatus = sgrStatus;
+	}
+
+	/**
 	 * @return the recordId
 	 */
     @Column(name = "RecordID", unique = false, nullable = true, insertable = true, updatable = true)

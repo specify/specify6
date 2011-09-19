@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -35,6 +36,16 @@ public class AttachmentImageAttribute extends DataModelObjBase
     protected Double                  magnification;
     protected String                  creativeCommons;
     protected MorphBankView           morphBankView;
+    protected String				  viewDescription;
+    protected String                  imageType;
+    protected String				  text1;
+    protected String                  text2;
+    protected Double                  number1;
+    protected Double                  number2;
+    protected Boolean                 yesNo1;
+    protected Boolean                 yesNo2;
+    protected String				  remarks;
+    
     protected Set<Attachment>		  attachments;
 	
     protected Timestamp timestampLastSend; //time last send to morphbank was completed 
@@ -163,6 +174,7 @@ public class AttachmentImageAttribute extends DataModelObjBase
 		this.resolution = resolution;
 	}
 
+	
 	/**
 	 * @return the magnification
 	 */
@@ -178,6 +190,42 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	public void setMagnification(Double magnification)
 	{
 		this.magnification = magnification;
+	}
+
+	
+	
+	/**
+	 * @return the number1
+	 */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+	public Double getNumber1() 
+    {
+		return number1;
+	}
+
+	/**
+	 * @param number1 the number1 to set
+	 */
+	public void setNumber1(Double number1) 
+	{
+		this.number1 = number1;
+	}
+
+	/**
+	 * @return the number2
+	 */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+	public Double getNumber2() 
+    {
+		return number2;
+	}
+
+	/**
+	 * @param number2 the number2 to set
+	 */
+	public void setNumber2(Double number2) 
+	{
+		this.number2 = number2;
 	}
 
 	/**
@@ -197,7 +245,130 @@ public class AttachmentImageAttribute extends DataModelObjBase
 		this.creativeCommons = creativeCommons;
 	}
 
+	
     /**
+	 * @return the viewDescription
+	 */
+    @Column(name = "ViewDescription", length = 80)
+    public String getViewDescription() 
+	{
+		return viewDescription;
+	}
+
+	/**
+	 * @param viewDescription the viewDescription to set
+	 */
+	public void setViewDescription(String viewDescription) 
+	{
+		this.viewDescription = viewDescription;
+	}
+
+	/**
+	 * @return the imageType
+	 */
+    @Column(name = "ImageType", length = 80)
+	public String getImageType() 
+	{
+		return imageType;
+	}
+
+	/**
+	 * @param imageType the imageType to set
+	 */
+	public void setImageType(String imageType) 
+	{
+		this.imageType = imageType;
+	}
+
+	
+	/**
+	 * @return the text1
+	 */
+    @Column(name = "Text1", length = 200)
+	public String getText1() 
+	{
+		return text1;
+	}
+
+	/**
+	 * @param text1 the text1 to set
+	 */
+	public void setText1(String text1) 
+	{
+		this.text1 = text1;
+	}
+
+	/**
+	 * @return the text2
+	 */
+    @Column(name = "Text2", length = 200)
+	public String getText2() 
+	{
+		return text2;
+	}
+
+	/**
+	 * @param text2 the text2 to set
+	 */
+	public void setText2(String text2) 
+	{
+		this.text2 = text2;
+	}
+
+	
+	/**
+	 * @return the yesNo1
+	 */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo1() 
+	{
+		return yesNo1;
+	}
+
+	/**
+	 * @param yesNo1 the yesNo1 to set
+	 */
+	public void setYesNo1(Boolean yesNo1) 
+	{
+		this.yesNo1 = yesNo1;
+	}
+
+	/**
+	 * @return the yesNo2
+	 */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo2() 
+	{
+		return yesNo2;
+	}
+
+	/**
+	 * @param yesNo2 the yesNo2 to set
+	 */
+	public void setYesNo2(Boolean yesNo2) 
+	{
+		this.yesNo2 = yesNo2;
+	}
+
+	/**
+	 * @return the remarks
+	 */
+    @Lob
+    @Column(name = "Remarks", length = 4096)
+	public String getRemarks() 
+	{
+		return remarks;
+	}
+
+	/**
+	 * @param remarks the remarks to set
+	 */
+	public void setRemarks(String remarks) 
+	{
+		this.remarks = remarks;
+	}
+
+	/**
      * @return the attachments
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "attachmentImageAttribute")
