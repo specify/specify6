@@ -3433,7 +3433,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void backupObject()
     {
-        WorkbenchBackupMgr.backupWorkbench(workbench, (WorkbenchTask) task);
+        WorkbenchBackupMgr.backupWorkbench(workbench);
     }
     
     protected void logDebug(Object toLog)

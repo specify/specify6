@@ -127,7 +127,7 @@ public class WorkbenchBackupMgr
      * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the
      * default working Path, and deletes old backups if necessary.
      */
-    public static String backupWorkbench(final Object toBackup, final WorkbenchTask task)
+    public static String backupWorkbench(final Object toBackup)
     {
         String backupName = null;
         try
@@ -173,7 +173,7 @@ public class WorkbenchBackupMgr
             // XXX the command has to be sent synchronously so the backup happens before the save,
             // so when dispatchCommand goes asynchronous
             // more work will have to done here...
-            task.sendExportCommand(props, workbench.getWorkbenchTemplate()
+            WorkbenchTask.sendExportCommand(props, workbench.getWorkbenchTemplate()
                     .getWorkbenchTemplateMappingItems(), command);
 
             // XXX again assuming command was dispatched synchronously...
