@@ -241,11 +241,6 @@ abstract class WorkbenchEditorCreator
              }
          }
          
-         if (workbenchPane != null && workbenchPane.isDoIncremental())
-         {
-             workbenchPane.validateAll(null);
-         }
-         
          return workbenchPane;
     }
 }

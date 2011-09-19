@@ -712,12 +712,17 @@ public class SGRTask extends BaseTask
                     addNbisForResultSet(nbis, resultSet);
                 }
                 
+                updateNavBoxes(nbis);
+                
                 if (glassPane != null)
                 {
                     UIRegistry.clearSimpleGlassPaneMsg();
                 }
                 
-                updateNavBoxes(nbis);
+                if (workbenchPane != null && workbenchPane.isDoIncremental())
+                {
+                    workbenchPane.validateAll(null);
+                }
              }
         };
         

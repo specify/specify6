@@ -2285,11 +2285,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             @Override
             public void completed(WorkbenchPaneSS workbenchPane)
             {
-                if (glassPane != null)
-                {
-                    UIRegistry.clearSimpleGlassPaneMsg();
-                }
-                
                 addSubPaneToMgr(workbenchPane);
                 RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
                 if (roc != null)
@@ -2302,6 +2297,16 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 }
 
                 updateNavBoxUI(null);
+                
+                if (glassPane != null)
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
+                
+                if (workbenchPane != null && workbenchPane.isDoIncremental())
+                {
+                    workbenchPane.validateAll(null);
+                }
             }
         };
         
