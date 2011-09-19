@@ -28,7 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * An implementation of AttachmentManagerIface that uses the underlying filesystem to
@@ -206,6 +208,16 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             {
                 return storedFile;
             }
+            
+            try
+            {
+                return regenerateThumbnail(attachment);
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            
         } else
         {
             log.error("AttachmentLocation is null for id["+attachment.getId()+"]");
@@ -236,6 +248,24 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         // since we have now made use of the temp file we created earlier, we don't
         // need to keep track of it as an 'unfilled' file to be cleaned up later
         unfilledFiles.remove(attachment.getAttachmentLocation());
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
+     */
+    public File regenerateThumbnail(final Attachment attachment) throws IOException
+    {
+        // copy the original into the storage system
+        String      attachLoc      = attachment.getAttachmentLocation();
+        File        repositoryFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+        File        thumbFile      = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
+
+        Thumbnailer thumbnailGen   = AttachmentUtils.getThumbnailer();
+        thumbnailGen.generateThumbnail(repositoryFile.getAbsolutePath(), 
+                                       thumbFile.getAbsolutePath(),
+                                       false);
+        return thumbFile;
     }
 
     /* (non-Javadoc)

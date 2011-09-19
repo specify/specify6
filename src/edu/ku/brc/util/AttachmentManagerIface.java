@@ -91,6 +91,15 @@ public interface AttachmentManagerIface
      */
     public void deleteAttachmentFiles(Attachment attachment) throws IOException;
     
+    
+    /**
+     * Regenerates the thumbnail from the original file.
+     * @param attachment the attachment with thumbnail
+     * @return the File for the thumbnail.
+     * @throws IOException
+     */
+    public File regenerateThumbnail(final Attachment attachment) throws IOException;
+    
     /**
      * Resets the baseDirectory.
      * @param baseDir the new base directory
