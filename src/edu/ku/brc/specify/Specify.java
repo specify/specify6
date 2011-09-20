@@ -207,7 +207,6 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -215,6 +214,7 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -245,6 +245,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
+    private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
     
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 1024;
@@ -2176,33 +2177,28 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         UIRegistry.getTopWindow().setVisible(false);
                         statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                        statsTrackerTask.sendStats(!UIRegistry.isMobile(), false, UIRegistry.isMobile()); // false means don't do it silently
+                        statsTrackerTask.sendStats(false, false, true); // don't exit, show progress and send done event
                         
-                        if (UIRegistry.isMobile())
-                        {
-                            AppPreferences.shutdownAllPrefs();
-                            DataProviderFactory.getInstance().shutdown();
-                            DBConnection.shutdown();
-                        }
                         return false;
                     }
-                    AppPreferences.shutdownAllPrefs();
-                    DataProviderFactory.getInstance().shutdown();
-                    DBConnection.shutdown();
-                    
-                } else if (UIRegistry.isMobile())
-                {
-                    // Fake like we sent stats
-                    CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, "STATS_SEND_DONE", null));
                     
                 } else
                 {
-                    AppPreferences.shutdownAllPrefs();
-                    DataProviderFactory.getInstance().shutdown();
-                    DBConnection.shutdown();
-                    System.exit(0);
+                    // Fake like we sent stats, needs to  to be placed into the event queue 
+                    // so any other events can be processed.
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(500); // wait half second before sending 'faked' done event.
+                            } catch (Exception ex) {}
+                            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, STATS_SEND_DONE, null));
+                        }
+                    });
                 }
-                
             }
         }
         return okToShutdown;
@@ -2787,8 +2783,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             } else if (cmdAction.isAction("CheckForUpdates"))
             {
                 checkForUpdates();
-            } else if (cmdAction.isAction("STATS_SEND_DONE"))
+                
+            } else if (cmdAction.isAction(STATS_SEND_DONE))
             {
+                AppPreferences.shutdownAllPrefs();
+                
                 if (UIRegistry.isMobile())
                 {
                     

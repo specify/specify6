@@ -28,6 +28,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -180,7 +182,18 @@ public class StatsTrackerTask extends BaseTask
                         
                     } else if (doSendDoneEvent)
                     {
-                        CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, "STATS_SEND_DONE", null));
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                try
+                                {
+                                    Thread.sleep(500);
+                                } catch (Exception ex) {}
+                                CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, "STATS_SEND_DONE", null));
+                            }
+                        });
                     }
                 }
                 
