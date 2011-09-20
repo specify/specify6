@@ -34,6 +34,7 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
@@ -83,6 +84,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
@@ -1074,6 +1076,52 @@ public class UIRegistry
                                                      JOptionPane.YES_NO_CANCEL_OPTION,
                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         return userChoice;
+    }
+    
+    /**
+     * Displays a dialog with a text field. 
+     * @param lblKey the L10N key for the text field label
+     * @param titleKey the L10N key for the title
+     * @param msgKey optional message to be displayed, can be null or empty string
+     * @param doMustHaveValue indicates that the dialog will only have an OK and will no close until a value is entered.
+     * @return the string entered into the dialog.
+     */
+    public static String askForString(final String lblKey, 
+                                      final String titleKey,
+                                      final String msgKey,
+                                      final boolean doMustHaveValue)
+    {
+        CellConstraints    cc = new CellConstraints();
+        PanelBuilder       pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p" + (StringUtils.isNotEmpty(msgKey) ? ",4px,p" : "")));
+        final ValTextField vt = new ValTextField(32);
+        
+        vt.setRequired(doMustHaveValue);
+        pb.add(UIHelper.createI18NFormLabel(lblKey), cc.xy(1, 1));
+        pb.add(vt, cc.xy(3, 1));
+        if (StringUtils.isNotEmpty(msgKey))
+        {
+            pb.add(UIHelper.createI18NLabel(msgKey), cc.xyw(1, 3, 3));
+
+        }
+        pb.setDefaultDialogBorder();
+        
+        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString(titleKey), true, 
+                                                  doMustHaveValue ? CustomDialog.OK_BTN : CustomDialog.OKCANCEL, pb.getPanel());
+        dlg.createUI();
+        dlg.getOkBtn().setEnabled(false);
+        
+        vt.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyTyped(KeyEvent e)
+            {
+                dlg.getOkBtn().setEnabled(StringUtils.isNotEmpty(vt.getText()));
+            }
+        });
+        
+        UIHelper.centerAndShow(dlg);
+        
+        return vt.getText();
     }
 
     /**

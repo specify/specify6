@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -164,6 +166,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public static final String DISCPLINEDIR  = "Discipline"; //$NON-NLS-1$
     public static final String COMMONDIR     = "Common"; //$NON-NLS-1$
     public static final String BACKSTOPDIR   = "BackStop"; //$NON-NLS-1$
+    
+    private static Boolean isNewJavaVersion = null;
 
     protected Vector<SpAppResourceDir>              spAppResourceList = new Vector<SpAppResourceDir>();
     protected Hashtable<String, SpAppResourceDir>   spAppResourceHash = new Hashtable<String, SpAppResourceDir>();
@@ -2957,7 +2961,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
     
     //--------------------------------------------------------
-    // There is no greate place for this because the Pref system
+    // There is not great place for this because the Pref system
     // has to have been initialized and the Prefs are defined
     // in package edu.ku.brc.af.prefs
     //--------------------------------------------------------
@@ -3013,10 +3017,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return sb.toString();
     }
 
-
-
-    protected static Boolean isNewJavaVersion = null;
-    
     /**
      * Returns true is the Pref's java.version match the current System properties java.version and
      * sets the Prefs appropriately (so if it has changed it will only return true the first time 
@@ -3347,6 +3347,75 @@ public class SpecifyAppContextMgr extends AppContextMgr
             closeSession();
         }
         return status;
+    }
+    
+    /**
+     * Gets the current email address from (first) the SpecifyUser and then the User Agent
+     * @param doAskForIt indicates whether to ask for the email address
+     * @param doRequireValue indicates whether the email must be filled in.
+     * @return the email address
+     */
+    public String getMailAddr(final boolean doAskForIt, final boolean doRequireValue)
+    {
+        String      email       = null;
+        SpecifyUser spUser      = getClassObject(SpecifyUser.class);
+        Agent       userAgent   = getClassObject(Agent.class);
+        
+        if (spUser != null && StringUtils.isNotEmpty(spUser.getEmail()))
+        {
+            email = spUser.getEmail();
+        }
+        
+        if (StringUtils.isEmpty(email) && 
+            userAgent != null && StringUtils.isNotEmpty(userAgent.getEmail()))
+        {
+            email = userAgent.getEmail();
+        }
+        
+        email = null;
+        if (doAskForIt && StringUtils.isEmpty(email))
+        {
+            boolean isValidEmailAddr = true;
+            do
+            {
+                email = UIRegistry.askForString("SpecifyAppContextMgr.ENT_EMAIL_LABEL", 
+                                               "SpecifyAppContextMgr.ENT_EMAIL_TITLE", 
+                                               isValidEmailAddr ? null : "SpecifyAppContextMgr.ENT_EMAIL_ERR",
+                                               true);
+                isValidEmailAddr = UIHelper.isValidEmailAddress(email);
+            } while (!isValidEmailAddr);
+        }
+        
+        DataProviderSessionIFace session = openSession();
+        if (session != null)
+        {
+            try
+            {
+                spUser = session.get(SpecifyUser.class, spUser.getId());
+                spUser.setEmail(email);
+                session.beginTransaction();
+                for (Agent agt : spUser.getAgents())
+                {
+                    agt.setEmail(email);
+                    session.saveOrUpdate(agt);
+                }
+                session.saveOrUpdate(spUser);
+                session.commit();
+                
+                setClassObject(Agent.class, session.get(Agent.class, userAgent.getId()));
+                setClassObject(SpecifyUser.class, spUser);
+                
+            } catch (Exception ex)
+            {
+                session.rollback();
+                
+            } finally
+            {
+                closeSession();
+            }
+        }
+
+        return email;
     }
 
     /* (non-Javadoc)

@@ -90,6 +90,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.media.opengl.GLCanvas;
 import javax.swing.AbstractAction;
@@ -136,6 +138,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -2482,6 +2486,77 @@ public final class UIHelper
     }
     
     /**
+     * @param table
+     * @param model
+     * @return
+     */
+    public static JTable autoResizeColWidth(final JTable table, final DefaultTableModel model)
+    {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setModel(model);
+
+        int margin = 5;
+        
+        DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
+        
+        int   preferredWidthTotal = 0;
+        int   renderedWidthTotal  = 0;
+        int[] colWidths           = new int[table.getColumnCount()];
+        for (int i = 0; i < table.getColumnCount(); i++)
+        {
+            int                     vColIndex = i;
+            TableColumn             col       = colModel.getColumn(vColIndex);
+            int                     width     = 0;
+
+            // Get width of column header
+            TableCellRenderer renderer = col.getHeaderRenderer();
+
+            if (renderer == null)
+            {
+                renderer = table.getTableHeader().getDefaultRenderer();
+            }
+
+            Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(),
+                                                                    false, false, 0, 0);
+
+            width = comp.getPreferredSize().width;
+            
+            
+
+            // Get maximum width of column data
+            for (int r=0;r<table.getRowCount();r++)
+            {
+                renderer = table.getCellRenderer(r, vColIndex);
+                comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, vColIndex), false, false, r, vColIndex);
+                width = Math.max(width, comp.getPreferredSize().width);
+            }
+
+            // Add margin
+            width += 2 * margin;
+
+            preferredWidthTotal += col.getPreferredWidth();
+            colWidths[i] = width;
+            
+            renderedWidthTotal += width;
+        }
+        
+        if (renderedWidthTotal > preferredWidthTotal)
+        {
+            for (int i = 0; i < table.getColumnCount(); i++)
+            {
+                colModel.getColumn(i).setPreferredWidth(colWidths[i]);
+            }
+        }
+
+        ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+
+        // table.setAutoCreateRowSorter(true);
+        table.getTableHeader().setReorderingAllowed(false);
+
+        return table;
+    }
+    
+    /**
      * Sets a JTable to have the headers be centered. Also, the caller can indicate whether
      * and "String" columns are also centered.
      * @param table the table
@@ -4000,5 +4075,18 @@ public final class UIHelper
             fullPath = fileName + '.' + ext;
         }
         return fullPath;
+    }
+    
+    /**
+     * @param emailAddress
+     * @return
+     */
+    public static boolean isValidEmailAddress(final String emailAddress)
+    {
+        String expression = "^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = emailAddress;
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        return matcher.matches();
     }
 }

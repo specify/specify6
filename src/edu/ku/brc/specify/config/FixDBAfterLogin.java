@@ -334,6 +334,13 @@ public class FixDBAfterLogin
      */
     public static void fixUserPermissions(final boolean doSilently)
     {
+        final String FIXED_USER_PERMS = "FIXED_USER_PERMS";
+        boolean isAlreadyFixed = AppPreferences.getRemote().getBoolean(FIXED_USER_PERMS, false);
+        if (isAlreadyFixed)
+        {
+            return;
+        }
+        
         String whereStr  = " WHERE p.GroupSubClass = 'edu.ku.brc.af.auth.specify.principal.UserPrincipal' ";
         String whereStr2 = "AND p.userGroupScopeID IS NULL";
         
@@ -486,6 +493,9 @@ public class FixDBAfterLogin
             }
             
             log.debug("("+sb1.toString()+")");
+            
+            AppPreferences.getRemote().putBoolean(FIXED_USER_PERMS, true);
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();

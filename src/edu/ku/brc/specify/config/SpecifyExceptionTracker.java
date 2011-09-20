@@ -20,13 +20,11 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
-import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
-import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -42,12 +40,10 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 import org.apache.commons.httpclient.NameValuePair;
@@ -101,9 +97,8 @@ public class SpecifyExceptionTracker extends ExceptionTracker
     protected FeedBackSenderItem getFeedBackSenderItem(final Class<?> cls, final Exception exception)
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,2px, p,4px,p,4px,p,2px,p,4px,p,2px,f:p:g"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,8px,p,2px, p,4px,p,2px,f:p:g"));
         
-        //TreeSet<Taskable> treeSet    = new TreeSet<Taskable>(TaskMgr.getInstance().getAllTasks());
         Vector<Taskable>  taskItems  = new Vector<Taskable>(TaskMgr.getInstance().getAllTasks());
         Collections.sort(taskItems, new Comparator<Taskable>() {
             @Override
@@ -113,10 +108,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
             }
         });
         
-        final JComboBox         taskCBX    = createComboBox(taskItems);
-        final JTextField        titleTF    = createTextField();
-        final JTextField        bugTF      = createTextField();
-        final JTextArea         commentsTA = createTextArea(6, 60);
+        final JTextArea         commentsTA = createTextArea(3, 60);
         final JTextArea         stackTraceTA = createTextArea(15, 60);
         final JCheckBox         moreBtn;
         
@@ -132,17 +124,9 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         JScrollPane sp = new JScrollPane(stackTraceTA,  ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         
         int y = 1;
-        pb.add(desc ,                   cc.xyw(1, y, 4)); y += 2;
-        pb.addSeparator(getResourceString("UNHDL_EXCP_INFO"), cc.xyw(1, y, 4)); y += 2;
-        
-        pb.add(createI18NFormLabel("UNHDL_EXCP_TSK"), cc.xy(1, y));
-        pb.add(taskCBX,                 cc.xy(3, y)); y += 2;
-        
-        pb.add(createI18NFormLabel("UNHDL_EXCP_TTL"), cc.xy(1, y));
-        pb.add(titleTF,                  cc.xyw(3, y, 2)); y += 2;
-        
+        pb.add(desc,                                  cc.xyw(1, y, 4)); y += 2;
         pb.add(createI18NFormLabel("UNHDL_EXCP_CMM"), cc.xy(1, y));     y += 2;
-        pb.add(createScrollPane(commentsTA, true), cc.xyw(1, y, 4)); y += 2;
+        pb.add(createScrollPane(commentsTA, true),    cc.xyw(1, y, 4)); y += 2;
         
         
         forwardImgIcon = IconManager.getIcon("Forward"); //$NON-NLS-1$
@@ -151,16 +135,14 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         setControlSize(moreBtn);
         JButton copyBtn = createI18NButton("UNHDL_EXCP_COPY");
         
-        PanelBuilder innerPB = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,2px,p:g,2px,p"));
-        innerPB.add(createI18NFormLabel("UNHDL_EXCP_BUG"), cc.xy(1, 1));
-        innerPB.add(bugTF,                                 cc.xy(3, 1));
-        innerPB.add(createI18NLabel("UNHDL_EXCP_STK"),     cc.xy(1, 3));
-        innerPB.add(sp,                                    cc.xyw(1, 5, 3));
-        innerPB.add(copyBtn,                               cc.xy(1, 7));
+        PanelBuilder innerPB = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p:g,2px,p"));
+        innerPB.add(createI18NLabel("UNHDL_EXCP_STK"),     cc.xy(1, 1));
+        innerPB.add(sp,                                    cc.xyw(1, 3, 3));
+        innerPB.add(copyBtn,                               cc.xy(1, 5));
         stackTracePanel = innerPB.getPanel();
         stackTracePanel.setVisible(false);
         
-        pb.add(moreBtn,            cc.xyw(1, y, 4)); y += 2;
+        pb.add(moreBtn,         cc.xyw(1, y, 4)); y += 2;
         pb.add(stackTracePanel, cc.xyw(1, y, 4)); y += 2;
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -168,16 +150,6 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         
         stackTraceTA.setText(baos.toString());
         
-        
-        if (SubPaneMgr.getInstance().getCurrentSubPane() != null &&
-            SubPaneMgr.getInstance().getCurrentSubPane().getTask() != null)
-        {
-            Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
-            taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
-        } else
-        {
-            taskCBX.setSelectedItem(0);
-        }
         
         moreBtn.addActionListener(new ActionListener()
         {
@@ -203,8 +175,8 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         {
             public void actionPerformed(ActionEvent e)
             {
-                String taskName = taskCBX.getSelectedItem() != null ? ((Taskable)taskCBX.getSelectedItem()).getName() : "No Task Name";
-                FeedBackSenderItem item = new FeedBackSenderItem(taskName, titleTF.getText(), bugTF.getText(), commentsTA.getText(), stackTraceTA.getText(), cls.getName());
+                String taskName = getTaskName();
+                FeedBackSenderItem item = new FeedBackSenderItem(taskName,"", "", commentsTA.getText(), stackTraceTA.getText(), cls.getName());
                 NameValuePair[] pairs = createPostParameters(item);
                 
                 StringBuilder sb = new StringBuilder();
@@ -230,12 +202,35 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         
         pb.setDefaultDialogBorder();
         dlg = new CustomDialog((Frame)null, "Handled Exception", true, CustomDialog.OK_BTN, pb.getPanel());
+        dlg.setOkLabel(getResourceString("UNHDL_EXCP_SEND"));
+        
+        dlg.createUI();
+        stackTracePanel.setVisible(false);
         
         centerAndShow(dlg);
         
-        String taskName = taskCBX.getSelectedItem() != null ? ((Taskable)taskCBX.getSelectedItem()).getName() : "No Task Name";
-        FeedBackSenderItem item = new FeedBackSenderItem(taskName, titleTF.getText(), bugTF.getText(), commentsTA.getText(), stackTraceTA.getText(), cls.getName());
+        String taskName = getTaskName();
+        FeedBackSenderItem item = new FeedBackSenderItem(taskName, "", "", commentsTA.getText(), stackTraceTA.getText(), cls.getName());
         return item;
+    }
+    
+    /**
+     * @return
+     */
+    private String getTaskName()
+    {
+        String taskName = "";
+        if (SubPaneMgr.getInstance().getCurrentSubPane() != null &&
+                SubPaneMgr.getInstance().getCurrentSubPane().getTask() != null)
+        {
+            Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
+            Taskable tsk = currTask != null ? currTask : TaskMgr.getDefaultTaskable();
+            if (tsk != null)
+            {
+                taskName = tsk.getName();
+            }
+        }
+        return taskName;
     }
 
     /* (non-Javadoc)
@@ -266,6 +261,12 @@ public class SpecifyExceptionTracker extends ExceptionTracker
             if (collection != null && StringUtils.isNotEmpty(collection.getIsaNumber()))
             {
                 stats.add(new NameValuePair("ISA_number", collection.getIsaNumber())); //$NON-NLS-1$
+            }
+            
+            String email = ((SpecifyAppContextMgr)mgr).getMailAddr(true, true);
+            if (StringUtils.isNotEmpty(email))
+            {
+                stats.add(new NameValuePair("email", email)); //$NON-NLS-1$
             }
         }
         return stats;
