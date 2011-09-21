@@ -572,13 +572,12 @@ public class ChooseFromListDlg<T> extends JDialog
      * Returns the selected Object or null if nothing was selected.
      * @return the selected Object or null if nothing was selected
      */
-    @SuppressWarnings("unchecked")
     public List<T> getSelectedObjects()
     {
         List<T> selectedItems = new ArrayList<T>(5);
-        for (Object obj : list.getSelectedValues())
+        for (int ind : list.getSelectedIndices())
         {
-            selectedItems.add((T) obj);
+            selectedItems.add(items.get(ind));
         }
         return selectedItems;
     }

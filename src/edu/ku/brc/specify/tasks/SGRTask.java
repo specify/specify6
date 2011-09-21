@@ -26,7 +26,10 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,12 +37,14 @@ import java.util.Vector;
 import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
@@ -72,6 +77,7 @@ import edu.ku.brc.specify.plugins.sgr.SGRMatcherUI;
 import edu.ku.brc.specify.plugins.sgr.SGRPluginImpl;
 import edu.ku.brc.specify.plugins.sgr.WorkBenchBatchMatch;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
@@ -180,14 +186,31 @@ public class SGRTask extends BaseTask
              NavBoxItemIFace nbi = addMatcherToNavBox(mc, matchersBox, true);
         }
         
-        final RolloverCommand roc = 
+        final RolloverCommand createMatcherBtn = 
             (RolloverCommand)makeDnDNavBtn(matchersBox, 
                     getResourceString("SGR_CREATE_MATCHER"), "PlusSign", 
                     new CommandAction(SGR, "new_matcher"), 
                     null, false, false);
         
-        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        roc.addDropDataFlavor(WorkbenchTask.DATASET_FLAVOR);
+        createMatcherBtn.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        createMatcherBtn.addDropDataFlavor(WorkbenchTask.DATASET_FLAVOR);
+        
+        if (AppPreferences.getLocalPrefs().getBoolean("ENABLE_SGR_MATCHER_IMPORT_EXPORT", false))
+        {
+            final RolloverCommand exportMatcherBtn = 
+                (RolloverCommand)makeDnDNavBtn(matchersBox, 
+                        getResourceString("SGR_EXPORT_MATCHER"), "PlusSign", 
+                        new CommandAction(SGR, "export_matcher"), 
+                        null, false, false);
+            
+            exportMatcherBtn.addDropDataFlavor(MATCHER_FLAVOR);
+            
+            final RolloverCommand importMatchersBtn = 
+                (RolloverCommand)makeDnDNavBtn(matchersBox, 
+                        getResourceString("SGR_IMPORT_MATCHERS"), "PlusSign", 
+                        new CommandAction(SGR, "import_matchers"), 
+                        null, false, false);
+        }        
         return matchersBox;
     }
             
@@ -619,6 +642,63 @@ public class SGRTask extends BaseTask
                     }
                 });
                 UsageTracker.incrUsageCount("SGR.NewMatcher");
+            }
+            else if (cmdAction.isAction("export_matcher"))
+            {
+                List<MatchConfiguration> mcs;
+                if (cmdAction.getData() == cmdAction)
+                {
+                    mcs = DataModel.getMatcherConfigurations();
+                    ChooseFromListDlg<MatchConfiguration> dlg =
+                        new ChooseFromListDlg<MatchConfiguration>(
+                                (Frame)UIRegistry.get(UIRegistry.FRAME), 
+                                "Choose Matchers To Export", mcs);
+                    dlg.setMultiSelect(true);
+                    UIHelper.centerAndShow(dlg);
+                    if (dlg.isCancelled()) return;
+
+                    mcs = dlg.getSelectedObjects();
+                }
+                else
+                {
+                    mcs = ImmutableList.of((MatchConfiguration) cmdAction.getData());
+                }
+
+                JFileChooser chooser = new JFileChooser(
+                        WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
+                chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_EXPORT_FILE"));
+                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(false);
+                if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
+                File file = chooser.getSelectedFile();
+                try
+                {
+                    FileWriter fw = new FileWriter(file);
+                    fw.write(DataModel.exportMatchConfigurations(mcs).toString());
+                    fw.close();
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (cmdAction.isAction("import_matchers"))
+            {
+                JFileChooser chooser = new JFileChooser(
+                        WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
+                chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_IMPORT_FILE"));
+                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(true);
+                if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
+                File file = chooser.getSelectedFile();
+                Collection<MatchConfiguration> mcs = DataModel.importMatchConfigurations(file);
+                UIRegistry.loadAndPushResourceBundle("specify_plugins");
+                for (MatchConfiguration matchConfiguration : mcs)
+                {
+                    addMatcherToNavBox(matchConfiguration, matchersNavBox, false);
+                }
+                UIRegistry.popResourceBundle();
+                NavBox.refresh(matchersNavBox);
             }
             else if (cmdAction.isAction(WorkbenchTask.SELECTED_WORKBENCH))
             {
