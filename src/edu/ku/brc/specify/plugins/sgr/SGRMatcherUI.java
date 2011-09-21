@@ -20,6 +20,7 @@ package edu.ku.brc.specify.plugins.sgr;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +51,15 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.sgr.SGRMatcher;
 import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.core.QueryNodeException;
+import org.apache.lucene.queryParser.standard.StandardQueryParser;
+import org.apache.lucene.search.Query;
 /**
  * @author ben
  *
@@ -147,7 +153,18 @@ public class SGRMatcherUI extends CustomDialog
             }
             mf.similarityFields = StringUtils.join(fields.iterator(), ',');
             mf.queryFields = StringUtils.join(boosts.iterator(), ' ');
-            mf.filterQuery = uiPanel.filterQuery.getText();
+            
+            List<String> filters = new LinkedList<String>();
+            
+            String institutionCode = uiPanel.institutionCode.getText(); 
+            if (!StringUtils.isBlank(institutionCode))
+                 filters.add("-institution_code:\"" + institutionCode + "\"");
+            
+            String collectionCode = uiPanel.collectionCode.getText(); 
+            if (!StringUtils.isBlank(collectionCode))
+                 filters.add("-collection_code:\"" + collectionCode + "\"");
+            
+            mf.filterQuery = StringUtils.join(filters.toArray(), ' ');
             
             finished.apply(
                     DataModel.persistMatchConfiguration(name, mf)
@@ -176,7 +193,8 @@ public class SGRMatcherUI extends CustomDialog
         Map<String, JComboBox> similarityFields = new HashMap<String, JComboBox>(
                                                         availableFields.length);
 
-        JTextField             filterQuery      = new JTextField();
+        JTextField             institutionCode      = new JTextField();
+        JTextField             collectionCode       = new JTextField();
 
         JTextArea              remarks          = new JTextArea(10, 20);
         
@@ -233,19 +251,26 @@ public class SGRMatcherUI extends CustomDialog
                     cb.setEnabled(false);
                 }
                 
-                filterQuery.setText(matchConfig.filterQuery());
-                filterQuery.setEditable(false);
+                institutionCode.setText(
+                        extractFieldFromQuery(matchConfig.filterQuery(), "institution_code"));
+                institutionCode.setEditable(false);
                 
+                collectionCode.setText(
+                        extractFieldFromQuery(matchConfig.filterQuery(), "collection_code"));
+                collectionCode.setEditable(false);
+
                 remarks.setText(matchConfig.remarks());
             }
             else
             {
-                filterQuery.setText("-institution_code:\"" +
-                        AppContextMgr.getInstance().getClassObject(Institution.class).getCode()
-                        + "\"");
+                institutionCode.setText(
+                        AppContextMgr.getInstance().getClassObject(Institution.class).getCode());
+                
+                collectionCode.setText(
+                        AppContextMgr.getInstance().getClassObject(Collection.class).getCode());
             }
             
-            int rows = availableFields.length + 6;
+            int rows = availableFields.length + 7;
             StringBuilder colSpec = new StringBuilder();
             for (int i = 0; i < rows; i++) colSpec.append("p, 2dlu,");
             colSpec.append("p");
@@ -266,11 +291,15 @@ public class SGRMatcherUI extends CustomDialog
             builder.add(serverUrl,          cc.xy(3, y));
             y += 2;
             
-            builder.addSeparator("Filters", cc.xyw(1, y, 3));
+            builder.addSeparator("Exclude", cc.xyw(1, y, 3));
             y += 2;
             
-            builder.addLabel("Filter",      cc.xy(1, y));
-            builder.add(filterQuery,        cc.xy(3, y));
+            builder.addLabel("Institution Code",      cc.xy(1, y));
+            builder.add(institutionCode,        cc.xy(3, y));
+            y += 2;
+            
+            builder.addLabel("Collection Code",      cc.xy(1, y));
+            builder.add(collectionCode,        cc.xy(3, y));
             y += 2;
             
             builder.addSeparator("Similarity", cc.xyw(1, y, 3));
@@ -304,6 +333,25 @@ public class SGRMatcherUI extends CustomDialog
             y += 2;
         }
         
+        private String extractFieldFromQuery(String query, String field)
+        {
+            StandardQueryParser qp = new StandardQueryParser();
+            Query q;
+            try
+            {
+                q = qp.parse(query, "defaultField");
+            } catch (QueryNodeException e) { throw new RuntimeException(e); }
+
+            Set<Term> terms = new HashSet<Term>();
+            q.extractTerms(terms);
+            for (Term t : terms)
+            if (t.field().equals(field))
+            {
+                return t.text();
+            }
+            return "";
+        }
+
         private Set<String> parseSimilarityFields(String fields)
         {
             ImmutableSet.Builder<String> b = ImmutableSet.builder();
