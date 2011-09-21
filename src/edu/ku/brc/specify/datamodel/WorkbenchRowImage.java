@@ -181,14 +181,12 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
             return new ImageIcon(cardImageData);
         }
         
-        return null;
+        return getFullSizeImage();
     }
     
     @Transient
     public ImageIcon getFullSizeImage()
     {
-        if (cardImageData != null && cardImageFullPath != null && cardImageFullPath.length() > 0)
-        {
             ImageIcon fullSizeImage = null;
             
             // try to get the image from the SoftReference
@@ -228,8 +226,6 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
             }
             
             return fullSizeImageSR.get();
-        }
-        return null;
     }
     
     @Transient
