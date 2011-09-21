@@ -132,26 +132,29 @@ public class SGRMatcherUI extends CustomDialog
             mf.nRows = ((Number) uiPanel.nRows.getValue()).intValue();
             mf.boostInterestingTerms = uiPanel.boost.isSelected();
             
-            List<String> fields = new LinkedList<String>();
+            List<String> similarityFields = new LinkedList<String>();
             List<String> boosts = new LinkedList<String>();
             for (String field : availableFields)
             {
-                switch ((WeightChoice)uiPanel.similarityFields.get(field).getSelectedItem())
+                // The date_split field is controlled by the same UI elements as date_collected
+                String ctrlField = field.equals("date_split") ? "date_collected" : field;
+                
+                switch ((WeightChoice)uiPanel.similarityFields.get(ctrlField).getSelectedItem())
                 {
                     case High:
                         boosts.add(field + "^5.0");
-                        fields.add(field);
+                        similarityFields.add(field);
                         break;
                     case Low:
                         boosts.add(field + "^0.2");
-                        fields.add(field);
+                        similarityFields.add(field);
                         break;
                     case Normal:
-                        fields.add(field);
+                        similarityFields.add(field);
                         break;
                 }
             }
-            mf.similarityFields = StringUtils.join(fields.iterator(), ',');
+            mf.similarityFields = StringUtils.join(similarityFields.iterator(), ',');
             mf.queryFields = StringUtils.join(boosts.iterator(), ' ');
             
             List<String> filters = new LinkedList<String>();
@@ -204,6 +207,9 @@ public class SGRMatcherUI extends CustomDialog
             
             for (String field : availableFields)
             {
+                // The date_split field doesn't get its own controls.
+                if (field.equals("date_split")) continue;
+                
                 JComboBox comboBox = new JComboBox(WeightChoice.values());
                 comboBox.setSelectedItem(WeightChoice.Normal);
                 similarityFields.put(field, comboBox);
@@ -229,6 +235,9 @@ public class SGRMatcherUI extends CustomDialog
                 
                 for (String field : availableFields)
                 {
+                    // The date_split field doesn't get its own controls.
+                    if (field.equals("date_split")) continue;
+                    
                     if (!selectedFields.contains(field))
                     {
                         similarityFields.get(field).setSelectedItem(WeightChoice.Ignore);
@@ -270,7 +279,7 @@ public class SGRMatcherUI extends CustomDialog
                         AppContextMgr.getInstance().getClassObject(Collection.class).getCode());
             }
             
-            int rows = availableFields.length + 7;
+            int rows = similarityFields.size() + 7;
             StringBuilder colSpec = new StringBuilder();
             for (int i = 0; i < rows; i++) colSpec.append("p, 2dlu,");
             colSpec.append("p");
@@ -309,6 +318,8 @@ public class SGRMatcherUI extends CustomDialog
             
             for (String field : availableFields)
             {
+                if (!similarityFields.containsKey(field)) continue;
+                
                 String label = columnOrdering.getHeadingFor(field);
                 label = label == null ? WordUtils.capitalize(field) : label;
                 
