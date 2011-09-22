@@ -126,87 +126,89 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
         if (dObjArg instanceof FormDataObjIFace)
         {
             final FormDataObjIFace dObj    = (FormDataObjIFace)dObjArg;
-            
-            try
+            if (dObj.getId() != null)
             {
-                if (pStmt == null)
+                try
                 {
-                    String sql = "INSERT INTO spauditlog (TimestampCreated, TimestampModified, Version, Action, ParentRecordId, ParentTableNum, " +
-                                 "RecordId,  RecordVersion,  TableNum,  ModifiedByAgentID, CreatedByAgentID) " +
-                                 " VALUES(?,?,?,?,?,?,?,?,?,?,?)";
-                    pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
-                }
-                
-                if (pStmt == null)
-                {
-                    return;
-                }
-                
-                // On Save Hibernate send both an insert and an update, skip the update if it is the same record
-                Timestamp now = new Timestamp(System.currentTimeMillis());
-                if (gRecordId == dObj.getId() && gAction == 0 && action == 1 && (now.getTime() - gTSCreated) < 1001)
-                {
-                    return;
-                }
-                
-                gAction    = action;
-                gRecordId  = dObj.getId();
-                gTSCreated = now.getTime();
-                
-                Agent createdByAgent = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null);
-                
-                pStmt.setTimestamp(1, now);
-                pStmt.setTimestamp(2, now);
-                pStmt.setInt(3, 0);
-                pStmt.setInt(4, action);
-                    
-                Integer pId  = dObj.getParentId();
-                if (pId != null)
-                {
-                    pStmt.setInt(5, pId);
-                    
-                    Integer parentTableId = dObj.getParentTableId();
-                    if (parentTableId != null)
+                    if (pStmt == null)
                     {
-                        pStmt.setInt(6, parentTableId);    
+                        String sql = "INSERT INTO spauditlog (TimestampCreated, TimestampModified, Version, Action, ParentRecordId, ParentTableNum, " +
+                                     "RecordId,  RecordVersion,  TableNum,  ModifiedByAgentID, CreatedByAgentID) " +
+                                     " VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+                        pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
+                    }
+                    
+                    if (pStmt == null)
+                    {
+                        return;
+                    }
+                    
+                    // On Save Hibernate send both an insert and an update, skip the update if it is the same record
+                    Timestamp now = new Timestamp(System.currentTimeMillis());
+                    if (gRecordId == dObj.getId() && gAction == 0 && action == 1 && (now.getTime() - gTSCreated) < 1001)
+                    {
+                        return;
+                    }
+                    
+                    gAction    = action;
+                    gRecordId  = dObj.getId();
+                    gTSCreated = now.getTime();
+                    
+                    Agent createdByAgent = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null);
+                    
+                    pStmt.setTimestamp(1, now);
+                    pStmt.setTimestamp(2, now);
+                    pStmt.setInt(3, 0);
+                    pStmt.setInt(4, action);
+                        
+                    Integer pId  = dObj.getParentId();
+                    if (pId != null)
+                    {
+                        pStmt.setInt(5, pId);
+                        
+                        Integer parentTableId = dObj.getParentTableId();
+                        if (parentTableId != null)
+                        {
+                            pStmt.setInt(6, parentTableId);    
+                        } else
+                        {
+                            pStmt.setObject(6, null);
+                        }
                     } else
                     {
+                        pStmt.setObject(5, null);
                         pStmt.setObject(6, null);
                     }
-                } else
+                    
+                    pStmt.setInt(7, dObj.getId());
+                    
+                    if (dObj.getVersion() != null)
+                    {
+                        pStmt.setInt(8, dObj.getVersion());
+                    } else
+                    {
+                        pStmt.setObject(8, null);
+                    }
+                    
+                    pStmt.setInt(9, dObj.getTableId());
+                    
+                    if (createdByAgent != null)
+                    {
+                        pStmt.setInt(10, createdByAgent.getId());
+                        pStmt.setInt(11, createdByAgent.getId());
+                    } else
+                    {
+                        pStmt.setObject(10, null);
+                        pStmt.setObject(10, null);
+                    }
+                    
+                    pStmt.execute();
+                    
+                } catch (Exception ex)
                 {
-                    pStmt.setObject(5, null);
-                    pStmt.setObject(6, null);
+                    ex.printStackTrace();
+                    log.error(ex);
                 }
-                
-                pStmt.setInt(7, dObj.getId());
-                
-                if (dObj.getVersion() != null)
-                {
-                    pStmt.setInt(8, dObj.getVersion());
-                } else
-                {
-                    pStmt.setObject(8, null);
-                }
-                
-                pStmt.setInt(9, dObj.getTableId());
-                
-                if (createdByAgent != null)
-                {
-                    pStmt.setInt(10, createdByAgent.getId());
-                    pStmt.setInt(11, createdByAgent.getId());
-                } else
-                {
-                    pStmt.setObject(10, null);
-                    pStmt.setObject(10, null);
-                }
-                
-                pStmt.execute();
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                log.error(ex);
             }
         } else
         {
