@@ -67,7 +67,7 @@ public class SpecialMsgNotifier
             {
                 try
                 {
-                    Thread.sleep(30000); // 30 seconds
+                    Thread.sleep(15000); // 15 seconds
                     
                     String url       = UIRegistry.getResourceString("CGI_BASE_URL") + "/getmsg2.php";
                     String installID = UsageTracker.getInstallId();

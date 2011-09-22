@@ -2022,6 +2022,8 @@ public class ViewFactory
             bi.doRegControl     = false;
             bi.doAddToValidator = false;
  
+            cell.setIgnoreSetGet(true);
+            
             FormCellPanel           cellPanel = (FormCellPanel)cell;
             PanelViewable.PanelType panelType = PanelViewable.getType(cellPanel.getPanelType());
             
