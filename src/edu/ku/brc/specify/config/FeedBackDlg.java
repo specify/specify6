@@ -156,7 +156,7 @@ public class FeedBackDlg extends FeedBackSender
      * @see edu.ku.brc.exceptions.ExceptionTracker#collectSecondaryStats()
      */
     @Override
-    protected Vector<NameValuePair> collectionSecondaryInfo()
+    protected Vector<NameValuePair> collectionSecondaryInfo(final FeedBackSenderItem item)
     {
         Vector<NameValuePair> stats = new Vector<NameValuePair>();
         if (AppContextMgr.getInstance().hasContext())

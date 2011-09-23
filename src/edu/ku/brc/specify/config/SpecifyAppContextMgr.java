@@ -168,6 +168,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public static final String BACKSTOPDIR   = "BackStop"; //$NON-NLS-1$
     
     private static Boolean isNewJavaVersion = null;
+    
+    private enum UpdateEmailType {eNone, eAgent, eSpUser, eBoth};
 
     protected Vector<SpAppResourceDir>              spAppResourceList = new Vector<SpAppResourceDir>();
     protected Hashtable<String, SpAppResourceDir>   spAppResourceHash = new Hashtable<String, SpAppResourceDir>();
@@ -3352,11 +3354,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Gets the current email address from (first) the SpecifyUser and then the User Agent
      * @param doAskForIt indicates whether to ask for the email address
-     * @param doRequireValue indicates whether the email must be filled in.
-     * @return the email address
+     * @return return an email address
      */
-    public String getMailAddr(final boolean doAskForIt, final boolean doRequireValue)
+    public String getMailAddr(final boolean doAskForIt)
     {
+        UpdateEmailType updateType = UpdateEmailType.eNone;
+        
         String      email       = null;
         SpecifyUser spUser      = getClassObject(SpecifyUser.class);
         Agent       userAgent   = getClassObject(Agent.class);
@@ -3364,54 +3367,74 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (spUser != null && StringUtils.isNotEmpty(spUser.getEmail()))
         {
             email = spUser.getEmail();
+            if (StringUtils.isNotEmpty(email)) updateType = UpdateEmailType.eAgent;
         }
         
         if (StringUtils.isEmpty(email) && 
             userAgent != null && StringUtils.isNotEmpty(userAgent.getEmail()))
         {
             email = userAgent.getEmail();
+            if (StringUtils.isNotEmpty(email)) updateType = UpdateEmailType.eSpUser;
+        }
+        
+        if (!doAskForIt)
+        {
+            return  StringUtils.isEmpty(email) ? "" : email;
         }
         
         email = null;
-        if (doAskForIt && StringUtils.isEmpty(email))
+        if (StringUtils.isEmpty(email) || !UIHelper.isValidEmailAddress(email))
         {
             boolean isValidEmailAddr = true;
             do
             {
                 email = UIRegistry.askForString("SpecifyAppContextMgr.ENT_EMAIL_LABEL", 
-                                               "SpecifyAppContextMgr.ENT_EMAIL_TITLE", 
-                                               isValidEmailAddr ? null : "SpecifyAppContextMgr.ENT_EMAIL_ERR",
-                                               true);
+                                                "SpecifyAppContextMgr.ENT_EMAIL_TITLE", 
+                                                isValidEmailAddr ? "SpecifyAppContextMgr.ENT_EMAIL_WHY" : "SpecifyAppContextMgr.ENT_EMAIL_ERR",
+                                                true);
                 isValidEmailAddr = UIHelper.isValidEmailAddress(email);
             } while (!isValidEmailAddr);
+            
+            updateType = UpdateEmailType.eBoth;
         }
         
-        DataProviderSessionIFace session = openSession();
-        if (session != null)
+        if (updateType != UpdateEmailType.eNone)
         {
-            try
+            DataProviderSessionIFace session = openSession();
+            if (session != null)
             {
-                spUser = session.get(SpecifyUser.class, spUser.getId());
-                spUser.setEmail(email);
-                session.beginTransaction();
-                for (Agent agt : spUser.getAgents())
+                try
                 {
-                    agt.setEmail(email);
-                    session.saveOrUpdate(agt);
+                    spUser = session.get(SpecifyUser.class, spUser.getId());
+                    spUser.setEmail(email);
+                    session.beginTransaction();
+                    
+                    if (updateType == UpdateEmailType.eBoth || updateType == UpdateEmailType.eAgent)
+                    {
+                        for (Agent agt : spUser.getAgents())
+                        {
+                            agt.setEmail(email);
+                            session.saveOrUpdate(agt);
+                        }
+                    }
+                    if (updateType == UpdateEmailType.eBoth || updateType == UpdateEmailType.eSpUser)
+                    {
+                        session.saveOrUpdate(spUser);
+                    }
+                    session.commit();
+                    
+                    setClassObject(Agent.class, session.get(Agent.class, userAgent.getId()));
+                    setClassObject(SpecifyUser.class, spUser);
+                    
+                } catch (Exception ex)
+                {
+                    session.rollback();
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    closeSession();
                 }
-                session.saveOrUpdate(spUser);
-                session.commit();
-                
-                setClassObject(Agent.class, session.get(Agent.class, userAgent.getId()));
-                setClassObject(SpecifyUser.class, spUser);
-                
-            } catch (Exception ex)
-            {
-                session.rollback();
-                
-            } finally
-            {
-                closeSession();
             }
         }
 

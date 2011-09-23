@@ -77,6 +77,19 @@ public abstract class FeedBackSender
     }
     
     /**
+     * @param cls
+     * @param exception
+     */
+    public void sendMsg(final Class<?> cls, 
+                        final String message,
+                        final Exception exception)
+    {
+        FeedBackSenderItem item = getFeedBackSenderItem(cls, message, exception);
+        item.setIncludeEmail(false);
+        connectToServerNow(item);
+    }
+    
+    /**
      * 
      */
     public void sendFeedback()
@@ -215,7 +228,7 @@ public abstract class FeedBackSender
             }
             postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
             
-            Vector<NameValuePair> extraStats = collectionSecondaryInfo();
+            Vector<NameValuePair> extraStats = collectionSecondaryInfo(item);
             if (extraStats != null)
             {
                 postParams.addAll(extraStats);
@@ -239,9 +252,10 @@ public abstract class FeedBackSender
     
     /**
      * Collection Statistics about the Collection (synchronously).
+     * @param item feedback item
      * @return list of http named value pairs
      */
-    protected Vector<NameValuePair> collectionSecondaryInfo()
+    protected Vector<NameValuePair> collectionSecondaryInfo(@SuppressWarnings("unused") final FeedBackSenderItem item)
     {
         return null;
     }

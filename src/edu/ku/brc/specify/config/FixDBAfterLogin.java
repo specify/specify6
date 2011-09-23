@@ -102,7 +102,7 @@ public class FixDBAfterLogin
 					"inner join collectingevent ce on ce.collectingeventid = co.collectingeventid " +
 					"inner join  (select localityid from localitydetail group by localityid having count(localitydetailid) > 1) badlocs on badlocs.localityid = ce.localityid");
 			String str = String.format("Multiple Locality Detail Records - Count: %d", cnt);
-			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FixDBAfterLogin.class, str, new Exception(str));
+			edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(FixDBAfterLogin.class, str, new Exception(str));
 		}
          
          cnt = getCountAsInt("select count(geocoorddetailid) - count(distinct localityid) from geocoorddetail");
@@ -112,7 +112,7 @@ public class FixDBAfterLogin
         	 		"inner join collectingevent ce on ce.collectingeventid = co.collectingeventid " +
         	 		"inner join (select localityid from geocoorddetail group by localityid having count(geocoorddetailid) > 1) badlocs on badlocs.localityid = ce.localityid");
  		     String str = String.format("Multiple GeoCoord Detail Records - Count: %d", cnt);
- 		     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FixDBAfterLogin.class, str, new Exception(str));
+ 		     edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(FixDBAfterLogin.class, str, new Exception(str));
          }
     }
     

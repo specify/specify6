@@ -40,6 +40,7 @@ public class FeedBackSenderItem
     protected String     comments;
     protected String     stackTrace;
     protected String     className;
+    protected boolean    includeEmail = true;
     protected Properties props = null;
     
     /**
@@ -72,6 +73,22 @@ public class FeedBackSenderItem
         this.comments = comments;
         this.stackTrace = stackTrace;
         this.className = className;
+    }
+
+    /**
+     * @return the includeEmail
+     */
+    public boolean isIncludeEmail()
+    {
+        return includeEmail;
+    }
+
+    /**
+     * @param includeEmail the includeEmail to set
+     */
+    public void setIncludeEmail(boolean includeEmail)
+    {
+        this.includeEmail = includeEmail;
     }
 
     /**

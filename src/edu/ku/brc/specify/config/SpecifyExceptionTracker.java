@@ -201,7 +201,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         });
         
         pb.setDefaultDialogBorder();
-        dlg = new CustomDialog((Frame)null, "Handled Exception", true, CustomDialog.OK_BTN, pb.getPanel());
+        dlg = new CustomDialog((Frame)null, getResourceString("UnhandledExceptionTitle"), true, CustomDialog.OK_BTN, pb.getPanel());
         dlg.setOkLabel(getResourceString("UNHDL_EXCP_SEND"));
         
         dlg.createUI();
@@ -237,7 +237,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
      * @see edu.ku.brc.exceptions.ExceptionTracker#collectSecondaryStats()
      */
     @Override
-    protected Vector<NameValuePair> collectionSecondaryInfo()
+    protected Vector<NameValuePair> collectionSecondaryInfo(final FeedBackSenderItem item)
     {
         AppContextMgr mgr = AppContextMgr.getInstance();
         Vector<NameValuePair> stats = new Vector<NameValuePair>();
@@ -263,10 +263,13 @@ public class SpecifyExceptionTracker extends ExceptionTracker
                 stats.add(new NameValuePair("ISA_number", collection.getIsaNumber())); //$NON-NLS-1$
             }
             
-            String email = ((SpecifyAppContextMgr)mgr).getMailAddr(true, true);
-            if (StringUtils.isNotEmpty(email))
+            if (item.isIncludeEmail())
             {
-                stats.add(new NameValuePair("email", email)); //$NON-NLS-1$
+                String email = ((SpecifyAppContextMgr)mgr).getMailAddr(true);
+                if (StringUtils.isNotEmpty(email))
+                {
+                    stats.add(new NameValuePair("email", email)); //$NON-NLS-1$
+                }
             }
         }
         return stats;

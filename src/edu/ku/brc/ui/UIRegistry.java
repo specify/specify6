@@ -1092,7 +1092,7 @@ public class UIRegistry
                                       final boolean doMustHaveValue)
     {
         CellConstraints    cc = new CellConstraints();
-        PanelBuilder       pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p" + (StringUtils.isNotEmpty(msgKey) ? ",4px,p" : "")));
+        PanelBuilder       pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p" + (StringUtils.isNotEmpty(msgKey) ? ",4px,p:g" : "")));
         final ValTextField vt = new ValTextField(32);
         
         vt.setRequired(doMustHaveValue);
