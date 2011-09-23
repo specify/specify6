@@ -161,11 +161,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         for (WorkbenchDataItem item : getWorkbenchDataItems())
         {
             item.getCellData();
+        }
 
-            if (getWorkbenchRowImages() != null)
-            {
-                getWorkbenchRowImages().size();
-            }
+        if (getWorkbenchRowImages() != null)
+        {
+            getWorkbenchRowImages().size();
         }
     }
     
