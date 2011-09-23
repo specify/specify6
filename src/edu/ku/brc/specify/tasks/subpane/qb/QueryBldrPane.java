@@ -2010,10 +2010,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                 }
                 //XXX - should only use left joins when necessary (see 4th param below)
+                //XXX - actually since the domain adjuster adds joins to system tables that should always 
+                //contain related records, AND because now joins are only made when domain criteria are speciried,
+                //It is ok to use inner join.
                 boolean skipExtraJoin = level > 1;// && tt.getTableInfo().getTableId() == Agent.getClassTableId();
                 if (!skipExtraJoin)
                 {
-                	String extraJoin = QueryAdjusterForDomain.getInstance().getJoinClause(tt.getTableInfo(), true, alias, true);
+                	String extraJoin = QueryAdjusterForDomain.getInstance().getJoinClause(tt.getTableInfo(), true, alias, false);
                 
                 	if (StringUtils.isNotEmpty(extraJoin))
                 	{
