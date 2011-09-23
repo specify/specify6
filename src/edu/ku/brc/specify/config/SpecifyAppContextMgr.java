@@ -3382,7 +3382,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             return  StringUtils.isEmpty(email) ? "" : email;
         }
         
-        email = null;
         if (StringUtils.isEmpty(email) || !UIHelper.isValidEmailAddress(email))
         {
             boolean isValidEmailAddr = true;
