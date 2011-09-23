@@ -358,7 +358,10 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         
         if (workbenchPaneSS.getTask() instanceof SGRTask)
         {
-            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, null, false,
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            String tooltip = UIRegistry.getResourceString("SGR_SHOW_RESULTS");
+            UIRegistry.popResourceBundle();
+            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, tooltip, false,
                     new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -405,7 +408,10 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
 
         if (workbenchPaneSS.getTask() instanceof SGRTask)
         {
-            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, null, false,
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            String tooltip = UIRegistry.getResourceString("SGR_REFRESH_RESULTS");
+            UIRegistry.popResourceBundle();
+            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, tooltip, false,
                     new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
