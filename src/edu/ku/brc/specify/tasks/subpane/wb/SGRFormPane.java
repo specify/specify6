@@ -29,7 +29,6 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -74,11 +73,25 @@ public class SGRFormPane extends JPanel implements FormPaneWrapper
             }
         };
         
+        Action update = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                copyDataFromForm();
+                refreshResults();
+            }
+        };
+        
         workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_PAGE_UP, 
                 "prev_record", prevRecord, InputEvent.SHIFT_DOWN_MASK);
         
         workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_PAGE_DOWN, 
                 "next_record", nextRecord, InputEvent.SHIFT_DOWN_MASK);
+        
+        workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_F5, 
+                "update", update, 0);
+        
     }
     
     public void refreshResults()
