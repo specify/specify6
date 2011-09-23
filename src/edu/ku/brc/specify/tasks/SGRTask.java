@@ -29,7 +29,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +47,7 @@ import com.google.common.collect.ImmutableList;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -64,9 +64,13 @@ import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.sgr.datamodel.BatchMatchResultSet;
 import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.plugins.sgr.BatchResultPropertyEditor;
 import edu.ku.brc.specify.plugins.sgr.BatchResultsMgr;
@@ -134,6 +138,29 @@ public class SGRTask extends BaseTask
         CommandDispatcher.register(SGR, this);
     }
     
+    private void loadDefaultMatchers()
+    {
+        Discipline disc = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        File file = 
+            XMLHelper.getConfigDir(disc.getType() + File.separator + "default_sgr_matchers.xml");
+        if (file.exists())
+        {
+            java.util.Collection<MatchConfiguration> mcs = DataModel.importMatchConfigurations(file);
+            
+            // ugly
+            Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
+            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+            
+            String fq = "-institution_code:\"" + inst.getCode()
+                + "\" -collection_code:\"" + coll.getCode() +"\"";
+            for (MatchConfiguration mc : mcs)
+            {
+                mc.updateFilterQuery(fq);
+            }
+            AppPreferences.getRemote().putBoolean("SGR_DEFAULT_MATCHERS_LOADED", true);
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -148,18 +175,19 @@ public class SGRTask extends BaseTask
                 @Override public Connection apply(Object arg0) {
                     return DBConnection.getInstance().createConnection();
             }});
-            
-            // create an instance of each registered exporter
+
+            if (!AppPreferences.getRemote().getBoolean("SGR_DEFAULT_MATCHERS_LOADED", false))
+            {
+                loadDefaultMatchers();
+            }
+
             toolsNavBoxList.clear();
 
-            // if visible, create a nav box button for each exporter
             if (isVisible)
             {
                 UIRegistry.loadAndPushResourceBundle("specify_plugins");
                 
                 extendedNavBoxes.clear();
-                
-//                navBoxes.add(makeActionsNavBox());
                 
                 matchersNavBox = makeMatchersNavBox();
                 navBoxes.add(matchersNavBox);
@@ -691,7 +719,7 @@ public class SGRTask extends BaseTask
                 chooser.setMultiSelectionEnabled(true);
                 if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
                 File file = chooser.getSelectedFile();
-                Collection<MatchConfiguration> mcs = DataModel.importMatchConfigurations(file);
+                java.util.Collection<MatchConfiguration> mcs = DataModel.importMatchConfigurations(file);
                 UIRegistry.loadAndPushResourceBundle("specify_plugins");
                 for (MatchConfiguration matchConfiguration : mcs)
                 {
