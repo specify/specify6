@@ -5287,6 +5287,22 @@
                     <cell type="field" id="8" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
                 <row>
+                    <cell type="separator" id="relmgrsep" label="Managed Releases" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" id="relmgrlabel" label=" "/>
+                    <cell type="panel" id="relmgrpanel" name="mgrpanel" coldef="p,2px,p,20px,p,1px,p" rowdef="p" colspan="7">
+                      <rows>
+                        <row>
+		                    <cell type="label" label=" "/>
+		                    <cell type="field" id="isRelMgrGlb" name="isReleaseManagedGlobally" uitype="checkbox" />
+		                    <cell type="label" id="curMgrRelVerLbl" labelfor="curMgrRelVer"/>
+		                    <cell type="field" id="curMgrRelVer" name="currentManagedRelVersion" uitype="combobox"/> 
+	                    </row>
+	                  </rows>
+	                </cell>
+                </row>
+                <row>
                     <cell type="subview" viewname="Address" id="12" name="address" colspan="9" initialize="btn=true"/>
                 </row>
                 <row>

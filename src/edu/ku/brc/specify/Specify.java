@@ -3117,8 +3117,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       isExtraCheck = true;
                       localPrefs.putBoolean(EXTRA_CHECK, isExtraCheck);
                   }
+                  
+                  // Managed Releases
+                  // it's never managed for the Release Manager
+                  boolean isReleaseManager = AppPreferences.getLocalPrefs().getBoolean("RELEASE_MANAGER", false);
+                  boolean isManagedRelease = AppPreferences.getLocalPrefs().getBoolean("MANAGED_RELEASES", false);
+                  boolean isMgrRel         = !isReleaseManager && isManagedRelease;
 
-                  if (localPrefs.getBoolean(VERSION_CHECK, true))
+                  // Never check if it is a managed release
+                  if (localPrefs.getBoolean(VERSION_CHECK, true) && !isMgrRel)
                   {
                       try
                       {
@@ -3147,11 +3154,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       }
                   } else
                   {
-                      if (!isExtraCheck && StringUtils.isNotEmpty(UIRegistry.getAppVersion()))
+                      if (!isManagedRelease && !isExtraCheck && StringUtils.isNotEmpty(UIRegistry.getAppVersion()))
                       {
                           UIRegistry.showLocalizedMsg(null, "SpReg.NOT_REGISTERED");
                       }
-                      startApp( );
+                      startApp();
                   }
               } catch (Exception ex)
               {

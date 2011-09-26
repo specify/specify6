@@ -45,10 +45,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -627,6 +626,31 @@ public class SpecifyAppContextMgr extends AppContextMgr
             am.setClassObject(LithoStratTreeDef.class,         discipline.getLithoStratTreeDef());
             discipline.getGeographyTreeDef().forceLoad();
             am.setClassObject(GeographyTreeDef.class,          discipline.getGeographyTreeDef());
+            
+            // Managed Releases
+            // it's never managed for the Release Manager
+            boolean isReleaseManager = AppPreferences.getLocalPrefs().getBoolean("RELEASE_MANAGER", false);
+            boolean isManagedRelease = !isReleaseManager && institution.getIsReleaseManagedGlobally();
+            AppPreferences.getLocalPrefs().putBoolean("MANAGED_RELEASES", isManagedRelease);
+            
+            if (isManagedRelease)
+            {
+                String curRelease = UIHelper.getInstall4JInstallString();
+                String mgrRelease = institution.getCurrentManagedRelVersion();
+                if (StringUtils.isNotEmpty(curRelease) && 
+                    StringUtils.isNotEmpty(mgrRelease) &&
+                    !curRelease.equals(mgrRelease))
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            CommandDispatcher.dispatch(new CommandAction("App", "CheckForUpdates"));
+                        }
+                    });
+                }
+            }
             
             return collection;
             
