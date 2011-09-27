@@ -1326,12 +1326,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         ResultSet rs = meta.getTables(null, null, null, new String [] {"TABLE"});
         Set<String> tables = new HashSet<String>();
         while (rs.next())
-            tables.add(rs.getString("TABLE_NAME").toLowerCase());
+            tables.add(rs.getString("TABLE_NAME"));
         rs.close();
 
         if (!tables.contains("sgrmatchconfiguration"))
         {
-            String sql = "CREATE TABLE `sgrMatchConfiguration` (" +
+            String sql = "CREATE TABLE `sgrmatchconfiguration` (" +
                             "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
                             "`name`                     varchar(128)    NOT NULL, " +
                             "`similarityFields`         text            NOT NULL, " +
@@ -1348,7 +1348,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
         if (!tables.contains("sgrbatchmatchresultset"))
         {
-            String sql = "CREATE TABLE `sgrBatchMatchResultSet` (" +
+            String sql = "CREATE TABLE `sgrbatchmatchresultset` (" +
                         "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
                         "`insertTime`               timestamp       NOT NULL, " +
                         "`name`                     varchar(128)    NOT NULL, " +
@@ -1358,23 +1358,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         "`remarks`                  text            NOT NULL, " +
                         "`dbTableId`                int(11)         DEFAULT NULL, " +
                         "PRIMARY KEY (`id`), " +
-                        "KEY `sgrBatchMatchResultSetFK2` (`matchConfigurationId`), " +
-                        "CONSTRAINT `sgrBatchMatchResultSetFK2` FOREIGN KEY (`matchConfigurationId`) REFERENCES `sgrMatchConfiguration` (`id`) " +
+                        "KEY `sgrbatchmatchresultsetfk2` (`matchConfigurationId`), " +
+                        "CONSTRAINT `sgrbatchmatchresultsetfk2` FOREIGN KEY (`matchConfigurationId`) REFERENCES `sgrmatchconfiguration` (`id`) " +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
             update(conn, sql);
         }
         
         if (!tables.contains("sgrbatchmatchresultitem"))
         {
-            String sql = "CREATE TABLE `sgrBatchMatchResultItem` ( " +
+            String sql = "CREATE TABLE `sgrbatchmatchresultitem` ( " +
                         "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
                         "`matchedId`                varchar(128)    NOT NULL, " +
                         "`maxScore`                 float           NOT NULL, " +
                         "`batchMatchResultSetId`    bigint(20)      NOT NULL, " +
                         "`qTime`                    int(11)         NOT NULL, " +
                         "PRIMARY KEY (`id`), " +
-                        "KEY `sgrBatchMatchResultItemFK1` (`batchMatchResultSetId`), " +
-                        "CONSTRAINT `sgrBatchMatchResultItemFK1` FOREIGN KEY (`batchMatchResultSetId`) REFERENCES `sgrBatchMatchResultSet` (`id`) ON DELETE CASCADE " +
+                        "KEY `sgrbatchmatchresultitemfk1` (`batchMatchResultSetId`), " +
+                        "CONSTRAINT `sgrbatchmatchresultitemfk1` FOREIGN KEY (`batchMatchResultSetId`) REFERENCES `sgrbatchmatchresultset` (`id`) ON DELETE CASCADE " +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
             update(conn, sql);
         }
