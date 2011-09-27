@@ -133,7 +133,7 @@
 		<indexitem text="Table Aggregation Editor" target="DOA_EDITOR" mergetype="javax.help.SortMerge" />
 		<indexitem text="Table Format Editor" target="DOF_EDITOR" mergetype="javax.help.SortMerge" />
 	</indexitem>
-	<indexitem text="Security Summary" target="SECURITY_SUMMARY" mergetype="javax.help.SortMerge" />
+	<indexitem text="Security Summary" mergetype="javax.help.SortMerge" />
 	<indexitem text="Series Data Entry" target="Forms_Series_Entry" mergetype="javax.help.SortMerge" />
 	<indexitem text="Services" target="Services" mergetype="javax.help.SortMerge" />
 	<indexitem text="Simple Search" target="SS" mergetype="javax.help.SortMerge">
@@ -239,4 +239,5 @@
 		<indexitem text="Top 10" target="WorkbenchTop10" mergetype="javax.help.SortMerge" />
 		<indexitem text="Working with Images" target="WorkbenchWorkingWithImages" mergetype="javax.help.SortMerge" />
 	</indexitem>
+	<indexitem text="Keyboard Shortcuts" target="Keyboard_Functions" mergetype="javax.help.SortMerge" />
 </index>
