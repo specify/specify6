@@ -62,7 +62,6 @@ public class LoansPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     protected void createUI()
     {
         createForm("Preferences", "LoansPrefs");
-        
         AppPreferences prefs = AppPreferences.getRemote();
         
         Integer dueInMonths      = prefs.getInt(DUEINMONTHS, 6);

@@ -23,7 +23,10 @@ import java.util.Properties;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 
@@ -37,11 +40,21 @@ import edu.ku.brc.specify.datamodel.Discipline;
  */
 public class GEOLocatePrefsPanel extends GenericPrefsPanel
 {
-    private static final String GL_HYWX    = "GEOLocate.HYWX";
-    private static final String GL_WTRBODY = "GEOLocate.WATERBODY";
+    private static final String GL_HYWX    		= "GEOLocate.HYWX";
+    private static final String GL_WTRBODY 		= "GEOLocate.WATERBODY";
+    private static final String GL_RESTRICT 	= "GEOLocate.RESTRICTTOLOWESTADM";
+    private static final String GL_DOUNCERT 	= "GEOLocate.DOUNCERT";
+    private static final String GL_DOPOLY 		= "GEOLocate.DOPOLY";
+    private static final String GL_DISPLACEPOLY = "GEOLocate.DISPLACEPOLY";
+    private static final String GL_LANGKEY 		= "GEOLocate.LANGUAGEKEY";
     
     protected ValCheckBox  hywXCBX;
     protected ValCheckBox  waterBodyCBX;
+    protected ValCheckBox  restrictToLowestAdmCBX;
+    protected ValCheckBox  doUncertCBX;
+    protected ValCheckBox  doPolyCBX;
+    protected ValCheckBox  displacePolyCBX;
+    protected ValComboBox  languageKeyCoBX;
 
     /**
      * 
@@ -49,10 +62,29 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     public GEOLocatePrefsPanel()
     {
         super();
-        
-        createForm("Preferences", "GEOLocatePrefs");
+        createUI();
     }
-
+    
+    /**
+     * Create the UI for the panel
+     */
+    protected void createUI()
+    {
+    	createForm("Preferences", "GEOLocatePrefs");
+    	
+    	AppPreferences prefs = AppPreferences.getRemote();
+    	String  languageKey   = prefs.get(GL_LANGKEY, "English");
+    	
+    	FormViewObj fvo = (FormViewObj)form;
+    	languageKeyCoBX = fvo.getCompById("GEOLocate.LANGUAGEKEY");
+        if (languageKeyCoBX != null)
+        {
+        	languageKeyCoBX.setValue(languageKey, null);
+        	
+        }
+        
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#createForm(java.lang.String, java.lang.String)
      */
@@ -63,11 +95,25 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         
         hywXCBX      = form.getCompById(GL_HYWX);
         waterBodyCBX = form.getCompById(GL_WTRBODY);
+        restrictToLowestAdmCBX = form.getCompById(GL_RESTRICT);
+        doUncertCBX = form.getCompById(GL_DOUNCERT);
+        doPolyCBX = form.getCompById(GL_DOPOLY);
+        displacePolyCBX = form.getCompById(GL_DISPLACEPOLY);
+        languageKeyCoBX = form.getCompById(GL_LANGKEY);
         
         boolean isFish = Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish);
         
         hywXCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_HYWX, isFish), "");
         waterBodyCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_WTRBODY, isFish), "");
+        restrictToLowestAdmCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_RESTRICT, !isFish), "");
+        doUncertCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_DOUNCERT, isFish), "");
+        doPolyCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_DOPOLY, isFish), "");
+        displacePolyCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_DISPLACEPOLY, isFish), "");
+    }
+    
+    public Viewable getForm()
+    {
+    	return form;
     }
 
     
@@ -126,6 +172,19 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
             }
         }
     }
+    
+    private void saveCoBX (final ValComboBox cbx, final String prefName)
+    {
+    	if (cbx.isChanged())
+        {
+            String method = (String)cbx.getValue();
+            if (method != null)
+            {
+            	AppPreferences prefs = AppPreferences.getRemote();
+                prefs.put(prefName, method);
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#savePrefs()
@@ -135,5 +194,10 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     {
         saveCBX(hywXCBX, GL_HYWX);
         saveCBX(waterBodyCBX, GL_WTRBODY);
+        saveCBX(restrictToLowestAdmCBX, GL_RESTRICT);
+        saveCBX(doUncertCBX, GL_DOUNCERT);
+        saveCBX(doPolyCBX, GL_DOPOLY);
+        saveCBX(displacePolyCBX, GL_DISPLACEPOLY);
+        saveCoBX(languageKeyCoBX, GL_LANGKEY);
     }
 }

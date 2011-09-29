@@ -866,18 +866,35 @@
             
             <desc><![CDATA[GEOLocatePrefs Preference Form.]]></desc>
             
-            <columnDef>p,f:p:g</columnDef>
+            <columnDef>p,2px,p,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
-                    <cell type="separator" label="GEOLocate" colspan="2"/>
+                    <cell type="separator" label="GEOLocate" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="GEOLocate.HYWX" name="GEOLocate.HYWX" uitype="checkbox" label="GL_HYWX" colspan="2"/>
+                    <cell type="field" id="GEOLocate.HYWX" name="GEOLocate.HYWX" uitype="checkbox" label="GL_HYWX" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="GEOLocate.WATERBODY" name="GEOLocate.WATERBODY" uitype="checkbox" label="GL_WATERBODY" colspan="2"/>
+                    <cell type="field" id="GEOLocate.WATERBODY" name="GEOLocate.WATERBODY" uitype="checkbox" label="GL_WATERBODY" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.RESTRICTTOLOWESTADM" name="GEOLocate.RESTRICTTOLOWESTADM" uitype="checkbox" label="GL_RESTRICT" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.DOUNCERT" name="GEOLocate.DOUNCERT" uitype="checkbox" label="GL_DOUNCERT" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.DOPOLY" name="GEOLocate.DOPOLY" uitype="checkbox" label="GL_DOPOLY" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.DISPLACEPOLY" name="GEOLocate.DISPLACEPOLY" uitype="checkbox" label="GL_DISPLACEPOLY" colspan="4"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="GEOLocate.LANGUAGEKEY" label="GL_LANGKEY" />
+                    <cell type="field" id="GEOLocate.LANGUAGEKEY" name="GEOLocate.LANGUAGEKEY" uitype="combobox" isrequired="true" 
+                    initialize="data=English, Spanish, Basque, Catalan, Galician"/>
                 </row>
             </rows>
         </viewdef>

@@ -410,9 +410,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         ((JMenuItem)UIRegistry.get(UIRegistry.PASTE)).addActionListener(this);
         
         //add 3-state sort toggle
-        setFilters(new CustomToggleSortOrderFP());
- 
-
+        //setFilters(new CustomToggleSortOrderFP());
     }
     
     

@@ -24,7 +24,8 @@ import java.util.Properties;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
-import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
+//import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
+import edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.ui.UIRegistry;
 
