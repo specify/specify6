@@ -226,9 +226,13 @@ public class GridTableModel extends SpreadSheetModel
         if (headers.get(column) == sgrHeading)
         {
             SGRPluginImpl sgr = (SGRPluginImpl) workbenchPaneSS.getPlugin(SGRPluginImpl.class);
-            WorkbenchColorizer colorizer = sgr.getColorizer();
-            Float score = colorizer.getScoreForRow(workbenchPaneSS.getWorkbench().getRow(row), true);
-            return score != null ? "" + Math.round(100*score) : "";
+            if (sgr != null)
+            {
+                WorkbenchColorizer colorizer = sgr.getColorizer();
+                Float score = colorizer.getScoreForRow(workbenchPaneSS.getWorkbench().getRow(row), true);
+                return score != null ? "" + Math.round(100*score) : "";
+            }
+            return 0;
         }
         
         // otherwise...

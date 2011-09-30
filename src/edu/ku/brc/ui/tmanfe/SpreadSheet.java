@@ -61,6 +61,7 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -74,10 +75,11 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.decorator.Filter;
+/*import org.jdesktop.swingx.decorator.Filter;
 import org.jdesktop.swingx.decorator.FilterPipeline;
 import org.jdesktop.swingx.decorator.SortController;
 import org.jdesktop.swingx.decorator.Sorter;
+*/
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.ui.IconManager;
@@ -411,6 +413,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         //add 3-state sort toggle
         //setFilters(new CustomToggleSortOrderFP());
+        
+        setSortOrderCycle(SortOrder.ASCENDING, SortOrder.DESCENDING, SortOrder.UNSORTED);
     }
     
     
@@ -1195,62 +1199,62 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      *
      *Copied directly from example at API documentation for org.jdesktop.swingx.JXTable
      */
-    public class CustomToggleSortOrderFP extends FilterPipeline
-	{
-
-		/**
-		 * 
-		 */
-		public CustomToggleSortOrderFP()
-		{
-			super();
-		}
-
-		/**
-		 * @param inList
-		 */
-		public CustomToggleSortOrderFP(Filter[] inList)
-		{
-			super(inList);
-		}
-
-		/* (non-Javadoc)
-		 * @see org.jdesktop.swingx.decorator.FilterPipeline#createDefaultSortController()
-		 */
-		@Override
-		protected SortController createDefaultSortController()
-		{
-			return new CustomSortController();
-		}
-
-		/**
-		 * @author timbo
-		 *
-		 */
-		protected class CustomSortController extends SorterBasedSortController
-		{
-
-			/* (non-Javadoc)
-			 * @see org.jdesktop.swingx.decorator.FilterPipeline.SorterBasedSortController#toggleSortOrder(int, java.util.Comparator)
-			 */
-			@Override
-			@SuppressWarnings("unchecked")
-			public void toggleSortOrder(int column, Comparator comparator)
-			{
-				Sorter currentSorter = getSorter();
-				if ((currentSorter != null)
-						&& (currentSorter.getColumnIndex() == column)
-						&& !currentSorter.isAscending())
-				{
-					setSorter(null);
-				} else
-				{
-					super.toggleSortOrder(column, comparator);
-				}
-			}
-
-		}
-	}
+//    public class CustomToggleSortOrderFP extends FilterPipeline
+//	{
+//
+//		/**
+//		 * 
+//		 */
+//		public CustomToggleSortOrderFP()
+//		{
+//			super();
+//		}
+//
+//		/**
+//		 * @param inList
+//		 */
+//		public CustomToggleSortOrderFP(Filter[] inList)
+//		{
+//			super(inList);
+//		}
+//
+//		/* (non-Javadoc)
+//		 * @see org.jdesktop.swingx.decorator.FilterPipeline#createDefaultSortController()
+//		 */
+//		@Override
+//		protected SortController createDefaultSortController()
+//		{
+//			return new CustomSortController();
+//		}
+//
+//		/**
+//		 * @author timbo
+//		 *
+//		 */
+//		protected class CustomSortController extends SorterBasedSortController
+//		{
+//
+//			/* (non-Javadoc)
+//			 * @see org.jdesktop.swingx.decorator.FilterPipeline.SorterBasedSortController#toggleSortOrder(int, java.util.Comparator)
+//			 */
+//			@Override
+//			@SuppressWarnings("unchecked")
+//			public void toggleSortOrder(int column, Comparator comparator)
+//			{
+//				Sorter currentSorter = getSorter();
+//				if ((currentSorter != null)
+//						&& (currentSorter.getColumnIndex() == column)
+//						&& !currentSorter.isAscending())
+//				{
+//					setSorter(null);
+//				} else
+//				{
+//					super.toggleSortOrder(column, comparator);
+//				}
+//			}
+//
+//		}
+//	}
 
     
 	/*
