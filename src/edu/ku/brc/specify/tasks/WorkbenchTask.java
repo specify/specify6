@@ -1624,10 +1624,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	try
         	{
         		workbenchTemplate = (WorkbenchTemplate)workbenchTemplate.clone();
-                for (WorkbenchTemplateMappingItem mi : workbenchTemplate.getWorkbenchTemplateMappingItems())
-                {
-                	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
-                }
+//                for (WorkbenchTemplateMappingItem mi : workbenchTemplate.getWorkbenchTemplateMappingItems())
+//                {
+//                	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
+//                }
 
         	} catch (CloneNotSupportedException ex)
         	{
