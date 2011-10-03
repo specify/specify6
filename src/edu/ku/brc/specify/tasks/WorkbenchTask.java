@@ -839,7 +839,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     template.forceLoad();
                 	matchingTemplates.add(template);
                     
-                } else if (colInfo.size() <= template.getWorkbenchTemplateMappingItems().size())
+                //} else if (colInfo.size() <= template.getWorkbenchTemplateMappingItems().size())
+                } else if (colInfo.size() == template.getWorkbenchTemplateMappingItems().size())
                 {
                     boolean match = true;
                     Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(template.getWorkbenchTemplateMappingItems());
