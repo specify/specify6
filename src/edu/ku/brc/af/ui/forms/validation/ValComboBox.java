@@ -748,6 +748,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
                     PickListItemIFace pli    = (PickListItemIFace)model.getElementAt(i);
                     Object            valObj = pli.getValueObject();
                     
+                    //log.debug(pli.getValue());
                     if (valObj != null)
                     {
                         if (isFormObjIFace && valObj instanceof FormDataObjIFace)
@@ -777,12 +778,19 @@ public class ValComboBox extends JPanel implements UIValidatable,
                 // Decided to just let non-existent vales pass on by
                 if (fndInx == -1 && adapter != null)
                 {
-                    PickListDBAdapterIFace pla      = (PickListDBAdapterIFace)comboBox.getModel();
-                    PickListIFace          pickList = pla.getPickList();
-                    if (!pickList.getReadOnly())
+                    ComboBoxModel cbxModel = comboBox.getModel();
+                    if (cbxModel instanceof PickListDBAdapterIFace)
                     {
-                        textEditor.setText(value.toString());
-                        
+                        PickListDBAdapterIFace pla      = (PickListDBAdapterIFace)comboBox.getModel();
+                        PickListIFace          pickList = pla.getPickList();
+                        if (!pickList.getReadOnly())
+                        {
+                            textEditor.setText(value.toString());
+                            
+                        } else
+                        {
+                            UIRegistry.showLocalizedError("ValComboBox.PL_ITEM_NOTFND", value.toString());//$NON-NLS-1$
+                        }
                     } else
                     {
                         UIRegistry.showLocalizedError("ValComboBox.PL_ITEM_NOTFND", value.toString());//$NON-NLS-1$
