@@ -49,6 +49,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -122,7 +123,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             
         } else if (locality != null)
         {
-            List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
+            List<CollectingEvent> collectingEvents = locality.getCollectingEvents(false);
             if (collectingEvents != null && collectingEvents.size() > 0)
             {
                 ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("collectingevent", IconManager.IconSize.Std32);
@@ -270,7 +271,26 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             } else if (value instanceof Locality)
             {
                 locality = (Locality)value;
-                List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
+                
+                String select = "SELECT COUNT(*)";
+                String from   = " FROM collectingevent WHERE LocalityID = " + locality.getId();
+                int ceCount = BasicSQLUtils.getCountAsInt(select + from);
+                if (ceCount == 1)
+                {
+                    int ceID = BasicSQLUtils.getCountAsInt("SELECT CollectingEventID" + from);
+                    List<CollectingEvent> collectingEvents = locality.getCollectingEvents(false); // don't load all ColObjs
+                    ce = collectingEvents.get(0);
+                    
+                    from = " FROM collectionobject WHERE CollectingEventID = " + ceID;
+                    int coCount = BasicSQLUtils.getCountAsInt(select + from);
+                    if (coCount == 1)
+                    {
+                        colObj  = ce.getCollectionObjects().iterator().next();
+                        imageIcon = getDisciplineIcon();
+                    }
+                }
+                
+                /*List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
                 if (collectingEvents != null && collectingEvents.size() == 1)
                 {
                     ce = collectingEvents.get(0);
@@ -279,7 +299,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                         colObj  = ce.getCollectionObjects().iterator().next();
                         imageIcon = getDisciplineIcon();
                     }
-                }
+                }*/
             }
             hasPoints = locality != null && locality.getLat1() != null && locality.getLong1() != null;
         } else

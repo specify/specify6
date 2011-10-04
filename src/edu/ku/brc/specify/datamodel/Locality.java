@@ -784,9 +784,23 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         return discipline != null ? discipline.getId() : null;
     }
     
+    /**
+     * @return
+     */
     @SuppressWarnings("unchecked")
     @Transient
     public List<CollectingEvent> getCollectingEvents()
+    {
+        return getCollectingEvents(true);
+    }
+    
+    /**
+     * @param doLoadColObjs
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    @Transient
+    public List<CollectingEvent> getCollectingEvents(final boolean doLoadColObjs)
     {
         if (getId() != null)
         {
@@ -796,9 +810,13 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
                 if (session != null)
                 {
                     List<CollectingEvent> ces = (List<CollectingEvent>)session.getDataList("FROM CollectingEvent WHERE localityId = "+getId());
-                    for (CollectingEvent ce : ces)
+                    ces.size(); // load all CEs
+                    if (doLoadColObjs)
                     {
-                        ce.getCollectionObjects().size(); // force load of COs
+                        for (CollectingEvent ce : ces)
+                        {
+                            ce.getCollectionObjects().size(); // force load of COs
+                        }
                     }
                     return ces;
                 }

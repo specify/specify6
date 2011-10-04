@@ -110,7 +110,7 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
             
         } else if (locality != null)
         {
-            List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
+            List<CollectingEvent> collectingEvents = locality.getCollectingEvents(false);
             if (collectingEvents != null && collectingEvents.size() > 0)
             {
                 ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("collectingevent", IconManager.IconSize.Std32);

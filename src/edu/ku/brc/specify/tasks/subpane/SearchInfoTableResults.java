@@ -108,7 +108,7 @@ public class SearchInfoTableResults extends ResultSetTableModel
     @Override
     public int getRowCount()
     {
-        return reasonList.size();
+        return reasonList == null ? 0 : reasonList.size();
     }
 
     /* (non-Javadoc)

@@ -20,6 +20,9 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -30,6 +33,7 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalSQLService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -90,11 +94,8 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(cls.getName());
                 
                 addPermissions(cls, session, user, existingPerms, perms, 
-                                cls.getMethod("getId"), 
-                                cls.getMethod("getName"),
                                 prefPrefix, 
-                                tblInfo.getTitle(), 
-                                UIRegistry.getLocalizedMessage("ADMININFO_DESC", tblInfo.getTitle()),
+                                tblInfo, 
                                 panel);
             }
         } 
@@ -173,41 +174,59 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
                                     final SpecifyUser user,
                                     final Hashtable<String, SpPermission> existingPerms,
                                     final List<PermissionEditorRowIFace> perms,
-                                    final Method getId,
-                                    final Method getName,
                                     final String objBaseType,
-                                    final String objBaseTitle,
-                                    final String objBaseDesc,
+                                    final DBTableInfo tblInfo,
                                     final PermissionEditorIFace editorPanel)
     {
-        List<T> list = session.getDataList(clazz, "specifyUser", user);
-        for (T item : list)
+        String      desc = UIRegistry.getLocalizedMessage("ADMININFO_DESC", tblInfo.getTitle());
+        String      sql  = String.format("SELECT DISTINCT %s, Name FROM %s WHERE SpecifyUserID = %d", tblInfo.getIdColumnName(), tblInfo.getName(), user.getId());
+        Statement   stmt = null;
+        ResultSet   rs   = null; 
+        
+        try
         {
-            String  name     = null; 
-            Integer targetId = null;
-            
-            try 
+            stmt = DBConnection.getInstance().getConnection().createStatement();
+            if (stmt != null)
             {
-                targetId = (Integer) getId.invoke(item);
-                name = (String) getName.invoke(item);
+                rs = stmt.executeQuery(sql);
+                while (rs.next())
+                {
+                    int    targetId = rs.getInt(1);
+                    String name     = rs.getString(2); 
+                    
+                    String taskName = "Object." + tblInfo.getTitle() + "." + targetId;
+                    
+                    SpPermission owner = createPermission(taskName, "Owner", targetId, existingPerms);
+                    SpPermission group = createPermission(taskName, "Group", targetId, existingPerms);
+                    SpPermission other = createPermission(taskName, "Other", targetId, existingPerms);
+                    
+                    String title = tblInfo.getTitle() + ": " + name;
+                    String description = desc + name;
+                    
+                    ObjectPermissionEditorRow wrapper = new ObjectPermissionEditorRow(owner, group, other, objBaseType, 
+                                                                                      title, description, null, editorPanel);
+                    addCustomPermissions(wrapper, taskName, targetId, existingPerms);
+                    
+                    // add newly created permission to the bag that will be returned
+                    perms.add(wrapper);
+                }
+                rs.close();
+                rs = null;
             }
-            catch (Exception e) { } // ignore exception
             
-            String taskName = "Object." + objBaseTitle + "." + targetId;
-            
-            SpPermission owner = createPermission(taskName, "Owner", targetId, existingPerms);
-            SpPermission group = createPermission(taskName, "Group", targetId, existingPerms);
-            SpPermission other = createPermission(taskName, "Other", targetId, existingPerms);
-            
-            String title = objBaseTitle + ": " + name;
-            String description = objBaseDesc + name;
-            
-            ObjectPermissionEditorRow wrapper = new ObjectPermissionEditorRow(owner, group, other, objBaseType, 
-                                                                              title, description, null, editorPanel);
-            addCustomPermissions(wrapper, taskName, targetId, existingPerms);
-            
-            // add newly created permission to the bag that will be returned
-            perms.add(wrapper);
+        } catch (SQLException ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ObjectPermissionEnumerator.class, ex);
+            ex.printStackTrace();
+
+        } finally
+        {
+            try
+            {
+                if (stmt != null) stmt.close();
+                if (rs != null) rs.close();
+            } catch (SQLException ex2) {}
         }
     }
 
