@@ -278,28 +278,24 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 if (ceCount == 1)
                 {
                     int ceID = BasicSQLUtils.getCountAsInt("SELECT CollectingEventID" + from);
-                    List<CollectingEvent> collectingEvents = locality.getCollectingEvents(false); // don't load all ColObjs
+                    // In the next call 'false' means don't load all the COs in the CEs
+                    // because we don't know how many COs are attached to the CE
+                    // and it could take a long time to load (Hibernate)
+                    List<CollectingEvent> collectingEvents = locality.getCollectingEvents(false); 
                     ce = collectingEvents.get(0);
                     
                     from = " FROM collectionobject WHERE CollectingEventID = " + ceID;
                     int coCount = BasicSQLUtils.getCountAsInt(select + from);
                     if (coCount == 1)
                     {
-                        colObj  = ce.getCollectionObjects().iterator().next();
-                        imageIcon = getDisciplineIcon();
+                        // Here, we know there is only one CO, so get the CE (there is only one)
+                        // but this time load the the CO (there is only one).
+                        collectingEvents = locality.getCollectingEvents(); // load all ColObjs
+                        ce               = collectingEvents.get(0);
+                        colObj           = ce.getCollectionObjects().iterator().next();
+                        imageIcon        = getDisciplineIcon();
                     }
                 }
-                
-                /*List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
-                if (collectingEvents != null && collectingEvents.size() == 1)
-                {
-                    ce = collectingEvents.get(0);
-                    if (ce.getCollectionObjects().size() == 1)
-                    {
-                        colObj  = ce.getCollectionObjects().iterator().next();
-                        imageIcon = getDisciplineIcon();
-                    }
-                }*/
             }
             hasPoints = locality != null && locality.getLat1() != null && locality.getLong1() != null;
         } else
