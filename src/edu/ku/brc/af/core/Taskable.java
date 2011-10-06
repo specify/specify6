@@ -196,5 +196,7 @@ public interface Taskable extends SecurityOptionIFace
      * for good or for a restart.
      */
     public abstract void shutdown();
+
+    public abstract void closing(SubPaneIFace workbenchPaneSS);
     
 }

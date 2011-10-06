@@ -1611,4 +1611,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     public void shutdown()
     {
     }
+    
+    @Override
+    public void closing(SubPaneIFace workbenchPaneSS) {};
 }

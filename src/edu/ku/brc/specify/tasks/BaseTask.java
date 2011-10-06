@@ -248,4 +248,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
             secOpt.addDefaultPerm(userType.toString(), new PermissionSettings(p[0], p[1], p[2], p[3]));
         }
     }
+    
+    @Override
+    public void closing(SubPaneIFace workbenchPaneSS) {};
 }

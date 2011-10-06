@@ -49,6 +49,7 @@ public class WorkbenchColorizer
     private final Map<String, Float> sgrScores   = new HashMap<String, Float>();
     private float                    maxScore;
     private final Color              origGridColor;
+    private BatchMatchResultSet      resultSet;
        
     public WorkbenchColorizer(Workbench workbench, SpreadSheet spreadSheet)
     {
@@ -59,6 +60,8 @@ public class WorkbenchColorizer
 
     public void setBatchResults(BatchMatchResultSet results)
     {
+        this.resultSet = results;
+        
         if (highlighter != null)
         {
             spreadSheet.removeHighlighter(highlighter);
@@ -115,6 +118,11 @@ public class WorkbenchColorizer
     public float getMaxScore()
     {
         return maxScore;
+    }
+    
+    public BatchMatchResultSet getResultSet()
+    {
+        return resultSet;
     }
     
     public void stopColoring()

@@ -2647,7 +2647,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param helpContext the help context
      * @return a workbench object or null
      */
-    protected Workbench selectWorkbench(final CommandAction cmdAction,
+    public static Workbench selectWorkbench(final CommandAction cmdAction,
                                         final String helpContext)
     {
         return selectWorkbench(cmdAction, "WB_CHOOSE_DATASET", null, helpContext, false);
@@ -2663,7 +2663,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @return a workbench object or null
      */
     @SuppressWarnings("unchecked")
-    protected Workbench selectWorkbench(final CommandAction cmdAction, 
+    public static Workbench selectWorkbench(final CommandAction cmdAction, 
                                         final String titleKey,
                                         final String labelKey,
                                         final String helpContext,

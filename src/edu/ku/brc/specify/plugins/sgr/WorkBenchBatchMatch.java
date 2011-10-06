@@ -56,9 +56,22 @@ public class WorkBenchBatchMatch
         Workbench2SGR workbench2SGR = new Workbench2SGR(workbench);
         
         return new SGRBatchScenario(recordSet, matchConfig, 
+                recordGenerator(workbench, workbench2SGR, mySession),
+                workbench.getName(), 
+                Long.valueOf(workbench.getId()));
+    }
+
+    public static SGRBatchScenario newScenario(int workbenchId, MatchConfiguration matchConfig)
+    {
+        final DataProviderSessionIFace mySession = DataProviderFactory.getInstance().createSession();
+        Workbench workbench = WorkbenchTask.loadWorkbench(workbenchId, mySession);
+        Workbench2SGR workbench2SGR = new Workbench2SGR(workbench);
+        
+        return new SGRBatchScenario(matchConfig, 
                     recordGenerator(workbench, workbench2SGR, mySession),
                     workbench.getName(), 
-                    Long.valueOf(workbench.getId()));
+                    Long.valueOf(workbench.getId()),
+                    workbench.getDbTableId());
     }
     
     private static SGRBatchScenario.RecordGenerator recordGenerator(final Workbench workbench, 

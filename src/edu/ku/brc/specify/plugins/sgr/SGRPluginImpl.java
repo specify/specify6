@@ -19,32 +19,28 @@
 */
 package edu.ku.brc.specify.plugins.sgr;
 
-import static edu.ku.brc.ui.UIHelper.createIconBtn;
-
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.JComponent;
 
-import com.google.common.base.Function;
+import org.apache.commons.lang.StringUtils;
+
 import com.google.common.collect.ImmutableList;
 
-import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.sgr.MatchResults;
 import edu.ku.brc.sgr.SGRMatcher;
 import edu.ku.brc.sgr.SGRMatcher.Factory;
 import edu.ku.brc.sgr.SGRRecord;
+import edu.ku.brc.sgr.datamodel.BatchMatchResultSet;
 import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -54,7 +50,8 @@ import edu.ku.brc.specify.tasks.subpane.wb.SGRFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS.PanelType;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DropDownButtonStateless;
+import edu.ku.brc.ui.DropDownButtonStateless.MenuInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -71,59 +68,23 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
  */
 public class SGRPluginImpl implements WorkBenchPluginIFace
 {
-    private SpreadSheet        spreadSheet;
-    private Workbench          workbench;
+    private SpreadSheet             spreadSheet;
+    private Workbench               workbench;
 
-    private SGRMatcher         matcher;
-    private final JPopupMenu   popupMenuGrid;
-    private final JPopupMenu   popupMenuForm;
-    private MatchConfiguration matcherConfiguration;
-    private WorkbenchColorizer colorizer;
-    private WorkbenchPaneSS    workbenchPaneSS;
+    private SGRMatcher              matcher;
+    private MatchConfiguration      matcherConfiguration;
+    private WorkbenchColorizer      colorizer;
+    private WorkbenchPaneSS         workbenchPaneSS;
 
-    private SubPaneIFace       subPane;
-    private Workbench2SGR      workbench2SGR;
-    private List<JButton>      ssButtons;
-    private List<JButton>      formButtons;
-    protected Integer nResults;
-   
-    public SGRPluginImpl()
-    {
-        super();
+    private Workbench2SGR           workbench2SGR;
+    private List<JComponent>        ssButtons;
+    private List<JComponent>        formButtons;
 
-        popupMenuGrid = createPopupMenuForGrid();
-        popupMenuForm = createPopupMenuForForm();
-    }
+    protected Integer               nResults;
 
-    private JPopupMenu createPopupMenuForGrid()
-    {
-        JPopupMenu menu = new JPopupMenu();
-        JMenuItem mi = new JMenuItem();
-
-        mi.setText("Select Matcher...");
-        mi.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e) { selectMatcher(); }
-        });
-        menu.add(mi);
+    private DropDownButtonStateless matcherButton;
+    private DropDownButtonStateless batchButton;
         
-//        mi = new JMenuItem();
-//        mi.setText("Stop coloring.");
-//        mi.addActionListener(new ActionListener()
-//        {
-//            
-//            @Override
-//            public void actionPerformed(ActionEvent e)
-//            {
-//                colorizer.stopColoring();
-//                workbenchPaneSS.showHideSgrCol(false);
-//            }
-//        });
-//        menu.add(mi);
-       
-        return menu;
-    }
-    
     private void selectMatcher()
     {
         List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
@@ -135,121 +96,41 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
-            SGRTask sgrTask = (SGRTask) ContextMgr.getTaskByClass(SGRTask.class);
-            sgrTask.setMatcher(dlg.getSelectedObject());
+            setMatcherConfiguration(dlg.getSelectedObject());
             refreshFormPane();
         }
     }    
     
-    private JPopupMenu createPopupMenuForForm()
+    public void setBatchMatchResults(BatchMatchResultSet rs)
     {
-        JPopupMenu menu = new JPopupMenu();
-        JMenuItem mi = new JMenuItem();
-
-        mi.setText("Select Matcher...");
-        mi.addActionListener(new ActionListener()
+        for (MenuInfo mi : batchButton.getMenuInfos())
         {
-            public void actionPerformed(ActionEvent e) { selectMatcher(); }
-        });
-        menu.add(mi);
-        
-        mi = new JMenuItem();
-        mi.setText("Set number of results...");
-        mi.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            BatchMenuInfo bmi = (BatchMenuInfo) mi;
+            if (bmi.resultSet.id() == rs.id())
             {
-                List<Integer> choices = ImmutableList.of(1, 2, 5, 10, 20);
-                
-                ChooseFromListDlg<Integer> dlg = 
-                    new ChooseFromListDlg<Integer>((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                            "Choose", choices);
-                
-                UIHelper.centerAndShow(dlg);
-                if (!dlg.isCancelled())
-                {
-                    nResults = dlg.getSelectedObject();
-                    refreshFormPane();
-                }
+                batchButton.setSelected(bmi);
+                setMatcherConfiguration(rs.getMatchConfiguration());
+                return;
             }
-        });
-        menu.add(mi);
-       
-        return menu;
+        }
     }
     
     public void setMatcherConfiguration(MatchConfiguration mc)
     {
-        matcherConfiguration = mc;
-
-        Factory matcherFactory = matcherConfiguration.createMatcherFactory();
-        matcherFactory.docSupplied = true;
-        matcherFactory.debugQuery = true;
-        try
+        for (MenuInfo mi : matcherButton.getMenuInfos())
         {
-            matcher = matcherFactory.build();
-        } catch (MalformedURLException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.WorkBenchPluginIFace#process(java.util.List)
-     */
-    @Override
-    public boolean process(final List<WorkbenchRow> rows)
-    {
-        if (rows.size() < 1)
-            return true;
-        
-        UIRegistry.loadAndPushResourceBundle("specify_plugins");
-        
-        if (!isReady())
-        {
-            String msg = "You must select a match configuration before using SGR in the Workbench.";
-            
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                    "No Matcher Selected", true, CustomDialog.OK_BTN, new JLabel(msg));
-            
-            UIHelper.centerAndShow(dlg);
-            return true;
-        }
-        
-        final WorkbenchRow row = rows.get(0);
-        final MatchResults results =  doQuery(row);
-   
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
+            MatcherMenuInfo mmi = (MatcherMenuInfo) mi;
+            if (mmi.matchConfiguration.id() == mc.id())
             {
-                SGRResultsChooser chooser = new SGRResultsChooser(
-                        (Frame)UIRegistry.getTopWindow(), row,
-                        results, spreadSheet, new Finished());
-                
-                //chooser.createUI();
-                chooser.setVisible(true); // Centers 
+                matcherButton.setSelected(mmi);
+                return;
             }
-        });
-        UIRegistry.popResourceBundle();        
-        
-        return true;
+        }
     }
-    
+
     public boolean isReady()
     {
         return matcherConfiguration != null;
-    }
-  
-    private class Finished implements Function<Void, Void>
-    {
-        @Override
-        public Void apply(Void arg0)
-        {
-            return null;
-        }
     }
     
     public MatchResults doQuery(WorkbenchRow row)
@@ -259,13 +140,187 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         return matcher.match(doc.asMatchable(), nResults);
     }
 
+    @Override
+    public Collection<JComponent> getSSButtons()
+    {
+        if (ssButtons != null)
+            return ssButtons;
+        
+        if (workbenchPaneSS.getTask() instanceof SGRTask)
+        {
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            String tooltip = UIRegistry.getResourceString("SGR_SHOW_RESULTS");
+            UIRegistry.popResourceBundle();
+            ImageIcon icon = IconManager.getIcon("SGR", IconManager.IconSize.Std20);
+
+            batchButton = new DropDownButtonStateless("Batch Results", icon, tooltip,
+                    new DropDownButtonStateless.MenuGenerator()
+            {
+                @Override
+                public List<MenuInfo> getItems()
+                {
+                    List<MenuInfo> batchList = new LinkedList<DropDownButtonStateless.MenuInfo>();
+                    for (BatchMatchResultSet rs : 
+                        DataModel.getBatchMatchResultSetsFor(
+                                (long)workbench.getId(), workbench.getDbTableId())) 
+                    {
+                        batchList.add(new BatchMenuInfo(rs));
+                    }
+                    return batchList;
+                }
+            });
+            
+            batchButton.addActionListener(new ActionListener()
+            {             
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    workbenchPaneSS.showPanel(PanelType.Form);                    
+                }
+            });
+            
+            ssButtons = ImmutableList.of((JComponent)batchButton);
+        }
+        else
+        {
+            ssButtons = ImmutableList.of();
+        }
+        
+        return ssButtons;
+    }
+
+    @Override
+    public Collection<JComponent> getFormButtons()
+    {
+        if (formButtons != null)
+            return formButtons;
+
+        if (workbenchPaneSS.getTask() instanceof SGRTask)
+        {
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            String tooltip = UIRegistry.getResourceString("SGR_REFRESH_RESULTS");
+            UIRegistry.popResourceBundle();
+            ImageIcon icon = IconManager.getIcon("SGR", IconManager.IconSize.Std20);
+            
+            matcherButton = new DropDownButtonStateless("Select Matcher",  icon, tooltip,
+                    new DropDownButtonStateless.MenuGenerator()
+            {
+                
+                @Override
+                public List<MenuInfo> getItems()
+                {
+                    List<MenuInfo> matchersList = new LinkedList<DropDownButtonStateless.MenuInfo>();
+                    for (MatchConfiguration mc : DataModel.getMatcherConfigurations()) 
+                    {
+                        matchersList.add(new MatcherMenuInfo(mc));
+                    }
+                    return matchersList;
+                }
+            });
+            
+            matcherButton.addActionListener(new ActionListener()
+            {             
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    refreshFormPane();                   
+                }
+            });
+         
+            formButtons = ImmutableList.of((JComponent)matcherButton);
+        }
+        else
+        {
+            formButtons = ImmutableList.of();
+        }            
+        return formButtons;
+    }
+
+    private void refreshFormPane()
+    {
+        SGRFormPane sgrFormPane;
+        try
+        {
+            sgrFormPane = (SGRFormPane) workbenchPaneSS.getFormPane();
+        }
+        catch (ClassCastException e) { return; }
+        sgrFormPane.copyDataFromForm();
+        sgrFormPane.refreshResults();        
+    }
+    
+    private class MatcherMenuInfo extends MenuInfo
+    {
+        public final MatchConfiguration matchConfiguration;
+
+        public MatcherMenuInfo(MatchConfiguration mc)
+        {
+            super(StringUtils.abbreviate(mc.name(), 14), null, null);
+            this.matchConfiguration = mc;
+        }
+        
+        @Override
+        public void selected()
+        {
+            Factory matcherFactory = matchConfiguration.createMatcherFactory();
+            matcherFactory.docSupplied = true;
+            matcherFactory.debugQuery = true;
+            try
+            {
+                matcher = matcherFactory.build();
+            } catch (MalformedURLException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+            
+            SGRPluginImpl.this.matcherConfiguration = matchConfiguration;
+            refreshFormPane();
+            
+            if (matcherConfiguration.id() != colorizer.getResultSet().getMatchConfiguration().id())
+            {
+                colorizer.stopColoring();
+                batchButton.reset();
+            }
+        }
+    }
+
+    private class BatchMenuInfo extends MenuInfo
+    {
+        public final BatchMatchResultSet resultSet;
+
+        public BatchMenuInfo(BatchMatchResultSet rs)
+        {
+            super(StringUtils.abbreviate(rs.name(), 14), null, null);
+            this.resultSet = rs;
+        }
+        
+        @Override
+        public void selected()
+        {
+            colorizer.setBatchResults(resultSet);
+            workbenchPaneSS.showHideSgrCol(true);
+            workbenchPaneSS.sgrSort();
+            setMatcherConfiguration(resultSet.getMatchConfiguration());
+        }
+    }
+
+    public MatchConfiguration getMatcher()
+    {
+        return matcherConfiguration;
+    }
+
+    @Override
+    public boolean process(List<WorkbenchRow> rows)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#setSubPanel(edu.ku.brc.af.core.SubPaneIFace)
      */
     @Override
     public void setSubPanel(SubPaneIFace parent)
     {
-        this.subPane = parent;
     }
 
     /* (non-Javadoc)
@@ -332,132 +387,15 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     {
 
     }
-
-    private void doPopup(MouseEvent e, JPopupMenu popup)
-    {
-        if (!popup.isShowing()) 
-            popup.show(e.getComponent(), e.getX(), e.getY());
-    }
     
     public WorkbenchColorizer getColorizer()
     {
-    	return colorizer;
-    }
-
-	@Override
-	public void setWorkbenchPaneSS(WorkbenchPaneSS wbpss)
-	{
-		workbenchPaneSS = wbpss;
-	}
-
-    @Override
-    public Collection<JButton> getSSButtons()
-    {
-        if (ssButtons != null)
-            return ssButtons;
-        
-        if (workbenchPaneSS.getTask() instanceof SGRTask)
-        {
-            UIRegistry.loadAndPushResourceBundle("specify_plugins");
-            String tooltip = UIRegistry.getResourceString("SGR_SHOW_RESULTS");
-            UIRegistry.popResourceBundle();
-            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, tooltip, false,
-                    new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            workbenchPaneSS.showPanel(PanelType.Form);
-                        }
-                    });
-            
-            button.addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mousePressed(MouseEvent e)            
-                {
-                    super.mousePressed(e);
-                    if (e.isPopupTrigger())
-                        doPopup(e, popupMenuGrid);
-                }
-                
-                @Override
-                public void mouseReleased(MouseEvent e)
-                {
-                    super.mouseReleased(e);
-                    if (e.isPopupTrigger())
-                        doPopup(e, popupMenuGrid);
-                }
-            });
-            
-            button.setEnabled(true);
-            ssButtons = ImmutableList.of(button);
-        }
-        else
-        {
-            ssButtons = ImmutableList.of();
-        }
-        
-        return ssButtons;
+        return colorizer;
     }
 
     @Override
-    public Collection<JButton> getFormButtons()
+    public void setWorkbenchPaneSS(WorkbenchPaneSS wbpss)
     {
-        if (formButtons != null)
-            return formButtons;
-
-        if (workbenchPaneSS.getTask() instanceof SGRTask)
-        {
-            UIRegistry.loadAndPushResourceBundle("specify_plugins");
-            String tooltip = UIRegistry.getResourceString("SGR_REFRESH_RESULTS");
-            UIRegistry.popResourceBundle();
-            JButton button = createIconBtn("SGR", IconManager.IconSize.Std20, tooltip, false,
-                    new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            refreshFormPane();
-                        }
-                    });
-            
-            button.addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mousePressed(MouseEvent e)            
-                {
-                    super.mousePressed(e);
-                    if (e.isPopupTrigger())
-                        doPopup(e, popupMenuForm);
-                }
-                
-                @Override
-                public void mouseReleased(MouseEvent e)
-                {
-                    super.mouseReleased(e);
-                    if (e.isPopupTrigger())
-                        doPopup(e, popupMenuForm);
-                }
-            });
-            
-            button.setEnabled(true);
-            formButtons = ImmutableList.of(button);
-        }
-        else
-        {
-            formButtons = ImmutableList.of();
-        }            
-        return formButtons;
-    }
-
-    private void refreshFormPane()
-    {
-        SGRFormPane sgrFormPane;
-        try
-        {
-            sgrFormPane = (SGRFormPane) workbenchPaneSS.getFormPane();
-        }
-        catch (ClassCastException e) { return; }
-        sgrFormPane.copyDataFromForm();
-        sgrFormPane.refreshResults();        
+        workbenchPaneSS = wbpss;
     }
 }

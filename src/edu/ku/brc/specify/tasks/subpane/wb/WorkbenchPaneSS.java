@@ -300,8 +300,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     private static class WorkbenchPluginMap extends HashMap<Class<?>, WorkBenchPluginIFace> {}
     
     protected WorkbenchPluginMap    workBenchPlugins        = new WorkbenchPluginMap();
-    protected Vector<JButton>       workBenchPluginSSBtns   = new Vector<JButton>();
-    protected Vector<JButton>       workBenchPluginFormBtns = new Vector<JButton>();
+    protected Vector<JComponent>    workBenchPluginSSBtns   = new Vector<JComponent>();
+    protected Vector<JComponent>    workBenchPluginFormBtns = new Vector<JComponent>();
     
     /**
      * The currently active Uploader. 
@@ -1957,7 +1957,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 // Enable the "Find" action in the Edit menu when a spreadsheet is shown
                 UIRegistry.enableFind(findPanel, true);
     
-                NavBoxMgr.getInstance().adjustSplitter();
+//                NavBoxMgr.getInstance().adjustSplitter();
                 ssFormSwitcher.setCurrentIndex(1);
                 break;
             case Form:
@@ -1978,8 +1978,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 // Disable the ctrl-F from the edit menu
                 UIRegistry.disableFindFromEditMenu();
                 
-                if(task instanceof SGRTask)
-                    NavBoxMgr.getInstance().closeSplitter();
+//                if(task instanceof SGRTask)
+//                    NavBoxMgr.getInstance().closeSplitter();
                 
                 ssFormSwitcher.setCurrentIndex(0);
                 break;
@@ -3673,11 +3673,7 @@ public class WorkbenchPaneSS extends BaseSubPane
               
         if (retStatus)
         {
-            try
-            {
-                ((WorkbenchTask)task).closing(this);
-            }
-            catch (ClassCastException e) {}
+            task.closing(this);
             
             if (spreadSheet != null)
             {
@@ -4374,7 +4370,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         	showHideUploadToolBtn.setEnabled(enabled);
         }
 
-    	for (JButton btn : workBenchPluginSSBtns)
+    	for (JComponent btn : workBenchPluginSSBtns)
     	{
     	    btn.setEnabled(enabled);
     	}

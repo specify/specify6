@@ -84,6 +84,18 @@ public class SGRBatchScenario
                 sourceId, recordSet.getDbTableId(), matchConfig.id());
     }
     
+    public SGRBatchScenario(MatchConfiguration matchConfig, 
+                            RecordGenerator recordGenerator, 
+                            String sourceName, Long sourceId, Integer dbTableId)
+    {
+        this.recordGenerator = recordGenerator;
+        matcher = setupMatcher(matchConfig);
+        
+        resultSet = 
+            DataModel.createBatchMatchResultSet(sourceName, matcher,
+                sourceId, dbTableId, matchConfig.id());
+    }
+    
     private SGRMatcher setupMatcher(MatchConfiguration matchConfig)
     {
         SGRMatcher.Factory matcherFactory = matchConfig.createMatcherFactory();

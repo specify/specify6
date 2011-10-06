@@ -113,6 +113,9 @@ public class SGRResultsForForm extends JPanel
     
     public void refresh()
     {
+        if (currentIndex < 0)
+            return;
+        
         removeAll();
         repaint();
         

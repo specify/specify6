@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -78,8 +79,8 @@ public interface WorkBenchPluginIFace
 
     public abstract void setButton(JButton btn);
 
-    public abstract Collection<? extends JButton> getSSButtons();
+    public abstract Collection<JComponent> getSSButtons();
 
-    public abstract Collection<? extends JButton> getFormButtons();
+    public abstract Collection<JComponent> getFormButtons();
     
 }

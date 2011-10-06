@@ -21,7 +21,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Color;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -29,11 +28,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Connection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
-import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
@@ -101,8 +97,6 @@ import edu.ku.brc.ui.dnd.Trash;
  */
 public class SGRTask extends BaseTask
 {
-    private static class NavBoxMapping extends WeakHashMap<SubPaneIFace, Set<NavBoxItemIFace>> {}
-    
     public static final int           GLASSPANE_FONT_SIZE  = 20;
 
     public static final DataFlavor    TOOLS_FLAVOR         = new DataFlavor(SGRTask.class,
@@ -128,8 +122,6 @@ public class SGRTask extends BaseTask
     private NavBox                    batchMatchResultsBox;
     private NavBox                    matchersNavBox;
     protected NavBox                  workbenchNavBox;
-
-    private final NavBoxMapping       selectedNavBoxItems  = new NavBoxMapping();
 
     public SGRTask()
     {
@@ -220,9 +212,6 @@ public class SGRTask extends BaseTask
                     new CommandAction(SGR, "new_matcher"), 
                     null, false, false);
         
-        createMatcherBtn.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        createMatcherBtn.addDropDataFlavor(WorkbenchTask.DATASET_FLAVOR);
-        
         if (AppPreferences.getLocalPrefs().getBoolean("ENABLE_SGR_MATCHER_IMPORT_EXPORT", false))
         {
             final RolloverCommand exportMatcherBtn = 
@@ -245,7 +234,7 @@ public class SGRTask extends BaseTask
     private NavBoxItemIFace addMatcherToNavBox(MatchConfiguration mc, NavBox nb, boolean addSorted)
     {
         final NavBoxItemIFace nbi = makeDnDNavBtn(nb, mc.name(), "SGR", null,
-                new CommandAction("SGR", SGR_PROCESS, mc, null, mc), null, true, 0, addSorted);
+                new CommandAction(SGR, SGR_PROCESS, mc, null, mc), null, true, 0, addSorted);
         
         nbi.setData(mc);
 
@@ -301,10 +290,34 @@ public class SGRTask extends BaseTask
             
             nbi.setToolTip(toolTip);
         }
+        
+        final RolloverCommand createBatchBtn = 
+            (RolloverCommand)makeDnDNavBtn(batchResultsBox, 
+                    getResourceString("SGR_DO_BATCH"), "PlusSign", 
+                    new CommandAction(SGR, "do_batch"), 
+                    null, false, false);
+        
+        createBatchBtn.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        createBatchBtn.addDropDataFlavor(WorkbenchTask.DATASET_FLAVOR);
+        
 
         return batchResultsBox;
     }
-
+    
+    private void setEnableBatchBtnForWorkbench(Workbench workbench, boolean enabled)
+    {
+        for (NavBoxItemIFace nbi : batchMatchResultsBox.getItems())
+        {
+            BatchMatchResultSet resultSet;
+            try { resultSet = (BatchMatchResultSet) nbi.getData(); }
+            catch (ClassCastException e) { continue; }
+            if (resultSet.getRecordSetId() == (long) workbench.getId())
+            {
+                nbi.setEnabled(enabled);
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#requestContext()
      */
@@ -324,22 +337,6 @@ public class SGRTask extends BaseTask
         
         UsageTracker.incrUsageCount("SGR.StartSGR");
     }
-
-    @Override
-    public void subPaneShown(SubPaneIFace subPane) 
-    {
-        super.subPaneShown(subPane);
-        if (subPane == starterPane)
-        {
-            updateNavBoxes(new HashSet<NavBoxItemIFace>(0));
-        }
-        else
-        {
-            Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(subPane);
-            if (nbis != null)
-                updateNavBoxes(nbis);
-        }
-    }
     
     @Override
     public void subPaneRemoved(SubPaneIFace subPane) 
@@ -348,12 +345,6 @@ public class SGRTask extends BaseTask
             starterPane = null;
     }
     
-    @Override
-    protected SubPaneIFace addSubPaneToMgr(SubPaneIFace subPane) 
-    {
-        selectedNavBoxItems.put(subPane, new HashSet<NavBoxItemIFace>());
-        return super.addSubPaneToMgr(subPane);
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
@@ -453,29 +444,299 @@ public class SGRTask extends BaseTask
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
-     */
     @Override
-    public Class<? extends BaseTask> getTaskClass()
+    public void doCommand(final CommandAction cmdAction)
     {
-        return this.getClass();
+        if (cmdAction.isType(SGR))
+        {
+            if (cmdAction.isAction(SGR_PROCESS))
+            {
+                processCommand(cmdAction);
+            } 
+            else if (cmdAction.isAction("new_matcher"))
+            {
+                createNewMatcher();
+            }
+            else if (cmdAction.isAction("export_matcher"))
+            {
+                exportMatchers(cmdAction);
+            }
+            else if (cmdAction.isAction("import_matchers"))
+            {
+                importMatchers();
+            }
+            else if (cmdAction.isAction("do_batch"))
+            {
+                doBatchMatch(cmdAction);
+            }
+            else if (cmdAction.isAction(DELETE_CMD_ACT))
+            {
+                NavBoxItemIFace nbi = (NavBoxItemIFace) cmdAction.getData();
+                Object toDelete = nbi.getData();
+                if (toDelete instanceof BatchMatchResultSet)
+                {
+                    deleteBatchMatchResultSet(nbi);
+                }
+                else if (toDelete instanceof MatchConfiguration)
+                {
+                    deleteMatchConfiguration(nbi);
+                }
+            }
+            else if (cmdAction.isAction(WorkbenchTask.SELECTED_WORKBENCH))
+            {
+                Object cmdData = cmdAction.getData();
+                Workbench workbench = null;
+                if (cmdData instanceof RecordSetIFace)
+                {
+                    workbench = WorkbenchTask.loadWorkbench((RecordSetIFace)cmdData);
+                } else 
+                {
+                    // This is for when the user clicks directly on the workbench
+                    workbench = WorkbenchTask.loadWorkbench(
+                            (RecordSetIFace)cmdAction.getProperty("workbench"));
+                }                
+                if (workbench != null)
+                {
+                    createEditorForWorkbench(workbench, null, false, true, null, null);
+                }
+            }
+            else if (cmdAction.isAction("selected_resultset"))
+            {
+                BatchMatchResultSet resultSet = (BatchMatchResultSet) cmdAction.getData();
+                Workbench workbench = WorkbenchTask.loadWorkbench(
+                        (int)(long)resultSet.getRecordSetId(), null);
+                if (workbench != null)
+                {
+                    createEditorForWorkbench(workbench, null, false, true, null, resultSet);
+                }
+            }
+        } 
+        else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
+        {
+            prefsChanged(cmdAction);
+        } 
     }
 
-    //-------------------------------------------------------
-    // CommandListener Interface
-    //-------------------------------------------------------
-
-    /**
-     * @param cmdAction the command to be processed
-     */
-    protected void processCommand(CommandAction cmdAction)
+    private void createNewMatcher()
     {
+        final SGRMatcherUI mui = 
+            SGRMatcherUI.dialogForNewConfig((Frame)UIRegistry.getTopWindow(), 
+                new Function<MatchConfiguration, Void>()
+                {
+                    @Override
+                    public Void apply(MatchConfiguration mc)
+                    {
+                        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+                        addMatcherToNavBox(mc, matchersNavBox, false);
+                        UIRegistry.popResourceBundle();            
+                        NavBox.refresh(matchersNavBox);
+                        return null;
+                    }
+                }
+            );
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mui.setVisible(true);
+            }
+        });
+        UsageTracker.incrUsageCount("SGR.NewMatcher");
+    }
+
+    private void importMatchers()
+    {
+        JFileChooser chooser = new JFileChooser(
+                WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
+        chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_IMPORT_FILE"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
+        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
+        File file = chooser.getSelectedFile();
+        java.util.Collection<MatchConfiguration> mcs = DataModel.importMatchConfigurations(file);
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+        for (MatchConfiguration matchConfiguration : mcs)
+        {
+            addMatcherToNavBox(matchConfiguration, matchersNavBox, false);
+        }
+        UIRegistry.popResourceBundle();
+        NavBox.refresh(matchersNavBox);
+    }
+
+    private void exportMatchers(final CommandAction cmdAction)
+    {
+        List<MatchConfiguration> mcs;
+        if (cmdAction.getData() == cmdAction)
+        {
+            mcs = DataModel.getMatcherConfigurations();
+            ChooseFromListDlg<MatchConfiguration> dlg =
+                new ChooseFromListDlg<MatchConfiguration>(
+                        (Frame)UIRegistry.get(UIRegistry.FRAME), 
+                        "Choose Matchers To Export", mcs);
+            dlg.setMultiSelect(true);
+            UIHelper.centerAndShow(dlg);
+            if (dlg.isCancelled()) return;
+
+            mcs = dlg.getSelectedObjects();
+        }
+        else
+        {
+            mcs = ImmutableList.of((MatchConfiguration) cmdAction.getData());
+        }
+
+        JFileChooser chooser = new JFileChooser(
+                WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
+        chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_EXPORT_FILE"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
+        File file = chooser.getSelectedFile();
+        try
+        {
+            FileWriter fw = new FileWriter(file);
+            fw.write(DataModel.exportMatchConfigurations(mcs).toString());
+            fw.close();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void processCommand(CommandAction cmdAction)
+    {
+        MatchConfiguration selectedMatcher;
+        Workbench workbench;
+        
+        if (cmdAction.getData() instanceof MatchConfiguration)
+        {
+            selectedMatcher = (MatchConfiguration)cmdAction.getData();
+            workbench = WorkbenchTask.selectWorkbench(cmdAction, null);
+        }
+        else
+        {
+            selectedMatcher = (MatchConfiguration)cmdAction.getSrcObj();
+            workbench = WorkbenchTask.selectWorkbench((CommandAction) cmdAction.getData(), null);
+        }
+         
+        createEditorForWorkbench(workbench, null, false, true, selectedMatcher, null);
+    }    
+    
+    protected void createEditorForWorkbench(final Workbench workbench, 
+                                            final DataProviderSessionIFace session,
+                                            final boolean showImageView,
+                                            final boolean doInbackground,
+                                            final MatchConfiguration matchConfiguration,
+                                            final BatchMatchResultSet resultSet)
+    {
+        if (workbench == null) return;
+
+        final SimpleGlassPane glassPane = doInbackground ? 
+                UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                        getResourceString("WB_LOADING_DATASET"), 
+                        new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) : null;
+
+        WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);   
+        
+        WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
+                session, showImageView, this, !wbTask.isPermitted())
+        {
+            @Override
+            public void progressUpdated(java.util.List<Integer> chunks) 
+            {
+                if (glassPane != null)
+                    glassPane.setProgress(chunks.get(chunks.size() - 1));
+            }
+            
+            @Override
+            public void completed(WorkbenchPaneSS workbenchPane)
+            {
+                addSubPaneToMgr(workbenchPane);
+                RolloverCommand roc = WorkbenchTask.getNavBtnById(workbenchNavBox, 
+                        workbench.getWorkbenchId(), "workbench");
+                if (roc != null)
+                {
+                    roc.setEnabled(false);
+                }
+                setEnableBatchBtnForWorkbench(workbench, false);
+                
+                roc = WorkbenchTask.getNavBtnById(batchMatchResultsBox, 
+                        workbench.getWorkbenchId(), "workbench");
+                if (roc != null)
+                {
+                    roc.setEnabled(false);
+                }
+                
+                if (resultSet != null)
+                {
+                    SGRPluginImpl sgr = 
+                        (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
+                    sgr.setBatchMatchResults(resultSet);
+                }
+                else if (matchConfiguration != null)
+                {
+                    SGRPluginImpl sgr = 
+                        (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
+                    sgr.setMatcherConfiguration(matchConfiguration);
+                    workbenchPane.showPanel(WorkbenchPaneSS.PanelType.Form);
+                }
+                
+                if (glassPane != null)
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
+                
+                if (workbenchPane != null && workbenchPane.isDoIncremental())
+                {
+                    workbenchPane.validateAll(null);
+                }
+             }
+        };
+        
+        if (doInbackground)
+            wbec.runInBackground();
+        else
+            wbec.runInForeground();
+    }
+    
+    public void closing(final SubPaneIFace pane)
+    {
+        Workbench workbench;
+        try { workbench = ((WorkbenchPaneSS)pane).getWorkbench(); }
+        catch (ClassCastException e) { return; }
+        
+        setEnableBatchBtnForWorkbench(workbench, true);
+        
+        if (workbench != null)
+        {
+            RolloverCommand roc = WorkbenchTask.getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+            if (roc != null)
+            {
+                roc.setEnabled(true);
+            }
+        }
+    }
+    
+    
+    private void doBatchMatch(CommandAction cmdAction)
+    {
+        List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
+        
+        ChooseFromListDlg<MatchConfiguration> dlg = 
+            new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                    "Choose Matcher", mcs);
+        
+        UIHelper.centerAndShow(dlg);
+        if (dlg.isCancelled())
+            return;
+        
+        MatchConfiguration matchConfig = dlg.getSelectedObject();
+        
         SGRBatchScenario scenario = null;
         if (cmdAction.getData() instanceof RecordSetIFace)
         {
             RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-            MatchConfiguration matchConfig = (MatchConfiguration)cmdAction.getSrcObj();
             scenario = RecordSetBatchMatch.newScenario(recordSet, matchConfig);
         }
         else if (cmdAction.getData() instanceof CommandAction)
@@ -484,22 +745,21 @@ public class SGRTask extends BaseTask
             if (internal.getAction().equals(WorkbenchTask.SELECTED_WORKBENCH))
             {
                 RecordSetIFace recordSet = (RecordSetIFace)internal.getProperty("workbench");
-                MatchConfiguration matchConfig = (MatchConfiguration)cmdAction.getSrcObj();
                 scenario = WorkBenchBatchMatch.newScenario(recordSet, matchConfig);
             }
-        }
-        else if (cmdAction.getData() instanceof MatchConfiguration)
-        {
-            MatchConfiguration selectedMatcher = (MatchConfiguration)cmdAction.getData();
-            setMatcher(selectedMatcher);
-        }
-            
+            else 
+            {
+                Workbench workbench = WorkbenchTask.selectWorkbench(cmdAction, null);
+                scenario = WorkBenchBatchMatch.newScenario(workbench.getId(), matchConfig);
+            }
+        }    
+        
         if (scenario != null)
         {
             BatchMatchResultSet resultSet = scenario.getResultSet(); 
             scenario.start();
             NavBoxItemIFace nbi = new BatchResultsMgr(resultSet, scenario, permissions);
-            batchMatchResultsBox.insertSorted(nbi);
+            batchMatchResultsBox.insert(nbi, true, false, 0);
             
             final BatchResultPropertyEditor editor = new BatchResultPropertyEditor(nbi);
             SwingUtilities.invokeLater(new Runnable()
@@ -515,39 +775,6 @@ public class SGRTask extends BaseTask
         }
     }
     
-    public void setMatcher(MatchConfiguration matcher)
-    {
-        SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-
-        Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(subPane);
-        if (nbis == null) return;
-        for (NavBoxItemIFace nbi : nbis)
-            if (nbi.getData() == matcher)
-                return;
-        
-        nbis.clear();
-        addNbiForMatcher(nbis, matcher);
-        
-        WorkbenchPaneSS workbenchPane = null;
-        try
-        {
-            workbenchPane = (WorkbenchPaneSS)subPane;
-        } catch (ClassCastException e) {}
-        
-        if (workbenchPane != null)
-        {
-            SGRPluginImpl sgr = 
-                (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
-            sgr.setMatcherConfiguration(matcher);
-            sgr.getColorizer().stopColoring();
-            workbenchPane.showHideSgrCol(false);
-            
-            addNbiForWorkbench(nbis, workbenchPane.getWorkbench());
-        }
-        
-        updateNavBoxes(nbis);
-    }
-    
     protected void deleteBatchMatchResultSet(final NavBoxItemIFace nbi)
     {
         BatchMatchResultSet rs = (BatchMatchResultSet) nbi.getData();
@@ -558,6 +785,23 @@ public class SGRTask extends BaseTask
     protected void deleteMatchConfiguration(final NavBoxItemIFace nbi)
     {
         MatchConfiguration mc = (MatchConfiguration) nbi.getData();
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
+        {
+            WorkbenchPaneSS workbenchPane;
+            try { workbenchPane = (WorkbenchPaneSS) pane; }
+            catch (ClassCastException e) { continue; }
+            
+            SGRPluginImpl sgr = 
+                (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
+            
+            if (sgr.getMatcher() == mc)
+            {
+                UIRegistry.loadAndPushResourceBundle("specify_plugins");
+                UIRegistry.showLocalizedError("SGR_CANT_DELETE_OPEN_MATCHER");
+                UIRegistry.popResourceBundle();
+                return;
+            }
+        }
         try
         {
             mc.delete();
@@ -581,15 +825,15 @@ public class SGRTask extends BaseTask
     {
         SubPaneIFace histoPane = new HistogramChart(resultSet.name(), this, resultSet, scenario, f);
         addSubPaneToMgr(histoPane);
-        Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(histoPane);
-        addNbisForResultSet(nbis, resultSet);
-        updateNavBoxes(nbis);
         UsageTracker.incrUsageCount("SGR.Histogram");
     }
     
-    /**
-     * 
-     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel(SGR, "ENABLE", null, null, null);
+    }
+    
     protected void prefsChanged(final CommandAction cmdAction)
     {
         AppPreferences appPrefs = (AppPreferences)cmdAction.getData();
@@ -621,302 +865,9 @@ public class SGRTask extends BaseTask
         }
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
-     */
     @Override
-    public PermissionEditorIFace getPermEditorPanel()
+    public Class<? extends BaseTask> getTaskClass()
     {
-        return new BasicPermisionPanel(SGR, "ENABLE", null, null, null);
-    }
-
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
-     */
-    @Override
-    public void doCommand(final CommandAction cmdAction)
-    {
-        if (cmdAction.isType(SGR))
-        {
-            if (cmdAction.isAction(SGR_PROCESS))
-            {
-                processCommand(cmdAction);
-            } 
-            else if (cmdAction.isAction(DELETE_CMD_ACT))
-            {
-                NavBoxItemIFace nbi = (NavBoxItemIFace) cmdAction.getData();
-                Object toDelete = nbi.getData();
-                if (toDelete instanceof BatchMatchResultSet)
-                {
-                    deleteBatchMatchResultSet(nbi);
-                }
-                else if (toDelete instanceof MatchConfiguration)
-                {
-                    deleteMatchConfiguration(nbi);
-                }
-            }
-            else if (cmdAction.isAction("new_matcher"))
-            {
-                final SGRMatcherUI mui = 
-                    SGRMatcherUI.dialogForNewConfig((Frame)UIRegistry.getTopWindow(), 
-                        new SGRMatcherUIFinished(cmdAction));
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        mui.setVisible(true);
-                    }
-                });
-                UsageTracker.incrUsageCount("SGR.NewMatcher");
-            }
-            else if (cmdAction.isAction("export_matcher"))
-            {
-                List<MatchConfiguration> mcs;
-                if (cmdAction.getData() == cmdAction)
-                {
-                    mcs = DataModel.getMatcherConfigurations();
-                    ChooseFromListDlg<MatchConfiguration> dlg =
-                        new ChooseFromListDlg<MatchConfiguration>(
-                                (Frame)UIRegistry.get(UIRegistry.FRAME), 
-                                "Choose Matchers To Export", mcs);
-                    dlg.setMultiSelect(true);
-                    UIHelper.centerAndShow(dlg);
-                    if (dlg.isCancelled()) return;
-
-                    mcs = dlg.getSelectedObjects();
-                }
-                else
-                {
-                    mcs = ImmutableList.of((MatchConfiguration) cmdAction.getData());
-                }
-
-                JFileChooser chooser = new JFileChooser(
-                        WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
-                chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_EXPORT_FILE"));
-                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                chooser.setMultiSelectionEnabled(false);
-                if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
-                File file = chooser.getSelectedFile();
-                try
-                {
-                    FileWriter fw = new FileWriter(file);
-                    fw.write(DataModel.exportMatchConfigurations(mcs).toString());
-                    fw.close();
-                }
-                catch (Exception e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-            else if (cmdAction.isAction("import_matchers"))
-            {
-                JFileChooser chooser = new JFileChooser(
-                        WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
-                chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_IMPORT_FILE"));
-                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                chooser.setMultiSelectionEnabled(true);
-                if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
-                File file = chooser.getSelectedFile();
-                java.util.Collection<MatchConfiguration> mcs = DataModel.importMatchConfigurations(file);
-                UIRegistry.loadAndPushResourceBundle("specify_plugins");
-                for (MatchConfiguration matchConfiguration : mcs)
-                {
-                    addMatcherToNavBox(matchConfiguration, matchersNavBox, false);
-                }
-                UIRegistry.popResourceBundle();
-                NavBox.refresh(matchersNavBox);
-            }
-            else if (cmdAction.isAction(WorkbenchTask.SELECTED_WORKBENCH))
-            {
-                Object cmdData = cmdAction.getData();
-                Workbench workbench = null;
-                if (cmdData instanceof RecordSetIFace)
-                {
-                    workbench = WorkbenchTask.loadWorkbench((RecordSetIFace)cmdData);
-                } else 
-                {
-                    // This is for when the user clicks directly on the workbench
-                    workbench = WorkbenchTask.loadWorkbench(
-                            (RecordSetIFace)cmdAction.getProperty("workbench"));
-                }                
-                if (workbench != null)
-                {
-                    createEditorForWorkbench(workbench, null, false, true);
-                }
-            }
-            else if (cmdAction.isAction("selected_resultset"))
-            {
-                BatchMatchResultSet resultSet = (BatchMatchResultSet) cmdAction.getData();
-                Workbench workbench = WorkbenchTask.loadWorkbench(
-                        (int)(long)resultSet.getRecordSetId(), null);
-                if (workbench != null)
-                {
-                    createEditorForWorkbench(workbench, null, false, true, resultSet);
-                }
-            }
-        } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
-        {
-            prefsChanged(cmdAction);
-        } 
-    }
-
-    /**
-     * Creates the Pane for editing a Workbench.
-     * @param workbench the workbench to be edited
-     * @param session a session to use to load the workbench (can be null)
-     * @param showImageView shows image window when first showing the window
-     */
-    protected void createEditorForWorkbench(final Workbench workbench, 
-                                            final DataProviderSessionIFace session,
-                                            final boolean showImageView,
-                                            final boolean doInbackground)
-    {
-        createEditorForWorkbench(workbench, session, showImageView, doInbackground, null);   
-    }
-    
-    protected void createEditorForWorkbench(final Workbench workbench, 
-                                            final DataProviderSessionIFace session,
-                                            final boolean showImageView,
-                                            final boolean doInbackground,
-                                            final BatchMatchResultSet resultSet)
-    {
-        if (workbench == null) return;
-
-        final SimpleGlassPane glassPane = doInbackground ? 
-                UIRegistry.writeSimpleGlassPaneMsg(String.format(
-                        getResourceString("WB_LOADING_DATASET"), 
-                        new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) : null;
-
-        WorkbenchTask wbTask = (WorkbenchTask)ContextMgr.getTaskByClass(WorkbenchTask.class);   
-        
-        WorkbenchEditorCreator wbec = new WorkbenchEditorCreator(workbench,
-                session, showImageView, this, !wbTask.isPermitted())
-        {
-            @Override
-            public void progressUpdated(java.util.List<Integer> chunks) 
-            {
-                if (glassPane != null)
-                    glassPane.setProgress(chunks.get(chunks.size() - 1));
-            }
-            
-            @Override
-            public void completed(WorkbenchPaneSS workbenchPane)
-            {
-                addSubPaneToMgr(workbenchPane);
-                Set<NavBoxItemIFace> nbis = selectedNavBoxItems.get(workbenchPane);
-                addNbiForWorkbench(nbis, workbench);
-                
-                if (resultSet != null)
-                {
-                    SGRPluginImpl sgr = 
-                        (SGRPluginImpl) workbenchPane.getPlugin(SGRPluginImpl.class);
-                    sgr.setMatcherConfiguration(resultSet.getMatchConfiguration());
-                    sgr.getColorizer().setBatchResults(resultSet);
-                    workbenchPane.showHideSgrCol(true);
-                    workbenchPane.sgrSort();
-                    
-                    addNbisForResultSet(nbis, resultSet);
-                }
-                
-                updateNavBoxes(nbis);
-                
-                if (glassPane != null)
-                {
-                    UIRegistry.clearSimpleGlassPaneMsg();
-                }
-                
-                if (workbenchPane != null && workbenchPane.isDoIncremental())
-                {
-                    workbenchPane.validateAll(null);
-                }
-             }
-        };
-        
-        if (doInbackground)
-            wbec.runInBackground();
-        else
-            wbec.runInForeground();
-    }
-    
-    private void addNbiForWorkbench(Set<NavBoxItemIFace> nbis, Workbench workbench)
-    {
-        NavBoxItemIFace wbnbi = 
-            (NavBoxItemIFace) WorkbenchTask.getNavBtnById(workbenchNavBox, 
-                    workbench.getWorkbenchId(), "workbench");
-        
-        if (wbnbi != null)
-        {
-            nbis.add(wbnbi);
-        }
-    }
-    
-    private void addNbisForResultSet(Set<NavBoxItemIFace> nbis, BatchMatchResultSet resultSet)
-    {
-        for (NavBoxItemIFace nbi : batchMatchResultsBox.getItems())
-            if (nbi.getData() == resultSet)
-                 nbis.add(nbi);
- 
-        addNbiForMatcher(nbis, resultSet.getMatchConfiguration());
-    }
-    
-    private void addNbiForMatcher(Set<NavBoxItemIFace> nbis, MatchConfiguration matcher)
-    {
-        for (NavBoxItemIFace nbi : matchersNavBox.getItems())
-        {
-            MatchConfiguration matcherInBox;
-            try 
-            {
-                matcherInBox = (MatchConfiguration) nbi.getData();
-            } catch (ClassCastException e) { continue; }
-            
-            if (matcherInBox.id() == matcher.id())
-                nbis.add(nbi);
-        }
-    }
-    
-    private void updateNavBoxes(Set<NavBoxItemIFace> nbis)
-    {
-        updateNavBox(matchersNavBox, nbis);
-        updateNavBox(workbenchNavBox, nbis);
-        updateNavBox(batchMatchResultsBox, nbis);
-    }
-    
-    private void updateNavBox(NavBox nb, Set<NavBoxItemIFace> nbis)
-    {
-        for (NavBoxItemIFace nbi : nb.getItems())
-            if (nbis.contains(nbi))
-            {
-                nbi.getUIComponent().setBackground(Color.LIGHT_GRAY);
-            }
-            else
-            {
-                nbi.getUIComponent().setBackground(Color.WHITE);
-            }
-    }
-
-    private class SGRMatcherUIFinished implements Function<MatchConfiguration, Void>
-    {
-        private final CommandAction cmdAction;
-
-        public SGRMatcherUIFinished(CommandAction cmdAction)
-        {
-            this.cmdAction = cmdAction;
-        }
-
-        @Override
-        public Void apply(MatchConfiguration matchConfiguration)
-        {
-            UIRegistry.loadAndPushResourceBundle("specify_plugins");
-            addMatcherToNavBox(matchConfiguration, matchersNavBox, false);
-            UIRegistry.popResourceBundle();
-            
-            NavBox.refresh(matchersNavBox);
-            // kludgie
-            cmdAction.setSrcObj(matchConfiguration);
-            processCommand(cmdAction);
-            return null;
-        }
+        return this.getClass();
     }
 }
