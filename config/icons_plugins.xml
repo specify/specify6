@@ -16,6 +16,7 @@
     <icon name="WorldWind"        file="worldwind32x32.png" sizes="32"/>
     <icon name="SGR"              file="sgr.png" sizes="32"/>
     <icon name="SGRGEAR"          file="system.png" sizes="32" />
+    <icon name="SGRMatchers"      file="matchers_32.png" sizes="32" />
     <icon name="ColorPalette"     file="colorpalette.png" sizes="32"/>
     <icon name="Weightings"       file="weightings.png" sizes="32"/>
     

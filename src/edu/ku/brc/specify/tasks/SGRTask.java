@@ -233,7 +233,7 @@ public class SGRTask extends BaseTask
             
     private NavBoxItemIFace addMatcherToNavBox(MatchConfiguration mc, NavBox nb, boolean addSorted)
     {
-        final NavBoxItemIFace nbi = makeDnDNavBtn(nb, mc.name(), "SGR", null,
+        final NavBoxItemIFace nbi = makeDnDNavBtn(nb, mc.name(), "SGRMatchers", null,
                 new CommandAction(SGR, SGR_PROCESS, mc, null, mc), null, true, 0, addSorted);
         
         nbi.setData(mc);
@@ -543,7 +543,7 @@ public class SGRTask extends BaseTask
     {
         JFileChooser chooser = new JFileChooser(
                 WorkbenchTask.getDefaultDirPath(WorkbenchTask.EXPORT_FILE_PATH));
-        chooser.setDialogTitle(getResourceString("CHOOSE_MATCHER_IMPORT_FILE"));
+        chooser.setDialogTitle(getResourceString("SGR_CHOOSE_MATCHER_IMPORT_FILE"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
         if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION) return;
@@ -566,8 +566,9 @@ public class SGRTask extends BaseTask
             mcs = DataModel.getMatcherConfigurations();
             ChooseFromListDlg<MatchConfiguration> dlg =
                 new ChooseFromListDlg<MatchConfiguration>(
-                        (Frame)UIRegistry.get(UIRegistry.FRAME), 
-                        "Choose Matchers To Export", mcs);
+                        (Frame)UIRegistry.get(UIRegistry.FRAME),
+                        getResourceString("SGR_CHOOSE_MATCHERS_TO_EXPORT"),
+                        mcs);
             dlg.setMultiSelect(true);
             UIHelper.centerAndShow(dlg);
             if (dlg.isCancelled()) return;
@@ -716,10 +717,13 @@ public class SGRTask extends BaseTask
     private void doBatchMatch(CommandAction cmdAction)
     {
         List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+        String title = UIRegistry.getResourceString("SGR_SELECT_MATCHER");
+        UIRegistry.popResourceBundle();
         
         ChooseFromListDlg<MatchConfiguration> dlg = 
             new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                    "Choose Matcher", mcs);
+                    title, mcs);
         
         UIHelper.centerAndShow(dlg);
         if (dlg.isCancelled())

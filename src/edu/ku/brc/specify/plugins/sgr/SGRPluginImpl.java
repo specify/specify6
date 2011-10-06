@@ -200,10 +200,11 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         {
             UIRegistry.loadAndPushResourceBundle("specify_plugins");
             String tooltip = UIRegistry.getResourceString("SGR_REFRESH_RESULTS");
+            String label = UIRegistry.getResourceString("SGR_SELECT_MATCHER");
             UIRegistry.popResourceBundle();
-            ImageIcon icon = IconManager.getIcon("SGR", IconManager.IconSize.Std20);
+            ImageIcon icon = IconManager.getIcon("SGRMatchers", IconManager.IconSize.Std20);
             
-            matcherButton = new DropDownButtonStateless("Select Matcher",  icon, tooltip,
+            matcherButton = new DropDownButtonStateless(label,  icon, tooltip,
                     new DropDownButtonStateless.MenuGenerator()
             {
                 
