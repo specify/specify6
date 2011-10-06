@@ -199,7 +199,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     } else
                     {
                         pStmt.setObject(10, null);
-                        pStmt.setObject(10, null);
+                        pStmt.setObject(11, null);
                     }
                     
                     pStmt.execute();

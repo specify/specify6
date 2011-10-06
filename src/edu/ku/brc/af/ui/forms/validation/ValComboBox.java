@@ -722,7 +722,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
      * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
     @Override
-    public void setValue(final Object value, final String defaultValue)
+    public void setValue(final Object valueArg, final String defaultValue)
     {
         if (multiView == null)
         {
@@ -734,6 +734,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
             isNew = isFormObjNew = multiView.isNewForm();
         }
         
+        Object  value  = valueArg == null ? defaultValue : null;
         Integer fndInx = -1;
         
         if (value != null)
@@ -759,10 +760,14 @@ public class ValComboBox extends JPanel implements UIValidatable,
                                 fndInx = i;
                                 break;                                
                             }
-                        } else if (pli.getValue().equals(value.toString()))
+                        } else
                         {
-                            fndInx = i;
-                            break;                            
+                            Object pliVal = pli.getValue() == null ? pli.getTitle() : pli.getValue();
+                            if (pliVal != null && pliVal.equals(value.toString()))
+                            {
+                                fndInx = i;
+                                break;                            
+                            }
                         }
                     } else
                     {
