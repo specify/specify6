@@ -78,9 +78,10 @@ public class SGRBatchScenario
     {
         this.recordGenerator = recordGenerator;
         matcher = setupMatcher(matchConfig);
+        String name = sourceName + " " + matchConfig.name(); 
         
         resultSet = 
-            DataModel.createBatchMatchResultSet(sourceName, matcher,
+            DataModel.createBatchMatchResultSet(name, matcher,
                 sourceId, recordSet.getDbTableId(), matchConfig.id());
     }
     
@@ -90,9 +91,10 @@ public class SGRBatchScenario
     {
         this.recordGenerator = recordGenerator;
         matcher = setupMatcher(matchConfig);
+        String name = sourceName + " " + matchConfig.name(); 
         
         resultSet = 
-            DataModel.createBatchMatchResultSet(sourceName, matcher,
+            DataModel.createBatchMatchResultSet(name, matcher,
                 sourceId, dbTableId, matchConfig.id());
     }
     

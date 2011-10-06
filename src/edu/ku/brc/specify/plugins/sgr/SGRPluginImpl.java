@@ -150,10 +150,11 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         {
             UIRegistry.loadAndPushResourceBundle("specify_plugins");
             String tooltip = UIRegistry.getResourceString("SGR_SHOW_RESULTS");
+            String label = UIRegistry.getResourceString("SGR_BATCH_RESULTS");
             UIRegistry.popResourceBundle();
             ImageIcon icon = IconManager.getIcon("SGR", IconManager.IconSize.Std20);
 
-            batchButton = new DropDownButtonStateless("Batch Results", icon, tooltip,
+            batchButton = new DropDownButtonStateless(label, icon, tooltip,
                     new DropDownButtonStateless.MenuGenerator()
             {
                 @Override
