@@ -371,7 +371,7 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	/**
      * @return the attachments
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "attachmentImageAttribute")
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "attachmentImageAttribute")
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -475,10 +475,10 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	public void forceLoad() 
 	{
 		super.forceLoad();
-		for (Attachment att : getAttachments())
-		{
-			att.getId(); 
-		}
+//		for (Attachment att : getAttachments())
+//		{
+//			att.getId(); 
+//		}
 	}
 	
 	
