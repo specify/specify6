@@ -275,7 +275,14 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
             SGRPluginImpl.this.matcherConfiguration = matchConfiguration;
             refreshFormPane();
             
-            if (matcherConfiguration.id() != colorizer.getResultSet().getMatchConfiguration().id())
+            BatchMatchResultSet rs = null;
+            try
+            {
+                rs = colorizer.getResultSet();
+            }
+            catch (NullPointerException e) {}
+            
+            if (rs != null && matcherConfiguration.id() != rs.getMatchConfiguration().id())
             {
                 colorizer.stopColoring();
                 batchButton.reset();
