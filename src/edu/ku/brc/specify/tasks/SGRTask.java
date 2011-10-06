@@ -399,10 +399,7 @@ public class SGRTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        if (AppPreferences.getLocalPrefs().getBoolean("ENABLE_SGR", false))
-        {
-            toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
-        }
+        toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         return toolbarItems;
     }
 
@@ -415,29 +412,26 @@ public class SGRTask extends BaseTask
     {
         menuItems = new Vector<MenuItemDesc>();
         
-        if (AppPreferences.getLocalPrefs().getBoolean("ENABLE_SGR", false))
-        {
-            String menuDesc = "Specify.SYSTEM_MENU";
+        String menuDesc = "Specify.SYSTEM_MENU";
             
-            if (permissions == null || permissions.canModify())
+        if (permissions == null || permissions.canModify())
+        {
+            String    menuTitle = "SGRTask.PLUGIN_MENU"; //$NON-NLS-1$
+            String    mneu      = "SGRTask.PLUGIN_MNEU"; //$NON-NLS-1$
+            String    desc      = "SGRTask.PLUGIN_DESC"; //$NON-NLS-1$
+            JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+            mi.addActionListener(new ActionListener()
             {
-                String    menuTitle = "SGRTask.PLUGIN_MENU"; //$NON-NLS-1$
-                String    mneu      = "SGRTask.PLUGIN_MNEU"; //$NON-NLS-1$
-                String    desc      = "SGRTask.PLUGIN_DESC"; //$NON-NLS-1$
-                JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
-                mi.addActionListener(new ActionListener()
+                @Override
+                public void actionPerformed(ActionEvent ae)
                 {
-                    @Override
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        SGRTask.this.requestContext();
-                    }
-                });
-                MenuItemDesc miDesc = new MenuItemDesc(mi, menuDesc);
-                miDesc.setPosition(MenuItemDesc.Position.Bottom);
-                miDesc.setSepPosition(MenuItemDesc.Position.Before);
-                menuItems.add(miDesc);
-            }
+                    SGRTask.this.requestContext();
+                }
+            });
+            MenuItemDesc miDesc = new MenuItemDesc(mi, menuDesc);
+            miDesc.setPosition(MenuItemDesc.Position.Bottom);
+            miDesc.setSepPosition(MenuItemDesc.Position.Before);
+            menuItems.add(miDesc);
         }
         
         return menuItems;
