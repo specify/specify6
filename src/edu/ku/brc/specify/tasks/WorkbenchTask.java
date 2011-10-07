@@ -2287,17 +2287,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             public void completed(WorkbenchPaneSS workbenchPane)
             {
                 addSubPaneToMgr(workbenchPane);
-                RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-                if (roc != null)
-                {
-                    roc.setEnabled(false);
-                    
-                } else
-                {
-                    WorkbenchTask.log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-                }
-
-                updateNavBoxUI(null);
                 
                 if (glassPane != null)
                 {
@@ -2315,6 +2304,26 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             wbec.runInBackground();
         else
             wbec.runInForeground();
+    }
+    
+    /**
+     * Tells the task theat a Workbench Pane is being opened.
+     * @param pane the pane being closed.
+     */
+    public void opening(WorkbenchPaneSS pane)
+    {
+        Workbench workbench = pane.getWorkbench();
+        RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+        if (roc != null)
+        {
+            roc.setEnabled(false);
+            
+        } else
+        {
+            WorkbenchTask.log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+        }
+
+        updateNavBoxUI(null);        
     }
     
     /**

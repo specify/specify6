@@ -648,20 +648,6 @@ public class SGRTask extends BaseTask
             public void completed(WorkbenchPaneSS workbenchPane)
             {
                 addSubPaneToMgr(workbenchPane);
-                RolloverCommand roc = WorkbenchTask.getNavBtnById(workbenchNavBox, 
-                        workbench.getWorkbenchId(), "workbench");
-                if (roc != null)
-                {
-                    roc.setEnabled(false);
-                }
-                setEnableBatchBtnForWorkbench(workbench, false);
-                
-                roc = WorkbenchTask.getNavBtnById(batchMatchResultsBox, 
-                        workbench.getWorkbenchId(), "workbench");
-                if (roc != null)
-                {
-                    roc.setEnabled(false);
-                }
                 
                 if (resultSet != null)
                 {
@@ -693,6 +679,19 @@ public class SGRTask extends BaseTask
             wbec.runInBackground();
         else
             wbec.runInForeground();
+    }
+    
+    public void opening(WorkbenchPaneSS pane)
+    {
+        Workbench workbench = pane.getWorkbench();
+        RolloverCommand roc = WorkbenchTask.getNavBtnById(workbenchNavBox, 
+                workbench.getWorkbenchId(), "workbench");
+        if (roc != null)
+        {
+            roc.setEnabled(false);
+        }
+        
+        setEnableBatchBtnForWorkbench(workbench, false);
     }
     
     public void closing(final SubPaneIFace pane)
