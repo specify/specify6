@@ -50,12 +50,13 @@ import edu.ku.brc.af.core.PermissionIFace;
 @SuppressWarnings("serial")
 public class BatchResultsMgr extends NavBoxButton
 {
-    public static final long PROGRESS_UPDATE_INTERVAL = 2000;
-    private SGRBatchScenario scenario;
-    private JMenuItem        stopProcessing;
-    private JMenuItem        resumeProcessing;
-    private ProgressUpdater  progressUpdater;
-    
+    public static final long    PROGRESS_UPDATE_INTERVAL = 2000;
+    private SGRBatchScenario    scenario;
+    private JMenuItem           stopProcessing;
+    private JMenuItem           resumeProcessing;
+    private ProgressUpdater     progressUpdater;
+    private BatchMatchResultSet resultSet;
+
     public BatchResultsMgr(BatchMatchResultSet resultSet, PermissionIFace permissions)
     {
         this(resultSet, null, permissions);
@@ -67,6 +68,7 @@ public class BatchResultsMgr extends NavBoxButton
         setData(resultSet);
         
         this.scenario = initialScenario;
+        this.resultSet = resultSet;
         
         UIRegistry.loadAndPushResourceBundle("specify_plugins");
 
@@ -164,6 +166,13 @@ public class BatchResultsMgr extends NavBoxButton
         createMouseInputAdapter();
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         UIRegistry.popResourceBundle();
+    }
+    
+    public void delete()
+    {
+        if (scenario != null)
+            scenario.abort();
+        resultSet.delete();
     }
     
     private void setUpScenario()

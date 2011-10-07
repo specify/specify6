@@ -774,8 +774,7 @@ public class SGRTask extends BaseTask
     
     protected void deleteBatchMatchResultSet(final NavBoxItemIFace nbi)
     {
-        BatchMatchResultSet rs = (BatchMatchResultSet) nbi.getData();
-        rs.delete();
+        ((BatchResultsMgr) nbi).delete();
         deleteDnDBtn(batchMatchResultsBox, nbi);
     }
     
