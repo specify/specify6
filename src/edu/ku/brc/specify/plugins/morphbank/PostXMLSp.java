@@ -30,8 +30,7 @@ public class PostXMLSp
 	// static String UPLOAD_FILE =
 	// "C:/dev/morphbank/spiderfiles/spiders0004.xml";
 	// static String URL = "http://localhost:8080/mb/restful";
-	//static String MorphBankServiceURL = "http://services.morphbank.net/mbd/restful";
-	static String MorphBankServiceURL = "http://www.morphbank.net/mbd"; 
+	static String MorphBankServiceURL = "http://services.morphbank.net/mbd/restful";
 	public static void main(String[] args) throws Exception
 	{
 		PostXMLSp postXML = new PostXMLSp();
