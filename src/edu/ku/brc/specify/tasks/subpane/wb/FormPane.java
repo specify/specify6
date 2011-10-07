@@ -79,6 +79,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.ui.DocumentAdaptor;
@@ -939,6 +940,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
     protected void copyDataFromForm(final InputPanel p, final WorkbenchRow wbRow)
     {
         short col = p.getWbtmi().getViewOrder();
+        WorkbenchDataItem result = null;
         
         if (p.getComp() instanceof JTextComponent)
         {
@@ -946,7 +948,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
             String cellData = wbRow.getData(col);
             if (StringUtils.isNotEmpty(cellData) || data != null)
             {
-                wbRow.setData(data == null ? "" : data, col, true);
+                result = wbRow.setData(data == null ? "" : data, col, true);
             }
             
         } else if (p.getComp() instanceof GetSetValueIFace)
@@ -955,7 +957,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
             String cellData = wbRow.getData(col);
             if (StringUtils.isNotEmpty(cellData) || data != null)
             {
-                wbRow.setData(data == null ? "" : data.toString(), col, true);
+                result = wbRow.setData(data == null ? "" : data.toString(), col, true);
             }
             
         } else if (p.getComp() instanceof JScrollPane)
@@ -964,16 +966,21 @@ public class FormPane extends JPanel implements FormPaneWrapper
             Component   comp = sc.getViewport().getView();
             if (comp instanceof JTextArea)
             {
-                wbRow.setData(((JTextArea)comp).getText(), col, true);
+                result = wbRow.setData(((JTextArea)comp).getText(), col, true);
             }
         } else if (p.getComp() instanceof JComboBox)
         {
         	JComboBox cb = (JComboBox )p.getComp();
-        	wbRow.setData(cb.getSelectedItem().toString(), col, true);
+        	result = wbRow.setData(cb.getSelectedItem().toString(), col, true);
         }
         else
         {
            log.error("Can't get data from control["+p.getLabelText()+"]");
+        }
+        
+        if (result != null && workbenchPane.getTask() instanceof SGRTask)
+        {
+            wbRow.setSgrStatus((byte)1);
         }
     }
     /**

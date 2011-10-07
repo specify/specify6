@@ -5711,14 +5711,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
 
     /**
-     * @return the hasChanged
-     */
-    public boolean isHasChanged()
-    {
-        return hasChanged;
-    }
-
-    /**
      * @param hasChanged the hasChanged to set
      */
     public void setHasChanged(boolean hasChanged)
