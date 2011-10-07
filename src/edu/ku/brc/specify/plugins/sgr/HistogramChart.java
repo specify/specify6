@@ -113,7 +113,7 @@ public class HistogramChart extends BaseSubPane
         double max = resultSet.getMax();
 
         dataSet.addSeries(getResourceString("SGR_HISTO_DATASERIES"), 
-                resultSet.getValues(100.0/max), 40, 0.0, 100.0);
+                resultSet.getValues(1.0), 40, 0.0, max);
 
         JFreeChart chart = ChartFactory.createHistogram(
                 getResourceString("SGR_HISTO_TITLE"),

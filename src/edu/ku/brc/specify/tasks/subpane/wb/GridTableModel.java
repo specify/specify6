@@ -229,8 +229,8 @@ public class GridTableModel extends SpreadSheetModel
             if (sgr != null)
             {
                 WorkbenchColorizer colorizer = sgr.getColorizer();
-                Float score = colorizer.getScoreForRow(workbenchPaneSS.getWorkbench().getRow(row), true);
-                return score != null ? "" + Math.round(100*score) : "";
+                Float score = colorizer.getScoreForRow(workbenchPaneSS.getWorkbench().getRow(row));
+                return score != null ? String.format("%1$.2f", score) : "";
             }
             return 0;
         }

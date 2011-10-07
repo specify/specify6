@@ -206,7 +206,7 @@ public class SGRResultsForForm extends JPanel
                         }
                         else if (field.equals("score"))
                         {
-                            value = "" + Math.round(100.0*result.score/maxScore);
+                            value = String.format("%1$.2f", result.score);
                             color = SGRColors.colorForScore(result.score, maxScore);
                         }
                         else
