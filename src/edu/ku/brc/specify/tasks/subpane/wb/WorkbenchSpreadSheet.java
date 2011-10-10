@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.swingx.sort.TableSortController;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -60,7 +61,40 @@ public class WorkbenchSpreadSheet extends SpreadSheet
         super(model);
         this.workbenchPaneSS = workbenchPaneSS;
         buildComparators();
+        TableSortController<SpreadSheetModel> nsc = new TableSortController<SpreadSheetModel>() {
+
+			/* (non-Javadoc)
+			 * @see org.jdesktop.swingx.sort.DefaultSortController#toggleSortOrder(int)
+			 */
+			@Override
+			public void toggleSortOrder(int arg0)
+			{
+				TableColumnExt col = getColumnExt(arg0);
+				Comparator<String> cmp = comparators.get(arg0);
+				if (col.getComparator() == null && cmp != null)
+				{
+					getColumnExt(arg0).setComparator(cmp);
+				}
+
+				super.toggleSortOrder(arg0);
+			}
+        	
+        };
+        nsc.setModel(model);
+        for (int c = 0; c < model.getColumnCount(); c++)
+		{
+			Comparator<String> cmp = comparators.get(c);
+			if (cmp != null)
+			{
+				//getColumnExt(c).setComparator(cmp);
+				nsc.setComparator(c, cmp);
+			}
+		}
+        setRowSorter(nsc);
     }
+	
+
+
     
     
     
