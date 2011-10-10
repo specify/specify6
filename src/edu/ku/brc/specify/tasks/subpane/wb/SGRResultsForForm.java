@@ -218,7 +218,7 @@ public class SGRResultsForForm extends JPanel
                         
                         JTextField textField = new JTextField(value);
                         textField.setBackground(color);
-                        //textField.setEditable(false);
+                        textField.setEditable(false);
                         textField.setCaretPosition(0);
                         builder.add(textField, cc.xy(x, y));
                         y += 2;
