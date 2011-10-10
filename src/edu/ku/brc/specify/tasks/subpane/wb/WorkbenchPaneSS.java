@@ -120,13 +120,14 @@ import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.table.TableColumnExt;
 
+import sun.swing.table.DefaultTableCellHeaderRenderer;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -5530,21 +5531,19 @@ public class WorkbenchPaneSS extends BaseSubPane
 			JLabel lbl = (JLabel) super.getTableCellRendererComponent(
 					table, value, isSelected, hasFocus, tblRow,
 					tblColumn);
-			int modelRow = spreadSheet.convertRowIndexToModel(tblRow);
-			WorkbenchRow wbRow = workbench.getRow(modelRow);
-			String cardImageFullPath = wbRow.getCardImageFullPath();
+			
+			int          modelRow = spreadSheet.convertRowIndexToModel(tblRow);
+			WorkbenchRow wbRow    = workbench.getRow(modelRow);
+			String       cardImageFullPath = wbRow.getCardImageFullPath();
 			if (cardImageFullPath != null)
 			{
-				String filename = FilenameUtils
-						.getBaseName(cardImageFullPath);
+				String filename = FilenameUtils.getBaseName(cardImageFullPath);
 				filename = FilenameUtils.getName(cardImageFullPath);
 				lbl.setText(filename);
 				lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			}
 			return lbl;
 		}
-		
-		
     }
     
     /**
@@ -5553,54 +5552,49 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Column header renderer that adds icon for the specify table that contains the field the column is mapped to.
      *
      */
-    public class WbTableHeaderRenderer extends DefaultTableCellRenderer implements TableCellRenderer {
+    public class WbTableHeaderRenderer implements TableCellRenderer
+    {
+        protected JLabel iconLbl;
+        protected JPanel panel;
+        protected DefaultTableCellHeaderRenderer header;
         
-    	private final ImageIcon icon;
-    	
-    	/**
-    	 * @param tableName the name of the table containing column's data field
-    	 */
-    	public WbTableHeaderRenderer(final String tableName)
-    	{
-            super();
-            if (tableName != null)
-            {
-            	icon = IconManager.getIcon(tableName, IconManager.IconSize.Std16);
-            } else
-            {
-            	icon = null;
-            }
-            	
-    	}
-    	
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
+        /**
+         * 
          */
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
-            // 'value' is column header value of column 'vColIndex'
-            // rowIndex is always -1
-            // isSelected is always false
-            // hasFocus is always false
-
-            setIcon(icon != null ? icon : IconManager.getIcon("Blank",
-                    IconManager.IconSize.Std16));
-
-            // Configure the component with the specified value
-            setText(value.toString());
-
-            // Set tool tip if desired
-            //setToolTipText((String)value);
-
-            // Since the renderer is a component, return itself
-            return this;
+        public WbTableHeaderRenderer(final String tableName)
+        {
+            super();
+            
+            ImageIcon icon = tableName != null ? IconManager.getIcon(tableName, IconManager.IconSize.Std16) : null;
+            iconLbl = UIHelper.createLabel(null, icon);
+            header  = new DefaultTableCellHeaderRenderer();
+            header.setHorizontalTextPosition(JLabel.LEFT);
+            
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("p,1px,f:p:g", "f:p:g"));
+            pb.add(iconLbl, cc.xy(1, 1));
+            pb.add(header, cc.xy(3, 1));
+            panel = pb.getPanel();
+            panel.setOpaque(false);
         }
 
-        // The following methods override the defaults for performance reasons
-        public void validate() {}
-        public void revalidate() {}
-        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
-        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
+         */
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex)
+        {
+            header.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
+            header.setOpaque(false);
+            //header.setBackground(Color.BLUE);
+            return panel;
+        }
+        
+        //public void validate() {}
+        //public void revalidate() {}
+        //protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
+        //public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
     }
 
     
