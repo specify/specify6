@@ -175,7 +175,8 @@ public class SGRMatcherUI extends CustomDialog
         } else {
             MatchConfiguration matchConfig = (MatchConfiguration)nbi.getData();
             String name = uiPanel.name.getText();
-            matchConfig.updateProperties(name, "");
+            String remarks = uiPanel.remarks.getText();
+            matchConfig.updateProperties(name, remarks);
             ((NavBoxButton) nbi).setLabelText(name);
             ((NavBoxButton) nbi).getParent().repaint();
         }
