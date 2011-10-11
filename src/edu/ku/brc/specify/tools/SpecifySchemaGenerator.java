@@ -146,7 +146,8 @@ public class SpecifySchemaGenerator
                 if (!doUpdate)
                 {
                     fixFloatFields(dbConnForDatabase);
-                    SpecifySchemaUpdateService.createSGRTables(dbConnForDatabase.getConnection());
+                    SpecifySchemaUpdateService.createSGRTables(dbConnForDatabase.getConnection(),
+                            databaseName);
                 }
                 dbConnForDatabase.close();
                 

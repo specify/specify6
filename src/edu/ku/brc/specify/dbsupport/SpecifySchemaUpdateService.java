@@ -1291,7 +1291,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall(); // #24
                     
-                    createSGRTables(conn);
+                    createSGRTables(conn, databaseName);
                     frame.incOverall(); // #25
 
                     return true;
@@ -1320,16 +1320,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
-    public static void createSGRTables(Connection conn) throws SQLException
+    public static void createSGRTables(Connection conn, String databaseName) throws SQLException
     {
-        DatabaseMetaData meta = conn.getMetaData();
-        ResultSet rs = meta.getTables(null, null, null, new String [] {"TABLE"});
-        Set<String> tables = new HashSet<String>();
-        while (rs.next())
-            tables.add(rs.getString("TABLE_NAME"));
-        rs.close();
 
-        if (!tables.contains("sgrmatchconfiguration"))
+        if (!doesTableExist(databaseName, "sgrmatchconfiguration"))
         {
             String sql = "CREATE TABLE `sgrmatchconfiguration` (" +
                             "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
@@ -1346,7 +1340,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             update(conn, sql);
         }
         
-        if (!tables.contains("sgrbatchmatchresultset"))
+        if (!doesTableExist(databaseName, "sgrbatchmatchresultset"))
         {
             String sql = "CREATE TABLE `sgrbatchmatchresultset` (" +
                         "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
@@ -1364,7 +1358,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             update(conn, sql);
         }
         
-        if (!tables.contains("sgrbatchmatchresultitem"))
+        if (!doesTableExist(databaseName, "sgrbatchmatchresultitem"))
         {
             String sql = "CREATE TABLE `sgrbatchmatchresultitem` ( " +
                         "`id`                       bigint(20)      NOT NULL AUTO_INCREMENT, " +
@@ -2820,6 +2814,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return BasicSQLUtils.getCountAsInt(sql) == 1;
     }
     
+    protected static boolean doesTableExist(final String dbName, final String tableName)
+    {
+        String  sql  = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", dbName, tableName);
+        //log.debug(sql);
+        return BasicSQLUtils.getCountAsInt(sql) == 1;
+    }
     /**
      * 
      */
