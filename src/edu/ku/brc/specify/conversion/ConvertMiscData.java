@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import java.net.URI;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -99,6 +101,75 @@ public class ConvertMiscData
         
         return false;
     }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     * @return
+     */
+    public static void convertImagesToWebLinks(final Connection oldDBConn, final Connection newDBConn)
+    {
+        IdMapperIFace ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
+        
+        PreparedStatement pStmt1 = null;
+        try
+        {
+            Timestamp now = new Timestamp(System .currentTimeMillis());
+            pStmt1 = newDBConn.prepareStatement("UPDATE collectingevent SET VerbatimDate=? WHERE CollectingEventID=?");
+            
+            int errCnt = 0;
+            int cnt    = 0;
+            
+            String sql = "SELECT VerbatimDate, CollectingEventID FROM collectingevent WHERE VerbatimDate IS NOT NULL";
+            Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
+            for (Object[] row : rows)
+            {
+                Integer newId = ceMapper.get((Integer)row[1]);
+                if (newId != null)
+                {
+                    String fileName    = (String)row[0];
+                    String shortenName = fileName.substring(fileName.lastIndexOf('/')+1, fileName.length());
+                    shortenName = URLDecoder.decode( shortenName, "UTF-8");
+                    
+                    URI uri = new URI("file", "/"+shortenName, null);
+                    String uriStr = uri.getRawPath();
+                    System.out.println("["+shortenName+"]["+uriStr+"]");
+                    shortenName   = uriStr.substring(uriStr.lastIndexOf('/')+1, uriStr.length());
+                    
+                    System.out.println("["+shortenName+"]["+fileName+"]");
+                    if (shortenName.length() < 51)
+                    {
+                        pStmt1.setString(1, shortenName);
+                        pStmt1.setInt(2, newId);
+                        pStmt1.execute();
+                        cnt++;
+                    } else
+                    {
+                        System.err.println(String.format("Name Length Error %d [%s]", shortenName.length(), shortenName));
+                        errCnt++;
+                    }
+                } else
+                {
+                    System.err.println(String.format("Couldn't map OldID %d", (Integer)row[1]));
+                    errCnt++;
+                }
+            }
+            System.out.println(String.format("Done - convertImagesToWebLinks Transfered : %d,  Errors: %d", cnt, errCnt));
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt1 != null) pStmt1.close();
+                
+            } catch (Exception ex) {}
+        }
+    }
+    
     /**
      * @param oldDBConn
      * @param newDBConn

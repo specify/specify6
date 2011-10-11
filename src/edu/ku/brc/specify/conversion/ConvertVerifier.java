@@ -379,7 +379,7 @@ public class ConvertVerifier extends AppBase
         // For Debug
         coOptions = DO_CO_ALL;
         
-        if (coOptions > NO_OPTIONS)
+        //if (coOptions > NO_OPTIONS)
         {
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -390,9 +390,10 @@ public class ConvertVerifier extends AppBase
             {
                 int    oldCatNum = rs.getInt(1);
                 String newCatNum = convertCatNum(oldCatNum);
+                
                 //if (oldCatNum < 1643) continue;
                 
-                if (isCOOn(DO_CO_DETERMINER))
+                /*if (isCOOn(DO_CO_DETERMINER))
                 {
                     tblWriter = tblWriterHash.get(DO_CO_DETERMINER);
                     if (!verifyDeterminer(oldCatNum, newCatNum))
@@ -489,7 +490,7 @@ public class ConvertVerifier extends AppBase
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
-                }
+                } */
                 
                 if ((i % 100) == 0)
                 {
@@ -1427,9 +1428,9 @@ public class ConvertVerifier extends AppBase
             ResultSetMetaData oldRsmd = oldDBRS.getMetaData();
             ResultSetMetaData newRsmd = newDBRS.getMetaData();
             
-            Pair<String, String> datePair = new Pair<String, String>();
-            Calendar             cal      = Calendar.getInstance();
-            StringBuilder        errSB    = new StringBuilder();
+            PartialDateConv datePair = new PartialDateConv();
+            Calendar        cal      = Calendar.getInstance();
+            StringBuilder   errSB    = new StringBuilder();
             
             while (hasNewRec && hasOldRec)
             {
@@ -1599,21 +1600,21 @@ public class ConvertVerifier extends AppBase
                             
                             if (partialDateType != null)
                             {
-                                boolean ok = StringUtils.isNotEmpty(datePair.second) && StringUtils.isNumeric(datePair.second);
-                                if (!ok || (Byte.parseByte(datePair.second) != partialDateType.byteValue()))
+                                boolean ok = StringUtils.isNotEmpty(datePair.getPartial()) && StringUtils.isNumeric(datePair.getPartial());
+                                if (!ok || (Byte.parseByte(datePair.getPartial()) != partialDateType.byteValue()))
                                 {
-                                    errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
+                                    errSB.append("Partial Dates Type do not match. Old["+datePair.getPartial()+"]  New ["+partialDateType.byteValue()+"]");
                                     // error partial dates don't match
                                 }
                             } 
                             
                             cal.setTime((Date)newObj);
                             
-                            if (StringUtils.isNotEmpty(datePair.first) && !datePair.first.equalsIgnoreCase("null"))
+                            if (StringUtils.isNotEmpty(datePair.getDateStr()) && !datePair.getDateStr().equalsIgnoreCase("null"))
                             {
-                                int year = Integer.parseInt(datePair.first.substring(0, 4));
-                                int mon  = Integer.parseInt(datePair.first.substring(5, 7));
-                                int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                                int year = Integer.parseInt(datePair.getDateStr().substring(0, 4));
+                                int mon  = Integer.parseInt(datePair.getDateStr().substring(5, 7));
+                                int day  = Integer.parseInt(datePair.getDateStr().substring(8, 10));
                                 
                                 if (mon > 0) mon--;
                                 
@@ -1768,7 +1769,7 @@ public class ConvertVerifier extends AppBase
      */
     private StatusType compareDates(final String oldNewIdStr, final int newColInx, final int oldColInx) throws SQLException 
     {
-        Pair<String, String> datePair = new Pair<String, String>();
+        PartialDateConv datePair = new PartialDateConv();
         
         Object newObj = newDBRS.getObject(newColInx);
         Object oldObj = oldDBRS.getObject(oldColInx);
@@ -1870,9 +1871,9 @@ public class ConvertVerifier extends AppBase
                 
                 if (partialDateType != null)
                 {
-                    if (Byte.parseByte(datePair.second) != partialDateType.byteValue())
+                    if (Byte.parseByte(datePair.getPartial()) != partialDateType.byteValue())
                     {
-                        errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
+                        errSB.append("Partial Dates Type do not match. Old["+datePair.getPartial()+"]  New ["+partialDateType.byteValue()+"]");
                         // error partial dates don't match
                     }
                 } 
@@ -1880,9 +1881,9 @@ public class ConvertVerifier extends AppBase
                 Calendar cal = Calendar.getInstance();
                 cal.setTime((Date)newObj);
                 
-                int year = Integer.parseInt(datePair.first.substring(0, 4));
-                int mon  = Integer.parseInt(datePair.first.substring(5, 7));
-                int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                int year = Integer.parseInt(datePair.getDateStr().substring(0, 4));
+                int mon  = Integer.parseInt(datePair.getDateStr().substring(5, 7));
+                int day  = Integer.parseInt(datePair.getDateStr().substring(8, 10));
                 
                 if (mon > 0) mon--;
                 

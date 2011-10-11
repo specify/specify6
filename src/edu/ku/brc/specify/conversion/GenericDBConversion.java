@@ -1353,8 +1353,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "ProjectCollectionObjects", 
                 "ReferenceWork", 
                 "Shipment", 
-                "Sound",
-                "SoundEventStorage", 
+                //"Sound",
+                //"SoundEventStorage", 
                 "Stratigraphy", }; // NOTE: the TAXON tables are done in ConvertTaxonHelper
 
         // shouldCreateMapTables = false;
@@ -1834,8 +1834,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "Permit",       "IssueeID", 
                 "AgentAddress", "AgentAddressID", 
                 
-                "Sound",        "RecordedByID", 
-                "Agent",        "AgentID", 
+                //"Sound",        "RecordedByID", 
+                //"Agent",        "AgentID", 
                 
                 "Determination", "DeterminerID", 
                 "Agent",         "AgentID", 
@@ -2073,6 +2073,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (!doBrief)
         {
             tablesToMoveOver = new String[] { 
+                    "CollectingEvent",
                 "AccessionAgent", 
                 "Accession", 
                 "AccessionAuthorization",
@@ -2082,7 +2083,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "BorrowAgent", 
                 "BorrowMaterial",
                 "BorrowReturnMaterial", 
-                "CollectingEvent", 
+                 
                 "CollectionObjectCitation", 
                 "Collector",
                 "Deaccession", 
@@ -2195,6 +2196,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         addToValueMapper("SrcLatLongUnit",     srcLatLongUnitValueMapper);
         
         
+        
         TableWriter tblWriter = convLogger.getWriter("CopyTable.html", "Copy Tables");
         setTblWriter(tblWriter);
         
@@ -2221,13 +2223,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // } else
             //               
             setFieldsToIgnoreWhenMappingNames(null);
+            HashMap<String, String> verbatimDateMapper = null;
 
             if (tableName.equals("Accession") || tableName.equals("AccessionAuthorization"))
             {
                 String[] ignoredFields = { "RepositoryAgreementID", "Version", "CreatedByAgentID",
-                                           "DateAcknowledged",
-                                           "AddressOfRecordID", "AppraisalID", "AccessionCondition",
-                                           "DivisionID", "TotalValue" };
+                                           "DateAcknowledged", "AddressOfRecordID", "AppraisalID", 
+                                           "AccessionCondition", "DivisionID", "TotalValue" };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
             } else if (fromTableName.equals("accession"))
@@ -2284,14 +2286,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             } else if (fromTableName.equals("collectingevent"))
             {
                 String[] ignoredFields = {"VisibilitySetByID", "CollectingTripID",
-                        "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim",
-                        "StartDatePrecision", "HabitatAttributeID", "Version", "CreatedByAgentID",
-                        "CollectionMemberID", "CollectingEventAttributeID", "DisciplineID" };
+                                          "EndDateVerbatim", "EndDatePrecision", 
+                                          "StartDatePrecision", "HabitatAttributeID", "Version", "CreatedByAgentID",
+                                          "CollectionMemberID", "CollectingEventAttributeID", "DisciplineID" };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 setOneToOneIDHash(createFieldNameMap(new String[] {"HabitatAttributeID", "HabitatAttributeID" }));
-
-                errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK;           // Turn off this error for LocalityID
-                errorsToShow &= ~BasicSQLUtils.SHOW_VAL_MAPPING_ERROR; // Turn off this error for Habitat
+                
+                verbatimDateMapper = new HashMap<String, String>();
+                verbatimDateMapper.put("StartDateVerbatim", "StartDateVerbatim");
+                
+                errorsToShow &= ~BasicSQLUtils.SHOW_NAME_MAPPING_ERROR; // urn off this error for StartDateVerbatim
+                errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK;            // Turn off this error for LocalityID
+                errorsToShow &= ~BasicSQLUtils.SHOW_VAL_MAPPING_ERROR;  // Turn off this error for Habitat
 
             } else if (fromTableName.equals("collector") || fromTableName.equals("collectors"))
             {
@@ -2434,7 +2440,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             setIdentityInsertONCommandForSQLServer(newDBConn, toTableName, BasicSQLUtils.myDestinationServerType);
             
             if (!copyTable(oldDBConn, newDBConn, sql, fromTableName, toTableName, tableMaps.get(toTableName), 
-                           null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
+                           verbatimDateMapper, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
             {
                 String msg = "Table [" + tableName + "] didn't copy correctly.";
                 log.error(msg);
@@ -5003,15 +5009,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
-            Pair<String, String> datePair = new Pair<String, String>();
+            PartialDateConv partialDateConv = new PartialDateConv();
             
             int lastEditedByInx = oldNameIndex.get("LastEditedBy");
             
             int count = 0;
             do
             {
-                datePair.first  = null;
-                datePair.second = null;
+                partialDateConv.nullAll();
                 
                 String lastEditedBy = rs.getString(lastEditedByInx);
 
@@ -5554,7 +5559,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Statement prepTypeStmt         = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             prepTypeStmt.setFetchSize(Integer.MIN_VALUE);
 
-            Pair<String, String> datePair = new Pair<String, String>();
+            PartialDateConv partialDateConv = new PartialDateConv();
             
             prepIdMapper.setShowLogErrors(false);
             
@@ -5570,8 +5575,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int     count           = 0;
             do
             {
-                datePair.first  = null;
-                datePair.second = null;
+                partialDateConv.nullAll();
                 
                 Integer preparedById = null;
                 if (shouldCheckPrepAttrs)
@@ -5584,11 +5588,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     if (subQueryRS.next())
                     {
                         preparedById = subQueryRS.getInt(1);
-                        getPartialDate(rs.getObject(2), datePair);
+                        getPartialDate(rs.getObject(2), partialDateConv);
                     } else
                     {
-                        datePair.first  = "NULL";
-                        datePair.second = "NULL";
+                        partialDateConv.setDateStr("NULL");
+                        partialDateConv.setPartial("NULL");
                     }
                     subQueryRS.close();
                 }
@@ -5711,11 +5715,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("PreparedDate"))
                     {
-                        str.append(datePair.first);
+                        str.append(partialDateConv.getDateStr());
 
                     } else if (newFieldName.equals("PreparedDatePrecision"))
                     {
-                        str.append(datePair.second);
+                        str.append(partialDateConv.getPartial());
 
                     } else if (newFieldName.equals("DerivedFromIDX"))
                     {
@@ -6161,7 +6165,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
-            Pair<String, String> datePair = new Pair<String, String>();
+            PartialDateConv partialDateConv = new PartialDateConv();
             
             IdMapperIFace detIdMapper = IdMapperMgr.getInstance().get("determination", "DeterminationID");
             
@@ -6197,8 +6201,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int count = 0;
             do
             {
-                datePair.first  = null;
-                datePair.second = null;
+                partialDateConv.nullAll();
                 
                 String lastEditedBy = rs.getString(lastEditedByInx);
                 
@@ -6256,22 +6259,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         //System.out.println("["+rs.getObject(detDateInx)+"]");
                         
-                        if (datePair.first == null)
+                        if (partialDateConv.getDateStr() == null)
                         {
-                            getPartialDate(rs.getObject(detDateInx), datePair);
+                            getPartialDate(rs.getObject(detDateInx), partialDateConv);
                         }
                         
-                        if (datePair.first != null)
+                        if (!partialDateConv.isNull())
                         {
-                            int len = datePair.first.length();
+                            int len = partialDateConv.getDateStr().length();
                             if (len == 12)
                             {
-                                String tsStr = datePair.first.length() == 12 ? datePair.first.substring(1, 11) : datePair.first;
+                                String tsStr = partialDateConv.getDateStr().length() == 12 ? partialDateConv.getDateStr().substring(1, 11) : partialDateConv.getDateStr();
                                 pStmt.setString(fldInx, tsStr);
                                 
                             } else
                             {
-                                if (!datePair.first.equals("NULL")) log.error("Determined Date was in error["+datePair.first+"]");
+                                if (!partialDateConv.getDateStr().equals("NULL")) log.error("Determined Date was in error["+partialDateConv.getDateStr()+"]");
                                 pStmt.setObject(fldInx, null);
                             }
                         } else
@@ -6280,15 +6283,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         }
                         
                         /*
-                         if (datePair.first == null)
+                         if (partialDateConv.getDateStr() == null)
                         {
-                            getPartialDate(rs.getObject(detDateInx), datePair);
+                            getPartialDate(rs.getObject(detDateInx), partialDateConv);
                         }
-                        if (StringUtils.isNotEmpty(datePair.first))
+                        if (StringUtils.isNotEmpty(partialDateConv.getDateStr()))
                         {
                             try
                             {
-                                Date tsDate = sdf.parse(datePair.first);
+                                Date tsDate = sdf.parse(partialDateConv.getDateStr());
                                 pStmt.setTimestamp(fldInx, new Timestamp(tsDate.getTime()));
                                 
                             } catch (ParseException e)
@@ -6305,19 +6308,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         
                     } else if (newFieldName.equals("DeterminedDatePrecision"))
                     {
-                        if (datePair.first == null)
+                        if (partialDateConv.getDateStr() == null)
                         {
-                            getPartialDate(rs.getObject(detDateInx), datePair);
+                            getPartialDate(rs.getObject(detDateInx), partialDateConv);
                         }
                         
-                        if (datePair.second != null)
+                        if (partialDateConv.getPartial() != null)
                         {
-                            if (datePair.second.length() > 1)
+                            if (partialDateConv.getPartial().length() > 1)
                             {
                                 pStmt.setInt(fldInx, 1);
                             } else
                             {
-                                pStmt.setInt(fldInx, Integer.parseInt(datePair.second));
+                                pStmt.setInt(fldInx, Integer.parseInt(partialDateConv.getPartial()));
                             }
                         } else
                         {
@@ -6600,7 +6603,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         //IdHashMapper stratMapper    = (IdHashMapper)idMapperMgr.get("stratigraphy_StratigraphyID");
         //IdHashMapper stratGTPMapper = (IdHashMapper)idMapperMgr.get("stratigraphy_GeologicTimePeriodID");
 
-        String[] fieldsToSkip = { "CatalogedDateVerbatim", "ContainerID", "ContainerItemID",
+        String[] fieldsToSkip = { "ContainerID", "ContainerItemID",
                                   "AltCatalogNumber",
                                   "GUID",
                                   "ContainerOwnerID",
@@ -6705,7 +6708,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             int boaCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM biologicalobjectattributes");
             
-            Pair<String, String> datePair = new Pair<String, String>();
+            PartialDateConv partialDateConv = new PartialDateConv();
             
             Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt2.setFetchSize(Integer.MIN_VALUE);
@@ -6753,8 +6756,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     continue;
                 }
                 
-                datePair.first  = null;
-                datePair.second = null;
+                partialDateConv.nullAll();
                 
                 skipRecord = false;
                 
@@ -6870,6 +6872,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             
                             if (catalogNumber != null)
                             {
+                                int catNumInt = (int)Math.abs(rs.getDouble(catNumInx));
+                                catalogNumber = Integer.toString(catNumInt);
+                                    
                                 if (catalogNumber.length() > 0 && catalogNumber.length() < ZEROES.length())
                                 {
                                     catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
@@ -6881,9 +6886,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 
                             } else
                             {
-                                log.debug("Empty catalog number.");
-                                showError("Empty catalog number.");
-                                tblWriter.logError("Empty catalog number.");
+                                String mssg = "Empty catalog number.";
+                                log.debug(mssg);
+                                //showError(msg);
+                                tblWriter.logError(mssg);
                             }
 
                         } else
@@ -6957,19 +6963,27 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         
                     } else if (newFieldName.equals("CatalogedDate"))
                     {
-                        if (datePair.first == null)
+                        if (partialDateConv.getDateStr() == null)
                         {
-                            getPartialDate(rs.getObject(catDateInx), datePair);
+                            getPartialDate(rs.getObject(catDateInx), partialDateConv);
                         }
-                        str.append(datePair.first);
+                        str.append(partialDateConv.getDateStr());
 
                     } else if (newFieldName.equals("CatalogedDatePrecision"))
                     {
-                        if (datePair.first == null)
+                        if (partialDateConv.getDateStr() == null)
                         {
-                            getPartialDate(rs.getObject(catDateInx), datePair);
+                            getPartialDate(rs.getObject(catDateInx), partialDateConv);
                         }
-                        str.append(datePair.second);
+                        str.append(partialDateConv.getPartial());
+
+                    } else if (newFieldName.equals("CatalogedDateVerbatim"))
+                    {
+                        if (partialDateConv.getDateStr() == null)
+                        {
+                            getPartialDate(rs.getObject(catDateInx), partialDateConv);
+                        }
+                        str.append(partialDateConv.getVerbatim());
 
                     } else if (newFieldName.equals("Availability"))
                     {
@@ -9099,8 +9113,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //Hashtable<Integer, Integer> newCEIdToNewStratIdHash = new Hashtable<Integer, Integer>();
             
             // stratigraphy2 goes here.
-            IdTableMapper newCEIdToNewStratIdHash = IdMapperMgr.getInstance().addTableMapper("stratigraphy", "StratigraphyID", true);
-            newCEIdToNewStratIdHash.clearRecords();
+            IdHashMapper newCEIdToNewStratIdHash = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid_2", true);
             
             IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
 

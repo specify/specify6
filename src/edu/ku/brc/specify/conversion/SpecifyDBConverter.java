@@ -753,6 +753,19 @@ public class SpecifyDBConverter extends AppBase
             System.exit(0);
         }
         
+        boolean doImagesToWebLinks = false;
+        if (doImagesToWebLinks)
+        {
+            frame.setDesc("Fixing Scope....");
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            ConvertMiscData.convertImagesToWebLinks(oldDBConn, newDBConn);
+            oldDBConn.close();
+            newDBConn.close();
+            System.exit(0);
+        }
+        
+        
+        
         if (!System.getProperty("user.name").equals("rods"))
         {
             OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
@@ -1153,7 +1166,7 @@ public class SpecifyDBConverter extends AppBase
                 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertDiscipline = true;
+                boolean convertDiscipline = false;
                 if (convertDiscipline)
                 {
                     if (!conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent))
@@ -1177,7 +1190,7 @@ public class SpecifyDBConverter extends AppBase
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and more importantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
-                boolean copyAgentAddressTables = doAll;
+                boolean copyAgentAddressTables = false;
                 if (copyAgentAddressTables)
                 {
                     log.info("Calling - convertAgents");
@@ -1225,7 +1238,7 @@ public class SpecifyDBConverter extends AppBase
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
-                boolean doGTP = doAll;
+                boolean doGTP = false;
                 if (doGTP)
                 {
                     if (stratToGTP != null)
@@ -1252,7 +1265,7 @@ public class SpecifyDBConverter extends AppBase
 
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
-                boolean doTaxonomy = doAll;
+                boolean doTaxonomy = false;
                 if (doTaxonomy)
                 {
                     BasicSQLUtils.setTblWriter(taxonTblWriter);
@@ -1269,11 +1282,11 @@ public class SpecifyDBConverter extends AppBase
                 //-------------------------------------------------------------------------------
                 //conversion.loadDisciplineObjects();
                 
-                conversion.convertHabitat();
+                //conversion.convertHabitat();
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
-                boolean doDeterminations = doAll;
+                boolean doDeterminations = false;
                 if (doDeterminations)
                 {
                     frame.incOverall();

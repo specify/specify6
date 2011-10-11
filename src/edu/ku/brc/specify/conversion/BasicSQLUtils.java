@@ -54,7 +54,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.util.Pair;
 
 /**
  * A set of basic utilities that used almost exclusively for converting old Database schemas to the new schema
@@ -93,6 +92,7 @@ public class BasicSQLUtils
     protected static Calendar         calendar          = new GregorianCalendar();
     protected static Timestamp        now               = new Timestamp(System .currentTimeMillis());
     protected static String           nowStr            = dateTimeFormatter.format(now);
+    protected static int              currentYear;
     
     protected static Map<String, String> ignoreMappingFieldNames = null;
     protected static Map<String, String> ignoreMappingFieldIDs   = null;
@@ -106,22 +106,23 @@ public class BasicSQLUtils
     protected static boolean       ignoreMySQLduplicates = true;
     protected static boolean       skipTrackExceptions   = false;
     
-    protected static Pair<String, String> datePair = new Pair<String, String>();
+    protected static PartialDateConv datePair = new PartialDateConv();
     
     // Missing Mapping File
     protected static PrintWriter missingPW = null;
     
-    /*static
+    static
     {
-        try
+        /*try
         {
             missingPW = new PrintWriter("missing.txt");
             
         } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-    }*
+        }*/
+        currentYear = calendar.get(Calendar.YEAR);
+    }
 
     /**
      * Singleton
@@ -1342,18 +1343,21 @@ public class BasicSQLUtils
         {
             getPartialDate(obj, datePair);
             
-            try
+            if (!datePair.isNull())
             {
-                Date d = dateFormatter.parse(datePair.first);
-                if (d != null)
+                try
                 {
-                    return new java.sql.Date(d.getTime());
+                    Date d = dateFormatter.parse(datePair.getDateStr());
+                    if (d != null)
+                    {
+                        return new java.sql.Date(d.getTime());
+                    }
+                    return null;
+                    
+                } catch (ParseException e)
+                {
+                    e.printStackTrace();
                 }
-                return null;
-                
-            } catch (ParseException e)
-            {
-                e.printStackTrace();
             }
             return null;
                 
@@ -1428,7 +1432,7 @@ public class BasicSQLUtils
                 if (newFieldType.toLowerCase().indexOf("date") ==  0)
                 {
                 	getPartialDate(obj, datePair);
-                    return datePair.first;
+                    return datePair.getDateStr();
 
                 }
                 //Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
@@ -2064,8 +2068,7 @@ public class BasicSQLUtils
             
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
 
-            Map<String, String>               vertbatimDateMap = UIHelper.createMap();
-            Map<String, Pair<String, String>> dateMap          = new Hashtable<String, Pair<String, String>>();
+            Map<String, PartialDateConv> dateMap = new Hashtable<String, PartialDateConv>();
             
             String insertSQL = null;
 
@@ -2075,12 +2078,13 @@ public class BasicSQLUtils
             Integer timestampCreatedInx  = fromHash.get("TimestampCreated");
             boolean isAccessionTable     = fromTableName.equals("accession");
 
-            StringBuilder verbatimDateStr = new StringBuilder(1024);
-            StringBuffer  str             = new StringBuffer(1024);
-            int           count           = 0;
+            StringBuffer  str   = new StringBuffer(1024);
+            int           count = 0;
             while (rs.next())
             {
             	boolean skipRecord = false;
+            	
+            	dateMap.clear();
             	
                 // Start by going through the resultset and converting all dates from Integers
                 // to real dates and keep the verbatium date information if it is a partial date
@@ -2110,20 +2114,10 @@ public class BasicSQLUtils
                     
                     if (dataObj instanceof Integer)
                     {
-                    	Pair<String, String> datep = new Pair<String, String>();
-                    	getPartialDate((Integer)dataObj, datep);
+                    	PartialDateConv datep = new PartialDateConv();
+                    	getPartialDate((Integer)dataObj, datep); // fills in Verbatim also
+                    	
                         dateMap.put(newColName, datep);
-
-                        if (verbatimDateMapper != null)
-                        {
-	                        if (verbatimDateStr.length() > 0)
-	                        {
-	                            vertbatimDateMap.put(newColName, dataObj.toString());
-	                        } else
-	                        {
-	                            log.error("No Verbatim Date Mapper  for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
-	                        }
-                        }
                     }
                 }
                 
@@ -2234,6 +2228,12 @@ public class BasicSQLUtils
                         oldMappedColName = newColName;
                     }
                     
+                    String verbatimDateFieldName = null;
+                    if (verbatimDateMapper != null)
+                    {
+                        verbatimDateFieldName = verbatimDateMapper.get(newColName); 
+                    }
+                    
                     //System.out.println("new["+newColName+"]  old["+oldMappedColName+"]");
 
                     if (columnIndex != null)
@@ -2315,7 +2315,6 @@ public class BasicSQLUtils
                                     {
                                         Date date = UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")));
                                         str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFldMetaData.getType()));
-    
                                     } else
                                     {
                                         str.append(getStrValue(timestampCreatedCached, newFldMetaData.getType()));
@@ -2347,36 +2346,26 @@ public class BasicSQLUtils
                             {
                                 str.append("NULL");
                             }
-                                
 
                         } else if (dataObj instanceof Integer && 
                                   (newFldMetaData.getSqlType() == java.sql.Types.DATE ||
                                    newColName.toLowerCase().endsWith("date") || 
                                    newColName.toLowerCase().startsWith("date")))
                         {
-                        	Pair<String, String> datePr = dateMap.get(newColName);
+                            PartialDateConv datePr = dateMap.get(newColName);
                         	if (datePr != null)
                         	{
-                        		str.append(datePr.first);
-                        		
-                        	} else if (verbatimDateMapper != null)
-                        	{
-	                            // First check to see if the current column name is that of the verbatim field
-	                            // it will return the new schema's date field name that this verbatim field is associated with
-	                            String dateFieldName = verbatimDateMapper.get(newColName); // from verbatim to associated date field
-	                            if (dateFieldName != null)
-	                            {
-	                                str.append(getStrValue(vertbatimDateMap.get(newColName)));
-	
-	                            } else
-	                            {
-	                                str.append(getStrValue(dateMap.get(newColName)));
-	                            }
+                        	    str.append(datePr.getDateStr());
                         	} else
                         	{
-                        		str.append("NULL");
+                        	    str.append("NULL");
                         	}
-
+                        	
+                        } else if (verbatimDateFieldName != null)
+                        {
+                            PartialDateConv datePr = dateMap.get(newColName);
+                            str.append(datePr != null ? datePr.getVerbatim() : "NULL");
+                            
                         } else if (dataObj instanceof Number)
                         {
                             DBFieldInfo fi   = tblInfo.getFieldByColumnName(newColName);
@@ -2419,10 +2408,10 @@ public class BasicSQLUtils
                     	if (i > 0) str.append(", ");
                     	
                     	String cName = newColName.substring(0, newColName.length()-9);
-                    	Pair<String, String> datePr = dateMap.get(cName);
+                    	PartialDateConv datePr = dateMap.get(cName);
                     	if (datePr != null)
                     	{
-                    		str.append(datePr.second);
+                    		str.append(datePr.getPartial());
                     	} else
                     	{
                     		str.append("NULL");
@@ -2607,9 +2596,9 @@ public class BasicSQLUtils
      * @param datePair
      */
     public static void getPartialDate(final Object data, 
-                                      final Pair<String, String> datePairArg)
+                                      final PartialDateConv partialDateConv)
     {
-        getPartialDate(data, datePairArg, true);
+        getPartialDate(data, partialDateConv, true);
     }
     
     /**
@@ -2618,11 +2607,10 @@ public class BasicSQLUtils
      * @param datePair
      */
     public static void getPartialDate(final Object data, 
-                                      final Pair<String, String> datePairArg,
+                                      final PartialDateConv partialDateConv,
                                       final boolean includeQuotes)
     {
-        datePairArg.first  = "NULL";
-        datePairArg.second = "NULL";
+        partialDateConv.setAllNullStrs();
         
         if (data != null)
         {
@@ -2630,46 +2618,66 @@ public class BasicSQLUtils
             {
                 // 012345678     012345678
                 // 20051314      19800307
-                Date   dateObj = null;
-                String dateStr = ((Integer)data).toString();
+                Date   dateObj  = null;
+                String dateStr  = ((Integer)data).toString();
+                String partial  = "1";
+                String verbatim = "NULL";
+                
                 if (dateStr.length() == 8)
                 {
-                    //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
-                    int fndInx  = dateStr.substring(4, 8).indexOf("00");
-                    if (fndInx > -1)
+                    String yearStr = dateStr.substring(0,4);
+                    if (yearStr.equals("0000") || yearStr.equals("9999") || yearStr.equals("1111"))
                     {
-                        if (fndInx == 0)
+                        verbatim = dateStr;
+                        dateStr  = "NULL";
+                        partial  = "NULL";
+                        
+                    } else
+                    {
+                        Integer yr = Integer.parseInt(yearStr);
+                        if (yr < 1700 || yr > currentYear)
                         {
-                            dateStr = dateStr.substring(0, 4) + "0101";
-                            dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                            datePairArg.second = "3";
-                            
-                        } else if (fndInx == 2)
-                        {
-                            dateStr = dateStr.substring(0, 6) + "01";
-                            dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                            datePairArg.second = "2";
+                            dateStr  = "NULL";
+                            partial  = "NULL";
+                            verbatim = dateStr;
                             
                         } else
                         {
-                            dateObj = UIHelper.convertIntToDate((Integer)data);
-                            datePairArg.second = "1";
+                            //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
+                            int fndInx  = dateStr.substring(4, 8).indexOf("00");
+                            if (fndInx > -1)
+                            {
+                                if (fndInx == 0)
+                                {
+                                    dateStr = dateStr.substring(0, 4) + "0101";
+                                    dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                                    partial = "3";
+                                    
+                                } else if (fndInx == 2)
+                                {
+                                    dateStr = dateStr.substring(0, 6) + "01";
+                                    dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                                    partial = "2";
+                                    
+                                } else
+                                {
+                                    dateObj = UIHelper.convertIntToDate((Integer)data);
+                                    partial = "1";
+                                }
+                                
+                            } else
+                            {
+                                dateObj = UIHelper.convertIntToDate((Integer)data); 
+                                partial = "1";
+                            }
+                            dateStr = (dateObj == null) ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
                         }
-                    } else
-                    {
-                        dateObj = UIHelper.convertIntToDate((Integer)data); 
-                        datePairArg.second = "1";
                     }
-                    datePairArg.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
-                    
+                    partialDateConv.set(dateStr, partial, verbatim);
                 } else 
                 {
                     log.error("Partial Date was't 8 digits! ["+dateStr+"]");
                 }
-            } else
-            {
-                datePairArg.first  = "NULL";
-                datePairArg.second = "1";
             }
         }
     }
