@@ -168,7 +168,7 @@ public class SGRTask extends BaseTask
                     return DBConnection.getInstance().createConnection();
             }});
 
-            if (!AppPreferences.getRemote().getBoolean("SGR_DEFAULT_MATCHERS_LOADED", false))
+            //if (!AppPreferences.getRemote().getBoolean("SGR_DEFAULT_MATCHERS_LOADED", false))
             {
                 loadDefaultMatchers();
             }
