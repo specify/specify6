@@ -266,7 +266,7 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame parent frame
+     * @param dlg parent frame
      * @param title the title of the dialog
      * @param desc
      * @param itemList the list to be selected from
@@ -303,7 +303,7 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame parent frame
+     * @param dlg parent frame
      * @param title the title of the dialog
      * @param desc
      * @param itemList the list to be selected from

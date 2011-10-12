@@ -197,7 +197,7 @@ public class CustomDialog extends JDialog
     }
 
     /**
-     * @param frame parent frame
+     * @param dlg parent frame
      * @param title the title of the dialog
      * @param isModal whether or not it is model
      * @param whichBtns which button to use for the dialog

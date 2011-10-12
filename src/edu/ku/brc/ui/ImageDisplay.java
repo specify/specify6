@@ -68,6 +68,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	protected String       loadingImageStr = getResourceString("loadingimage");
 	protected boolean      isNoImage       = true;
     protected JFileChooser chooser;
+    protected boolean      doShowText      = true;
 
 	/**
 	 * Constructor.
@@ -86,6 +87,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 		this.isEditMode = isEditMode;
 		createUI();
+		
+		setDoubleBuffered(true);
 	}
 
 	/**
@@ -199,6 +202,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	 */
 	public void loadImage()
 	{
+	    isError = false;
 		if (isNotEmpty(url))
 		{
 			setNoImage(false); // means it is loading it
@@ -221,6 +225,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 					
 				} catch (URISyntaxException e)
 				{
+				    isError = true;
 				    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 				    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 					e.printStackTrace();
@@ -244,20 +249,22 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+		
+		boolean doScale = true;
 
 		int w = getWidth();
 		int h = getHeight();
 
-		if (imageIcon != null && !isNoImage)
+		if (imageIcon != null && (!isNoImage && !isError))
 		{
 			int imgW = imageIcon.getIconWidth();
 			int imgH = imageIcon.getIconHeight();
 
-			if (imgW > w || imgH > h)
+			if (doScale && (imgW > w || imgH > h))
 			{
 				double scaleW = 1.0;
 				double scaleH = 1.0;
-				double scale = 1.0;
+				double scale  = 1.0;
 
 				if (imgW > w)
 				{
@@ -286,7 +293,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 			}
 			Image image = imageIcon.getImage();
 			g.drawImage(image, x, y, imgW, imgH, null);
-		} else
+			
+		} else if (doShowText)
 		{
 			String label = this.isNoImage ? noImageStr : loadingImageStr;
 			FontMetrics fm = g.getFontMetrics();
@@ -393,7 +401,23 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		});
 	}*/
 
-	//--------------------------------------------------------------
+	/**
+     * @return the doShowText
+     */
+    public boolean isDoShowText()
+    {
+        return doShowText;
+    }
+
+    /**
+     * @param doShowText the doShowText to set
+     */
+    public void setDoShowText(boolean doShowText)
+    {
+        this.doShowText = doShowText;
+    }
+
+    //--------------------------------------------------------------
 	//-- Inner Class JPanel for displaying an image
 	//--------------------------------------------------------------
 	public class ImageGetter implements Runnable
@@ -456,23 +480,37 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 					File file = fileCache.getCacheFile(urlStr);
 					if (file == null)
 					{
-						String fileName = fileCache.cacheWebResource(urlStr);
-						file = fileCache.getCacheFile(fileName);
+					    try
+					    {
+					        String fileName = fileCache.cacheWebResource(urlStr);
+					        file = fileCache.getCacheFile(fileName);
+					    } catch (Exception ex)
+					    {
+					        
+					    }
 					}
-					Image img = getToolkit().getImage(file.toURI().toURL());
-					ImageIcon imgIcon = new ImageIcon(img);
+					if (file != null)
+					{
+					    Image img = getToolkit().getImage(file.toURI().toURL());
+					    ImageIcon imgIcon = new ImageIcon(img);
+					    setImage(imgIcon);
+					} else
+					{
+					    isError = true;
+					}
 
-					setImage(imgIcon);
+					
 				}
 
 				getter = null;
 
 			} catch (Exception e)
 			{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
-				//log.error(e);
-				e.printStackTrace();
+			    isError = true;
+			    e.printStackTrace();
+			    //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+			    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
+				
 			}
 		}
 	}

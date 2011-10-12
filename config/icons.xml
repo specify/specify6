@@ -212,6 +212,7 @@
     <icon name="Checkmark"        file="Checkmark32x32.png" sizes="all"/>
     <icon name="Attach"           file="attachicon.png" sizes="all"/>
     <icon name="Attach16"         file="attachicon16.png" sizes="16"/>
+    <icon name="RedDot6x6"        file="reddot.gif" sizes="NonStd"/>
     
     <!-- Preferences -->
     <icon name="Preferences"      file="preferences.png"    sizes="all"/>
