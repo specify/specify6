@@ -84,7 +84,7 @@ public class WorldWindPanel extends JPanel
     
     protected AnnotationAttributes       annoAttrs   = new AnnotationAttributes();
     protected BasicMarkerAttributes      markerAttrs;
-    
+    protected double                     zoomInMeters = 20000.0;
 
     /**
      * @throws HeadlessException
@@ -312,6 +312,22 @@ public class WorldWindPanel extends JPanel
     }
 
     /**
+     * @return the zoomInMeters
+     */
+    public double getZoomInMeters()
+    {
+        return zoomInMeters;
+    }
+
+    /**
+     * @param zoomInMeters the zoomInMeters to set
+     */
+    public void setZoomInMeters(double zoomInMeters)
+    {
+        this.zoomInMeters = zoomInMeters;
+    }
+
+    /**
      * @return the statusBar
      */
     public StatusBar getStatusBar()
@@ -496,7 +512,7 @@ public class WorldWindPanel extends JPanel
                                        , pos          // bbox
                                        , Angle.ZERO   // Heading
                                        , Angle.ZERO   // Pitch
-                                       , 20000.0 )        // Altitude/Zoom (m)
+                                       , zoomInMeters )        // Altitude/Zoom (m)
                                        );
     }
 
