@@ -971,7 +971,7 @@ public class StratToGTP
             String postfix = " FROM collectingevent AS ce " +
                              "Inner Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +    
                              "Left Join geologictimeperiod AS g ON s.GeologicTimePeriodID = g.GeologicTimePeriodID " +
-                             "WHERE s.`Group` IS NOT NULL AND g.Name IS NOT NULL AND s.Member IS NOT NULL AND s.Bed IS NULL AND g.GeologicTimePeriodID IS NOT NULL";
+                             "WHERE s.`Group` IS NOT NULL OR g.Name IS NOT NULL OR s.Member IS NOT NULL OR s.Bed IS NULL OR g.GeologicTimePeriodID IS NOT NULL";
             
             String sql = "SELECT ce.CollectingEventID, s.`Group`, g.Name, s.Member, s.Bed, s.TimestampCreated, s.TimestampModified " + postfix;
             log.debug(sql);

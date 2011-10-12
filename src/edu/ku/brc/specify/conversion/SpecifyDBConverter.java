@@ -1166,14 +1166,13 @@ public class SpecifyDBConverter extends AppBase
                 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertDiscipline = false;
+                boolean convertDiscipline = doAll;
                 if (convertDiscipline)
                 {
                     if (!conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent))
                     {
                         return;
                     }
-
                 } else
                 {
                     idMapperMgr.addTableMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
@@ -1190,7 +1189,7 @@ public class SpecifyDBConverter extends AppBase
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and more importantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
-                boolean copyAgentAddressTables = false;
+                boolean copyAgentAddressTables = doAll;
                 if (copyAgentAddressTables)
                 {
                     log.info("Calling - convertAgents");
@@ -1208,13 +1207,12 @@ public class SpecifyDBConverter extends AppBase
                 log.info("MappingAgent Tables.");
                 if (mapTables)
                 {
-                    // Ignore these field names from new table schema when mapping OR
-                    // when mapping IDs
+                    // Ignore these field names from new table schema when mapping OR when mapping IDs
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MethodID",  "RoleID",  "CollectionID",  "ConfidenceID",
                                                                                 "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
                                                                                 "TypeID",  "ShipmentMethodID", "RankID", "DirectParentRankID",
                                                                                 "RequiredParentRankID", "MediumID"});
-                    conversion.mapAgentRelatedIds();//MEG LOOK HERE
+                    conversion.mapAgentRelatedIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
                 frame.incOverall();
@@ -1236,9 +1234,8 @@ public class SpecifyDBConverter extends AppBase
 
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
-                // GTP needs to be converted here so the stratigraphy conversion can use
-                // the IDs
-                boolean doGTP = false;
+                // GTP needs to be converted here so the stratigraphy conversion can use the IDs
+                boolean doGTP = doAll;
                 if (doGTP)
                 {
                     if (stratToGTP != null)
@@ -1250,7 +1247,6 @@ public class SpecifyDBConverter extends AppBase
                         {
                             stratToGTP.createGTPTreeDefKUINVP();
                         }
-                        
                     } else
                     {
                         GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
@@ -1265,7 +1261,7 @@ public class SpecifyDBConverter extends AppBase
 
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
-                boolean doTaxonomy = false;
+                boolean doTaxonomy = doAll;
                 if (doTaxonomy)
                 {
                     BasicSQLUtils.setTblWriter(taxonTblWriter);
@@ -1275,18 +1271,16 @@ public class SpecifyDBConverter extends AppBase
                 }
                 frame.incOverall();
 
-                //checkDisciplines();
-
                 //-------------------------------------------------------------------------------
                 // Get the Discipline Objects and put them into the CollectionInfo Objects
                 //-------------------------------------------------------------------------------
                 //conversion.loadDisciplineObjects();
                 
-                //conversion.convertHabitat();
+                conversion.convertHabitat();
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
-                boolean doDeterminations = false;
+                boolean doDeterminations = doAll;
                 if (doDeterminations)
                 {
                     frame.incOverall();
@@ -1296,9 +1290,6 @@ public class SpecifyDBConverter extends AppBase
                     frame.incOverall();
                 }
                 frame.incOverall();
-
-                //checkDisciplines();
-
                 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
@@ -1310,8 +1301,6 @@ public class SpecifyDBConverter extends AppBase
                 }
 
                 frame.incOverall();
-
-                //checkDisciplines();
                 
                 conversion.updateHabitatIds();
 
@@ -1329,8 +1318,6 @@ public class SpecifyDBConverter extends AppBase
                     frame.incOverall();
                     frame.incOverall();
                 }
-
-                //checkDisciplines();
                 
                 frame.setDesc("Converting DeaccessionCollectionObject");
                 log.info("Converting DeaccessionCollectionObject");
@@ -1340,8 +1327,6 @@ public class SpecifyDBConverter extends AppBase
                     conversion.convertDeaccessionCollectionObject();
                 }
                 frame.incOverall();          
-
-                //checkDisciplines();
 
                 frame.setDesc("Converting Preparations");
                 log.info("Converting Preparations");
@@ -1381,8 +1366,6 @@ public class SpecifyDBConverter extends AppBase
                             }
                             conversion.convertPreparationRecords(collToPrepTypeHash);
 
-                            //checkDisciplines();
-
                         } catch (Exception ex)
                         {
                             throw new RuntimeException(ex);
@@ -1409,8 +1392,6 @@ public class SpecifyDBConverter extends AppBase
                     {
                         frame.incOverall();
                     }
-
-                    //checkDisciplines();
 
                     // Arg1 - Use Numeric Catalog Number
                     // Arg2 - Use the Prefix from Catalog Series
@@ -1511,8 +1492,6 @@ public class SpecifyDBConverter extends AppBase
                         collection = dscp.getCollections().iterator().next();
                     }
 
-                    //checkDisciplines();
-
                     if (collection == null)
                     {
                         if (conversion.getCurCollectionID() == null || conversion.getCurCollectionID() == 0)
@@ -1544,15 +1523,10 @@ public class SpecifyDBConverter extends AppBase
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
 
-                    //checkDisciplines();
-
-                    
                     if (doFixCollectors)
                     {
                         agentConverter.fixupForCollectors(division, dscp);
                     }
-
-                    //checkDisciplines();
 
                     setSession(localSession);
                     
@@ -1589,8 +1563,6 @@ public class SpecifyDBConverter extends AppBase
 
                         }
 
-                        //checkDisciplines();
-
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
@@ -1620,8 +1592,6 @@ public class SpecifyDBConverter extends AppBase
                 
                 dscp = (Discipline)localSession.createQuery("FROM Discipline WHERE id = " + dscp.getId()).list().iterator().next();
                 AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
-
-                //checkDisciplines();
 
                 localSession.flush();
                 
@@ -1666,8 +1636,6 @@ public class SpecifyDBConverter extends AppBase
                 {
                     localSession.close();
                 }
-
-                //checkDisciplines();
 
                 frame.incOverall();
                 
