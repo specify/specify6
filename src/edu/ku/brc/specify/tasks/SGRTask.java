@@ -285,10 +285,6 @@ public class SGRTask extends BaseTask
         {
             NavBoxItemIFace nbi = new BatchResultsMgr(rs, permissions);
             batchResultsBox.insertSorted(nbi);
-            
-            String toolTip = "" + rs.nItems() + " " + getResourceString("SGR_BATCH_ITEMS");
-            
-            nbi.setToolTip(toolTip);
         }
         
         final RolloverCommand createBatchBtn = 

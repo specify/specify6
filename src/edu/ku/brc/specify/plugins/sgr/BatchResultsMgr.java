@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.plugins.sgr;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +33,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
+import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -51,6 +54,7 @@ import edu.ku.brc.af.core.PermissionIFace;
 public class BatchResultsMgr extends NavBoxButton
 {
     public static final long    PROGRESS_UPDATE_INTERVAL = 2000;
+    private final String        sgrBatchItemsLabel;
     private SGRBatchScenario    scenario;
     private JMenuItem           stopProcessing;
     private JMenuItem           resumeProcessing;
@@ -65,13 +69,15 @@ public class BatchResultsMgr extends NavBoxButton
     public BatchResultsMgr(final BatchMatchResultSet resultSet, final SGRBatchScenario initialScenario, PermissionIFace permissions)
     {
         super(resultSet.name(), IconManager.getIcon("SGR", IconManager.STD_ICON_SIZE));
-        setData(resultSet);
-        
-        this.scenario = initialScenario;
-        this.resultSet = resultSet;
         
         UIRegistry.loadAndPushResourceBundle("specify_plugins");
-
+        this.scenario = initialScenario;
+        this.resultSet = resultSet;
+        this.sgrBatchItemsLabel = UIRegistry.getResourceString("SGR_BATCH_ITEMS");
+        
+        setData(resultSet);
+        doToolTip();
+                
         //addDragDataFlavor(SGRTask.BATCH_RESULTS_FLAVOR);
         JPopupMenu popupMenu = new JPopupMenu();
 
@@ -205,8 +211,17 @@ public class BatchResultsMgr extends NavBoxButton
         }
     }
     
+    private void doToolTip()
+    {
+        String toolTip = "" + resultSet.nItems() + " " + sgrBatchItemsLabel;
+        setToolTip(toolTip);
+    }
+    
+    private static class ScenarioNotRunning extends Exception {};
+    
     private class ProgressUpdater extends SwingWorker<Void, Double>
     {
+        
         @Override
         protected Void doInBackground() throws Exception
         {
@@ -216,8 +231,15 @@ public class BatchResultsMgr extends NavBoxButton
                 // thread, scenario could get set to null at any moment if the scenario
                 // finishes.  Using if(scenario != null) would only introduce a race
                 // condition, so try / catch is used instead.
-                try { if (!scenario.isRunning()) return null; }
-                catch (NullPointerException e) { return null; }
+                try {
+                    try { if (!scenario.isRunning()) throw new ScenarioNotRunning(); }
+                    catch (NullPointerException e) { throw new ScenarioNotRunning(); }
+                }
+                catch (ScenarioNotRunning e)
+                {
+                    doToolTip();
+                    return null;
+                }
 
                 SwingUtilities.invokeLater(new Runnable()
                 {
