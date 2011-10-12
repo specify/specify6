@@ -468,6 +468,8 @@ public class Mapper extends JXMapKit {
         	lWp = it.next();
         	if (lWp.getPosition().equals(newPos))
         		break;
+        	else
+        		lWp = null;
         } 
         
         if (lWp != null)
@@ -503,9 +505,31 @@ public class Mapper extends JXMapKit {
         	mostAccurateResultPt.getLocality().setPrecision("");
         	mostAccurateResultPt.getLocality().setScore(-1);
         	mostAccurateResultPt.getLocality().setMultipleResults("");
+        	
+        	//Draw old error polygon for compatibility.
+            if (!mostAccurateResultPt.getLocality().getErrorPolygon().toLowerCase().equals("unavailable"))
+            {
+            	double lat = Double.NaN; 
+            	double lon = Double.NaN;
+            	String[] latLons =  mostAccurateResultPt.getLocality().getErrorPolygon().split(",");
+            	for (int i=0; i<latLons.length; i++)
+            	{
+            		if ((i%2) == 0) //Latitude.
+            			lat = Double.parseDouble(latLons[i]);
+            		else //Longitude.
+            		{
+            			lon = Double.parseDouble(latLons[i]);
+            			GeoPosition pos = new GeoPosition(lat, lon);
+            			if (errorRegion == null)
+            				errorRegion = new ArrayList<GeoPosition>();
+            			errorRegion.add(pos);
+            		}
+            	}
+            	drawPolygonOverlay(errorRegion);
+            }
         }
         
-		drawMostAccuratePt(new Waypoint(newPos));
+		drawMostAccuratePt(new Waypoint(mostAccurateResultPt.getPosition()));
 		
 		
 		//Draw uncertainty at new location.

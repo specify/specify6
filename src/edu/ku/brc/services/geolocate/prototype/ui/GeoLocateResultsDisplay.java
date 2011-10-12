@@ -394,6 +394,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						errorPTxt.setText("");
 						geoMapper.removePolygon();
 						errorPBtn.setText("draw polygon");
+						geoMapper.getMostAccurateResultPt().getLocality().setErrorPolygon(null);
 					}
 				}
 			});
@@ -558,7 +559,10 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							
 							String resErrorP = res.getUncertaintyPolygon();
 							if ((resErrorP != null) && !(resErrorP.equalsIgnoreCase("unavailable")))
+							{
 								errorPTxt.setText(resErrorP);
+								errorPBtn.setText("clear polygon");
+							}
 							else
 								errorPTxt.setText("");
 							break;
