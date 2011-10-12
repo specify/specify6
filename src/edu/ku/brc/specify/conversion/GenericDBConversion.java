@@ -9079,7 +9079,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         Statement stmt = null;
         ResultSet rs   = null;
-        
+        String s = "";
         try
         {
             // get a Hibernate session for saving the new records
@@ -9182,6 +9182,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 counter++;
     
                 // Map Old LithoStrat ID to the new Tree Id
+                //System.out.println(oldStratId + " " + newStrat.getLithoStratId());
                 lithoStratIdMapper.put(oldStratId, newStrat.getLithoStratId());
                 
                 // Convert Old CEId (StratID) to new CEId, then map the new CEId -> new StratId
