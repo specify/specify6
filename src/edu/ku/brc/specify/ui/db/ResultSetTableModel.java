@@ -183,8 +183,9 @@ public class ResultSetTableModel extends DefaultTableModel implements SQLExecuti
             numColumns = captions.size();
             for (ERTICaptionInfo caption : captions)
             {
-                 classNames.addElement(caption.getColClass());
-                 colNames.addElement(caption.getColName());
+                Class<?> cls = caption.getColClass();
+                classNames.addElement(cls == Boolean.class ? String.class : cls);
+                colNames.addElement(caption.getColName());
             }
             
             JPAQuery jpaQuery = null;

@@ -831,53 +831,49 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        //if (askBeforeStartingTool())
-        //{
-            boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
-            if (!ok)
+        //SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).checkToOverrideLogins(null);
+        //boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
+        if (!ok)
+        {
+            TaskMgr.getTask("Startup").requestContext();
+            return;
+        }
+        
+        UsageTracker.incrUsageCount("SS.SCHEMACFG");
+        
+        getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+        getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
+        getStatusBar().repaint();
+        
+        SwingWorker workerThread = new SwingWorker()
+        {
+            @Override
+            public Object construct()
             {
-                TaskMgr.getTask("Startup").requestContext();
-                return;
+                Locale.getAvailableLocales(); // load all the locales
+                return null;
             }
             
-            UsageTracker.incrUsageCount("SS.SCHEMACFG");
-            
-            getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
-            getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
-            getStatusBar().repaint();
-            
-            SwingWorker workerThread = new SwingWorker()
+            @Override
+            public void finished()
             {
-                @Override
-                public Object construct()
-                {
-                    Locale.getAvailableLocales(); // load all the locales
-                    return null;
-                }
+                getStatusBar().setText(""); //$NON-NLS-1$
+                getStatusBar().setProgressDone(SYSTEMSETUPTASK);
                 
-                @Override
-                public void finished()
+                JComponent videoBtn = CollapsableSepExtraCompFactory.getInstance().getComponent("Schema", "Config");
+                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)getTopWindow(), schemaType, tableMgr);
+                dlg.setExtraBtn(videoBtn);
+                dlg.setVisible(true);
+                if (!dlg.isCancelled())
                 {
-                    getStatusBar().setText(""); //$NON-NLS-1$
-                    getStatusBar().setProgressDone(SYSTEMSETUPTASK);
-                    
-                    JComponent videoBtn = CollapsableSepExtraCompFactory.getInstance().getComponent("Schema", "Config");
-                    SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)getTopWindow(), schemaType, tableMgr);
-                    dlg.setExtraBtn(videoBtn);
-                    dlg.setVisible(true);
-                    if (!dlg.isCancelled())
-                    {
-                        TaskMgr.getTask("Startup").requestContext();
-                    }
+                    TaskMgr.getTask("Startup").requestContext();
                 }
-            };
-            
-            // start the background task
-            workerThread.start();
-        //} else
-        //{
-        //    TaskMgr.getTask("Startup").requestContext();
-        //}
+            }
+        };
+        
+        // start the background task
+        workerThread.start();
     }
     
     

@@ -22,11 +22,8 @@ package edu.ku.brc.specify.config;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
-import java.util.TreeSet;
-import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import org.apache.log4j.Logger;
@@ -40,7 +37,6 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**

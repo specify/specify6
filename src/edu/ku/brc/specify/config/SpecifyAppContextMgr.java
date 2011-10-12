@@ -156,7 +156,8 @@ import edu.ku.brc.util.Triple;
  */
 public class SpecifyAppContextMgr extends AppContextMgr
 {
-    protected static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
+    private static final Logger log  = Logger.getLogger(SpecifyAppContextMgr.class);
+    private static final String L10N = "SpecifyAppContextMgr.";
     
     // Virtual Directory Levels
     public static final String PERSONALDIR   = "Personal"; //$NON-NLS-1$
@@ -583,7 +584,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (collection == null)
             {
-                UIRegistry.showLocalizedError("SpecifyAppContextMgr.ERR_NO_COLL");
+                UIRegistry.showLocalizedError(L10N + "ERR_NO_COLL");
                 return null;
             }
             
@@ -1236,7 +1237,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-            showLocalizedError("SpecifyAppContextMgr.SCHEMA_OUTOF_SYNC"); //$NON-NLS-1$
+            showLocalizedError(L10N + "SCHEMA_OUTOF_SYNC"); //$NON-NLS-1$
             System.exit(0);
         }
         
@@ -1259,12 +1260,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {                    
                     if (user.getIsLoggedIn())
                     {
-                        Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
-                                             getResourceString("SpecifyAppContextMgr.EXIT")  //$NON-NLS-1$
+                        Object[] options = { getResourceString(L10N + "OVERRIDE"),  //$NON-NLS-1$
+                                             getResourceString(L10N + "EXIT")  //$NON-NLS-1$
                               };
                         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                     getResourceString("SpecifyAppContextMgr.LOGGED_IN"),
-                                                                     getResourceString("SpecifyAppContextMgr.LOGGED_IN_TITLE"),  //$NON-NLS-1$
+                                                                     getResourceString(L10N + "LOGGED_IN"),
+                                                                     getResourceString(L10N + "LOGGED_IN_TITLE"),  //$NON-NLS-1$
                                                                      JOptionPane.YES_NO_OPTION,
                                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                         if (userChoice == JOptionPane.NO_OPTION)
@@ -1521,7 +1522,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
             // For example: rods/fish/fish/manager / true (meaning the usr's personal space)
             //---------------------------------------------------------
-            String           title     = getResourceString("SpecifyAppContextMgr."+PERSONALDIR);
+            String           title     = getResourceString(L10N + ""+PERSONALDIR);
             SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, title, true);
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(PERSONALDIR, appResDir);
@@ -1531,7 +1532,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline / Collection / UserType
             // For example: rods/fish/fish/manager
             //---------------------------------------------------------
-            title     = getResourceString("SpecifyAppContextMgr."+USERTYPEDIR);
+            title     = getResourceString(L10N + ""+USERTYPEDIR);
             appResDir = getAppResDir(session, user, discipline, collection, userType, false, title, true);
             File dir  = XMLHelper.getConfigDir(folderName + File.separator + userType);
             if (dir.exists())
@@ -1545,7 +1546,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline / Collection
             // For example: rods/fish/fish
             //---------------------------------------------------------
-            title     = getResourceString("SpecifyAppContextMgr."+COLLECTIONDIR);
+            title     = getResourceString(L10N + ""+COLLECTIONDIR);
             appResDir = getAppResDir(session, user, discipline, collection, null, false, title, true);
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(COLLECTIONDIR, appResDir);
@@ -1555,7 +1556,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline
             // For example: rods/fish
             //---------------------------------------------------------
-            title     = getResourceString("SpecifyAppContextMgr."+DISCPLINEDIR);
+            title     = getResourceString(L10N + ""+DISCPLINEDIR);
             appResDir = getAppResDir(session, user, discipline, null, null, false, title, true);
             dir       = XMLHelper.getConfigDir(folderName);
             if (dir.exists())
@@ -1568,7 +1569,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             // Common Views 
             //---------------------------------------------------------
-            title     = getResourceString("SpecifyAppContextMgr."+COMMONDIR);
+            title     = getResourceString(L10N + ""+COMMONDIR);
             appResDir = getAppResDir(session, user, null, null, COMMONDIR, false, title, true);
             dir = XMLHelper.getConfigDir("common"); //$NON-NLS-1$
             if (dir.exists())
@@ -1588,7 +1589,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 appResDir = createAppResourceDefFromDir(BACKSTOPDIR, dir); //$NON-NLS-1$
                 appResDir.setUserType(BACKSTOPDIR); //$NON-NLS-1$
-                appResDir.setTitle(getResourceString("SpecifyAppContextMgr."+BACKSTOPDIR)); //$NON-NLS-1$
+                appResDir.setTitle(getResourceString(L10N + ""+BACKSTOPDIR)); //$NON-NLS-1$
                 
                 spAppResourceList.add(appResDir);
                 spAppResourceHash.put(BACKSTOPDIR, appResDir);
@@ -1676,7 +1677,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         fndLocale = engLocale != null ? engLocale : locales.get(0);
                         SchemaI18NService.setCurrentLocale(fndLocale);
                         Locale.setDefault(fndLocale);
-                        UIRegistry.displayErrorDlgLocalized("SpecifyAppContextMgr.NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
+                        UIRegistry.displayErrorDlgLocalized(L10N + "NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
                     }
                     SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
                 }
@@ -1753,7 +1754,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
         
-        showLocalizedError("SpecifyAppContextMgr.CRITICAL_LOGIN_ERR"); //$NON-NLS-1$
+        showLocalizedError(L10N + "CRITICAL_LOGIN_ERR"); //$NON-NLS-1$
         System.exit(0);
         return null;
     }
@@ -2836,7 +2837,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 list.addAll(pickList.getItems());
                 ChooseFromListDlg<PickListItemIFace> plDlg = new ChooseFromListDlg<PickListItemIFace>((Frame)null, 
-                        getLocalizedMessage("SpecifyAppContextMgr.CHS_DEF_OBJ", title), list); //$NON-NLS-1$
+                        getLocalizedMessage(L10N + "CHS_DEF_OBJ", title), list); //$NON-NLS-1$
                 plDlg.setModal(true);
                 plDlg.setVisible(true);
                 if (!plDlg.isCancelled())
@@ -3274,21 +3275,43 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @param titleKey
      * @param msgKey
-     * @return null on error, an empty list if no one else is logged in, or a populated list
+     * @return true if no users are logged in, false if users are logged in
      */
     public boolean displayAgentsLoggedInDlg(final String msgKey)
     {
-        return displayAgentsLoggedInDlg(null, msgKey);
+        int rv = displayAgentsLoggedInDlg(null, msgKey, false);
+        
+        return rv != CustomDialog.NONE_BTN; 
     }
     
     /**
      * @param titleKey
      * @param msgKey
-     * @return true if it is ok to process, false if there are users logged in
+     * @param includeOverride whether to include asking the user to clear all logged in users
+     * @return CustomDialog.NONE_BTN - no one on, CustomDialog.OK_BTN user are on do override, 
+     * CustomDialog.OK_CANCEL users logged on, but don't override
      */
-    public boolean displayAgentsLoggedInDlg(final String titleKey, final String msgKey)
+    public int displayAgentsLoggedInDlg(final String titleKey, 
+                                        final String msgKey, 
+                                        final boolean includeOverride)
     {
         List<String> logins = getAgentListLoggedIn(getClassObject(Discipline.class));
+        return displayAgentsLoggedInDlg(titleKey, msgKey, logins, includeOverride);
+    }
+    
+    /**
+     * @param titleKey
+     * @param msgKey
+     * @param includeOverride whether to include asking the user to clear all logged in users
+     * @return CustomDialog.NONE_BTN - no one on, CustomDialog.OK_BTN user are on do override, 
+     * CustomDialog.OK_CANCEL users logged on, but don't override
+     */
+    public int displayAgentsLoggedInDlg(final String titleKey, 
+                                        final String msgKey, 
+                                        final List<String> logins,
+                                        final boolean includeOverride)
+    {
+        
         if (logins.size() > 0)
         {
             String loginStr = "";
@@ -3301,23 +3324,74 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 loginStr += "'" + logins.get(l) + "'";
             }
             
-            CellConstraints cc = new CellConstraints();
-            String titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : "SpecifyAppContextMgr.OU_TITLE");
-            PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+            String rowDef = "f:p:g, 2dlu, f:p:g, 2dlu, f:p:g";
+            int    btns   = includeOverride ? CustomDialog.OKCANCELHELP : CustomDialog.OKHELP;
             
-            pb.add(createI18NLabel("SpecifyAppContextMgr.OTHER_USERS"), cc.xy(2, 2));
-            pb.add(createLabel(loginStr),   cc.xy(2, 4));
-            pb.add(createI18NLabel(msgKey), cc.xy(2, 6));
+            CellConstraints cc = new CellConstraints();
+            String titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : L10N + "OU_TITLE");
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", rowDef));
+            
+            pb.add(createI18NLabel(L10N + "OTHER_USERS"), cc.xy(1, 1));
+            pb.add(createLabel(loginStr),   cc.xy(1, 3));
+            pb.add(createI18NLabel(msgKey), cc.xy(1, 5));
+            
+            pb.setDefaultDialogBorder();
             
             CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
                                                 titleStr,
                                                 true,
-                                                CustomDialog.OKHELP,
+                                                btns,
                                                 pb.getPanel());
+            
+            if (includeOverride) dlg.setOkLabel(L10N + "LOGIN_OVRDE");
             UIHelper.centerAndShow(dlg);
-            return false;
+            return dlg.getBtnPressed();
         }
-        return true;
+        return CustomDialog.NONE_BTN;
+    }
+    
+    /**
+     * 
+     */
+    public boolean checkToOverrideLogins(final String currentUserName)
+    {
+        SpecifyUser  spUser = getClassObject(SpecifyUser.class);
+        Integer      userId = spUser != null ? spUser.getId() : null; 
+        Discipline   disp   = getClassObject(Discipline.class);
+        List<String> logins = null;
+        
+        if (currentUserName == null && disp != null)
+        {
+            logins = getAgentListLoggedIn(getClassObject(Discipline.class));
+        } else
+        {
+            userId = BasicSQLUtils.getCountAsInt(String.format("SELECT SpecifyUserID FROM specifyuser WHERE Name = '%s'", currentUserName));
+            if (userId != null)
+            {
+                ArrayList<String> userNames = new ArrayList<String>();
+                String sql = String.format("SELECT name FROM specifyuser WHERE name <> '%s'", currentUserName);
+                for (Object user : BasicSQLUtils.querySingleCol(sql))
+                {
+                    userNames.add((String)user);
+                }
+                logins = userNames;
+            }
+        }
+        
+        int rv = CustomDialog.NONE_BTN;
+        if (logins != null)
+        {
+            rv = displayAgentsLoggedInDlg(null, L10N + "OVRDE_MSG",  logins, true);
+            if (rv == CustomDialog.OK_BTN)
+            {
+                
+                if (BasicSQLUtils.update("UPDATE specifyuser SET IsLoggedIn=0 WHERE SpecifyUserID <> "+spUser.getId()) > 0)
+                {
+                    return false;
+                }
+            }
+        }
+        return rv == CustomDialog.NONE_BTN;
     }
     
     /**
@@ -3411,9 +3485,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             boolean isValidEmailAddr = true;
             do
             {
-                email = UIRegistry.askForString("SpecifyAppContextMgr.ENT_EMAIL_LABEL", 
-                                                "SpecifyAppContextMgr.ENT_EMAIL_TITLE", 
-                                                isValidEmailAddr ? "SpecifyAppContextMgr.ENT_EMAIL_WHY" : "SpecifyAppContextMgr.ENT_EMAIL_ERR",
+                email = UIRegistry.askForString(L10N + "ENT_EMAIL_LABEL", 
+                                                L10N + "ENT_EMAIL_TITLE", 
+                                                L10N + (isValidEmailAddr ? "ENT_EMAIL_WHY" : "ENT_EMAIL_ERR"),
                                                 true);
                 isValidEmailAddr = UIHelper.isValidEmailAddress(email);
             } while (!isValidEmailAddr);

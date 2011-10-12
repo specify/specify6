@@ -214,10 +214,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
      */
     @Override
-    public SchemaUpdateType updateSchema(final String appVerNumArg)
+    public SchemaUpdateType updateSchema(final String appVerNumber, final String username)
     {
         String  dbVersion      = getDBSchemaVersionFromXML();
-        String  appVerNum      = appVerNumArg;
+        String  appVerNum      = appVerNumber;
         boolean internalVerNum = isInternalVerNum(appVerNum);
         
         boolean useSilentSuccess = false;
@@ -240,7 +240,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Integer recVerNum       = 1;
                 
                 
-                log.debug("appVerNumArg:  ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] ");
+                log.debug("appVerNumArg:  ["+appVerNumber+"] dbVersion from XML["+dbVersion+"] ");
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
@@ -253,7 +253,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         spverId       = (Integer)row[2];
                         recVerNum     = (Integer)row[3];
                         
-                        log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] appVersion["+appVerFromDB+"] schemaVersion["+schemaVerFromDB+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
+                        log.debug("appVerNumArg: ["+appVerNumber+"] dbVersion from XML["+dbVersion+"] appVersion["+appVerFromDB+"] schemaVersion["+schemaVerFromDB+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
                         
                         if (appVerNum == null /*happens for developers*/ || internalVerNum) 
                         {
@@ -296,7 +296,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         //If somebody somehow got a hold of an 'internal' version (via a conversion, or possibly by manually checking for updates.
                         doUpdateAppVer = true;
-                        if (appVerNumArg != null && appVerNumArg.length() > 2)
+                        if (appVerNumber != null && appVerNumber.length() > 2)
                         {
                             doSchemaUpdate   = true; //Integer.parseInt(appVerNumArg.substring(2, 3)) == 0;
                             useSilentSuccess = true;
@@ -311,6 +311,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     if (doSchemaUpdate || doInsert || doUpdateAppVer)
                     {
+                        
                         fixDuplicatedPaleoContexts(dbConn.getConnection());
                         
                         if (doSchemaUpdate || doInsert)

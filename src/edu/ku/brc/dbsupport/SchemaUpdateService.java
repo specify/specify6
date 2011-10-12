@@ -77,12 +77,12 @@ public abstract class SchemaUpdateService
     }
     
     /**
-     * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
-     * @param viewName the name of the view (cannot be null)
+     * Check to see if the DB Schema needs to be updated
      * @param versionNumber the current version number of the application
-     * @return the view
+     * @param username the user logging in
+     * @return
      */
-    public abstract SchemaUpdateType updateSchema(String versionNumber);
+    public abstract SchemaUpdateType updateSchema(String versionNumber, String username);
     
     
     /**
