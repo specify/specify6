@@ -77,6 +77,11 @@ public class Workbench2SGR
         return doc.build(); 
     }
     
+    public Short getFieldFor(String specifyField)
+    {
+        return fieldName2Index.get(specifyField);
+    }
+    
     private void addCollectors(WorkbenchRow row, SGRRecord.Builder doc)
     {
         for (int c = 1; c < 9; c++)
@@ -118,7 +123,10 @@ public class Workbench2SGR
         for (String field : inputFields)
         {
             Short ind = fieldName2Index.get(field);
-            if (ind != null) sb.append(row.getData(ind) + " ");
+            if (ind != null) 
+            {
+                sb.append(row.getData(ind) + " ");
+            }
         }
         
         if (sb.length() > 0) doc.put(outputField, sb.toString().trim());

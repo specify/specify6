@@ -17,8 +17,6 @@
  */
 package edu.ku.brc.specify.plugins.sgr;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +31,6 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
-import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;

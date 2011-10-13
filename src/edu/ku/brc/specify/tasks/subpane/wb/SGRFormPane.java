@@ -83,6 +83,15 @@ public class SGRFormPane extends JPanel implements FormPaneWrapper
             }
         };
         
+        Action transfer = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                sgrPanel.copyDataIntoWB();
+            }
+        };
+        
         workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_PAGE_UP, 
                 "prev_record", prevRecord, InputEvent.SHIFT_DOWN_MASK);
         
@@ -91,6 +100,9 @@ public class SGRFormPane extends JPanel implements FormPaneWrapper
         
         workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_F5, 
                 "update", update, 0);
+        
+        workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_F6, 
+                "transfer", transfer, 0);
         
     }
     

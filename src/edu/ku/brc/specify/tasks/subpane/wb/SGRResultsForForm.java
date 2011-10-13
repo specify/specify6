@@ -22,6 +22,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -48,6 +49,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.plugins.sgr.SGRColors;
 import edu.ku.brc.specify.plugins.sgr.SGRColumnOrdering;
 import edu.ku.brc.specify.plugins.sgr.SGRPluginImpl;
+import edu.ku.brc.specify.plugins.sgr.Workbench2SGR;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -69,6 +71,7 @@ public class SGRResultsForForm extends JPanel
     private SGRColumnOrdering   columnOrdering = SGRColumnOrdering.getInstance();
     public final JScrollPane    scrollPane;
     private int                 currentIndex   = -1;
+    private MatchResults        results;
 
     public SGRResultsForForm(WorkbenchPaneSS workbenchPaneSS, Workbench workbench)
     {
@@ -145,7 +148,6 @@ public class SGRResultsForForm extends JPanel
                 if (index != currentIndex) return;
                 //removeAll();
                 
-                MatchResults results;
                 try { results = get(); } 
                 catch (CancellationException e) { return; }
                 catch (InterruptedException e) { return; } 
@@ -229,6 +231,64 @@ public class SGRResultsForForm extends JPanel
             }
         }.execute();
         UsageTracker.incrUsageCount("SGR.MatchRow");
+    }
+    
+    public void copyDataIntoWB()
+    {
+        if (results == null) return;
+        
+        for (Match result : results)
+        {
+            for (String field: columnOrdering.getFields())
+            {
+                List<String> values = result.match.getFieldValues(field);
+                
+                if (field.equals("latitude"))
+                {
+                    copyFieldIntoRow("latitude1", values);
+                }
+                else if (field.equals("longitude"))
+                {
+                    copyFieldIntoRow("longitude1", values);
+                }
+                else if (field.equals("locality"))
+                {
+                    copyFieldIntoRow("localityName", values);
+                }
+                else if (field.equals("county_name"))
+                {
+                    copyFieldIntoRow("county", values);
+                }
+                else if (field.equals("state_name"))
+                {
+                    copyFieldIntoRow("state", values);
+                }
+                else if (field.equals("country_name"))
+                {
+                    copyFieldIntoRow("country", values);
+                }
+            }
+            break; // only do the first one
+        }
+        workbenchPaneSS.getFormPane().indexChanged(currentIndex);
+    }
+    
+    private void copyFieldIntoRow(String field, List<String> values)
+    {
+        int modelIndex = workbenchPaneSS.getSpreadSheet().convertRowIndexToModel(currentIndex);
+        WorkbenchRow row = workbench.getRow(modelIndex);     
+        
+        Short i;
+
+        Workbench2SGR wb2sgr = sgrPlugin.getWorkbench2SGR();
+        i = wb2sgr.getFieldFor(field);
+            
+        row.setData(StringUtils.join(values.toArray()), i, true);
+//
+//        Map<Short, WorkbenchDataItem> dis = row.getItems();
+//        WorkbenchDataItem di = dis.get(i);
+//        if (di != null)
+//            di.setCellData(StringUtils.join(values.toArray()));
     }
 
     protected void sgrFailed(ExecutionException e)

@@ -401,6 +401,11 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     {
         return colorizer;
     }
+    
+    public Workbench2SGR getWorkbench2SGR()
+    {
+        return workbench2SGR;
+    }
 
     @Override
     public void setWorkbenchPaneSS(WorkbenchPaneSS wbpss)
