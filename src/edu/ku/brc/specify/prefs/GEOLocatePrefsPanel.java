@@ -190,7 +190,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
             String method = (String)cbx.getValue();
             if (method != null)
             {
-            	AppPreferences.getLocalPrefs().put(prefName, method);
+            	AppPreferences.getRemote().put(prefName, method);
             }
         }
     }
