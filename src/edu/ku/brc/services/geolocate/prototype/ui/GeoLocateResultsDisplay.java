@@ -271,7 +271,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                         geoMapper.hideEditUncertaintyHandle();
                         
                         uncertTxt.setEditable(false);
-                        uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+                        uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
                         ucBtnState = UnCertBtnStateType.eEdit;
                     } else
                     {
@@ -385,7 +385,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 				@Override
 				public void uncertaintyCircleResizeCancelled() {
 					geoMapper.hideEditUncertaintyHandle();
-                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
                     ucBtnState = UnCertBtnStateType.eEdit;
 					uncertTxt.setEditable(false);
 				}
@@ -424,7 +424,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							.getUncertaintyMeters());
 					
 					geoMapper.hideEditUncertaintyHandle();
-                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
                     ucBtnState = UnCertBtnStateType.eEdit;
 					uncertTxt.setEditable(false);
 					statusURLbl.setText("");
@@ -615,7 +615,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						{
 							uncertTxt.setText(resUncert);
 							uncertTxt.setEditable(false);
-	                        uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+	                        uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
 	                        ucBtnState = UnCertBtnStateType.eEdit;
 						}
 						else
