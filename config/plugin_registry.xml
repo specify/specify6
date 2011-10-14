@@ -45,7 +45,7 @@
         
         <plugin name="VisualQueryTask" class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true" prefname="visualquery"/>
         
-        <plugin name="LMTask" class="edu.ku.brc.specify.tasks.LifeMapperTask" addui="true" prefname="lifemappertask"/>
+        <plugin name="LMTask" class="edu.ku.brc.specify.tasks.LifeMapperTask" addui="true"/>
 	</core>
 	
 	<mobilecore>

@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -33,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
@@ -43,6 +42,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.jdesktop.swingx.mapviewer.GeoPosition;
+
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -100,6 +101,11 @@ import gov.nasa.worldwind.view.OrbitView;
  */
 public class GeoLocateResultsDisplay extends JPanel implements MapperListener, SelectListener
 {
+    private enum ErrBtnStateType    {eDraw, eApply, eClear};
+    private enum UnCertBtnStateType {eEdit, eApply};
+    
+    private static final String L10N = "GeoLocateResultsDisplay.";
+    
     protected static final int MAP_WIDTH  = 500;
     protected static final int MAP_HEIGHT = 500;
     protected static final int MAP_WIDTH2  = 600;
@@ -114,7 +120,10 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
     protected JTextField        countyField;
     protected JTextField        stateField;
     protected JTextField        countryField;
-    protected JTextField		polyField;    
+    protected JTextField		polyField;   
+    
+    protected ErrBtnStateType    errBtnState = ErrBtnStateType.eApply;
+    protected UnCertBtnStateType ucBtnState  = UnCertBtnStateType.eApply;
     
     protected JButton           acceptBtn     = null;
     
@@ -154,261 +163,182 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         
         // add the query fields to the display
         int rowIndex = 1;
-        localityStringField = addRow(cc, getResourceString("GeoLocateResultsDisplay.LOCALITY_DESC"),      1, rowIndex); //$NON-NLS-1$
-        rowIndex+=2;
-        countyField         = addRow(cc, getResourceString("GeoLocateResultsDisplay.COUNTY"), 1, rowIndex); //$NON-NLS-1$
-        rowIndex+=2;
-        stateField          = addRow(cc, getResourceString("GeoLocateResultsDisplay.STATE"),    1, rowIndex); //$NON-NLS-1$
-        rowIndex+=2;
-        countryField        = addRow(cc, getResourceString("GeoLocateResultsDisplay.COUNTRY"),    1, rowIndex); //$NON-NLS-1$
-        rowIndex+=2;
+        localityStringField = addRow(cc, getResourceString(L10N + "LOCALITY_DESC"),      1, rowIndex); //$NON-NLS-1$
+        rowIndex += 2;
+        countyField         = addRow(cc, getResourceString(L10N + "COUNTY"), 1, rowIndex); //$NON-NLS-1$
+        rowIndex += 2;
+        stateField          = addRow(cc, getResourceString(L10N + "STATE"),    1, rowIndex); //$NON-NLS-1$
+        rowIndex += 2;
+        countryField        = addRow(cc, getResourceString(L10N + "COUNTRY"),    1, rowIndex); //$NON-NLS-1$
+        rowIndex += 2;
 
         // add the JLabel to show the map
-        mapLabel = createLabel(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
+        mapLabel = createLabel(getResourceString(L10N + "LOADING_MAP")); //$NON-NLS-1$
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
         
         if (!useWorldWind)
         {
-        	//Add the correction marker section.
-        	JPanel corMarkerPanel = new JPanel();
-            add(corMarkerPanel, cc.xywh(1,rowIndex,3,1));
-            rowIndex+=2;
+            FocusListener focLis = new FocusListener() {
+                @Override
+                public void focusLost(FocusEvent e) { }
+                
+                @Override
+                public void focusGained(FocusEvent e) {
+                    statusErrorLbl.setText("");
+                }
+            };
+            
+        	// Add the correction marker section.
+            PanelBuilder corMarkerPB = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g,10px,f:p:g", "f:p:g"));
 
-            corMarkerPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED), "Correction (Green) Marker Properties",
-            		TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 12), Color.BLACK));
-            corMarkerPanel.setLayout(new GridLayout(1, 3));
+            JLabel lbl = UIHelper.createLabel("");
             
-            JPanel coordinatesP = new JPanel();
-            coordinatesP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-            GroupLayout layout = new GroupLayout(coordinatesP);
-            coordinatesP.setLayout(layout);
-            layout.setAutoCreateGaps(true);
-            layout.setAutoCreateContainerGaps(true);
-            
-            JLabel latLbl = new JLabel("lat: ");
-            latText = new JTextField();
-            latText.addFocusListener(new FocusListener() {
-				
-				@Override
-				public void focusLost(FocusEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void focusGained(FocusEvent e) {
-					statusErrorLbl.setText("");
-					
-				}
-			});
-            
-            JLabel lonLbl = new JLabel("lon: ");
-            lonText = new JTextField();
-            lonText.addFocusListener(new FocusListener() {
-				
-				@Override
-				public void focusLost(FocusEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void focusGained(FocusEvent e) {
-					statusErrorLbl.setText("");
-					
-				}
-			});
+            corMarkerPB.getPanel().setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED), UIRegistry.getResourceString(L10N+"GREEN_PROPS"),
+                                                     TitledBorder.LEFT, TitledBorder.TOP, lbl.getFont(), lbl.getForeground()));
+            add(corMarkerPB.getPanel(), cc.xyw(1, rowIndex, 3));
+            rowIndex += 2;
 
-            coordBtn = new JButton("apply manual");
+            latText = UIHelper.createTextField();
+            latText.addFocusListener(focLis);
+            
+            lonText = UIHelper.createTextField();
+            lonText.addFocusListener(focLis);
+
+            coordBtn = UIHelper.createI18NButton("Apply");
             coordBtn.addActionListener(new ActionListener() {
-				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					applyManualCoordinates();
 				}
 			});
             
-            layout.setHorizontalGroup(layout.createSequentialGroup()
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            				.addComponent(latLbl).addComponent(lonLbl))
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-            				.addComponent(latText).addComponent(lonText).addComponent(coordBtn)));
+            //Border border = new EtchedBorder(EtchedBorder.LOWERED);
             
-            layout.setVerticalGroup(layout.createSequentialGroup()
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            				.addComponent(latLbl).addComponent(latText))
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            				.addComponent(lonLbl).addComponent(lonText))
-            		.addComponent(coordBtn).addGap(5));
-            corMarkerPanel.add(coordinatesP);
+            PanelBuilder coordsPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,2px,p,4px,p"));
+            coordsPB.addSeparator(UIRegistry.getResourceString(L10N+"POS"), cc.xyw(1, 1, 4));
+            coordsPB.add(UIHelper.createI18NFormLabel("Latitude", SwingConstants.RIGHT), cc.xy(1, 3));
+            coordsPB.add(latText, cc.xyw(3, 3, 2));
+            coordsPB.add(UIHelper.createI18NFormLabel("Longitude", SwingConstants.RIGHT), cc.xy(1, 5));
+            coordsPB.add(lonText, cc.xyw(3, 5, 2));
             
+            coordsPB.add(coordBtn, cc.xy(4, 7));
             
-            JPanel uncertaintyP = new JPanel();
-            uncertaintyP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-            layout = new GroupLayout(uncertaintyP);
-            uncertaintyP.setLayout(layout);
-            layout.setAutoCreateGaps(true);
-            layout.setAutoCreateContainerGaps(true);
-            JLabel uncertLbl1 = new JLabel("uncertainty radius");
-            JLabel uncertLbl2 = new JLabel("in meters: ");
-            uncertTxt = new JTextField();
-            uncertTxt.addFocusListener(new FocusListener() {
-				
-				@Override
-				public void focusLost(FocusEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void focusGained(FocusEvent e) {
-					statusErrorLbl.setText("");
-					
-				}
-			});
+            corMarkerPB.add(coordsPB.getPanel(), cc.xy(1,1));
+            
+            uncertTxt = UIHelper.createTextField();
+            uncertTxt.addFocusListener(focLis);
+            uncertBtn = UIHelper.createI18NButton("Apply");
+            
+            PanelBuilder uncertaintyPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,4px,f:p:g,p"));
+            uncertaintyPB.addSeparator(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"), cc.xyw(1, 1, 4));
+            uncertaintyPB.add(UIHelper.createI18NFormLabel("In meters"), cc.xy(1, 3));
+            uncertaintyPB.add(uncertTxt, cc.xyw(3, 3, 2));
+            uncertaintyPB.add(uncertBtn, cc.xy(4, 6));
+            
+            corMarkerPB.add(uncertaintyPB.getPanel(), cc.xy(3, 1));
 
-            uncertBtn = new JButton("apply manual");
-            uncertBtn.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (e.getActionCommand().equalsIgnoreCase("apply manual"))
-					{
-						long uRad = 0;
-						try
-						{
-							uRad = Long.parseLong(uncertTxt.getText());
-						}
-						
-						catch (Exception ex)
-						{
-							statusErrorLbl.setText("Error: Invalid uncertainty radius data type.");
-							return;
-						}
-						
-						geoMapper.editUncertaintyCircle(uRad);
-						geoMapper.hideEditUncertaintyHandle();
-						uncertBtn.setText("edit radius");
-						uncertTxt.setEditable(false);
-					}
-					
-					else
-					{
-						uncertTxt.setEditable(true);
-						uncertBtn.setText("apply manual");
-						geoMapper.showEditUncertaintyHandle();
-					}
-				}
-			});
-            
-            layout.setHorizontalGroup(layout.createSequentialGroup()
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            				.addComponent(uncertLbl1).addComponent(uncertLbl2))
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    				.addComponent(uncertTxt).addComponent(uncertBtn)));
-            
-            layout.setVerticalGroup(layout.createSequentialGroup()
-            		.addComponent(uncertLbl1)
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            				.addComponent(uncertLbl2).addComponent(uncertTxt))
-            		.addComponent(uncertBtn));
-            corMarkerPanel.add(uncertaintyP);
-            
-            JPanel errorPolygonP = new JPanel();
-            errorPolygonP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-            layout = new GroupLayout(errorPolygonP);
-            errorPolygonP.setLayout(layout);
-            layout.setAutoCreateGaps(true);
-            layout.setAutoCreateContainerGaps(true);
-            JLabel errorPLbl= new JLabel("error polygon");
-            errorPTxt = new JTextArea();
-            errorPTxt.addFocusListener(new FocusListener() {
-				
-				@Override
-				public void focusLost(FocusEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void focusGained(FocusEvent e) {
-					statusErrorLbl.setText("");
-					
-				}
-			});
-
+            errorPTxt = UIHelper.createTextArea();
             errorPTxt.setLineWrap(true);
+            errorPTxt.addFocusListener(focLis);
+            
             JScrollPane errorPScrollPane = new JScrollPane(errorPTxt, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             errorPScrollPane.setPreferredSize(new Dimension(70, 50));
-            errorPBtn = new JButton("apply manual");
+            errorPBtn = UIHelper.createI18NButton("Apply");
+            
+            PanelBuilder errorPolygonPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,4px,f:p:g,p"));
+            errorPolygonPB.addSeparator(UIRegistry.getResourceString(L10N+"ERR_POLYGON"), cc.xyw(1, 1, 4));
+            errorPolygonPB.add(errorPScrollPane, cc.xyw(1,3,4));
+            errorPolygonPB.add(errorPBtn,        cc.xy(4, 6));
+            
+            corMarkerPB.add(errorPolygonPB.getPanel(), cc.xy(5,1));
+            
+            uncertBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (ucBtnState == UnCertBtnStateType.eApply)
+                    {
+                        long uRad = 0;
+                        try
+                        {
+                            uRad = Long.parseLong(uncertTxt.getText());
+                        } catch (Exception ex)
+                        {
+                            statusErrorLbl.setText(UIRegistry.getResourceString(L10N+"INV_ERR_RADIUS"));
+                            return;
+                        }
+                        
+                        geoMapper.editUncertaintyCircle(uRad);
+                        geoMapper.hideEditUncertaintyHandle();
+                        
+                        uncertTxt.setEditable(false);
+                        uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+                        ucBtnState = UnCertBtnStateType.eEdit;
+                    } else
+                    {
+                        uncertTxt.setEditable(true);
+                        uncertBtn.setText(UIRegistry.getResourceString("Apply"));
+                        ucBtnState = UnCertBtnStateType.eApply;
+                        geoMapper.showEditUncertaintyHandle();
+                    }
+                }
+            });
+            
             errorPBtn.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (e.getActionCommand().equalsIgnoreCase("apply manual"))
-					{
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (errBtnState == ErrBtnStateType.eApply)
+                    {
 
-			        	List<GeoPosition> errorRegion = new ArrayList<GeoPosition>();
-						try
-						{
-							if (errorPTxt.getText().length() > 0)
-							{
-								double lat = Double.NaN; 
-					        	double lon = Double.NaN;
-					        	String[] latLons =  errorPTxt.getText().split(",");
-					        	for (int i=0; i<latLons.length; i++)
-					        	{
-					        		if ((i%2) == 0) //Latitude.
-					        			lat = Double.parseDouble(latLons[i]);
-					        		else //Longitude.
-					        		{
-					        			lon = Double.parseDouble(latLons[i]);
-					        			GeoPosition pos = new GeoPosition(lat, lon);
-					        			errorRegion.add(pos);
-					        		}
-					        	}
-							}
-						}
-						
-						catch (Exception ex)
-						{
-							statusErrorLbl.setText("Error: Invalid polygon string format.");
-							return;
-						}
-						
-						geoMapper.drawPolygon(errorRegion);
-						geoMapper.hideEditPolygonHandle();
-						errorPBtn.setText("clear polygon");
-						errorPTxt.setEditable(false);
-					}
-					
-					else if (e.getActionCommand().equalsIgnoreCase("draw polygon"))
-					{
-						errorPTxt.setEditable(true);
-						errorPBtn.setText("apply manual");
-						geoMapper.showEditPolygonHandle();
-					}
-					
-					else if (e.getActionCommand().equalsIgnoreCase("clear polygon"))
-					{
-						errorPTxt.setText("");
-						geoMapper.removePolygon();
-						errorPBtn.setText("draw polygon");
-						geoMapper.getMostAccurateResultPt().getLocality().setErrorPolygon(null);
-					}
-				}
-			});
-            
-            layout.setHorizontalGroup(layout.createSequentialGroup()
-            		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-            				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            						.addComponent(errorPLbl).addComponent(errorPScrollPane))
-            				.addComponent(errorPBtn)));
-            
-            layout.setVerticalGroup(layout.createSequentialGroup()
-            		.addComponent(errorPLbl).addComponent(errorPScrollPane).addComponent(errorPBtn));
-            corMarkerPanel.add(errorPolygonP);
-            
+                        List<GeoPosition> errorRegion = new ArrayList<GeoPosition>();
+                        try
+                        {
+                            if (errorPTxt.getText().length() > 0)
+                            {
+                                double lat = Double.NaN; 
+                                double lon = Double.NaN;
+                                String[] latLons =  errorPTxt.getText().split(",");
+                                for (int i=0; i<latLons.length; i++)
+                                {
+                                    if ((i%2) == 0) //Latitude.
+                                        lat = Double.parseDouble(latLons[i]);
+                                    else //Longitude.
+                                    {
+                                        lon = Double.parseDouble(latLons[i]);
+                                        GeoPosition pos = new GeoPosition(lat, lon);
+                                        errorRegion.add(pos);
+                                    }
+                                }
+                            }
+                        } catch (Exception ex)
+                        {
+                            statusErrorLbl.setText(UIRegistry.getResourceString(L10N+"INV_POLY"));
+                            return;
+                        }
+                        
+                        geoMapper.drawPolygon(errorRegion);
+                        geoMapper.hideEditPolygonHandle();
+                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
+                        errBtnState = ErrBtnStateType.eClear;
+                        errorPTxt.setEditable(false);
+                        
+                    } else if (errBtnState == ErrBtnStateType.eDraw)
+                    {
+                        errorPTxt.setEditable(true);
+                        errorPBtn.setText(UIRegistry.getResourceString("Apply"));
+                        errBtnState = ErrBtnStateType.eApply;
+                        geoMapper.showEditPolygonHandle();
+                        
+                    } else if (errBtnState == ErrBtnStateType.eClear)
+                    {
+                        errorPTxt.setText("");
+                        geoMapper.removePolygon();
+                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"DRW_POLYGON"));
+                        errBtnState = ErrBtnStateType.eDraw;
+                        geoMapper.getMostAccurateResultPt().getLocality().setErrorPolygon(null);
+                    }
+                }
+            });
             
             //add(mapLabel, cc.xywh(5,1,1,9));
             //Add the map.
@@ -422,19 +352,25 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         	statusPanel.setPreferredSize(new Dimension(MAP_WIDTH2, 16));
         	statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
         	
+        	Font font = new Font("Arial", Font.PLAIN, 10);
+        	
         	statusLatLbl = new JLabel("Lat: ,", JLabel.LEFT);
         	statusLatLbl.setPreferredSize(new Dimension(100, 12));
-        	statusLatLbl.setFont(new Font("Arial", Font.PLAIN, 10));
+        	statusLatLbl.setFont(font);
+        	
         	statusLonLbl = new JLabel("Lon: ", JLabel.LEFT);
         	statusLonLbl.setPreferredSize(new Dimension(100, 12));
-        	statusLonLbl.setFont(new Font("Arial", Font.PLAIN, 10));
+        	statusLonLbl.setFont(font);
+        	
         	statusURLbl = new JLabel("", JLabel.LEFT);
         	statusURLbl.setPreferredSize(new Dimension(100, 12));
-        	statusURLbl.setFont(new Font("Arial", Font.PLAIN, 10));
+        	statusURLbl.setFont(font);
+        	
         	statusErrorLbl = new JLabel("", JLabel.LEFT);
         	statusErrorLbl.setPreferredSize(new Dimension(290, 12));
         	statusErrorLbl.setForeground(Color.RED);
-        	statusErrorLbl.setFont(new Font("Arial", Font.PLAIN, 10));
+        	statusErrorLbl.setFont(font);
+        	
         	statusPanel.add(statusErrorLbl);
         	statusPanel.add(statusURLbl);
         	statusPanel.add(statusLatLbl);
@@ -449,7 +385,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 				@Override
 				public void uncertaintyCircleResizeCancelled() {
 					geoMapper.hideEditUncertaintyHandle();
-					uncertBtn.setText("edit radius");
+                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+                    ucBtnState = UnCertBtnStateType.eEdit;
 					uncertTxt.setEditable(false);
 				}
 			});
@@ -460,7 +397,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 				public void errorPolygonDrawCancelled() {
 					errorPTxt.setText("");
 					errorPTxt.setEditable(false);
-					errorPBtn.setText("draw polygon");
+                    errorPBtn.setText(UIRegistry.getResourceString(L10N+"DRW_POLYGON"));
+                    errBtnState = ErrBtnStateType.eDraw;
 				}
 			});
         	
@@ -472,9 +410,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							.getErrorPolygon());
 					
 					geoMapper.hideEditPolygonHandle();
-					errorPBtn.setText("clear polygon");
+                    errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
+                    errBtnState = ErrBtnStateType.eClear;
 					errorPTxt.setEditable(false);
-					
 				}
 			});
         	
@@ -486,7 +424,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							.getUncertaintyMeters());
 					
 					geoMapper.hideEditUncertaintyHandle();
-					uncertBtn.setText("edit radius");
+                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+                    ucBtnState = UnCertBtnStateType.eEdit;
 					uncertTxt.setEditable(false);
 					statusURLbl.setText("");
 				}
@@ -561,10 +500,13 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							if ((resErrorP != null) && !(resErrorP.equalsIgnoreCase("unavailable")))
 							{
 								errorPTxt.setText(resErrorP);
-								errorPBtn.setText("clear polygon");
-							}
-							else
+		                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
+		                        errBtnState = ErrBtnStateType.eClear;
+		                        
+							} else
+							{
 								errorPTxt.setText("");
+							}
 							break;
 						}
 					}
@@ -651,9 +593,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                     wwPanel.flyToMarker(resultsTable.getSelectedRow());
                 }
             });
-        }
-        
-        else
+        } else
         {
         	resultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 @Override
@@ -675,13 +615,16 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						{
 							uncertTxt.setText(resUncert);
 							uncertTxt.setEditable(false);
-							uncertBtn.setText("edit radius");
+	                        uncertBtn.setText(UIRegistry.getResourceString(L10N+"EDT_RADIUS"));
+	                        ucBtnState = UnCertBtnStateType.eEdit;
 						}
 						else
 						{
 							uncertTxt.setText("");
 							uncertTxt.setEditable(true);
-							uncertBtn.setText("apply manual");
+	                        uncertBtn.setText(UIRegistry.getResourceString("Apply"));
+	                        ucBtnState = UnCertBtnStateType.eApply;
+
 						}
 						
 						String resErrorP = res.getUncertaintyPolygon();
@@ -689,13 +632,15 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						{
 							errorPTxt.setText(resErrorP);
 							errorPTxt.setEditable(false);
-							errorPBtn.setText("clear polygon");
+	                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
+	                        errBtnState = ErrBtnStateType.eClear;
 						}
 						else
 						{
 							errorPTxt.setText("");
 							errorPTxt.setEditable(false);
-							errorPBtn.setText("draw polygon");
+	                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"DRW_POLYGON"));
+	                        errBtnState = ErrBtnStateType.eDraw;
 						}
                 	}
                 }
@@ -721,35 +666,40 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         
         JScrollPane scrollPane = new JScrollPane(resultsTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, cc.xywh(1,rowIndex, 3, 1));
-        rowIndex+=2;
+        rowIndex += 2;
     }
     
-    protected void setStatusBarCoordinates(double latitude, double longitude) {
-    	String msg = String.format("Lat: %10.6f,", latitude);
-    	statusLatLbl.setText(msg);
-    	msg = String.format("Lon: %11.6f", longitude);
-    	statusLonLbl.setText(msg);
-	}
+    /**
+     * @param latitude
+     * @param longitude
+     */
+    protected void setStatusBarCoordinates(double latitude, double longitude)
+    {
+        statusLatLbl.setText(String.format("Lat: %10.6f,", latitude));
+        statusLonLbl.setText(String.format("Lon: %11.6f", longitude));
+    }
 
-	protected void applyManualCoordinates() {
-		
-		double lat = Double.NaN;
-		double lon = Double.NaN;
-		
-		try
-		{
-			lat = Double.parseDouble(latText.getText());
-			lon = Double.parseDouble(lonText.getText());
-		}
-		
-		catch (Exception ex)
-		{
-			statusErrorLbl.setText("Error: Invalid coordinate(s) data type.");
-			return;
-		}
-		
-		geoMapper.snapMostAccuratePointTo(new GeoPosition(lat, lon));
-	}
+    /**
+     * 
+     */
+    protected void applyManualCoordinates()
+    {
+
+        double lat = Double.NaN;
+        double lon = Double.NaN;
+
+        try
+        {
+            lat = Double.parseDouble(latText.getText());
+            lon = Double.parseDouble(lonText.getText());
+        } catch (Exception ex)
+        {
+            statusErrorLbl.setText("Error: Invalid coordinate(s) data type.");
+            return;
+        }
+
+        geoMapper.snapMostAccuratePointTo(new GeoPosition(lat, lon));
+    }
 
 	/**
      * @param acceptBtn the acceptBtn to set
@@ -772,7 +722,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         // Create User defined point/marker
         userDefGeoRef = new Georef_Result();
         userDefGeoRef.setWGS84Coordinate(pnt);
-        userDefGeoRef.setParsePattern(getResourceString("GeoLocateResultsDisplay.USRDEF")); // XXX I18N
+        userDefGeoRef.setParsePattern(getResourceString(L10N + "USRDEF")); // XXX I18N
         tableModel.add(userDefGeoRef);
         
         // Auto select the User Defined row
@@ -839,7 +789,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             
         } else
         {
-            //mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
+            //mapLabel.setText(getResourceString(L10N + "LOADING_MAP")); //$NON-NLS-1$
         	//Build locality way points to plot.
         	LocalityWaypoint[] lWps = new LocalityWaypoint[ georefResults.getNumResults()];
         	int index = 0;
@@ -912,9 +862,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
      */
     public void exceptionOccurred(Exception e)
     {
-        if (mapLabel != null) mapLabel.setText(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP")); //$NON-NLS-1$
+        if (mapLabel != null) mapLabel.setText(getResourceString(L10N + "ERROR_GETTING_MAP")); //$NON-NLS-1$
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setErrorMessage(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP"), e); //$NON-NLS-1$
+        statusBar.setErrorMessage(getResourceString(L10N + "ERROR_GETTING_MAP"), e); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -1112,31 +1062,31 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             {
                 case 0:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.NUMBER"); //$NON-NLS-1$
+                    return getResourceString(L10N + "NUMBER"); //$NON-NLS-1$
                 }
                 case 1:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.LATITUDE"); //$NON-NLS-1$
+                    return getResourceString(L10N + "LATITUDE"); //$NON-NLS-1$
                 }
                 case 2:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.LONGITUDE"); //$NON-NLS-1$
+                    return getResourceString(L10N + "LONGITUDE"); //$NON-NLS-1$
                 }
                 case 3:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.PARSE_PATTERN"); //$NON-NLS-1$
+                    return getResourceString(L10N + "PARSE_PATTERN"); //$NON-NLS-1$
                 }
                 case 4:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.PRECISION"); //$NON-NLS-1$
+                    return getResourceString(L10N + "PRECISION"); //$NON-NLS-1$
                 }
                 case 5:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.ERROR_POLY"); //$NON-NLS-1$
+                    return getResourceString(L10N + "ERROR_POLY"); //$NON-NLS-1$
                 }
                 case 6:
                 {
-                    return getResourceString("GeoLocateResultsDisplay.UNCERTAINTY"); //$NON-NLS-1$
+                    return getResourceString(L10N + "UNCERTAINTY"); //$NON-NLS-1$
                 }
             }
             return null;

@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -59,6 +63,8 @@ import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.Pair;
 import gov.nasa.worldwind.render.Polyline;
 
@@ -214,43 +220,103 @@ public class LifeMapperPane extends BaseSubPane
     {
         listModel.clear();
         occurList.clear();
-        
-        HttpClient httpClient = new HttpClient();
-        httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        
-        String genusSpecies = StringUtils.replace(searchText.getText(), " ", "%20");
-        String url = "http://www.lifemapper.org/hint/species/"+genusSpecies;
-        System.out.println(url);
-        
-        PostMethod postMethod = new PostMethod(url);
-        try
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
+        glassPane.setTextYPos((int)((double)getSize().height * 0.25));
+
+        SwingWorker<String, String> worker = new SwingWorker<String, String>()
         {
-            httpClient.executeMethod(postMethod);
-            
-            // get the server response
-            String responseString = postMethod.getResponseBodyAsString();
-            
-            if (StringUtils.isNotEmpty(responseString))
+            @Override
+            protected String doInBackground() throws Exception
             {
-                String[] lines = StringUtils.split(responseString, '\n');
-                for (String line : lines)
+                HttpClient httpClient = new HttpClient();
+                httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+                
+                String genusSpecies = StringUtils.replace(searchText.getText(), " ", "%20");
+                String url = "http://www.lifemapper.org/hint/species/"+genusSpecies;
+                //System.out.println(url);
+                
+                PostMethod postMethod = new PostMethod(url);
+                try
                 {
-                    String[] fields = StringUtils.split(line, '\t');
-                    listModel.addElement(String.format("%s (%s)", fields[0], fields[2]));
-                    occurList.add(fields[1]);
+                    httpClient.executeMethod(postMethod);
+                    return postMethod.getResponseBodyAsString();
                 }
-                System.err.println(responseString);
+                catch (java.net.UnknownHostException uex)
+                {
+                    //log.error(uex.getMessage());
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                return null;
             }
 
-        }
-        catch (java.net.UnknownHostException uex)
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                boolean isError = true;
+                
+                try
+                {
+                    String responseString = get();
+                    
+                    if (StringUtils.isNotEmpty(responseString))
+                    {
+                        String[] lines = StringUtils.split(responseString, '\n');
+                        for (String line : lines)
+                        {
+                            String[] fields = StringUtils.split(line, '\t');
+                            if (fields != null && fields.length == 3)
+                            {
+                                listModel.addElement(String.format("%s (%s)", fields[0], fields[2]));
+                                occurList.add(fields[1]);
+                            }
+                        }
+                        isError = false;
+                        //System.err.println(responseString);
+                    }
+                    
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+                
+                if (isError)
+                {
+                    showErrorMsg(glassPane);
+                } else
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
+            }
+        };
+        worker.execute();
+    }
+    
+    /**
+     * @param glassPane
+     */
+    protected void showErrorMsg(final SimpleGlassPane glassPane)
+    {
+        glassPane.setTextColor(Color.RED);
+        glassPane.setText(getLocalizedMessage("LifeMapperTask.PROC_ERR"));
+        
+        SwingUtilities.invokeLater(new Runnable()
         {
-            //log.error(uex.getMessage());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+            
+            @Override
+            public void run()
+            {
+                try { Thread.sleep(2000); } catch (Exception ex){}
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
+        });
     }
     
     /**
@@ -259,10 +325,14 @@ public class LifeMapperPane extends BaseSubPane
     @SuppressWarnings("unchecked")
     private void doSearchOccur()
     {
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
+        glassPane.setTextYPos((int)((double)getSize().height * 0.25));
+        
+        
         points.clear();
         
         // check the website for the info about the latest version
-        HttpClient httpClient = new HttpClient();
+        final HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
         
         if (list.getSelectedIndex() < 0)
@@ -271,76 +341,122 @@ public class LifeMapperPane extends BaseSubPane
         }
         
         occurSet = occurList.get(list.getSelectedIndex());
-        String url = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurSet);
-        System.out.println(url);
+        final String url = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurSet);
+        //System.out.println(url);
         
-        GetMethod  getMethod  = new GetMethod(url);
-        
-        try
+        SwingWorker<String, String> worker = new SwingWorker<String, String>()
         {
-            httpClient.executeMethod(getMethod);
-            
-            // get the server response
-            String responseString = getMethod.getResponseBodyAsString();
-            if (StringUtils.isNotEmpty(responseString))
+            @Override
+            protected String doInBackground() throws Exception
             {
-                //System.err.println(responseString);
-            }
-            
-            String bboxStr = "-180.0,-90.0,180.0,90.0";
-            
-            JSONTokener tok = new JSONTokener(responseString);
-            while (tok.more())
-            {
-                JSONObject obj = (JSONObject)tok.nextValue();
+                GetMethod  getMethod  = new GetMethod(url);
                 
-                JSONArray titleArray = (JSONArray)obj.get("title");
-                System.out.println(titleArray.get(0));
-                
-                JSONArray pointArray = (JSONArray)obj.get("point");
-                Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
-                while (iter.hasNext())
+                try
                 {
-                    JSONObject pObj = (JSONObject)iter.next();
-                    String lat  = (String)pObj.get("latitude");
-                    String lon  = (String)pObj.get("longitude");
-                    System.out.println(lat+"  "+lon);
+                    httpClient.executeMethod(getMethod);
                     
-                    LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
-                    points.add(plcMark);
+                    // get the server response
+                    String responseString = getMethod.getResponseBodyAsString();
+                    if (StringUtils.isNotEmpty(responseString))
+                    {
+                        //System.err.println(responseString);
+                    }
+                    return responseString;
                 }
-                
-                wwPanel.reset();
-                if (points.size() > 0)
+                catch (java.net.UnknownHostException uex)
                 {
-                    wwPanel.placeMarkers(points, 0);
+                    //log.error(uex.getMessage());
                 }
-                
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                return null;
             }
-            
-            bboxStr = "-180.0,-90.0,180.0,90.0";
-            String fmtUrl = "http://lifemapper.org/ogc?map=data_%s&layers=bmng,occ_%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=450&height=225&styles=&color=ff0000";
-            url = String.format(fmtUrl, occurSet, occurSet, bboxStr);
-            System.out.println(url);
-            
-            imgDisplay.setValue(url, null);
-            SwingUtilities.invokeLater(new Runnable()
+
+            @Override
+            protected void done()
             {
-                @Override
-                public void run()
+                super.done();
+                
+                boolean isError = true;
+                
+                try
                 {
-                    imgDisplay.loadImage();
+                    String responseString = get();
+                    
+                    if (StringUtils.isNotEmpty(responseString))
+                    {
+                        String bboxStr = "-180.0,-90.0,180.0,90.0";
+                        
+                        JSONTokener tok = new JSONTokener(responseString);
+                        while (tok.more())
+                        {
+                            JSONObject obj = (JSONObject)tok.nextValue();
+                            
+                            //JSONArray titleArray = (JSONArray)obj.get("title");
+                            //System.out.println(titleArray.get(0));
+                            
+                            JSONArray pointArray = (JSONArray)obj.get("point");
+                            Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
+                            while (iter.hasNext())
+                            {
+                                JSONObject pObj = (JSONObject)iter.next();
+                                String lat  = (String)pObj.get("latitude");
+                                String lon  = (String)pObj.get("longitude");
+                                //System.out.println(lat+"  "+lon);
+                                
+                                LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
+                                points.add(plcMark);
+                            }
+                            
+                            wwPanel.reset();
+                            if (points.size() > 0)
+                            {
+                                wwPanel.placeMarkers(points, 0);
+                            }
+                            isError = false;
+                        }
+                        
+                        bboxStr = "-180.0,-90.0,180.0,90.0";
+                        String fmtUrl = "http://lifemapper.org/ogc?map=data_%s&layers=bmng,occ_%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=450&height=225&styles=&color=ff0000";
+                        String url = String.format(fmtUrl, occurSet, occurSet, bboxStr);
+                        //System.out.println(url);
+                        
+                        imgDisplay.setValue(url, null);
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                imgDisplay.loadImage();
+                            }
+                        });
+                    } else
+                    {
+                        // error
+                    }
+                    
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
                 }
-            });
-        }
-        catch (java.net.UnknownHostException uex)
-        {
-            //log.error(uex.getMessage());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+                
+                if (isError)
+                {
+                    showErrorMsg(glassPane);
+                } else
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
+            }
+        };
+        worker.execute();
+
     }
     
     

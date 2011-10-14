@@ -2886,6 +2886,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+      IconManager.loadIcons(XMLHelper.getConfigDir("icons_imgproc.xml")); //$NON-NLS-1$
       
       /*if (UIHelper.isMacOS())
       {

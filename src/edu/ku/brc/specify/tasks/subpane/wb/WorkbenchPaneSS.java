@@ -1808,7 +1808,18 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Show image for a selected row. 
      */
-    protected void showCardImageForSelectedRow()
+    public void refreshImagesForSelectedRow()
+    {
+        if (imageFrame != null)
+        {
+            imageFrame.refreshImages();
+        }
+    }
+    
+    /**
+     * Show image for a selected row. 
+     */
+    public void showCardImageForSelectedRow()
     {
         int selectedIndex = getCurrentIndex();
         if (selectedIndex == -1)

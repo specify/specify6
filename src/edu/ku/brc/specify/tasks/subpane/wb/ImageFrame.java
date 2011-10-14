@@ -941,7 +941,15 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             noRowSelected();
             return;
         }
-
+        
+        refreshImages();
+    }
+    
+    /**
+     * 
+     */
+    public void refreshImages()
+    {
         // put the correct thumbs in the tray UI
         tray.getModel().removeAllElements();
         

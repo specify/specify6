@@ -67,6 +67,7 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
     private Color  textColor    = null;
     private Color  fillColor    = new Color(0, 0, 0, 50);
     private Insets margin       = new Insets(0,0,0,0);
+    private Integer yPos        = null;
     
     private  boolean          useBGImage       		= false;
     private  boolean          hideOnClick      		= false;
@@ -345,6 +346,14 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
         return true;
     }
     
+    /**
+     * @param textPos the textPos to set
+     */
+    public void setTextYPos(Integer yPos)
+    {
+        this.yPos = yPos;
+    }
+
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paint(java.awt.Graphics)
      */
@@ -403,6 +412,11 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
             int th = fm.getHeight();
             int tx = (rect.width - tw) / 2;
             int ty = (rect.height - th) / 2;
+            
+            if (yPos != null)
+            {
+                ty = yPos;
+            }
             
             int expand = 20;
             int arc    = expand * 2;
