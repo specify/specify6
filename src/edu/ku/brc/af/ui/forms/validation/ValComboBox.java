@@ -734,7 +734,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
             isNew = isFormObjNew = multiView.isNewForm();
         }
         
-        Object  value  = valueArg == null ? defaultValue : null;
+        Object  value  = valueArg == null ? defaultValue : valueArg;
         Integer fndInx = -1;
         
         if (value != null)

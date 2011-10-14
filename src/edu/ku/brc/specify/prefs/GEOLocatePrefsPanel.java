@@ -111,8 +111,12 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         doPolyCBX.setValue(locPrefs.getBoolean(GL_DOPOLY, isFish), null);
         displacePolyCBX.setValue(locPrefs.getBoolean(GL_DISPLACEPOLY, isFish), null);
         geoLocMapServerCBX.setValue(locPrefs.getBoolean(GL_USEGL_MAPS, true), null);
+        //languageKeyCoBX.setValue(locPrefs.get(GL_LANGKEY, null), null);
     }
     
+    /**
+     * @return
+     */
     public Viewable getForm()
     {
     	return form;
@@ -136,17 +140,17 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     
     /**
      * @param cbx
-     * @param name
+     * @param cmpName
      * @param changeHash
      */
-    private void checkChanged(final ValCheckBox cbx, final String name, final Properties changeHash)
+    private void checkChanged(final ValCheckBox cbx, final String cmpName, final Properties changeHash)
     {
         if (cbx != null && cbx.isChanged())
         {
             Object value = cbx.getValue();
             if (value != null)
             {
-                changeHash.put(name, value);
+                changeHash.put(cmpName, value);
             }
         }
     }
@@ -175,6 +179,10 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         }
     }
     
+    /**
+     * @param cbx
+     * @param prefName
+     */
     private void saveCoBX (final ValComboBox cbx, final String prefName)
     {
     	if (cbx.isChanged())
@@ -182,8 +190,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
             String method = (String)cbx.getValue();
             if (method != null)
             {
-            	AppPreferences prefs = AppPreferences.getRemote();
-                prefs.put(prefName, method);
+            	AppPreferences.getLocalPrefs().put(prefName, method);
             }
         }
     }
