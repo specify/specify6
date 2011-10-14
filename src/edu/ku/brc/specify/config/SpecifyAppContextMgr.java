@@ -938,7 +938,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             return null;
         }
         
-        removeAppResource(virtualDirName, appResource);
+        removeAppResource(virtualDirName, fndAppRes);
             
         return null;
     }
@@ -3281,7 +3281,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         int rv = displayAgentsLoggedInDlg(null, msgKey, false);
         
-        return rv != CustomDialog.NONE_BTN; 
+        return rv == CustomDialog.NONE_BTN; 
     }
     
     /**
