@@ -892,6 +892,9 @@
                     <cell type="field" id="GEOLocate.DISPLACEPOLY" name="GEOLocate.DISPLACEPOLY" uitype="checkbox" label="GL_DISPLACEPOLY" colspan="4"/>
                 </row>
                 <row>
+                    <cell type="field" id="GEOLocate.USEGL_MAPS" name="GEOLocate.USEGL_MAPS" uitype="checkbox" label="GL_USEGL_MAPS" colspan="4"/>
+                </row>
+                <row>
                 	<cell type="label" labelfor="GEOLocate.LANGUAGEKEY" label="GL_LANGKEY" />
                     <cell type="field" id="GEOLocate.LANGUAGEKEY" name="GEOLocate.LANGUAGEKEY" uitype="combobox" isrequired="true" 
                     initialize="data=English, Spanish, Basque, Catalan, Galician"/>

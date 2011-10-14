@@ -46,7 +46,8 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     private static final String GL_DOUNCERT 	= "GEOLocate.DOUNCERT";
     private static final String GL_DOPOLY 		= "GEOLocate.DOPOLY";
     private static final String GL_DISPLACEPOLY = "GEOLocate.DISPLACEPOLY";
-    private static final String GL_LANGKEY 		= "GEOLocate.LANGUAGEKEY";
+    private static final String GL_LANGKEY      = "GEOLocate.LANGUAGEKEY";
+    private static final String GL_USEGL_MAPS   = "GEOLocate.USEGL_MAPS";
     
     protected ValCheckBox  hywXCBX;
     protected ValCheckBox  waterBodyCBX;
@@ -54,6 +55,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     protected ValCheckBox  doUncertCBX;
     protected ValCheckBox  doPolyCBX;
     protected ValCheckBox  displacePolyCBX;
+    protected ValCheckBox  geoLocMapServerCBX;
     protected ValComboBox  languageKeyCoBX;
 
     /**
@@ -80,9 +82,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         if (languageKeyCoBX != null)
         {
         	languageKeyCoBX.setValue(languageKey, null);
-        	
         }
-        
     }
     
     /* (non-Javadoc)
@@ -93,22 +93,24 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     {
         super.createForm(viewSetName, viewName);
         
-        hywXCBX      = form.getCompById(GL_HYWX);
-        waterBodyCBX = form.getCompById(GL_WTRBODY);
+        hywXCBX            = form.getCompById(GL_HYWX);
+        waterBodyCBX       = form.getCompById(GL_WTRBODY);
         restrictToLowestAdmCBX = form.getCompById(GL_RESTRICT);
-        doUncertCBX = form.getCompById(GL_DOUNCERT);
-        doPolyCBX = form.getCompById(GL_DOPOLY);
-        displacePolyCBX = form.getCompById(GL_DISPLACEPOLY);
-        languageKeyCoBX = form.getCompById(GL_LANGKEY);
-        
+        doUncertCBX        = form.getCompById(GL_DOUNCERT);
+        doPolyCBX          = form.getCompById(GL_DOPOLY);
+        displacePolyCBX    = form.getCompById(GL_DISPLACEPOLY);
+        languageKeyCoBX    = form.getCompById(GL_LANGKEY);
+        geoLocMapServerCBX = form.getCompById(GL_USEGL_MAPS);
         boolean isFish = Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish);
         
-        hywXCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_HYWX, isFish), "");
-        waterBodyCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_WTRBODY, isFish), "");
-        restrictToLowestAdmCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_RESTRICT, !isFish), "");
-        doUncertCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_DOUNCERT, isFish), "");
-        doPolyCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_DOPOLY, isFish), "");
-        displacePolyCBX.setValue(AppPreferences.getLocalPrefs().getBoolean(GL_DISPLACEPOLY, isFish), "");
+        AppPreferences locPrefs = AppPreferences.getLocalPrefs();
+        hywXCBX.setValue(locPrefs.getBoolean(GL_HYWX, isFish), null);
+        waterBodyCBX.setValue(locPrefs.getBoolean(GL_WTRBODY, isFish), null);
+        restrictToLowestAdmCBX.setValue(locPrefs.getBoolean(GL_RESTRICT, !isFish), null);
+        doUncertCBX.setValue(locPrefs.getBoolean(GL_DOUNCERT, isFish), null);
+        doPolyCBX.setValue(locPrefs.getBoolean(GL_DOPOLY, isFish), null);
+        displacePolyCBX.setValue(locPrefs.getBoolean(GL_DISPLACEPOLY, isFish), null);
+        geoLocMapServerCBX.setValue(locPrefs.getBoolean(GL_USEGL_MAPS, true), null);
     }
     
     public Viewable getForm()
@@ -198,6 +200,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         saveCBX(doUncertCBX, GL_DOUNCERT);
         saveCBX(doPolyCBX, GL_DOPOLY);
         saveCBX(displacePolyCBX, GL_DISPLACEPOLY);
+        saveCBX(geoLocMapServerCBX, GL_USEGL_MAPS);
         saveCoBX(languageKeyCoBX, GL_LANGKEY);
     }
 }
