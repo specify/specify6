@@ -1,13 +1,20 @@
 package edu.ku.brc.services.geolocate.prototype.ui;
 
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.JButton;
 
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.geolocate.prototype.LocalityWaypoint;
@@ -17,6 +24,7 @@ import edu.ku.brc.services.geolocate.prototype.client.Georef_Result_Set;
 import edu.ku.brc.services.geolocate.prototype.ui.GeoLocateResultsDisplay;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 public class GeoLocateResultsChooser extends CustomDialog
@@ -68,11 +76,70 @@ public class GeoLocateResultsChooser extends CustomDialog
     @Override
     public void createUI()
     {
+    	 JButton webGeorefBtn = new JButton("GEOLocate Web", IconManager.getIcon("GEOLocate16"));
+         webGeorefBtn.addActionListener(new ActionListener() {
+ 			
+ 			@Override
+ 			public void actionPerformed(ActionEvent e) {
+ 	            try
+ 	            {
+ 	            	String url = "http://www.museum.tulane.edu/geolocate/web/WebGeoref.aspx?v=1";
+ 	            	
+            		Georef_Result_Set res = rowsAndResults.get(rowIndex).second;
+            		GeoCoordDataIFace loc = rowsAndResults.get(rowIndex).first;
+            		
+            		url += String.format("&country=%1$s&state=%2$s&county=%3$s&locality=%4$s",  URLEncoder.encode(loc.getCountry(), "UTF-8"),
+            				URLEncoder.encode(loc.getState(), "UTF-8"),  URLEncoder.encode(loc.getCounty(), "UTF-8"), 
+            				URLEncoder.encode( loc.getLocalityString(), "UTF-8"));
+            		
+            		String points = "&points=";
+            		for (int j = 0; j < res.getNumResults(); j++)
+            		{
+            			String latStr = Double.toString(res.getResultSet()[j].getWGS84Coordinate().getLatitude());
+ 	            		String lonStr = Double.toString(res.getResultSet()[j].getWGS84Coordinate().getLongitude());
+ 	            		String patStr = res.getResultSet()[j].getParsePattern();
+ 	            		patStr = (patStr == null)? "" : patStr;
+ 	            		String precStr = res.getResultSet()[j].getPrecision();
+ 	            		precStr = (precStr == null)? "" : precStr + " (" + res.getResultSet()[j].getScore() + ")";
+ 	            		String uncertStr = res.getResultSet()[j].getUncertaintyRadiusMeters();
+ 	            		uncertStr = ((uncertStr == null) || uncertStr.equalsIgnoreCase("unavailable"))? "unavailable" :
+ 	            			uncertStr;
+ 	            		
+ 	            		points += URLEncoder.encode(String.format("%1$s|%2$s|%3$s|%4$s|%5$s", cleanString(latStr), cleanString(lonStr), cleanString(patStr), 
+ 	            						cleanString(precStr), cleanString(uncertStr)), "UTF-8");
+ 	            		if (j < (res.getNumResults() - 1))
+ 	            			points += ":";
+            		}
+            		
+            		url += points;
+ 	        
+ 	                AttachmentUtils.openURI(new URL(url).toURI());
+ 	            }
+ 	            catch (Exception ex)
+ 	            {
+ 	                ex.printStackTrace();
+ 	            }
+ 			}
+ 		});
+         
+         setExtraBtn(webGeorefBtn);
+         
         super.createUI();
         
         applyBtn.setEnabled(false);
         
         resultsDisplayPanel.setAcceptBtn(applyBtn);
+    }
+    
+    private String cleanString(String str)
+    {
+        String newStr = str;
+        String[] offenders = {"\0", "\b", "\f", "\n", "\r", "\t"};
+        for (int i = 0; i < offenders.length; i++)
+        {
+            newStr = newStr.replace(offenders[i], " ");
+        }
+        return newStr.trim();
     }
 
     /**
