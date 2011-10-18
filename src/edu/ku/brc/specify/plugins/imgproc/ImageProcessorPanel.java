@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trayable;
 import edu.ku.brc.util.Pair;
@@ -79,7 +80,9 @@ public class ImageProcessorPanel extends JPanel
     protected Vector<TrayImageIcon> trayItems = new Vector<TrayImageIcon>();
     protected String                srcDir = "/Users/rods/Pictures/Eye-Fi/Pics";
     
-    protected int         step = 0;
+    protected int                   step          = 0;
+    protected int                   numPics       = 3;
+    protected int                   barcodePicInx = 0;
     
     protected String[]    procImgNames = {"camera", "barcode", "metadata", "disk"};
     
@@ -98,10 +101,11 @@ public class ImageProcessorPanel extends JPanel
     }
 
     /**
-     * 
+     * @param iconTray
+     * @param listener
      */
     public ImageProcessorPanel(final IconTray<Trayable> iconTray, 
-                           final ImageProcListener listener)
+                               final ImageProcListener listener)
     {
         super(null);
         this.iconTray = iconTray;
@@ -113,7 +117,7 @@ public class ImageProcessorPanel extends JPanel
      */
     public void createUI()
     {
-        Dimension s = new Dimension(500, 500);
+        Dimension s = new Dimension(350, 350);
         setSize(s);
         setPreferredSize(s);
         
@@ -145,7 +149,7 @@ public class ImageProcessorPanel extends JPanel
     protected void doProcLayout()
     {
         Dimension size = getSize();
-        int margin = PROC_ICON_SIZE / 2;
+        int margin = 20;
         
         Point p = new Point(margin, margin);
         for (int i=0;i<4;i++)
@@ -153,16 +157,16 @@ public class ImageProcessorPanel extends JPanel
             switch (i)
             {
                 case 0:
-                    //p.setLocation(margin, margin);
+                    p.setLocation(margin, margin*2);
                     break;
                 case 1:
-                    p.setLocation(size.width-PROC_ICON_SIZE-PROC_IMG_SIZE, margin);
+                    p.setLocation(size.width-PROC_ICON_SIZE-margin, margin*2);
                     break;
                 case 2:
-                    p.setLocation(size.width-PROC_ICON_SIZE-PROC_IMG_SIZE, size.height-PROC_ICON_SIZE-PROC_IMG_SIZE);
+                    p.setLocation(size.width-PROC_ICON_SIZE-margin, size.height-PROC_ICON_SIZE-margin);
                     break;
                 case 3:
-                    p.setLocation(margin, size.height-PROC_ICON_SIZE-PROC_IMG_SIZE);
+                    p.setLocation(margin, size.height-PROC_ICON_SIZE-margin);
                     break;
             }
             add(procObjs.get(i));
@@ -191,7 +195,7 @@ public class ImageProcessorPanel extends JPanel
         g.setColor(new Color(32, 131, 155));
         g.setFont(font);
         int w = g.getFontMetrics().stringWidth(title);
-        int y = g.getFontMetrics().getHeight() + 10;
+        int y = g.getFontMetrics().getHeight()-5;
         int x = (getSize().width - w) / 2;
         
         g.drawString(title, x, y);
@@ -211,6 +215,21 @@ public class ImageProcessorPanel extends JPanel
             }
         });
         timer.start();
+    }
+    
+    /**
+     * 
+     */
+    public void clearFiles()
+    {
+        File dir = new File(srcDir);
+        for (File f : dir.listFiles())
+        {
+            if (!f.getName().startsWith("."))
+            {
+                f.delete();
+            }
+        }
     }
     
     /**
@@ -308,7 +327,7 @@ public class ImageProcessorPanel extends JPanel
         }
         //System.out.println(dir.getAbsolutePath()+":  "+cnt);
         
-        if (cnt > 1)
+        if (cnt == numPics)
         {
             filesToProcess.clear();
             trayItems.clear();
@@ -326,9 +345,6 @@ public class ImageProcessorPanel extends JPanel
             
             Comparator<File> fileComp = new Comparator<File>()
             {
-                /* (non-Javadoc)
-                 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-                 */
                 @Override
                 public int compare(File o1, File o2)
                 {
@@ -356,6 +372,17 @@ public class ImageProcessorPanel extends JPanel
             startWatching();
         }
     }
+    
+    /**
+     * 
+     */
+    public void readSetupPrefs()
+    {
+        AppPreferences locPrefs = AppPreferences.getLocalPrefs();
+        numPics       = locPrefs.getInt("IMGWRKFLW.PIC_CNT", 3);
+        barcodePicInx = locPrefs.getInt("IMGWRKFLW.PIC_INX", 1);
+        srcDir        = locPrefs.get("IMGWRKFLW.PIC_DEST", "/Users/rods/Pictures/Eye-Fi/Pics");
+    }
 
     
     /**
@@ -365,7 +392,7 @@ public class ImageProcessorPanel extends JPanel
     {
         listener.statusMsg("Reading BarCode from image...");
         
-        File file = filesToProcess.get(1);
+        File file = filesToProcess.get(barcodePicInx);
         System.out.println("BarCode: "+file.getName());
         try
         {
@@ -399,7 +426,13 @@ public class ImageProcessorPanel extends JPanel
                     cnt++;
                 }
                 
-                listener.complete(ImageProcListener.ActionType.eBarDecoding, new Pair<String, ArrayList<File>>(number, imgFiles));
+                try
+                {
+                    listener.complete(ImageProcListener.ActionType.eBarDecoding, new Pair<String, ArrayList<File>>(number, imgFiles));
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
 
             } else
             {
@@ -423,10 +456,10 @@ public class ImageProcessorPanel extends JPanel
     {
         listener.statusMsg("Setting metadata...");
 
-        for (File f : filesToProcess) System.out.println("MetaData: "+f.getName());
+        //for (File f : filesToProcess) System.out.println("MetaData: "+f.getName());
         try
         {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (InterruptedException e)
         {
             e.printStackTrace();
@@ -440,7 +473,7 @@ public class ImageProcessorPanel extends JPanel
     protected void processSaveToDisk()
     {
         listener.statusMsg("Saving to disk...");
-        for (File f : filesToProcess) System.out.println("Save: "+f.getName());
+        //for (File f : filesToProcess) System.out.println("Save: "+f.getName());
         try
         {
             Thread.sleep(500);

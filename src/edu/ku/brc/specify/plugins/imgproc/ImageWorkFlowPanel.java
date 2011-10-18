@@ -65,7 +65,7 @@ import edu.ku.brc.util.Pair;
 public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, WorkBenchPluginIFace
 {
     protected CustomDialog        dlg;
-    protected ImageProcessorPanel ipwf;
+    protected ImageProcessorPanel imgProcPanel;
     protected IconTray<Trayable>  imageTray;
     protected JStatusBar          statusBar;
     protected JList               list;
@@ -97,29 +97,59 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
         imageTray.setCellRenderer(new ImageTrayListCellRenderer());
         //imageTray.setFixedCellHeight(120);
         
-        ImageProcessorPanel ipwf = new ImageProcessorPanel(imageTray, this);
-        ipwf.createUI();
+        imgProcPanel = new ImageProcessorPanel(imageTray, this);
+        imgProcPanel.createUI();
         
         statusBar = new JStatusBar();
         
         list = new JList(new DefaultListModel());
         JScrollPane sc = UIHelper.createScrollPane(list);
         
-        pb.add(ipwf,      cc.xy(1,1));
-        pb.add(sc,        cc.xywh(3, 1, 1, 3));
-        pb.add(imageTray, cc.xyw(1,3,1));
-        pb.add(statusBar, cc.xyw(1,5,3));
+        pb.add(imgProcPanel, cc.xy(1,1));
+        pb.add(sc,           cc.xywh(3, 1, 1, 3));
+        pb.add(imageTray,    cc.xyw(1,3,1));
+        pb.add(statusBar,    cc.xyw(1,5,3));
         
         pb.setDefaultDialogBorder();
         
-        dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", false, CustomDialog.OK_BTN, this);
+        dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Image Processor", false, CustomDialog.OKCANCELAPPLY, this)
+        {
+            @Override
+            public JButton getOkBtn()
+            {
+                imageTray.removeAllItems();
+                return super.getOkBtn();
+            }
+
+            @Override
+            protected void cancelButtonPressed()
+            {
+                ConfigDlg configDlg = new ConfigDlg(dlg);
+                UIHelper.centerAndShow(configDlg);
+                if (!configDlg.isCancelled())
+                {
+                    imgProcPanel.readSetupPrefs();
+                }
+            }
+            
+            @Override
+            protected void applyButtonPressed()
+            {
+                imgProcPanel.clearFiles();
+            }
+        };
         dlg.setOkLabel("Close");
+        dlg.setCancelLabel("Config");
+        dlg.setApplyLabel("Clear");
+        
+        imgProcPanel.clearFiles();
     }
     
 
     /* (non-Javadoc)
      * @see edu.ku.brc.imgproc.ImageProcListener#complete(edu.ku.brc.imgproc.ImageProcListener.ActionType, java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void complete(ActionType actionType, Object data)
     {
@@ -130,39 +160,42 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
                 Pair<String, ArrayList<File>> dataPair = (Pair<String, ArrayList<File>>)data;
                 ((DefaultListModel)list.getModel()).addElement(dataPair.first);
                 
-                wbpss.addRowAfter();
-                
-                int          rowInx = spreadSheet.getRowCount() - 1;
-                WorkbenchRow row    = workbench.getRow(rowInx);
-                if (row != null)
+                if (spreadSheet != null)
                 {
-                    for (File file : dataPair.second)
+                    int rowInx = spreadSheet.getRowCount() - 1;
+                    spreadSheet.setRowSelectionInterval(rowInx, rowInx);
+                    wbpss.addRowAfter();
+                    rowInx++;
+                    
+                    WorkbenchRow row = workbench.getRow(rowInx);
+                    if (row != null)
                     {
-                        //WorkbenchRowImage rowImg = new WorkbenchRowImage();
-                        //rowImg.initialize();
-                        try
+                        for (File file : dataPair.second)
                         {
-                            row.addImage(file);
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                    WorkbenchTemplate wbt = workbench.getWorkbenchTemplate();
-                    for (WorkbenchTemplateMappingItem item : wbt.getWorkbenchTemplateMappingItems())
-                    {
-                        System.out.println("["+item.getFieldName()+"]");
-                        if (item.getFieldName().equals("catalogNumber"))
-                        {
-                            int colInx = item.getViewOrder();
-                            System.out.println("colInx["+colInx+"]");
-                            if (colInx > -1)
+                            try
                             {
-                                spreadSheet.setValueAt(dataPair.first, rowInx, colInx);
+                                row.addImage(file);
+                            } catch (IOException e)
+                            {
+                                e.printStackTrace();
                             }
                         }
+                        WorkbenchTemplate wbt = workbench.getWorkbenchTemplate();
+                        for (WorkbenchTemplateMappingItem item : wbt.getWorkbenchTemplateMappingItems())
+                        {
+                            System.out.println("["+item.getFieldName()+"]");
+                            if (item.getFieldName().equals("catalogNumber"))
+                            {
+                                int colInx = item.getViewOrder();
+                                System.out.println("colInx["+colInx+"]");
+                                if (colInx > -1)
+                                {
+                                    spreadSheet.setValueAt(dataPair.first, rowInx, colInx);
+                                }
+                            }
+                        }
+                        wbpss.refreshImagesForSelectedRow();
                     }
-                    wbpss.refreshImagesForSelectedRow();
                 }
             }
         }
