@@ -37,6 +37,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -147,9 +148,14 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             } else if (formViewObj != null && pickList.getType() == PickListIFace.PL_WITH_ITEMS)
             {
                 int           min         = Math.max(pickList.getNumItems(), 0);
-                int           max         = 500;
+                int           max         = AppPreferences.getRemote().getInt("PL_MAX_ITEMS", 500);
                 Integer       val         = pickList.getSizeLimit();
                 formViewObj.getValidator().setHasChanged(true);
+                
+                if (min > max)
+                {
+                    max = min;
+                }
     
                 if (val == null || val == -1 || val < min)
                 {
