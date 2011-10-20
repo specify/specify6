@@ -953,41 +953,44 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         // put the correct thumbs in the tray UI
         tray.getModel().removeAllElements();
         
-        // add the default, pre-thumbnail-generation icons to the tray for each image
-        Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
-        for (int i = 0; i < rowImages.size(); ++i)
+        if (row != null)
         {
-            tray.getModel().add(defaultThumbIcon);
-        }
-        
-        // start the background thumbnail generation process
-        // replacing the default icons as thumbnails become available
-        List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
-        
-        for (WorkbenchRowImage img: rowImages)
-        {
-            // load any cached thumbnails
-            ImageIcon thumb = img.getThumbnail();
-            if (thumb != null)
+            // add the default, pre-thumbnail-generation icons to the tray for each image
+            Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+            for (int i = 0; i < rowImages.size(); ++i)
             {
-                tray.getModel().set(img.getImageOrder(), thumb);
+                tray.getModel().add(defaultThumbIcon);
             }
-            else // generate any missing thumbnails
+            
+            // start the background thumbnail generation process
+            // replacing the default icons as thumbnails become available
+            List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
+            
+            for (WorkbenchRowImage img: rowImages)
             {
-                log.debug("Workbench row image is missing its thumbnail.  Adding it to the list of row images for thumbnail generation work.  " + img);
-                rowImagesNeedingThumbnails.add(img);
+                // load any cached thumbnails
+                ImageIcon thumb = img.getThumbnail();
+                if (thumb != null)
+                {
+                    tray.getModel().set(img.getImageOrder(), thumb);
+                }
+                else // generate any missing thumbnails
+                {
+                    log.debug("Workbench row image is missing its thumbnail.  Adding it to the list of row images for thumbnail generation work.  " + img);
+                    rowImagesNeedingThumbnails.add(img);
+                }
             }
+            
+            if (rowImagesNeedingThumbnails.size() > 0)
+            {
+                generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+            }
+            
+            // set the index so the first image is displayed
+            imageIndex = 0;
+            tray.setSelectedIndex(imageIndex);
+            showImage();
         }
-        
-        if (rowImagesNeedingThumbnails.size() > 0)
-        {
-            generateThumbnailsInBackground(rowImagesNeedingThumbnails);
-        }
-        
-        // set the index so the first image is displayed
-        imageIndex = 0;
-        tray.setSelectedIndex(imageIndex);
-        showImage();
     }
     
     protected ImageIcon generateThumbnail(WorkbenchRowImage rowImage) throws IOException
