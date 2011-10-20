@@ -223,11 +223,16 @@ public class ImageProcessorPanel extends JPanel
     public void clearFiles()
     {
         File dir = new File(srcDir);
-        for (File f : dir.listFiles())
+        
+        if (dir != null && dir.exists())
         {
-            if (!f.getName().startsWith("."))
+            for (File f : dir.listFiles())
             {
-                f.delete();
+                String ext = FilenameUtils.getExtension(f.getName());
+                if (!f.getName().startsWith(".") && ext != null && (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("png")))
+                {
+                    f.delete();
+                }
             }
         }
     }
