@@ -214,7 +214,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             
             //Border border = new EtchedBorder(EtchedBorder.LOWERED);
             
-            PanelBuilder coordsPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,2px,p,4px,p"));
+            PanelBuilder coordsPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,2px,p,f:p:g,p"));
             coordsPB.addSeparator(UIRegistry.getResourceString(L10N+"POS"), cc.xyw(1, 1, 4));
             coordsPB.add(UIHelper.createI18NFormLabel("Latitude", SwingConstants.RIGHT), cc.xy(1, 3));
             coordsPB.add(latText, cc.xyw(3, 3, 2));
