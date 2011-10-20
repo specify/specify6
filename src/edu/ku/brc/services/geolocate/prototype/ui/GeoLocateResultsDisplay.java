@@ -344,8 +344,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             //Add the map.
         	geoMapper = new Mapper();
         	geoMapper.setMapSize(new Dimension(MAP_WIDTH2, MAP_HEIGHT2));
-        	geoMapper.setZoomButtonsVisible(false);
-        	geoMapper.setZoomSliderVisible(false);
+        	//geoMapper.setZoomButtonsVisible(false);
+        	//geoMapper.setZoomSliderVisible(false);
         	
         	JPanel statusPanel = new JPanel();
         	statusPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
