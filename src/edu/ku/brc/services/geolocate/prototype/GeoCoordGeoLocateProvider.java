@@ -24,6 +24,8 @@ import edu.ku.brc.services.geolocate.prototype.client.GeolocatesvcLocator;
 import edu.ku.brc.services.geolocate.prototype.client.GeolocatesvcSoap;
 import edu.ku.brc.services.geolocate.prototype.client.Georef_Result;
 import edu.ku.brc.services.geolocate.prototype.client.Georef_Result_Set;
+import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.prefs.GEOLocatePrefsPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -110,12 +112,15 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                 state   = state   == null ? "" : state;
                 county  = county  == null ? "" : county;
                 
-                boolean hwyX = AppPreferences.getLocalPrefs().getBoolean(GL_HYWX, false);
-                boolean findWaterbody = AppPreferences.getLocalPrefs().getBoolean(GL_WTRBODY, false);
-                boolean restrictToLowestAdm = AppPreferences.getLocalPrefs().getBoolean(GL_RESTRICT, false);
-                boolean doUncert = AppPreferences.getLocalPrefs().getBoolean(GL_DOUNCERT, false);
-                boolean doPoly = AppPreferences.getLocalPrefs().getBoolean(GL_DOPOLY, false);
-                boolean displacePoly = AppPreferences.getLocalPrefs().getBoolean(GL_DISPLACEPOLY, false);
+                boolean isFish        = Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish);
+                
+                boolean hwyX          = AppPreferences.getLocalPrefs().getBoolean(GL_HYWX, isFish);
+                boolean findWaterbody = AppPreferences.getLocalPrefs().getBoolean(GL_WTRBODY, isFish);
+                boolean restrictToLowestAdm = AppPreferences.getLocalPrefs().getBoolean(GL_RESTRICT, isFish);
+                boolean doUncert      = AppPreferences.getLocalPrefs().getBoolean(GL_DOUNCERT, isFish);
+                boolean doPoly        = AppPreferences.getLocalPrefs().getBoolean(GL_DOPOLY, isFish);
+                boolean displacePoly  = AppPreferences.getLocalPrefs().getBoolean(GL_DISPLACEPOLY, isFish);
+                
                 boolean polyAsLinkID = false;
                 
                 GEOLocatePrefsPanel GLP = new GEOLocatePrefsPanel();
