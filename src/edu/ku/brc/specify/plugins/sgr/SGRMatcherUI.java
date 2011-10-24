@@ -347,6 +347,9 @@ public class SGRMatcherUI extends CustomDialog
         
         private String extractFieldFromQuery(String query, String field)
         {
+            if (StringUtils.isBlank(query))
+                return "";
+            
             StandardQueryParser qp = new StandardQueryParser();
             Query q;
             try
