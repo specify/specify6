@@ -270,6 +270,7 @@ public class SGRResultsForForm extends JPanel
             }
             break; // only do the first one
         }
+        workbenchPaneSS.setChanged(true);
         workbenchPaneSS.getFormPane().indexChanged(currentIndex);
     }
     
