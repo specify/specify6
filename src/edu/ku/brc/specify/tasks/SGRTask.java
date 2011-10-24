@@ -708,27 +708,34 @@ public class SGRTask extends BaseTask
         }
     }
     
-    
-    private void doBatchMatch(CommandAction cmdAction)
+    private ChooseFromListDlg<MatchConfiguration> makeSelectMatcherDlg()
     {
         List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
         UIRegistry.loadAndPushResourceBundle("specify_plugins");
         String title = UIRegistry.getResourceString("SGR_SELECT_MATCHER");
         UIRegistry.popResourceBundle();
         
-        ChooseFromListDlg<MatchConfiguration> dlg = 
+        ChooseFromListDlg<MatchConfiguration> selectMatcherDlg = 
             new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
                     title, mcs);
         
-        UIHelper.centerAndShow(dlg);
-        if (dlg.isCancelled())
-            return;
-        
-        MatchConfiguration matchConfig = dlg.getSelectedObject();
+        UIHelper.centerAndShow(selectMatcherDlg);
+        return selectMatcherDlg;
+    }
+    
+    private void doBatchMatch(CommandAction cmdAction)
+    {
+
+
         
         SGRBatchScenario scenario = null;
         if (cmdAction.getData() instanceof RecordSetIFace)
         {
+            ChooseFromListDlg<MatchConfiguration> selectMatcherDlg = makeSelectMatcherDlg();
+            if (selectMatcherDlg.isCancelled())
+                return;
+            
+            MatchConfiguration matchConfig = selectMatcherDlg.getSelectedObject();
             RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
             scenario = RecordSetBatchMatch.newScenario(recordSet, matchConfig);
         }
@@ -737,12 +744,25 @@ public class SGRTask extends BaseTask
             CommandAction internal = (CommandAction)cmdAction.getData();
             if (internal.getAction().equals(WorkbenchTask.SELECTED_WORKBENCH))
             {
+                ChooseFromListDlg<MatchConfiguration> selectMatcherDlg = makeSelectMatcherDlg();
+                if (selectMatcherDlg.isCancelled())
+                    return;
+                
+                MatchConfiguration matchConfig = selectMatcherDlg.getSelectedObject();
                 RecordSetIFace recordSet = (RecordSetIFace)internal.getProperty("workbench");
                 scenario = WorkBenchBatchMatch.newScenario(recordSet, matchConfig);
             }
             else 
             {
                 Workbench workbench = WorkbenchTask.selectWorkbench(cmdAction, null);
+                if (workbench == null)
+                    return;
+                
+                ChooseFromListDlg<MatchConfiguration> selectMatcherDlg = makeSelectMatcherDlg();
+                if (selectMatcherDlg.isCancelled())
+                    return;
+                
+                MatchConfiguration matchConfig = selectMatcherDlg.getSelectedObject();
                 scenario = WorkBenchBatchMatch.newScenario(workbench.getId(), matchConfig);
             }
         }    
