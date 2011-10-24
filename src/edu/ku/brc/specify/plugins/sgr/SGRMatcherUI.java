@@ -116,6 +116,7 @@ public class SGRMatcherUI extends CustomDialog
         
         this.finished = finished;
         this.uiPanel = uiPanel;
+        this.helpContext = "sgr_matcher_create";
         pack();
     }
     

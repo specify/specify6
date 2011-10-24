@@ -50,9 +50,10 @@ public class BatchResultPropertyEditor extends CustomDialog
 
     public BatchResultPropertyEditor(NavBoxItemIFace nbi)
     {
-        super((Frame) UIRegistry.getTopWindow(), "", true, CustomDialog.OKCANCEL, new UIPanel());
+        super((Frame) UIRegistry.getTopWindow(), "", true, CustomDialog.OKCANCELHELP, new UIPanel());
 
         this.nbi = nbi;
+        this.helpContext = "sgr_matchresults_properties";
 
         UIRegistry.loadAndPushResourceBundle("specify_plugins");
         setTitle(getResourceString("SGR_EDIT_BATCH_RESULTS"));

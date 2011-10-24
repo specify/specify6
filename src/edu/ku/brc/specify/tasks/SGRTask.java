@@ -608,7 +608,8 @@ public class SGRTask extends BaseTask
         else
         {
             selectedMatcher = (MatchConfiguration)cmdAction.getSrcObj();
-            workbench = WorkbenchTask.selectWorkbench((CommandAction) cmdAction.getData(), null);
+            workbench = WorkbenchTask.selectWorkbench((CommandAction) cmdAction.getData(), 
+                    "sgr_matcher_create");
         }
          
         createEditorForWorkbench(workbench, null, false, true, selectedMatcher, null);
@@ -679,6 +680,7 @@ public class SGRTask extends BaseTask
     
     public void opening(WorkbenchPaneSS pane)
     {
+        if (workbenchNavBox == null) return;
         Workbench workbench = pane.getWorkbench();
         RolloverCommand roc = WorkbenchTask.getNavBtnById(workbenchNavBox, 
                 workbench.getWorkbenchId(), "workbench");
@@ -717,7 +719,11 @@ public class SGRTask extends BaseTask
         
         ChooseFromListDlg<MatchConfiguration> selectMatcherDlg = 
             new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                    title, mcs);
+                    title,
+                    ChooseFromListDlg.HELP_BTN | ChooseFromListDlg.OK_BTN | ChooseFromListDlg.CANCEL_BTN,
+                    mcs);
+        
+        selectMatcherDlg.setHelpContext("sgr_matchresults_matcher");
         
         UIHelper.centerAndShow(selectMatcherDlg);
         return selectMatcherDlg;
@@ -725,9 +731,6 @@ public class SGRTask extends BaseTask
     
     private void doBatchMatch(CommandAction cmdAction)
     {
-
-
-        
         SGRBatchScenario scenario = null;
         if (cmdAction.getData() instanceof RecordSetIFace)
         {
@@ -754,7 +757,7 @@ public class SGRTask extends BaseTask
             }
             else 
             {
-                Workbench workbench = WorkbenchTask.selectWorkbench(cmdAction, null);
+                Workbench workbench = WorkbenchTask.selectWorkbench(cmdAction, "sgr_matchresults_matcher");
                 if (workbench == null)
                     return;
                 
