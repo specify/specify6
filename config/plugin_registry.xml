@@ -68,9 +68,9 @@
         <plugin name="ContainersColObjPlugin" class="edu.ku.brc.specify.plugins.ContainersColObjPlugin"/>
         <plugin name="CollectionRelOneToManyPlugin" class="edu.ku.brc.specify.plugins.CollectionRelOneToManyPlugin"/>
 		
-		<!-- -->
+		<!-- 
 		<plugin name="MorphBankPanel"       class="edu.ku.brc.specify.plugins.morphbank.MorphBankPanel"/>
-		<!-- -->
+		-->
 		
 		<plugin name="TaxonLabelFormatting" class="edu.ku.brc.specify.plugins.TaxonLabelFormatting"/>
 		<plugin name="ColRelTypePlugin"     class="edu.ku.brc.specify.plugins.CollectionRelPlugin"/>
