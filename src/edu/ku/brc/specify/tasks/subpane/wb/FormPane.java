@@ -531,7 +531,8 @@ public class FormPane extends JPanel implements FormPaneWrapper
         // the user can switch other field fro TextField to TextArea if the wish.
         if (fieldType != null)
         {
-            return fieldType == WorkbenchTemplateMappingItem.TEXTFIELD;
+            return fieldType == WorkbenchTemplateMappingItem.TEXTFIELD ||
+                fieldType == WorkbenchTemplateMappingItem.TEXTFIELD_DATE;
         }
         
         if (fieldLen > TEXTFIELD_DATA_LEN_MAX)
