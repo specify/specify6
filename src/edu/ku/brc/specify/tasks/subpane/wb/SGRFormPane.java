@@ -53,7 +53,7 @@ public class SGRFormPane extends JPanel implements FormPaneWrapper
         sgrPanel = new SGRResultsForForm(workbenchPaneSS, workbench);
         
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, formPane.getPane(), sgrPanel.scrollPane);
-        splitPane.setResizeWeight(0.2);
+        splitPane.setResizeWeight(0);
         
         Action prevRecord = new AbstractAction()
         {
