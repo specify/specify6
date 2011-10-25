@@ -1630,83 +1630,80 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             session = openSession();
             
-            if (isFirstTime)
+            // Now load the Schema, but make sure the Discipline has a localization.
+            // for the current locale.
+            int disciplineId = getClassObject(Discipline.class).getDisciplineId();
+            if (disciplineId != prevDisciplineId)
             {
-                // Now load the Schema, but make sure the Discipline has a localization.
-                // for the current locale.
-                int disciplineId = getClassObject(Discipline.class).getDisciplineId();
-                if (disciplineId != prevDisciplineId)
+                Locale       engLocale  = null;
+                Locale       fndLocale  = null;
+                Locale       currLocale = SchemaI18NService.getCurrentLocale();
+                List<Locale> locales    = SchemaI18NService.getInstance().getLocalesFromData(SpLocaleContainer.CORE_SCHEMA, disciplineId);
+                for (Locale locale : locales)
                 {
-                    Locale       engLocale  = null;
-                    Locale       fndLocale  = null;
-                    Locale       currLocale = SchemaI18NService.getCurrentLocale();
-                    List<Locale> locales    = SchemaI18NService.getInstance().getLocalesFromData(SpLocaleContainer.CORE_SCHEMA, disciplineId);
-                    for (Locale locale : locales)
+                    if (locale.equals(currLocale))
                     {
-                        if (locale.equals(currLocale))
-                        {
-                            fndLocale = currLocale;
-                        }
-                        if (locale.getLanguage().equals("en"))
-                        {
-                            engLocale = currLocale;
-                        }
+                        fndLocale = currLocale;
                     }
-                    if (fndLocale == null)
+                    if (locale.getLanguage().equals("en"))
                     {
-                        if (engLocale != null)
-                        {
-                            fndLocale = engLocale;
-                            
-                        } else if (locales.size() > 0)
-                        {
-                            fndLocale = locales.get(0);
-                            
-                        } else
-                        {
-                            currentStatus = CONTEXT_STATUS.Error;
-                            String msg = "Specify was unable to a Locale in the Schema Config for this discipline.\nPlease contact S[ecify support immediately.";
-                            UIRegistry.showError(msg);
-                            AppPreferences.shutdownAllPrefs();
-                            DataProviderFactory.getInstance().shutdown();
-                            DBConnection.shutdown();
-                            System.exit(0);
-                            return currentStatus;
-                        }
+                        engLocale = currLocale;
+                    }
+                }
+                if (fndLocale == null)
+                {
+                    if (engLocale != null)
+                    {
+                        fndLocale = engLocale;
                         
-                        fndLocale = engLocale != null ? engLocale : locales.get(0);
-                        SchemaI18NService.setCurrentLocale(fndLocale);
-                        Locale.setDefault(fndLocale);
-                        UIRegistry.displayErrorDlgLocalized(L10N + "NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
-                    }
-                    SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
-                }
-                
-                UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
-                if (catNumFmtr != null)
-                {
-                    DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
-                    field.setFormatter(catNumFmtr);
-                }
-                
-                Institution institution = getClassObject(Institution.class);
-                if (!institution.getIsAccessionsGlobal())
-                {
-                    for (AutoNumberingScheme ans : collection.getNumberingSchemes())
+                    } else if (locales.size() > 0)
                     {
-                        if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
+                        fndLocale = locales.get(0);
+                        
+                    } else
+                    {
+                        currentStatus = CONTEXT_STATUS.Error;
+                        String msg = "Specify was unable to a Locale in the Schema Config for this discipline.\nPlease contact Specify support immediately.";
+                        UIRegistry.showError(msg);
+                        AppPreferences.shutdownAllPrefs();
+                        DataProviderFactory.getInstance().shutdown();
+                        DBConnection.shutdown();
+                        System.exit(0);
+                        return currentStatus;
+                    }
+                    
+                    fndLocale = engLocale != null ? engLocale : locales.get(0);
+                    SchemaI18NService.setCurrentLocale(fndLocale);
+                    Locale.setDefault(fndLocale);
+                    UIRegistry.displayErrorDlgLocalized(L10N + "NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
+                }
+                SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            }
+            
+            UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
+            if (catNumFmtr != null)
+            {
+                DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
+                field.setFormatter(catNumFmtr);
+            }
+            
+            Institution institution = getClassObject(Institution.class);
+            if (!institution.getIsAccessionsGlobal())
+            {
+                for (AutoNumberingScheme ans : collection.getNumberingSchemes())
+                {
+                    if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
+                    {
+                        DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
+                        if (field != null)
                         {
-                            DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
-                            if (field != null)
+                            UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
+                            if (accNumFmtr != null)
                             {
-                                UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
-                                if (accNumFmtr != null)
-                                {
-                                    field.setFormatter(accNumFmtr);
-                                }
+                                field.setFormatter(accNumFmtr);
                             }
-                            break;
                         }
+                        break;
                     }
                 }
             }
