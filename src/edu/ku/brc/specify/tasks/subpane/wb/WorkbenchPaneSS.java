@@ -2707,6 +2707,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             String currentValue = null; 
             //check backup col for original value before any conversions...
             currentValue = getLatLonSrc(columnIndex, rowIndex);
+            if (currentValue != null)
+            {
+            	currentValue = currentValue.replace("  ", " ");
+            }
             if (StringUtils.isBlank(currentValue))
             {
                 currentValue = (String)model.getValueAt(rowIndex, columnIndex);
