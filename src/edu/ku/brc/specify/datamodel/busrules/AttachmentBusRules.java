@@ -96,11 +96,16 @@ public class AttachmentBusRules extends BaseBusRules
         
         if (formViewObj != null)
         {
-            morphbankPanel = formViewObj.getCompById("morphbankpanel");
+            //morphbankPanel = formViewObj.getCompById("morphbankpanel");
 
             imageAttributeMultiView = formViewObj.getKids() != null && formViewObj.getKids().size() > 0 
             	? formViewObj.getKids().get(0) : null;
 
+            if (imageAttributeMultiView != null)
+            {
+            	morphbankPanel = imageAttributeMultiView.getCurrentViewAsFormViewObj().getCompById("morphbankpanel");
+            }
+            
             origComp  = formViewObj.getCompById("origFilename");
             final Component titleComp = formViewObj.getCompById("title");
             
