@@ -4565,10 +4565,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 			originalStats.put(original.getKey(), (short )original.getValue().getEditorValidationStatus());
 		}
 		
-		if (workbenchValidator.getUploader().isUpdateUpload())
-		{
-			
-		}
+//		if (workbenchValidator.getUploader().isUpdateUpload())
+//		{
+//			
+//		}
 		
 		if (doIncrementalMatching)
 		{
