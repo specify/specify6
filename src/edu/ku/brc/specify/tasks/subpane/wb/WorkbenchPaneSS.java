@@ -4025,6 +4025,14 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void buildValidator()
     {
+    	buildValidator(false);
+    }
+    
+    /**
+     * builds validator
+     */
+    protected void buildValidator(boolean quietly)
+    {
     	try
     	{
     		workbenchValidator = new WorkbenchValidator(this);
@@ -4062,7 +4070,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     			{
     				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex.getCause();
     			}
-    			if (wvEx != null && wvEx.getStructureErrors().size() > 0)
+    			if (!quietly && wvEx != null && wvEx.getStructureErrors().size() > 0)
     			{
     				Uploader.showStructureErrors(wvEx.getStructureErrors());
     			}
@@ -4070,12 +4078,25 @@ public class WorkbenchPaneSS extends BaseSubPane
     		else {
     			ex.printStackTrace();
     		}
-    		UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
-    		uploadToolPanel.turnOffSelections();
-    		turnOffIncrementalValidation();
-    		turnOffIncrementalMatching();
+    		if (!quietly)
+    		{
+    			UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
+    		}
+    		if (isDoIncrementalValidation() || isDoIncrementalMatching()) //but how could this be true???
+    		//oh yeah. If they were on when the workbench was last closed, but the template has been changed since...
+    		{
+        		uploadToolPanel.turnOffSelections();
+        		if (isDoIncrementalValidation()) 
+        		{
+        			turnOffIncrementalValidation();
+        		}
+        		if (isDoIncrementalMatching()) 
+        		{
+        			turnOffIncrementalMatching();
+        		}
+    			model.fireDataChanged();    			
+    		}
 			workbenchValidator = null;
-			model.fireDataChanged();
     	}
     }
     
@@ -4542,6 +4563,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 		for (Map.Entry<Short, WorkbenchDataItem> original : originals.entrySet())
 		{
 			originalStats.put(original.getKey(), (short )original.getValue().getEditorValidationStatus());
+		}
+		
+		if (workbenchValidator.getUploader().isUpdateUpload())
+		{
+			
 		}
 		
 		if (doIncrementalMatching)
@@ -5835,7 +5861,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (workbenchValidator == null)
     	{
-    		buildValidator();
+    		buildValidator(true);
     	}
     	if (workbenchValidator != null)
     	{
