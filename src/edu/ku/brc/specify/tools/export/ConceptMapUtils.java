@@ -6,6 +6,7 @@ package edu.ku.brc.specify.tools.export;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.dom4j.Element;
 
@@ -21,30 +22,42 @@ public class ConceptMapUtils
 {
 	//TODO: more then just the concept name is really needed for the key in the map.
 	// concept namespace and other stuff will probably turn out to be necessary.
-	protected static Map<String, MappedFieldInfo> autoMaps = null;
+	protected static Map<String, Vector<MappedFieldInfo>> autoMaps = null;
 	
 	/**
 	 * @return default mappings for darwin core concepts.
 	 * 
 	 * 
 	 */
-	public static Map<String, MappedFieldInfo> getDefaultDarwinCoreMappings()
+	public static Map<String, Vector<MappedFieldInfo>> getDefaultDarwinCoreMappings()
 	{
 		if (autoMaps == null)
 		{
-	        autoMaps = new HashMap<String, MappedFieldInfo>();
+	        autoMaps = new HashMap<String, Vector<MappedFieldInfo>>();
 			try
 	        {
 	            Element root       = XMLHelper.readDOMFromConfigDir("dwcdefaultmap.xml");
 	            List<?> mapNodes = root.selectNodes("/default_mappings/default_mapping");
+	            String prevName = "";
+	            Vector<MappedFieldInfo> ams = new Vector<MappedFieldInfo>();
 	            for (Object obj : mapNodes)
 	            {
-	                String name = XMLHelper.getAttr((Element)obj, "name", null);
-	                MappedFieldInfo am = new MappedFieldInfo((Element )obj);
-	                if (am.isActive())
-	                {
-	                    autoMaps.put(name, am);
-	                }
+	            	String name = XMLHelper.getAttr((Element)obj, "name", null);
+	        		if (!"".equals(prevName) && !prevName.equals(name) && ams.size() > 0)
+	        		{
+	        			autoMaps.put(prevName, ams);
+	        			ams = new Vector<MappedFieldInfo>();
+	        		}
+	        		MappedFieldInfo am = new MappedFieldInfo((Element )obj);
+	        		if (am.isActive)
+	        		{
+	        				ams.add(am);
+	        		}	
+	                prevName = name;
+	            }
+	            if (ams.size() > 0)
+	            {
+	            	autoMaps.put(prevName, ams);
 	            }
 	        }
 	        catch (Exception ex)
