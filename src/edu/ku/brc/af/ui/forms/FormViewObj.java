@@ -4958,7 +4958,7 @@ public class FormViewObj implements Viewable,
             draggableRecIdentifier.setFormDataObj(formDataObj);
         }
         
-        boolean hasDefault = false;
+        boolean hasDefaultAnywhere = false;
         if (weHaveData)
         {
             Object[] defaultDataArray = new Object[1]; // needed for setting the default value
@@ -4987,14 +4987,11 @@ public class FormViewObj implements Viewable,
                     String  defaultValue      = isEditing() ? cellField.getDefaultValue() : null;
                     boolean hasID             = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null;
                     
-                    //log.debug("["+cellField.getName()+"] hasID["+hasID+"]  defaultValue["+defaultValue+"]  hasDefault["+hasDefault+"]");
+                    //log.debug("["+cellField.getName()+"] hasID["+hasID+"]  defaultValue["+defaultValue+"]  hasDefault["+hasDefaultAnywhere+"]");
                     
-                    if (this.dataObj != null && !hasID && !hasDefault && StringUtils.isNotEmpty(defaultValue))
+                    if (!hasDefaultAnywhere && this.dataObj != null && !hasID && StringUtils.isNotEmpty(defaultValue))
                     {
-                       hasDefault = true; 
-                    } else
-                    {
-                        defaultValue = null;
+                       hasDefaultAnywhere = true; 
                     }
                     
                     boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
@@ -5154,7 +5151,7 @@ public class FormViewObj implements Viewable,
         
         if (formValidator != null)
         {
-            if (this.dataObj == null || (!hasDefault && doResetAfterFill))
+            if (this.dataObj == null || (!hasDefaultAnywhere && doResetAfterFill))
             {
                 formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
             } else
