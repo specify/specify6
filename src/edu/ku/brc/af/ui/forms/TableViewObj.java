@@ -2197,6 +2197,17 @@ public class TableViewObj implements Viewable,
     {
         return null;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#hasRequiredFields()
+     */
+    @Override
+    public boolean hasRequiredFields()
+    {
+        return false; // doesn't matter for Grid / Tables right now
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#fixUpRequiredDerivedLabels()

@@ -169,6 +169,15 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#hasRequiredFields()
+     */
+    @Override
+    public boolean hasRequiredFields()
+    {
+        return parentBuilder.hasRequiredFields();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.af.ui.forms.UIPluginable)
      */
     public void registerPlugin(FormCellIFace formCell, UIPluginable uip)

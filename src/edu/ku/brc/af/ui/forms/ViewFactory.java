@@ -1198,7 +1198,8 @@ public class ViewFactory
     }
 
 
-    protected boolean createItem(final DBTableChildIFace           childInfo,
+    protected boolean createItem(final DBTableInfo                 parentTableInfo,
+                                 final DBTableChildIFace           childInfo,
                                  final MultiView                   parent,
                                  final FormViewDefIFace            formViewDef,
                                  final FormValidator               validator,
@@ -1441,6 +1442,8 @@ public class ViewFactory
             // Create the UI Component
             
             boolean isReq = cellField.isRequired() || (fieldInfo != null && fieldInfo.isRequired()) || (relInfo != null && relInfo.isRequired());
+            cellField.setRequired(isReq);
+            
             switch (uiType)
             {
                 case text:
@@ -2031,7 +2034,7 @@ public class ViewFactory
             {
                 PanelViewable panelViewable = new PanelViewable(viewBldObj, cellPanel);
 
-                processRows(null, parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
+                processRows(parentTableInfo, parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
 
                 panelViewable.setVisible(cellPanel.getPropertyAsBoolean("visible", true));
                 
@@ -2120,7 +2123,7 @@ public class ViewFactory
                     ((FormCellField)cell).setEditOnCreate(true);
                 }
                 
-                if (!createItem(childInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi))
+                if (!createItem(tableInfo, childInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi))
                 {
                     return;
                 }
@@ -2150,12 +2153,12 @@ public class ViewFactory
                     bi2.curMaxRow  = 1;
                     bi2.colInx     = 1;
                     
-                    createItem(childInfo, parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
+                    createItem(tableInfo, childInfo, parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component editCompReg = bi2.compToReg;
                     Component editCompAdd = bi2.compToAdd;
                     
-                    createItem(childInfo, parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
+                    createItem(tableInfo, childInfo, parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component viewCompReg = bi2.compToReg;
                     Component viewCompAdd = bi2.compToAdd;
@@ -2194,8 +2197,10 @@ public class ViewFactory
         
         viewBldObj.doneBuilding();
         
-        // Check to see if there is at least one required field
-        if (doFixLabels && hasRequiredOrDerivedField)
+        // Check to see if there is at least one required field.
+        // The call to 'viewBldObj.hasRequiredFields is because it may have had an embedded panel
+        // that had required fields.
+        if (doFixLabels && (hasRequiredOrDerivedField || viewBldObj.hasRequiredFields()))
         {
             viewBldObj.fixUpRequiredDerivedLabels();
         }

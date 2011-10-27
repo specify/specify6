@@ -133,6 +133,11 @@ public interface ViewBuilderIFace
     public abstract void fixUpRequiredDerivedLabels();
     
     /**
+     * @return returns whether there were required fields or not in the view.
+     */
+    public abstract boolean hasRequiredFields();
+    
+    /**
      * Provide an opportunity to tell the controls that the form is now complete (i.e. like UIPlugins)
      */
     public abstract void doneBuilding();

@@ -231,10 +231,11 @@ public class FormViewObj implements Viewable,
     
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
-    protected boolean                       isBuildValid     = false;
+    protected boolean                       isBuildValid      = false;
+    protected boolean                       hasRequiredFields = false;
 
-    protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
-    protected Boolean                       isJavaCollection = null;
+    protected boolean                       isSkippingAttach  = false; // Indicates whether to skip before setting data into the form
+    protected Boolean                       isJavaCollection  = null;
     
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
@@ -4001,6 +4002,15 @@ public class FormViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#hasRequiredFields()
+     */
+    @Override
+    public boolean hasRequiredFields()
+    {
+        return hasRequiredFields;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#fixUpRequiredDerivedLabels()
      */
     public void fixUpRequiredDerivedLabels()
@@ -5193,6 +5203,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getDataFromUI()
      */
+    @Override
     public void getDataFromUI()
     {
         if (isEditing)
@@ -5449,6 +5460,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getDataFromUIComp(java.lang.String)
      */
+    @Override
     public Object getDataFromUIComp(final String id)
     {
         FVOFieldInfo fieldInfo = controlsById.get(id);
@@ -5473,6 +5485,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getSubView(java.lang.String)
      */
+    @Override
     public MultiView getSubView(final String name)
     {
         // do linear search because there will never be very many of them
@@ -5489,6 +5502,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataIntoUIComp(java.lang.String, java.lang.Object)
      */
+    @Override
     public void setDataIntoUIComp(final String id, Object data)
     {
         setDataIntoUIComp(controlsById.get(id).getComp(), data, null);
@@ -5642,6 +5656,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getView()
      */
+    @Override
     public ViewIFace getView()
     {
         return view;
@@ -5650,6 +5665,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#hideMultiViewSwitch(boolean)
      */
+    @Override
     public void hideMultiViewSwitch(boolean hide)
     {
         if (switcherUI != null)
@@ -5661,6 +5677,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#enableMultiViewSwitch(boolean)
      */
+    @Override
     public void enableMultiViewSwitch(boolean enabled)
     {
         if (switcherUI != null)
@@ -5672,6 +5689,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#dataHasChanged()
      */
+    @Override
     public void validationWasOK(boolean wasOK)
     {
        if (saveControl != null && (mvParent == null || mvParent.hasChanged()))
@@ -5683,6 +5701,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
      */
+    @Override
     public void setSession(final DataProviderSessionIFace session)
     {
         //log.debug("setSession "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
@@ -5731,6 +5750,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setCellName(java.lang.String)
      */
+    @Override
     public void setCellName(final String cellName)
     {
         this.cellName = cellName;
@@ -5739,6 +5759,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#registerSaveBtn(javax.swing.JButton)
      */
+    @Override
     public void registerSaveBtn(final JButton saveBtnArg)
     {
         this.saveControl = saveBtnArg;
@@ -5754,6 +5775,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#updateSaveBtn()
      */
+    @Override
     public void updateSaveBtn()
     {
         if (saveControl != null && formValidator != null)
@@ -5768,6 +5790,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#focus()
      */
+    @Override
     public void focus()
     {
         focusFirstFormControl();
@@ -5776,6 +5799,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#aboutToShutdown()
      */
+    @Override
     public void aboutToShutdown()
     {
         if (businessRules != null)
@@ -5787,6 +5811,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
      */
+    @Override
     public void shutdown()
     {
         for (Enumeration<FVOFieldInfo> e=controlsById.elements(); e.hasMoreElements();)
@@ -5875,6 +5900,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerControl(edu.ku.brc.ui.forms.persist.FormCellIFace, java.awt.Component)
      */
+    @Override
     public void registerControl(final FormCellIFace formCell, final Component control)
     {
         if (formCell != null)
@@ -5889,6 +5915,11 @@ public class FormViewObj implements Viewable,
             if (!isThis && controlsByName.get(formCell.getName()) != null)
             {
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
+            }
+            
+            if (!hasRequiredFields && formCell instanceof FormCellFieldIFace && ((FormCellFieldIFace)formCell).isRequired())
+            {
+                hasRequiredFields = true;
             }
 
             JScrollPane scrPane;
@@ -5921,6 +5952,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.af.ui.forms.UIPluginable)
      */
+    @Override
     public void registerPlugin(final FormCellIFace formCell, final UIPluginable uip)
     {
         boolean isThis = formCell.getName().equals("this");
@@ -5956,6 +5988,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addControlToUI(java.awt.Component, int, int, int, int)
      */
+    @Override
     public void addControlToUI(Component control, int colInx, int rowInx, int colSpan, int rowSpan)
     {
         if (control instanceof SessionListenerIFace)
@@ -5968,6 +6001,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#createSeparator(java.lang.String)
      */
+    @Override
     public Component createSeparator(String title)
     {
         int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
@@ -5980,6 +6014,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addRecordIndentifier(java.lang.String, javax.swing.ImageIcon)
      */
+    @Override
     public JComponent createRecordIndentifier(String title, ImageIcon icon)
     {
         PanelBuilder panelBldr = new PanelBuilder(new FormLayout("16px,1px,f:p:g", "p"));
