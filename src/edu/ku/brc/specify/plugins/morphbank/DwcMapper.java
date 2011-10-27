@@ -26,6 +26,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
+import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 import edu.ku.brc.ui.UIRegistry;
@@ -116,9 +117,9 @@ public class DwcMapper
 	protected void fillDefaultConcepts()
 	{
 		concepts.clear();
-		for (Map.Entry<String, MappedFieldInfo> me : ConceptMapUtils.getDefaultDarwinCoreMappings().entrySet())
+		for (Map.Entry<String, Vector<MappedFieldInfo>> me : ConceptMapUtils.getDefaultDarwinCoreMappings().entrySet())
 		{
-			concepts.add(new MappingInfo(me.getKey(), me.getValue()));
+			concepts.add(new MappingInfo(me.getKey(), me.getValue().get(0)));
 		}
 	}
 	
@@ -162,7 +163,9 @@ public class DwcMapper
 	 */
 	protected String getValuesQuery(Integer collectionObjectId)
 	{
-		return "select * from " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + " where " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + "id = " + collectionObjectId; 
+		//return "select * from " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + " where " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + "id = " + collectionObjectId; 
+		//XXX ExportPanel.getCacheTableName assumes current collection. Is it possible for collectionObjectId to identify a record in another collection???
+		return "select * from " + ExportPanel.getCacheTableName(mappingName) + " where " + ExportPanel.getCacheTableName(mappingName) + "id = " + collectionObjectId; 
 	}
 	
 	
