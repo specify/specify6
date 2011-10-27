@@ -296,7 +296,7 @@ public class SGRResultsForForm extends JPanel
     {
         log.error("Failed to get SGR results.", e);
         UIRegistry.loadAndPushResourceBundle("specify_plugins");
-        UIRegistry.displayErrorDlg("SGR_ERROR_SERVER_FAIL");
+        UIRegistry.showLocalizedError("SGR_ERROR_SERVER_FAIL");
         UIRegistry.popResourceBundle();
     }
 
