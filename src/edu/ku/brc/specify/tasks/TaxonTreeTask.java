@@ -41,6 +41,7 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * Task that handles the UI for viewing taxonomy data.
@@ -161,11 +162,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                         return;
                     }
 
-                    final RecordSet recordSet = new RecordSet();
-                    recordSet.initialize();
-                    recordSet.set("TTV", CollectionObject.getClassTableId(), RecordSet.GLOBAL);
-
-                    fillRecordSet(taxon, recordSet);
+                   final RecordSet recordSet = createColObjRSFromTaxon(taxon);
 
                     UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
                     // This is needed so the StatusBar gets updated
@@ -178,9 +175,44 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                 }
             });
             popup.add(getDeters, true);
+            
+            JMenuItem lifeMapperDisplay = new JMenuItem("LifeMapper");//getResourceString("TTV_ASSOC_COS"));
+            lifeMapperDisplay.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    Taxon     taxon     = ttv.getSelectedNode(popup.getList());
+                    RecordSet recordSet = createColObjRSFromTaxon(taxon);
+                    final Pair<Taxon, RecordSet> pair = new Pair<Taxon, RecordSet>(taxon, recordSet);
+                    //UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
+                    // This is needed so the StatusBar gets updated
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            CommandDispatcher.dispatch(new CommandAction("LifeMapper", "Display", pair));
+                        }
+                    });
+                }
+            });
+            popup.add(lifeMapperDisplay, true);
         }
         
         return ttv;
+    }
+    
+    /**
+     * @param taxon
+     * @return
+     */
+    private RecordSet createColObjRSFromTaxon(final Taxon taxonObj)
+    {
+        RecordSet recordSet = new RecordSet();
+        recordSet.initialize();
+        recordSet.set("TTV", CollectionObject.getClassTableId(), RecordSet.GLOBAL);
+
+        fillRecordSet(taxonObj, recordSet);
+        
+        return recordSet;
     }
     
 	/* (non-Javadoc)

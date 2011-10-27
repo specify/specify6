@@ -592,6 +592,10 @@
                     <cell type="label" labelfor="7" label="SEC_URL_TITLE"/>
                     <cell type="field" id="7" name="google.earth.secondaryurltitle" uitype="text" colspan="2"/> 
                 </row>
+                <row>
+                    <cell type="label" labelfor="9" label=""/>
+                    <cell type="field" id="9" name="google.earth.usekmz" uitype="checkbox" label="GE_USE_KMZ" colspan="2"/> 
+                </row>
             </rows>
         </viewdef>
 

@@ -19,21 +19,30 @@
 */
 package edu.ku.brc.util.thumbnails;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.IconEntry;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -46,6 +55,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class Thumbnailer
 {
+    private static HashMap<String, String> availableIcons;
+
 	/** A map of registered ThumbnailGenerators. */
 	protected Hashtable<String, ThumbnailGeneratorIFace> mimeTypeToGeneratorMap;
 	
@@ -58,6 +69,14 @@ public class Thumbnailer
     /** The max height of the thumbnail output. */
 	protected int maxHeight;
 	
+	static
+	{
+	    readIconMap();
+	}
+	
+	/**
+	 * 
+	 */
 	public Thumbnailer()
 	{
 		mimeTypeToGeneratorMap = new Hashtable<String, ThumbnailGeneratorIFace>();
@@ -97,6 +116,50 @@ public class Thumbnailer
 	}
 	
 	/**
+	 * 
+	 */
+	private static void readIconMap()
+	{
+	    availableIcons = new HashMap<String, String>();
+	    
+	    File mimeTypeFile = XMLHelper.getConfigDir("mime_icons.xml");
+	    if (mimeTypeFile.exists())
+	    {
+            try
+            {
+                Document registry = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(mimeTypeFile);
+                NodeList mimeNodes = registry.getElementsByTagName("mimetype");
+                for(int i = 0; i < mimeNodes.getLength(); ++i )
+                {
+                    Node     mimeNode     = mimeNodes.item(i);
+                    Node     iconNameNode = mimeNode.getAttributes().getNamedItem("icon");
+                    String   iconName     = iconNameNode.getNodeValue();
+                    NodeList extNodes     = mimeNode.getChildNodes();
+                    for(int j = 0; j < extNodes.getLength(); ++j )
+                    {
+                        Node   extNode = extNodes.item(j);
+                        String ext     = extNode.getTextContent().trim();
+                        if (StringUtils.isNotEmpty(ext))
+                        {
+                            System.out.println(String.format("[%s][%s]", ext, iconName));
+                            availableIcons.put(ext, iconName);
+                        }
+                    }
+                }
+            } catch (SAXException e)
+            {
+                e.printStackTrace();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } catch (ParserConfigurationException e)
+            {
+                e.printStackTrace();
+            }
+	    }
+	}
+	
+	/**
      * Registers the given {@link ThumbnailGeneratorIFace} with the system.
      * 
 	 * @param mimeType the MIME type handled by the generator
@@ -133,27 +196,50 @@ public class Thumbnailer
 	                              final String outputFile,
 	                              final boolean doHighQuality) throws IOException
 	{
-        // get the system MIME type mapper
-        MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
-        mimeMap.addMimeTypes("image/png    png");
-        mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
-        
-        // get the MIME type of the given original file
-		String mimeType = mimeMap.getContentType(originalFile);
-        
-        // find the appropriate thumbnail generator, if any
-		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
-		if (generator != null)
-		{
-            if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
-            {
-                UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
-            }
-            return;
-		}
-        
-        // if no generator was found, throw an exception
-        throw new IOException("No ThumbnailGenerator registered for this MIME type");
+	    if (outputFile != null)
+	    {
+	        if (!(new File(outputFile).exists()))
+	        {
+                // get the system MIME type mapper
+                MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
+                mimeMap.addMimeTypes("image/png    png");
+                mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
+                
+                // get the MIME type of the given original file
+        		String mimeType = mimeMap.getContentType(originalFile);
+                
+                // find the appropriate thumbnail generator, if any
+        		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
+        		if (generator != null)
+        		{
+                    if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
+                    {
+                        UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
+                    }
+                    return;
+        		}
+        		
+        		String iconName = null;
+        		
+        		String ext = FilenameUtils.getExtension(outputFile);
+        		if (StringUtils.isNotEmpty(ext))
+        		{
+        		    iconName = availableIcons.get(ext);
+        		}
+        		
+        		if (StringUtils.isEmpty(iconName))
+        		{
+        		    iconName = "unknown";
+        		}
+        		
+		        IconEntry entry = IconManager.getIconEntryByName(iconName);
+		        if (entry != null)
+		        {
+		            BufferedImage bi = ImageIO.read(entry.getUrl());
+		            ImageIO.write(bi, "PNG", new FileOutputStream(outputFile));
+		        }
+	        }
+	    }
 	}
 	
 	/**

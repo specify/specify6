@@ -28,7 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
@@ -258,8 +257,23 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         // copy the original into the storage system
         String      attachLoc      = attachment.getAttachmentLocation();
-        File        repositoryFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
-        File        thumbFile      = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
+        File        repositoryFile = null;
+        File        thumbFile      = null;
+        if (StringUtils.isNotEmpty(attachLoc))
+        {
+            repositoryFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+            thumbFile      = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
+            
+        } else if (StringUtils.isNotEmpty(attachment.getOrigFilename()))
+        {
+            repositoryFile = new File(attachment.getOrigFilename());
+            thumbFile      = File.createTempFile("sp6-", ".tmp");
+            thumbFile.deleteOnExit();
+            
+        } else
+        {
+            return null;
+        }
 
         Thumbnailer thumbnailGen   = AttachmentUtils.getThumbnailer();
         thumbnailGen.generateThumbnail(repositoryFile.getAbsolutePath(), 

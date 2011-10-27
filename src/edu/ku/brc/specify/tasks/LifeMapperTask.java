@@ -42,11 +42,16 @@ import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.LifeMapperPane;
+import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -60,14 +65,15 @@ public class LifeMapperTask extends BaseTask
 {
     //private static final Logger log  = Logger.getLogger(VisualQueryTask.class);
     
-    private static final String  LIFEMAP           = "LifeMapperTask";
+    private static final String  LIFEMAPPER        = "LifeMapper";
     private static final String  LIFEMAP_MENU      = "LIFEMAP_MENU";
     private static final String  LIFEMAP_MNU       = "LIFEMAP_MNU";
     private static final String  LIFEMAP_TITLE     = "LIFEMAP_TITLE";
     private static final String  LIFEMAP_SECURITY  = "LIFEMAPEDIT";
     
     // Data Members
-    protected NavBox                  actionNavBox       = null;
+    protected LifeMapperPane          lmPane           = null;
+    protected NavBox                  actionNavBox     = null;
 
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected ToolBarDropDownBtn      toolBarBtn       = null;
@@ -78,8 +84,9 @@ public class LifeMapperTask extends BaseTask
      */
     public LifeMapperTask()
     {
-        super(LIFEMAP, UIRegistry.getResourceString(LIFEMAP_TITLE));
+        super(LIFEMAPPER, UIRegistry.getResourceString(LIFEMAP_TITLE));
         this.iconName = "LifeMapper";
+        CommandDispatcher.register(LIFEMAPPER, this);
     }
 
     /* (non-Javadoc)
@@ -105,7 +112,7 @@ public class LifeMapperTask extends BaseTask
     @Override
     public void preInitialize()
     {
-        CommandDispatcher.register(LIFEMAP, this);
+        CommandDispatcher.register(LIFEMAPPER, this);
 
         // Create and add the Actions NavBox first so it is at the top at the top
         actionNavBox = new NavBox(getResourceString("Actions"));
@@ -117,7 +124,11 @@ public class LifeMapperTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new LifeMapperPane(name, this);
+        if (starterPane == null)
+        {
+            starterPane = lmPane = new LifeMapperPane(name, this);
+        }
+        return starterPane;
     }
     
     //-------------------------------------------------------
@@ -241,5 +252,53 @@ public class LifeMapperTask extends BaseTask
         return menuItems;
     }
 
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+    
+    /**
+     * Processes all Commands of type RECORD_SET.
+     * @param cmdAction the command to be processed
+     */
+    protected void processRecordSetCommands(final CommandAction cmdAction)
+    {
+        if (cmdAction.isAction("Display"))
+        {
+            if (cmdAction.getData() instanceof RecordSetIFace)
+            {
+                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
+                if (rs.getDbTableId() == Taxon.getClassTableId())
+                {
+                    // Loop through all the RS ids and get the names
+                    //BasicSQLUtils.querySingleObj("SELECT)
+                    //((LifeMapperPane)getStarterPane()).doSearchGenusSpecies(searchStr)
+                }
+            } else if (cmdAction.getData() instanceof Pair<?,?>)
+            {
+                @SuppressWarnings("unchecked")
+                Pair<Taxon, RecordSet> p = (Pair<Taxon, RecordSet>)cmdAction.getData();
+                getStarterPane(); // make sure it is loaded
+                lmPane.resetWWPanel();
+                lmPane.setDoResetWWPanel(false);
+                lmPane.doSearchGenusSpecies(p.first.getFullName());
+                lmPane.addLocalData(p.second);
+                requestContext();
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        super.doCommand(cmdAction);
+        
+        if (cmdAction.isType(LIFEMAPPER))
+        {
+            processRecordSetCommands(cmdAction);
+        }
+    }
 
 }

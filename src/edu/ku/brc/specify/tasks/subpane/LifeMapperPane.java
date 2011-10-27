@@ -27,7 +27,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -37,6 +42,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -56,9 +62,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
@@ -66,7 +77,10 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.Pair;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Polyline;
+import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 
 /**
  * @author rods
@@ -80,8 +94,10 @@ public class LifeMapperPane extends BaseSubPane
 {
     protected static final int MAP_WIDTH  = 500;
     protected static final int MAP_HEIGHT = 500;
+    protected static boolean   IS_OFFLINE = false; 
     
     protected WorldWindPanel        wwPanel;
+    protected boolean               doResetWWPanel = true;
     protected JButton               searchBtn;
     
     // Search Data
@@ -127,7 +143,7 @@ public class LifeMapperPane extends BaseSubPane
         imgDisplay       = new ImageDisplay(450, 225, false, true);
         
         wwPanel = new WorldWindPanel();
-        wwPanel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
+        wwPanel.setPreferredSize(new Dimension(MAP_WIDTH, 450));
         wwPanel.setZoomInMeters(3500000.0);
         
         imgDisplay.setDoShowText(false);
@@ -158,7 +174,9 @@ public class LifeMapperPane extends BaseSubPane
         pb.add(searchText,         cc.xy(1,1));
         pb.add(searchSciNameBtn,   cc.xy(3,1));
         pb.add(pb2.getPanel(),     cc.xyw(1,3,3));
-        pb.add(wwPanel,            cc.xyw(1,5,3));
+        
+        //JScrollPane sp = new JScrollPane(wwPanel);
+        pb.add(wwPanel,                 cc.xyw(1,5,3));
         
         list.addListSelectionListener(new ListSelectionListener()
         {
@@ -172,6 +190,10 @@ public class LifeMapperPane extends BaseSubPane
                         @Override
                         protected Boolean doInBackground() throws Exception
                         {
+                            if (doResetWWPanel)
+                            {
+                                wwPanel.reset();
+                            }
                             doSearchOccur();
                             return null;
                         }
@@ -218,8 +240,173 @@ public class LifeMapperPane extends BaseSubPane
      */
     private void doSearchGenusSpecies()
     {
+        doResetWWPanel = true;
+        doSearchGenusSpecies(searchText.getText());
+    }
+    
+    /**
+     * 
+     */
+    public void doSearchGenusSpecies(final String searchStr)
+    {
         listModel.clear();
         occurList.clear();
+        
+        if (StringUtils.isNotEmpty(searchStr))
+        {
+            doSearchGenusSpecies(searchStr, new LMSearchCallbackListener()
+            {
+                @Override
+                public void noItems()
+                {
+                    
+                }
+                
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.LMSearchCallbackListener#itemsFound(java.util.List)
+                 */
+                @Override
+                public void itemsFound(List<OccurrenceSetIFace> items)
+                {
+                    for (OccurrenceSetIFace item : items)
+                    {
+                        listModel.addElement(item.getTitle());
+                        occurList.add(item.getOccurrenceId());
+                    }
+                    if (occurList.size() == 1)
+                    {
+                        list.setSelectedIndex(0);
+                    }
+                }
+            });
+        }
+    }
+    
+    /**
+     * @param pStmt
+     * @param ceID
+     * @param pmList
+     * @throws SQLException
+     */
+    private void addMarkerFromCE(final PreparedStatement pStmt, 
+                                 final int ceID,
+                                 final ArrayList<LatLonPlacemarkIFace> pmList) throws SQLException
+    {
+        pStmt.setInt(1, ceID);
+        ResultSet rs = pStmt.executeQuery();
+        if  (rs.next())
+        {
+            LatLonPlacemark llp = new LatLonPlacemark(rs.getDouble(1), rs.getDouble(2));
+            pmList.add(llp);
+        }
+        rs.close();
+    }
+    
+    /**
+     * 
+     */
+    public void resetWWPanel()
+    {
+        if (wwPanel != null)
+        {
+            wwPanel.reset();
+        }
+    }
+    
+    /**
+     * @param doResetWWPanel the doResetWWPanel to set
+     */
+    public void setDoResetWWPanel(boolean doResetWWPanel)
+    {
+        this.doResetWWPanel = doResetWWPanel;
+    }
+
+    /**
+     * @param recSet
+     */
+    public void addLocalData(final RecordSet recSet)
+    {
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        boolean    isEmbedded = collection.getIsEmbeddedCollectingEvent();
+        
+        ArrayList<LatLonPlacemarkIFace> coPoints = new ArrayList<LatLonPlacemarkIFace>();
+        
+        Connection conn  = null;        
+        PreparedStatement coStmt = null;
+        PreparedStatement ceStmt = null;
+
+        try
+        {
+            conn   = DBConnection.getInstance().createConnection();
+            coStmt = conn.prepareStatement("SELECT CollectingEventID FROM collectionobject WHERE CollectionObjectID = ?");
+            ceStmt = conn.prepareStatement("SELECT Latitude1, Longitude1 FROM locality l INNER JOIN collectingevent ce ON ce.LocalityID = l.LocalityID " +
+            		                       "WHERE CollectingEventID = ? And Latitude1 IS NOT NULL AND Longitude1 IS NOT NULL");
+
+            HashSet<Integer> ceSet = new HashSet<Integer>();
+            
+            //int currCnt = 0;
+            for (RecordSetItemIFace rsi : recSet.getItems())
+            {
+                coStmt.setInt(1, rsi.getRecordId());
+                ResultSet rs = coStmt.executeQuery();
+                if  (rs.next())
+                {
+                    if (isEmbedded)
+                    {
+                        addMarkerFromCE(ceStmt, rs.getInt(1), coPoints);
+                    } else
+                    {
+                        ceSet.add(rs.getInt(1));
+                    }
+                }
+                rs.close();
+                
+                if (!isEmbedded)
+                {
+                    for (Integer id : ceSet)
+                    {
+                        addMarkerFromCE(ceStmt, id, coPoints);
+                    }
+                }
+            }
+            
+            if (coPoints.size() > 0)
+            { 
+                //wwPanel.reset();
+                BasicMarkerAttributes bmAttrs = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.CONE, 1d, 3, 3);
+                wwPanel.placeMarkers(coPoints, 0, bmAttrs, false);
+            }
+        } 
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try 
+            {
+                if (ceStmt != null) ceStmt.close();
+                if (coStmt != null) coStmt.close();
+                if (conn != null) conn.close();
+            } catch (Exception ex) {}
+        }
+    }
+    
+    /**
+     * @param searchStr
+     * @param cbListener
+     */
+    private void doSearchGenusSpecies(final String searchStr, 
+                                      final LMSearchCallbackListener cbListener)
+    {    
+        if (IS_OFFLINE)
+        {
+            ArrayList<LifeMapperPane.OccurrenceSetIFace> items = new ArrayList<LifeMapperPane.OccurrenceSetIFace>();
+            items.add(new GenusSpeciesDataItem(String.format("%s (%s)", searchStr, "1"), "1"));
+            cbListener.itemsFound(items); 
+            return;
+        }
+        
         final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
 
@@ -230,8 +417,9 @@ public class LifeMapperPane extends BaseSubPane
             {
                 HttpClient httpClient = new HttpClient();
                 httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+                httpClient.getParams().setParameter("http.socket.timeout", 15000); 
                 
-                String genusSpecies = StringUtils.replace(searchText.getText(), " ", "%20");
+                String genusSpecies = StringUtils.replace(searchStr, " ", "%20");
                 String url = "http://www.lifemapper.org/hint/species/"+genusSpecies;
                 //System.out.println(url);
                 
@@ -258,6 +446,7 @@ public class LifeMapperPane extends BaseSubPane
                 super.done();
                 
                 boolean isError = true;
+                ArrayList<OccurrenceSetIFace> items = null;
                 
                 try
                 {
@@ -265,14 +454,14 @@ public class LifeMapperPane extends BaseSubPane
                     
                     if (StringUtils.isNotEmpty(responseString))
                     {
+                        items = new ArrayList<LifeMapperPane.OccurrenceSetIFace>();
                         String[] lines = StringUtils.split(responseString, '\n');
                         for (String line : lines)
                         {
                             String[] fields = StringUtils.split(line, '\t');
                             if (fields != null && fields.length == 3)
                             {
-                                listModel.addElement(String.format("%s (%s)", fields[0], fields[2]));
-                                occurList.add(fields[1]);
+                                items.add(new GenusSpeciesDataItem(String.format("%s (%s)", fields[0], fields[2]), fields[1]));
                             }
                         }
                         isError = false;
@@ -290,9 +479,12 @@ public class LifeMapperPane extends BaseSubPane
                 if (isError)
                 {
                     showErrorMsg(glassPane);
+                    cbListener.noItems();
+                    
                 } else
                 {
                     UIRegistry.clearSimpleGlassPaneMsg();
+                    cbListener.itemsFound(items);
                 }
             }
         };
@@ -325,24 +517,48 @@ public class LifeMapperPane extends BaseSubPane
     @SuppressWarnings("unchecked")
     private void doSearchOccur()
     {
+        occurSet = occurList.get(list.getSelectedIndex());
+        if (StringUtils.isNotEmpty(occurSet))
+        {
+            doSearchOccur(occurSet);
+        }
+    }
+    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public void doSearchOccur(final String occurrenceId)
+    {
+        points.clear();
+        
+        if (IS_OFFLINE)
+        {
+            LatLonPlacemark plcMark = new LatLonPlacemark(-93.0, 38.0);
+            points.add(plcMark);
+            
+            wwPanel.reset();
+            if (points.size() > 0)
+            {
+                wwPanel.placeMarkers(points, 0);
+            }
+        }
+
         final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
-        
-        
-        points.clear();
         
         // check the website for the info about the latest version
         final HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+        httpClient.getParams().setParameter("http.socket.timeout", 15000); 
         
         if (list.getSelectedIndex() < 0)
         {
             return;
         }
         
-        occurSet = occurList.get(list.getSelectedIndex());
-        final String url = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurSet);
-        //System.out.println(url);
+        final String url = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurrenceId);
+        System.out.println(url);
         
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
         {
@@ -411,12 +627,12 @@ public class LifeMapperPane extends BaseSubPane
                                 points.add(plcMark);
                             }
                             
-                            wwPanel.reset();
-                            if (points.size() > 0)
-                            {
-                                wwPanel.placeMarkers(points, 0);
-                            }
                             isError = false;
+                        }
+                        
+                        if (points.size() > 0)
+                        {
+                            wwPanel.placeMarkers(points, 0, null, false);
                         }
                         
                         bboxStr = "-180.0,-90.0,180.0,90.0";
@@ -459,7 +675,9 @@ public class LifeMapperPane extends BaseSubPane
 
     }
     
-    
+    //----------------------------------------------------------------------------------
+    //--
+    //----------------------------------------------------------------------------------
     class LatLonPlacemark implements LatLonPlacemarkIFace
     {
         private Pair<Double, Double> pnt;
@@ -524,6 +742,87 @@ public class LifeMapperPane extends BaseSubPane
         public void cleanup()
         {
         }
+    }
+    
+    //----------------------------------------------------------
+    class GenusSpeciesDataItem implements OccurrenceSetIFace
+    {
+        private String title;
+        private String occurrenceId;
         
+        /**
+         * @param title
+         * @param genusSpecies
+         */
+        public GenusSpeciesDataItem(String title, String occurrenceId)
+        {
+            super();
+            this.title = title;
+            this.occurrenceId = occurrenceId;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.GenusSpeciesItem#getTitle()
+         */
+        @Override
+        public String getTitle()
+        {
+            return title;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.GenusSpeciesItem#getGenusSpecies()
+         */
+        @Override
+        public String getOccurrenceId()
+        {
+            return occurrenceId;
+        }
+        
+    }
+    
+    //----------------------------------------------------------------------------------
+    //--
+    //----------------------------------------------------------------------------------
+    public interface LMSearchCallbackListener
+    {
+        /**
+         * 
+         */
+        public abstract void itemsFound(List<OccurrenceSetIFace> items);
+        
+        
+        /**
+         * 
+         */
+        public abstract void noItems();
+    }
+    
+    //--------------------------------
+    public interface OccurrenceSetIFace
+    {
+        /**
+         * @return
+         */
+        public abstract String getTitle();
+        
+        /**
+         * @return
+         */
+        public abstract String getOccurrenceId();
+    }
+    
+    //--------------------------------
+    public interface GenusSpeciesItemIFace
+    {
+        /**
+         * @return
+         */
+        public abstract String getTitle();
+        
+        /**
+         * @return
+         */
+        public abstract String getOccurrenceId();
     }
 }

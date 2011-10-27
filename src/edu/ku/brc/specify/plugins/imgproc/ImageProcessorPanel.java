@@ -73,7 +73,7 @@ public class ImageProcessorPanel extends JPanel
     protected IconTray<Trayable>    iconTray;
     
     protected Timer                 timer = null;
-    protected String[]              imgNames = {"png", "tif", "bmp"};
+    protected String[]              imgNames = {"png", "tif", "bmp", "gif", "jpg"};
     protected int                   imgIndex = 0;
     protected ImageIcon             circle;
     protected ImageProcListener     listener;
@@ -229,7 +229,8 @@ public class ImageProcessorPanel extends JPanel
             for (File f : dir.listFiles())
             {
                 String ext = FilenameUtils.getExtension(f.getName());
-                if (!f.getName().startsWith(".") && ext != null && (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("png")))
+                if (!f.getName().startsWith(".") && ext != null && 
+                    (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("png")))
                 {
                     f.delete();
                 }

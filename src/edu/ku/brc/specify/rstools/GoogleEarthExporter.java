@@ -76,6 +76,11 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     /** Logger for all log messages emitted from this class. */
     private static final Logger log = Logger.getLogger(GoogleEarthExporter.class);
     
+    private boolean useKMZ = false;
+    
+    /**
+     * 
+     */
     public GoogleEarthExporter()
     {
     }
@@ -85,6 +90,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	 */
 	public void processRecordSet(final RecordSetIFace recordSet, final Properties reqParams)
     {
+        useKMZ = AppPreferences.getLocalPrefs().getBoolean("USE_GE_KMZ", false);
+
 	    String description = JOptionPane.showInputDialog(getTopWindow(), getResourceString("GE_ENTER_DESC"));
         
         log.info("Exporting RecordSet");
@@ -94,7 +101,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         {
             exportDataObjects(description, 
                               RecordSetLoader.loadRecordSet(recordSet), 
-                              true, 
+                              useKMZ, 
                               getPlacemarkIcon());
             
         } else if (dataTableId == CollectionObject.getClassTableId())
@@ -207,7 +214,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         
         if (list.size() > 0)
         {
-            exportDataObjects(description, list, true, getIconFromPrefs());
+            exportDataObjects(description, list, useKMZ, getIconFromPrefs());
             
         } else
         {
@@ -233,7 +240,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         
         if (list.size() > 0)
         {
-            exportDataObjects(description, list, true, getIconFromPrefs());
+            exportDataObjects(description, list, useKMZ, getIconFromPrefs());
         } else
         {
             writeTimedSimpleGlassPaneMsg(getResourceString("GE_NO_POINTS"), Color.RED);
@@ -296,7 +303,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 }
                 
                 File defaultIconFile = null;
-                if (imageIcon != null)
+                if (doKMZ && imageIcon != null)
                 {
                     // set it to a standard name that we will put into the KMZ file
                     kmlGen.setPlacemarkIconURL("files/specify32.png");
@@ -346,6 +353,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 
                 File outputFile = File.createTempFile("sp6export", doKMZ ? ".kmz" : ".kml");
                 kmlGen.outputToFile(outputFile.getAbsolutePath());
+                log.debug(outputFile.getAbsolutePath());
                 
                 if (doKMZ)
                 {

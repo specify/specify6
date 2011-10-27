@@ -73,6 +73,8 @@ import javax.swing.JPanel;
  */
 public class WorldWindPanel extends JPanel
 {
+    private static final int DEFAULT_RADIUS = 3;
+    
     protected AnnotationLayer            annoLayer;
     protected MarkerLayer                markerLayer = new MarkerLayer();
     protected RenderableLayer            lineLayer   = new RenderableLayer();
@@ -114,11 +116,10 @@ public class WorldWindPanel extends JPanel
                 ex.printStackTrace();
             }
             
-            int radius = 3;
-            annoAttrs.setCornerRadius(radius);
+            annoAttrs.setCornerRadius(DEFAULT_RADIUS);
             annoAttrs.setInsets(new Insets(4, 4, 4, 4));
             annoAttrs.setBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
-            annoAttrs.setDrawOffset(new Point(0, radius+3));
+            annoAttrs.setDrawOffset(new Point(0, DEFAULT_RADIUS+3));
             annoAttrs.setDistanceMinScale(0.5);
             annoAttrs.setDistanceMaxScale(2);
             annoAttrs.setDistanceMinOpacity(0.5);
@@ -127,8 +128,7 @@ public class WorldWindPanel extends JPanel
             annoAttrs.setTextColor(Color.WHITE);
             annoAttrs.setBorderColor(new Color(0.75f, 0.75f, 0.75f, 0.75f));
             
-            Material material = new Material(new Color(1f, 0.1f, 0.1f, 0.75f));
-            markerAttrs = new BasicMarkerAttributes(material, BasicMarkerShape.ORIENTED_SPHERE, 1d, radius, radius);
+            resetMarkerAttrs(DEFAULT_RADIUS);
             
             markerLayer.setOverrideMarkerElevation(true);
             markerLayer.setKeepSeparated(false);
@@ -154,6 +154,32 @@ public class WorldWindPanel extends JPanel
             
             initWorldWindLayerModel();
         }
+    }
+    
+    /**
+     * 
+     */
+    public void resetMarkerAttrs()
+    {
+        resetMarkerAttrs(DEFAULT_RADIUS);
+    }
+    
+    /**
+     * 
+     */
+    public void resetMarkerAttrs(final Integer radius)
+    {
+        int rad = radius == null ? 3 : radius;
+        Material material = new Material(new Color(1f, 0.1f, 0.1f, 0.75f));
+        markerAttrs = new BasicMarkerAttributes(material, BasicMarkerShape.ORIENTED_SPHERE, 1d, rad, rad);
+    }
+
+    /**
+     * @param markerAttrs the markerAttrs to set
+     */
+    public void setMarkerAttrs(BasicMarkerAttributes markerAttrs)
+    {
+        this.markerAttrs = markerAttrs;
     }
 
     /*
@@ -222,10 +248,24 @@ public class WorldWindPanel extends JPanel
      * Places marker points on map.
      * @param points the list of points
      * @param flyToIndex
+     * @param doReset
      */
-    public void placeMarkers(final List<LatLonPlacemarkIFace> points, final Integer flyToIndex)
+    public void placeMarkers(final List<LatLonPlacemarkIFace> points, 
+                             final Integer flyToIndex,
+                             final BasicMarkerAttributes attrs,
+                             final boolean doReset)
     {
-        placeMarkers(points, false, true, flyToIndex);
+        placeMarkers(points, false, true, flyToIndex, attrs, doReset);
+    }
+    
+    /**
+     * @param points
+     * @param flyToIndex
+     */
+    public void placeMarkers(final List<LatLonPlacemarkIFace> points, 
+                             final Integer flyToIndex)
+    {
+        placeMarkers(points, flyToIndex, null, true);
     }
     
     /**
@@ -260,7 +300,28 @@ public class WorldWindPanel extends JPanel
                              final boolean doAddMarkCntText, 
                              final Integer flyToIndex)
     {
-        reset();
+        placeMarkers(points, doAddTitles, doAddMarkCntText, flyToIndex, null, true);
+    }
+    
+    /**
+     * Places marker points on map.
+     * @param points the list of points
+     * @param doAddTitles
+     * @param doAddMarkCntText
+     * @param flyToIndex
+     * @param doReset
+     */
+    public void placeMarkers(final List<LatLonPlacemarkIFace> points, 
+                             final boolean doAddTitles,
+                             final boolean doAddMarkCntText, 
+                             final Integer flyToIndex,
+                             final BasicMarkerAttributes attrs,
+                             final boolean doReset)
+    {
+        if (doReset)
+        {
+            reset();
+        }
         
         int i = 1;
         for (LatLonPlacemarkIFace pnt : points)
@@ -270,7 +331,7 @@ public class WorldWindPanel extends JPanel
             {
                 Position pos = Position.fromDegrees(latLon.first, latLon.second, 0);
                 
-                Marker marker = new BasicMarker(pos, markerAttrs);
+                Marker marker = new BasicMarker(pos, attrs == null ? markerAttrs : attrs);
                 marker.setPosition(Position.fromDegrees(latLon.first, latLon.second, 0));
                 markers.add(marker);
                 

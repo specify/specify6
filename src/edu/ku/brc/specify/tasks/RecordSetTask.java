@@ -1309,6 +1309,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
+    @Override
     public void doCommand(CommandAction cmdAction)
     {
         super.doCommand(cmdAction);
