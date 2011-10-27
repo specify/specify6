@@ -1704,6 +1704,12 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         int rowCount = workbench.getWorkbenchRowsAsList().size();
         
+        if (rowCount == 0)
+        {
+        	spreadSheet.getSelectionModel().clearSelection();        	
+        	addRowAtEnd();
+        }
+        
         if (currentPanelType == PanelType.Spreadsheet)
         {
             if (rowCount > 0)
