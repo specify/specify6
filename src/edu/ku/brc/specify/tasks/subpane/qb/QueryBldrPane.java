@@ -634,7 +634,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             public void actionPerformed(ActionEvent ae)
             {
-            	doSearch();
+//            	int m = ae.getModifiers();
+//            	boolean ors = (m & ActionEvent.ALT_MASK) > 0 && (m & ActionEvent.CTRL_MASK) > 0 && (m & ActionEvent.SHIFT_MASK) > 0;
+//            	if (ors)
+//            	{
+//            		System.out.println("Disjunctional conjoinment desire gesture detected");
+//            	}
+//            	doSearch(ors);
+            	doSearch(false);
             }
         });
         distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
@@ -967,6 +974,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public void doSearch()
     {
+    	doSearch(false);
+    }
+    
+    public void doSearch(boolean doOr)
+    {
         if (canSearch())
         {
             if (distinctChk.isSelected())
@@ -977,7 +989,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 UsageTracker.incrUsageCount("QB.DoSearch." + query.getContextName());
             }
-            doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
+            doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected(), doOr);
         }
         else 
         {
@@ -1124,23 +1136,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	{
         		if (!qfp.isConditionForSchema())
 				{
-					MappedFieldInfo mappedTo = ConceptMapUtils.getDefaultDarwinCoreMappings().get(qfp.getSchemaItem()
+					Vector<MappedFieldInfo> mappedTos = ConceptMapUtils.getDefaultDarwinCoreMappings().get(qfp.getSchemaItem()
 							.getFieldName().toLowerCase());
-					if (mappedTo != null)
+					
+					if (mappedTos != null)
 					{
-						FieldQRI fqri = getFieldQRI(tableTree, mappedTo
+						for (MappedFieldInfo mappedTo : mappedTos)
+						{
+							FieldQRI fqri = getFieldQRI(tableTree, mappedTo
 								.getFieldName(), mappedTo.isRel(), mappedTo
 								.getStringId(), getTableIds(mappedTo
 								.getTableIds()), 0, tableTreeHash);
-						if (fqri != null)
-						{
-							SpQueryField qf = new SpQueryField();
-							qf.initialize();
-							qf.setFieldName(fqri.getFieldName());
-							qf.setStringId(fqri.getStringId());
-							query.addReference(qf, "fields");
-							addNewMapping(fqri, qf, qfp);
-							dirty = true;
+							if (fqri != null)
+							{
+								SpQueryField qf = new SpQueryField();
+								qf.initialize();
+								qf.setFieldName(fqri.getFieldName());
+								qf.setStringId(fqri.getStringId());
+								query.addReference(qf, "fields");
+								addNewMapping(fqri, qf, qfp);
+								dirty = true;
+								break;
+							}
 						}
 					}
 				}
@@ -1221,6 +1238,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         updateSearchBtn();
         QueryBldrPane.this.validate();
     }
+
+    public static HQLSpecs buildHQL(final TableQRI rootTable, 
+            final boolean distinct, 
+            final Vector<QueryFieldPanel> qfps,
+            final TableTree tblTree, 
+            final RecordSetIFace keysToRetrieve,
+            final boolean searchSynonymy,
+            final boolean isSchemaExport,
+            final Timestamp lastExportTime) throws ParseException
+    {
+    	return buildHQL(rootTable, distinct, qfps, tblTree, keysToRetrieve, searchSynonymy, isSchemaExport, lastExportTime, false);
+    }
+
     
     /**
      * @param rootTable
@@ -1237,7 +1267,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                        final RecordSetIFace keysToRetrieve,
                                        final boolean searchSynonymy,
                                        final boolean isSchemaExport,
-                                       final Timestamp lastExportTime) throws ParseException
+                                       final Timestamp lastExportTime,
+                                       final boolean disjunct) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -1461,7 +1492,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     if (!isDisplayOnly && criteriaStr.length() > 0)
                     {
-                        criteriaStr.append(" AND ");
+                        criteriaStr.append(disjunct ? " OR " : " AND ");
                     }
                     if (hqlHasSynJoins && isSynSearchable(qfi.getFieldQRI()) && !qfi.isEmptyCriterion())
                     {
@@ -1780,12 +1811,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * Performs the Search by building the HQL String.
      */
-    protected void doSearch(final TableQRI rootTable, boolean distinct)
+    protected void doSearch(final TableQRI rootTable, boolean distinct, boolean disjunct)
     {
         try
         {
             //XXX need to determine exportQuery params (probably)
-        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null);  
+        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null, disjunct);  
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         }
         catch (Exception ex)
@@ -2011,7 +2042,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 //XXX - should only use left joins when necessary (see 4th param below)
                 //XXX - actually since the domain adjuster adds joins to system tables that should always 
-                //contain related records, AND because now joins are only made when domain criteria are speciried,
+                //contain related records, AND because now joins are only made when domain criteria are specified,
                 //It is ok to use inner join.
                 boolean skipExtraJoin = level > 1;// && tt.getTableInfo().getTableId() == Agent.getClassTableId();
                 if (!skipExtraJoin)
@@ -2022,7 +2053,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	{
                 		sqlStr.append(extraJoin + " ");
                 	}
-                }
+                } 	
             }
             else if (qri instanceof RelQRI && isSchemaExport && exportTimestamp != null)
             {
@@ -4169,7 +4200,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             final Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash, final Component saveBtn,
             SpExportSchemaMapping schemaMapping, List<String> missingFlds,
-            Map<String, MappedFieldInfo> autoMaps)
+            Map<String, Vector<MappedFieldInfo>> autoMaps)
     {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         //Need to change columnDefStr if mapMode...
