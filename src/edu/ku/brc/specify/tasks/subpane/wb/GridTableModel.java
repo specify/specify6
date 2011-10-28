@@ -202,6 +202,11 @@ public class GridTableModel extends SpreadSheetModel
      */
     public Object getValueAt(int row, int column)
     {
+    	if (row < 0 || row >= getRowCount() || column < 0 || column >= getColumnCount())
+    	{
+    		return null;
+    	}
+    	
         // if this is the image column...
         if (headers.get(column) == imageMappingItem)
         {
@@ -240,6 +245,7 @@ public class GridTableModel extends SpreadSheetModel
         {
             return getWorkbench().getWorkbenchRowsAsList().get(row).getData(column);
         }
+        
         return null;
     }
 
