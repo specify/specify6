@@ -176,7 +176,7 @@ public class SGRMatcherUI extends CustomDialog
             mf.filterQuery = StringUtils.join(filters.toArray(), ' ');
             
             finished.apply(
-                    DataModel.persistMatchConfiguration(name, mf)
+                    DataModel.persistMatchConfiguration(name, uiPanel.remarks.getText(), mf)
             );
         } else {
             MatchConfiguration matchConfig = (MatchConfiguration)nbi.getData();
