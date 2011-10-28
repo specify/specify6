@@ -141,7 +141,6 @@ public class Thumbnailer
                         String ext     = extNode.getTextContent().trim();
                         if (StringUtils.isNotEmpty(ext))
                         {
-                            System.out.println(String.format("[%s][%s]", ext, iconName));
                             availableIcons.put(ext, iconName);
                         }
                     }
@@ -196,50 +195,44 @@ public class Thumbnailer
 	                              final String outputFile,
 	                              final boolean doHighQuality) throws IOException
 	{
-	    //if (outputFile != null)
-	    {
-	        //if (!(new File(outputFile).exists()))
+            // get the system MIME type mapper
+            MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
+            mimeMap.addMimeTypes("image/png    png");
+            mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
+            
+            // get the MIME type of the given original file
+    		String mimeType = mimeMap.getContentType(originalFile);
+            
+            // find the appropriate thumbnail generator, if any
+    		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
+    		if (generator != null)
+    		{
+                if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
+                {
+                    UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
+                }
+                return;
+    		}
+    		
+    		String iconName = null;
+    		
+    		String ext = FilenameUtils.getExtension(originalFile);
+    		if (StringUtils.isNotEmpty(ext))
+    		{
+    		    iconName = availableIcons.get(ext);
+    		}
+    		
+    		if (StringUtils.isEmpty(iconName))
+    		{
+    		    iconName = "unknown";
+    		}
+    		
+	        IconEntry entry = IconManager.getIconEntryByName(iconName);
+	        if (entry != null)
 	        {
-                // get the system MIME type mapper
-                MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
-                mimeMap.addMimeTypes("image/png    png");
-                mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
-                
-                // get the MIME type of the given original file
-        		String mimeType = mimeMap.getContentType(originalFile);
-                
-                // find the appropriate thumbnail generator, if any
-        		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
-        		if (generator != null)
-        		{
-                    if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
-                    {
-                        UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
-                    }
-                    return;
-        		}
-        		
-        		String iconName = null;
-        		
-        		String ext = FilenameUtils.getExtension(originalFile);
-        		if (StringUtils.isNotEmpty(ext))
-        		{
-        		    iconName = availableIcons.get(ext);
-        		}
-        		
-        		if (StringUtils.isEmpty(iconName))
-        		{
-        		    iconName = "unknown";
-        		}
-        		
-		        IconEntry entry = IconManager.getIconEntryByName(iconName);
-		        if (entry != null)
-		        {
-		            BufferedImage bi = ImageIO.read(entry.getUrl());
-		            ImageIO.write(bi, "PNG", new FileOutputStream(outputFile));
-		        }
+	            BufferedImage bi = ImageIO.read(entry.getUrl());
+	            ImageIO.write(bi, "PNG", new FileOutputStream(outputFile));
 	        }
-	    }
 	}
 	
 	/**

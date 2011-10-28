@@ -168,44 +168,32 @@ public class AttachmentIconMapper implements ObjectIconMapper
             return IconManager.getIcon("unknown", size);
         }
         
-        if(mimeType.startsWith("image"))
+        int inx = mimeType.indexOf('/');
+        if (inx > -1)
         {
-            return IconManager.getIcon("image", size);
-        }
-        
-        if(mimeType.startsWith("video"))
-        {
-            return IconManager.getIcon("video", size);
-        }
-        
-        if(mimeType.startsWith("audio"))
-        {
-            return IconManager.getIcon("audio", size);
-        }
-        
-        if(mimeType.equals("application/pdf"))
-        {
-            return IconManager.getIcon("pdf", size);
-        }
-        
-        if(mimeType.equals("text/html"))
-        {
-            return IconManager.getIcon("html", size);
-        }
-        
-        if(mimeType.equals("text/plain"))
-        {
-            return IconManager.getIcon("text", size);
-        }
-        
-        if(mimeType.equals("application/excel") ||
-                mimeType.equals("text/csv") ||
-                mimeType.equals("application/csv") ||
-                mimeType.equals("application/vnd.ms-excel") ||
-                mimeType.equals("application/vnd.msexcel") )
-                
-        {
-            return IconManager.getIcon("Spreadsheet", size);
+            String mimePrefix = mimeType.substring(0, inx);
+            String mimeStr    = Thumbnailer.getIconNameFromExtension(mimePrefix);
+            if (mimeStr != null)
+            {
+                ImageIcon icon = IconManager.getIcon(mimeStr, size);
+                if (icon != null)
+                {
+                    return icon;
+                }
+            }
+            
+            if (inx == 11 && mimePrefix.equalsIgnoreCase("application"))
+            {
+                mimeStr = mimeType.substring(inx+1, mimeType.length());
+                if (!mimeStr.equals("octet-stream"))
+                {
+                    ImageIcon icon = IconManager.getIcon(mimeStr, size);
+                    if (icon != null)
+                    {
+                        return icon;
+                    }
+                }
+            }
         }
         
         if (StringUtils.isNotEmpty(origFilename))
