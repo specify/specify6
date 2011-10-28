@@ -27,6 +27,8 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -204,6 +206,19 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 
         {
             return IconManager.getIcon("Spreadsheet", size);
+        }
+        
+        if (StringUtils.isNotEmpty(origFilename))
+        {
+            String ext = FilenameUtils.getExtension(origFilename);
+            if (ext != null)
+            {
+                String imgIconName = Thumbnailer.getIconNameFromExtension(ext);
+                if (imgIconName != null)
+                {
+                    return IconManager.getIcon(imgIconName, size);
+                }
+            }
         }
 
         return IconManager.getIcon("unknown", size);

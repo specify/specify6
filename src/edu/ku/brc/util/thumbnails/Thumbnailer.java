@@ -196,9 +196,9 @@ public class Thumbnailer
 	                              final String outputFile,
 	                              final boolean doHighQuality) throws IOException
 	{
-	    if (outputFile != null)
+	    //if (outputFile != null)
 	    {
-	        if (!(new File(outputFile).exists()))
+	        //if (!(new File(outputFile).exists()))
 	        {
                 // get the system MIME type mapper
                 MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
@@ -221,7 +221,7 @@ public class Thumbnailer
         		
         		String iconName = null;
         		
-        		String ext = FilenameUtils.getExtension(outputFile);
+        		String ext = FilenameUtils.getExtension(originalFile);
         		if (StringUtils.isNotEmpty(ext))
         		{
         		    iconName = availableIcons.get(ext);
@@ -295,6 +295,16 @@ public class Thumbnailer
 		}
 		
 		this.quality = percent;
+	}
+	
+	/**
+	 * Get cion name for extnsion.
+	 * @param ext file extension 
+	 * @return the icon name for a file extension
+	 */
+	public static String getIconNameFromExtension(final String ext)
+	{
+	    return availableIcons.get(ext);
 	}
 	
 	/**
