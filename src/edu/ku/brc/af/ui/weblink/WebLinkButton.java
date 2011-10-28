@@ -482,9 +482,10 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 {
                     val = valueHash.get("this");
                 }
-                try
+                /*try
                 {
-                    for (int j=32;j<48;j++)
+                    byte[] badChars = new byte[] {45};
+                    for (byte j : badChars)
                     {
                         String  str  = "%" + Integer.toHexString(j);
                         String  with = ""+(char)j;
@@ -501,11 +502,20 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                             }
                         }
                     }
-                    val = URLEncoder.encode(val, "UTF-8");
+                    //val = URLEncoder.encode(val, "UTF-8");
+                    //val = URLEncoder.encode(val, "ISO-8859-1");
+
+                    url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    //url = URLEncoder.encode(url, "ISO-8859-1");
+                    //System.out.println("|"+key+"|"+url);
+                    
                 } catch (Exception ex) {}
+                */
+                
+                //System.out.println("|"+key+"|"+url);
+                // http://darwin2.nhm.ku.edu/ksem/collectionlabelimages/PL.Dylewska1964.05.20%20001.JPG
                 
                 url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                //System.out.println("|"+key+"|"+url);
             }
             
             
