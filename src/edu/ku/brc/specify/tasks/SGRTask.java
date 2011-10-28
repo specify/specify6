@@ -74,6 +74,7 @@ import edu.ku.brc.specify.plugins.sgr.HistogramChart;
 import edu.ku.brc.specify.plugins.sgr.RecordSetBatchMatch;
 import edu.ku.brc.specify.plugins.sgr.SGRBatchScenario;
 import edu.ku.brc.specify.plugins.sgr.SGRMatcherUI;
+import edu.ku.brc.specify.plugins.sgr.SGRMatcherUI.AvailableIndicesFetchException;
 import edu.ku.brc.specify.plugins.sgr.SGRPluginImpl;
 import edu.ku.brc.specify.plugins.sgr.WorkBenchBatchMatch;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -509,30 +510,40 @@ public class SGRTask extends BaseTask
 
     private void createNewMatcher()
     {
-        final SGRMatcherUI mui = 
-            SGRMatcherUI.dialogForNewConfig((Frame)UIRegistry.getTopWindow(), 
-                new Function<MatchConfiguration, Void>()
-                {
-                    @Override
-                    public Void apply(MatchConfiguration mc)
-                    {
-                        UIRegistry.loadAndPushResourceBundle("specify_plugins");
-                        addMatcherToNavBox(mc, matchersNavBox, false);
-                        UIRegistry.popResourceBundle();            
-                        NavBox.refresh(matchersNavBox);
-                        return null;
-                    }
-                }
-            );
-        SwingUtilities.invokeLater(new Runnable()
+        try
         {
-            @Override
-            public void run()
+            final SGRMatcherUI mui = 
+                SGRMatcherUI.dialogForNewConfig((Frame)UIRegistry.getTopWindow(), 
+                    new Function<MatchConfiguration, Void>()
+                    {
+                        @Override
+                        public Void apply(MatchConfiguration mc)
+                        {
+                            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+                            addMatcherToNavBox(mc, matchersNavBox, false);
+                            UIRegistry.popResourceBundle();            
+                            NavBox.refresh(matchersNavBox);
+                            return null;
+                        }
+                    }
+                );
+            
+            SwingUtilities.invokeLater(new Runnable()
             {
-                mui.setVisible(true);
-            }
-        });
-        UsageTracker.incrUsageCount("SGR.NewMatcher");
+                @Override
+                public void run()
+                {
+                    mui.setVisible(true);
+                }
+            });
+            UsageTracker.incrUsageCount("SGR.NewMatcher");
+        }
+        catch (AvailableIndicesFetchException e)
+        {
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            UIRegistry.showLocalizedError("SGR_ERROR_SERVER_FAILED_GETTING_INDICES");
+            UIRegistry.popResourceBundle();
+        }
     }
 
     private void importMatchers()

@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -51,7 +52,9 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.sgr.SGRMatcher;
 import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
@@ -70,6 +73,7 @@ import org.apache.lucene.search.Query;
  */
 public class SGRMatcherUI extends CustomDialog
 {
+
     public static enum WeightChoice
     {
         Ignore,
@@ -129,7 +133,8 @@ public class SGRMatcherUI extends CustomDialog
             
             String name = uiPanel.name.getText();
             
-            mf.serverUrl = uiPanel.serverUrl.getText();
+            String index = (String) ((JComboBox) uiPanel.index).getSelectedItem();
+            mf.serverUrl = uiPanel.indices.get(index);
             mf.nRows = ((Number) uiPanel.nRows.getValue()).intValue();
             mf.boostInterestingTerms = uiPanel.boost.isSelected();
             
@@ -188,8 +193,7 @@ public class SGRMatcherUI extends CustomDialog
     {
         JTextField             name             = new JTextField("New matcher");
 
-        JTextField             serverUrl        = new JTextField(
-                                                        "http://dhwd99p1.nhm.ku.edu:8983/solr");
+        JComponent             index;
 
         JFormattedTextField    nRows            = new JFormattedTextField(10);
 
@@ -202,6 +206,8 @@ public class SGRMatcherUI extends CustomDialog
         JTextField             collectionCode       = new JTextField();
 
         JTextArea              remarks          = new JTextArea(10, 20);
+        
+        Map<String, String> indices;
         
         public SGRMatcherUIPanel(NavBoxItemIFace nbi)
         {
@@ -222,8 +228,11 @@ public class SGRMatcherUI extends CustomDialog
                 MatchConfiguration matchConfig = (MatchConfiguration)nbi.getData();
                 name.setText(matchConfig.name());
                 
+                JTextField serverUrl;
+                serverUrl = new JTextField();
                 serverUrl.setText(matchConfig.serverUrl());
                 serverUrl.setEditable(false);
+                index = serverUrl;
                 
                 nRows.setText("" + matchConfig.nRows());
                 
@@ -279,6 +288,25 @@ public class SGRMatcherUI extends CustomDialog
                 
                 collectionCode.setText(
                         AppContextMgr.getInstance().getClassObject(Collection.class).getCode());
+                
+                try
+                {
+                    indices = AvailableIndicesFetcher.getIndices();
+                }
+                catch (Exception e)
+                {
+                    throw new AvailableIndicesFetchException(e);
+                }
+                JComboBox availIndices = new JComboBox(indices.keySet().toArray());
+                index = availIndices;
+                
+                Discipline disc = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                String discTitle = disc.getName();
+                for (int i= 0; i < availIndices.getItemCount(); i++)
+                {
+                    if (availIndices.getItemAt(i).equals(discTitle))
+                        availIndices.setSelectedIndex(i);
+                }
             }
             
             int rows = similarityFields.size() + 7;
@@ -298,19 +326,19 @@ public class SGRMatcherUI extends CustomDialog
             builder.add(name,               cc.xy(3, y));
             y += 2;
             
-            builder.addLabel("Server URL",  cc.xy(1, y));
-            builder.add(serverUrl,          cc.xy(3, y));
+            builder.addLabel("Index",   cc.xy(1, y));
+            builder.add(index,          cc.xy(3, y));
             y += 2;
             
             builder.addSeparator("Exclude", cc.xyw(1, y, 3));
             y += 2;
             
             builder.addLabel("Institution Code",      cc.xy(1, y));
-            builder.add(institutionCode,        cc.xy(3, y));
+            builder.add(institutionCode,              cc.xy(3, y));
             y += 2;
             
             builder.addLabel("Collection Code",      cc.xy(1, y));
-            builder.add(collectionCode,        cc.xy(3, y));
+            builder.add(collectionCode,              cc.xy(3, y));
             y += 2;
             
             builder.addSeparator("Similarity", cc.xyw(1, y, 3));
@@ -395,4 +423,32 @@ public class SGRMatcherUI extends CustomDialog
         }
     }
 
+    public static class AvailableIndicesFetchException extends RuntimeException 
+    {
+
+        public AvailableIndicesFetchException()
+        {
+            super();
+            // TODO Auto-generated constructor stub
+        }
+
+        public AvailableIndicesFetchException(String arg0, Throwable arg1)
+        {
+            super(arg0, arg1);
+            // TODO Auto-generated constructor stub
+        }
+
+        public AvailableIndicesFetchException(String arg0)
+        {
+            super(arg0);
+            // TODO Auto-generated constructor stub
+        }
+
+        public AvailableIndicesFetchException(Throwable arg0)
+        {
+            super(arg0);
+            // TODO Auto-generated constructor stub
+        }
+       
+    }
 }
