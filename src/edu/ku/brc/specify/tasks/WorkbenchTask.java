@@ -2463,7 +2463,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     
                     datasetNavBoxMgr.removeWorkbench(workbench);
                     updateNavBoxUI(null);
-                    
+                    ((SGRTask)ContextMgr.getTaskByClass(SGRTask.class)).deleteResultsForWorkbench(workbench);
                 } catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

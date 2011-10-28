@@ -710,6 +710,20 @@ public class SGRTask extends BaseTask
         }
     }
     
+    public void deleteResultsForWorkbench(Workbench workbench)
+    {
+        for (NavBoxItemIFace nbi : batchMatchResultsBox.getItems())
+        {
+            BatchMatchResultSet resultSet;
+            try { resultSet = (BatchMatchResultSet) nbi.getData(); }
+            catch (ClassCastException e) { continue; }
+            if (resultSet.getRecordSetId() == (long) workbench.getId())
+            {
+                deleteBatchMatchResultSet(nbi);
+            }
+        }
+    }
+    
     private ChooseFromListDlg<MatchConfiguration> makeSelectMatcherDlg()
     {
         List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
