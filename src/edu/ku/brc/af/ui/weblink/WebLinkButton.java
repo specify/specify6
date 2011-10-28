@@ -484,12 +484,31 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 }
                 try
                 {
+                    for (int j=32;j<48;j++)
+                    {
+                        String  str  = "%" + Integer.toHexString(j);
+                        String  with = ""+(char)j;
+                        boolean doSub = true;
+                        while (doSub)
+                        {
+                            if (val.indexOf(str) > -1)
+                            {
+                                val = StringUtils.replace(val, str, with);
+                                doSub = true;
+                            } else
+                            {
+                                doSub = false;
+                            }
+                        }
+                    }
                     val = URLEncoder.encode(val, "UTF-8");
                 } catch (Exception ex) {}
                 
                 url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 //System.out.println("|"+key+"|"+url);
             }
+            
+            
             
             url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
             return url;
