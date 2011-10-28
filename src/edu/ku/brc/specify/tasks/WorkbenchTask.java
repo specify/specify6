@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -496,34 +497,37 @@ public class WorkbenchTask extends BaseTask
      */
     public static RolloverCommand getNavBtnById(final NavBox navBox, final Integer recordId, final String cmdAttrName)
     {
-        for (NavBoxItemIFace nbi : navBox.getItems())
+        if (recordId != null)
         {
-            RolloverCommand roc = (RolloverCommand)nbi;
-            if (roc != null)
+            for (NavBoxItemIFace nbi : navBox.getItems())
             {
-                Object data  = roc.getData();
-                if (data != null)
+                RolloverCommand roc = (RolloverCommand)nbi;
+                if (roc != null)
                 {
-                    RecordSetIFace rs = null;
-                    if (data instanceof CommandAction)
+                    Object data  = roc.getData();
+                    if (data != null)
                     {
-                        CommandAction cmd  = (CommandAction)data;
-                        Object prop = cmd.getProperty(cmdAttrName);
-                        if (prop instanceof RecordSetIFace)
+                        RecordSetIFace rs = null;
+                        if (data instanceof CommandAction)
                         {
-                            rs  = (RecordSetIFace)prop;
+                            CommandAction cmd  = (CommandAction)data;
+                            Object prop = cmd.getProperty(cmdAttrName);
+                            if (prop instanceof RecordSetIFace)
+                            {
+                                rs  = (RecordSetIFace)prop;
+                            }
+                        } else if (data instanceof RecordSetIFace)
+                        {
+                            rs  = (RecordSetIFace)data;
                         }
-                    } else if (data instanceof RecordSetIFace)
-                    {
-                        rs  = (RecordSetIFace)data;
-                    }
-                    
-                    if (rs != null)
-                    {
-                        RecordSetItemIFace rsi = rs.getOnlyItem();
-                        if (rsi != null && rsi.getRecordId().intValue() == recordId.intValue())
+                        
+                        if (rs != null)
                         {
-                            return roc;
+                            RecordSetItemIFace rsi = rs.getOnlyItem();
+                            if (rsi != null && rsi.getRecordId().intValue() == recordId.intValue())
+                            {
+                                return roc;
+                            }
                         }
                     }
                 }
