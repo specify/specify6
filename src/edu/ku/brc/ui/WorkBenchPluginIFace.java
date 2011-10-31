@@ -22,12 +22,9 @@ package edu.ku.brc.ui;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
 
-import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 

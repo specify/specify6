@@ -3654,7 +3654,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param workbenchArg the {@link Workbench} to append rows to, or <code>null</code> if a new {@link Workbench} should be created
      * @param doOneImagePerRow indicates whether the images are assign to a single row or not.
      */
-    public void importCardImages(final Workbench workbenchArg, final boolean doOneImagePerRow)
+    public void importCardImages(Workbench workbench, final boolean doOneImagePerRow)
     {
         // ask the user to select the files to import
         final ImageFilter imageFilter = new ImageFilter();
@@ -3693,9 +3693,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             }
         }
 
-        Workbench workbench = null;
+        boolean creatingNewWb = workbench == null;
         
-        if (workbenchArg == null) // create a new Workbench
+        if (creatingNewWb) // create a new Workbench
         {
             List<?> selection = selectExistingTemplate(null, "WorkbenchImportImages");
         	//Pair<Boolean, WorkbenchTemplate> selection = selectExistingTemplate(null, "WorkbenchImportImages");
@@ -3728,30 +3728,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             }
 
         }
-        else // append to the passed in Workbench
+
+        if (workbench != null) // this should always hold, but whatev
         {
-            workbench = workbenchArg;
-        }
-        
-        if (workbench != null)
-        {
-            final Workbench importWB = workbench;
-            
             UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
-            
-            WorkbenchPaneSS workbenchPane = null;
-            if (workbenchArg == null) // meaning a new one was created
-            {
-                // create a new WorkbenchPaneSS
-                workbenchPane = null; //new WorkbenchPaneSS(workbench.getName(), this, importWB, false,  !isPermitted());
-            }
-            else
-            {
-                workbenchPane = (WorkbenchPaneSS)SubPaneMgr.getInstance().getCurrentSubPane();
-            }
-            
-            doImageImport(importWB, workbenchPane, fileList, workbenchArg == null, doOneImagePerRow);
-            
+            doImageImport(workbench, fileList, creatingNewWb, doOneImagePerRow);
         }
     }
     
@@ -3763,7 +3744,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param doOneImagePerRow
      */
     protected void doImageImport(final Workbench       importWB, 
-                                 final WorkbenchPaneSS wbPaneSS, 
                                  final Vector<File>    fileList, 
                                  final boolean         isNew, 
                                  final boolean         doOneImagePerRow)
@@ -3771,13 +3751,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         final SwingWorker worker = new SwingWorker()
         {
             protected boolean isOK = false;
-            protected WorkbenchPaneSS pane = wbPaneSS;
+            
+            protected WorkbenchPaneSS pane = !isNew ?
+                    (WorkbenchPaneSS)SubPaneMgr.getInstance().getCurrentSubPane() : null;
             
             @Override
             public Object construct()
             {
                 // import the images into the Workbench, creating new rows (and saving the WB if it is brand new)
-                isOK = importImages(importWB, fileList, wbPaneSS, isNew, doOneImagePerRow);
+                isOK = importImages(importWB, fileList, pane, isNew, doOneImagePerRow);
                 
                 return null;
             }
@@ -3790,13 +3772,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
                 if (isOK)
                 {
-                    if (wbPaneSS == null)
-                    {
-                    	pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted());
-                    } else
-                    {
-                    	pane = wbPaneSS;
-                    }
                     if (isNew) // meaning a brand new Workbench was created (and saved already)
                     {
                     	// add a new button to the NavBox
@@ -3804,6 +3779,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         getBoxByTitle(workbenchNavBox, importWB.getName()).setEnabled(false);
                         
                         // show the WorkbenchPaneSS
+                        pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted());
                         addSubPaneToMgr(pane);
                         
                         // the importImages() call will save the wb if it was just created

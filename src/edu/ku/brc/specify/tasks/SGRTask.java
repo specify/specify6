@@ -303,8 +303,6 @@ public class SGRTask extends BaseTask
     
     private void setEnableBatchBtnForWorkbench(Workbench workbench, boolean enabled)
     {
-        if (workbench.getId() == null) return;
-        
     	for (NavBoxItemIFace nbi : batchMatchResultsBox.getItems())
         {
             BatchMatchResultSet resultSet;
