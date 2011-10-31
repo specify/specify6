@@ -1657,7 +1657,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * NOTE: for large databases this method might take a long time.
      * It probably should be called from a SwingWorker. 
      */
-    public static boolean checkUniqueRecIds(final String hql)
+    public static boolean checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
     {
         //Assumes the ID field is selected by hql -
     	//Assumes that  'select' is lower case.
@@ -1678,6 +1678,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	{
             	QueryIFace q1 = session.createQuery(countHql, false);
         		QueryIFace q2 = session.createQuery(distinctHql, false);
+        		for (Pair<String, Object> param : params)
+        		{
+        			q1.setParameter(param.getFirst(), param.getSecond());
+        			q2.setParameter(param.getFirst(), param.getSecond());
+        		}
         		return q1.list().size() == q2.list().size();
         	} catch (Exception ex) 
         	{
@@ -2829,7 +2834,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
             	if (schemaMapping != null)
             	{
-            		if (!checkUniqueRecIds(hqlSpecs.getHql()))
+            		if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()))
             		{
             			SwingUtilities.invokeLater(new Runnable() {
 
