@@ -3743,10 +3743,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             if (workbenchArg == null) // meaning a new one was created
             {
                 // create a new WorkbenchPaneSS
-//                workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false, 
-//                        (AppContextMgr.isSecurityOn() && !getPermissions().canModify()));
-                workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false, 
-                        !isPermitted());
+                workbenchPane = null; //new WorkbenchPaneSS(workbench.getName(), this, importWB, false,  !isPermitted());
             }
             else
             {
@@ -3774,6 +3771,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         final SwingWorker worker = new SwingWorker()
         {
             protected boolean isOK = false;
+            protected WorkbenchPaneSS pane = wbPaneSS;
             
             @Override
             public Object construct()
@@ -3792,28 +3790,35 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
                 if (isOK)
                 {
+                    if (wbPaneSS == null)
+                    {
+                    	pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted());
+                    } else
+                    {
+                    	pane = wbPaneSS;
+                    }
                     if (isNew) // meaning a brand new Workbench was created (and saved already)
                     {
-                        // add a new button to the NavBox
+                    	// add a new button to the NavBox
                         datasetNavBoxMgr.addWorkbench(importWB);
                         getBoxByTitle(workbenchNavBox, importWB.getName()).setEnabled(false);
                         
                         // show the WorkbenchPaneSS
-                        addSubPaneToMgr(wbPaneSS);
+                        addSubPaneToMgr(pane);
                         
                         // the importImages() call will save the wb if it was just created
-                        wbPaneSS.setChanged(false);
+                        pane.setChanged(false);
                     }
                     else // the Workbench already existed and a pane was already showing
                     {
                         // update the "Save" button state
-                        wbPaneSS.setChanged(true);
+                    	pane.setChanged(true);
                     }
                     
-                    wbPaneSS.setImageFrameVisible(true);
+                    //pane.setImageFrameVisible(true);
 
                     // scrolls to the last row
-                    wbPaneSS.newImagesAdded();
+                    pane.newImagesAdded();
                 }
             }
         };

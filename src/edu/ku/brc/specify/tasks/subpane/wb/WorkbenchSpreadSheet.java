@@ -60,37 +60,14 @@ public class WorkbenchSpreadSheet extends SpreadSheet
     {
         super(model);
         this.workbenchPaneSS = workbenchPaneSS;
-        buildComparators();
-        TableSortController<SpreadSheetModel> nsc = new TableSortController<SpreadSheetModel>() {
-
-			/* (non-Javadoc)
-			 * @see org.jdesktop.swingx.sort.DefaultSortController#toggleSortOrder(int)
-			 */
-			@Override
-			public void toggleSortOrder(int arg0)
-			{
-				TableColumnExt col = getColumnExt(arg0);
-				Comparator<String> cmp = comparators.get(arg0);
-				if (col.getComparator() == null && cmp != null)
-				{
-					getColumnExt(arg0).setComparator(cmp);
-				}
-
-				super.toggleSortOrder(arg0);
-			}
-        	
-        };
-        nsc.setModel(model);
         for (int c = 0; c < model.getColumnCount(); c++)
 		{
-			Comparator<String> cmp = comparators.get(c);
+			Comparator<String> cmp = getComparatorForCol(c);
 			if (cmp != null)
 			{
-				//getColumnExt(c).setComparator(cmp);
-				nsc.setComparator(c, cmp);
+				getColumnExt(c).setComparator(cmp);
 			}
 		}
-        setRowSorter(nsc);
     }
 	
 
@@ -98,7 +75,20 @@ public class WorkbenchSpreadSheet extends SpreadSheet
     
     
     
-    /* (non-Javadoc)
+//    /**
+//	 * @return the comparators
+//	 */
+//	public Vector<Comparator<String>> getComparators() 
+//	{
+//		return comparators;
+//	}
+
+
+
+
+
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheet#paste()
      */
     @Override
@@ -221,17 +211,17 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	}
 
 
-	/**
-     * Builds custom comparators for columns that requre them.
-     */
-    protected void buildComparators()
-    {
-    	comparators = new Vector<Comparator<String>>(model.getColumnCount());
-    	for (int c = 0; c < model.getColumnCount(); c++)
-    	{
-    		comparators.add(getComparatorForCol(c));
-    	}
-    }
+//	/**
+//     * Builds custom comparators for columns that requre them.
+//     */
+//    protected void buildComparators()
+//    {
+//    	comparators = new Vector<Comparator<String>>(model.getColumnCount());
+//    	for (int c = 0; c < model.getColumnCount(); c++)
+//    	{
+//    		comparators.add(getComparatorForCol(c));
+//    	}
+//    }
     
     /**
      * @param colIdx

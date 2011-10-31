@@ -466,8 +466,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 	    int sgrColIndex = model.getSgrHeading().getViewOrder();
 	    sgrColExt = spreadSheet.getColumnExt(sgrColIndex);
 	    sgrColExt.setComparator( ((WorkbenchSpreadSheet)spreadSheet).new NumericColumnComparator() );
+      
+
         // Start off with the SGR score column hidden
         showHideSgrCol(false);
+       
         
         model.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e)

@@ -411,9 +411,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         ((JMenuItem)UIRegistry.get(UIRegistry.CUT)).addActionListener(this);
         ((JMenuItem)UIRegistry.get(UIRegistry.PASTE)).addActionListener(this);
         
-        //add 3-state sort toggle
-        //setFilters(new CustomToggleSortOrderFP());
-        
         setSortOrderCycle(SortOrder.ASCENDING, SortOrder.DESCENDING, SortOrder.UNSORTED);
     }
     
@@ -451,8 +448,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      */
     public void addRow()
     {
-        addRow(getModel().getRowCount()-1, getModel().getRowCount(), true);
-        
+    	addRow(getModel().getRowCount()-1, getModel().getRowCount(), true);
     }
     
     /**
