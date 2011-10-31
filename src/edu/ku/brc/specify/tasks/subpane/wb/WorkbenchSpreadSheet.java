@@ -60,14 +60,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
     {
         super(model);
         this.workbenchPaneSS = workbenchPaneSS;
-        for (int c = 0; c < model.getColumnCount(); c++)
-		{
-			Comparator<String> cmp = getComparatorForCol(c);
-			if (cmp != null)
-			{
-				getColumnExt(c).setComparator(cmp);
-			}
-		}
+        buildComparators();
     }
 	
 
@@ -75,13 +68,13 @@ public class WorkbenchSpreadSheet extends SpreadSheet
     
     
     
-//    /**
-//	 * @return the comparators
-//	 */
-//	public Vector<Comparator<String>> getComparators() 
-//	{
-//		return comparators;
-//	}
+    /**
+	 * @return the comparators
+	 */
+	public Vector<Comparator<String>> getComparators() 
+	{
+		return comparators;
+	}
 
 
 
@@ -211,17 +204,17 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	}
 
 
-//	/**
-//     * Builds custom comparators for columns that requre them.
-//     */
-//    protected void buildComparators()
-//    {
-//    	comparators = new Vector<Comparator<String>>(model.getColumnCount());
-//    	for (int c = 0; c < model.getColumnCount(); c++)
-//    	{
-//    		comparators.add(getComparatorForCol(c));
-//    	}
-//    }
+	/**
+     * Builds custom comparators for columns that requre them.
+     */
+    protected void buildComparators()
+    {
+    	comparators = new Vector<Comparator<String>>(model.getColumnCount());
+    	for (int c = 0; c < model.getColumnCount(); c++)
+    	{
+    		comparators.add(getComparatorForCol(c));
+    	}
+    }
     
     /**
      * @param colIdx
