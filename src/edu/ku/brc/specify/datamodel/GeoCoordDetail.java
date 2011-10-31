@@ -61,6 +61,8 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     // New Fields
     protected BigDecimal            maxUncertaintyEst; 
     protected String                maxUncertaintyEstUnit; 
+    protected String                uncertaintyPolygon; 
+    protected String                errorPolygon; 
     protected String                originalCoordSystem; 
     protected String                validation; 
     protected String                protocol; 
@@ -97,7 +99,10 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         geoRefVerificationStatus = null; 
         
         maxUncertaintyEst     = null;  
-        maxUncertaintyEstUnit = null;  
+        maxUncertaintyEstUnit = null;
+        uncertaintyPolygon    = null;
+        errorPolygon          = null;
+        
         originalCoordSystem   = null;  
         validation            = null;  
         protocol              = null;  
@@ -296,6 +301,46 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     {
         this.maxUncertaintyEstUnit = maxUncertaintyEstUnit;
     }
+
+    /**
+     * @return the uncertaintyPolygon
+     */
+    @Lob
+    @Column(name = "UncertaintyPolygon", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getUncertaintyPolygon()
+    {
+        return uncertaintyPolygon;
+    }
+
+
+    /**
+     * @param uncertaintyPolygon the uncertaintyPolygon to set
+     */
+    public void setUncertaintyPolygon(String uncertaintyPolygon)
+    {
+        this.uncertaintyPolygon = uncertaintyPolygon;
+    }
+
+
+    /**
+     * @return the errorPolygon
+     */
+    @Lob
+    @Column(name = "ErrorPolygon", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getErrorPolygon()
+    {
+        return errorPolygon;
+    }
+
+
+    /**
+     * @param errorPolygon the errorPolygon to set
+     */
+    public void setErrorPolygon(String errorPolygon)
+    {
+        this.errorPolygon = errorPolygon;
+    }
+
 
     /**
      * @return the originalCoordSystem

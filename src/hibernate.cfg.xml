@@ -116,7 +116,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GiftAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GiftPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
+        <mapping class="edu.ku.brc.specify.datamodel.Institution"/>
+        <mapping class="edu.ku.brc.specify.datamodel.InstitutionNetwork"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
         <mapping class="edu.ku.brc.specify.datamodel.LatLonPolygon"/>
         <mapping class="edu.ku.brc.specify.datamodel.LatLonPolygonPnt"/>

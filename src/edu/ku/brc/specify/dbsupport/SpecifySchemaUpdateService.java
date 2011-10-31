@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -50,7 +49,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -100,6 +98,7 @@ import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
+import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpVersion;
@@ -129,7 +128,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 25;
+    private final int OVERALL_TOTAL = 27;
     private static final String TINYINT4 = "TINYINT(4)";
     
     private static final String APP                     = "App";
@@ -239,8 +238,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Integer spverId         = null;
                 Integer recVerNum       = 1;
                 
-                
-                log.debug("appVerNumArg:  ["+appVerNumber+"] dbVersion from XML["+dbVersion+"] ");
+                log.debug("appVerNumArg:  ["+appVerNumber+"] dbVersion from XML["+dbVersion+"] "+ dbVersion.compareTo("1.6"));
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
@@ -279,17 +277,52 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             }
                         }
                         
-                        if (dbVersion != null && schemaVerFromDB != null && !schemaVerFromDB.equals(dbVersion))
+                        String schemaVers = AppPreferences.getLocalPrefs().get("UPDATE_SCHEMA", null);
+                        if (schemaVers != null)
                         {
-                            String errKey = mkKey("DB_VER_NEQ");
-                            if (checkVersion(schemaVerFromDB, dbVersion, 
-                                             mkKey("DB_VER_ERR"), errKey, errKey, false))
+                            AppPreferences.getLocalPrefs().remove("UPDATE_SCHEMA");
+                            schemaVerFromDB = schemaVers;
+                        }
+                        
+                        if (dbVersion != null && schemaVerFromDB != null)
+                        {
+                            Boolean isDBClosed      = false;
+                            String  dbClosedBy      = null;
+
+                            //log.debug("schemaVerFromDB["+schemaVerFromDB+"]  compareTo["+schemaVerFromDB.compareTo("1.6")+"] ");
+                            if (schemaVerFromDB.compareTo("1.6") > -1)
                             {
-                                doSchemaUpdate = true;
-                            } else
+                                rows = query(dbConn.getConnection(), "SELECT IsDBClosed, DbClosedBy FROM spversion ORDER BY TimestampCreated DESC");
+                                if (rows.size() > 0)
+                                {
+                                    row = (Object[])rows.get(rows.size()-1);
+                                    isDBClosed = (Boolean)row[0];
+                                    dbClosedBy = (String)row[1];
+                                    //log.debug("isDBClosed["+isDBClosed+"]  dbClosedBy["+dbClosedBy+"] ");
+                                }
+                            }
+                            
+                            if (isDBClosed != null && isDBClosed)
                             {
-                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
-                                return SchemaUpdateType.Error;
+                                if (dbClosedBy != null && !dbClosedBy.equals(username))
+                                {
+                                    UIRegistry.showLocalizedError("SYSSTP_CLSD_MSG", username);
+                                    return SchemaUpdateType.Error;
+                                }
+                            }
+
+                            if (!schemaVerFromDB.equals(dbVersion))
+                            {
+                                String errKey = mkKey("DB_VER_NEQ");
+                                if (checkVersion(schemaVerFromDB, dbVersion, 
+                                                 mkKey("DB_VER_ERR"), errKey, errKey, false))
+                                {
+                                    doSchemaUpdate = true;
+                                } else
+                                {
+                                    CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                    return SchemaUpdateType.Error;
+                                }
                             }
                         }
                     } else
@@ -381,7 +414,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 }
                                 frame.setVisible(false);
                                 
-                                fixSchemaMappingScope();
+                                fixSchemaMappingScope(dbConn.getConnection(), dbConn.getDatabaseName());
                                 
                                 fixLocaleSchema();
                                 
@@ -1292,8 +1325,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall(); // #24
                     
+
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //                                                                                                              //
+                    // Schema Changes 1.6                                                                                        //
+                    //                                                                                                              //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    
                     createSGRTables(conn, databaseName);
                     frame.incOverall(); // #25
+                    
+                    if (!miscSchema16Updates(conn, databaseName)) // Steps 26 - 27
+                    {
+                        return false;
+                    }
 
                     return true;
                     
@@ -1321,6 +1367,50 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
+    /**
+     * Schema Update for 1.6
+     */
+    public boolean miscSchema16Updates(final Connection conn, final String databaseName) throws Exception
+    {
+        
+        //-----------------------------------------------------------------------------
+        //-- SpVersion
+        //-----------------------------------------------------------------------------
+        String tblName = getTableTitleForFrame(SpVersion.getClassTableId());
+        if (!doesColumnExist(databaseName, tblName, "IsDBClosed"))
+        {
+            String[] instCols = {"IsDBClosed", "BIT(1)", "SchemaVersion", 
+                                 "DbClosedBy", "VARCHAR(32)", "IsDBClosed"};
+            if (!checkAndAddColumns(conn, databaseName, tblName, instCols))
+            {
+                return false;
+            }
+        }
+        frame.incOverall(); // #26
+
+        //-----------------------------------------------------------------------------
+        //-- GeoCoordDetail
+        //-----------------------------------------------------------------------------
+        tblName = getTableTitleForFrame(GeoCoordDetail.getClassTableId());
+        if (!doesColumnExist(databaseName, tblName, "UncertaintyPolygon"))
+        {
+            String[] instCols = {"UncertaintyPolygon", "TEXT", "MaxUncertaintyEstUnit", 
+                                 "ErrorPolygon", "TEXT", "UncertaintyPolygon"};
+            if (!checkAndAddColumns(conn, databaseName, tblName, instCols))
+            {
+                return false;
+            }
+        }
+        frame.incOverall(); // #27
+        
+        return true;
+    }
+    
+    /**
+     * @param conn
+     * @param databaseName
+     * @throws SQLException
+     */
     public static void createSGRTables(Connection conn, String databaseName) throws SQLException
     {
 
@@ -2899,7 +2989,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     /**
      * Assigns a CollectionMemberID to ExportSchema records 
      */
-	protected void fixSchemaMappingScope() throws Exception {
+	protected void fixSchemaMappingScope(final Connection conn, final String databaseName) throws Exception 
+	{
+	    String tblName = getTableTitleForFrame(SpExportSchemaMapping.getClassTableId());
+        if (!doesColumnExist(databaseName, tblName, "CollectionMemberID"))
+        {
+            String[] instCols = {"CollectionMemberID", "INT(11)", "TimestampExported"};
+            if (!checkAndAddColumns(conn, databaseName, tblName, instCols))
+            {
+                return;
+            }
+        }
+        
 		String checkSQL = "select SpExportSchemaMappingID, MappingName from spexportschemamapping "
 				+ "where CollectionMemberID is null";
 		Vector<Object[]> mappingsToFix = BasicSQLUtils.query(checkSQL);

@@ -51,6 +51,9 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
     protected String            appName;
     protected String            appVersion;
     protected String            schemaVersion;
+    
+    protected Boolean           isDBClosed;
+    protected String            dbClosedBy;
 
     // Constructors
 
@@ -75,6 +78,9 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
         appName        = null;
         appVersion     = null;
         schemaVersion  = null;
+        
+        isDBClosed     = null;
+        dbClosedBy     = null;
     }
     // End Initializer
 
@@ -165,6 +171,40 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
         this.schemaVersion = schemaVersion;
     }
 
+
+    /**
+     * @return the isDBClosed
+     */
+    @Column(name = "IsDBClosed", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsDBClosed()
+    {
+        return isDBClosed != null && isDBClosed;
+    }
+
+    /**
+     * @param isDBClosed the isDBClosed to set
+     */
+    public void setIsDBClosed(Boolean isDBClosed)
+    {
+        this.isDBClosed = isDBClosed;
+    }
+
+    /**
+     * @return the dbClosedBy
+     */
+    @Column(name = "DbClosedBy", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getDbClosedBy()
+    {
+        return dbClosedBy;
+    }
+
+    /**
+     * @param dbClosedBy the dbClosedBy to set
+     */
+    public void setDbClosedBy(String dbClosedBy)
+    {
+        this.dbClosedBy = dbClosedBy;
+    }
 
     @Override
     @Transient

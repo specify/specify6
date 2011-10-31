@@ -58,6 +58,7 @@
     <icon name="geologictimeperiod"   file="chronostratigraphy.png" sizes="all"/>
     <icon name="inforequest"          file="information_request.png" sizes="all"/>
     <icon name="institution"          file="institution.png" sizes="all"/>
+    <icon name="institutionnetwork"   file="inst_network.png" sizes="all"/>
     <icon name="journal"              file="journal.png" sizes="all"/>
     <icon name="lithostrat"           file="stratigraphy.png" sizes="all"/>
     <icon name="loan"                 file="loan.png" sizes="all"/>
@@ -254,6 +255,7 @@
     <icon name="Gift"                   alias="gift"/>
     <icon name="InfoRequest"            alias="inforequest"/>
     <icon name="Institution"            alias="institution"/>
+    <icon name="InstitutionNetwork"     alias="institutionnetwork"/>
     <icon name="Journal"                alias="journal"/>
     <icon name="LithoStrat"             alias="lithostrat"/>
     <icon name="Loan"                   alias="loan"/>

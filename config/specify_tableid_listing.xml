@@ -2,9 +2,9 @@
 
 <!-- 
 
-    Last used ID is 141 or 532
+    Last used ID is 142 or 532
     
-    [] are available
+    [0] are available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -231,6 +231,7 @@
             <display view="Institution"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.InstitutionBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.InstitutionNetwork" abbrev="instnwk" id="142" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Journal" abbrev="jn" id="51" searchable="true">
             <display view="JournalForm" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.JournalBusRules</businessrule>

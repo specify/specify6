@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
+import static edu.ku.brc.specify.tasks.services.PickListUtils.getI18n;
 import static edu.ku.brc.ui.UIRegistry.askYesNoLocalized;
 import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
 import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlgLocalized;
@@ -29,7 +31,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
-import static edu.ku.brc.specify.tasks.services.PickListUtils.*;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
@@ -81,8 +82,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.CollapsableSepExtraCompFactory;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -92,6 +93,7 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -121,6 +123,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
 
@@ -153,7 +156,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 	protected PickListBusRules									pickListBusRules			= new PickListBusRules();
 	protected FormPane											formPane					= null;
 	protected Vector<Pair<BaseTreeTask<?, ?, ?>, JMenuItem>>	treeUpdateMenuItems			= new Vector<Pair<BaseTreeTask<?, ?, ?>, JMenuItem>>();
-
+	protected NavBoxButton                                      lockDBBtn;                   
     /**
      * Default Constructor
      *
@@ -213,7 +216,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 public void actionPerformed(ActionEvent e)
                 {
                     editWebLinks();
-                }
+                }E
             })); */
             navBoxes.add(sysNavBox);
             
@@ -229,16 +232,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
             })); 
             
-            String title = getResourceString(getI18n("PL_EXPORT"));
-            collNavBox.add(NavBox.createBtnWithTT(title, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            String btnTitle = getResourceString(getI18n("PL_EXPORT"));
+            collNavBox.add(NavBox.createBtnWithTT(btnTitle, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     PickListUtils.exportPickList(null, null);
                 }
             })); 
 
-            title = getResourceString(getI18n("PL_IMPORT"));
-            collNavBox.add(NavBox.createBtnWithTT(title, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            btnTitle = getResourceString(getI18n("PL_IMPORT"));
+            collNavBox.add(NavBox.createBtnWithTT(btnTitle, PICKLIST, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     Collection collection = PickListUtils.getCollectionFromAppContext();
@@ -248,6 +251,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     }
                 }
             })); 
+
+            btnTitle = getResourceString(getI18n("SS.LOCK_DB"));
+            lockDBBtn = (NavBoxButton)NavBox.createBtnWithTT(btnTitle, SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    loadUnlockDB(false);
+                }
+            });
+            collNavBox.add((NavBoxItemIFace)lockDBBtn); 
+            loadUnlockDB(true);
 
             navBoxes.add(collNavBox);
             
@@ -270,6 +283,61 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         isShowDefault = true;
     }
     
+    /**
+     * @param isLocked
+     */
+    private void setLockBtntitle(final Boolean isLocked)
+    {
+        String btnTitle = UIRegistry.getLocalizedMessage("SYSSTP_BTN_TITLE", getResourceString((isLocked == null || !isLocked ? "SYSSTP_CLOSE" : "SYSSTP_OPEN")));
+        lockDBBtn.setLabelText(btnTitle);
+    }
+    
+    /**
+     * 
+     */
+    private void  loadUnlockDB(final boolean doJustBtnLabel)
+    {
+        Vector<Object[]>rows = query(DBConnection.getInstance().getConnection(), "SELECT IsDBClosed, DbClosedBy FROM spversion ORDER BY TimestampCreated DESC");
+        if (rows.size() > 0)
+        {
+            Object[] row        = (Object[])rows.get(rows.size()-1);
+            Boolean  isDBClosed = (Boolean)row[0];
+            String   dbClosedBy = (String)row[1];
+            
+            //log.debug("isDBClosed["+isDBClosed+"]  dbClosedBy["+dbClosedBy+"] ");
+            
+            if (!doJustBtnLabel)
+            {
+                String updateStr = "UPDATE spversion SET IsDBClosed=%d, DbClosedBy=%s";
+                if (isDBClosed == null || !isDBClosed)
+                {
+                    isDBClosed = true;
+                    SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    if (spUser == null)
+                    {
+                        return;
+                    }
+                    dbClosedBy = String.format("'%s'", spUser.getName());
+                } else
+                {
+                    isDBClosed = false;
+                    dbClosedBy = "NULL";
+                }
+                
+                updateStr = String.format(updateStr, isDBClosed ? 1 : 0, dbClosedBy);
+                log.debug(updateStr);
+                int rv = BasicSQLUtils.update(updateStr);
+                if (rv == 1)
+                {
+                    UIRegistry.displayErrorDlgLocalized("SYSSTP_LCK_MSG", getResourceString(isDBClosed ? "SYSSTP_CLOSED" : "SYSSTP_OPEN"));
+                    setLockBtntitle(isDBClosed);
+                }
+            } else
+            {
+                setLockBtntitle(isDBClosed); 
+            }
+        }
+    }
     
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)

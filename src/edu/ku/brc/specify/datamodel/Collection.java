@@ -95,6 +95,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
 
     protected Set<AutoNumberingScheme>   numberingSchemes;
     
+    protected Institution                institutionNetwork;
+    
     // Constructors
 
     /** default constructor */
@@ -148,6 +150,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
 
         leftSideRelTypes       = new HashSet<CollectionRelType>();
         rightSideRelTypes      = new HashSet<CollectionRelType>();
+        
+        institutionNetwork     = null;
     }
     // End Initializer
 
@@ -733,6 +737,24 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.pickLists = pickLists;
     }
     
+    /**
+     * @return the institutionNetwork
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstitutionNetworkID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Institution getInstitutionNetwork()
+    {
+        return institutionNetwork;
+    }
+
+    /**
+     * @param institutionNetwork the institutionNetwork to set
+     */
+    public void setInstitutionNetwork(Institution institutionNetwork)
+    {
+        this.institutionNetwork = institutionNetwork;
+    }
+
     /**
      * Asks the Object to force load and child object. This must be done within a Session. 
      */
