@@ -692,7 +692,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				//listeners.add(listener);
 				try
 				{
-            		if (!QueryBldrPane.checkUniqueRecIds(uniquenessHql))
+            		if (!QueryBldrPane.checkUniqueRecIds(uniquenessHql, hql.getArgs()))
             		{
             			SwingUtilities.invokeLater(new Runnable() {
 
