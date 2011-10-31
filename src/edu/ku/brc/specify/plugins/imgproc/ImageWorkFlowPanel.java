@@ -215,14 +215,6 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
     //---------------------------------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.WorkBenchPluginIFace#setSubPanel(edu.ku.brc.af.core.SubPaneIFace)
-     */
-    @Override
-    public void setSubPanel(final SubPaneIFace parent)
-    {
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#getMissingFieldsForPlugin()
      */
     @Override
@@ -259,15 +251,6 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.WorkBenchPluginIFace#process(java.util.List)
-     */
-    @Override
-    public boolean process(final List<WorkbenchRow> rows)
-    {
-        return false;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#shutdown()
      */
     @Override
@@ -278,14 +261,6 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
         
         this.dlg.setVisible(false);
         this.dlg       = null;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.WorkBenchPluginIFace#setButton(javax.swing.JButton)
-     */
-    @Override
-    public void setButton(final JButton btn)
-    {
     }
 
     /* (non-Javadoc)

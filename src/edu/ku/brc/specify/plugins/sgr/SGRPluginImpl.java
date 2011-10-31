@@ -317,21 +317,6 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         return matcherConfiguration;
     }
 
-    @Override
-    public boolean process(List<WorkbenchRow> rows)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.WorkBenchPluginIFace#setSubPanel(edu.ku.brc.af.core.SubPaneIFace)
-     */
-    @Override
-    public void setSubPanel(SubPaneIFace parent)
-    {
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#setSpreadSheet(edu.ku.brc.ui.tmanfe.SpreadSheet)
      */
@@ -391,12 +376,6 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         workbenchPaneSS = null;
     }
 
-    @Override
-    public void setButton(JButton btn)
-    {
-
-    }
-    
     public WorkbenchColorizer getColorizer()
     {
         return colorizer;

@@ -41,46 +41,72 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
  */
 public interface WorkBenchPluginIFace
 {
-    /**
-     * @param parent
-     */
-    public abstract void setSubPanel(SubPaneIFace parent);
     
     /**
-     * Does the WorkBench Template definition have the necessary columns for the plugin.
-     * @return list of missing fields required by plugin (might return null)
+     * Provides the plugin with a reference to the workbench
+     * it will be dealing with.
+     * 
+     * Will be called immediately after the plugin is instantiated.
+     * 
+     * @param workbench
      */
-    public abstract List<String> getMissingFieldsForPlugin();
+    public abstract void setWorkbench(Workbench workbench);
+
     
     /**
-     * @param ss
-     */
-    /**
+     * Provides the plugin with a reference to the pane containing
+     * the workbench editor.
+     * 
+     * Will be called immediately after the plugin is instantiated.
+     * 
      * @param ss
      */
     public abstract void setWorkbenchPaneSS(WorkbenchPaneSS wbpss);
     
+    
+    /**
+     * Provides the plugin with a reference to the spreadsheet
+     * object for the workbench.
+     * 
+     * Will be called immediately after the plugin is instantiated.
+     * 
+     * @param ss
+     */
     public abstract void setSpreadSheet(SpreadSheet ss);
     
+
     /**
-     * @param workbench
-     */
-    public abstract void setWorkbench(Workbench workbench);
-    
-    /**
-     * @return
-     */
-    public abstract boolean process(List<WorkbenchRow> rows);
-    
-    /**
-     * 
+     * Called when the workbench is being closed to allow the
+     * plugin to clean up after itself.
      */
     public abstract void shutdown();
+    
 
-    public abstract void setButton(JButton btn);
+    /**
+     * Does the WorkBench Template definition have the necessary columns for the plugin.
+     * 
+     * Not currently used.
+     * 
+     * @return list of missing fields required by plugin (might return null)
+     */
+    public abstract List<String> getMissingFieldsForPlugin();
 
+    /**
+     * The plugin should return a collection of buttons it wants
+     * added to the Spreadsheet view of the workbench. These can
+     * be the same or different from those for the form view.
+     * 
+     * @return
+     */
     public abstract Collection<JComponent> getSSButtons();
 
-    public abstract Collection<JComponent> getFormButtons();
     
+    /**
+     * The plugin should return a collection of buttons it wants
+     * added to the form view of the workbench. These can be the
+     * same or different from those for the spreadsheet view.
+     *  
+     * @return
+     */
+    public abstract Collection<JComponent> getFormButtons();
 }
