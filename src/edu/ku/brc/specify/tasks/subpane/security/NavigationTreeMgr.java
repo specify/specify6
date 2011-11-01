@@ -791,6 +791,10 @@ public class NavigationTreeMgr
         // This is the existing User to be Added to the New Collection/Discipline
         SpecifyUser specifyUser = null;//dlg.getSelectedUser();
         SpecifyUser[] selUsers = dlg.getSelectedUsers();
+        if (selUsers == null || selUsers.length == 0)
+        {
+            return null;
+        }
         specifyUser = selUsers[0];
         
         if (specifyUser == null || grpNode == null || 
