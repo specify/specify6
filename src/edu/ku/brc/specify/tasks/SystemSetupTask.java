@@ -109,6 +109,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tasks.services.PickListUtils;
@@ -252,14 +253,19 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
             })); 
 
-            btnTitle = getResourceString(getI18n("SS.LOCK_DB"));
-            lockDBBtn = (NavBoxButton)NavBox.createBtnWithTT(btnTitle, SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    loadUnlockDB(false);
-                }
-            });
-            collNavBox.add((NavBoxItemIFace)lockDBBtn); 
+            SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            String sql = String.format("SELECT COUNT(*) FROM specifyuser su INNER JOIN specifyuser_spprincipal sup ON su.SpecifyUserID = sup.SpecifyUserID " +
+                                       "INNER JOIN spprincipal p ON sup.SpPrincipalID = p.SpPrincipalID WHERE p.Name = 'Administrator' AND su.Name = '%s'", spUser.getName());
+            if (BasicSQLUtils.getCountAsInt(sql) > 0)
+            {
+                lockDBBtn = (NavBoxButton)NavBox.createBtnWithTT("Lock", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        loadUnlockDB(false);
+                    }
+                });
+                collNavBox.add((NavBoxItemIFace)lockDBBtn); 
+            }
             loadUnlockDB(true);
 
             navBoxes.add(collNavBox);
@@ -288,8 +294,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     private void setLockBtntitle(final Boolean isLocked)
     {
-        String btnTitle = UIRegistry.getLocalizedMessage("SYSSTP_BTN_TITLE", getResourceString((isLocked == null || !isLocked ? "SYSSTP_CLOSE" : "SYSSTP_OPEN")));
-        lockDBBtn.setLabelText(btnTitle);
+        if (lockDBBtn != null)
+        {
+            String btnTitle = UIRegistry.getLocalizedMessage("SYSSTP_BTN_TITLE", getResourceString((isLocked == null || !isLocked ? "SYSSTP_CLOSE" : "SYSSTP_OPEN")));
+            lockDBBtn.setLabelText(btnTitle);
+        }
     }
     
     /**
