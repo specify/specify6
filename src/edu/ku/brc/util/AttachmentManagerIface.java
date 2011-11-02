@@ -30,9 +30,16 @@ import edu.ku.brc.specify.datamodel.Attachment;
  *
  * @code_status Beta
  * @author jstewart
+ * @author rods
  */
 public interface AttachmentManagerIface
 {
+    /**
+     * Whether it was initialized OK.
+     * @return true if initialized and can be used.
+     */
+    public abstract boolean isInitialized();
+    
     /**
      * Sets the attachmentLocation field in the passed in Attachment
      * object.  This allows the AttachmentManagerIface implementation
@@ -42,7 +49,7 @@ public interface AttachmentManagerIface
      * @param doDisplayErrors false for silent mode, true for popu dialog errors
      * @return true if successfully set
      */
-    public boolean setStorageLocationIntoAttachment(Attachment attachment, boolean doDisplayErrors);
+    public abstract boolean setStorageLocationIntoAttachment(Attachment attachment, boolean doDisplayErrors);
     
     /**
      * Get a file handle to the attachment original.
@@ -50,7 +57,7 @@ public interface AttachmentManagerIface
      * @param attachment the attachment record
      * @return a java.io.File handle to the attachment document
      */
-    public File getOriginal(Attachment attachment);
+    public abstract File getOriginal(Attachment attachment);
 
     /**
      * Get a file handle to the attachment thumbnail.
@@ -58,7 +65,7 @@ public interface AttachmentManagerIface
      * @param attachment the attachment record
      * @return a java.io.File handle to the attachment thumbnail
      */
-    public File getThumbnail(Attachment attachment);
+    public abstract File getThumbnail(Attachment attachment);
     
     /**
      * Store a new attachment file (and thumbnail) in the manager's storage area.  A call
@@ -69,7 +76,7 @@ public interface AttachmentManagerIface
      * @param thumbnail the thumbnail of the original
      * @throws IOException if an error occurs when storing the files
      */
-    public void storeAttachmentFile(Attachment attachment, File attachmentFile, File thumbnail) throws IOException;
+    public abstract void storeAttachmentFile(Attachment attachment, File attachmentFile, File thumbnail) throws IOException;
     
     /**
      * Replace the existing attachment file with a new version.  If an exception occurs during the
@@ -81,7 +88,7 @@ public interface AttachmentManagerIface
      * @param newThumbnail the new version of the thumbnail
      * @throws IOException if an error occurs when replacing the files
      */
-    public void replaceOriginal(Attachment attachment, File newOriginal, File newThumbnail) throws IOException;
+    public abstract void replaceOriginal(Attachment attachment, File newOriginal, File newThumbnail) throws IOException;
     
     /**
      * Delete the files (original and thumbnail) associated with this attachment record.
@@ -89,7 +96,7 @@ public interface AttachmentManagerIface
      * @param attachment the DB record holding the file info
      * @throws IOException if an error occurs when deleting the files
      */
-    public void deleteAttachmentFiles(Attachment attachment) throws IOException;
+    public abstract void deleteAttachmentFiles(Attachment attachment) throws IOException;
     
     
     /**
@@ -98,22 +105,22 @@ public interface AttachmentManagerIface
      * @return the File for the thumbnail.
      * @throws IOException
      */
-    public File regenerateThumbnail(final Attachment attachment) throws IOException;
+    public abstract File regenerateThumbnail(final Attachment attachment) throws IOException;
     
     /**
      * Resets the baseDirectory.
      * @param baseDir the new base directory
      * @throws IOException
      */
-    public void setDirectory(File baseDir) throws IOException;
+    public abstract void setDirectory(File baseDir) throws IOException;
     
     /**
      * @return the directory of the Attachment Manager
      */
-    public File getDirectory();
+    public abstract File getDirectory();
     
     /**
      * Perform any internal cleanup needed before shutdown.
      */
-    public void cleanup();
+    public abstract void cleanup();
 }

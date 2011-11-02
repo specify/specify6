@@ -20,6 +20,7 @@
 package edu.ku.brc.util;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -71,6 +72,17 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         setDirectory(baseDirectory);
     }
     
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#isInitialized()
+     */
+    @Override
+    public boolean isInitialized()
+    {
+        return false;
+    }
+
     /**
      * @param baseDir
      * @throws IOException
@@ -143,7 +155,13 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             }
             
             // find an unused filename in the originals dir
-            File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
+            File storageFile = new File(originalsDir +File.separator + "xxx" + suffix);//File.createTempFile("sp6-", suffix, originalsDir);
+            System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
+            FileOutputStream fos = new FileOutputStream(storageFile);
+            fos.write(1);
+            fos.flush();
+            fos.close();
+            
             if (storageFile.exists())
             {
                 attachment.setAttachmentLocation(storageFile.getName());
@@ -155,16 +173,18 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         }
         catch (IOException e)
         {
+            e.printStackTrace();
+            
             if (doDisplayErrors)
             {
                 errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", storageFilename);
-                return false;
+            } else
+            {
+                // This happens when errors are not displayed.
+                e.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileStoreAttachmentManager.class, e);
             }
-            
-            // This happens when errors are not displayed.
-            e.printStackTrace();
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileStoreAttachmentManager.class, e);
         }
         
         if (doDisplayErrors && errMsg != null)

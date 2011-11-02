@@ -207,6 +207,7 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -214,7 +215,6 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -225,7 +225,9 @@ import edu.ku.brc.util.FileCache;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.MemoryWarningSystem;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.WebStoreAttachmentMgr;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
+
 /**
  * Specify Main Application Class
  *
@@ -415,49 +417,58 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             SystemPrefs.changeSplashImage();
         }
         
-        AttachmentManagerIface attachMgr          = null;
-        File                   attachmentLocation = null;
-        final File             location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
-            
-        try
+        AttachmentManagerIface attachMgr = null;
+        WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
+        if (webAssetMgr.isInitialized())
         {
-            String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
-            attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
-            if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
-            {
-                final File attchLocDir = attachmentLocation;
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        String pathStr;
-                        try
-                        {
-                            pathStr = attchLocDir.getCanonicalPath();
-                        } catch (IOException e)
-                        {
-                            pathStr = attchLocDir.getAbsolutePath();
-                        }
-                        UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", pathStr);
-                    }
-                });
-                
-            } else
-            {
-                attachMgr = new FileStoreAttachmentManager(attachmentLocation);
-            }
-            
-            if (path == null)
-            {
-                localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
-            }
+            attachMgr = webAssetMgr;
         }
-        catch (IOException e1)
+        
+        if (attachMgr == null)
         {
-            log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            // TODO RELEASE -  Instead of exiting we need to disable Attachments
-            //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            File       attachmentLocation = null;
+            final File location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+                
+            try
+            {
+                String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
+                attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
+                if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
+                {
+                    final File attchLocDir = attachmentLocation;
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            String pathStr;
+                            try
+                            {
+                                pathStr = attchLocDir.getCanonicalPath();
+                            } catch (IOException e)
+                            {
+                                pathStr = attchLocDir.getAbsolutePath();
+                            }
+                            UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", pathStr);
+                        }
+                    });
+                    
+                } else
+                {
+                    attachMgr = new FileStoreAttachmentManager(attachmentLocation);
+                }
+                
+                if (path == null)
+                {
+                    localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
+                }
+            }
+            catch (IOException e1)
+            {
+                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                // TODO RELEASE -  Instead of exiting we need to disable Attachments
+                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
         
         AttachmentUtils.setAttachmentManager(attachMgr);
@@ -3035,7 +3046,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
    */
   public static void main(String[] args)
   {
-      
+
       // Set App Name, MUST be done very first thing!
       UIRegistry.setAppName("Specify");  //$NON-NLS-1$
 

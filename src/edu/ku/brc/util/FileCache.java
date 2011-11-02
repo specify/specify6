@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -59,6 +60,9 @@ public class FileCache implements DataCacheIFace
 	
 	/** Suffix to be added to all cache filenames. */
 	protected String suffix;
+	
+	/** whether to use the extension of the file. */
+	protected boolean isUsingExtensions = false;
 	
 	/** Hashtable mapping from a "handle" to the name of the cached file it refers to. */
 	protected Properties handleToFilenameHash;
@@ -207,6 +211,22 @@ public class FileCache implements DataCacheIFace
 	}
 
 	/**
+     * @return the isUsingExtensions
+     */
+    public boolean isUsingExtensions()
+    {
+        return isUsingExtensions;
+    }
+
+    /**
+     * @param isUsingExtensions the isUsingExtensions to set
+     */
+    public void setUsingExtensions(boolean isUsingExtensions)
+    {
+        this.isUsingExtensions = isUsingExtensions;
+    }
+
+    /**
 	 * Get the max cache size.  Only enforced if
 	 * <code>enforceMaxSize</code> is set to true.
 	 * 
@@ -419,9 +439,9 @@ public class FileCache implements DataCacheIFace
 	 * @return a newly created cache file
 	 * @throws IOException an I/O error occurred while creating a new cache file object
 	 */
-	protected synchronized File createCacheFile() throws IOException
+	protected synchronized File createCacheFile(final String extension) throws IOException
 	{
-		return File.createTempFile(prefix, suffix, cacheDir);
+		return File.createTempFile(prefix, extension == null ? suffix : extension, cacheDir);
 	}
 
 	/**
@@ -550,7 +570,7 @@ public class FileCache implements DataCacheIFace
 	 */
 	public void cacheData(final String key, final byte[] data ) throws IOException
 	{
-		File f = createCacheFile();
+		File f = createCacheFile(null);
 		FileOutputStream fos = new FileOutputStream(f);
 		fos.write(data);
 		fos.flush();
@@ -581,8 +601,10 @@ public class FileCache implements DataCacheIFace
 	 */
 	public void cacheFile(final String key, final File f ) throws IOException
 	{
-		File cachedFile = createCacheFile();
-		FileUtils.copyFile(f,cachedFile);
+	    String extension = isUsingExtensions ? ("." + FilenameUtils.getExtension(f.getName())) : null;
+		File cachedFile = createCacheFile(extension);
+		log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
+		FileUtils.copyFile(f, cachedFile);
 		cacheNewItem(key,cachedFile);
 	}
 
@@ -638,6 +660,8 @@ public class FileCache implements DataCacheIFace
 	 */
 	public File getCacheFile(final String key )
 	{
+	    log.debug(String.format("Get [%s]", key));
+
 		String filename = handleToFilenameHash.getProperty(key);
 		if( filename == null )
 		{
