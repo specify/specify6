@@ -97,7 +97,6 @@ public class SGRResultsForForm extends JPanel
 
     public void indexChanged(final int newIndex)
     {
-        if (newIndex == currentIndex) return;
         currentIndex = newIndex;
         refresh();
     }

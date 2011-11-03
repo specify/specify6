@@ -52,12 +52,10 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.sgr.SGRMatcher;
 import edu.ku.brc.sgr.datamodel.DataModel;
 import edu.ku.brc.sgr.datamodel.MatchConfiguration;
-import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 import org.apache.lucene.index.Term;
