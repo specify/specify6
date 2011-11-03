@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.plugins.sgr;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -28,14 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.sgr.MatchResults;
 import edu.ku.brc.sgr.SGRMatcher;
 import edu.ku.brc.sgr.SGRMatcher.Factory;
@@ -49,11 +46,9 @@ import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.specify.tasks.subpane.wb.SGRFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS.PanelType;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.DropDownButtonStateless;
 import edu.ku.brc.ui.DropDownButtonStateless.MenuInfo;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
@@ -85,22 +80,6 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     private DropDownButtonStateless matcherButton;
     private DropDownButtonStateless batchButton;
         
-    private void selectMatcher()
-    {
-        List<MatchConfiguration> mcs = DataModel.getMatcherConfigurations();
-        
-        ChooseFromListDlg<MatchConfiguration> dlg = 
-            new ChooseFromListDlg<MatchConfiguration>((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                    "Choose Matcher", mcs);
-        
-        UIHelper.centerAndShow(dlg);
-        if (!dlg.isCancelled())
-        {
-            setMatcherConfiguration(dlg.getSelectedObject());
-            refreshFormPane();
-        }
-    }    
-    
     public void setBatchMatchResults(BatchMatchResultSet rs)
     {
         for (MenuInfo mi : batchButton.getMenuInfos())
@@ -256,7 +235,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
 
         public MatcherMenuInfo(MatchConfiguration mc)
         {
-            super(StringUtils.abbreviate(mc.name(), 14), null, null);
+            super(mc.name(), null, null);
             this.matchConfiguration = mc;
         }
         
@@ -298,7 +277,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
 
         public BatchMenuInfo(BatchMatchResultSet rs)
         {
-            super(StringUtils.abbreviate(rs.name(), 14), null, null);
+            super(rs.name(), null, null);
             this.resultSet = rs;
         }
         
