@@ -723,7 +723,10 @@ public class SGRTask extends BaseTask
     
     public void deleteResultsForWorkbench(Workbench workbench)
     {
-        for (NavBoxItemIFace nbi : batchMatchResultsBox.getItems())
+        java.util.Collection<NavBoxItemIFace> nbis = 
+            ImmutableList.copyOf(batchMatchResultsBox.getItems());
+        
+        for (NavBoxItemIFace nbi : nbis)
         {
             BatchMatchResultSet resultSet;
             try { resultSet = (BatchMatchResultSet) nbi.getData(); }
