@@ -5,7 +5,7 @@
               <serverUrl>http://sgr.nhm.ku.edu:8983/solr/botany</serverUrl>
               <nRows>10</nRows>
               <boostInterestingTerms>true</boostInterestingTerms>
-              <similarityFields>collectors,collector_number,date_collected,date_split</similarityFields>
+              <similarityFields>collectors,collector_number,date_collected,date_split,scientific_name,location</similarityFields>
               <queryFields></queryFields>
               <filterQuery></filterQuery>
           </MatchConfiguration><MatchConfiguration>
