@@ -57,6 +57,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 import org.apache.lucene.index.Term;
@@ -127,6 +128,14 @@ public class SGRMatcherUI extends CustomDialog
     @Override
     protected void okButtonPressed() 
     {
+        if (StringUtils.isBlank(uiPanel.name.getText()))
+        {
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            UIRegistry.showLocalizedError("SGR_MATCHER_NAME_REQUIRED_ERROR");
+            UIRegistry.popResourceBundle();
+            return;
+        }
+
         if (nbi == null)
         {
             SGRMatcher.Factory mf = SGRMatcher.getFactory();
