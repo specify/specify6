@@ -480,10 +480,10 @@ public class Scriptlet extends JRDefaultScriptlet
     	Vector<Object> match = BasicSQLUtils.querySingleCol(sql);
     	if (match == null || match.size() == 0)
     	{
-    		return null;
+    		return "";
     	}
     	
-    	return match.get(0) == null ? null : match.get(0).toString();
+    	return match.get(0) == null ? "" : match.get(0).toString();
     	
     }
     /**
