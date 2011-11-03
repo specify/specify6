@@ -212,6 +212,7 @@ public class SGRMatcherUI extends CustomDialog
         public SGRMatcherUIPanel(NavBoxItemIFace nbi)
         {
             super();
+            remarks.setLineWrap(true);
             
             for (String field : availableFields)
             {
