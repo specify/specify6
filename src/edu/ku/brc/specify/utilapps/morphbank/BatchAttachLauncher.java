@@ -131,7 +131,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
                     @Override
                     public void run()
                     {
-                        UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", location.getAbsolutePath());
+                        UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD");
                     }
                 });
                 

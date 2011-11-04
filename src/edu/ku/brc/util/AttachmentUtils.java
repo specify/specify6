@@ -49,6 +49,7 @@ public class AttachmentUtils
     private static final Logger           log              = Logger.getLogger(AttachmentUtils.class);
     private static AttachmentManagerIface attachMgr;
     private static Thumbnailer            thumbnailer;
+    private static boolean                isConfigForPath = true;
     
     /**
      * @return the manager
@@ -92,6 +93,22 @@ public class AttachmentUtils
         return thumbnailer;
     }
     
+    /**
+     * @return the isConfigForPath
+     */
+    public static boolean isConfigForPath()
+    {
+        return isConfigForPath;
+    }
+
+    /**
+     * @param isConfigForPath the isConfigForPath to set
+     */
+    public static void setConfigForPath(boolean isConfigForPath)
+    {
+        AttachmentUtils.isConfigForPath = isConfigForPath;
+    }
+
     /**
      * @return whether the AttachmentManger can be used.
      */

@@ -110,7 +110,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     return isInitialized;
                 }
             }
-            
+                
             try
             {
                 shortTermCache = new FileCache(cacheDir.getAbsolutePath(), "cache.map");
@@ -127,14 +127,13 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         return isInitialized;
     }
     
-    
     /**
      * @return
      */
-    private File getConfigFile()
+    /*private File getConfigFile()
     {
         return new File(UIRegistry.getAppDataDir() + File.separator + "web_asset_store.xml");
-    }
+    }*/
     
     /**
      * @return
@@ -143,29 +142,20 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     {
         try
         {
-            // write now also get the file and do not cache it.
-            File webAssetStoreFile = null;//getConfigFile();
-            if (webAssetStoreFile == null || !webAssetStoreFile.exists() || webAssetStoreFile.length() == 0)
+            String urlStr = AppPreferences.getLocalPrefs().get("attachment.url", null);
+            if (StringUtils.isNotEmpty(urlStr))
             {
-                String urlStr = AppPreferences.getLocalPrefs().get("WEB_ASSET_STORE_URL", null);
-                if (StringUtils.isNotEmpty(urlStr))
+                File tmpFile = File.createTempFile("sp6", ".xml", cacheDir.getAbsoluteFile());
+                if (fillFileFromWeb(urlStr, tmpFile))
                 {
-                    File tmpFile = File.createTempFile("sp6", ".xml", cacheDir.getAbsoluteFile());
-                    if (fillFileFromWeb(urlStr, tmpFile))
+                    if (getURLSFromFile(tmpFile))
                     {
-                        if (getURLSFromFile(tmpFile))
-                        {
-                            FileUtils.copyFile(tmpFile, getConfigFile());
-                            tmpFile.delete();
-                            return true;
-                        }
                         tmpFile.delete();
+                        return true;
                     }
-                } 
-            } else
-            {
-                return getURLSFromFile(webAssetStoreFile);
-            }
+                    tmpFile.delete();
+                }
+            } 
             
         } catch (IOException e)
         {

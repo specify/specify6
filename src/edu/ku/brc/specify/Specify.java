@@ -207,7 +207,6 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -215,6 +214,7 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -417,65 +417,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             SystemPrefs.changeSplashImage();
         }
         
-        AttachmentManagerIface attachMgr = null;
-        WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-        if (webAssetMgr.isInitialized())
-        {
-            attachMgr = webAssetMgr;
-        }
+        configureAttachmentManager(localPrefs);
         
-        if (attachMgr == null)
-        {
-            File       attachmentLocation = null;
-            final File location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
-                
-            try
-            {
-                String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
-                attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
-                if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
-                {
-                    final File attchLocDir = attachmentLocation;
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            String pathStr;
-                            try
-                            {
-                                pathStr = attchLocDir.getCanonicalPath();
-                            } catch (IOException e)
-                            {
-                                pathStr = attchLocDir.getAbsolutePath();
-                            }
-                            UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", pathStr);
-                        }
-                    });
-                    
-                } else
-                {
-                    attachMgr = new FileStoreAttachmentManager(attachmentLocation);
-                }
-                
-                if (path == null)
-                {
-                    localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
-                }
-            }
-            catch (IOException e1)
-            {
-                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                // TODO RELEASE -  Instead of exiting we need to disable Attachments
-                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-        
-        AttachmentUtils.setAttachmentManager(attachMgr);
         AttachmentUtils.setThumbnailer(thumb);
-        ActionListener attachmentDisplayer = AttachmentUtils.getAttachmentDisplayer();
-        
         DefaultClassActionHandler defClassActionHandler = DefaultClassActionHandler.getInstance();
+        ActionListener            attachmentDisplayer   = AttachmentUtils.getAttachmentDisplayer();
         
         defClassActionHandler.registerActionHandler(Attachment.class,                     attachmentDisplayer);
         defClassActionHandler.registerActionHandler(AccessionAttachment.class,            attachmentDisplayer);
@@ -655,6 +601,84 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         dbLoginPanel = UIHelper.doLogin(usrPwdProvider, true, false, false, this, getLargeIconName(), getTitle(), null, getOpaqueIconName(), "login"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
+    }
+    
+    /**
+     * @param localPrefs
+     */
+    protected void configureAttachmentManager(final AppPreferences localPrefs)
+    {
+        boolean useFilePath = localPrefs.getBoolean("attachment.use_path", true);
+        String  msgPath     = "";
+        
+        final String errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
+        
+        AttachmentUtils.setConfigForPath(useFilePath);
+        AttachmentManagerIface attachMgr = null;
+        
+        if (!useFilePath)
+        {
+            String attchURL = localPrefs.get("attachment.url", null);
+            if (StringUtils.isNotEmpty(attchURL))
+            {
+                WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
+                if (webAssetMgr.isInitialized())
+                {
+                    attachMgr = webAssetMgr;
+                }
+            }
+            
+        } else
+        {
+            File       attachmentLocation = null;
+            final File location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+                
+            try
+            {
+                String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
+                attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
+                if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
+                {
+                    try
+                    {
+                        msgPath = attachmentLocation.getCanonicalPath();
+                    } catch (IOException e)
+                    {
+                        msgPath = attachmentLocation.getAbsolutePath();
+                    }
+                } else
+                {
+                    attachMgr = new FileStoreAttachmentManager(attachmentLocation);
+                }
+                
+                if (path == null)
+                {
+                    localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
+                }
+            }
+            catch (IOException e1)
+            {
+                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                // TODO RELEASE -  Instead of exiting we need to disable Attachments
+                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+        }
+        
+        if (attachMgr == null)
+        {
+            log.warn("Problems setting the AttachmentManager at ["+msgPath+"]");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    UIRegistry.showLocalizedError("AttachmentUtils."+errorKey);
+                }
+            });
+        }
+        
+        AttachmentUtils.setAttachmentManager(attachMgr);
     }
     
 
@@ -1146,6 +1170,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         if (!isWorkbenchOnly)
         {
+            final String AUTO_NUM = "AutoNumbering";
             //---------------------------------------
             // AutoNumber Menu Item (On / Off)
             Action autoNumberOnOffAction = new AbstractAction(getResourceString("FormViewObj.SET_AUTONUMBER_ONOFF")) { //$NON-NLS-1$
@@ -1162,8 +1187,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             autoNumberOnOffAction.setEnabled(false);
             JCheckBoxMenuItem autoNumCBMI = new JCheckBoxMenuItem(autoNumberOnOffAction);
             dataMenu.add(autoNumCBMI);
-            UIRegistry.register("AutoNumbering", autoNumCBMI); //$NON-NLS-1$
-            UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
+            UIRegistry.register(AUTO_NUM, autoNumCBMI); //$NON-NLS-1$
+            UIRegistry.registerAction(AUTO_NUM, autoNumberOnOffAction); //$NON-NLS-1$
         }
 
 

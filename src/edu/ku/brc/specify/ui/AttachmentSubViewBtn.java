@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Properties;
 
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -26,6 +28,7 @@ import edu.ku.brc.af.ui.forms.SubViewBtn;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -55,13 +58,23 @@ public class AttachmentSubViewBtn extends SubViewBtn
     {
         super(mvParent, subviewDef, view, dataType, options, props, classToCreate, mode);
         
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.SubViewBtn#setEnabled(boolean)
-     */
-    public void setEnabled(final boolean enabled)
-    {
-        super.setEnabled(enabled && AttachmentUtils.isAvailable());
+        for (ActionListener al: subViewBtn.getActionListeners())
+        {
+            subViewBtn.removeActionListener(al);
+        }
+        
+        subViewBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (AttachmentUtils.isAvailable())
+                {
+                    showForm();
+                } else
+                {
+                    UIRegistry.showLocalizedError(UIRegistry.getResourceString("AttachmentUtils." + (AttachmentUtils.isConfigForPath() ? "LOC_BAD" : "URL_BAD")));
+                }
+            }
+        });
     }
 }

@@ -372,7 +372,7 @@
             <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p,4px,p,f:p:g</columnDef>
-            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
+            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
                
             <rows>
                 <row>
@@ -391,9 +391,23 @@
                     <cell type="separator" label="ATTCH_PATH" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
+                    <cell type="field" id="attch_cbx" name="attachment.use_path" uitype="checkbox" label="USE_ATTACH_PATH"/>
                 </row>
                 <row>
+                    <cell type="panel" id="ap" name="attachpanel" coldef="p,2px,f:p:g" rowdef="p,4px,p" colspan="4">
+                        <rows>
+			                <row>
+                                <cell type="label" id="attch_path_lbl" labelfor="attch_path" label="ATTACHMENT_LOC"/>
+			                    <cell type="field" id="attch_path" name="attachment.path" cols="30" uitype="browse"/>
+			                </row>
+			                <row>
+                                 <cell type="label" id="attch_url_lbl" labelfor="attch_url" label="ATTACHMENT_URL"/>
+			                    <cell type="field" id="attch_url" name="attachment.url" cols="30" uitype="text"/>
+			                </row>
+			            </rows>
+			        </cell>
+			     </row>
+                 <row>
                     <cell type="separator" label="REP_IMG_PATH" colspan="4"/>
                 </row>
                 <row>
