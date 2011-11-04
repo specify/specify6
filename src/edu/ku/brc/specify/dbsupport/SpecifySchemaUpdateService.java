@@ -2485,6 +2485,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         alterFieldLength(conn, databaseName, "project", "projectname", 50, 128);
         frame.incOverall();
 
+        
+        /////////////////////////////
+        // AttachmentImageAttribute Table
+        /////////////////////////////
+        alterFieldLength(conn, databaseName, "attachmentimageattribute", "CreativeCommons", 128, 500);
+        frame.incOverall();
+        
         /////////////////////////////
         // LocalityDetail
         /////////////////////////////

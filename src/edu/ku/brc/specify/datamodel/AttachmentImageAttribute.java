@@ -231,7 +231,7 @@ public class AttachmentImageAttribute extends DataModelObjBase
 	/**
 	 * @return the creativeCommons
 	 */
-    @Column(name = "CreativeCommons", length = 128)
+    @Column(name = "CreativeCommons", length = 500)
 	public String getCreativeCommons()
 	{
 		return creativeCommons;
