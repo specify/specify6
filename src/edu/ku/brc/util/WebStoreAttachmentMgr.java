@@ -469,7 +469,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             File tmpFile = createTempFile(fileName, false);
             
-            //String urlStr = String.format("http://localhost/cgi-bin/fileget.php?subdir=%s&filename=%s&mimeType=%s;disp=%s", 
+            //String urlStr = String.format("http://localhost/cgi-bin/fileget.php?type=%s&filename=%s&mimeType=%s;disp=%s", 
             //                  isThumb ? "thumbs" : "originals", fileName, StringUtils.isNotEmpty(mimeType) ? mimeType : "",
             //                  discipline.getName());
             
@@ -524,7 +524,6 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         for (int i=0;i<values.length;i++)
         {
             values[i] = StringUtils.replace(values[i], " ", "%20");
-            values[i] = "";
         }
     }
     
@@ -541,7 +540,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             newURLStr = doSub(newURLStr, symbols[i], values[i]);
         }
         
-        newURLStr = doSub(newURLStr, "<subdir>", isThumb ? "thumbs" : "originals");
+        newURLStr = doSub(newURLStr, "<type>", isThumb ? "T" : "O");
         newURLStr = doSub(newURLStr, "<fname>", fileName);
         
         return newURLStr;
@@ -569,9 +568,9 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
 
             Part[] parts = {
                     new FilePart(targetFile.getName(), targetFile),
-                    new StringPart("subdir", isThumb ? "thumbs" : "originals"),
+                    new StringPart("type", isThumb ? "T" : "O"),
                     new StringPart("store", fileName),
-                    //new StringPart("coll", values[0]),
+                    new StringPart("coll", values[0]),
                     //new StringPart("disp", values[1]),
                     //new StringPart("div",  values[2]),
                     //new StringPart("inst", values[3]),
