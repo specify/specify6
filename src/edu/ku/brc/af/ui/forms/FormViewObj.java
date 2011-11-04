@@ -194,7 +194,8 @@ public class FormViewObj implements Viewable,
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
     private static final String actionName = "SwitcherToggle";
-
+    private static final String AUTO_NUM   = "AutoNumbering";
+        
     protected enum SAVE_STATE {Initial, NewObjSaveerror, StaleRecovery, SaveOK, Error}
     
 
@@ -637,6 +638,16 @@ public class FormViewObj implements Viewable,
         }
         
         isBuildValid = true;
+        
+        isAutoNumberOn = AppPreferences.getLocalPrefs().getBoolean(AUTO_NUM, true);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                updateAutoNumberFieldState();
+            }
+        });
     }
     
     /**
@@ -956,7 +967,7 @@ public class FormViewObj implements Viewable,
         enableActionAndMenu("ConfigCarryForward", isVisible, null);
         
         boolean doAutoNum = isAutoNumberOn() && isEditing && isVisible;
-        enableActionAndMenu("AutoNumbering", isEditing && isVisible, doAutoNum);
+        enableActionAndMenu(AUTO_NUM, isEditing && isVisible, doAutoNum);
         
         enableActionAndMenu("SaveAndNew", isVisible, null);
     }
@@ -1238,7 +1249,7 @@ public class FormViewObj implements Viewable,
             popup.add(chkMI);
 
             popup.addSeparator();
-            chkMI = new JCheckBoxMenuItem(UIRegistry.getAction("AutoNumbering"));
+            chkMI = new JCheckBoxMenuItem(UIRegistry.getAction(AUTO_NUM));
             /*chkMI.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ex)
                 {
@@ -1259,7 +1270,17 @@ public class FormViewObj implements Viewable,
     {
         isAutoNumberOn = !isAutoNumberOn;
         
-        JCheckBoxMenuItem mi = (JCheckBoxMenuItem)UIRegistry.get("AutoNumbering");
+        AppPreferences.getLocalPrefs().putBoolean(AUTO_NUM, isAutoNumberOn);
+        
+        updateAutoNumberFieldState();
+    }
+    
+    /**
+     * Updates the AutoNumbering Menu and the control on the form.
+     */
+    protected void updateAutoNumberFieldState()
+    {
+        JCheckBoxMenuItem mi = (JCheckBoxMenuItem)UIRegistry.get(AUTO_NUM);
         if (mi != null)
         {
             mi.setSelected(isAutoNumberOn);
