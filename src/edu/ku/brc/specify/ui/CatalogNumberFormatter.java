@@ -25,10 +25,12 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * Formats a single Latitude or Longitude field from a locality object.
@@ -42,6 +44,8 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
  */
 public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace, Cloneable
 {
+    protected static final Logger log = Logger.getLogger(CatalogNumberStringUIFieldFormatter.class);
+    
     protected String name;
     
     /**
@@ -223,5 +227,39 @@ public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace, Clon
     {
         return super.clone();
     }
-    
+
+    /**
+     * @param entry a list of one or more numeric cataloger numbers, possibly containing alphabetic prefixes or suffixes.
+     * @param formatter the CatalogNumber formatter for the entry.
+     * @return a comma delimited of numeric portions of the catalognumbers in the list. Non-numeric characters are treated as
+     * delimiters.
+     */
+    public static String preParseNumericCatalogNumbers(final String entry, final UIFieldFormatterIFace formatter)
+    {
+    	if (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter )formatter).isNumeric())
+    	{
+    		//just go through char by char
+    		StringBuilder result = new StringBuilder();
+    		String numericCatNumChars = "0123456789"; //No negative signs and no decimal points in Numeric cat nums.
+    		boolean separate = false;
+    		for (int i = 0; i < entry.length(); i++)
+    		{
+    			String current = entry.substring(i, i+1);
+    			if (numericCatNumChars.contains(current))
+    			{
+    				result.append(current);
+    				separate = true;
+    			}
+    			else if (result.length() > 0 && separate)
+    			{
+    				result.append(", ");
+    				separate = false;
+    			}
+    		}
+    		return result.toString();
+    	}
+    	log.warn("not pre-parsing " + entry + " because the supplied formatter is not a numeric catalognumber formatter");
+    	return entry;
+    }
+
 }

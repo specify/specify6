@@ -88,6 +88,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpQueryField.OperatorType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.ui.CatalogNumberFormatter;
 import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.specify.ui.db.PickListTableAdapter;
@@ -882,19 +883,24 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         return StringUtils.isNotEmpty(getCriteriaText(true).trim());
     }
  
-    /**
+    
+   /**
      * @param criteriaEntry - String of comma-delimited entries
      * @return Array of formatted criteria
      * @throws ParseException
      */
-    protected Object[] parseCriteria(final String criteriaEntry) throws ParseException
+    protected Object[] parseCriteria(final String origCriteriaEntry) throws ParseException
     {
         String[] raw;
+        UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
+        String criteriaEntry = (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter )formatter).isNumeric()) ?
+        		CatalogNumberFormatter.preParseNumericCatalogNumbers(origCriteriaEntry, formatter) :
+        		origCriteriaEntry;
         
         if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN 
                 || operatorCBX.getSelectedItem() == SpQueryField.OperatorType.IN)
         {
-            raw = criteriaEntry.split(",");
+        	raw = criteriaEntry.split(",");
         }
         else
         {
@@ -918,7 +924,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
         }
         
-        UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
         Object[] result = new String[raw.length];
         for (int e=0; e<raw.length; e++)
         {

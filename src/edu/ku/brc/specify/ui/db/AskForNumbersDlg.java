@@ -53,6 +53,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.ui.CatalogNumberFormatter;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
@@ -167,6 +168,10 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         boolean isOK = true;
         
         String catNumbersStr = textArea.getText().trim();
+        if (formatter.isNumeric())
+        {
+        	catNumbersStr = CatalogNumberFormatter.preParseNumericCatalogNumbers(catNumbersStr, formatter);
+        }
         if (StringUtils.isNotEmpty(catNumbersStr))
         {
             DataProviderSessionIFace session = null;
