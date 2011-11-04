@@ -114,6 +114,7 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -128,7 +129,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 27;
+    private final int OVERALL_TOTAL = 28;
     private static final String TINYINT4 = "TINYINT(4)";
     
     private static final String APP                     = "App";
@@ -1336,7 +1337,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     createSGRTables(conn, databaseName);
                     frame.incOverall(); // #25
                     
-                    if (!miscSchema16Updates(conn, databaseName)) // Steps 26 - 27
+                    if (!miscSchema16Updates(conn, databaseName)) // Steps 26 - 28
                     {
                         return false;
                     }
@@ -1402,7 +1403,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         }
         frame.incOverall(); // #27
-        
+
+        frame.setDesc("Fixing SrcLatLonUnit in Locality");
+        fixSrcLatLongUnit(conn);
+        frame.incOverall(); // #28
+        frame.setDesc("Processing...");
+
         return true;
     }
     
@@ -1464,6 +1470,109 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             update(conn, sql);
         }
     }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     */
+    private LatLonConverter.FORMAT discoverUnitType(final String latLonStr)
+    {
+        LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.None;
+        if (StringUtils.isNotEmpty(latLonStr))
+        {
+            int colonCnt = StringUtils.countMatches(latLonStr, ":");
+            
+            if (colonCnt == 0)
+            {
+                fmt = LatLonConverter.FORMAT.DDDDDD;
+                
+            } else if (colonCnt == 1)
+            {
+                fmt = LatLonConverter.FORMAT.DDMMMM;
+                
+            } else if (colonCnt == 2)
+            {
+                fmt = LatLonConverter.FORMAT.DDMMSS;
+            }
+        }
+        return fmt;
+    }
+
+    /**
+     * @param oldDBConn
+     * @param conn
+     */
+    private void fixSrcLatLongUnit(final Connection conn)
+    {
+        String post   = " FROM locality WHERE Lat1Text IS NOT NULL AND Long1Text IS NOT NULL AND OriginalLatLongUnit <> SrcLatLongUnit";
+        String cntSQL = "SELECT COUNT(*)" + post;
+        String sql    = "SELECT LocalityID, OriginalLatLongUnit, SrcLatLongUnit, Lat1Text, Long1Text" + post;
+        
+        int total = BasicSQLUtils.getCountAsInt(conn, cntSQL);
+        int cnt = 0;
+        int updated = 0;
+        
+        frame.setProcess(0, total);
+        PreparedStatement pStmt1 = null;
+        try
+        {
+            pStmt1 = conn.prepareStatement("UPDATE locality SET SrcLatLongUnit=? WHERE LocalityID = ?");
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                int locID       = rs.getInt(1);
+                //Integer orgUnit = rs.getInt(2);
+                Integer srcUnit = rs.getInt(3);
+                String  latStr  = rs.getString(4);
+                String  lonStr  = rs.getString(5);
+                
+                LatLonConverter.FORMAT latFmt = discoverUnitType(latStr);
+                LatLonConverter.FORMAT lonFmt = discoverUnitType(lonStr);
+                
+                LatLonConverter.FORMAT fmt;
+                if (latFmt == LatLonConverter.FORMAT.DDMMSS || 
+                    lonFmt == LatLonConverter.FORMAT.DDMMSS)
+                {
+                    fmt = LatLonConverter.FORMAT.DDMMSS;
+                } else
+                {
+                    fmt = latFmt.ordinal() > lonFmt.ordinal() ? latFmt : lonFmt;
+                }
+                int fmtUnit = fmt.ordinal();
+                if (fmtUnit != srcUnit)
+                {
+                    pStmt1.setInt(1, fmtUnit);
+                    pStmt1.setInt(2, locID);
+                    pStmt1.executeUpdate();
+                    updated++;
+                }
+                
+                cnt++;
+                if (cnt % 100 == 0)
+                {
+                    frame.setProcess(cnt);
+                    //System.out.println(String.format("%d / %d", cnt, total));
+                }
+            }
+            frame.setProcess(total);
+            rs.close();
+            stmt.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt1 != null) pStmt1.close();
+            } catch (Exception ex) {}
+        }
+        //System.out.println("Fixed "+cnt+" Locality records and updated "+updated);
+    }
+
 
     /**
      * Creates error message with all the field names and adds it to the error list.
