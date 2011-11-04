@@ -1681,7 +1681,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         } else
         {
             rows = new int[1];
-            rows[0] = resultsetController.getCurrentIndex();
+            rows[0] = spreadSheet.convertRowIndexToModel(resultsetController.getCurrentIndex());
         }
         
         int firstRow = rows[0];
@@ -1740,13 +1740,14 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         } else
         {
+            int currentRow = resultsetController.getCurrentIndex();
             resultsetController.setLength(rowCount);
-            if (firstRow >= rowCount)
+            if (currentRow >= rowCount)
             {
                 resultsetController.setIndex(rowCount-1);
             } else
             {
-                resultsetController.setIndex(firstRow);
+                resultsetController.setIndex(currentRow);
             }
         }
         
