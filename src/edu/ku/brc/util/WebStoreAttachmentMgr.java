@@ -22,10 +22,15 @@ package edu.ku.brc.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -65,6 +70,9 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
 {
     private static final Logger  log   = Logger.getLogger(WebStoreAttachmentMgr.class);
     
+    private static MessageDigest sha1 = null;
+
+    
     private Boolean                 isInitialized      = null;
     private byte[]                  bytes              = new byte[100*1024];
     private File                    cacheDir; 
@@ -80,7 +88,16 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     private String[]                symbols = {"<coll>", "<disp>", "<div>", "<inst>"};
     private String[]                values  = new String[symbols.length];
     
-    
+    static
+    {
+        try
+        {
+            sha1 = MessageDigest.getInstance("SHA1");
+        } catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+    }
     /**
      * 
      */
@@ -564,12 +581,15 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             System.out.println("Uploading " + targetFile.getName() + " to " + targetURL);
+            
+            String sha1Hash = calculateHash(targetFile);
 
             Part[] parts = {
                     new FilePart(targetFile.getName(), targetFile),
                     new StringPart("type", isThumb ? "T" : "O"),
                     new StringPart("store", fileName),
                     new StringPart("coll", values[0]),
+                    new StringPart("hash", sha1Hash == null ? "" : sha1Hash),
                     //new StringPart("disp", values[1]),
                     //new StringPart("div",  values[2]),
                     //new StringPart("inst", values[3]),
@@ -715,6 +735,47 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         return thumbFile;
     }
+    
+    /**
+     * @param algorithm
+     * @param fileName
+     * @return
+     * @throws Exception
+     */
+    private String calculateHash(final File file) throws Exception
+    {
+        if (sha1 != null)
+        {
+            FileInputStream     fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            DigestInputStream   dis = new DigestInputStream(bis, sha1);
+    
+            // read the file and update the hash calculation
+            while (dis.read() != -1)
+                ;
+    
+            // get the hash value as byte array
+            byte[] hash = sha1.digest();
+
+            return byteArray2Hex(hash);
+        }
+        return null;
+    }
+
+    /**
+     * @param hash
+     * @return
+     */
+    private String byteArray2Hex(byte[] hash)
+    {
+        Formatter formatter = new Formatter();
+        for (byte b : hash)
+        {
+            formatter.format("%02x", b);
+        }
+        return formatter.toString();
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#setDirectory(java.io.File)
