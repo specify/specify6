@@ -731,7 +731,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             }
             choosenFormat = defaultFormat;
             
-            srcFormat         = convertIntToFORMAT(locality.getSrcLatLongUnit());
+            srcFormat         = locality.getId() == null ? choosenFormat : convertIntToFORMAT(locality.getSrcLatLongUnit());
             srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getLat1text(),  defaultFormat, LATLON.Latitude);
             srcLatLon1.second = ensureFormattedString(locality.getLongitude1(), locality.getLong1text(), defaultFormat, LATLON.Longitude);
             
