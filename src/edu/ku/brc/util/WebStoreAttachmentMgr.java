@@ -37,7 +37,6 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -240,8 +239,8 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                 
                 return true;
             }
-            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", (storageFile != null ? storageFile.getAbsolutePath() : "(missing file name)"));
-            log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
+            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", storageFile.getAbsolutePath());
+            log.error("storageFile doesn't exist["+storageFile.getAbsolutePath()+"]");
         }
         catch (IOException e)
         {
@@ -617,11 +616,13 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     public void deleteAttachmentFiles(final Attachment attachment) throws IOException
     {
         String targetFileName = attachment.getAttachmentLocation();
-        if (!deleteFileFromWeb(targetFileName, false))
+        if (deleteFileFromWeb(targetFileName, false))
         {
-            throw new IOException("Couldn't delete original file: "+targetFileName);
+            deleteFileFromWeb(targetFileName, true); // ok to fail deleting thumb
+        } else
+        {
+            UIRegistry.showLocalizedError("ATTCH_NOT_DEL_REPOS", targetFileName);
         }
-        deleteFileFromWeb(targetFileName, true); // ok to fail deleting thumb
     }
     
     /**
@@ -635,14 +636,16 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             //String     targetURL  = String.format("http://localhost/cgi-bin/filedelete.php?filename=%s;disp=%s", targetName, discipline.getName());
             String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb);
-            GetMethod  filePost   = new GetMethod(targetURL);
+            GetMethod  getMethod  = new GetMethod(targetURL);
 
             System.out.println("Deleting " + fileName + " from " + targetURL );
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-            int status = client.executeMethod(filePost);
+            int status = client.executeMethod(getMethod);
+            
+            System.out.println(getMethod.getResponseBodyAsString());
 
             return status == HttpStatus.SC_OK;
             
