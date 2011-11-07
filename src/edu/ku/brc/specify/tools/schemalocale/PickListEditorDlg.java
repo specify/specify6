@@ -46,6 +46,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
@@ -514,6 +515,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         
         if (PickListUtils.importPickLists(localizableIO, collection))
         {
+            collection = PickListUtils.getCollectionFromAppContext();
+            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+            
             loadList(sysPLList, true);
             loadList(plList, false);
         }

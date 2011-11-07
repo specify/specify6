@@ -284,6 +284,7 @@ public class PickListUtils
             collection = AppContextMgr.getInstance().getClassObject(Collection.class);
             collection = (Collection)session.getData("FROM Collection WHERE collectionId = "+collection.getId());
             collection.getPickLists().size();
+            collection.getNumberingSchemes().size();
             
         } catch (Exception ex)
         {

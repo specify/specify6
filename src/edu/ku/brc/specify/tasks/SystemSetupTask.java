@@ -248,6 +248,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     Collection collection = PickListUtils.getCollectionFromAppContext();
                     if (PickListUtils.importPickLists(null, collection))
                     {
+                        collection = PickListUtils.getCollectionFromAppContext();
                         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                     }
                 }
