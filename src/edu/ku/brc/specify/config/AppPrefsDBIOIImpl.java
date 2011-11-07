@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpAppResource;
@@ -188,7 +189,9 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                         if (spAppResource == null)
                         {
                             log.error("Couldn't find Prefs object");
-                            UIRegistry.showLocalizedError("Couldn't find Remote Prefs. Application will exit."); // I18N
+                            UIRegistry.showLocalizedError(String.format("Couldn't find '%s'. Application will exit.", spAppResourceDir != null ? spAppResourceDir.getTitle() : "(Unknown)")); // I18N
+                            session.close();
+                            DBConnection.shutdown();
                             System.exit(0);
                         }
                     }
