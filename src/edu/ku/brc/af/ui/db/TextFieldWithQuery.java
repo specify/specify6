@@ -85,6 +85,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.ESTermParser;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -1015,7 +1016,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                                 {
                                     val = scrDateFormat.format((Date)val);
                                 }
-                                values[i] = val != null ? val : ""; //$NON-NLS-1$
+                                if (val instanceof FormDataObjIFace)
+                                {
+                                    val = ((FormDataObjIFace)val).getIdentityTitle();
+                                }
+                                values[i] = val != null ? val : null; //$NON-NLS-1$
                             }
                             
                             String valStr = (String)UIHelper.getFormattedValue(format, values);

@@ -1547,22 +1547,23 @@ public final class UIHelper
      */
     public static Object getFormattedValue(final String format, final Object...valuesArg)
     {
-        if (valuesArg == null)
+        if (valuesArg == null || valuesArg.length == 0)
         {
             return "";
         }
 
         try
         {
-            return String.format(format, valuesArg);
-            //Formatter formatter = new Formatter();
-            //formatter.format(format, valuesArg);
-            //return formatter.toString();
+            StringFormatHelper strFmtHelper = StringFormatHelper.getStringFormatHelper(format, true);
+            if (strFmtHelper != null && !strFmtHelper.isInError())
+            {
+                return strFmtHelper.format(valuesArg);
+            }
 
         } catch (Exception ex)
         {
-            return valuesArg[0] != null ? valuesArg[0].toString() : "";
         }
+        return valuesArg[0] != null ? valuesArg[0].toString() : "";
     }
 
     //-------------------------------------------------------
