@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -72,6 +74,13 @@ public class BatchResultPropertyEditor extends CustomDialog
     protected void okButtonPressed()
     {
         String name = uiPanel.name.getText();
+        if (StringUtils.isBlank(name))
+        {
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            UIRegistry.showLocalizedError("SGR_BLANK_RESULTSET_NAME_ERROR");
+            UIRegistry.popResourceBundle();
+            return;
+        }
         resultSet.updateProperties(name, uiPanel.remarks.getText());
         ((NavBoxButton) nbi).setLabelText(name);
         ((NavBoxButton) nbi).getParent().repaint();
