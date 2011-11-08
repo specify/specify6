@@ -46,7 +46,7 @@
   </p>
     <blockquote>
       <p>
-        Right-button-click an open section of the side bar to activate the <img height="27" src=
+        Right-click an open section of the side bar to activate the <img height="27" src=
       "../../images/configure_box.png" width="110">&nbsp;button or choose <em>Tabs &gt; Configure Side Bar</em> from the top menu bar.    </p>
       <ul>
         <li>
@@ -493,149 +493,238 @@
       <p><u>Web links</u></p>
       <blockquote>
         <p>Three web link buttons exist on the Locality form: </p>
-        <p>
-          <img height="23" src="../../images/geolocate_button.png" width="90">&nbsp;This button is a
+        <p><img height="23" src="../../images/geolocate_button.png" width="90">&nbsp;This button is a
           quick link to the GEOLocate service. GEOLocate uses a description of a Locality, and at least
           two geographic locations to find Latitude and Longitude coordinate data. This is referred to
-          as georeferencing. Once the Latitude and Longitude information is complete the GEOLocate
+          as georeferencing. Once the locality information is complete the GEOLocate
           button will become enabled. </p>
         <p>
-          Use either 'United States' or 'USA', GEOLocate does not recognize 'United
+          <em><strong>Note:</strong></em> Use either 'United States' or 'USA', GEOLocate does not recognize 'United
           States of America' or 'U.S.A.'.</p>
+        <p>Click on the <img src="../../images/geolocate_button.png" alt="GEOlocate button" width="90" height="23"> button to send locality information to the GEOLocate service. A message will either diplay the number of results GEOLocate found that matched the locality information, or state that no results were found. </p>
+        <p align="center"><img src="../../images/geolocate_view.png" alt="View GEOLocate" width="432" height="116"></p>
+        <p align="center" class="imgcaption">View GEOLocate Results</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>Results will display in the GEOLocate Results Chooser tool. </p>
+        <p>&nbsp;</p>
+        <p align="center"><img src="../../images/geolocate_screen.png" alt="geolocate" width="576" height="226"></p>
+        <p align="center" class="imgcaption">GEOLocate</p>
+        <p>****Need New Screenshot -- this is from the WorkBench</p>
+        <p><strong>Locality Record</strong></p>
+        <p>The Locality Description, County, State and Country information from your record are displayed in the top left corner of the window. </p>
+        <p><strong>Correction (Green) Marker Properties</strong></p>
+        <p>The map and Correction form interact to allow changes in the form to show on the map and vice versa. </p>
+        <blockquote>
+        <p><strong>Position</strong> represents the Latittude and Longitude of the green marker. The green marker initially represents the current result, but can be edited.</p>
+        <blockquote>
+        <p>Edit the Position using the form:</p>
+        <ol>
+          <ol>
+            <li> Type into the Latitude or Longitude box. </li>
+            <li>Click the <em>Apply</em> button to accept the changes and update the location of the green marker on the map.</li>
+          </ol>
+        </ol>
+        <p>Edit the Position using the map:</p>
+        <ol>
+          <ol>
+            <li>Click on the green dot on the map and drag it to the new position. The values in the form will automatically update.</li>
+          </ol>
+        </ol>
+        </blockquote>
+        <p><strong>Uncertainty Radius</strong> is the ??? The Uncertainty Radius initially represents the current result, but can be edited. </p>
+        <blockquote>
+        <p>Edit the Uncertainty Radius using the form:</p>
+        <ol>
+          <ol>
+            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point. </li><br>
+            <li>Type a new numeric value into the box and click the <em>Apply</em> button to accept the changed value and update the Uncertainty Radius on the map.</li>
+          </ol>
+        </ol>
+        <p>Edit the Uncertaintly Radius using the map:</p>
+        <ol>
+          <ol>
+            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point. </li>
+            <br>
+            <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower left corner under the map. </li>
+          </ol>
+        </ol>
+        </blockquote>
+        <p><strong>Error Polygon</strong> is the ???? </p>
+        <p>Results which include an Error Polygon will display the vertex values in the form and a red polygon on the map. Not all results include an Error Polygon. If the results do include an Error Polygon the vertex values in the form must be cleared by clicking the <em>Clear Polygon</em> button before changes to the Error Polygon can be made.</p>
+        <blockquote>
+        <p>Edit the Error Polygon using the form:</p>
+        <ol>
+          <ol>
+            <li>Click the Draw Polygon button. The box will change to accept numeric values. Type in latitude and longitude values, separated by a commas. </li><br>
+            <li>Click the Apply button to accept the values and draw the polygon on the map. </li>
+          </ol>
+        </ol>
+        <p>Edit the Error Polygon using the map:</p>
+        <ol>
+          <ol>
+            <li>Click the Draw Polygon button. A blue circle will appear around your mouse in the map area. As you move your mouse within the map the corresponding latituted and longitude values display in the lower left corner under the map.</li><br>
+            <li>Right-Click on the map to add a vertex point.</li><br>
+            <li>Continue adding points until the polygon is complete.</li><br>
+            <li>Double click on the last vertex point to finish the polygon and exit the draw polygon mode. The vertex values will be updated in the form. </li>
+          </ol>
+        </ol>
+        <blockquote>
+          <blockquote>
+            <p>OR, Right-click on the map to cancel the vertex and exit the draw polygon mode.</p>
+          </blockquote>
+          </blockquote>
+          <p><em><strong>Note:</strong></em> If there are vertex values included in the Error Polygon field the values must be cleared by clicking the Clear Polygon button before new values can be entered or drawn on the map.</p>
+        </blockquote>
+        </blockquote>
+        <p><strong>GEOLocate Results</strong></p>
+        <blockquote>
+          <p>GEOLocate Results are shown in a grid form. If multiple results are returned they are numbered in the grid. The active result in highlighted in blue. </p>
+          <p>Click on a result to make it active in the map and Correction Marker Properties form.</p>
+        </blockquote>
+        <p><strong>Other Map Controls</strong></p>
+        <blockquote>
+          <p><u>Zoom In/Out</u></p>
+          <blockquote>
+            <p>Slide the slider down to zoom in, and up to zoom out.</p>
+            <p>Click the <img src="../../images/geolocate_zooin.png" alt="zoom in" width="20" height="19"> buttons to zoom in and the <img src="../../images/geolocate_zoom_out.png" alt="zoom out" width="20" height="19"> button to zoom out.</p>
+            <p>Turn the wheel on your mouse up to zoom in and down to zoom down.</p>
+            <p>Double click to zoom in, right-click to zoom out.</p>
+          </blockquote>
+        </blockquote>
+        <p><strong>Accept Results</strong></p>
+        <p>Click the Accept button at the bottom of the GEOLocate tool to write the values in the appropriate fields in Specify.</p>
+        <p>Multiple Results are shown in the grid </p>
         <p>
           More information about GEOLocate can be found at <a href=
       "http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>.      </p>
         <p>
-          <img height="23" src="../../images/worldwind_button.png" width="144"> <a name=
+      <img height="23" src="../../images/worldwind_button.png" width="144"> <a name=
       "world_wind"></a>The link to NASA World Wind is always available on the Locality form. A
           text box at the top of the World Wind dialog allows either a Latitude and Longitude or a
           Locality Name to be entered. The location is then displayed on a World Wind map. If either a
           Latitude and Longitude or Locality Name exists in the Locality form World Wind will
           automatically plot the location on the map once the button is clicked.      </p>
-        <p>
-          World Wind requires a 3D video card with updated drivers to work properly.      </p>
-        <p>
-          Several default controls are available from within World Wind.      </p>
-        <p>
-          Mouse with scroll wheel:      </p>
-      
-      <table cellpadding="6" border="1" cellspacing="2">
-        <tr>
-          <td>
-            Pan        </td>
-          <td>
-            <p> Left-button-click &amp; drag - all directions <br>
-            Left-button-click once to center the view.</p></td>
-        </tr>
-        <tr>
-          <td>
-            Zoom        </td>
-          <td>
-            Use the scroll wheel on the mouse<br>
-            or Left or Right-buttons-click &amp; drag        </td>
-        </tr>
-        <tr>
-          <td>
-            Tilt        </td>
-          <td>
-            Right- button-click &amp; drag - up and down<br>
-            or use "Page Up' and "Page Down" on the keyboard.        </td>
-        </tr>
-        <tr>
-          <td valign="top">
-            Rotate        </td>
-          <td>
-            <p>
-              Right-button-click &amp; drag - left and right<br>
-              <em><strong>Note:</strong></em> Crossing the top and bottom half f the screen while rotating will change
-              direction.          </p>        </td>
-        </tr>
-        <tr>
-          <td>
-            Stop        </td>
-          <td>
-            Spacebar        </td>
-        </tr>
-        <tr>
-          <td>
-            Reset Heading        </td>
-          <td>
-            N        </td>
-        </tr>
-        <tr>
-          <td>
-            Rest All        </td>
-          <td>
-            R        </td>
-        </tr>
-        </table>
-      
-        <p>&nbsp; </p>
-        <p>
-          Single button mouse:      </p>
-      
-      <table cellpadding="6" border="1" cellspacing="2">
-        <tr>
-          <td>
-            Pan        </td>
-          <td>
-            Left-button click &amp; drag - all directions<br>
-            Left-button button click once to center view.        </td>
-        </tr>
-        <tr>
-          <td>
-            Zoom        </td>
-          <td>
-            Hold "Ctrl" on the keyboard and<br>
-            Left-button click &amp; drag - up and down.        </td>
-        </tr>
-        <tr>
-          <td>
-            Tilt        </td>
-          <td>
-            Hold "Shift" on the keyboard and<br>
-            Left-button click &amp; drag - up and down        </td>
-        </tr>
-        <tr>
-          <td valign="top">
-            Rotate        </td>
-          <td>
-            Hold "Shift" on the keyboar and<br>
-            Left-button click &amp; drag - left and right.        </td>
-        </tr>
-        <tr>
-          <td>
-            Stop        </td>
-          <td>
-            Spacebar        </td>
-        </tr>
-        <tr>
-          <td>
-            Reset Heading        </td>
-          <td>
-            N        </td>
-        </tr>
-        <tr>
-          <td>
-            Rest All        </td>
-          <td>
-            R        </td>
-        </tr>
-        </table>
-     
-        <p>
-          More information about World Wind can be found at <a href=
+<p>
+      World Wind requires a 3D video card with updated drivers to work properly.      </p>
+<p>
+      Several default controls are available from within World Wind.      </p>
+<p>
+      Mouse with scroll wheel:      </p>
+<table cellpadding="6" border="1" cellspacing="2">
+      <tr>
+        <td>
+          Pan        </td>
+        <td>
+          <p> Left-click &amp; drag - all directions <br>
+          Left-click once to center the view.</p></td>
+      </tr>
+      <tr>
+        <td>
+          Zoom        </td>
+        <td>
+          Use the scroll wheel on the mouse<br>
+          or Left or Right-click &amp; drag        </td>
+      </tr>
+      <tr>
+        <td>
+          Tilt        </td>
+        <td>
+          Right - click &amp; drag - up and down<br>
+          or use "Page Up&quot; and "Page Down" on the keyboard.        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          Rotate        </td>
+        <td>
+          <p>
+            Right-click &amp; drag - left and right<br>
+            <em><strong>Note:</strong></em> Crossing the top and bottom half f the screen while rotating will change
+            direction.          </p>        </td>
+      </tr>
+      <tr>
+        <td>
+          Stop        </td>
+        <td>
+          Spacebar        </td>
+      </tr>
+      <tr>
+        <td>
+          Reset Heading        </td>
+        <td>
+          N        </td>
+      </tr>
+      <tr>
+        <td>
+          Rest All        </td>
+        <td>
+          R        </td>
+      </tr>
+      </table>
+<p>&nbsp; </p>
+<p>
+      Single button mouse:      </p>
+<table cellpadding="6" border="1" cellspacing="2">
+      <tr>
+        <td>
+          Pan        </td>
+        <td>
+          Left - click &amp; drag - all directions<br>
+          Left - button click once to center view.        </td>
+      </tr>
+      <tr>
+        <td>
+          Zoom        </td>
+        <td>
+          Hold "Ctrl" on the keyboard and<br>
+          Left - click &amp; drag - up and down.        </td>
+      </tr>
+      <tr>
+        <td>
+          Tilt        </td>
+        <td>
+          Hold "Shift" on the keyboard and<br>
+          Left - click &amp; drag - up and down        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          Rotate        </td>
+        <td>
+          Hold "Shift" on the keyboar and<br>
+          Left - click &amp; drag - left and right.        </td>
+      </tr>
+      <tr>
+        <td>
+          Stop        </td>
+        <td>
+          Spacebar        </td>
+      </tr>
+      <tr>
+        <td>
+          Reset Heading        </td>
+        <td>
+          N        </td>
+      </tr>
+      <tr>
+        <td>
+          Rest All        </td>
+        <td>
+          R        </td>
+      </tr>
+      </table>
+<p>
+      More information about World Wind can be found at <a href=
       "http://worldwind.arc.nasa.gov/java/">http://worldwind.arc.nasa.gov/java/</a>.      </p>
-        <p>
-          <img height="23" src="../../images/google_earth.png" width="153">&nbsp;A web link button to
+<p>
+      <img height="23" src="../../images/google_earth.png" width="153">&nbsp;A web link button to
           Google Earth is also included on the Locality form. Localities with Latitude and Longitude
           data can be plotted on Google Earth by simply clicking this button. Google Earth must be
           properly installed on the local machine for Specify to display in Google Earth. </p>
-        <p>
-          For more information or to download and install Google Earth visit <a href=
+<p>
+      For more information or to download and install Google Earth visit <a href=
       "http://earth.google.com/">http://earth.google.com/</a>.      </p>
-        <p>
-          For more information about the GEOLocate or Google Earth plugins please refer to the <a
+<p>
+      For more information about the GEOLocate or Google Earth plugins please refer to the <a
       href="../Plugins/Plugins.html">Plugins</a> documentation.      </p>
       </blockquote>
       <p>&nbsp;</p>

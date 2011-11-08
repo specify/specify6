@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Introduction to SGR</title>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2> Introducing SGR</h2>
+<p>It is common practice for botanists to collect duplicate voucher specimens of a plant with the intention of distributing extra specimens to taxonomic specialists as gifts for determination, or in ‘exchange’ to share unique specimens with other institutions. Plant specimen duplicates are also sent to multiple institutions to help insure the longevity of unique vouchers in case copies are lost to local disasters. In international collaborations, deposition of copies of each specimen in host country institutions can be mandated by law.</p>
+
+<p>As a consequence of this methodology botanical collections contain a non-trivial amount of redundancy in their holdings, in particular with specimens from prolific field workers. Some botanical collectors are renowned (and revered) for collecting plant specimens in sets of 40 or 50 for wide distribution. The frequency of duplicate specimens in large herbaria has been variously estimated to be 20-30% of total holdings, but the actual level of duplication with respect to other collections in an institution’s holdings probably varies widely. This redundancy sets up an opportunity for computerization efforts to take advantage of data records previously entered elsewhere for specimens which represent duplicates of their own. </p>
+
+<p>In the computerization of entomological collections, numerous insect specimens are often obtained from the same collection event. Some specimens may be exchanged with other collections, but also many organisms belonging to different species obtained from one collection event may be inserted into the source collection in different places as determined by its taxonomic organization. In entomology this internal duplication and to a lesser extent that caused by exchanges, creates an opportunity to re-use previously entered collecting event information (locality, geography, dates, collectors) by linking new specimen data to it.</p>
+
+<p>“Scatter-Gather-Reconcile” or “SGR” refers to this historical methodology whereby specimens are scattered among multiple institutions or within a collection, and then gathered virtually back together when their associated data is electronically assembled and then reconciled in the computerization process. Duplicate botanical specimens once distributed, undergo independent annotation data entry and validation processes, so that some specimens and their data may be more up-to-date with a revised determination or include value-added information such as a locality georeference.</p>
+
+<p>In collaboration with the Lifemapper Project (www.lifemapper.org), the Specify Project serves a copy of the online specimen data cached by the Global Biodiversity Information Facility (GBIF) from the world’s collections. Initially, Specify and SGR will support botanical collections, with entomology and other disciplines to be supported in future releases. The Project indexes the GBIF specimen data for fast searches and makes the searching facility available through a web service. This network infrastructure is invisible to the user and is used by the SGR plug-in for comparing specimen data records to those from other collections. Each time you compare one of your records or a set of them in a Workbench DataSet to GBIF’s holdings; records are returned from the <strong>GBIF/SGR</strong> cache database and sent to your machine. For this reason your machine must be connected to a network to run SGR.</p>
+<p>&nbsp;</p>
+<h3>SGR Algorithm</h3>
+<p>When using SGR it is useful to understand some basic information about the algorithm used to find specimen matches. 
+Records returned from an SGR query usually do not completely match your specimen data.  SGR does not work with exact character by character matching but uses a complex algorithm to identify and rank matches based on several variables.</p>
+
+<p>Because SGR compares your data records, (which may be incomplete) against hundreds of thousands of records in the GBIF/SGR cache, it uses an algorithm that not only tries to find records that closely match  the contents of your data fields, it also analyzes the GBIF/SGR cache for the level of uniqueness of potential matching records. For example, if you specify Collector Name as a data field to use for an SGR query and the particular collector name in your data record is someone whose name occurs frequently in specimen records in the GBIF/SGR  cache, then SGR will rank matches for that particular Collector Name field at a slightly lower level than if the name was rare or unique within the GBIF/SGR  cache.  If the Collector Name is rare in the GBIF/SGR  cache, the SGR match score (rank) will be given a higher value. In the same way, if a Locality you are using matches against a small number of records in the GBIF database, SGR will recognize that as a higher score match. </p>
+
+<p>The algorithm that SGR utilizes for finding matching specimens is “Solr” an open source, full-text, search engine from the Apache Lucene Project. Solr gives matching records a score and SGR uses that score to rank the matching GBIF records from the highest probability matches to the lowest for every record you use in a query from your own collection. SGR takes that score and creates a color gradient as a background fill in the GBIF/SGR  cache for a quick visual indication of the goodness of match. Green represents a better match. As colors change to shades of yellow and then red, matches become increasingly worse. SGR will always return some records, and although in many cases they may all be red and poor matches, they represent the best matches based on the matching criteria specified for the record used in the query.  In many cases GBIF/SGR  cache with red or pink backgrounds have very little data in common with the record from your collection.</p>
+
+<p>The SGR numeric matching scores represent the rank or relative goodness of match (and uniqueness) for GBIF records returned within a single SGR search. It is important to note that SGR matching scores are not based on a percentage of 100. Do not think of the matching score values as normalized between searches. SGR match scores are not comparable between searches on each of your individual specimen (Collection Object) records. A score of 75 for a match record returned from the GBIF/SGR  cache for a particular specimen record from your collection, is not comparable to a matching record score of 75 on a </p>
+<p> record returned by SGR from a another search using a different specimen record from your collection.</p>
+<p>The SGR match value from the Solr search engine is calculated by an algorithm which uses a combination of both the goodness of a match between your record and those in GBIF and the uniqueness of that records data field values in the GBIF/SGR  cache. </p>
+

@@ -219,6 +219,9 @@
 			<tocitem text="WorkBench Uploader" target="uploading" />
 			<tocitem text="Specify File Slicer" target="slicer" />
 			<tocitem text="WorkBench Schema Configuration" target="wb_schema_config" />
+			<tocitem text="Introducing SGR" target="sgr_intro" >
+			    <tocitem text="Using SGR" target="sgr" />
+			</tocitem>    
 		</tocitem>
 	</tocitem>
 </toc>

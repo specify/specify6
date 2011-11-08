@@ -39,6 +39,8 @@
 <p>&nbsp;</p>
 <p>To copy the 'map' from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open, to name and describe the new Data Set. </p>
 <p>To create a new map for the new Data Set select the 'Create new Data Set mapping' button and click 'OK'.</p>
+<p><strong><em>Note:</em></strong> Mappings can only be reused if the CSV file being imported contains the same or fewer fields than the mapping. In other words, if you split a CSV file into two smaller files for import, then import the first CSV file but do not map all the fields, the unmapped fields are discarded. When you then import the second CSV file you will <em>NOT</em> be given the option to reuse the mapping created for the first CSV file. To reuse the mapping you must first delete the unmapped/discarded fields from  the  CSV file before importing it into the WorkBench. </p>
+<p>&nbsp;</p>
 <p>The 'auto-mapper' then compares the import column headings to the Specify fields and 'maps' the columns to matching fields. </p>
 <p align="center"><img src="../images/automappededitor.png" alt="automapped" ></p>
 <p align="center" class="imgcaption">Column Headings Automapped in the Data Set Mapping Editor </p>

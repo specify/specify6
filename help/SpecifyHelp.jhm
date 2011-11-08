@@ -136,7 +136,10 @@
    <mapID target="wizard" url="SpecifyHelp/Security/Wizard.html"/>
    <mapID target="it_credentials" url="SpecifyHelp/Dialogs/it_credentials.html"/>
    <mapID target="collection_relationships" url="SpecifyHelp/Configuration/collection_relationships.html"/>
-   <mapID target="separate_apps" url="SpecifyHelp/Dialogs/separate_apps.html"/>   
+   <mapID target="separate_apps" url="SpecifyHelp/Dialogs/separate_apps.html"/>
+   <mapID target="sgr" url="SpecifyHelp/Plugins/SGR.html"/>
+   <mapID target="sgr_intro" url="SpecifyHelp/Plugins/SGR_intro.html"/>
+      
 
 
 <!-- Index Bookmarks -->
@@ -363,7 +366,12 @@
    <mapID target="col_wizard_summary" url="SpecifyHelp/Configuration/institution_hierarchy.html#col_summary"/>
    <mapID target="col_wizard_create_accession_number" url="SpecifyHelp/Configuration/institution_hierarchy.html#col_assoc_number"/>
    <mapID target="cr_name" url="SpecifyHelp/Configuration/collection_relationships.html#cr_lastscreen"/>
-   <mapID target="cr_configure" url="SpecifyHelp/Configuration/collection_relationships.html#cr_configure"/>   
+   <mapID target="cr_configure" url="SpecifyHelp/Configuration/collection_relationships.html#cr_configure"/>
+   <mapID target="sgr_matcher_create" url="SpecifyHelp/Plugins/SGR.html#sgr_matcher_create"/>
+   <mapID target="sgr_matcher_dataset" url="SpecifyHelp/Plugins/SGR.html#sgr_matcher_dataset"/>
+   <mapID target="sgr_matchresults_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_matcher"/>
+   <mapID target="sgr_matchresults_properties" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_properties"/>
+   <mapID target="lifemapper" url="SpecifyHelp/Plugins/Plugins.html#lifemapper"/>      
     
                   
 </map>

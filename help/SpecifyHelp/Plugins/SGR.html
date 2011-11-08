@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Using SGR</title>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2>Using SGR</h2>
+<p>In collaboration with the Lifemapper Project (www.lifemapper.org), the Specify Project serves a copy of the online specimen data cached by the Global Biodiversity Information Facility (GBIF) from the world&rsquo;s collections. Initially, Specify and SGR will support botanical collections, with entomology and other disciplines to be supported in future releases. The Project indexes the GBIF specimen data for fast searches and makes the searching facility available through a web service. This network infrastructure is invisible to the user and is used by the SGR plug-in for comparing specimen data records to those from other collections. Each time you compare one of your records or a set of them in a Workbench DataSet to GBIF&rsquo;s holdings; records are returned from the GBIF cache database and sent to your machine. For this reason your machine must be connected to a network to run SGR.</p>
+<p>For more information about SGR please refer to the <a href="../Plugins/SGR_intro.html">Introduction to SGR</a> help page.</p>
+<blockquote>
+  <h3><a name="requirements"></a>Requirements: </h3>
+
+<ol>
+  <li>To use SGR your machine must be connected to the internet. </li><br />
+  <li>You must have a Data Set to compare your records against records in the SGR index. The Data Set does not have to be populated with values -- you can use SGR  as you enter data, but it must include some of the fields SGR uses to find matching records in the SGR index. The more fields you can match against, the better your results will be.</li>
+</ol>
+
+  <p>&nbsp;</p>
+  <h3>SGR Search Criteria</h3>
+  <p>Many of the SGR search criteria use a combination of fields in the WorkBench. The following table lists the SGR search criteria and their corresponding fields and originating tables  in the WorkBench:</p>
+  <table cellpadding="6" border="1" width="98%" cellspacing="2">
+    <tr>
+      <td width="18%"><u><strong>SGR Search Criteria</strong></u></td>
+      <td colspan="3"><div align="center"><u><strong>WorkBench Table and Fields</strong></u></div></td>
+    </tr>
+    <tr>
+      <td><strong>Collectors</strong></td>
+      <td width="32%"><p><u>Table:</u> Collecting Event</p>
+        <p><u>Fields:</u> Collector First Name, Collector Middle Name, Collector Last Name</p></td>
+      <td width="25%">&nbsp;</td>
+      <td width="25%">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><strong>Collector /Field #</strong></td>
+      <td><p><u>Table:</u> Collection Object</p>
+        <p><u>Field:</u> Field Number</p></td>
+      <td><u>Table:</u> Collecting Event Field: Station Field Number</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><strong>Location</strong></td>
+      <td><p><u>Table:</u> Geography </p>
+        <p><u>Fields:</u> Country, State, County</p></td>
+      <td><p><u>Table:</u> Locality</p>
+        <p><u>Fields:</u> Locality Name, Named Place</p></td>
+      <td><p><u>Table:</u> Collecting Event</p>
+        <p><u>Field:</u> Verbatim Locality</p></td>
+    </tr>
+    <tr>
+      <td><strong>Date</strong></td>
+      <td><p><u>Table:</u> Collecting Event </p>
+        <p><u>Fields:</u> Verbatim Date, Start Date, End Date</p></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><strong>Taxon Name</strong></td>
+      <td><p><u>Table:</u> Determination</p>
+        <p> <u>Fields:</u> Genus 1, Species 1, Subspecies 1</p></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <h3>&nbsp;</h3>
+</blockquote>
+<h3>SGR Side Bar Tools</h3>
+<blockquote>
+<h3>Matchers  </h3>
+
+<p>Matchers are the set of search criteria and settings SGR  uses to compare your data to the GBIF/SGR cache. Once created, the settings for Matchers may not be edited. This allows Matchers to be kept as a property of Match Results. </p>
+<p>The name of the Matcher can be changed at any time, and will be automatically updated in the properties of Match Results.</p>
+<blockquote>
+<p><strong>Create a Matcher</strong></p>
+<p>Matchers are created using the  Create Matcher dialog. Simply click on the <img src="../../images/add.png" alt="Add" width="16" height="16" /><em>Create Matcher</em> button to open the dialog. </p>
+<a name="sgr_matcher_create"></a>
+<p align="center"><img src="../../images/create_matcher.png" width="225" height="288" /></p>
+<p align="center" class="imgcaption">Create a Matcher</p>
+<p>&nbsp;</p>
+<ul>
+  <li><strong>Name </strong>is used to name the Matcher.</li><br />
+  <li><strong>Server UR</strong>L is the path Specify uses to access the server. This is not an editable field at this time.</li><br />
+  <li><strong>Exclude</strong> is used to exclude your institution code and/or collection code. Use the codes that represent your data that is already in GBIF to assure that you exclude your own data from the SGR matches.</li><br />
+  <li><strong>Similarity</strong> includes the search criteria. </li>
+</ul>
+<blockquote>
+  <p>Select the fields you wish to use to compare your data to the SGR indexed data by simply clicking on the pick list next to the field name. You can also choose the amount of emphasis you wish to place on each field:  </p>
+
+<table cellpadding="6" border="1" width="64%" cellspacing="2">
+  
+  <tr>
+    <td width="177"><strong>Ignore</strong></td>
+    <td width="572"> Do not use this field.</td>
+  </tr>
+  <tr>
+    <td><strong>Low</strong></td>
+    <td>Place a lower emphasis on this field.</td>
+  </tr>
+  <tr>
+    <td><strong>Normal</strong></td>
+    <td>Place an average amount of emphasis on this field</td>
+  </tr>
+  <tr>
+    <td><strong>High</strong></td>
+    <td>Place a greater emphasis on this field.</td>
+  </tr>
+</table>
+</blockquote>
+<ul>
+  <li><strong>Remarks</strong> is a text field for writing extra information about the Matcher.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Run a Matcher</strong></p>
+<p>Once a Matcher has been created simply click on it in the side bar and choose a Data Set from the resulting dialog.</p>
+<a name="sgr_matcher_dataset"></a>
+<p align="center"><img src="../../images/choose_dataset.png" width="180" height="139" /></p>
+<p align="center" class="imgcaption">Choose a Data Set</p>
+<p>Or, drag a Data Set  and drop it onto a Matcher on the side bar.</p>
+<p>SGR will then use the Solr algorithm to compare the records in your Data Set to the GBIF/SGR cache. The results will appear in a split screen in the Form View. Your records are located in the left panel and the GBIF/SGR cache records are viewed in the right panel. </p>
+<blockquote>
+  <p><strong><em>Note:</em></strong> The Data Set and matching GBIF/SGR cache records are not saved when simply running a matcher. To save entire Data Sets along with their matching GBIF/SGR cache records use the <em>Process Data Set</em> button located on the side bar under Match Results.</p>
+</blockquote>
+<h3>Edit a Matcher</h3>
+<p>Right-click on a matcher and click on the resulting <em>Edit</em> button to edit a Matcher. </p>
+<p>Once a matcher has been created only the <strong>Name</strong> and the <strong>Remarks</strong> may be edited. This allows users to reuse matchers and know that they are exactly what have been used in the past as well as review a matcher to see exactly what criteria were used on past searches.</p>
+<p>Matchers may not be deleted unless there are no Match Results that refer to them. </p>
+<p>The <strong>Name</strong> of the Matcher can be changed, and will be automatically updated in the properties of Match Results.</p>
+</blockquote>
+<p>&nbsp; </p>
+<h3>Match Results  </h3>
+<p>The algorithm SGR uses to find matches compares a combination of both the exactness and uniqueness of the value used in the match. This allows SGR to reorder your Data Set with the  records most likely to have matches at the top of the order and the least likely at the bottom. SGR also color codes the records, as well as the returned GBIF/SGR cache records, based on this order with green representing a likely match and red representing a less likely match. This ordered pairing is called a Match Result. When using a Match Result to compare your records against the resulting GBIF/SGR cache records you are able to start with the records which include the most probable matches first.</p>
+<p>When a Match Result is open the original Data Set and all Match Results which use it will become inactive on the side bar.</p>
+<p>SGR adds an SGR Score field to the Match Result file. This allows you to click on the field name and return the Match Result to the original, unsorted state.</p>
+<blockquote>
+<p><strong>Create a Match Result</strong></p>
+
+  <p>Click on the <img src="../../images/add.png" width="16" height="16" /><em>Process Data Set</em> button,   then choose a Data Set in the resulting dialog.</p>
+  <p align="center"><img src="../../images/choose_dataset.png" alt="choose dataset" width="180" height="139" /></p>
+  <p align="center" class="imgcaption">Choose a Data Set</p>
+  <p>Next, you will be asked to choose a Matcher.</p>
+  <p>Or  drag and drop a Data Set from the side bar onto the <img src="../../images/add.png" alt="Process Data Set" width="16" height="16" /><em>Process Data Set</em> button and choose a Matcher in the resulting dialog.</p>
+  <a name="sgr_matchresults_matcher"></a>
+  <p align="center"><img src="../../images/select_matcher.png" width="180" height="139" /></p>
+  <p align="center" class="imgcaption">Select Matcher</p>
+  <p>While SGR is processing the Data Set, a <img src="../images/system.png" alt="ear" width="32" height="32" /> (system) icon will be displayed rather than the SGR logo.</p>
+  <p>When the SGR process is complete the Data Set will open in  Grid view. It is now reordered and prioritized. </p>
+  <p>To view the Data Set records along with the resulting GBIF/SGR cache records, click on the <img src="../../images/form_view.png" alt="form view" width="77" height="28" /> <em>Form View</em> button. The results will appear in a split screen with your Data Set records editable in the left panel and GBIF/SGR cache records viewed the right panel. </p>
+  <p>&nbsp;</p>
+  <p><strong>Context Menu</strong></p>
+<p>Right-click on a Match Result for a context menu. The context menu is not available when Match Results are open in SGR. If the desired Match Result is inactive simply close it in SGR.</p>
+<p align="center"><img src="../../images/match_result_menu.png" alt="match result context menu" width="173" height="104" /></p>
+<p align="center" class="imgcaption">Match Result Context Menu</p>
+<blockquote>
+  <ul>
+    <li><strong>Edit properties  </strong></li>
+  </ul>
+  <blockquote>
+    <p>You can rename the batch result and/or add notes or comments about the batch result in a properties editor. 
+      
+      The properties editor also displays the name of the matcher used to create the batch result.</p>
+      <a name="sgr_matchresults_properties"></a>
+    <p align="center"><img src="../../images/match_result_properties.png" alt="match result properties" width="225" height="154" /></p>
+    <p align="center" class="imgcaption">Edit Match Result Properties</p>
+  </blockquote>
+  <ul>
+    <li><strong>Stop Processing</strong></li>
+  </ul>
+  <blockquote>
+    <p>Large Data Sets may take quite a few minutes to process. If you do not wish to leave the process running while you are away from your machine, you may choose to stop the process by clicking the <em>Stop Processing</em> button. </p>
+    <p>To view the progress, hold your mouse over the Match Result on the side bar. If the process was stopped two numbers will appear separated by a slash (<img src="../../images/process_status.png" alt="status" width="48" height="20" />). A completed Match Result will show the number of items (<img src="../../images/finished_process.png" width="68" height="20" />).</p>
+    <p>You may also hold your mouse over a Match Result while it is processing to view how many records have been processed. To update, simply move your mouse off the Match Result for a second, then place it back over the Match Result, allowing the status to refresh.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <ul>
+    <li><strong>Resume Processing</strong></li>
+  </ul>
+  <blockquote>
+    <p>Resume processing the rest of the Data Set at another time by clicking the <em>Resume Processing</em> button.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <ul>
+    <li><strong>Show Histogram  </strong></li>
+  </ul>
+  <blockquote>
+    <p>A historgram offers a graphical view of the distribution of SGR scores. It uses 30 colors to represent the SGR score and plots the number of rows that fall within a particular  score (color) range.   A histogram which displays a bimodal distribution is often an indication of good results. This type of histogram includes two high peaks with a 'neck' in the middle. The neck represents a threshold that separates
+      probable duplicates from probable non-duplicates.  </p>
+  </blockquote>
+  <ul>
+    <li><strong>Delete  </strong></li>
+  </ul>
+  <blockquote>
+    <p>Click the <em>Delete</em> button in the context menu or drag and drop a Match Result to the garbage can to delete it.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3>Using SGR Results </h3>
+<p>There are two basic workflows that can be employed to interact with the SGR tool:</p>
+<ol>
+  <li>Search GBIF/SGR cache records as you are entering data into an incomplete WorkBench data set. This allows you to find and use existing information rather than typing it in yourself. </li>
+  <br />
+  <li>Augment existing records  with data found in the GBIF/SGR cache records.</li>
+</ol>
+<p>Both workflows use SGR results in the same way, but when working with a complete data set a Match Result can be created before viewing the SGR/GBIF record results. This orders the Data Set records with the most likely to include a correct GBIF/SGR match to the least likely to include a correct match. </p>
+<p>GBIF/SGR cache records are only visible in Form View. When in Form View, the workspace window  is separated into two panels. Single records in your Data Set are editable in the left panel and  matching GBIF/SGR cache records are viewed in the right panel. The 10 best GBIF/SGR cache matches for each record in the data set are available. Simply use the slider at the bottom of the panel to view all 10 results.</p>
+<p align="center"><img src="../../images/sgr_screenshot.png" alt="sgr screenshot" width="576" height="416" /></p>
+<p align="center" class="imgcaption">SGR Results in Form View</p>
+<p>&nbsp;</p>
+<p>SGR/GBIF cache matches can be updated while in Form View by using the buttons on the Work Space Item Bar. When finding matches in an incomplete Data Set simply add values into fields, then click on the <img src="../../../../../../../SGR/icons/matchers_24.png" alt="matcher" width="24" height="24" /> <em>Matcher</em> button to update/refresh the search to include the new values. You may also change the matcher itself and run a new SGR search by clicking on the button and choosing a new Matcher from the drop-down list. </p>
+<p align="center"><img src="../../images/matcher_dropdown.png" alt="drop-down" width="129" height="73" /></p>
+<p align="center" class="imgcaption">Matcher Drop-Down List</p>
+<p>When you find a match, simply copy and paste the necessary GBIF/SGR cache values into the appropriate Data Set fields. Once you save the changes they will be included in your original Data Set.  </p>
+<blockquote>
+  <p>&nbsp;</p>
+  <p><strong>Work Space Item Bar Tools</strong></p>
+  <p>The Work space item bar, located under the work space, offers several tools  while in form view. </p>
+  <table border="1">
+    <tr>
+      <td rowspan="6" align="left" valign="top">Record Number Control </td>
+      <td align="left" valign="top">l&lt;</td>
+      <td align="left" valign="top">Go to the  first record. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top">&lt;</td>
+      <td align="left" valign="top">Go to the  previous record. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top">&gt;</td>
+      <td align="left" valign="top">Go to the  next record. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top">&gt;l</td>
+      <td align="left" valign="top">Go to the  last record. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16" /></td>
+      <td align="left" valign="top">Add a record. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><img src="../images/RemoveRecord16x16.png" alt="remove" width="16" height="16" /></td>
+      <td align="left" valign="top">Delete a record. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><span class="index">Edit Form Properties</span></td>
+      <td align="left" valign="top"><img src="../images/EditProperties16x16.png" alt="edit properties" width="16" height="16" /></td>
+      <td align="left" valign="top">Allows the columns to be resized, moved and renamed. See 
+      <a href="../WorkBench/FormEditing.html#formcontrol">Edit Form Properties.</a></td>
+    </tr>
+    <tr>
+      <td align="left" valign="top">Refresh/Select Matcher</td>
+      <td align="left" valign="top">&nbsp;</td>
+      <td align="left" valign="top"><p>Refresh the search by clicking on the Matcher button. This can be used when entering new data. Simply enter values for a few fields and run the Matcher. If you do not get the expected results, enter more data, then click on the Matcher button to update the search with the new values.</p>
+      <p>Click the <img src="../../images/dropdownarrow.gif" alt="expand" width="8" height="4" /> arrow to expand the Matcher button and select a different Matcher. The window will be refreshed with the results for the new matcher.</p></td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><span class="index">Image Window</span></td>
+      <td align="left" valign="top"><img src="../images/Image-Window-A-16x16.png" alt="image window" width="20" height="20" /></td>
+      <td align="left" valign="top">Toggles the Image Window on and off. </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><span class="index">Configure Carry Forward</span></td>
+      <td align="left" valign="top"><img src="../images/CarryForward20x20.png" alt="carry forward" width="20" height="20" /></td>
+      <td align="left" valign="top">Opens the 'Carry Forward' configuration dialog. See <a href="../WorkBench/FormEditing.html#Carry_Forward">Carry Forward</a>.</td>
+    </tr>
+    <tr>
+      <td align="left" valign="top">Grid View </td>
+      <td align="left" valign="top"><img src="../images/gridedit.png" alt="Grid Edit" width="60" height="21" /></td>
+      <td align="left" valign="top">Displays the Data Set in a  grid view (resembling a spreadsheet). Matching GBIF records are not displayed in this view.</td>
+    </tr>
+    </table>
+  <p>&nbsp;</p>
+  <p><strong>Keyboard Shortcuts</strong></p>
+  <p><strong>Shift + Page_Up</strong> will advance to the next record.</p>
+  <p><strong>Shift = Page_Down</strong> will move to the previous record.</p>
+</blockquote>
+</body>
+</html>
