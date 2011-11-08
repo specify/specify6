@@ -100,9 +100,11 @@ public class SGRFormPane extends JPanel implements FormPaneWrapper
         
         workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_F5, 
                 "update", update, 0);
-        
-        workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_F6, 
-                "transfer", transfer, 0);
+  
+//////// Disabling for 6.4.00 release.
+//        
+//        workbenchPaneSS.addRecordKeyMappings(splitPane, KeyEvent.VK_F6, 
+//                "transfer", transfer, 0);
         
     }
     
