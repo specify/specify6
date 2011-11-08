@@ -898,7 +898,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         		origCriteriaEntry;
         
         if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN 
-                || operatorCBX.getSelectedItem() == SpQueryField.OperatorType.IN)
+                || operatorCBX.getSelectedItem() == SpQueryField.OperatorType.IN 
+                || formatter instanceof CatalogNumberUIFieldFormatter) //',' in numeric catnums cause stack traces, and they are invalid in string catnums so don't allow them)
         {
         	raw = criteriaEntry.split(",");
         }
