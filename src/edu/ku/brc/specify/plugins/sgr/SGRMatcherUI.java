@@ -33,6 +33,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -378,7 +379,11 @@ public class SGRMatcherUI extends CustomDialog
             builder.addSeparator("Remarks", cc.xyw(1, y, 3));
             y += 2;
             
-            builder.add(remarks,            cc.xyw(1, y, 3));
+            JScrollPane scrollPane = new JScrollPane(remarks, 
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            
+            builder.add(scrollPane,            cc.xyw(1, y, 3));
             y += 2;
         }
         

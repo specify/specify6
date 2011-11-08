@@ -20,6 +20,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Frame;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -116,7 +117,12 @@ public class BatchResultPropertyEditor extends CustomDialog
             matcher.setEditable(false);
 
             builder.addLabel(getResourceString("SGR_REMARKS"), cc.xy(1, 5));
-            builder.add(remarks, cc.xy(3, 5));
+            
+            JScrollPane scrollPane = new JScrollPane(remarks, 
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                       
+            builder.add(scrollPane, cc.xy(3, 5));
             UIRegistry.popResourceBundle();
         }
     }
