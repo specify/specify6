@@ -97,7 +97,9 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         boolean isUsingPath = localPrefs.getBoolean(ATTACHMENT_USE_PATH, true);
         
         pathChkBx = form.getCompById("attch_path_cbx");
-        toggleAttachmentsEnabledState(!isUsingPath, false);
+        toggleAttachmentsEnabledState(isUsingPath, false);
+        pathChkBx.setSelected(isUsingPath);
+        
         pathChkBx.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)

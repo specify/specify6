@@ -391,14 +391,14 @@
                 </row>
                 <row>
                     <cell type="label" id="attch_path_lbl" labelfor="attch_path" label="ATTACHMENT_LOC"/>
-                    <cell type="field" id="attch_path" name="attachment.path" cols="30" uitype="browse"/>
+                    <cell type="field" id="attch_path" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="2"/>
                 </row>
                 <row>
                     <cell type="separator" label="ATTCH_URL.TITLE" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" id="attch_url_lbl" labelfor="attch_url" label="ATTACHMENT_URL"/>
-                    <cell type="field" id="attch_url" name="attachment.url" cols="30" uitype="text"/>
+                    <cell type="field" id="attch_url" name="attachment.url" cols="30" uitype="text" colspan="2"/>
                 </row>
              </rows>
         </viewdef>
