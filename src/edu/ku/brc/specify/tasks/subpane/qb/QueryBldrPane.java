@@ -1863,7 +1863,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         catch (Exception ex)
         {
             String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
-            ex.printStackTrace();
+            //ex.printStackTrace();
         	UIRegistry.getStatusBar().setErrorMessage(msg, ex);
             UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
             runningResults.set(null);
