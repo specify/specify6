@@ -105,9 +105,9 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
@@ -118,9 +118,9 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -2699,6 +2699,50 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return countOnly;
     }
     
+    
+    protected void launchPartialResultDisplayMsg(final String hql)
+    {
+    	new SwingWorker()
+    	{
+    		protected Integer count = null;
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.helpers.SwingWorker#construct()
+			 */
+			@Override
+			public Object construct() 
+			{
+				String countHql = QueryBldrPane.getCountHql(hql);
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            	try
+            	{
+            		QueryIFace q = session.createQuery(countHql, false);
+            		count = (Integer )q.list().get(0);
+            	} finally
+            	{
+            		session.close();
+            	}
+				return null;
+			}
+
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.helpers.SwingWorker#finished()
+			 */
+			@Override
+			public void finished() 
+			{
+				if (count != null && count > ExpressSearchTask.RESULTS_THRESHOLD)
+				{
+                    String msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS_PARTIAL"), 
+                            String.valueOf(count), 
+                            String.format("%04.2f", (doneTime.get() - startTime.get()) / 1000000000D),
+                            String.valueOf(ExpressSearchTask.RESULTS_THRESHOLD));
+					//System.out.println(msg);
+                    UIRegistry.displayStatusBarText(msg);
+				}
+			}
+
+    	}.start();
+    }
     /**
      * Called when the db record retrieval task has completed.
      */
@@ -2711,6 +2755,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (!countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
             {
                 final int results = runningResults.get().getQuery().getDataObjects().size();
+                
+                if (results == ExpressSearchTask.RESULTS_THRESHOLD)
+                {
+                	launchPartialResultDisplayMsg(runningResults.get().getHQL());
+                }
                 
                 String msg = "";
                 if (results <= runningResults.get().getMaxTableRows())
