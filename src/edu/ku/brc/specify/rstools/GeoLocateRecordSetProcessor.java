@@ -70,14 +70,14 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
         GeoCoordProviderListenerIFace listener = listenerObj != null && listenerObj instanceof GeoCoordProviderListenerIFace ? 
                 (GeoCoordProviderListenerIFace)listenerObj : null;
         
-        boolean useNewGEOLocate = AppPreferences.getLocalPrefs().getBoolean("USE_NEW_GL", false);
-        if (useNewGEOLocate)
+        boolean useOldGEOLocate = AppPreferences.getLocalPrefs().getBoolean("USE_OLD_GL", false);
+        if (useOldGEOLocate)
         {
-            edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider geoCoordGLProvider = new edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider();
+            GeoCoordGeoLocateProvider geoCoordGLProvider = new GeoCoordGeoLocateProvider();
             geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
         } else
         {
-            GeoCoordGeoLocateProvider geoCoordGLProvider = new GeoCoordGeoLocateProvider();
+            edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider geoCoordGLProvider = new edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider();
             geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
         }
     }
