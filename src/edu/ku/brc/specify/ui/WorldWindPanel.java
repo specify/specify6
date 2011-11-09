@@ -80,6 +80,7 @@ public class WorldWindPanel extends JPanel
     protected RenderableLayer            lineLayer   = new RenderableLayer();
     protected WorldWindowGLCanvas        world = null;
     protected StatusBar                  statusBar;
+    protected boolean                    includeGazetter;
     
     protected ArrayList<Marker>          markers     = new ArrayList<Marker>();
     protected ArrayList<GlobeAnnotation> annotations = new ArrayList<GlobeAnnotation>();
@@ -93,10 +94,16 @@ public class WorldWindPanel extends JPanel
      */
     public WorldWindPanel() throws HeadlessException
     {
+        this(true);
+    }
+    
+    /**
+     * @throws HeadlessException
+     */
+    public WorldWindPanel(final boolean includeGazetter) throws HeadlessException
+    {
         super();
-        
-        //Configuration.setValue(AVKey.GLOBE_CLASS_NAME, EarthFlat.class.getName());
-        //Configuration.setValue(AVKey.VIEW_CLASS_NAME, FlatOrbitView.class.getName());
+        this.includeGazetter = includeGazetter;
         
         init();
     }
@@ -217,22 +224,26 @@ public class WorldWindPanel extends JPanel
        statusBar.setEventSource(world);
        
        add(world, BorderLayout.CENTER);
-       try
-        {
-           add(new GazetteerPanel(world, null), BorderLayout.NORTH);
-           
-        } catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-            
-        } catch (InstantiationException e)
-        {
-            e.printStackTrace();
-            
-        } catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+       
+       if (includeGazetter)
+       {
+            try
+            {
+               add(new GazetteerPanel(world, null), BorderLayout.NORTH);
+               
+            } catch (IllegalAccessException e)
+            {
+                e.printStackTrace();
+                
+            } catch (InstantiationException e)
+            {
+                e.printStackTrace();
+                
+            } catch (ClassNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+       }
     }
     
     /**

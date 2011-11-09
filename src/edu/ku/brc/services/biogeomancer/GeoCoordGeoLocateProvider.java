@@ -109,9 +109,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         // So, instead we keep a List of the Future objects as we schedule the Callable workers.
         final List<Future<Pair<GeoCoordDataIFace, GeorefResultSet>>> runningQueries = new Vector<Future<Pair<GeoCoordDataIFace, GeorefResultSet>>>();
         
-        // create the thread pool for pre-caching maps
-        final ExecutorService mapGrabExecServ = Executors.newFixedThreadPool(10);
-        
         // create individual worker threads to do the GL queries for the rows
         for (GeoCoordDataIFace grItem: items)
         {
@@ -149,30 +146,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                        }
                     });
 
-                    // if there was at least one result, pre-cache a map for that result
-                    if (glResults != null && glResults.getNumResults() > 0)
-                    {
-                        Runnable mapPreCacheTask = new Runnable()
-                        {
-                            public void run()
-                            {
-                                try
-                                {
-                                    int rowNumber = item.getGeoCoordId();
-                                    log.info("Requesting map of GEOLocate results for workbench row " + rowNumber); //$NON-NLS-1$
-                                    GeoLocate.getMapOfGeographicPoints(glResults.getResultSet(), null);
-                                }
-                                catch (Exception e)
-                                {
-                                    UsageTracker.incrHandledUsageCount();
-                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordGeoLocateProvider.class, e);
-                                    log.warn("Failed to pre-cache GEOLocate results map",e); //$NON-NLS-1$
-                                }
-                            }
-                        };
-                        mapGrabExecServ.execute(mapPreCacheTask);
-                    }
-
                     return new Pair<GeoCoordDataIFace, GeorefResultSet>(item, glResults);
                 }
             };
@@ -205,7 +178,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     {
                         // ignore this query since results were not available
                         log.warn("Process cancelled by user",e); //$NON-NLS-1$
-                        mapGrabExecServ.shutdown();
                         return;
                     }
                     catch (ExecutionException e)
@@ -222,7 +194,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     {
                         progressDialog.setVisible(false);
                         displayGeoLocateResults(glResults, items);
-                        mapGrabExecServ.shutdown();
                     }
                 });
             }
@@ -238,7 +209,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
             {
                 log.debug("Stopping the GEOLocate service worker threads"); //$NON-NLS-1$
                 glExecServ.shutdownNow();
-                mapGrabExecServ.shutdownNow();
                 waitingForExecutors.interrupt();
             }
         });

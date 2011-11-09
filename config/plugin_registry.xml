@@ -35,6 +35,8 @@
         		 
 		<plugin name="PluginsTask" class="edu.ku.brc.specify.tasks.PluginsTask" addui="true"/>
 		
+        <plugin name="LMTask" class="edu.ku.brc.specify.tasks.LifeMapperTask" addui="true"/>
+		
 		<plugin name="ExpressSearchTask" class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
 		
 		<plugin name="StatsTrackerTask" class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
@@ -45,7 +47,6 @@
         
         <plugin name="VisualQueryTask" class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true" prefname="visualquery"/>
         
-        <plugin name="LMTask" class="edu.ku.brc.specify.tasks.LifeMapperTask" addui="true"/>
 	</core>
 	
 	<mobilecore>

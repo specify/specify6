@@ -307,7 +307,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             {
                                 if (dbClosedBy != null && !dbClosedBy.equals(username))
                                 {
-                                    UIRegistry.showLocalizedError("SYSSTP_CLSD_MSG", username);
+                                    UIRegistry.showLocalizedError("SYSSTP_CLSD_MSG", dbClosedBy);
                                     return SchemaUpdateType.Error;
                                 }
                             }

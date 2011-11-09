@@ -759,7 +759,16 @@ public class WorkbenchPaneSS extends BaseSubPane
 
                             if (tool.equalsIgnoreCase("geolocate"))
                             {
-                                doGeoRef(new GeoCoordGeoLocateProvider(), "WB.GeoLocateRows");
+                                GeoCoordServiceProviderIFace provider;
+                                boolean useNewGEOLocate = AppPreferences.getLocalPrefs().getBoolean("USE_NEW_GL", false);
+                                if (useNewGEOLocate)
+                                {
+                                    provider = new edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider();
+                                } else
+                                {
+                                    provider = new GeoCoordGeoLocateProvider();
+                                }
+                                doGeoRef(provider, "WB.GeoLocateRows");
                             }
                             else
                             {

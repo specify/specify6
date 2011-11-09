@@ -12,6 +12,7 @@
         <ext>bin</ext>
     </mimetype>
     <mimetype icon="audio">
+        <ext>audio</ext>
         <ext>mpeg</ext>
         <ext>mp3</ext>
         <ext>aif</ext>
@@ -32,6 +33,7 @@
         <ext>wav</ext>
     </mimetype>
     <mimetype icon="video">
+        <ext>video</ext>
         <ext>avi</ext>
         <ext>dif</ext>
         <ext>dv</ext>
@@ -47,10 +49,10 @@
         <ext>gp</ext>
     </mimetype>
     <mimetype icon="text">
+        <ext>text</ext>
         <ext>txt</ext>
         <ext>asc</ext>
         <ext>css</ext>
-        <ext>csv</ext>
         <ext>etx</ext>
         <ext>ics</ext>
         <ext>ifb</ext>
@@ -65,6 +67,7 @@
         <ext>htm</ext>
     </mimetype>
     <mimetype icon="image">
+        <ext>image</ext>
         <ext>bmp</ext>
         <ext>cgm</ext>
         <ext>djv</ext>
@@ -98,5 +101,14 @@
         <ext>xbm</ext>
         <ext>xpm</ext>
         <ext>xwd</ext>
+    </mimetype>
+    <mimetype icon="Spreadsheet">
+        <ext>xls</ext>
+        <ext>xlsx</ext>
+        <ext>excel</ext>
+        <ext>csv</ext>
+        <ext>vnd.ms-excel</ext>
+        <ext>vnd.msexcel</ext>
+        <ext>csv</ext>
     </mimetype>
 </mimetypes>

@@ -21,27 +21,19 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
-
 import edu.ku.brc.af.auth.BasicPermisionPanel;
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.SecurityOption;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -49,7 +41,6 @@ import edu.ku.brc.specify.tasks.subpane.LifeMapperPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -66,8 +57,6 @@ public class LifeMapperTask extends BaseTask
     //private static final Logger log  = Logger.getLogger(VisualQueryTask.class);
     
     private static final String  LIFEMAPPER        = "LifeMapper";
-    private static final String  LIFEMAP_MENU      = "LIFEMAP_MENU";
-    private static final String  LIFEMAP_MNU       = "LIFEMAP_MNU";
     private static final String  LIFEMAP_TITLE     = "LIFEMAP_TITLE";
     private static final String  LIFEMAP_SECURITY  = "LIFEMAPEDIT";
     
@@ -85,8 +74,6 @@ public class LifeMapperTask extends BaseTask
     public LifeMapperTask()
     {
         super(LIFEMAPPER, UIRegistry.getResourceString(LIFEMAP_TITLE));
-        this.iconName = "LifeMapper";
-        CommandDispatcher.register(LIFEMAPPER, this);
     }
 
     /* (non-Javadoc)
@@ -124,6 +111,7 @@ public class LifeMapperTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
+        starterPane = null;
         if (starterPane == null)
         {
             starterPane = lmPane = new LifeMapperPane(name, this);
@@ -163,15 +151,12 @@ public class LifeMapperTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        String label    = getResourceString(LIFEMAP_MENU);
-        String hint     = getResourceString(LIFEMAP_MENU);
+        String label    = getResourceString(LIFEMAPPER);
+        String hint     = getResourceString(LIFEMAPPER);
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        if (AppPreferences.getRemote().getBoolean("LIFEMAP_TASK", false))
-        {
-            toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
-        }
+        toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         return toolbarItems;
     }
     
@@ -214,11 +199,11 @@ public class LifeMapperTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
+        menuItems = new Vector<MenuItemDesc>();
+        /*
         final String DATA_MENU = "Specify.DATA_MENU";
         
         SecurityMgr secMgr = SecurityMgr.getInstance();
-        
-        menuItems = new Vector<MenuItemDesc>();
         
         MenuItemDesc mid;
         JMenuItem mi;
@@ -248,7 +233,7 @@ public class LifeMapperTask extends BaseTask
             mid.setPosition(MenuItemDesc.Position.Bottom, menuDesc);
             menuItems.add(mid);
         }
-        
+        */
         return menuItems;
     }
 

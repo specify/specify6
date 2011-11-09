@@ -22,10 +22,10 @@ package edu.ku.brc.specify.rstools;
 import java.util.List;
 import java.util.Properties;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
-//import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
-import edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider;
+import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -70,8 +70,16 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
         GeoCoordProviderListenerIFace listener = listenerObj != null && listenerObj instanceof GeoCoordProviderListenerIFace ? 
                 (GeoCoordProviderListenerIFace)listenerObj : null;
         
-        GeoCoordGeoLocateProvider geoCoordGLProvider = new GeoCoordGeoLocateProvider();
-        geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
+        boolean useNewGEOLocate = AppPreferences.getLocalPrefs().getBoolean("USE_NEW_GL", false);
+        if (useNewGEOLocate)
+        {
+            edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider geoCoordGLProvider = new edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider();
+            geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
+        } else
+        {
+            GeoCoordGeoLocateProvider geoCoordGLProvider = new GeoCoordGeoLocateProvider();
+            geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
+        }
     }
     
     /* (non-Javadoc)

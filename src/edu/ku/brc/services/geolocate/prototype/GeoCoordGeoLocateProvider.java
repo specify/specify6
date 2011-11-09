@@ -134,30 +134,46 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                 
                 // make the web service request
                 // Call Web Service Operation
-                GeolocatesvcLocator service = new GeolocatesvcLocator();
-                GeolocatesvcSoap port;
+                GeolocatesvcLocator service = null;
+                GeolocatesvcSoap    port    = null;
 				try 
 				{
-					port = service.getgeolocatesvcSoap();
-					try 
-	                {
-						final Georef_Result_Set glResultSet = port.georef2(country, state, county, localityNameStr, 
-								hwyX, findWaterbody, restrictToLowestAdm, doUncert, doPoly, displacePoly, 
-								polyAsLinkID, languageKey);
-						glResults.add(new Pair<GeoCoordDataIFace, Georef_Result_Set>(grItem, glResultSet));
-					} 
-	                
-	                catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						glResults.add(new Pair<GeoCoordDataIFace, Georef_Result_Set>(grItem, new Georef_Result_Set()));
-					}
-				} 
-				
-				catch (ServiceException e1) {
-					// TODO Auto-generated catch block
+				    service = new GeolocatesvcLocator();
+				    if (service != null)
+				    {
+    					port = service.getgeolocatesvcSoap();
+    					if (port != null)
+    					{
+        					try 
+        	                {
+        						final Georef_Result_Set glResultSet = port.georef2(country, state, county, localityNameStr, 
+        								hwyX, findWaterbody, restrictToLowestAdm, doUncert, doPoly, displacePoly, 
+        								polyAsLinkID, languageKey);
+        						glResults.add(new Pair<GeoCoordDataIFace, Georef_Result_Set>(grItem, glResultSet));
+        					} 
+        	                
+        	                catch (RemoteException e) {
+        						e.printStackTrace();
+        						glResults.add(new Pair<GeoCoordDataIFace, Georef_Result_Set>(grItem, new Georef_Result_Set()));
+        					}
+    					}
+				    }
+				} catch (ServiceException e1) {
 					e1.printStackTrace();
 					glResults.add(new Pair<GeoCoordDataIFace, Georef_Result_Set>(grItem, new Georef_Result_Set()));
+					
+				} catch (OutOfMemoryError em1)
+				{
+				    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            UIRegistry.showError("Out of Memory! Please restart Specify.");
+                        }
+                    });
+				    
+				    return;
 				}
                 
 

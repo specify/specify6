@@ -1894,11 +1894,30 @@ public class UIRegistry
                                                     final Integer pointSize,
                                                     final boolean doHideOnClick)
     {
+        writeTimedSimpleGlassPaneMsg(localizedMsg, milliseconds, textColor, pointSize, doHideOnClick, null);
+    }
+    
+    /**
+     * Fades screen and writes message to screen
+     * @param localizedMsg the already localized message
+     * @param milliseconds the number of milliseconds to pause showing the message
+     * @param textColor the color of the text
+     * @param pointSize the point size to draw the text
+     * @param yTextPos set the the 'y' position of the text
+     */
+    public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
+                                                    final Integer milliseconds, 
+                                                    final Color   textColor,
+                                                    final Integer pointSize,
+                                                    final boolean doHideOnClick,
+                                                    final Integer yTextPos)
+    {
         final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize == null ? STD_FONT_SIZE : pointSize);
         if (sgp != null)
         {
             sgp.setTextColor(textColor);
             sgp.setHideOnClick(doHideOnClick);
+            sgp.setTextYPos(yTextPos);
         }
 
         SwingWorker<Integer, Integer> msgWorker = new SwingWorker<Integer, Integer>()

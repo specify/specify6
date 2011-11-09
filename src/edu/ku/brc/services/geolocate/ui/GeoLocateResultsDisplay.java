@@ -328,7 +328,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         {
             mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         }
-        GeoLocate.getMapOfGeographicPoints(georefResults.getResultSet(), GeoLocateResultsDisplay.this);
+        //GeoLocate.getMapOfGeographicPoints(georefResults.getResultSet(), GeoLocateResultsDisplay.this);
         
         // set the table height to at most 10 rows
         Dimension size = resultsTable.getPreferredScrollableViewportSize();

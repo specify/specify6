@@ -19,7 +19,16 @@
 */
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createI18NButton;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
+import static edu.ku.brc.ui.UIHelper.createScrollPane;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIRegistry.clearSimpleGlassPaneMsg;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.writeSimpleGlassPaneMsg;
+import static edu.ku.brc.ui.UIRegistry.writeTimedSimpleGlassPaneMsg;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -31,6 +40,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,9 +51,10 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JList;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
@@ -64,6 +75,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -92,13 +104,12 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  */
 public class LifeMapperPane extends BaseSubPane
 {
-    protected static final int MAP_WIDTH  = 500;
-    protected static final int MAP_HEIGHT = 500;
-    protected static boolean   IS_OFFLINE = false; 
+    protected static final int MAP_WIDTH  = 600;
+    protected static final int MAP_HEIGHT = 450;
     
-    protected WorldWindPanel        wwPanel;
-    protected boolean               doResetWWPanel = true;
-    protected JButton               searchBtn;
+    protected WorldWindPanel             wwPanel;
+    protected boolean                    doResetWWPanel = true;
+    protected JButton                    searchBtn;
     
     // Search Data
     protected DefaultListModel           model   = null;
@@ -106,17 +117,22 @@ public class LifeMapperPane extends BaseSubPane
     protected Polyline                   polygon = null;
     protected int                        totalNumRecords = 0;
     
+    // My Data UI
+    protected JTextField                 myDataTF;
+    protected JButton                    searchMyDataBtn;
+    protected String                     myDataTaxa = "";
+    protected JComponent                 mySepComp;
+       
     // For Debugging
-    protected JButton          searchSciNameBtn;
-    protected JTextField       searchText;
-    protected String           occurSet = null;
-    protected JList            list;
-    protected DefaultListModel listModel = new DefaultListModel();
+    protected JButton                    searchSciNameBtn;
+    protected JTextField                 searchText;
+    protected String                     occurSet = null;
+    protected JList                      list;
+    protected DefaultListModel           listModel = new DefaultListModel();
     
-    protected ArrayList<String> occurList = new ArrayList<String>();
-    protected JButton           searchOccurBtn;
-    protected ImageDisplay      imgDisplay;
-    protected ImageIcon         markerImg;
+    protected ArrayList<OccurrenceSetIFace> occurList = new ArrayList<OccurrenceSetIFace>();
+    protected ImageDisplay                imgDisplay;
+    protected ImageIcon                   markerImg;
     protected ArrayList<LatLonPlacemarkIFace>  points = new ArrayList<LatLonPlacemarkIFace>();
 
 
@@ -137,20 +153,55 @@ public class LifeMapperPane extends BaseSubPane
      */
     protected void createUI()
     {
-        searchText       = UIHelper.createTextField(25);
-        searchSciNameBtn = UIHelper.createButton("Search");
+        searchText       = createTextField(25);
+        searchSciNameBtn = createI18NButton("LM_SEARCH");
         list             = new JList(listModel);
         imgDisplay       = new ImageDisplay(450, 225, false, true);
         
-        wwPanel = new WorldWindPanel();
-        wwPanel.setPreferredSize(new Dimension(MAP_WIDTH, 450));
+        wwPanel = new WorldWindPanel(false);
+        wwPanel.setPreferredSize(new Dimension(MAP_WIDTH, 400));
         wwPanel.setZoomInMeters(3500000.0);
         
         imgDisplay.setDoShowText(false);
         
-        searchOccurBtn = UIHelper.createButton("Search");
+        searchMyDataBtn = createI18NButton("LM_SRCH_SP_DATA");
+        myDataTF        = UIHelper.createTextField();
         
-        //searchText.setText("Buteogallus anthracinus anthracinus");
+        CellConstraints cc = new CellConstraints();
+        
+        PanelBuilder pb1 = new PanelBuilder(new FormLayout("p,2px,f:p:g,2px,p", "p"));
+        pb1.add(createI18NFormLabel("LM_SRCH_COL"), cc.xy(1,1));
+        pb1.add(searchText,                         cc.xy(3,1));
+        pb1.add(searchSciNameBtn,                   cc.xy(5,1));
+
+        PanelBuilder myPB = new PanelBuilder(new FormLayout("f:p:g,p", "p,2px,p,2px,p"));
+        mySepComp = myPB.addSeparator(getResourceString("LM_MYDATA_TITLE"), cc.xyw(1,1,2));
+        myPB.add(myDataTF,          cc.xyw(1,3,2));
+        myPB.add(searchMyDataBtn,   cc.xy(2,5));
+        
+        PanelBuilder pb2 = new PanelBuilder(new FormLayout("MAX(p;300px),2px,f:p:g", "f:p:g,20px,p"));
+        pb2.add(createScrollPane(list), cc.xy(1,1));
+        pb2.add(myPB.getPanel(),        cc.xy(1,3));
+        
+        PanelBuilder pb3 = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,4px,p,f:p:g"));
+        pb3.add(createI18NLabel("LM_WRLD_OVRVW", SwingConstants.CENTER), cc.xy(2,2));
+        pb3.add(imgDisplay,                           cc.xy(2,4));
+        
+        PanelBuilder pb4 = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,4px,p,f:p:g"));
+        pb4.add(createI18NLabel("LM_INTRACT_VW", SwingConstants.CENTER), cc.xy(2,2));
+        pb4.add(wwPanel,            cc.xy(2,4));
+        
+        PanelBuilder pb5 = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,p,f:p:g"));
+        pb5.add(pb3.getPanel(), cc.xy(1,1));
+        pb5.add(pb4.getPanel(), cc.xy(1,3));
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,8px,f:p:g", "p,8px,f:p:g"), this);
+        pb.add(pb1.getPanel(),  cc.xyw(1,1,3));
+        pb.add(pb2.getPanel(),  cc.xy(1,3));
+        pb.add(pb5.getPanel(),  cc.xy(3,3));
+        
+        updateMyDataUIState(false);
+        
         searchText.addKeyListener(new KeyAdapter()
         {
             @Override
@@ -163,20 +214,24 @@ public class LifeMapperPane extends BaseSubPane
             }
         });
         
-        CellConstraints cc = new CellConstraints();
+        myDataTF.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyReleased(KeyEvent e)
+            {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    searchMyDataBtn.doClick();
+                }
+            }
+        });
         
-        PanelBuilder pb2 = new PanelBuilder(new FormLayout("MAX(p;300px),2px,f:p:g", "f:p:g"));
-        pb2.add(UIHelper.createScrollPane(list), cc.xy(1,1));
-        //pb2.add(searchOccurBtn,                  cc.xy(3,1));
-        pb2.add(imgDisplay,         cc.xy(3,1));
+
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,2px,p", "p,4px,p,8px,f:p:g"), this);
-        pb.add(searchText,         cc.xy(1,1));
-        pb.add(searchSciNameBtn,   cc.xy(3,1));
-        pb.add(pb2.getPanel(),     cc.xyw(1,3,3));
-        
-        //JScrollPane sp = new JScrollPane(wwPanel);
-        pb.add(wwPanel,                 cc.xyw(1,5,3));
+        //wwPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+        //pb3.getPanel().setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        //pb4.getPanel().setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+        //pb5.getPanel().setBorder(BorderFactory.createLineBorder(Color.GREEN));
         
         list.addListSelectionListener(new ListSelectionListener()
         {
@@ -208,7 +263,7 @@ public class LifeMapperPane extends BaseSubPane
             }
         });
         
-        searchOccurBtn.addActionListener(new ActionListener()
+        searchMyDataBtn.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -218,7 +273,7 @@ public class LifeMapperPane extends BaseSubPane
                     @Override
                     public void run()
                     {
-                        doSearchOccur();
+                        doSearchSpecifyData(myDataTF.getText().trim());
                     }
                 });
                 
@@ -271,7 +326,7 @@ public class LifeMapperPane extends BaseSubPane
                     for (OccurrenceSetIFace item : items)
                     {
                         listModel.addElement(item.getTitle());
-                        occurList.add(item.getOccurrenceId());
+                        occurList.add(item);
                     }
                     if (occurList.size() == 1)
                     {
@@ -319,6 +374,110 @@ public class LifeMapperPane extends BaseSubPane
     public void setDoResetWWPanel(boolean doResetWWPanel)
     {
         this.doResetWWPanel = doResetWWPanel;
+    }
+    
+    /**
+     * @param genusSpecies
+     */
+    private void doSearchSpecifyData(final String genusSpecies)
+    {
+        myDataTaxa = genusSpecies;
+        
+        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LM_SEARCH_SPECIFY"), 24);
+        glassPane.setTextYPos((int)((double)getSize().height * 0.25));
+
+        SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
+        {
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                
+                return addLocalData(genusSpecies);
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                clearSimpleGlassPaneMsg();
+                
+                Integer cnt = null;
+                try
+                {
+                    cnt = get();
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+                if (cnt == null || cnt == 0)
+                {
+                    writeTimedSimpleGlassPaneMsg(getResourceString("LM_NO_LOCAL_DATA"), null, Color.RED, 24, true, (int)((double)getSize().height * 0.25));
+                } else
+                {
+                    String msg = UIRegistry.getFormattedResStr("LM_MYDATA_FND", cnt, myDataTaxa);
+                    writeTimedSimpleGlassPaneMsg(msg, null, null, 24, true, (int)((double)getSize().height * 0.25));
+                }
+            }
+        };
+        worker.execute();
+
+    }
+
+    /**
+     * @param recSet
+     */
+    public int addLocalData(final String genusSpecies)
+    {
+        int numFnd = 0;
+        
+        Connection conn = null;        
+        Statement stmt  = null;
+
+        try
+        {
+            
+            String sql = "SELECT ce.CollectingEventID, l.Latitude1, l.Longitude1 FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
+            "INNER JOIN collectionobject co ON d.CollectionObjectID = co.CollectionObjectID " +
+            "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
+            "INNER JOIN locality l ON ce.LocalityID = l.LocalityID WHERE co.CollectionMemberID = COLMEMID AND t.FullName LIKE '" + genusSpecies + "%'";
+            
+            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+            
+            conn   = DBConnection.getInstance().createConnection();
+            stmt = conn.createStatement();
+
+            ArrayList<LatLonPlacemarkIFace> coPoints = new ArrayList<LatLonPlacemarkIFace>();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                LatLonPlacemark llp = new LatLonPlacemark(rs.getDouble(2), rs.getDouble(3));
+                coPoints.add(llp);
+            }
+            
+            numFnd = coPoints.size();
+            if (numFnd > 0)
+            { 
+                BasicMarkerAttributes bmAttrs = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.CONE, 1d, 3, 3);
+                wwPanel.placeMarkers(coPoints, true, false, 0, bmAttrs, false);
+                
+            }
+        } 
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try 
+            {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (Exception ex) {}
+        }
+        return numFnd;
     }
 
     /**
@@ -374,7 +533,7 @@ public class LifeMapperPane extends BaseSubPane
             { 
                 //wwPanel.reset();
                 BasicMarkerAttributes bmAttrs = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.CONE, 1d, 3, 3);
-                wwPanel.placeMarkers(coPoints, 0, bmAttrs, false);
+                wwPanel.placeMarkers(coPoints, true, false, 0, bmAttrs, false);
             }
         } 
         catch (SQLException ex)
@@ -399,15 +558,9 @@ public class LifeMapperPane extends BaseSubPane
     private void doSearchGenusSpecies(final String searchStr, 
                                       final LMSearchCallbackListener cbListener)
     {    
-        if (IS_OFFLINE)
-        {
-            ArrayList<LifeMapperPane.OccurrenceSetIFace> items = new ArrayList<LifeMapperPane.OccurrenceSetIFace>();
-            items.add(new GenusSpeciesDataItem(String.format("%s (%s)", searchStr, "1"), "1"));
-            cbListener.itemsFound(items); 
-            return;
-        }
-        
-        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
+        updateMyDataUIState(false);
+
+        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
 
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
@@ -461,7 +614,7 @@ public class LifeMapperPane extends BaseSubPane
                             String[] fields = StringUtils.split(line, '\t');
                             if (fields != null && fields.length == 3)
                             {
-                                items.add(new GenusSpeciesDataItem(String.format("%s (%s)", fields[0], fields[2]), fields[1]));
+                                items.add(new GenusSpeciesDataItem(String.format("%s (%s)", fields[0], fields[2]), fields[1], fields[0]));
                             }
                         }
                         isError = false;
@@ -483,7 +636,7 @@ public class LifeMapperPane extends BaseSubPane
                     
                 } else
                 {
-                    UIRegistry.clearSimpleGlassPaneMsg();
+                    clearSimpleGlassPaneMsg();
                     cbListener.itemsFound(items);
                 }
             }
@@ -506,7 +659,7 @@ public class LifeMapperPane extends BaseSubPane
             public void run()
             {
                 try { Thread.sleep(2000); } catch (Exception ex){}
-                UIRegistry.clearSimpleGlassPaneMsg();
+                clearSimpleGlassPaneMsg();
             }
         });
     }
@@ -517,10 +670,14 @@ public class LifeMapperPane extends BaseSubPane
     @SuppressWarnings("unchecked")
     private void doSearchOccur()
     {
-        occurSet = occurList.get(list.getSelectedIndex());
+        OccurrenceSetIFace occurSetItem = occurList.get(list.getSelectedIndex());
+        occurSet = occurSetItem.getOccurrenceId();
+        
         if (StringUtils.isNotEmpty(occurSet))
         {
             doSearchOccur(occurSet);
+            myDataTaxa = occurSetItem.getTaxa();
+            myDataTF.setText(myDataTaxa);
         }
     }
     
@@ -530,21 +687,11 @@ public class LifeMapperPane extends BaseSubPane
     @SuppressWarnings("unchecked")
     public void doSearchOccur(final String occurrenceId)
     {
-        points.clear();
-        
-        if (IS_OFFLINE)
-        {
-            LatLonPlacemark plcMark = new LatLonPlacemark(-93.0, 38.0);
-            points.add(plcMark);
-            
-            wwPanel.reset();
-            if (points.size() > 0)
-            {
-                wwPanel.placeMarkers(points, 0);
-            }
-        }
+        updateMyDataUIState(false);
 
-        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
+        points.clear();
+
+        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
         
         // check the website for the info about the latest version
@@ -558,7 +705,7 @@ public class LifeMapperPane extends BaseSubPane
         }
         
         final String url = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurrenceId);
-        System.out.println(url);
+        //System.out.println(url);
         
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
         {
@@ -575,7 +722,7 @@ public class LifeMapperPane extends BaseSubPane
                     String responseString = getMethod.getResponseBodyAsString();
                     if (StringUtils.isNotEmpty(responseString))
                     {
-                        //System.err.println(responseString);
+                        System.err.println(responseString);
                     }
                     return responseString;
                 }
@@ -602,7 +749,7 @@ public class LifeMapperPane extends BaseSubPane
                 {
                     String responseString = get();
                     
-                    if (StringUtils.isNotEmpty(responseString))
+                    if (StringUtils.isNotEmpty(responseString) && StringUtils.contains(responseString.toLowerCase(), "{"))
                     {
                         String bboxStr = "-180.0,-90.0,180.0,90.0";
                         
@@ -630,25 +777,31 @@ public class LifeMapperPane extends BaseSubPane
                             isError = false;
                         }
                         
-                        if (points.size() > 0)
+                        boolean hasPnts = points.size() > 0;
+                        updateMyDataUIState(hasPnts && StringUtils.isNotEmpty(myDataTF.getText()));
+                        if (hasPnts)
                         {
-                            wwPanel.placeMarkers(points, 0, null, false);
+                            wwPanel.placeMarkers(points, true, false, 0, null, false);
+                        
+                            bboxStr = "-180.0,-90.0,180.0,90.0";
+                            String fmtUrl = "http://lifemapper.org/ogc?map=data_%s&layers=bmng,occ_%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=450&height=225&styles=&color=ff0000";
+                            String url = String.format(fmtUrl, occurSet, occurSet, bboxStr);
+                            //System.out.println(url);
+                            
+                            imgDisplay.setValue(url, null);
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    imgDisplay.loadImage();
+                                }
+                            });
+                        } else
+                        {
+                            isError = false;
                         }
                         
-                        bboxStr = "-180.0,-90.0,180.0,90.0";
-                        String fmtUrl = "http://lifemapper.org/ogc?map=data_%s&layers=bmng,occ_%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=450&height=225&styles=&color=ff0000";
-                        String url = String.format(fmtUrl, occurSet, occurSet, bboxStr);
-                        //System.out.println(url);
-                        
-                        imgDisplay.setValue(url, null);
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                imgDisplay.loadImage();
-                            }
-                        });
                     } else
                     {
                         // error
@@ -667,12 +820,21 @@ public class LifeMapperPane extends BaseSubPane
                     showErrorMsg(glassPane);
                 } else
                 {
-                    UIRegistry.clearSimpleGlassPaneMsg();
+                    clearSimpleGlassPaneMsg();
                 }
             }
         };
         worker.execute();
-
+    }
+    
+    /**
+     * @param enable
+     */
+    private void updateMyDataUIState(final boolean enable)
+    {
+        myDataTF.setEnabled(enable);
+        searchMyDataBtn.setEnabled(enable);
+        mySepComp.setEnabled(enable);
     }
     
     //----------------------------------------------------------------------------------
@@ -749,16 +911,18 @@ public class LifeMapperPane extends BaseSubPane
     {
         private String title;
         private String occurrenceId;
+        private String taxa;
         
         /**
          * @param title
          * @param genusSpecies
          */
-        public GenusSpeciesDataItem(String title, String occurrenceId)
+        public GenusSpeciesDataItem(String title, String occurrenceId, String taxa)
         {
             super();
             this.title = title;
             this.occurrenceId = occurrenceId;
+            this.taxa = taxa;
         }
 
         /* (non-Javadoc)
@@ -779,6 +943,14 @@ public class LifeMapperPane extends BaseSubPane
             return occurrenceId;
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.OccurrenceSetIFace#getTaxa()
+         */
+        @Override
+        public String getTaxa()
+        {
+            return taxa;
+        }
     }
     
     //----------------------------------------------------------------------------------
@@ -810,19 +982,12 @@ public class LifeMapperPane extends BaseSubPane
          * @return
          */
         public abstract String getOccurrenceId();
-    }
-    
-    //--------------------------------
-    public interface GenusSpeciesItemIFace
-    {
-        /**
-         * @return
-         */
-        public abstract String getTitle();
+        
         
         /**
          * @return
          */
-        public abstract String getOccurrenceId();
+        public abstract String getTaxa();
     }
+
 }
