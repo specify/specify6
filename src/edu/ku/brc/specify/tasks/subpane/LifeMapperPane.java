@@ -114,6 +114,7 @@ public class LifeMapperPane extends BaseSubPane
     protected WorldWindPanel             wwPanel;
     protected boolean                    doResetWWPanel = true;
     protected JButton                    searchBtn;
+    protected int                        currentSize    = 0;
     
     // Search Data
     protected DefaultListModel           model   = null;
@@ -151,11 +152,11 @@ public class LifeMapperPane extends BaseSubPane
         markerImg = IconManager.getIcon("RedDot6x6");
         createUI();
     }
-
+    
     /**
-     * Creates the UI.
+     * @return
      */
-    protected void createUI()
+    private int getCurrentSizeSquare()
     {
         int maxHeight = MAP_HEIGHT;
         int maxWidth  = MAP_WIDTH;
@@ -175,15 +176,32 @@ public class LifeMapperPane extends BaseSubPane
             maxHeight = size.height - lblHeight - IMG_HEIGHT - 30;
             maxWidth  = size.width - 20;
         }
-        int sqSize = Math.min(maxHeight, maxWidth);
-        
+        return Math.min(maxHeight, maxWidth);
+    }
+    
+    /**
+     * @return
+     */
+    public boolean hasSizeChanged()
+    {
+        int newSize = getCurrentSizeSquare();
+        return currentSize != newSize;
+    }
+
+    /**
+     * Creates the UI.
+     */
+    protected void createUI()
+    {
+        currentSize = getCurrentSizeSquare();
+
         searchText       = createTextField(25);
         searchSciNameBtn = createI18NButton("LM_SEARCH");
         list             = new JList(listModel);
         imgDisplay       = new ImageDisplay(IMG_WIDTH, IMG_HEIGHT, false, true);
         
         wwPanel = new WorldWindPanel(false);
-        wwPanel.setPreferredSize(new Dimension(sqSize, sqSize));
+        wwPanel.setPreferredSize(new Dimension(currentSize, currentSize));
         wwPanel.setZoomInMeters(3500000.0);
         
         imgDisplay.setDoShowText(false);

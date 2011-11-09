@@ -28,7 +28,6 @@ import java.util.Vector;
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.SecurityOption;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
-import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
@@ -112,8 +111,12 @@ public class LifeMapperTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         //starterPane = null; // for debug
-        if (starterPane == null)
+        if (starterPane == null || lmPane.hasSizeChanged())
         {
+            if (lmPane != null)
+            {
+                lmPane.shutdown();
+            }
             starterPane = lmPane = new LifeMapperPane(name, this);
         }
         return starterPane;
