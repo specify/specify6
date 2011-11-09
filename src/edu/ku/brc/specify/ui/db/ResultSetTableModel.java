@@ -193,6 +193,7 @@ public class ResultSetTableModel extends DefaultTableModel implements SQLExecuti
             if (sqlStr != null)
             {
                 jpaQuery = new JPAQuery(sqlStr, this);
+                jpaQuery.setMaxResults(results.getMaxTableRows()); //not sure if this ok... 
                 jpaQuery.setParams(results.getParams());
                 if (doSequentiallyArg)
                 {

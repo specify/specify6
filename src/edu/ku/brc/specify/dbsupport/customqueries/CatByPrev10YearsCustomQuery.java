@@ -163,5 +163,24 @@ public class CatByPrev10YearsCustomQuery implements CustomQueryIFace
     {
         // ignore
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.dbsupport.CustomQueryIFace#getMaxResults()
+	 */
+	@Override
+	public int getMaxResults() 
+	{
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.dbsupport.CustomQueryIFace#setMaxResults(int)
+	 */
+	@Override
+	public void setMaxResults(int maxResults)
+	{
+		// ignore
+	}
    
+    
 }

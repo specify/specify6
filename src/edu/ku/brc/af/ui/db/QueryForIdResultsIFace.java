@@ -198,4 +198,5 @@ public interface QueryForIdResultsIFace
      * Sorting or other actions can be applied to the cache.
      */
     public abstract void cacheFilled(final Vector<Vector<Object>> cache);
+    
 }

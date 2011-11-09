@@ -58,6 +58,7 @@ public class JPAQuery implements CustomQueryIFace
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
     protected boolean                   isUnique    = false;
+    protected int						maxResults  = 0;
     protected boolean                   doDebug     = AppPreferences.getLocalPrefs().getBoolean("esdebug", false);
     
     /**
@@ -212,7 +213,10 @@ public class JPAQuery implements CustomQueryIFace
             {
                 //log.debug(sqlStr);
                 Query qry = query != null ? query : session.createQuery(sqlStr);
-                
+                if (maxResults > 0)
+                {
+                	qry.setMaxResults(maxResults);
+                }
                 if (params != null)
                 {
                     for (Pair<String, Object> param : params)
@@ -460,4 +464,23 @@ public class JPAQuery implements CustomQueryIFace
         return null;
     }
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.dbsupport.CustomQueryIFace#getMaxResults()
+	 */
+	@Override
+	public int getMaxResults() 
+	{
+		return maxResults;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.dbsupport.CustomQueryIFace#setMaxResults(int)
+	 */
+	@Override
+	public void setMaxResults(int maxResults) 
+	{
+		this.maxResults = maxResults;
+	}
+
+    
 }

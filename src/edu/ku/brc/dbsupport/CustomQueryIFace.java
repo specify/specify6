@@ -90,4 +90,15 @@ public interface CustomQueryIFace
      */
     public abstract List<Integer> getTableIds();
     
+    /**
+     * @return the maximum number of rows the query will retrieve
+     */
+    public abstract int getMaxResults();
+    
+    /**
+     * @param maxResulst
+     * 
+     * set the maximum number of rows the query will retrieve
+     */
+    public abstract void setMaxResults(int maxResults);
 }

@@ -141,6 +141,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -1651,6 +1652,50 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     /**
      * @param hql
+     * @return hql transformed into hql that just counts the matching records.
+     */
+    public static String getCountHql(final String hql)
+    {
+        //Assumes the ID field is selected by hql -
+    	//Assumes that  'select' is lower case.
+    	int fromStart = hql.toLowerCase().indexOf(" from ");
+    	int orderStart = hql.toLowerCase().indexOf(" order by ");
+    	
+    	return "select count(*) " + (orderStart > fromStart ? hql.substring(fromStart, orderStart) : hql.substring(fromStart));
+    	
+//    	int idEnd = hql.indexOf(',', 0); 
+//        String fldPart = hql.substring(0, idEnd);
+//        if (fldPart.indexOf("distinct") != -1)
+//        {
+//        	fldPart = fldPart.replaceFirst("select distinct ", "select ");
+//        }
+//        String countHql = fldPart + " " + hql.substring(fromStart);
+//    	return countHql;
+    	
+    }
+    
+    /**
+     * @param hql
+     * @return
+     */
+    public static String getCountDistinctHql(final String hql)
+    {
+        //Assumes the ID field is selected by hql -
+    	//Assumes that  'select', is lower case.
+    	int fromStart = hql.toLowerCase().indexOf(" from ");
+    	int orderStart = hql.toLowerCase().indexOf(" order by ");
+    	int idEnd = hql.indexOf(',', 0); 
+        String fldPart = hql.substring(0, idEnd);
+        if (fldPart.indexOf("distinct") != -1)
+        {
+        	fldPart = fldPart.replaceFirst("select distinct ", "select ");
+        }
+        String distinctFldPart = fldPart.replaceFirst("select ", "select count(distinct ") + ") ";
+        String distinctHql = distinctFldPart + " " +(orderStart > fromStart ? hql.substring(fromStart, orderStart) : hql.substring(fromStart));
+    	return distinctHql;
+    }
+    /**
+     * @param hql
      * @return true if each record in the query defined by hql has
      * a unique key.
      * 
@@ -1659,18 +1704,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public static boolean checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
     {
-        //Assumes the ID field is selected by hql -
-    	//Assumes that  'select' is lower case.
-    	int fromStart = hql.toLowerCase().indexOf(" from ");
-    	int idEnd = hql.indexOf(',', 0); 
-        String fldPart = hql.substring(0, idEnd);
-        if (fldPart.indexOf("distinct") != -1)
-        {
-        	fldPart = fldPart.replaceFirst("select distinct ", "select ");
-        }
-        String countHql = fldPart + " " + hql.substring(fromStart);
-        String distinctFldPart = fldPart.replaceFirst("select ", "select distinct ");
-        String distinctHql = distinctFldPart + " " + hql.substring(fromStart);
+    	String countHql = getCountHql(hql);
+    	String distinctHql = getCountDistinctHql(hql);
+    	
     	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -1683,7 +1719,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         			q1.setParameter(param.getFirst(), param.getSecond());
         			q2.setParameter(param.getFirst(), param.getSecond());
         		}
-        		return q1.list().size() == q2.list().size();
+        		return q1.list().get(0).equals(q2.list().get(0));
         	} catch (Exception ex) 
         	{
                 UsageTracker.incrHandledUsageCount();
@@ -2730,7 +2766,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (countOnly)
                 {
-                    UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", runningResults.get().getQuery().getDataObjects().size());
+                	Object resultObj = runningResults.get().getQuery().getDataObjects().get(0);
+                    final int count = (Integer )resultObj;
+                    
+                    UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", count);
+                    
+                    //UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", runningResults.get().getQuery().getDataObjects().size());
                 }
                 else if (runningResults.get().isPostSorted())
                 {
@@ -2778,7 +2819,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 tblId,
                 this);
         
-        qri.setSQL(hqlSpecs.getHql());
+        String hql = hqlSpecs.getHql();
+        if (countOnly)
+        {
+        	hql = getCountHql(hql);
+        }
+        qri.setSQL(hql);
         qri.setParams(hqlSpecs.getArgs());
         qri.setSort(hqlSpecs.getSortElements());
         // XXX check generics reference book. (unchecked conversion here)
@@ -2810,6 +2856,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (schemaMapping != null)
         {
         	qri.setMaxTableRows(ExportSchemaPreviewSize);
+        } else
+        {
+        	qri.setMaxTableRows(ExpressSearchTask.RESULTS_THRESHOLD);
         }
         runningResults.set(qri);
         doneTime.set(-1);
@@ -2832,7 +2881,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             @Override
             public Object construct()
             {
-            	if (schemaMapping != null)
+            	if (schemaMapping != null && !countOnly /*this means the duplicate msg won't appear when counts are done */)
             	{
             		if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()))
             		{

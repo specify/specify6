@@ -33,6 +33,7 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -58,7 +59,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     protected Vector<Vector<Object>>                          cache = null;
     protected boolean                                         recIdsLoaded = false;
     protected boolean                                         hasIds = true;
-    protected int											  maxTableRows = 20000;
+    protected int											  maxTableRows = ExpressSearchTask.RESULTS_THRESHOLD;
         
     /**
      * @param bannerColor
