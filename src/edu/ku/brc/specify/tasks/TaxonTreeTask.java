@@ -176,7 +176,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             });
             popup.add(getDeters, true);
             
-            JMenuItem lifeMapperDisplay = new JMenuItem("LifeMapper");//getResourceString("TTV_ASSOC_COS"));
+            JMenuItem lifeMapperDisplay = new JMenuItem("LifeMapper");
             lifeMapperDisplay.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -184,8 +184,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     Taxon     taxon     = ttv.getSelectedNode(popup.getList());
                     RecordSet recordSet = createColObjRSFromTaxon(taxon);
                     final Pair<Taxon, RecordSet> pair = new Pair<Taxon, RecordSet>(taxon, recordSet);
-                    //UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
-                    // This is needed so the StatusBar gets updated
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run()
                         {
@@ -195,6 +193,27 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                 }
             });
             popup.add(lifeMapperDisplay, true);
+            
+            if (!isEditMode)
+            {
+                JMenuItem taxonMenu = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
+                taxonMenu.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        final Taxon taxon = ttv.getSelectedNode(popup.getList());
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                Pair<Object, Object> pair = new Pair<Object, Object>(taxon, "createchild");
+                                CommandDispatcher.dispatch(new CommandAction("Data_Entry", "OpenNewView", pair));
+                            }
+                        });
+                    }
+                });
+                popup.add(taxonMenu, true);
+
+            }
         }
         
         return ttv;

@@ -166,8 +166,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             unlockNavBox   = new NavBox(getResourceString("BaseTreeTask.UNLOCK"));
             browseNavBox   = new NavBox(getResourceString("BaseTreeTask.BROWSE"));
             
-            navBoxes.add(treeNavBox);
             navBoxes.add(browseNavBox);
+            navBoxes.add(treeNavBox);
             navBoxes.add(treeDefNavBox);
             navBoxes.add(unlockNavBox);
             

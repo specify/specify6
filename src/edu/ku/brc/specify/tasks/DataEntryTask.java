@@ -80,8 +80,8 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -91,6 +91,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
@@ -112,6 +113,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.util.Pair;
 
 /**
  * This task controls the data entry forms. 
@@ -1474,6 +1476,18 @@ public class DataEntryTask extends BaseTask
             {
                 editData(task != null ? task : this, data, viewName);
                 
+            } else if (data instanceof Pair<?, ?>)
+            {
+                Pair<Object, Object> p = (Pair<Object, Object>)data;
+                if (p.first instanceof Taxon && p.second instanceof String && ((String)p.second).equals("createchild"))
+                {
+                    Taxon parentTaxon  = (Taxon)p.first;
+                    Taxon childForForm = addChildToParentInForm(parentTaxon);
+                    if (childForForm != null)
+                    {
+                        openView(task != null ? task : this, null, "Taxon", "edit", childForForm, true);
+                    }
+                }
             } else
             {
                 openView(task != null ? task : this, null, viewName, "edit", null, true);
@@ -1519,6 +1533,37 @@ public class DataEntryTask extends BaseTask
         {
             checkToPrintLabel(cmdAction, true);
         }
+    }
+    
+    /**
+     * @param parentTaxon
+     * @return
+     */
+    private Taxon addChildToParentInForm(final Taxon parentTaxon)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            Taxon parent = session.get(Taxon.class, parentTaxon.getId());
+            Taxon newTaxon = new Taxon();
+            newTaxon.initialize();
+            newTaxon.setParent(parent);
+            parent.getChildren().add(newTaxon);
+            return newTaxon;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return null;
     }
     
     /**
