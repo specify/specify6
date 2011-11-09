@@ -53,6 +53,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JList;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -74,6 +75,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -106,6 +108,8 @@ public class LifeMapperPane extends BaseSubPane
 {
     protected static final int MAP_WIDTH  = 600;
     protected static final int MAP_HEIGHT = 450;
+    protected static final int IMG_WIDTH  = 450;
+    protected static final int IMG_HEIGHT = 225;
     
     protected WorldWindPanel             wwPanel;
     protected boolean                    doResetWWPanel = true;
@@ -153,13 +157,33 @@ public class LifeMapperPane extends BaseSubPane
      */
     protected void createUI()
     {
+        int maxHeight = MAP_HEIGHT;
+        int maxWidth  = MAP_WIDTH;
+        if (SubPaneMgr.getInstance() instanceof JTabbedPane)
+        {
+            Dimension size;
+            JTabbedPane tbPane = (JTabbedPane)SubPaneMgr.getInstance();
+            if (tbPane.getTabCount() > 0)
+            {
+                size = tbPane.getComponentAt(0).getSize();
+            } else
+            {
+                size = tbPane.getSize();
+                size.height -= 30;
+            }
+            int lblHeight = (UIHelper.createLabel(" ").getPreferredSize().height) * 5;
+            maxHeight = size.height - lblHeight - IMG_HEIGHT - 30;
+            maxWidth  = size.width - 20;
+        }
+        int sqSize = Math.min(maxHeight, maxWidth);
+        
         searchText       = createTextField(25);
         searchSciNameBtn = createI18NButton("LM_SEARCH");
         list             = new JList(listModel);
-        imgDisplay       = new ImageDisplay(450, 225, false, true);
+        imgDisplay       = new ImageDisplay(IMG_WIDTH, IMG_HEIGHT, false, true);
         
         wwPanel = new WorldWindPanel(false);
-        wwPanel.setPreferredSize(new Dimension(MAP_WIDTH, 400));
+        wwPanel.setPreferredSize(new Dimension(sqSize, sqSize));
         wwPanel.setZoomInMeters(3500000.0);
         
         imgDisplay.setDoShowText(false);
@@ -704,7 +728,7 @@ public class LifeMapperPane extends BaseSubPane
             return;
         }
         
-        final String url = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurrenceId);
+        final String lmURL = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurrenceId);
         //System.out.println(url);
         
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
@@ -712,18 +736,17 @@ public class LifeMapperPane extends BaseSubPane
             @Override
             protected String doInBackground() throws Exception
             {
-                GetMethod  getMethod  = new GetMethod(url);
-                
+                GetMethod  getMethod  = new GetMethod(lmURL);
                 try
                 {
                     httpClient.executeMethod(getMethod);
                     
                     // get the server response
                     String responseString = getMethod.getResponseBodyAsString();
-                    if (StringUtils.isNotEmpty(responseString))
-                    {
-                        System.err.println(responseString);
-                    }
+                    //if (StringUtils.isNotEmpty(responseString))
+                    //{
+                    //    System.err.println(responseString);
+                    //}
                     return responseString;
                 }
                 catch (java.net.UnknownHostException uex)

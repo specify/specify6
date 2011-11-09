@@ -111,7 +111,7 @@ public class LifeMapperTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        starterPane = null;
+        //starterPane = null; // for debug
         if (starterPane == null)
         {
             starterPane = lmPane = new LifeMapperPane(name, this);
@@ -135,12 +135,6 @@ public class LifeMapperTask extends BaseTask
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
 
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
-        if (nbs != null)
-        {
-            extendedNavBoxes.addAll(nbs);
-        }
         return extendedNavBoxes;
     }
 
