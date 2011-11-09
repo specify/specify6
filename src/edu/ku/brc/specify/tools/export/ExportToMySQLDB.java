@@ -374,16 +374,7 @@ public class ExportToMySQLDB
 			String val;
 			if (valObj == null)
 			{
-				ERTICaptionInfoQB col = row.getColumnInfo(r);
-				if (col instanceof ERTICaptionInfoTreeLevel)
-				{
-					//need to do this for IPT
-					val = "'" + UIRegistry.getResourceString("ExportToMySQLDB.EmptyTreeLevelText") + "'";
-				}
-				else
-				{
-					val = "null";
-				}
+				val = "null";
 			}
 			else 
 			{
