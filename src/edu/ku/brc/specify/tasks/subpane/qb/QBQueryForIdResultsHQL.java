@@ -334,6 +334,11 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     	this.filterDups = filterDups;
     }
     
+    public String getHQL()
+    {
+    	return overrideSQL;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
      */
