@@ -137,7 +137,7 @@
    <mapID target="it_credentials" url="SpecifyHelp/Dialogs/it_credentials.html"/>
    <mapID target="collection_relationships" url="SpecifyHelp/Configuration/collection_relationships.html"/>
    <mapID target="separate_apps" url="SpecifyHelp/Dialogs/separate_apps.html"/>
-   <mapID target="sgr" url="SpecifyHelp/Plugins/SGR.html"/>
+   <mapID target="SGR" url="SpecifyHelp/Plugins/SGR.html"/>
    <mapID target="sgr_intro" url="SpecifyHelp/Plugins/SGR_intro.html"/>
       
 
@@ -371,6 +371,7 @@
    <mapID target="sgr_matcher_dataset" url="SpecifyHelp/Plugins/SGR.html#sgr_matcher_dataset"/>
    <mapID target="sgr_matchresults_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_matcher"/>
    <mapID target="sgr_matchresults_properties" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_properties"/>
+   <mapID target="sgr_edit_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_edit_matcher"/>   
    <mapID target="lifemapper" url="SpecifyHelp/Plugins/Plugins.html#lifemapper"/>      
     
                   
