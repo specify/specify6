@@ -33,6 +33,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -110,6 +111,7 @@ public class LifeMapperTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
+        UsageTracker.incrUsageCount("LM.OpenLifemapper");
         //starterPane = null; // for debug
         if (starterPane == null || lmPane.hasSizeChanged())
         {

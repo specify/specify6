@@ -30,6 +30,7 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -187,6 +188,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run()
                         {
+                            UsageTracker.incrUsageCount("LM.TreeSearchReq");
                             CommandDispatcher.dispatch(new CommandAction("LifeMapper", "Display", pair));
                         }
                     });
@@ -205,6 +207,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run()
                             {
+                                UsageTracker.incrUsageCount("TREE.AddKidFrView");
                                 Pair<Object, Object> pair = new Pair<Object, Object>(taxon, "createchild");
                                 CommandDispatcher.dispatch(new CommandAction("Data_Entry", "OpenNewView", pair));
                             }
@@ -212,7 +215,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
                 });
                 popup.add(taxonMenu, true);
-
             }
         }
         

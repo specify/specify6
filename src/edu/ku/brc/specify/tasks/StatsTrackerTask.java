@@ -348,7 +348,6 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
                                   final StringBuilder sb)
     {
         if (sb.length() > 0) sb.append(';');
-        sb.append(colNm);
         sb.append(String.format("{%s, %s [", colNm, regNum));
 
         int     c   = 0;
@@ -401,7 +400,6 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         {
             doAllYears = true; 
         }
-        doAllYears = true;
         
         StringBuilder  allYearsSB   = new StringBuilder();
         StringBuilder  last30DaysSB = new StringBuilder();

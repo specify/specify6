@@ -77,6 +77,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -106,6 +107,8 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  */
 public class LifeMapperPane extends BaseSubPane
 {
+    protected static final int GLASS_FONT_SIZE = 14;
+    
     protected static final int MAP_WIDTH  = 600;
     protected static final int MAP_HEIGHT = 450;
     protected static final int IMG_WIDTH  = 450;
@@ -423,9 +426,11 @@ public class LifeMapperPane extends BaseSubPane
      */
     private void doSearchSpecifyData(final String genusSpecies)
     {
+        UsageTracker.incrUsageCount("LM.MyDataSearch");
+
         myDataTaxa = genusSpecies;
         
-        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LM_SEARCH_SPECIFY"), 24);
+        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LM_SEARCH_SPECIFY"), GLASS_FONT_SIZE);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
 
         SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
@@ -456,11 +461,12 @@ public class LifeMapperPane extends BaseSubPane
                 }
                 if (cnt == null || cnt == 0)
                 {
-                    writeTimedSimpleGlassPaneMsg(getResourceString("LM_NO_LOCAL_DATA"), null, Color.RED, 24, true, (int)((double)getSize().height * 0.25));
+                    writeTimedSimpleGlassPaneMsg(getResourceString("LM_NO_LOCAL_DATA"), null, Color.RED, GLASS_FONT_SIZE, true, (int)((double)getSize().height * 0.25));
+                    UsageTracker.incrUsageCount("LM.NoMyData");
                 } else
                 {
                     String msg = UIRegistry.getFormattedResStr("LM_MYDATA_FND", cnt, myDataTaxa);
-                    writeTimedSimpleGlassPaneMsg(msg, null, null, 24, true, (int)((double)getSize().height * 0.25));
+                    writeTimedSimpleGlassPaneMsg(msg, null, null, GLASS_FONT_SIZE, true, (int)((double)getSize().height * 0.25));
                 }
             }
         };
@@ -480,7 +486,6 @@ public class LifeMapperPane extends BaseSubPane
 
         try
         {
-            
             String sql = "SELECT ce.CollectingEventID, l.Latitude1, l.Longitude1 FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
             "INNER JOIN collectionobject co ON d.CollectionObjectID = co.CollectionObjectID " +
             "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
@@ -527,6 +532,7 @@ public class LifeMapperPane extends BaseSubPane
      */
     public void addLocalData(final RecordSet recSet)
     {
+        UsageTracker.incrUsageCount("LM.RSData");
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         boolean    isEmbedded = collection.getIsEmbeddedCollectingEvent();
         
@@ -600,9 +606,11 @@ public class LifeMapperPane extends BaseSubPane
     private void doSearchGenusSpecies(final String searchStr, 
                                       final LMSearchCallbackListener cbListener)
     {    
+        UsageTracker.incrUsageCount("LM.GenSpSearch");
+       
         updateMyDataUIState(false);
 
-        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
+        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), GLASS_FONT_SIZE);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
 
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
@@ -631,6 +639,7 @@ public class LifeMapperPane extends BaseSubPane
                 catch (Exception e)
                 {
                     e.printStackTrace();
+                    UsageTracker.incrUsageCount("LM.GenSpSearchErr");
                 }
                 return null;
             }
@@ -696,7 +705,6 @@ public class LifeMapperPane extends BaseSubPane
         
         SwingUtilities.invokeLater(new Runnable()
         {
-            
             @Override
             public void run()
             {
@@ -733,7 +741,7 @@ public class LifeMapperPane extends BaseSubPane
 
         points.clear();
 
-        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), 24);
+        final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), GLASS_FONT_SIZE);
         glassPane.setTextYPos((int)((double)getSize().height * 0.25));
         
         // check the website for the info about the latest version
@@ -745,6 +753,8 @@ public class LifeMapperPane extends BaseSubPane
         {
             return;
         }
+        
+        UsageTracker.incrUsageCount("LM.OccurSearch");
         
         final String lmURL = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurrenceId);
         //System.out.println(url);
@@ -774,6 +784,7 @@ public class LifeMapperPane extends BaseSubPane
                 catch (Exception e)
                 {
                     e.printStackTrace();
+                    UsageTracker.incrUsageCount("LM.OccurSearchErr");
                 }
 
                 return null;
@@ -845,7 +856,7 @@ public class LifeMapperPane extends BaseSubPane
                         
                     } else
                     {
-                        // error
+                        UsageTracker.incrUsageCount("LM.OccurSearchErr");
                     }
                     
                 } catch (InterruptedException e)
