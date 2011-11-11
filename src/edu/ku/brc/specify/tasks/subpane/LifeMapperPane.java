@@ -366,16 +366,19 @@ public class LifeMapperPane extends BaseSubPane
                  * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.LMSearchCallbackListener#itemsFound(java.util.List)
                  */
                 @Override
-                public void itemsFound(List<OccurrenceSetIFace> items)
+                public void itemsFound(final List<OccurrenceSetIFace> items)
                 {
-                    for (OccurrenceSetIFace item : items)
+                    if (items != null)
                     {
-                        listModel.addElement(item.getTitle());
-                        occurList.add(item);
-                    }
-                    if (occurList.size() == 1)
-                    {
-                        list.setSelectedIndex(0);
+                        for (OccurrenceSetIFace item : items)
+                        {
+                            listModel.addElement(item.getTitle());
+                            occurList.add(item);
+                        }
+                        if (occurList.size() == 1)
+                        {
+                            list.setSelectedIndex(0);
+                        }
                     }
                 }
             });
@@ -623,8 +626,8 @@ public class LifeMapperPane extends BaseSubPane
                 httpClient.getParams().setParameter("http.socket.timeout", 15000); 
                 
                 String genusSpecies = StringUtils.replace(searchStr, " ", "%20");
-                String url = "http://www.lifemapper.org/hint/species/"+genusSpecies;
-                //System.out.println(url);
+                String url = "http://www.lifemapper.org/hint/species/"+genusSpecies + "?maxReturned=1000&format=json";
+                System.out.println(url);
                 
                 PostMethod postMethod = new PostMethod(url);
                 try
@@ -649,44 +652,94 @@ public class LifeMapperPane extends BaseSubPane
             {
                 super.done();
                 
-                boolean isError = true;
                 ArrayList<OccurrenceSetIFace> items = null;
                 
+                String errMsgKey = "LifeMapperTask.PROC_ERR";
+                String responseString;
                 try
                 {
-                    String responseString = get();
+                    responseString = get();
+                    System.out.println(responseString);
                     
-                    if (StringUtils.isNotEmpty(responseString))
+                    if (responseString != null)
                     {
-                        items = new ArrayList<LifeMapperPane.OccurrenceSetIFace>();
-                        String[] lines = StringUtils.split(responseString, '\n');
-                        for (String line : lines)
+                        if (responseString.startsWith("None of the species"))
                         {
-                            String[] fields = StringUtils.split(line, '\t');
-                            if (fields != null && fields.length == 3)
+                            errMsgKey = "LM_NO_LOCAL_DATA";
+                            
+                        } else if (responseString.startsWith("Search too broad"))
+                        {
+                            errMsgKey = "LM_TOO_BROAD";
+                            
+                        } else if (StringUtils.isNotEmpty(responseString) && StringUtils.contains(responseString.toLowerCase(), "{"))
+                        {
+                            JSONTokener tok = new JSONTokener(responseString);
+                            while (tok.more())
                             {
-                                items.add(new GenusSpeciesDataItem(String.format("%s (%s)", fields[0], fields[2]), fields[1], fields[0]));
+                                JSONObject obj = (JSONObject)tok.nextValue();
+                                JSONArray pointArray = (JSONArray)obj.get("columns");
+                                Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
+                                while (iter.hasNext())
+                                {
+                                    JSONArray arrayObj = (JSONArray)iter.next();
+                                    //System.out.println(arrayObj);
+                                    Iterator<Object> iterInner =  (Iterator<Object>)arrayObj.iterator();
+                                    while (iterInner.hasNext())
+                                    {
+                                        JSONObject pObj = (JSONObject)iterInner.next();
+                                        String gnSpName      = (String)pObj.get("name");
+                                        String numPoints     = (String)pObj.get("numPoints");
+                                        String occurrenceSet = (String)pObj.get("occurrenceSet");
+                                        
+                                        if (StringUtils.isNotEmpty(gnSpName) && 
+                                            StringUtils.isNotEmpty(numPoints) &&
+                                            StringUtils.isNotEmpty(occurrenceSet))
+                                        {
+                                            try
+                                            {
+                                                int numPnts = Integer.parseInt(numPoints);
+                                                int occurId = Integer.parseInt(occurrenceSet);
+                                                if (numPnts > 0 && occurId > 0)
+                                                {
+                                                    if (items == null)
+                                                    {
+                                                        items = new ArrayList<LifeMapperPane.OccurrenceSetIFace>();
+                                                    }
+                                                    items.add(new GenusSpeciesDataItem(String.format("%s (%s)", gnSpName, numPoints), occurrenceSet, gnSpName));
+                                                }
+                                            } catch (Exception ex)
+                                            {
+                                                // no op
+                                            }
+                                            errMsgKey = items == null || items.size() == 0 ? "LM_NO_LOCAL_DATA" : null;
+                                        }
+                                    }
+                                }
                             }
                         }
-                        isError = false;
-                        //System.err.println(responseString);
+
+                    } else
+                    {
+                        
                     }
-                    
+
                 } catch (InterruptedException e)
                 {
                     e.printStackTrace();
+                    
                 } catch (ExecutionException e)
                 {
                     e.printStackTrace();
                 }
                 
-                if (isError)
+                if (errMsgKey != null)
                 {
-                    showErrorMsg(glassPane);
+                    showErrorMsg(glassPane, errMsgKey);
                     cbListener.noItems();
                     
                 } else
                 {
+                    //System.out.println("Num Genus/Species: "+items.size());
                     clearSimpleGlassPaneMsg();
                     cbListener.itemsFound(items);
                 }
@@ -697,11 +750,12 @@ public class LifeMapperPane extends BaseSubPane
     
     /**
      * @param glassPane
+     * @param key
      */
-    protected void showErrorMsg(final SimpleGlassPane glassPane)
+    protected void showErrorMsg(final SimpleGlassPane glassPane, final String key)
     {
         glassPane.setTextColor(Color.RED);
-        glassPane.setText(getLocalizedMessage("LifeMapperTask.PROC_ERR"));
+        glassPane.setText(getLocalizedMessage(key));
         
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -869,7 +923,7 @@ public class LifeMapperPane extends BaseSubPane
                 
                 if (isError)
                 {
-                    showErrorMsg(glassPane);
+                    showErrorMsg(glassPane, "LifeMapperTask.PROC_ERR");
                 } else
                 {
                     clearSimpleGlassPaneMsg();
