@@ -27,6 +27,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
+import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -57,6 +58,19 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
     {
         return "GEOLocate";
     }
+    
+    /**
+     * @return
+     */
+    private GeoCoordServiceProviderIFace getGeoLocateProvider()
+    {
+        boolean useOldGEOLocate = AppPreferences.getLocalPrefs().getBoolean("USE_OLD_GL", false);
+        if (useOldGEOLocate)
+        {
+            return new GeoCoordGeoLocateProvider();
+        }
+        return new edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.rstools.GeoRefRecordSetProcessorBase#processDataList(java.util.List, java.util.Properties)
@@ -70,16 +84,7 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
         GeoCoordProviderListenerIFace listener = listenerObj != null && listenerObj instanceof GeoCoordProviderListenerIFace ? 
                 (GeoCoordProviderListenerIFace)listenerObj : null;
         
-        boolean useOldGEOLocate = AppPreferences.getLocalPrefs().getBoolean("USE_OLD_GL", false);
-        if (useOldGEOLocate)
-        {
-            GeoCoordGeoLocateProvider geoCoordGLProvider = new GeoCoordGeoLocateProvider();
-            geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
-        } else
-        {
-            edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider geoCoordGLProvider = new edu.ku.brc.services.geolocate.prototype.GeoCoordGeoLocateProvider();
-            geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
-        }
+        getGeoLocateProvider().processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
     }
     
     /* (non-Javadoc)
@@ -88,7 +93,7 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
     public void processRecordSet(final RecordSetIFace recordSet, 
                                  final Properties requestParams) throws Exception
     {
-        processRecordSet(recordSet, requestParams, new GeoCoordGeoLocateProvider());
+        processRecordSet(recordSet, requestParams, getGeoLocateProvider());
     }
 
     /* (non-Javadoc)
