@@ -30,7 +30,13 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -41,11 +47,11 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.util.FileCache;
 
 /**
  * This class is responsible for displaying an image.The ImageDisplay will resize the image approriately to fit within its space
@@ -58,8 +64,17 @@ import edu.ku.brc.util.FileCache;
 @SuppressWarnings("serial")
 public class ImageDisplay extends JPanel implements GetSetValueIFace
 {
+    // Error Code
+    public static final int kImageOK      = 0;
+    public static final int kError        = 1;
+    public static final int kHttpError    = 2;
+    public static final int kInterruptedError = 3;
+    public static final int kIOError      = 4;
+    public static final int kURLError     = 5;
+    
+    private byte[]         bytes          = new byte[100*1024];
+    
 	protected ImageIcon    imageIcon       = null;
-	protected boolean      isError         = false;
 	protected String       url;
 	protected boolean      isEditMode      = true;
 	protected JButton      editBtn;
@@ -69,6 +84,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	protected boolean      isNoImage       = true;
     protected JFileChooser chooser;
     protected boolean      doShowText      = true;
+    
+    protected ChangeListener changeListener = null;
+    private int              status         = kImageOK;
+
 
 	/**
 	 * Constructor.
@@ -80,7 +99,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	public ImageDisplay(final int imgWidth, final int imgHeight, boolean isEditMode, boolean hasBorder)
 	{
 		super(new BorderLayout());
-        
+		
 		setBorder(hasBorder ? new EtchedBorder(EtchedBorder.LOWERED) : BorderFactory.createEmptyBorder());
 
 		setPreferredSize(new Dimension(imgWidth, imgHeight));
@@ -103,7 +122,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		setImage(imgIcon);
 	}
 
-	/**
+    /**
 	 *
 	 */
 	protected void createUI()
@@ -129,7 +148,31 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		}
 	}
 
-	protected void selectNewImage()
+	/**
+     * @return the changeListener
+     */
+    public ChangeListener getChangeListener()
+    {
+        return changeListener;
+    }
+    
+    /**
+     * @return
+     */
+    public boolean isInError()
+    {
+        return status != kImageOK;
+    }
+
+    /**
+     * @param changeListener the changeListener to set
+     */
+    public void setChangeListener(ChangeListener changeListener)
+    {
+        this.changeListener = changeListener;
+    }
+
+    protected void selectNewImage()
 	{
         String oldURL = this.url;
 		synchronized(this)
@@ -172,28 +215,15 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 		doLayout();
 	}
-
-	/**
-	 *
-	 */
-    protected void simpleLoad()
+    
+    /**
+     * 
+     */
+    private void notifyChangeListener()
     {
-        try
+        if (changeListener != null)
         {
-            setNoImage(false); // means it is loading it
-
-            // imgIcon = new ImageIcon(new URL(url));
-            Image img = getToolkit().getImage(new URL(url));
-
-            imageIcon = new ImageIcon(img);
-            setImage(imageIcon);
-
-        } catch (Exception e)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
-            // log.error(e);
-            e.printStackTrace();
+            changeListener.stateChanged(new ChangeEvent(this));
         }
     }
 
@@ -202,7 +232,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	 */
 	public void loadImage()
 	{
-	    isError = false;
+	    status = kImageOK;
 		if (isNotEmpty(url))
 		{
 			setNoImage(false); // means it is loading it
@@ -210,7 +240,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 			if (getter != null)
 			{
+			    getter.setManualStop(true);
 				getter.stop();
+				//getter.setManualStop(false);
 			}
 
 			if (url.startsWith("file"))
@@ -221,11 +253,12 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 					ImageIcon icon = new ImageIcon(f.getAbsolutePath());
 					setImage(icon);
 					repaint();
+					notifyChangeListener();
 					return;
 					
 				} catch (URISyntaxException e)
 				{
-				    isError = true;
+				    status = kURLError;
 				    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 				    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 					e.printStackTrace();
@@ -236,8 +269,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 		} else
 		{
+		    status = kURLError;
 			setNoImage(true);
 			setImage(null);
+			notifyChangeListener();
 		}
 		repaint();
 	}
@@ -255,7 +290,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		int w = getWidth();
 		int h = getHeight();
 
-		if (imageIcon != null && (!isNoImage && !isError))
+		if (imageIcon != null && (!isNoImage && status == kImageOK))
 		{
 			int imgW = imageIcon.getIconWidth();
 			int imgH = imageIcon.getIconHeight();
@@ -332,75 +367,6 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		return url;
 	}
 
-	/*public static void main(String[] args) throws InterruptedException
-	{
-		ImageIcon icon = new ImageIcon("demo_files/beach.jpg");
-		final ImageDisplay id = new ImageDisplay(icon, true, true);
-
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				JFrame f = new JFrame();
-				PanelBuilder builder = new PanelBuilder(new FormLayout("p,p",
-						"p,p,p,p"));
-				CellConstraints cc = new CellConstraints();
-				builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"), cc.xywh(1, 1, 1,1));
-				builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"), cc.xywh(1, 2, 1,1));
-				builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"), cc.xywh(1, 3, 1,1));
-				builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"), cc.xywh(1, 4, 1,1));
-				builder.add(id, cc.xywh(2, 1, 1, 4));
-				f.add(builder.getPanel());
-				f.pack();
-				f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				f.setVisible(true);
-			}
-		});
-
-		Thread.sleep(2000);
-
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				System.out.println("id.setNoImage(true)");
-				id.setNoImage(true);
-			}
-		});
-
-		Thread.sleep(2000);
-
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				System.out.println("id.setNoImage(false)");
-				id.setNoImage(false);
-			}
-		});
-
-		Thread.sleep(2000);
-
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				System.out.println("id.setImage(null)");
-				id.setImage(null);
-			}
-		});
-		Thread.sleep(1000);
-
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				System.out.println("id.setValue(\"http://www.google.com/images/logo_sm.gif\",null)");
-				id.setValue("http://www.google.com/images/logo_sm.gif", null);
-			}
-		});
-	}*/
-
 	/**
      * @return the doShowText
      */
@@ -408,7 +374,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     {
         return doShowText;
     }
-
+    
     /**
      * @param doShowText the doShowText to set
      */
@@ -423,44 +389,65 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	public class ImageGetter implements Runnable
 	{
 
-		// Error Code
-		public int kNoError = 0;
-		public int kError = 1;
-		public int kHttpError = 2;
-		public int kNotDoneError = 3;
-		public int kIOError = 4;
-		public int kURLError = 5;
 		private Thread thread = null;
 		private String urlStr;
-
+		private boolean isManualStop = false;
+		
+		/**
+		 * @param urlStr
+		 */
 		public ImageGetter(String urlStr)
 		{
 			this.urlStr = urlStr;
 		}
 
-		//----------------------------------------------------------------
+		/**
+         * @return the status
+         */
+        public int getStatus()
+        {
+            return status;
+        }
+
+        //----------------------------------------------------------------
 		//-- Runnable Interface
 		//----------------------------------------------------------------
 		public void start()
 		{
+		    //System.out.println("Calling Start");
 			if (thread == null)
 			{
 				thread = new Thread(this);
-				//thread.setPriority(Thread.MIN_PRIORITY);
 				thread.start();
 			}
 		}
 
 		/**
+         * @param isManualStop the isManualStop to set
+         */
+        public void setManualStop(boolean isManualStop)
+        {
+            this.isManualStop = isManualStop;
+        }
+
+        /**
 		 *
 		 *
 		 */
 		public synchronized void stop()
 		{
+		    //System.out.println("Calling Stop: "+isManualStop);
 			if (thread != null)
 			{
 				thread.interrupt();
 			}
+			
+			if (!isManualStop)
+			{
+			    status = kInterruptedError;
+			    notifyChangeListener();
+			}
+			
 			thread = null;
 			notifyAll();
 		}
@@ -474,44 +461,100 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 			{
 				setNoImage(false); // means it is loading it
 
-				FileCache fileCache = UIRegistry.getLongTermFileCache();
-				if (fileCache != null)
+			    File localFile = getFileFromWeb(urlStr);
+				if (localFile != null)
 				{
-					File file = fileCache.getCacheFile(urlStr);
-					if (file == null)
-					{
-					    try
-					    {
-					        String fileName = fileCache.cacheWebResource(urlStr);
-					        file = fileCache.getCacheFile(fileName);
-					    } catch (Exception ex)
-					    {
-					        
-					    }
-					}
-					if (file != null)
-					{
-					    Image img = getToolkit().getImage(file.toURI().toURL());
-					    ImageIcon imgIcon = new ImageIcon(img);
-					    setImage(imgIcon);
-					} else
-					{
-					    isError = true;
-					}
-
-					
+				    localFile.deleteOnExit();
+				    
+				    Image img = getToolkit().getImage(localFile.toURI().toURL());
+				    ImageIcon imgIcon = new ImageIcon(img);
+				    setImage(imgIcon);
+				    status = kImageOK;
+				    //System.out.println("Got Image");
+				    
+				} else
+				{
+				    status = kIOError;
+				    //System.out.println("Image Error1");
 				}
 
 				getter = null;
 
-			} catch (Exception e)
-			{
-			    isError = true;
+            } catch (MalformedURLException e)
+            {
+                status = kURLError;
+                e.printStackTrace();
+                //System.out.println("Image Error2");
+                
+            } catch (Exception e)
+            {
+                status = kError;
 			    e.printStackTrace();
-			    //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-			    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
-				
+			    //System.out.println("Image Error3");
 			}
+            notifyChangeListener();
 		}
 	}
+	
+    /**
+     * @param urlStr
+     * @param tmpFile
+     * @return
+     */
+    private boolean fillFileFromWeb(final String urlStr, 
+                                    final File tmpFile)
+    {
+        try
+        {
+            URL urlObj = new URL(urlStr);
+            InputStream inpStream = urlObj.openStream();
+            if (inpStream != null)
+            {
+                BufferedInputStream  in  = new BufferedInputStream(inpStream);
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
+                
+                do
+                {
+                    int numBytes = in.read(bytes);
+                    if (numBytes == -1)
+                    {
+                        break;
+                    }
+                    bos.write(bytes, 0, numBytes);
+                    
+                } while(true);
+                in.close();
+                bos.close();
+            
+                return true;
+            }
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    /**
+     * @param fileName
+     * @param mimeType
+     * @param isThumb
+     * @return
+     */
+    private synchronized File getFileFromWeb(final String urlStr)
+    {
+        try
+        {
+            File tmpFile = File.createTempFile("sp6", ".img", null);
+            return fillFileFromWeb(urlStr, tmpFile) ? tmpFile : null;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
 }

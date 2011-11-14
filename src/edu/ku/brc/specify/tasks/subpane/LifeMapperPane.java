@@ -58,6 +58,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -105,9 +107,10 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  * Oct 12, 2011
  *
  */
-public class LifeMapperPane extends BaseSubPane
+public class LifeMapperPane extends BaseSubPane implements ChangeListener
 {
     protected static final int GLASS_FONT_SIZE = 14;
+    protected static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
     protected static final int MAP_WIDTH  = 600;
     protected static final int MAP_HEIGHT = 450;
@@ -138,11 +141,13 @@ public class LifeMapperPane extends BaseSubPane
     protected JList                      list;
     protected DefaultListModel           listModel = new DefaultListModel();
     
-    protected ArrayList<OccurrenceSetIFace> occurList = new ArrayList<OccurrenceSetIFace>();
-    protected ImageDisplay                imgDisplay;
-    protected ImageIcon                   markerImg;
+    protected ArrayList<OccurrenceSetIFace> occurList     = new ArrayList<OccurrenceSetIFace>();
+    protected ImageDisplay                  imgDisplay;
+    protected int                           imgRequestCnt = 0;
+    protected String                        imgURL        = null;
+    
+    protected ImageIcon                     markerImg;
     protected ArrayList<LatLonPlacemarkIFace>  points = new ArrayList<LatLonPlacemarkIFace>();
-
 
     /**
      * @param name
@@ -203,9 +208,11 @@ public class LifeMapperPane extends BaseSubPane
         list             = new JList(listModel);
         imgDisplay       = new ImageDisplay(IMG_WIDTH, IMG_HEIGHT, false, true);
         
+        imgDisplay.setChangeListener(this);
+        
         wwPanel = new WorldWindPanel(false);
         wwPanel.setPreferredSize(new Dimension(currentSize, currentSize));
-        wwPanel.setZoomInMeters(3500000.0);
+        wwPanel.setZoomInMeters(600000.0);
         
         imgDisplay.setDoShowText(false);
         
@@ -270,13 +277,6 @@ public class LifeMapperPane extends BaseSubPane
                 }
             }
         });
-        
-
-        
-        //wwPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
-        //pb3.getPanel().setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        //pb4.getPanel().setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
-        //pb5.getPanel().setBorder(BorderFactory.createLineBorder(Color.GREEN));
         
         list.addListSelectionListener(new ListSelectionListener()
         {
@@ -627,7 +627,7 @@ public class LifeMapperPane extends BaseSubPane
                 
                 String genusSpecies = StringUtils.replace(searchStr, " ", "%20");
                 String url = "http://www.lifemapper.org/hint/species/"+genusSpecies + "?maxReturned=1000&format=json";
-                System.out.println(url);
+                //System.out.println(url);
                 
                 PostMethod postMethod = new PostMethod(url);
                 try
@@ -659,7 +659,7 @@ public class LifeMapperPane extends BaseSubPane
                 try
                 {
                     responseString = get();
-                    System.out.println(responseString);
+                    //System.out.println(responseString);
                     
                     if (responseString != null)
                     {
@@ -835,6 +835,10 @@ public class LifeMapperPane extends BaseSubPane
                 {
                     //log.error(uex.getMessage());
                 }
+                catch (java.net.SocketTimeoutException ex)
+                {
+                    UsageTracker.incrUsageCount("LM.OccurSearchErr");
+                }
                 catch (Exception e)
                 {
                     e.printStackTrace();
@@ -857,8 +861,6 @@ public class LifeMapperPane extends BaseSubPane
                     
                     if (StringUtils.isNotEmpty(responseString) && StringUtils.contains(responseString.toLowerCase(), "{"))
                     {
-                        String bboxStr = "-180.0,-90.0,180.0,90.0";
-                        
                         JSONTokener tok = new JSONTokener(responseString);
                         while (tok.more())
                         {
@@ -887,22 +889,15 @@ public class LifeMapperPane extends BaseSubPane
                         updateMyDataUIState(hasPnts && StringUtils.isNotEmpty(myDataTF.getText()));
                         if (hasPnts)
                         {
-                            wwPanel.placeMarkers(points, true, false, 0, null, false);
+                            imgDisplay.setImage(null);
+                            wwPanel.placeMarkers(points, false, false, 0, null, false);
                         
-                            bboxStr = "-180.0,-90.0,180.0,90.0";
+                            String bboxStr = "-180.0,-90.0,180.0,90.0";
+                            imgRequestCnt = 0;
                             String fmtUrl = "http://lifemapper.org/ogc?map=data_%s&layers=bmng,occ_%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=450&height=225&styles=&color=ff0000";
-                            String url = String.format(fmtUrl, occurSet, occurSet, bboxStr);
-                            //System.out.println(url);
+                            imgURL = String.format(fmtUrl, occurSet, occurSet, bboxStr);
+                            loadOverviewImage();
                             
-                            imgDisplay.setValue(url, null);
-                            SwingUtilities.invokeLater(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    imgDisplay.loadImage();
-                                }
-                            });
                         } else
                         {
                             isError = false;
@@ -931,6 +926,41 @@ public class LifeMapperPane extends BaseSubPane
             }
         };
         worker.execute();
+    }
+    
+    
+    
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        if (imgDisplay.isInError())
+        {
+            loadOverviewImage();
+        }
+    }
+
+    /**
+     * @param count
+     */
+    private void loadOverviewImage()
+    {
+        if (StringUtils.isNotEmpty(imgURL) && imgRequestCnt < MAX_IMAGE_REQUEST_COUNT)
+        {
+            imgDisplay.setValue(imgURL, null);
+            /*SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    imgDisplay.loadImage();
+                }
+            });*/
+            //System.out.println("imgRequestCnt: "+imgRequestCnt);
+            imgRequestCnt++;
+        }
     }
     
     /**
