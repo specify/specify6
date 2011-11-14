@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -86,7 +87,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     protected boolean      doShowText      = true;
     
     protected ChangeListener changeListener = null;
-    private int              status         = kImageOK;
+    private   int            status         = kImageOK;
+    private   ArrayList<File> fileCache = new ArrayList<File>();
 
 
 	/**
@@ -471,6 +473,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 				    setImage(imgIcon);
 				    status = kImageOK;
 				    //System.out.println("Got Image");
+				    
+				    if (fileCache.size() > 2)
+				    {
+				        File f = fileCache.get(0);
+				        fileCache.remove(0);
+				        f.delete();
+				    }
+				    fileCache.add(localFile);
 				    
 				} else
 				{
