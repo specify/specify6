@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -153,16 +154,19 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
     {
         super();
         
+        PanelBuilder mainPB;
         useWorldWind = !AppPreferences.getLocalPrefs().getBoolean("GEOLocate.USEGL_MAPS", true);
         if (useWorldWind)
-        	setLayout(new FormLayout("p,10px,500px,10px,f:p:g", "p,2px,p,2px,p,2px,p,10px,f:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+            mainPB = new PanelBuilder(new FormLayout("p,10px,500px,10px,f:p:g", "p,2px,p,2px,p,2px,p,2px,p,10px,p,2px,f:p:g"), this); //$NON-NLS-1$ //$NON-NLS-2$
         else
-        	setLayout(new FormLayout("p,10px,500px,10px,f:p:g", "p,2px,p,2px,p,2px,p,5px,f:p:g,10px,f:p:g"));
+            mainPB = new PanelBuilder(new FormLayout("p,10px,500px,10px,f:p:g", "p,2px,p,2px,p,2px,p,2px,p,5px,p,10px,p,2px,f:p:g,10px,f:p:g"), this);
         
         CellConstraints cc = new CellConstraints();
         
         // add the query fields to the display
         int rowIndex = 1;
+        mainPB.addSeparator(UIRegistry.getResourceString(L10N+"LOC_INFO"));
+        rowIndex += 2;
         localityStringField = addRow(cc, getResourceString(L10N + "LOCALITY_DESC"),      1, rowIndex); //$NON-NLS-1$
         rowIndex += 2;
         countyField         = addRow(cc, getResourceString(L10N + "COUNTY"), 1, rowIndex); //$NON-NLS-1$
@@ -195,7 +199,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             
             corMarkerPB.getPanel().setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED), UIRegistry.getResourceString(L10N+"GREEN_PROPS"),
                                                      TitledBorder.LEFT, TitledBorder.TOP, lbl.getFont(), lbl.getForeground()));
-            add(corMarkerPB.getPanel(), cc.xyw(1, rowIndex, 3));
+            mainPB.add(corMarkerPB.getPanel(), cc.xyw(1, rowIndex, 3));
             rowIndex += 2;
 
             latText = UIHelper.createTextField();
@@ -212,8 +216,6 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 				}
 			});
             
-            //Border border = new EtchedBorder(EtchedBorder.LOWERED);
-            
             PanelBuilder coordsPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,2px,p,f:p:g,p"));
             coordsPB.addSeparator(UIRegistry.getResourceString(L10N+"POS"), cc.xyw(1, 1, 4));
             coordsPB.add(UIHelper.createI18NFormLabel("Latitude", SwingConstants.RIGHT), cc.xy(1, 3));
@@ -229,26 +231,27 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             uncertTxt.addFocusListener(focLis);
             uncertBtn = UIHelper.createI18NButton("Apply");
             
-            PanelBuilder uncertaintyPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,4px,f:p:g,p"));
-            uncertaintyPB.addSeparator(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"), cc.xyw(1, 1, 4));
+            PanelBuilder uncertaintyPB = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,4px,f:p:g,p"));
+            uncertaintyPB.addSeparator(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"), cc.xyw(1, 1, 3));
             uncertaintyPB.add(UIHelper.createI18NFormLabel("In meters"), cc.xy(1, 3));
-            uncertaintyPB.add(uncertTxt, cc.xyw(3, 3, 2));
-            uncertaintyPB.add(uncertBtn, cc.xy(4, 6));
+            uncertaintyPB.add(uncertTxt, cc.xy(3, 3));
+            uncertaintyPB.add(uncertBtn, cc.xy(3, 6));
             
             corMarkerPB.add(uncertaintyPB.getPanel(), cc.xy(3, 1));
 
             errorPTxt = UIHelper.createTextArea();
             errorPTxt.setLineWrap(true);
+            errorPTxt.setWrapStyleWord(true);
             errorPTxt.addFocusListener(focLis);
             
-            JScrollPane errorPScrollPane = new JScrollPane(errorPTxt, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane errorPScrollPane = new JScrollPane(errorPTxt, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             errorPScrollPane.setPreferredSize(new Dimension(70, 50));
             errorPBtn = UIHelper.createI18NButton("Apply");
             
-            PanelBuilder errorPolygonPB = new PanelBuilder(new FormLayout("p,2px,f:p:g,p", "p,2px,p,4px,f:p:g,p"));
-            errorPolygonPB.addSeparator(UIRegistry.getResourceString(L10N+"ERR_POLYGON"), cc.xyw(1, 1, 4));
-            errorPolygonPB.add(errorPScrollPane, cc.xyw(1,3,4));
-            errorPolygonPB.add(errorPBtn,        cc.xy(4, 6));
+            PanelBuilder errorPolygonPB = new PanelBuilder(new FormLayout("f:p:g,2px,r:p", "p,2px,p,4px,f:p:g,p"));
+            errorPolygonPB.addSeparator(UIRegistry.getResourceString(L10N+"ERROR_POLY"), cc.xyw(1, 1, 3));
+            errorPolygonPB.add(errorPScrollPane, cc.xyw(1,3,3));
+            errorPolygonPB.add(errorPBtn,        cc.xy(3, 6));
             
             corMarkerPB.add(errorPolygonPB.getPanel(), cc.xy(5,1));
             
@@ -354,19 +357,19 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         	
         	Font font = new Font("Arial", Font.PLAIN, 10);
         	
-        	statusLatLbl = new JLabel("Lat: ,", JLabel.LEFT);
+        	statusLatLbl = new JLabel("Lat: ,", SwingConstants.LEFT);
         	statusLatLbl.setPreferredSize(new Dimension(100, 12));
         	statusLatLbl.setFont(font);
         	
-        	statusLonLbl = new JLabel("Lon: ", JLabel.LEFT);
+        	statusLonLbl = new JLabel("Lon: ", SwingConstants.LEFT);
         	statusLonLbl.setPreferredSize(new Dimension(100, 12));
         	statusLonLbl.setFont(font);
         	
-        	statusURLbl = new JLabel("", JLabel.LEFT);
+        	statusURLbl = new JLabel("", SwingConstants.LEFT);
         	statusURLbl.setPreferredSize(new Dimension(100, 12));
         	statusURLbl.setFont(font);
         	
-        	statusErrorLbl = new JLabel("", JLabel.LEFT);
+        	statusErrorLbl = new JLabel("", SwingConstants.LEFT);
         	statusErrorLbl.setPreferredSize(new Dimension(290, 12));
         	statusErrorLbl.setForeground(Color.RED);
         	statusErrorLbl.setFont(font);
@@ -406,9 +409,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 				
 				@Override
 				public void errorPolygonDrawn(ErrorPolygonDrawEvent evt) {
-					errorPTxt.setText(geoMapper.getMostAccurateResultPt().getLocality()
-							.getErrorPolygon());
-					
+				    setTextIntoErrorPolygonTA(geoMapper.getMostAccurateResultPt().getLocality().getErrorPolygon());
 					geoMapper.hideEditPolygonHandle();
                     errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
                     errBtnState = ErrBtnStateType.eClear;
@@ -466,7 +467,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 					
 					String resErrorP = mostAccurate.getLocality().getErrorPolygon();
 					if ((resErrorP != null) && !(resErrorP.equalsIgnoreCase("unavailable")))
-						errorPTxt.setText(resErrorP);
+						setTextIntoErrorPolygonTA(resErrorP);
 					else
 						errorPTxt.setText("");
 				}
@@ -499,7 +500,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							String resErrorP = res.getUncertaintyPolygon();
 							if ((resErrorP != null) && !(resErrorP.equalsIgnoreCase("unavailable")))
 							{
-								errorPTxt.setText(resErrorP);
+								setTextIntoErrorPolygonTA(resErrorP);
 		                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
 		                        errBtnState = ErrBtnStateType.eClear;
 		                        
@@ -518,7 +519,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 
         	mPanel.add(geoMapper, BorderLayout.CENTER);
         	mPanel.add(statusPanel, BorderLayout.SOUTH);
-        	add(mPanel, cc.xywh(5,1,1,11)); 
+            mainPB.add(mPanel, cc.xywh(5,1,1,15)); 
         } 
         
         else
@@ -558,7 +559,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                 }
             });
             
-            add(wwPanel, cc.xywh(5,1,1,9));
+            mainPB.add(wwPanel, cc.xywh(5,1,1,13));
         }
 
         // add the results table
@@ -630,7 +631,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						String resErrorP = res.getUncertaintyPolygon();
 						if ((resErrorP != null) && !(resErrorP.equalsIgnoreCase("unavailable")))
 						{
-							errorPTxt.setText(resErrorP);
+							setTextIntoErrorPolygonTA(resErrorP);
 							errorPTxt.setEditable(false);
 	                        errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
 	                        errBtnState = ErrBtnStateType.eClear;
@@ -664,9 +665,25 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         };
         resultsTable.getColumnModel().getColumn(3).setCellRenderer(cellRenderer);
         
+        mainPB.addSeparator(UIRegistry.getResourceString(L10N+"GEO_LOC_RESULTS"), cc.xywh(1,rowIndex, 3, 1));
+        rowIndex +=2;
+        
         JScrollPane scrollPane = new JScrollPane(resultsTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        add(scrollPane, cc.xywh(1,rowIndex, 3, 1));
+        mainPB.add(scrollPane, cc.xywh(1,rowIndex, 3, 1));
         rowIndex += 2;
+        
+        //mainPB.setDefaultDialogBorder();
+    }
+    
+    /**
+     * @param errStr
+     */
+    private void setTextIntoErrorPolygonTA(final String errStr)
+    {
+        if (StringUtils.isNotEmpty(errStr))
+        {
+            errorPTxt.setText(StringUtils.replace(errStr, ",", ", "));
+        }
     }
     
     /**
