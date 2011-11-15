@@ -41,6 +41,14 @@ public class TreeDefRow
     protected String  separator;
     
     /**
+     * Default no arg constructor
+     */
+    public TreeDefRow()
+    {
+    	//nothing to do
+    }
+    
+    /**
      * @param defName
      * @param rank
      * @param isEnforced
