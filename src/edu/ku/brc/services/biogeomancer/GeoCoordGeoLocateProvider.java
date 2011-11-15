@@ -133,6 +133,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     county  = county  == null ? "" : county;
                     
                     // make the web service request
+                    System.out.println(String.format("[%s][%s][%s][%s]", country, state, county, localityNameStr));
                     log.info("Making call to GEOLocate web service: " + localityNameStr); //$NON-NLS-1$
                     final GeorefResultSet glResults = GeoLocate.getGeoLocateResults(country, state, county, localityNameStr);
 

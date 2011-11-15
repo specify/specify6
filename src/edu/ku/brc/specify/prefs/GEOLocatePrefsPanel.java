@@ -106,7 +106,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         AppPreferences locPrefs = AppPreferences.getLocalPrefs();
         hywXCBX.setValue(locPrefs.getBoolean(GL_HYWX, isFish), null);
         waterBodyCBX.setValue(locPrefs.getBoolean(GL_WTRBODY, isFish), null);
-        restrictToLowestAdmCBX.setValue(locPrefs.getBoolean(GL_RESTRICT, !isFish), null);
+        restrictToLowestAdmCBX.setValue(locPrefs.getBoolean(GL_RESTRICT, false), null);
         doUncertCBX.setValue(locPrefs.getBoolean(GL_DOUNCERT, isFish), null);
         doPolyCBX.setValue(locPrefs.getBoolean(GL_DOPOLY, isFish), null);
         displacePolyCBX.setValue(locPrefs.getBoolean(GL_DISPLACEPOLY, isFish), null);

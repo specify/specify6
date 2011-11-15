@@ -82,8 +82,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.CollapsableSepExtraCompFactory;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -109,7 +109,6 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tasks.services.PickListUtils;
@@ -297,7 +296,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         if (lockDBBtn != null)
         {
-            String btnTitle = UIRegistry.getLocalizedMessage("SYSSTP_BTN_TITLE", getResourceString((isLocked == null || !isLocked ? "SYSSTP_CLOSE" : "SYSSTP_OPEN")));
+            String btnTitle = UIRegistry.getLocalizedMessage(isLocked == null || !isLocked ? "SYSSTP_BTN_BLK" : "SYSSTP_BTN_OPN");
             lockDBBtn.setLabelText(btnTitle);
         }
     }
@@ -339,7 +338,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 int rv = BasicSQLUtils.update(updateStr);
                 if (rv == 1)
                 {
-                    UIRegistry.displayErrorDlgLocalized("SYSSTP_LCK_MSG", getResourceString(isDBClosed ? "SYSSTP_CLOSED" : "SYSSTP_OPEN"));
+                    UIRegistry.displayErrorDlgLocalized("SYSSTP_LCK_MSG", getResourceString(isDBClosed ? "SYSSTP_LCK_MSG" : "SYSSTP_UNLCK_MSG"));
                     setLockBtntitle(isDBClosed);
                 }
             } else

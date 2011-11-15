@@ -608,76 +608,82 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void configureAttachmentManager(final AppPreferences localPrefs)
     {
-        boolean useFilePath = localPrefs.getBoolean("attachment.use_path", true);
-        String  msgPath     = "";
+        String USE_FILE_PATH_PREF  = "attachment.use_path";
+        String ATTACHMENT_URL_PREF = "attachment.url";
         
-        final String errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
+        boolean useFilePath = localPrefs.getBoolean(USE_FILE_PATH_PREF, true);
+        String  attchURL    = localPrefs.get(ATTACHMENT_URL_PREF, null);
+        String  filePath    = localPrefs.get(ATTACHMENT_PATH_PREF, null);
         
-        AttachmentUtils.setConfigForPath(useFilePath);
         AttachmentManagerIface attachMgr = null;
+        String msgPath  = "";
+        String errorKey = "NOT_AVAIL";
         
-        if (!useFilePath)
+        if (StringUtils.isNotEmpty(attchURL) || StringUtils.isNotEmpty(filePath))
         {
-            String attchURL = localPrefs.get("attachment.url", null);
-            if (StringUtils.isNotEmpty(attchURL))
+            if (StringUtils.isNotEmpty(attchURL)) // Using Web Server for Attachments
             {
+                useFilePath = false;
+                AttachmentUtils.setConfigForPath(useFilePath);
+    
                 WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
                 if (webAssetMgr.isInitialized())
                 {
                     attachMgr = webAssetMgr;
                 }
-            }
-            
-        } else
-        {
-            File       attachmentLocation = null;
-            final File location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
-                
-            try
+            } else
             {
-                String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
-                attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
-                if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
+                useFilePath = true;
+                
+                File       attLoc   = null;
+                final File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+                try
                 {
-                    try
+                    attLoc = filePath != null && !UIRegistry.isMobile() ? new File(filePath) : location;
+                    if (!AttachmentUtils.isAttachmentDirMounted(attLoc))
                     {
-                        msgPath = attachmentLocation.getCanonicalPath();
-                    } catch (IOException e)
+                        try
+                        {
+                            msgPath = attLoc.getCanonicalPath();
+                        } catch (IOException e)
+                        {
+                            msgPath = attLoc.getAbsolutePath();
+                        }
+                    } else
                     {
-                        msgPath = attachmentLocation.getAbsolutePath();
+                        attachMgr = new FileStoreAttachmentManager(attLoc);
                     }
-                } else
-                {
-                    attachMgr = new FileStoreAttachmentManager(attachmentLocation);
+                    
+                    if (filePath == null)
+                    {
+                        localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
+                    }
                 }
-                
-                if (path == null)
+                catch (IOException e1)
                 {
-                    localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
+                    log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                    // TODO RELEASE -  Instead of exiting we need to disable Attachments
+                    //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
-            catch (IOException e1)
-            {
-                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                // TODO RELEASE -  Instead of exiting we need to disable Attachments
-                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-
+            errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
         }
         
         if (attachMgr == null)
         {
+            final String errKey = errorKey;
             log.warn("Problems setting the AttachmentManager at ["+msgPath+"]");
             SwingUtilities.invokeLater(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    UIRegistry.showLocalizedError("AttachmentUtils."+errorKey);
+                    UIRegistry.showLocalizedError("AttachmentUtils."+errKey);
                 }
             });
         }
         
+        localPrefs.putBoolean(USE_FILE_PATH_PREF, useFilePath);
         AttachmentUtils.setAttachmentManager(attachMgr);
     }
     

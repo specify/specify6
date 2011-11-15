@@ -116,7 +116,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                 
                 boolean hwyX          = AppPreferences.getLocalPrefs().getBoolean(GL_HYWX, isFish);
                 boolean findWaterbody = AppPreferences.getLocalPrefs().getBoolean(GL_WTRBODY, isFish);
-                boolean restrictToLowestAdm = AppPreferences.getLocalPrefs().getBoolean(GL_RESTRICT, isFish);
+                boolean restrictToLowestAdm = AppPreferences.getLocalPrefs().getBoolean(GL_RESTRICT, false);
                 boolean doUncert      = AppPreferences.getLocalPrefs().getBoolean(GL_DOUNCERT, isFish);
                 boolean doPoly        = AppPreferences.getLocalPrefs().getBoolean(GL_DOPOLY, isFish);
                 boolean displacePoly  = AppPreferences.getLocalPrefs().getBoolean(GL_DISPLACEPOLY, isFish);

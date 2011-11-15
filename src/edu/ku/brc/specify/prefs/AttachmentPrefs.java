@@ -27,16 +27,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
-import javax.swing.JCheckBox;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+
+import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.af.ui.forms.PanelViewable;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
-import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -66,8 +70,9 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     protected String oldAttachmentPath   = null;
     protected String oldAttachmentURL    = null;
     
-    protected ValCheckBox pathChkBx;
-    protected ValCheckBox urlChkBx;
+    protected JRadioButton pathRB;
+    protected JRadioButton urlRB;
+
 
     /**
      * 
@@ -77,6 +82,22 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         super();
         
         createForm("Preferences", "Attachments");
+        
+        PanelViewable pathPanel = form.getCompById("path_panel");
+        PanelViewable urlPanel  = form.getCompById("url_panel");
+        
+        UIRegistry.loadAndPushResourceBundle("preferences");
+        pathRB = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_PATH"));
+        urlRB = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_URL"));
+        UIRegistry.popResourceBundle();
+        
+        ButtonGroup group = new ButtonGroup();
+        group.add(pathRB);
+        group.add(urlRB);
+        
+        CellConstraints cc = new CellConstraints();
+        pathPanel.add(pathRB, cc.xy(1, 1));
+        urlPanel.add(urlRB,  cc.xy(1, 1));
         
         ValBrowseBtnPanel browse = form.getCompById(ATTCH_PATH_ID);
         if (browse != null)
@@ -96,18 +117,18 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         
         boolean isUsingPath = localPrefs.getBoolean(ATTACHMENT_USE_PATH, true);
         
-        pathChkBx = form.getCompById("attch_path_cbx");
         toggleAttachmentsEnabledState(isUsingPath, false);
-        pathChkBx.setSelected(isUsingPath);
+        pathRB.setSelected(isUsingPath);
         
-        pathChkBx.addActionListener(new ActionListener() {
+        ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                JCheckBox chkBox = (JCheckBox)e.getSource();
-                toggleAttachmentsEnabledState(chkBox.isSelected(), true);
+                toggleAttachmentsEnabledState(pathRB.isSelected(), true);
             }
-         });
+         };
+         pathRB.addActionListener(al);
+         urlRB.addActionListener(al);
 
         oldAttachmentURL = localPrefs.get(ATTACHMENT_URL, "");
         ValTextField urlTF = form.getCompById(ATTCH_URL_ID);
@@ -131,7 +152,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
      */
     protected void toggleAttachmentsEnabledState(final boolean isSelected, final boolean doClearFields)
     {
-        System.out.println("isSelected:"+isSelected);
+        //System.out.println("isSelected:"+isSelected);
         
         ValBrowseBtnPanel pathBrwse = form.getCompById(ATTCH_PATH_ID);
         JLabel            pathLbl   = form.getLabelFor(ATTCH_PATH_ID);
@@ -166,7 +187,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         {
             super.savePrefs();
             
-            Boolean usingPath = (Boolean)pathChkBx.getValue();
+            Boolean usingPath = (Boolean)pathRB.isSelected();
             localPrefs.putBoolean(ATTACHMENT_USE_PATH, usingPath == null ? false : usingPath);  
             verifyAttachmentPath();
             
@@ -183,8 +204,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
      */
     private void verifyAttachmentPath()
     {
-        JCheckBox chk = form.getCompById("attch_path_cbx");
-        boolean isUsingPath = chk.isSelected();
+        boolean isUsingPath = pathRB.isSelected();
         
         if (isUsingPath)
         {
