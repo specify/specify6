@@ -201,8 +201,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                     if (locality != null)
                     {
                         Geography geo      = locality.getGeography();
-                        geo = null;
-                        if (geo != null && locality.getLatitude1() != null && locality.getLongitude1() != null)
+                        if (geo != null && locality.getLatitude1() == null && locality.getLongitude1() == null)
                         {
                             String          country  = getNameForRank(geo, 200);
                             String          state    = getNameForRank(geo, 300);
@@ -231,6 +230,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                     pb.setDefaultDialogBorder();
                     CustomDialog dlg = new CustomDialog((Frame)null, UIRegistry.getResourceString("WARNING"), true, CustomDialog.OK_BTN, pb.getPanel());
                     UIHelper.centerAndShow(dlg);
+                    return;
                 }
             } catch (Exception ex)
             {
