@@ -38,10 +38,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -66,16 +66,16 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ImageDisplay extends JPanel implements GetSetValueIFace
 {
     // Error Code
-    public static final int kImageOK      = 0;
-    public static final int kError        = 1;
-    public static final int kHttpError    = 2;
+    public static final int kImageOK       = 0;
+    public static final int kError         = 1;
+    public static final int kHttpError     = 2;
     public static final int kInterruptedError = 3;
-    public static final int kIOError      = 4;
-    public static final int kURLError     = 5;
+    public static final int kIOError       = 4;
+    public static final int kURLError      = 5;
     
-    private byte[]         bytes          = new byte[100*1024];
+    private byte[]         bytes           = null;
     
-	protected ImageIcon    imageIcon       = null;
+	protected Image        image           = null;
 	protected String       url;
 	protected boolean      isEditMode      = true;
 	protected JButton      editBtn;
@@ -118,11 +118,22 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	 * @param isEditMode whether it is in browse mode or edit mode
 	 * @param hasBorder whether it has a border
 	 */
-	public ImageDisplay(final ImageIcon imgIcon, boolean isEditMode, boolean hasBorder)
-	{
-		this(imgIcon.getIconWidth(), imgIcon.getIconHeight(), isEditMode, hasBorder);
-		setImage(imgIcon);
-	}
+    public ImageDisplay(final ImageIcon imgIcon, boolean isEditMode, boolean hasBorder)
+    {
+        this(imgIcon.getIconWidth(), imgIcon.getIconHeight(), isEditMode, hasBorder);
+        setImage(imgIcon.getImage());
+    }
+
+    /**
+     * @param imgIcon
+     * @param isEditMode
+     * @param hasBorder
+     */
+    public ImageDisplay(final Image imgIcon, boolean isEditMode, boolean hasBorder)
+    {
+        this(imgIcon.getWidth(null), imgIcon.getHeight(null), isEditMode, hasBorder);
+        setImage(imgIcon);
+    }
 
     /**
 	 *
@@ -190,7 +201,13 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		if (returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = new File(chooser.getSelectedFile().getAbsolutePath());
-			setImage(new ImageIcon(file.getAbsolutePath()));
+			try
+            {
+                setImage(ImageIO.read(file));
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
             url = file.getAbsolutePath();
 			repaint();
 		}
@@ -199,24 +216,39 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	}
 
 	/**
-	 * @param imgIcon
+	 * @param newImage
 	 */
-	public synchronized void setImage(final ImageIcon imgIcon)
-	{
-		if (imgIcon != null && imgIcon.getIconWidth() > 0
-				&& imgIcon.getIconHeight() > 0)
-		{
-			imageIcon = imgIcon;
-			setNoImage(false);
-		} else
-		{
-			imageIcon = null;
-			setNoImage(true);
-		}
-		repaint();
+    public synchronized void setImage(final Image newImage)
+    {
+        if (newImage != null && 
+            newImage.getWidth(null) > 0 &&
+            newImage.getHeight(null) > 0)
+        {
+            image = newImage;
+            setNoImage(false);
+        } else
+        {
+            image = null;
+            setNoImage(true);
+        }
+        repaint();
 
-		doLayout();
-	}
+        doLayout();
+    }
+    
+    /**
+     * @param newImageIcon
+     */
+    public synchronized void setImage(final ImageIcon newImageIcon)
+    { 
+        if (newImageIcon != null)
+        {
+            setImage(newImageIcon.getImage());
+        } else
+        {
+            setImage((Image)null);
+        }
+    }
     
     /**
      * 
@@ -252,13 +284,13 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 				try
 				{
 					File f = new File(new URI(url));
-					ImageIcon icon = new ImageIcon(f.getAbsolutePath());
-					setImage(icon);
+					Image img = ImageIO.read(f);
+					setImage(img);
 					repaint();
 					notifyChangeListener();
 					return;
 					
-				} catch (URISyntaxException e)
+				} catch (Exception e)
 				{
 				    status = kURLError;
 				    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -273,7 +305,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		{
 		    status = kURLError;
 			setNoImage(true);
-			setImage(null);
+			setImage((Image)null);
 			notifyChangeListener();
 		}
 		repaint();
@@ -292,10 +324,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		int w = getWidth();
 		int h = getHeight();
 
-		if (imageIcon != null && (!isNoImage && status == kImageOK))
+		if (image != null && (!isNoImage && status == kImageOK))
 		{
-			int imgW = imageIcon.getIconWidth();
-			int imgH = imageIcon.getIconHeight();
+			int imgW = image.getWidth(null);
+			int imgH = image.getHeight(null);
 
 			if (doScale && (imgW > w || imgH > h))
 			{
@@ -328,7 +360,6 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 			{
 				y = (h - imgH) / 2;
 			}
-			Image image = imageIcon.getImage();
 			g.drawImage(image, x, y, imgW, imgH, null);
 			
 		} else if (doShowText)
@@ -468,9 +499,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 				{
 				    localFile.deleteOnExit();
 				    
-				    Image img = getToolkit().getImage(localFile.toURI().toURL());
-				    ImageIcon imgIcon = new ImageIcon(img);
-				    setImage(imgIcon);
+				    setImage(ImageIO.read(localFile));
 				    status = kImageOK;
 				    //System.out.println("Got Image");
 				    
@@ -514,6 +543,11 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     private boolean fillFileFromWeb(final String urlStr, 
                                     final File tmpFile)
     {
+        if (bytes == null)
+        {
+            bytes = new byte[100*1024];
+        }
+        
         try
         {
             URL urlObj = new URL(urlStr);

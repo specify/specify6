@@ -343,7 +343,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                             imgDisplay.setImage(new ImageIcon(img));
                         } else
                         {
-                            imgDisplay.setImage(null);
+                            imgDisplay.setImage((Image)null);
                         }
                     }
 

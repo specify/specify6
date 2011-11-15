@@ -32,10 +32,15 @@ import static edu.ku.brc.ui.UIRegistry.writeTimedSimpleGlassPaneMsg;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,6 +53,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -112,10 +118,21 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     protected static final int GLASS_FONT_SIZE = 14;
     protected static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
+    private static final String URL_FMT  = "http://lifemapper.org/ogc?%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=%d&height=%d&styles=&color=ff0000";
+    private static final String BG_URL   = "http://lifemapper.org/ogc?LAYERS=bmnglowres&MAP=nasalocal.map&SERVICE=WMS&VERSION=1.0.0&FORMAT=image%2Fgif&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-180,-90,180,90&";
+    private static final String BBOX_STR = "-180.0,-90.0,180.0,90.0";
+    
     protected static final int MAP_WIDTH  = 600;
     protected static final int MAP_HEIGHT = 450;
     protected static final int IMG_WIDTH  = 450;
     protected static final int IMG_HEIGHT = 225;
+    
+    protected BufferedImage              blueMarble      = null;
+    protected int                        blueMarbleTries = 0;
+    protected String                     blueMarbleURL;
+    protected ImageListener              blueMarbleListener;
+    protected ImageListener              pointsMapImageListener;
+    protected BufferedImage              renderImage     = null;
     
     protected WorldWindPanel             wwPanel;
     protected boolean                    doResetWWPanel = true;
@@ -333,6 +350,118 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 doSearchGenusSpecies();
             }
         });
+        
+        blueMarbleListener = new ImageListener()
+        {
+            @Override
+            public void imageFetched(BufferedImage image)
+            {
+                blueMarble = image;
+                
+            }
+            
+            @Override
+            public void error()
+            {
+                blueMarbleTries++;
+                if (blueMarbleTries < 5)
+                {
+                    blueMarbleRetry();
+                }
+            }
+        };
+        
+        blueMarbleURL = BG_URL + String.format("WIDTH=%d&HEIGHT=%d", IMG_WIDTH, IMG_HEIGHT);
+        
+        pointsMapImageListener = new ImageListener()
+        {
+            @Override
+            public void imageFetched(final BufferedImage image)
+            {
+                if (renderImage == null)
+                {
+                    renderImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+                }
+                Graphics2D g2d = renderImage.createGraphics();
+                if (g2d != null)
+                {
+                    g2d.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+                    if (blueMarble != null)
+                    {
+                        g2d.drawImage(blueMarble, 0, 0, null);
+                    }
+                    if (image != null)
+                    {
+                        g2d.drawImage(image, 0, 0, null);
+                    }
+                    g2d.dispose();
+                    
+                    imgDisplay.setImage(renderImage);
+                }
+            }
+            
+            @Override
+            public void error()
+            {
+            }
+        };
+        blueMarbleRetry();
+    }
+    
+    /**
+     * 
+     */
+    private void blueMarbleRetry()
+    {
+        getImageFromWeb(blueMarbleURL, blueMarbleListener);
+    }
+    
+    /**
+     * @param urlStr
+     * @param listener
+     */
+    private void getImageFromWeb(final String        urlStr, 
+                                 final ImageListener listener)
+    {
+        System.out.println(urlStr);
+        
+        SwingWorker<BufferedImage, BufferedImage> worker = new SwingWorker<BufferedImage, BufferedImage>()
+        {
+            @Override
+            protected BufferedImage doInBackground() throws Exception
+            {
+                try {
+                    URL url = new URL(urlStr);
+                    return ImageIO.read(url);
+                    
+                 } catch (IOException e) {
+                     
+                 }
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                try
+                {
+                    BufferedImage img = get();
+                    listener.imageFetched(img);
+                    return;
+                    
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+                listener.error();
+                
+                super.done();
+            }
+        };
+        worker.execute();
     }
     
     /**
@@ -647,6 +776,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 return null;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void done()
             {
@@ -717,7 +847,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                 }
                             }
                         }
-
+                        
                     } else
                     {
                         
@@ -769,7 +899,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     }
     
     /**
-     * 
+     * ImageListener
      */
     @SuppressWarnings("unchecked")
     private void doSearchOccur()
@@ -889,14 +1019,14 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                         updateMyDataUIState(hasPnts && StringUtils.isNotEmpty(myDataTF.getText()));
                         if (hasPnts)
                         {
-                            imgDisplay.setImage(null);
+                            imgDisplay.setImage((Image)null);
                             wwPanel.placeMarkers(points, false, false, 0, null, false);
                         
-                            String bboxStr = "-180.0,-90.0,180.0,90.0";
                             imgRequestCnt = 0;
-                            String fmtUrl = "http://lifemapper.org/ogc?map=data_%s&layers=bmng,occ_%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=450&height=225&styles=&color=ff0000";
-                            imgURL = String.format(fmtUrl, occurSet, occurSet, bboxStr);
-                            loadOverviewImage();
+                            
+                            imgURL = makeURL(occurSet);
+                            
+                            getImageFromWeb(imgURL, pointsMapImageListener);
                             
                         } else
                         {
@@ -928,7 +1058,23 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         worker.execute();
     }
     
-    
+    /**
+     * @param occurrenceSetId
+     * @return
+     */
+    private String makeURL(final String occurrenceSetId)
+    {
+        String paramStr;
+        if (StringUtils.isNotEmpty(occurrenceSetId))
+        {
+            paramStr = String.format("map=data_%s&layers=occ_%s", occurrenceSetId, occurrenceSetId);   
+        } else
+        {
+            paramStr = "layers=bmng";
+        }
+        
+        return String.format(URL_FMT, paramStr, BBOX_STR, IMG_WIDTH, IMG_HEIGHT);
+    }
     
     /* (non-Javadoc)
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
@@ -950,15 +1096,6 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         if (StringUtils.isNotEmpty(imgURL) && imgRequestCnt < MAX_IMAGE_REQUEST_COUNT)
         {
             imgDisplay.setValue(imgURL, null);
-            /*SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    imgDisplay.loadImage();
-                }
-            });*/
-            //System.out.println("imgRequestCnt: "+imgRequestCnt);
             imgRequestCnt++;
         }
     }
@@ -971,6 +1108,16 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         myDataTF.setEnabled(enable);
         searchMyDataBtn.setEnabled(enable);
         mySepComp.setEnabled(enable);
+    }
+    
+    //----------------------------------------------------------------------------------
+    //--
+    //----------------------------------------------------------------------------------
+    interface ImageListener
+    {
+        public abstract void imageFetched(BufferedImage image);
+        
+        public abstract void error();
     }
     
     //----------------------------------------------------------------------------------
