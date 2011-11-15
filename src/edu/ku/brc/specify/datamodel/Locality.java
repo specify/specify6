@@ -102,6 +102,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                guid;
     protected String                text1;
     protected String                text2;
+    protected Byte                  sgrStatus;
     
     // Source Data used for formatting
     // XXX.XXXXXXXX N    Decimal Degrees
@@ -160,7 +161,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         latLongAccuracy = null;
         datum = null;
         remarks = null;
-
+        sgrStatus = null;
+        
         lat1text   = null;
         lat2text   = null;
         long1text  = null;
@@ -268,6 +270,23 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         this.relationToNamedPlace = relationToNamedPlace;
     }
+
+    /**
+	 * @return the sgrStatus
+	 */
+    @Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getSgrStatus() 
+	{
+		return sgrStatus;
+	}
+
+	/**
+	 * @param sgrStatus the sgrStatus to set
+	 */
+	public void setSgrStatus(Byte sgrStatus) 
+	{
+		this.sgrStatus = sgrStatus;
+	}
 
     /**
      * * The full name of the locality.

@@ -109,6 +109,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        restrictions;
     protected String                        notifications;
     protected BigDecimal                    totalValue;
+    protected Byte							sgrStatus;
     
     // Security
     protected Byte                          visibility;
@@ -191,6 +192,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         totalValue            = null;
         visibility            = null;
         visibilitySetBy       = null; 
+        sgrStatus             = null;
         
         collectingEvent       = null;
         appraisal             = null;
@@ -1185,6 +1187,24 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         return collectionObjectAttachments;
     }
 
+    
+    /**
+	 * @return the sgrStatus
+	 */
+    @Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getSgrStatus() 
+	{
+		return sgrStatus;
+	}
+
+	/**
+	 * @param sgrStatus the sgrStatus to set
+	 */
+	public void setSgrStatus(Byte sgrStatus) 
+	{
+		this.sgrStatus = sgrStatus;
+	}
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
      */
@@ -1217,6 +1237,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
             ce.forceLoad();
         }
     }
+    
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
@@ -1255,7 +1277,9 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     //----------------------------------------------------------------------
 
 
-    /* (non-Javadoc)
+    
+
+	/* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(CollectionObject obj)

@@ -90,6 +90,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected Set<Collector>        collectors;
     protected Locality              locality;
     protected CollectingTrip        collectingTrip;
+    protected Byte					sgrStatus;
     
     protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
@@ -133,6 +134,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         verbatimLocality = null;
         remarks = null;
         visibility = null;
+        sgrStatus = null;
         
         collectionObjects            = new HashSet<CollectionObject>();
         collectors                   = new HashSet<Collector>();
@@ -192,6 +194,23 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     public void setStationFieldNumber(String stationFieldNumber) {
         this.stationFieldNumber = stationFieldNumber;
     }
+
+    /**
+	 * @return the sgrStatus
+	 */
+    @Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getSgrStatus() 
+	{
+		return sgrStatus;
+	}
+
+	/**
+	 * @param sgrStatus the sgrStatus to set
+	 */
+	public void setSgrStatus(Byte sgrStatus) 
+	{
+		this.sgrStatus = sgrStatus;
+	}
 
     /**
      *      * The method used to obtain the biological object
