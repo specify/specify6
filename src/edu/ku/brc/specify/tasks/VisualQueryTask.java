@@ -202,7 +202,7 @@ public class VisualQueryTask extends BaseTask
         {
             // Note: The event send with the name of pref from the form
             // not the name that was saved. So we don't need to append the discipline name on the end
-            Object value = cmdAction.getProperties().get("Exporttask.OnTaskbar");
+            Object value = cmdAction.getProperties().get("VisualQuerytask.OnTaskbar");
             if (value != null && value instanceof Boolean)
             {
                 /*

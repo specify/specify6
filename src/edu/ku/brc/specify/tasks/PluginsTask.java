@@ -43,7 +43,6 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -62,7 +61,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -89,6 +87,8 @@ public class PluginsTask extends BaseTask
             
     // Static Data Members
     public static final DataFlavor TOOLS_FLAVOR = new DataFlavor(PluginsTask.class, "Plugins");
+    
+    private static final String ON_TASKBAR = "Exporttask.OnTaskbar";
     
     public static final String GE_BALLOON_FG_COLOR     = "google.earth.fgcolor";
     public static final String GE_BALLOON_FG_COLOR_STR = "255, 255, 255";
@@ -529,7 +529,7 @@ public class PluginsTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        if (AppPreferences.getRemote().getBoolean("PLUGINS_TASK", false))
+        if (AppPreferences.getRemote().getBoolean(ON_TASKBAR, false))
         {
             toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }
@@ -633,7 +633,7 @@ public class PluginsTask extends BaseTask
         {
             // Note: The event send with the name of pref from the form
             // not the name that was saved. So we don't need to append the discipline name on the end
-            Object value = cmdAction.getProperties().get("Exporttask.OnTaskbar");
+            Object value = cmdAction.getProperties().get(ON_TASKBAR);
             if (value != null && value instanceof Boolean)
             {
                 /*
