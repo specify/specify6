@@ -63,8 +63,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 {
     private static final Logger log = Logger.getLogger(GeoCoordGeoLocateProvider.class);
     
-    //protected static final String GEOLOCATE_RESULTS_VIEW_CONFIRM = UIRegistry.getString("GeoCoordGeoLocateProvider.GEOLOCATE_RESULTS_VIEW_CONFIRM"); //$NON-NLS-1$
-    
     protected GeoCoordProviderListenerIFace listener    = null;
     protected String                        helpContext = null;
     
@@ -259,7 +257,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
             }
             
             // ask the user if they want to review the results
-            String message = String.format(getResourceString("GeoCoordGeoLocateProvider.GEOLOCATE_RESULTS_VIEW_CONFIRM"), String.valueOf(withResults.size())); //$NON-NLS-1$
+            String message = withResults.size() == 1 ? getResourceString("GEOLOC_RES_VIEW_CONFIRM_ONE") :
+                String.format(getResourceString("GEOLOC_RES_VIEW_CONFIRM"), String.valueOf(withResults.size())); //$NON-NLS-1$
             int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
                     getResourceString("GeoCoordGeoLocateProvider.GEO_CONTINUE"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
             
