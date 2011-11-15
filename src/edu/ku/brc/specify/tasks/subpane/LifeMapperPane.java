@@ -423,7 +423,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     private void getImageFromWeb(final String        urlStr, 
                                  final ImageListener listener)
     {
-        System.out.println(urlStr);
+        //System.out.println(urlStr);
         
         SwingWorker<BufferedImage, BufferedImage> worker = new SwingWorker<BufferedImage, BufferedImage>()
         {
