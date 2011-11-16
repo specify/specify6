@@ -702,13 +702,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         importImagesBtn.setEnabled(true);
         
-        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.NonStd, "WB_SHOW_MAP", false, new ActionListener()
+        /*showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.NonStd, "WB_SHOW_MAP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 showMapOfSelectedRecords();
             }
-        });
+        });*/
         // enable or disable along with Google Earth and Geo Ref Convert buttons
         
         if (isReadOnly)
@@ -817,7 +817,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 convertGeoRefFormatBtn.setEnabled(false);
                 exportKmlBtn.setEnabled(false);
-                showMapBtn.setEnabled(false);
+                //showMapBtn.setEnabled(false);
 
                 String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
                 for (String reqdField : missingGeoRefFields)
@@ -829,14 +829,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                 convertGeoRefFormatBtn.setToolTipText("<html>" + origTT1 + ttText);
                 String origTT2 = exportKmlBtn.getToolTipText();
                 exportKmlBtn.setToolTipText("<html>" + origTT2 + ttText);
-                String origTT3 = showMapBtn.getToolTipText();
-                showMapBtn.setToolTipText("<html>" + origTT3 + ttText);
+                //String origTT3 = showMapBtn.getToolTipText();
+                //showMapBtn.setToolTipText("<html>" + origTT3 + ttText);
             }
             else
             {
                 convertGeoRefFormatBtn.setEnabled(true);
                 exportKmlBtn.setEnabled(true);
-                showMapBtn.setEnabled(true);
+                //showMapBtn.setEnabled(true);
             }
         }
         
@@ -947,7 +947,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn,
+        JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, /*showMapBtn,*/ exportKmlBtn,
                                    geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, showHideUploadToolBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginSSBtns.size());
         for (JComponent c : compsArray)
@@ -2512,7 +2512,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         UsageTracker.incrUsageCount("WB.MapRows");
         
         log.debug("Showing map of selected records");
-        showMapBtn.setEnabled(false);
+        //showMapBtn.setEnabled(false);
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
@@ -2658,7 +2658,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             UIHelper.positionFrameRelativeToTopFrame(mapFrame);
             mapFrame.setVisible(true);
             mapImageLabel.setIcon(map);
-            showMapBtn.setEnabled(true);
+            //showMapBtn.setEnabled(true);
             
             // is the map really skinny?
             int ht = map.getIconHeight();

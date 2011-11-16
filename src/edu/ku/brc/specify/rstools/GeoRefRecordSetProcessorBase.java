@@ -194,14 +194,16 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                Vector<String> badLocalityList = new Vector<String>();
+                Vector<String> noGeoList     = new Vector<String>();
+                Vector<String> hasLatLonList = new Vector<String>();
+
                 for (Integer id : ids)
                 {
                     Locality locality = (Locality)session.getData(Locality.class, "localityId", id, DataProviderSessionIFace.CompareType.Equals);
                     if (locality != null)
                     {
-                        Geography geo      = locality.getGeography();
-                        if (geo != null && locality.getLatitude1() == null && locality.getLongitude1() == null)
+                        Geography geo = locality.getGeography();
+                        if (geo != null)
                         {
                             String          country  = getNameForRank(geo, 200);
                             String          state    = getNameForRank(geo, 300);
@@ -213,24 +215,49 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                                                    county,
                                                                    locality.getLocalityName());
                             geoRefDataList.add(geoRefData);
+                            
+                            if (locality.getLatitude1() != null && locality.getLongitude1() != null)
+                            {
+                                hasLatLonList.add(locality.getIdentityTitle());
+                            }
+                            session.evict(geo);
                         } else
                         {
-                            badLocalityList.add(locality.getIdentityTitle());
+                            noGeoList.add(locality.getIdentityTitle());
                         }
+                        session.evict(locality);
                     }
                 }
                 
-                if (badLocalityList.size() > 0)
+                if (noGeoList.size() > 0 || hasLatLonList.size() > 0)
                 {
-                    JList           list = new JList(badLocalityList);
-                    CellConstraints cc   = new CellConstraints();
-                    PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
-                    pb.add(UIHelper.createI18NLabel("GeoRefRSProc.BAD_LOCS"));
-                    pb.add(UIHelper.createScrollPane(list, true), cc.xy(1, 3));
+                    String rowDef = "p,2px,f:p:g"  + (noGeoList.size() > 0 && hasLatLonList.size() > 0 ? ",10px, p,2px,f:p:g" : "");
+                    CellConstraints cc = new CellConstraints();
+                    PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", rowDef));
+                    
+                    int y = 1;
+                    if (noGeoList.size() > 0)
+                    {
+                        JList noGeoLst = new JList(noGeoList);
+                        pb.add(UIHelper.createI18NLabel("GeoRefRSProc.BAD_GEOS"), cc.xy(1, y)); y += 2;
+                        pb.add(UIHelper.createScrollPane(noGeoLst, true), cc.xy(1, y)); y += 2;
+                    }
+                    
+                    if (hasLatLonList.size() > 0)
+                    {
+                        JList locLst = new JList(hasLatLonList);
+                        pb.add(UIHelper.createI18NLabel("GeoRefRSProc.HAS_LOCS"), cc.xy(1, y)); y += 2;
+                        pb.add(UIHelper.createScrollPane(locLst, true), cc.xy(1, y));
+                    }
+                    
                     pb.setDefaultDialogBorder();
-                    CustomDialog dlg = new CustomDialog((Frame)null, UIRegistry.getResourceString("WARNING"), true, CustomDialog.OK_BTN, pb.getPanel());
+                    CustomDialog dlg = new CustomDialog((Frame)null, UIRegistry.getResourceString("WARNING"), true, CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN, pb.getPanel());
+                    dlg.setOkLabel("Continue");
                     UIHelper.centerAndShow(dlg);
-                    return;
+                    if (dlg.isCancelled())
+                    {
+                        return;
+                    }
                 }
             } catch (Exception ex)
             {

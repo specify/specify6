@@ -16,7 +16,7 @@
             <defperm name="LimitedAccess" perm="false,false,false,false"/>
             <defperm name="Guest"         perm="false,false,false,false"/>
         </pref>
-        <pref name="ATTACHMENTS" title="ATTACHMENTS" icon="Attachment"  panelClass="edu.ku.brc.specify.prefs.AttachmentPrefs">
+        <pref name="ATTACHMENTS" title="ATTACHMENTS" icon="AttachmentPrefs"  panelClass="edu.ku.brc.specify.prefs.AttachmentPrefs">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>
             <defperm name="LimitedAccess" perm="false,false,false,false"/>

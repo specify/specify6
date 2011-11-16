@@ -217,6 +217,7 @@
     
     <!-- Preferences -->
     <icon name="Preferences"      file="preferences.png"    sizes="all"/>
+    <icon name="AttachmentPrefs"  file="attach_pref.png"    sizes="all"/>
     
     <!-- TreeTableViewer icons -->
     <icon name="TTV_Subtree"        file="ExpandChildren32x32.png"    sizes="all"/>
