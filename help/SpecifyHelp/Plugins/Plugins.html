@@ -21,7 +21,7 @@
 <p>Plugins that can accept a Record Set   display a colored outline as the Record Set is dragged within the sidebar. An arrow will display within the outline when the Record Set can be dropped onto the Plugin.</p>
 <p>Specify is not responsible for the integrity or accuracy of any of the results of these web services. Specify is integrated with these services as a service to the community. For more information about these plugins, visit  their web sites; <a href="http://www.museum.tulane.edu/geolocate/">GEOLocate</a> or <a href="http://earth.google.com/#utm_campaign=en&utm_medium=ha&utm_source=en-ha-na-us-sk-eargen&utm_term=earth">Google Earth.</a></p>
 <p>&nbsp;</p>
-<h3><strong><a name="ge" id="ge"></a>Google Earth</strong></h3>
+<h3><strong><img src="../../images/GoogleEarth32x32.png" alt="google earth" width="32" height="32" /> <a name="ge" id="ge"></a>Google Earth</strong></h3>
 <blockquote>
   <p>The Google Earth Plugin is used as a means of visualizing object records from Specify in Google Earth.</p>
   <p>The full version of Google Earth 4.3 must be installed on the local machine for the Specify Google Earth integration to work, not the Beta version. Go to <a href="http://earth.google.com/">earth.google.com</a> for a free download. </p>
@@ -35,55 +35,156 @@
   <p>Google Earth is also available for use in the WorkBench</p>
 </blockquote>
 <p>&nbsp;</p>
-<h3><strong><a name="biogeo" id="biogeo"></a>GEOLocate</strong></h3>
-<blockquote>
-  <p>GEOLocate uses a description of a Locality and at least two geographic locations to find  Latitude and Longitude coordinate data. This is referred to as georeferencing.</p>
-  <p><u>Locality data Requirements</u></p>
-  <ul>
-    <li>Geographic Ranks, including country, state and an optional county for US data.</li>
-    <li>Locality Name</li>
-  </ul>
-  <p>A GEOLocate web link button, <img src="../../images/geolocate_button.png" width="90" height="23" />, is available on the Locality form for a quick link to GEOLocate. Click this button to automatically send the necessary Locality data to GEOLocate and launch a window with return data for Latitude and Longitude.</p>
-  <p>Once the required information is entered in the Locality form, the button (at the bottom of the locality form) becomes enabled. Click the button to automatically send the necessary Locality data to GEOLocate. The return georeferencing data  displays in a dialog which includes the locality information, count of results, longitude, latitude, and a map of the location. If the web service results represent more than one record, each record can be stepped through by using the buttons at the bottom of the dialog:</p>
-
-<table width="100%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="24%"><u><strong>Button</strong></u></td>
-    <td width="76%"><u><strong>Result</strong></u></td>
-  </tr>
-  <tr>
-    <td><strong>Help</strong></td>
-    <td>Launches Specify Help.</td>
-  </tr>
-  <tr>
-    <td><strong>Accept</strong></td>
-    <td><p>Accepts the locality data from the web service and copies it into the latitude and longitude fields. Specify also writes the name of the web service in the src lat long unit field, then steps to the next record.</p>    </td>
-  </tr>
-  <tr>
-    <td><strong>Skip</strong></td>
-    <td>Skips the current record information and steps to the next record.</td>
-  </tr>
-  <tr>
-    <td><strong>Quit</strong></td>
-    <td>Closes the dialog.</td>
-  </tr>
-</table>
-
-  <p>If the web service data is accepted and latitude and longitude information already exists in the locality form the existing information, including the source field, will be overwritten by the web service data.</p>
+<h3><strong><img src="../../images/geolocate_32.png" alt="geolocate" width="32" height="32" /> <a name="biogeo" id="biogeo"></a>GEOLocate</strong></h3>
+  <blockquote>
+    <p>GEOLocate has been upgraded to version 2.0 in Specify 6.4.</p>
+    <p>GEOLocate uses a description of a Locality, and three geography fields, such as County, State and Country, to find Latitude and Longitude coordinate data. This is referred to
+      as georeferencing. </p>
+    <p>Click  <img src="../../images/geolocate_button.png" alt="GEOLocate button" width="90" height="23" /> on the side bar and select either Collection Objects or Record Sets to send  to the GEOLocate service. Or, drag and drop a Record Set  GEOLocate on the side bar. A message will either display the number of records GEOLocate found results for, or state that no results were found. </p>
+    <p align="center"><img src="../../images/geolocate_view.png" alt="View GEOLocate" width="432" height="116" /></p>
+    <p align="center" class="imgcaption">View GEOLocate Results</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>Results will display in the GEOLocate Results Chooser tool. </p>
+    <p>&nbsp;</p>
+    <p align="center"><img src="../../images/geolocate_screen.png" alt="geolocate" /></p>
+    <p align="center" class="imgcaption">GEOLocate</p>
+    <p><strong>Locality Information </strong>displays the  Locality Description, County, State and Country values in your current Specify record. </p>
+    <p><strong>Correction (Green) Marker Properties</strong> includes the values for the most accurate result among the GEOLocate results returned. These values are also displayed visually on a map.</p>
+    <p>GEOLocate results can be edited using either the Correction Marker Properties form or the map elements. Changes made on the map are automatically recalculated and updated in the corresponding fields on the form. Updated values in the Correction Marker Properties form are  represented in the corresponding map element.</p>
+    <blockquote>
+      <p><em><strong>Note:</strong></em> As you move your mouse within the map the corresponding latituted and longitude values display in the lower right corner under the map.</p>
+      <p><strong>Position</strong> represents the Latitude and Longitude of the GEOLocate result, visually depicted on the map as a green marker. These results can be edited.</p>
+      <blockquote>
+        <p>Edit the Position using the Marker Properties form:</p>
+        <ol>
+          <ol>
+            <li> Type new values in the Latitude and/or Longitude box. </li>
+            <li>Click the <em>Apply</em> button to accept the changes and update the location of the green marker on the map.</li>
+          </ol>
+        </ol>
+        <p>Edit the Position using the map:</p>
+        <ol>
+          <ol>
+            <li>Click on the green dot on the map and drag it to a new position. The latitude and/or longitude values on the form will automatically update.</li>
+          </ol>
+        </ol>
+      </blockquote>
+      <p><strong>Uncertainty Radius</strong> represents the error due to the uncertainty of the locality information provided. It is shown as a grey circle around the green point marker on the map. The Uncertainty Radius can also be edited.</p>
+      <blockquote>
+        <p><em><strong>Note:</strong></em> At this time in Specify the Uncertainty Radius values are not written in a Specify database field. </p>
+        <p>Edit the Uncertainty Radius using the Marker Properties form:</p>
+        <ol>
+          <ol>
+            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point. </li>
+            <br />
+            <li>Type a new numeric value into the box and click the <em>Apply</em> button to accept the changed value in the GEOLocate tool and update the Uncertainty Radius on the map.</li>
+          </ol>
+        </ol>
+        <p>Edit the Uncertaintly Radius using the map:</p>
+        <ol>
+          <ol>
+            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point. </li>
+            <br />
+            <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower right corner under the map. </li>
+          </ol>
+        </ol>
+      </blockquote>
+      <p><strong>Error Polygon</strong> is a polygon which encompasses the entire area of uncertainty. </p>
+      <p>Results which include an Error Polygon will display the vertex values in the form and a red polygon on the map. Not all results include an Error Polygon. If the results do include an Error Polygon the vertex values in the form must be cleared by clicking the <em>Clear Polygon</em> button before  the Error Polygon can be edited.</p>
+      <blockquote>
+        <p><em><strong>Note:</strong></em> At this time in Specify the Error Polygon values are not written in a Specify database field. </p>
+        <p>Edit the Error Polygon using the Marker Properties form:</p>
+        <ol>
+          <ol>
+            <li>Click the <em>Draw Polygon</em> button. The box will change to accept numeric values. Type in latitude and longitude values, separated by commas. </li>
+            <br />
+            <li>Click the <em>Apply</em> button to accept the values in the GEOLocate tool and draw the polygon on the map. </li>
+          </ol>
+        </ol>
+        <p>Edit the Error Polygon using the map:</p>
+        <ol>
+          <ol>
+            <li>Click the <em>Draw Polygon</em> button. A blue circle will appear around your mouse in the map area. </li>
+            <br />
+            <li>Left-click on the map to add a vertex point.</li>
+            <br />
+            <li>Continue adding points until the polygon is complete.</li>
+            <br />
+            <li>Double click on the last vertex point to finish the polygon and exit the draw polygon mode. The vertex values will be updated in the form. </li>
+          </ol>
+        </ol>
+        <blockquote>
+          <blockquote>
+            <p>OR, Right-click on the map to cancel the vertex and exit the draw polygon mode.</p>
+          </blockquote>
+        </blockquote>
+        <p><em><strong>Note:</strong></em> If there are vertex values included in the Error Polygon field the values must be cleared by clicking the Clear Polygon button before new values can be entered or drawn on the map.</p>
+      </blockquote>
+    </blockquote>
+    <p><strong>GEOLocate Results</strong> displays the GEOLocate results in grid form. If multiple results are returned they are numbered and sorted with the most accurate listed first. The active result is highlighted in blue on the form. Other GEOLocate results are represented by red  markers on the map.</p>
+    <blockquote>
+      <p>Click on either a record in the GEOLocate Results form or a red point on the map to make it the current, or active result. The fields in the Correction Marker Properties box will be filled in and the green marker will represent the current result until you manually make corrections. </p>
+      <ul>
+        <li><strong>Number</strong> represents the order of GEOLocate returns both in the form and in a corresponding point on the map.</li>
+        <br />
+        <li><strong>Latitude</strong> represents the  latitude to the hundredth degree.</li>
+        <br />
+        <li><strong>Longitude</strong> represents the  longitude to the hundredth degree.</li>
+        <br />
+        <li><strong>Pattern</strong>, or pattern identifier, is a text description of the pattern or keyword used to determine a GEOLocate result. Single locality strings often include  multiple patterns, producing multiple GEOLocate results.</li>
+        <br />
+        <li><strong>Precision</strong> is an indication of the quality of locality information. Each GEOLocate result is given a score between 0 and 100 which represents the probability of it being a match. That score is then placed within a 'low', 'medium' and 'high' ranking to indicate precision. Results are then ordered according to their probability number, which allows results within the same rank to include the most accurate matches first.</li>
+        <br />
+        <li><strong>Error Polygon</strong> is a polygon which encompasses the entire area of uncertainty.</li>
+        <br />
+        <li><strong>Uncertainty</strong> represents the error due to the uncertainty of the locality information provided.</li>
+      </ul>
+    </blockquote>
+    <p><strong>Other Map Controls</strong></p>
+    <blockquote>
+      <p><u>Zoom In/Out</u></p>
+      <blockquote>
+        <p>Slide the slider down to zoom in, up to zoom out.</p>
+        <p>Click the <img src="../../images/geolocate_zooin.png" alt="zoom in" width="20" height="19" /> button to zoom in, the <img src="../../images/geolocate_zoom_out.png" alt="zoom out" width="20" height="19" /> button to zoom out.</p>
+        <p>Turn the wheel on your mouse up to zoom in,  down to zoom down.</p>
+        <p>Double click to zoom in, right-click to zoom out.</p>
+        <p>&nbsp;</p>
+      </blockquote>
+    </blockquote>
+    <p><strong>GEOLocate Web Butto</strong>n</p>
+    <p>Click the <img src="../../images/geolocate_web.png" alt="geolocate web" width="119" height="26" /> button to open the web-based version of GEOLocate in your default browser and plot the current result set on the map. </p>
+    <p>&nbsp;</p>
+    <p><strong>Other Buttons</strong></p>
+    <table width="85%" border="1" cellspacing="1" cellpadding="6">
+      <tr>
+        <td><u><strong>Button</strong></u></td>
+        <td><u><strong>Result</strong></u></td>
+      </tr>
+      <tr>
+        <td width="11%" align="left" valign="top"><div align="left"><strong>Help</strong></div></td>
+        <td width="89%" align="left" valign="top">Opens the Specify Help Window </td>
+      </tr>
+      <tr>
+        <td align="left" valign="top"><div align="left"><strong>Accept</strong></div></td>
+        <td align="left" valign="top">Stores the latitude and longitude values in the appropriate cells of the  record.</td>
+      </tr>
+      <tr>
+        <td align="left" valign="top"><div align="left"><strong>Skip</strong></div></td>
+        <td align="left" valign="top">Ignores all results obtained for a given record, and displays  the results for the next  record.</td>
+      </tr>
+      <tr>
+        <td align="left" valign="top"><div align="left"><strong>Done</strong></div></td>
+        <td align="left" valign="top">Accepts the currently selected row and closes the GEOLocate Results Chooser dialog.</td>
+      </tr>
+    </table>
+    <p>&nbsp;</p>
+    <p> The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
+    <p>&nbsp;</p>
+  </blockquote>
+  <p>More information about GEOLocate can be found at <a href=
+      "http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>. </p>
   <p>&nbsp;</p>
 
-  <p>&nbsp;</p>
-</blockquote>
-<h3><a name="lifemapper" id="lifemapper"></a>Lifemapper</h3>
-<p>Lifemappper is a biodiversity geospatial data modeling, visualization and analysis platform consisting of multiple web services for systematics, biogeographical and macroecological research. Lifemapper has been integrated into Specify to allow users to view their own specify distribution data as well as compare their data to data in GBIF. </p>
-<p>Click on the Lifemapper button on the sidebar to launch the plugin. </p>
-<p align="center"><img src="../../images/lifemapper.png" alt="lifemapper screen" width="504" height="525" /></p>
-<p align="center" class="imgcaption">Lifemapper Plugin</p>
-<p align="center">&nbsp;</p>
-<p align="left">Enter a species name in the top text box and click the <em>Search</em> button. Or, enter the first three letters of a species name and choose the name from the list of results in the results box. </p>
-<p align="left">The corresponding locality points from your data will be plotted on the map in ??? color.</p>
-<p align="left">The species locality points from GBIF will be plotted on the map in ???? color.</p>
-<p align="left">Enter a name or Latitude and Longitude values in the Locality text box to zoom the map to that location. </p>
-<p align="left">&nbsp;</p>
 </body>
 </html>

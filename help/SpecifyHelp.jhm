@@ -123,6 +123,7 @@
    <mapID target="Stats" url="SpecifyHelp/Statistics/Statistics.html"/>
    <mapID target="Load" url="SpecifyHelp/Security/loading.html"/> 
    <mapID target="PrefsLoan" url="SpecifyHelp/Prefs/Loans.html"/>
+   <mapID target="PrefsAttachments" url="SpecifyHelp/Prefs/Attachments.html"/>
    <mapID target="PrefsGeolocate" url="SpecifyHelp/Prefs/Geolocate.html"/>
    <mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/> 
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
@@ -139,6 +140,7 @@
    <mapID target="separate_apps" url="SpecifyHelp/Dialogs/separate_apps.html"/>
    <mapID target="SGR" url="SpecifyHelp/Plugins/SGR.html"/>
    <mapID target="sgr_intro" url="SpecifyHelp/Plugins/SGR_intro.html"/>
+   <mapID target="Lifemapper" url="SpecifyHelp/Plugins/lifemapper.html"/>
       
 
 
@@ -372,7 +374,7 @@
    <mapID target="sgr_matchresults_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_matcher"/>
    <mapID target="sgr_matchresults_properties" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_properties"/>
    <mapID target="sgr_edit_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_edit_matcher"/>   
-   <mapID target="lifemapper" url="SpecifyHelp/Plugins/Plugins.html#lifemapper"/>      
+   <mapID target="lm" url="SpecifyHelp/Plugins/Plugins.html#lm"/>      
     
                   
 </map>

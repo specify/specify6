@@ -50,6 +50,7 @@
 			<tocitem text="Using Backup and Restore" target="Backup_Restore" />
 		</tocitem>
 		<tocitem text="Setting Specify Preferences" target="PreferencesOverview">
+            <tocitem text="Attachments" target="PrefsAttachments" />
 			<tocitem text="EMail" target="PrefsEMail" />
 			<tocitem text="Formatting" target="PrefsFormatting" />
 			<tocitem text="GoogleEarth" target="PrefsGoogleEarth" />
@@ -170,6 +171,7 @@
 		<tocitem text="Importing and Exporting Resources" target="Import_Intro">
 			<tocitem text="Import/Export Forms and Reports" target="Import" />
 		</tocitem>
+		<tocitem text="Lifemapper" target="lifemapper" />
 		<tocitem text="Exporting Data" target="export_data">
 			<tocitem text="Web Publishing" target="web_publishing" />
 			<tocitem text="Schema Mapping" target="schema_mapping" />

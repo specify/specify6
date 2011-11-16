@@ -15,7 +15,7 @@ table.box td { border-bottom: 1px solid gray; border-right: 1px solid gray }
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2>GEOLocate</h2>
+<h2><img src="../../images/geolocate_32.png" alt="geolocate" width="32" height="32" /> GEOLocate</h2>
 <p>The WorkBench uses the GEOLocate web service to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
 The WorkBench processes all the selected rows and caches the information, enabling the results to be stepped through  and the appropriate Latitude / Longitude 
 to be either selected or skipped. </p>
@@ -51,45 +51,152 @@ to be either selected or skipped. </p>
     (this is a results column)</div></td>
 </tr>
 </table>
-<p>The GEOLocate tool uses the data present in the Locality Name, Country, State and County colunns to query the GEOLocate service.&nbsp;The service will not work without data in all of the columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the GEOLocate service.&nbsp; If GEOLocate is able to obtain results for any of the records, the GEOLocate Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
-<p align="center"><img src="../images/geolocate_screen.png" alt="GEOLocate" /></p>
-<p align="center" class="imgcaption">GEOLocate Results Chooser </p>
+<p>The GEOLocate tool uses the data present in the Locality Name, Country, State and County colunns to query the GEOLocate service.&nbsp;The service will not work without data in the Locality Name and at least two other columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the GEOLocate service.&nbsp; If GEOLocate is able to obtain results for any of the records, the GEOLocate Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
+<p>To use GEOLocate select one or more records in your Data Set and click the <img src="../../images/geolocate_20.png" alt="geolocate" width="20" height="20" /> button on the Work Space Item Bar.</p>
+<p align="center">&nbsp;</p>
+<p>A message will either display the number of records GEOLocate found results for, or state that no results were found. </p>
+<p align="center"><img src="../../images/geolocate_view.png" alt="View GEOLocate" width="432" height="116" /></p>
+<p align="center" class="imgcaption">View GEOLocate Results</p>
 <p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Results will display in the GEOLocate Results Chooser tool. </p>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/geolocate_screen.png" alt="geolocate" /></p>
+<p align="center" class="imgcaption">GEOLocate</p>
+<p><strong>Locality Information </strong>displays the  Locality Description, County, State and Country values in your current record. </p>
+<p><strong>Correction (Green) Marker Properties</strong> includes the values for the most accurate result among the GEOLocate results returned. These values are also displayed visually on a map.</p>
+<p>GEOLocate results can be edited using either the Correction Marker Properties form or the map elements. Changes made on the map are automatically recalculated and updated in the corresponding fields on the form. Updated values in the Correction Marker Properties form are automatically represented in the corresponding map element.</p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> As you move your mouse within the map the corresponding latituted and longitude values display in the lower right corner under the map.</p>
+  <p><strong>Position</strong> represents the Latitude and Longitude of the GEOLocate result, visually depicted on the map as a green marker. These results can be edited.</p>
+  <blockquote>
+    <p>Edit the Position using the Marker Properties form:</p>
+    <blockquote>
+      <ol>
+        <li> Type new values in the Latitude and/or Longitude box. </li>
+        <li>Click the <em>Apply</em> button to accept the changes and update the location of the green marker on the map.</li>
+      </ol>
+    </blockquote>
+    <p>Edit the Position using the map:</p>
+    <blockquote>
+      <ol>
+        <li>Click on the green dot on the map and drag it to a new position. The latitude and/or longitude values on the form will automatically update.</li>
+      </ol>
+    </blockquote>
+  </blockquote>
+  <p><strong>Uncertainty Radius</strong> represents the error due to the uncertainty of the locality information provided. It is shown as a grey circle around the green point marker on the map. The Uncertainty Radius can also be edited.</p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> At this time in Specify the Uncertainty Radius values are not written in a Specify database field. </p>
+    <p>Edit the Uncertainty Radius using the Marker Properties form:</p>
+    <blockquote>
+      <ol>
+        <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
+        </li>
+        <li>Type a new numeric value into the box and click the <em>Apply</em> button to accept the changed value in the GEOLocate tool and update the Uncertainty Radius on the map.</li>
+      </ol>
+    </blockquote>
+    <p>Edit the Uncertaintly Radius using the map:</p>
+    <blockquote>
+      <ol>
+        <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
+        </li>
+        <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower right corner under the map. </li>
+      </ol>
+    </blockquote>
+  </blockquote>
+  <p><strong>Error Polygon</strong> is a polygon which encompasses the entire area of uncertainty. </p>
+  <p>Results which include an Error Polygon will display the vertex values in the form and a red polygon on the map. Not all results include an Error Polygon. If the results do include an Error Polygon the vertex values in the form must be cleared by clicking the <em>Clear Polygon</em> button before  the Error Polygon can be edited.</p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> At this time in Specify the Error Polygon values are not written in a Specify database field. </p>
+    <p>Edit the Error Polygon using the Marker Properties form:</p>
+    <blockquote>
+      <ol>
+        <li>Click the <em>Draw Polygon</em> button. The box will change to accept numeric values. Type in latitude and longitude values, separated by a commas.<br />
+        </li>
+        <li>Click the <em>Apply</em> button to accept the values in the GEOLocate tool and draw the polygon on the map. </li>
+      </ol>
+    </blockquote>
+    <p>Edit the Error Polygon using the map:</p>
+    <blockquote>
+      <ol>
+        <li>Click the <em>Draw Polygon</em> button. A blue circle will appear around your mouse in the map area.<br />
+        </li>
+        <li>Right-Click on the map to add a vertex point.<br />
+        </li>
+        <li>Continue adding points until the polygon is complete.<br />
+        </li>
+        <li>Double click on the last vertex point to finish the polygon and exit the draw polygon mode. The vertex values will be updated in the form. </li>
+      </ol>
+      <blockquote>
+          <p>OR, Right-click on the map to cancel the vertex and exit the draw polygon mode.</p>
+      </blockquote>
+    </blockquote>
+    <p><em><strong>Note:</strong></em> If there are vertex values included in the Error Polygon field the values must be cleared by clicking the Clear Polygon button before new values can be entered or drawn on the map.</p>
+  </blockquote>
+</blockquote>
+<p><strong>GEOLocate Results</strong> displays the GEOLocate results in grid form. If multiple results are returned they are numbered and sorted with the most accurate listed first. The active result is highlighted in blue on the form. Other GEOLocate results are represented by red  markers on the map.</p>
+<blockquote>
+  <p>Click on either a record in the GEOLocate Results form or a red point on the map to make it the current, or active result. The fields in the Correction Marker Properties box will be filled in and the green marker will represent the current result until you manually make corrections. </p>
+  <ul>
+    <li><strong>Number</strong> represents the order of GEOLocate returns both in the form and in a corresponding point on the map.    </li><br />
+  
+    <li><strong>Latitude</strong> represents the  latitude to the hundredth degree.</li><br />
+ 
+    <li><strong>Longitude</strong> represents the  longitude to the hundredth degree.</li><br />
 
-<p>The number of records with results displays in the dialog title bar. The dialog itself displays results,  through the GEOLocate web service, and and allows them to be selected.&nbsp; </p>
-<p>The upper left portion of the dialog (ID, Country, Adm 1 or State, Adm 2 or County and Locality) displays the details about the query sent to GEOLocate from the Data Set.&nbsp; </p>
-<p>The map displays a graphical representation of the result(s) using  a pair of map servers, one hosted by NASA and one hosted at the University of Kansas.&nbsp; </p>
-<p>The lower portion of the dialog displays the resulting matches returned by GEOLocate.&nbsp; Often, if the locality description is specific enough, GEOLocate will provide only one result.&nbsp; At times, the service provides numerous results.&nbsp; </p>
-<p>To choose a result,  select  the row that corresponds with the correct coordinates of the Data Set record from the lower table.&nbsp; </p>
-<p>To deselect a row, either select a different row or hold the Control key while clicking on the currently selected row. </p>
-<p>The buttons at the bottom of the dialog offer the following functionality:</p>
-<table width="85%" border="1" cellspacing="1" cellpadding="6">
-  <tr>
-    <td><u><strong>Button</strong></u></td>
-    <td><u><strong>Result</strong></u></td>
-  </tr>
-  <tr>
-    <td width="11%" align="left" valign="top"><div align="left"><strong>Help</strong></div></td>
-    <td width="89%" align="left" valign="top">Opens the WorkBench Help Window </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="left"><strong>Accept</strong></div></td>
-    <td align="left" valign="top">Stores the latitude and longitude values in the appropriate cells of the Data Set record corresponding to the query.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="left"><strong>Skip</strong></div></td>
-    <td align="left" valign="top">Ignores all results obtained for a given record, and displays  the results for the next  record.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="left"><strong>Done</strong></div></td>
-    <td align="left" valign="top">Accepts the currently selected row and closes the GEOLocate Results Chooser dialog.</td>
-  </tr>
-</table>
+    <li><strong>Pattern</strong>, or pattern identifier, is a text description of the pattern or keyword used to determine a GEOLocate result. Single locality strings often include  multiple patterns, producing multiple GEOLocate results.</li><br />
+ 
+    <li><strong>Precision</strong> is an indication of the quality of locality information. Each GEOLocate result is given a score between 0 and 100 which represents the probability of it being a match. That score is then placed within a 'low', 'medium' and 'high' ranking to indicate precision. Results are then ordered according to their probability number, which allows results within the same rank to include the most accurate matches first.</li><br />
+ 
+    <li><strong>Error Polygon</strong> is a polygon which encompasses the entire area of uncertainty.</li><br />
+ 
+    <li><strong>Uncertainty</strong> represents the error due to the uncertainty of the locality information provided.</li>
+  </ul>
+</blockquote>
+<p><strong>Other Map Controls</strong></p>
+<blockquote>
+  <p><u>Zoom In/Out</u></p>
+  <blockquote>
+    <p>Slide the slider down to zoom in, up to zoom out.</p>
+    <p>Click the <img src="../../images/geolocate_zooin.png" alt="zoom in" width="20" height="19" /> button to zoom in, the <img src="../../images/geolocate_zoom_out.png" alt="zoom out" width="20" height="19" /> button to zoom out.</p>
+    <p>Turn the wheel on your mouse up to zoom in,  down to zoom down.</p>
+    <p>Double click to zoom in, right-click to zoom out.</p>
+    <p>&nbsp;</p>
+  </blockquote>
+</blockquote>
+<p><strong>GEOLocate Web Butto</strong>n</p>
+<p>Click the <img src="../../images/geolocate_web.png" alt="geolocate web" width="119" height="26" /> button to open the web-based version of GEOLocate in your default browser and plot the current result set on the map. </p>
 <p>&nbsp;</p>
-<p>  The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
-<p>The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
-<p>The WorkBench copies the latitude and longitude data into a hidden <em>Source</em> field. If the Data Set is uploaded into Specify 6 this hidden field will copy into the <em>Source</em> field in Specify 6 and will display on the Locality form.</p>
-<p>The WorkBench does not keep any ancillary data.</p>
-<br />
+<p><strong>Other Buttons</strong></p>
+<blockquote>
+  <table width="85%" border="1" cellspacing="1" cellpadding="6">
+    <tr>
+      <td><u><strong>Button</strong></u></td>
+      <td><u><strong>Result</strong></u></td>
+    </tr>
+    <tr>
+      <td width="11%" align="left" valign="top"><div align="left"><strong>Help</strong></div></td>
+      <td width="89%" align="left" valign="top">Opens the Specify Help Window </td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><div align="left"><strong>Accept</strong></div></td>
+      <td align="left" valign="top">Stores the latitude and longitude values in the appropriate cells of the  record.</td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><div align="left"><strong>Skip</strong></div></td>
+      <td align="left" valign="top">Ignores all results obtained for a given record, and displays  the results for the next  record.</td>
+    </tr>
+    <tr>
+      <td align="left" valign="top"><div align="left"><strong>Done</strong></div></td>
+      <td align="left" valign="top">Accepts the currently selected row and closes the GEOLocate Results Chooser dialog.</td>
+    </tr>
+  </table>
+</blockquote>
+<p>&nbsp;</p>
+<p> The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
+<p>&nbsp;</p>
+<p>More information about GEOLocate can be found at <a href=
+      "http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>. </p>
+<p align="center" class="imgcaption">&nbsp;</p>
 </body>
 </html>
