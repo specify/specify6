@@ -55,6 +55,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -271,8 +272,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Boolean    doCreateCE = collection.getIsEmbeddedCollectingEvent();
         CollectionObject colObj = (CollectionObject)newDataObj;
-        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        if (doCreateCE)
         {
             // Carry Forward may have already added 
             // some values so we need to check to make sure
@@ -282,6 +285,35 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 CollectingEvent ce = new CollectingEvent();
                 ce.initialize();
                 colObj.addReference(ce, "collectingEvent");
+            }
+        }
+        
+        boolean defaultForAdd = false; // helps with debugging
+        
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        if (remotePrefs != null)
+        {
+            Integer colId = collection.getId();
+            if (remotePrefs.getBoolean("CO_CREATE_COA_"+colId, defaultForAdd))
+            {
+                CollectionObjectAttribute coa = new CollectionObjectAttribute();
+                coa.initialize();
+                colObj.addReference(coa, "collectionObjectAttribute");
+            }
+            
+            if (remotePrefs.getBoolean("CO_CREATE_PREP_"+colId, defaultForAdd))
+            {
+                Preparation prep = new Preparation();
+                prep.initialize();
+                colObj.addReference(prep, "preparations");
+            }
+            
+            if (remotePrefs.getBoolean("CO_CREATE_DET_"+colId, defaultForAdd))
+            {
+                Determination det = new Determination();
+                det.initialize();
+                det.setIsCurrent(true);
+                colObj.addReference(det, "determinations");
             }
         }
     }

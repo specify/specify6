@@ -325,18 +325,10 @@ public class DataEntryTask extends BaseTask
             dataObj = dataObjList;
         }
         
-        FormPane tmpFP;
-        if (view != null)
-        {
-            tmpFP = new FormPane(view.getName(), task, view, mode, dataObj, 
-                                 isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER) : 0);
-        } else
-        {
-            UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
-            return null;
-        }
+        final FormPane formPane = new FormPane(view.getName(), task, view, mode, dataObj, 
+                                 (isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER) : 0),
+                                  true); // true -> suppress business rules (they get run later any way).
         
-        final FormPane formPane = tmpFP;
         formPane.setIcon(getIconForView(view));
         
         if (isNewForm)

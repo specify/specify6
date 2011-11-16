@@ -45,8 +45,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -82,8 +84,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.CollapsableSepExtraCompFactory;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -284,9 +286,56 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 navBoxes.add(collNavBox);
             }*/
             
+            if (AppPreferences.getLocalPrefs().getBoolean("SHOW_ADDOBJ_PREF", true))
+            {
+                collNavBox.add(NavBox.createBtnWithTT("Adding Data Prefs", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        showAddObjPrefs();
+                    }
+                })); 
+                navBoxes.add(collNavBox);
+            }
             
         }
         isShowDefault = true;
+    }
+    
+    /**
+     * 
+     */
+    private void showAddObjPrefs()
+    {
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Integer    colId      = collection.getId();
+        
+        AppPreferences remote = AppPreferences.getRemote();
+        
+        String[] keys = {"CO_CREATE_COA", "CO_CREATE_PREP", "CO_CREATE_DET", };
+        Properties props = new Properties();
+        for (String key : keys)
+        {
+            props.put(key, remote.getBoolean(key+"_"+colId, false));
+        }
+        
+        FormPane     pane = new FormPane("AddObjPrefs", this, "SystemSetup", "AddObjPrefs", "edit", props, MultiView.NO_OPTIONS | MultiView.DONT_USE_EMBEDDED_SEP, null); // not new data object
+        CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), "Add Object Preferences", true, pane);
+        pane.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        dlg.createUI();
+        pane.getMultiView().setData(props);
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            pane.getMultiView().getCurrentViewAsFormViewObj().getDataFromUI();
+            for (String key : keys)
+            {
+                Object val = props.get(key);
+                if (val != null)
+                {
+                    remote.putBoolean(key+"_"+colId, (Boolean)val);
+                }
+            }
+        }
     }
     
     /**
@@ -296,7 +345,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         if (lockDBBtn != null)
         {
-            String btnTitle = UIRegistry.getLocalizedMessage(isLocked == null || !isLocked ? "SYSSTP_BTN_BLK" : "SYSSTP_BTN_OPN");
+            String btnTitle = UIRegistry.getLocalizedMessage(isLocked == null || !isLocked ? "SYSSTP_BTN_BLOCK" : "SYSSTP_BTN_ALLOW");
             lockDBBtn.setLabelText(btnTitle);
         }
     }
@@ -334,11 +383,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
                 
                 updateStr = String.format(updateStr, isDBClosed ? 1 : 0, dbClosedBy);
-                log.debug(updateStr);
+                //log.debug(updateStr);
                 int rv = BasicSQLUtils.update(updateStr);
                 if (rv == 1)
                 {
-                    UIRegistry.displayErrorDlgLocalized("SYSSTP_LCK_MSG", getResourceString(isDBClosed ? "SYSSTP_LCK_MSG" : "SYSSTP_UNLCK_MSG"));
+                    UIRegistry.displayInfoMsgDlgLocalized(isDBClosed ? "SYSSTP_LCK_MSG" : "SYSSTP_UNLCK_MSG");
                     setLockBtntitle(isDBClosed);
                 }
             } else

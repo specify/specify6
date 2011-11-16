@@ -192,7 +192,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         {
             needsToBeSaved = true;
             
-            System.out.println(pickList.getItems().size());
+            //System.out.println(pickList.getItems().size());
             //if (doAutoSaveOnAdd)
             {
                 int version = BasicSQLUtils.getCount("SELECT Version FROM picklist WHERE PickListID = " + pickList.getId());
@@ -202,7 +202,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
                 }
             }
             
-            System.out.println(pickList.getItems().size());
+            //System.out.println(pickList.getItems().size());
 
             // find oldest item and remove it
             if (items.size() >= sizeLimit && sizeLimit > 0) 
@@ -365,9 +365,6 @@ log.debug("Listeners: "+getListDataListeners().length);
      */
     public Object getElementAt(int index)
     {
-        if (pickList.getId() == 28) log.debug("getElementAt"+items.size()+"  index: "+index);
-        //return selectedIndex > -1 && selectedIndex < items.size() ? items.get(selectedIndex) : null;
-        //System.out.println("Getting Item at["+index+"]["+items.get(index)+"]");
         if ( index >= 0 && index < items.size() )
         {
             return items.elementAt(index);

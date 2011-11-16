@@ -174,6 +174,35 @@ public class FormPane extends DroppableTaskPane
      * @param view the view to use
      * @param data the data to fill the form
      * @param options the options needed for creating the form
+     * @param doSuppressBusRules suppresses calling the business rules
+     */
+    public FormPane(final String    name,
+                    final Taskable  task,
+                    final ViewIFace view,
+                    final String    mode,
+                    final Object    data,
+                    final int       options,
+                    final boolean  doSuppressBusRules)
+    {
+        this(name, task, ""); //$NON-NLS-1$
+
+        this.viewSetName        = view.getViewSetName();
+        this.viewName           = view.getName();
+        this.data               = data;
+        this.doSuppressBusRules = doSuppressBusRules;
+        
+        UsageTracker.incrUsageCount("DE.VIEW."+viewName);
+
+        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, null);
+    }
+
+    /**
+     * Creates a form pane for a task.
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param view the view to use
+     * @param data the data to fill the form
+     * @param options the options needed for creating the form
      */
     public FormPane(final String    name,
                     final Taskable  task,
@@ -182,15 +211,7 @@ public class FormPane extends DroppableTaskPane
                     final Object    data,
                     final int       options)
     {
-        this(name, task, ""); //$NON-NLS-1$
-
-        this.viewSetName = view.getViewSetName();
-        this.viewName    = view.getName();
-        this.data        = data;
-        
-        UsageTracker.incrUsageCount("DE.VIEW."+viewName);
-
-        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, null);
+        this(name, task, view, mode, data, options, false); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

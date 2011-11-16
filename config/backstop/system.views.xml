@@ -146,6 +146,15 @@
             </altviews>
         </view>
         
+        <view name="AddObjPrefs"
+            class="java.util.Hashtable"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="AddObjPrefs Edit" viewdef="AddObjPrefs" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
     </views>
   
 	<!--  *************************************************************************************************************************** -->
@@ -641,6 +650,32 @@
                 <row>
                     <cell type="label" labelfor="remarks"/>
                     <cell type="field" id="remarks" name="remarks" uitype="textarea" isrequired="false" cols="50" rows="5"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="AddObjPrefs"
+            class="java.util.Hashtable"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            <desc><![CDATA[AddObjPrefs Data Entry Form]]></desc>
+            <columnDef>p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="For Collection Objects" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="field" id="CO_CREATE_COA" name="CO_CREATE_COA" label="Create Collection Object Attribute" uitype="checkbox"/>
+                </row>
+               <row>
+                    <cell type="field" id="CO_CREATE_PREP" name="CO_CREATE_PREP" label="Create Preparation" uitype="checkbox"/>
+                </row>
+               <row>
+                    <cell type="field" id="CO_CREATE_DET" name="CO_CREATE_DET" label="Create Determination" uitype="checkbox"/>
                 </row>
             </rows>
         </viewdef>
