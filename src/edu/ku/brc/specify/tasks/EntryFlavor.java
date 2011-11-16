@@ -40,7 +40,16 @@ public class EntryFlavor implements Cloneable
     protected String          humanReadable;
     protected Vector<Integer> tableIds = new Vector<Integer>();
     
-    public EntryFlavor(String  className, 
+    
+    /**
+     * No op constructor
+     */
+    public EntryFlavor() 
+    {
+		//nothing to do
+	}
+
+	public EntryFlavor(String  className, 
                        String humanReadable,
                        boolean isDraggableFlavor, 
                        int[]   dndTableIds)
