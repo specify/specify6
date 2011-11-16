@@ -4182,19 +4182,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         List<SubPaneIFace> badPanes = checkOpenTasksForUpload();
         if (badPanes.size() > 0)
         {
-            if (!UIRegistry.displayConfirm(UIRegistry.getResourceString("WB_UPLOAD_CLOSE_ALL_TITLE"), 
-                    String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)), 
-                    getResourceString("OK"), getResourceString("CANCEL"), JOptionPane.QUESTION_MESSAGE))
-            {
-                return;
-            }
-            for (SubPaneIFace badPane : badPanes)
-            {
-                if (!SubPaneMgr.getInstance().removePane(badPane, true))
-                {
-                    return;
-                }
-            }
+        	UIRegistry.displayInfoMsgDlgLocalized(UIRegistry.getResourceString("WB_UPLOAD_CLOSE_ALL_TITLE"), 
+                    String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
+        	return;
         }
         
         List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
