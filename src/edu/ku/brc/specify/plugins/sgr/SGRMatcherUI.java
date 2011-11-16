@@ -57,6 +57,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 import org.apache.lucene.index.Term;
@@ -330,27 +331,29 @@ public class SGRMatcherUI extends CustomDialog
             builder.setDefaultDialogBorder();
             CellConstraints cc = new CellConstraints();
             
+            UIRegistry.loadAndPushResourceBundle("specify_plugins");
+            
             int y = 1;
-            builder.addLabel("Name",        cc.xy(1, y));
-            builder.add(name,               cc.xy(3, y));
+            builder.add(UIHelper.createI18NFormLabel("SGR_MATCHER_NAME"), cc.xy(1, y));
+            builder.add(name,                                             cc.xy(3, y));
             y += 2;
             
-            builder.addLabel("Index",   cc.xy(1, y));
-            builder.add(index,          cc.xy(3, y));
+            builder.add(UIHelper.createI18NFormLabel("SGR_INDEX"), cc.xy(1, y));
+            builder.add(index,                                     cc.xy(3, y));
             y += 2;
             
-            builder.addSeparator("Exclude", cc.xyw(1, y, 3));
+            builder.addSeparator(UIRegistry.getResourceString("SGR_EXCLUDE"), cc.xyw(1, y, 3));
             y += 2;
             
-            builder.addLabel("Institution Code",      cc.xy(1, y));
-            builder.add(institutionCode,              cc.xy(3, y));
+            builder.add(UIHelper.createI18NFormLabel("SGR_INST_CODE"), cc.xy(1, y));
+            builder.add(institutionCode,                               cc.xy(3, y));
             y += 2;
             
-            builder.addLabel("Collection Code",      cc.xy(1, y));
-            builder.add(collectionCode,              cc.xy(3, y));
+            builder.add(UIHelper.createI18NFormLabel("SGR_COLL_CODE"), cc.xy(1, y));
+            builder.add(collectionCode,                                cc.xy(3, y));
             y += 2;
             
-            builder.addSeparator("Similarity", cc.xyw(1, y, 3));
+            builder.addSeparator(UIRegistry.getResourceString("SGR_SIMILARITY"), cc.xyw(1, y, 3));
             y += 2;
             
             SGRColumnOrdering columnOrdering = SGRColumnOrdering.getInstance();
@@ -362,8 +365,8 @@ public class SGRMatcherUI extends CustomDialog
                 String label = columnOrdering.getHeadingFor(field);
                 label = label == null ? WordUtils.capitalize(field) : label;
                 
-                builder.addLabel(label,                     cc.xy(1, y));
-                builder.add(similarityFields.get(field),    cc.xy(3, y));
+                builder.add(UIHelper.createFormLabel(label), cc.xy(1, y));
+                builder.add(similarityFields.get(field),     cc.xy(3, y));
                 y += 2;
             }
             
@@ -376,7 +379,7 @@ public class SGRMatcherUI extends CustomDialog
             
 //            builder.addLabel("Remarks",     cc.xy(1, y));
             
-            builder.addSeparator("Remarks", cc.xyw(1, y, 3));
+            builder.addSeparator(UIRegistry.getResourceString("SGR_REMARKS"), cc.xyw(1, y, 3));
             y += 2;
             
             JScrollPane scrollPane = new JScrollPane(remarks, 
@@ -385,6 +388,8 @@ public class SGRMatcherUI extends CustomDialog
             
             builder.add(scrollPane,            cc.xyw(1, y, 3));
             y += 2;
+            
+            UIRegistry.popResourceBundle();
         }
         
         private String extractFieldFromQuery(String query, String field)

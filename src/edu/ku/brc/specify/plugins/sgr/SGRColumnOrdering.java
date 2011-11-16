@@ -52,7 +52,7 @@ public class SGRColumnOrdering
     {
         fieldHeadings.put("id", "ID");
         fieldHeadings.put("catalog_number", "Catalog #");
-        fieldHeadings.put("collector_number", "Coll. / Field #");
+        fieldHeadings.put("collector_number", "Collector/Field #");
         fieldHeadings.put("collectors", "Collectors");
         fieldHeadings.put("scientific_name", "Taxon Name");
         fieldHeadings.put("determiner", "Determiner");
