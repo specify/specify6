@@ -4182,8 +4182,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         List<SubPaneIFace> badPanes = checkOpenTasksForUpload();
         if (badPanes.size() > 0)
         {
-        	UIRegistry.displayInfoMsgDlgLocalized(UIRegistry.getResourceString("WB_UPLOAD_CLOSE_ALL_TITLE"), 
-                    String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
+        	UIRegistry.displayInfoMsgDlgLocalized(String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)));
         	return;
         }
         
