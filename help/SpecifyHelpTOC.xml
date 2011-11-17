@@ -171,7 +171,7 @@
 		<tocitem text="Importing and Exporting Resources" target="Import_Intro">
 			<tocitem text="Import/Export Forms and Reports" target="Import" />
 		</tocitem>
-		<tocitem text="Lifemapper" target="lifemapper" />
+		<tocitem text="Lifemapper" target="Lifemapper" />
 		<tocitem text="Exporting Data" target="export_data">
 			<tocitem text="Web Publishing" target="web_publishing" />
 			<tocitem text="Schema Mapping" target="schema_mapping" />
@@ -222,7 +222,7 @@
 			<tocitem text="Specify File Slicer" target="slicer" />
 			<tocitem text="WorkBench Schema Configuration" target="wb_schema_config" />
 			<tocitem text="Introducing SGR" target="sgr_intro" >
-			    <tocitem text="Using SGR" target="sgr" />
+			    <tocitem text="Using SGR" target="SGR" />
 			</tocitem>    
 		</tocitem>
 	</tocitem>
