@@ -40,17 +40,104 @@
     <p>The GEOLocate project has created software and services for translating textual locality descriptions associated with biodiversity collections data into geographic coordinates. It uses a description of a Locality, and three geography fields, such as County, State and Country, to find Latitude and Longitude coordinate values. This is referred to
       as georeferencing. </p>
     <p>The Specify and GEOLocate teams have collaborated to create a GEOLocate module inside Specify. In Specify 6.4 and newer GEOLocate has been upgraded to plugin version 2.0.</p>
-    <p>Click  <img src="../../images/geolocate_button.png" alt="GEOLocate button" width="90" height="23" /> on the side bar and select either Collection Objects or Record Sets to send  to the GEOLocate service. Or, drag and drop a Record Set  GEOLocate on the side bar. A message will either display the number of records GEOLocate found results for, or state that no results were found. </p>
-    <p align="center"><img src="../../images/geolocate_view.png" alt="View GEOLocate" width="432" height="116" /></p>
-    <p align="center" class="imgcaption">View GEOLocate Results</p>
     <p>&nbsp;</p>
+
+    <strong>Requirements for Georeferencing US localities:
+    </h4>
+    </strong>
+    <blockquote>
+        <table class="box" border="1" cellspacing="0" cellpadding="4">
+          <tr>
+            <td align="left" valign="top"><div align="left"><u><strong>Column Heading</strong> </u></div></td>
+            <td align="left" valign="top"><div align="left"><u><strong>Data Needed </strong></u></div></td>
+          </tr>
+          <tr>
+            <td width="137" align="left" valign="top"><strong>Locality Name</strong></td>
+            <td width="241" align="left" valign="top"><div align="left">Yes</div></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Country</strong></td>
+            <td align="left" valign="top"><div align="left">Yes</div></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>State</strong></td>
+            <td align="left" valign="top"><div align="left">Yes</div></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>County</strong></td>
+            <td align="left" valign="top"><div align="left">
+                <p>No, but will improve results. </p>
+              <p><strong><em>Note:</em></strong> County is required when including waterbody and highway crossing in the GEOLocate search.</p>
+            </div></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Latitude1</strong></td>
+            <td align="left" valign="top"><p align="left">No<br />
+              (this is a results column) </p></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Longitude1</strong></td>
+            <td align="left" valign="top"><div align="left">No<br />
+              (this is a results column)</div></td>
+          </tr>
+        </table>
+    </blockquote>
+ 
+          <p>&nbsp;</p>
+
+          <h4>Requirements for Georeferencing localities outside of the US:</h4>
+        <blockquote>
+        <table class="box" border="1" cellspacing="0" cellpadding="4">
+          <tr>
+            <td align="left" valign="top"><div align="left"><u><strong>Column Heading</strong> </u></div></td>
+            <td align="left" valign="top"><div align="left"><u><strong>Data Needed </strong></u></div></td>
+          </tr>
+          <tr>
+            <td width="137" align="left" valign="top"><strong>Locality Name</strong></td>
+            <td width="241" align="left" valign="top"><div align="left">Yes</div></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Country</strong></td>
+            <td align="left" valign="top"><div align="left">Yes</div></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Child Node of Country</strong></td>
+            <td align="left" valign="top">No, but will improve results.</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Latitude1</strong></td>
+            <td align="left" valign="top"><p align="left">No<br />
+              (this is a results column) </p></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><strong>Longitude1</strong></td>
+            <td align="left" valign="top"><div align="left">No<br />
+              (this is a results column)</div></td>
+          </tr>
+        </table>
+        <p><em><strong>Note:</strong></em> A complete list of acceptable countries is available on the 
+          <a href="http://www.museum.tulane.edu/geolocate/standalone/globalExp.html">GEOLocate website</a>.</p>
+        <p>&nbsp;</p>
+        </blockquote>
+    <p>Click  <img src="../../images/geolocate_button.png" alt="GEOLocate button" width="90" height="23" /> on the side bar and select either Collection Objects or Record Sets to send  to the GEOLocate service. Or, drag and drop a Record Set  onto <img src="../../images/geolocate_button.png" alt="GEOLocate button" width="90" height="23" /> on the side bar. </p>
+    <p>A message will alert you to the status of the GEOLocate search requirements in regard to your records. </p>
+    <p align="center"><img src="../../images/geolocate_view_warning.png" alt="view Geolocate results screen" width="360" height="387" /></p>
+    <p align="center" class="imgcaption">GEOLocate Requirement Status</p>
+    <blockquote>
+      <p><em><strong>Note:</strong></em> Latitude and Longitude values present in Specify records will be replaced by those found in GEOLocate if GEOLocate results are accepted.</p>
+      <p>&nbsp;</p>
+      <p>Once GEOLocate has finished processing another message will either display the number of records for which GEOLocate returned results, or state that no results were found. </p>
+      <p align="center"><img src="../../images/geolocate_view.png" alt="View GEOLocate" /></p>
+      <p align="center" class="imgcaption">View GEOLocate Results</p>
+      <p></p>
+    </blockquote>
     <p>&nbsp;</p>
     <p>Results will display in the GEOLocate Results Chooser tool. </p>
     <p>&nbsp;</p>
     <p align="center"><img src="../../images/geolocate_screen.png" alt="geolocate" /></p>
     <p align="center" class="imgcaption">GEOLocate</p>
     <p><strong>Locality Information </strong>displays the  Locality Description, County, State and Country values in your current Specify record. </p>
-    <p><strong>Correction (Green) Marker Properties</strong> includes the values for the most accurate result among the GEOLocate results returned. These values are also displayed visually on a map.</p>
+    <p><strong>Correction (Green) Marker Properties</strong> include the values for the most accurate result among the GEOLocate results returned. These values are also displayed visually on a map.</p>
     <p>GEOLocate results can be edited using either the Correction Marker Properties form or the map elements. Changes made on the map are automatically recalculated and updated in the corresponding fields on the form. Updated values in the Correction Marker Properties form are  represented in the corresponding map element.</p>
     <blockquote>
       <p><em><strong>Note:</strong></em> As you move your mouse within the map the corresponding latituted and longitude values display in the lower right corner under the map.</p>
@@ -184,7 +271,7 @@
     <p> The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
     <p>&nbsp;</p>
   </blockquote>
-  <p>More information about GEOLocate can be found at <a href=
+<p>More information about GEOLocate can be found at <a href=
       "http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>. </p>
   <p>&nbsp;</p>
 
