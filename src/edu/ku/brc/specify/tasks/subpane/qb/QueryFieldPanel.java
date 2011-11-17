@@ -1209,7 +1209,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     Constructor<?> tester;
                     try
                     {
-                        tester = fieldQRI.getDataClass().getConstructor(String.class);
+                        tester = isNumericCatalogNumber() ? Integer.class.getConstructor(String.class)
+                        		: fieldQRI.getDataClass().getConstructor(String.class);
                         for (int s = 0; s < criteriaStrs.length; s++)
                         {
                             tester.newInstance((String)criteriaStrs[s]);
