@@ -286,7 +286,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 navBoxes.add(collNavBox);
             }*/
             
-            if (AppPreferences.getLocalPrefs().getBoolean("SHOW_ADDOBJ_PREF", true))
+            if (AppPreferences.getLocalPrefs().getBoolean("SHOW_ADDOBJ_PREF", false))
             {
                 collNavBox.add(NavBox.createBtnWithTT("Adding Data Prefs", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
