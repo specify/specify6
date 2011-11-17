@@ -256,7 +256,11 @@ public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace, Clon
     				separate = false;
     			}
     		}
-    		return result.toString();
+    		if (!StringUtils.isBlank(result.toString()))
+    		{
+    			return result.toString();
+    		}
+    		return entry;
     	}
     	log.warn("not pre-parsing " + entry + " because the supplied formatter is not a numeric catalognumber formatter");
     	return entry;
