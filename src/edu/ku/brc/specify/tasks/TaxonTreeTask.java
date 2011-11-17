@@ -177,7 +177,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             });
             popup.add(getDeters, true);
             
-            JMenuItem lifeMapperDisplay = new JMenuItem("LifeMapper");
+            JMenuItem lifeMapperDisplay = new JMenuItem("Lifemapper");
             lifeMapperDisplay.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -189,7 +189,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                         public void run()
                         {
                             UsageTracker.incrUsageCount("LM.TreeSearchReq");
-                            CommandDispatcher.dispatch(new CommandAction("LifeMapper", "Display", pair));
+                            CommandDispatcher.dispatch(new CommandAction("Lifemapper", "Display", pair));
                         }
                     });
                 }

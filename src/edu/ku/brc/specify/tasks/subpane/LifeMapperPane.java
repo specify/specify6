@@ -151,7 +151,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     protected String                     myDataTaxa = "";
     protected JComponent                 mySepComp;
        
-    // For Debugging
+    // Lifemapper Data
     protected JButton                    searchSciNameBtn;
     protected JTextField                 searchText;
     protected String                     occurSet = null;
@@ -245,8 +245,8 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
 
         PanelBuilder myPB = new PanelBuilder(new FormLayout("f:p:g,p", "p,2px,p,2px,p"));
         mySepComp = myPB.addSeparator(getResourceString("LM_MYDATA_TITLE"), cc.xyw(1,1,2));
-        myPB.add(myDataTF,          cc.xyw(1,3,2));
-        myPB.add(searchMyDataBtn,   cc.xy(2,5));
+        myPB.add(myDataTF,         cc.xyw(1,3,2));        
+        myPB.add(searchMyDataBtn,  cc.xy(2,5));
         
         PanelBuilder pb2 = new PanelBuilder(new FormLayout("MAX(p;300px),2px,f:p:g", "f:p:g,20px,p"));
         pb2.add(createScrollPane(list), cc.xy(1,1));
@@ -357,7 +357,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             public void imageFetched(BufferedImage image)
             {
                 blueMarble = image;
-                
+                imgDisplay.setImage(blueMarble);
             }
             
             @Override
@@ -478,8 +478,22 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
      */
     public void doSearchGenusSpecies(final String searchStr)
     {
+        doSearchGenusSpecies(searchStr, false);
+    }
+    
+    /**
+     * 
+     */
+    public void doSearchGenusSpecies(final String searchStr, final boolean doSetTextField)
+    {
         listModel.clear();
         occurList.clear();
+        
+        if (doSetTextField)
+        {
+            myDataTF.setText(searchStr);
+            searchText.setText(searchStr);
+        }
         
         if (StringUtils.isNotEmpty(searchStr))
         {
@@ -504,9 +518,10 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                             listModel.addElement(item.getTitle());
                             occurList.add(item);
                         }
-                        if (occurList.size() == 1)
+                        
+                        if (doSetTextField)
                         {
-                            list.setSelectedIndex(0);
+                            addLocalData(searchStr);
                         }
                     }
                 }
@@ -795,7 +810,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                     {
                         if (responseString.startsWith("None of the species"))
                         {
-                            errMsgKey = "LM_NO_LOCAL_DATA";
+                            errMsgKey = "LM_NO_LM_DATA";
                             
                         } else if (responseString.startsWith("Search too broad"))
                         {

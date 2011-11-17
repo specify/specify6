@@ -56,7 +56,7 @@ public class LifeMapperTask extends BaseTask
 {
     //private static final Logger log  = Logger.getLogger(VisualQueryTask.class);
     
-    private static final String  LIFEMAPPER        = "LifeMapper";
+    private static final String  LIFEMAPPER        = "Lifemapper";
     private static final String  LIFEMAP_TITLE     = "LIFEMAP_TITLE";
     private static final String  LIFEMAP_SECURITY  = "LIFEMAPEDIT";
     
@@ -264,8 +264,7 @@ public class LifeMapperTask extends BaseTask
                 getStarterPane(); // make sure it is loaded
                 lmPane.resetWWPanel();
                 lmPane.setDoResetWWPanel(false);
-                lmPane.doSearchGenusSpecies(p.first.getFullName());
-                lmPane.addLocalData(p.second);
+                lmPane.doSearchGenusSpecies(p.first.getFullName(), true);
                 requestContext();
             }
         }
