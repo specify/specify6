@@ -23,7 +23,7 @@
 <p>&nbsp;</p>
 <h3><strong><img src="../../images/GoogleEarth32x32.png" alt="google earth" width="32" height="32" /> <a name="ge" id="ge"></a>Google Earth</strong></h3>
 <blockquote>
-  <p>The Google Earth Plugin is used as a means of visualizing object records from Specify in Google Earth.</p>
+  <p>The Google Earth Plugin is used as a means of visualizing Collection Object records from Specify in Google Earth.</p>
   <p>The full version of Google Earth 4.3 must be installed on the local machine for the Specify Google Earth integration to work, not the Beta version. Go to <a href="http://earth.google.com/">earth.google.com</a> for a free download. </p>
   <p>Specify  plots locality records (or associated Collection Objects or Collecting Events) in Google Earth based on latitude and longitude data provided in the locality fields. All associated data is stored in a KML file which is launched within Google Earth upon clicking the <em>Google Earth</em> icon on the sidebar, or by dropping a Record Set  on Google Earth from within the Plugins Sidebar. </p>
   <p>Collection Object information  is shown within the Google Earth  information balloon. Specify also allows the insertion of two web service links for genus and species within the information balloon by configuring Google Earth with URLs to the web services in <em>Specify &gt; Preferences &gt; Tools</em>. </p>
@@ -37,9 +37,9 @@
 <p>&nbsp;</p>
 <h3><strong><img src="../../images/geolocate_32.png" alt="geolocate" width="32" height="32" /> <a name="biogeo" id="biogeo"></a>GEOLocate</strong></h3>
   <blockquote>
-    <p>GEOLocate has been upgraded to version 2.0 in Specify 6.4.</p>
-    <p>GEOLocate uses a description of a Locality, and three geography fields, such as County, State and Country, to find Latitude and Longitude coordinate data. This is referred to
+    <p>The GEOLocate project has created software and services for translating textual locality descriptions associated with biodiversity collections data into geographic coordinates. It uses a description of a Locality, and three geography fields, such as County, State and Country, to find Latitude and Longitude coordinate values. This is referred to
       as georeferencing. </p>
+    <p>The Specify and GEOLocate teams have collaborated to create a GEOLocate module inside Specify. In Specify 6.4 and newer GEOLocate has been upgraded to plugin version 2.0.</p>
     <p>Click  <img src="../../images/geolocate_button.png" alt="GEOLocate button" width="90" height="23" /> on the side bar and select either Collection Objects or Record Sets to send  to the GEOLocate service. Or, drag and drop a Record Set  GEOLocate on the side bar. A message will either display the number of records GEOLocate found results for, or state that no results were found. </p>
     <p align="center"><img src="../../images/geolocate_view.png" alt="View GEOLocate" width="432" height="116" /></p>
     <p align="center" class="imgcaption">View GEOLocate Results</p>
@@ -74,21 +74,23 @@
       <blockquote>
         <p><em><strong>Note:</strong></em> At this time in Specify the Uncertainty Radius values are not written in a Specify database field. </p>
         <p>Edit the Uncertainty Radius using the Marker Properties form:</p>
-        <ol>
+        <blockquote>
           <ol>
-            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point. </li>
-            <br />
+            <li>Click  the <em>Uncertainty Radius</em> button. The text box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
+            </li>
             <li>Type a new numeric value into the box and click the <em>Apply</em> button to accept the changed value in the GEOLocate tool and update the Uncertainty Radius on the map.</li>
           </ol>
-        </ol>
+          <p><em><strong>Note:</strong></em> If GEOLocate does not find an Uncertainty Radius the text box will open ready to accept numerical values and the <em>Apply</em> button will be available. </p>
+        </blockquote>
         <p>Edit the Uncertaintly Radius using the map:</p>
-        <ol>
+        <blockquote>
           <ol>
-            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point. </li>
-            <br />
-            <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower right corner under the map. </li>
+            <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
+            </li>
+            <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower right corner under the map.</li>
           </ol>
-        </ol>
+          <p><em><strong>Note:</strong></em> If GEOLocate does not find an Uncertainty Radius the text box will open ready to accept numerical values and the <em>Apply</em> button will be available. You must type a value into the text box and click the <em>Apply</em> button before the arrow will appear on the map.</p>
+        </blockquote>
       </blockquote>
       <p><strong>Error Polygon</strong> is a polygon which encompasses the entire area of uncertainty. </p>
       <p>Results which include an Error Polygon will display the vertex values in the form and a red polygon on the map. Not all results include an Error Polygon. If the results do include an Error Polygon the vertex values in the form must be cleared by clicking the <em>Clear Polygon</em> button before  the Error Polygon can be edited.</p>

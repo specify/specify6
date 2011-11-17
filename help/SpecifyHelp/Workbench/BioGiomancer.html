@@ -16,9 +16,9 @@ table.box td { border-bottom: 1px solid gray; border-right: 1px solid gray }
   </tr>
 </table>
 <h2><img src="../../images/geolocate_32.png" alt="geolocate" width="32" height="32" /> GEOLocate</h2>
-<p>The WorkBench uses the GEOLocate web service to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
-The WorkBench processes all the selected rows and caches the information, enabling the results to be stepped through  and the appropriate Latitude / Longitude 
-to be either selected or skipped. </p>
+    <p>The GEOLocate project has created software and services for translating textual locality descriptions associated with biodiversity collections data into geographic coordinates. It uses a description of a Locality, and three geography fields, such as County, State and Country, to find Latitude and Longitude coordinate values. This is referred to
+      as georeferencing. </p>
+    <p>The Specify and GEOLocate teams have collaborated to create a GEOLocate module inside Specify. In Specify 6.4 and newer GEOLocate has been upgraded to plugin version 2.0.</p>
 <p><em><strong>Notes: </strong></em></p>
 <ul>
   <li>If GEOLocate results are accepted, they will overwrite any existing  data in the corresponding Data Set columns.</li>
@@ -90,18 +90,20 @@ to be either selected or skipped. </p>
     <p>Edit the Uncertainty Radius using the Marker Properties form:</p>
     <blockquote>
       <ol>
-        <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
+        <li>Click  the <em>Uncertainty Radius</em> button. The text box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
         </li>
         <li>Type a new numeric value into the box and click the <em>Apply</em> button to accept the changed value in the GEOLocate tool and update the Uncertainty Radius on the map.</li>
       </ol>
+      <p><em><strong>Note:</strong></em> If GEOLocate does not find an Uncertainty Radius the text box will open ready to accept numerical values and the <em>Apply</em> button will be available. </p>
     </blockquote>
     <p>Edit the Uncertaintly Radius using the map:</p>
     <blockquote>
       <ol>
         <li>Click  the <em>Uncertainty Radius</em> button. The box will change to accept numeric values, and a large arrow will appear on the map next to the Uncertaintly Radius point.<br />
         </li>
-        <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower right corner under the map. </li>
+        <li>Click in the center of the arrow and drag to reset the Uncertainty Radius on the map as well as the numeric value in the form. As you move your mouse within the map the corresponding Uncertainty Radius, and latituted and longitude values display in the lower right corner under the map.</li>
       </ol>
+      <p><em><strong>Note:</strong></em> If GEOLocate does not find an Uncertainty Radius the text box will open ready to accept numerical values and the <em>Apply</em> button will be available. You must type a value into the text box and click the <em>Apply</em> button before the arrow will appear on the map.</p>
     </blockquote>
   </blockquote>
   <p><strong>Error Polygon</strong> is a polygon which encompasses the entire area of uncertainty. </p>
