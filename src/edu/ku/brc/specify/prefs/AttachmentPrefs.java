@@ -372,4 +372,13 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     }
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return "PrefsAttachments";
+    }
+
 }
