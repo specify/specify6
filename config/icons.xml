@@ -59,7 +59,7 @@
     <icon name="GlobalSearch"     file="global_search16x16.png" sizes="16"/>
     <icon name="SystemSetup"      file="System32x32.png" sizes="all"/>
     <icon name="PlaceHolder"      file="specify32faded.png" sizes="32"/>
-    <icon name="LifeMapper"       file="lifemapper32.png" sizes="all"/>
+    <icon name="Lifemapper"       file="lifemapper32.png" sizes="all"/>
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
     <icon name="Reports"       file="Reports32x32.png" sizes="all"/>
