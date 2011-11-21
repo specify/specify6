@@ -3104,7 +3104,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	//this is real lame but should hardly ever need to be executed
             	for (SpQueryField qf : query.getFields())
             	{
-            		if (qfId.equals(qf.getId()))
+                    if (qfId != null && qf != null && qf.getId() != null && qfId.equals(qf.getId()))
             		{
             			query.getFields().remove(qf);
             			break;
@@ -3692,7 +3692,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                     }
                                     else
                                     {
-                                        // add the field
+                                       if (exportSchema != null && selectedQFP == null)
+                                       {
+                                    	   System.out.println("Skipping");
+                                    	   UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_NO_CONCEPT_SELECTED");
+                                    	   return;
+                                       }
+                                    	   // add the field
 										try
 										{
 											FieldQRI fieldQRI = buildFieldQRI(qri);
