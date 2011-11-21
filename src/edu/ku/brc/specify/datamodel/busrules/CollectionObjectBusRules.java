@@ -32,7 +32,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,9 +58,15 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -127,6 +132,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private JCheckBox        generateLabelChk = null;
     
     private AtomicBoolean    processingSeries = new AtomicBoolean(false);
+    
+    private Integer          defaultPrepTypeId    = null;
+    private String           defValForPrepType    = null;
+    
     /**
      * Constructor.
      */
@@ -205,55 +214,46 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
         }
     }
+    
+    /**
+     * @param id
+     * @return
+     */
+    public static PrepType getPrepTypeFromId(final Integer id)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            return session.get(PrepType.class, id);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
+            
+        } finally
+        {
+            if (session != null) session.close();
+        }
+        return null;
+    }
 
     /**
      * @param disciplineType
      * @return
      */
-    protected PrepType getDefaultPrepType()
+    public static Integer getPrepTypeIdFromDefVal(final String defaultValue)
     {
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(PrepType.getClassTableId());
-        if (tableInfo != null)
+        Integer defPrepTypeId = null;
+        if (StringUtils.isNotEmpty(defaultValue))
         {
-            String sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PrepType WHERE collectionId = COLLID");
-            log.debug(sqlStr);
-            if (StringUtils.isNotEmpty(sqlStr))
-            {
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List<?> dataList = session.getDataList(sqlStr);
-                    if (dataList != null && !dataList.isEmpty())
-                    {
-                        // XXX for now we just get the First one
-                        return (PrepType)dataList.iterator().next();
-                    }
-                    // No Data Error
-        
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
-                    log.error(ex);
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-            } else
-            {
-                log.error("Query String is empty for tableId["+tableInfo.getTableId()+"]");
-            }
-        } else
-        {
-            throw new RuntimeException("Error looking up PickLIst's Table Name PrepType");
+            String sqlStr = String.format("SELECT PrepTypeId, Name FROM preptype WHERE collectionId = COLLID AND Name = '%s'", defaultValue);
+            sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
+            defPrepTypeId = BasicSQLUtils.getNumRecords(sqlStr);
         }
-        return null;
+        return defPrepTypeId;
     }
     
     /**
@@ -288,27 +288,47 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        boolean defaultForAdd = false; // helps with debugging
-        
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs != null)
         {
             Integer colId = collection.getId();
-            if (remotePrefs.getBoolean("CO_CREATE_COA_"+colId, defaultForAdd))
+            if (remotePrefs.getBoolean("CO_CREATE_COA_"+colId, false))
             {
                 CollectionObjectAttribute coa = new CollectionObjectAttribute();
                 coa.initialize();
                 colObj.addReference(coa, "collectionObjectAttribute");
             }
             
-            if (remotePrefs.getBoolean("CO_CREATE_PREP_"+colId, defaultForAdd))
+            if (remotePrefs.getBoolean("CO_CREATE_PREP_"+colId, false))
             {
-                Preparation prep = new Preparation();
-                prep.initialize();
-                colObj.addReference(prep, "preparations");
+                if (StringUtils.isEmpty(defValForPrepType))
+                {
+                    defValForPrepType = getDefValForPrepTypeHaveOnForm();
+                }
+                
+                if (defaultPrepTypeId == null && StringUtils.isNotEmpty(defValForPrepType))
+                {
+                    defaultPrepTypeId = getPrepTypeIdFromDefVal(defValForPrepType);
+                }
+                
+                if (defaultPrepTypeId != null)
+                {
+                    PrepType prepType = getPrepTypeFromId(defaultPrepTypeId);
+                    if (prepType != null)
+                    {
+                        Preparation prep = new Preparation();
+                        prep.initialize();
+                        prep.addReference(prepType, "prepType");
+                        colObj.addReference(prep, "preparations");
+                        
+                    } else
+                    {
+                        UIRegistry.showError("Unable to load PrepType with id: "+defaultPrepTypeId);
+                    }
+                }
             }
             
-            if (remotePrefs.getBoolean("CO_CREATE_DET_"+colId, defaultForAdd))
+            if (remotePrefs.getBoolean("CO_CREATE_DET_"+colId, false))
             {
                 Determination det = new Determination();
                 det.initialize();
@@ -408,6 +428,92 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         return status;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeFormFill()
+     */
+/*    @Override
+    public void beforeFormFill()
+    {
+        super.beforeFormFill();
+        
+        Collection     collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        if (collection != null && remotePrefs != null && viewable instanceof TableViewObj) // none of these should ever be null
+        {
+            Integer colId = collection.getId();
+            if (remotePrefs.getBoolean("CO_CREATE_PREP_"+colId, false))
+            {
+                FormViewObj fvo = null;
+                if (viewable instanceof TableViewObj)
+                {
+                    ViewIFace view = AppContextMgr.getInstance().getView("Preparation");
+                    if (view != null && view instanceof FormViewObj)
+                    {
+                        fvo = (FormViewObj)view;
+                        
+                    } else
+                    {
+                        // error
+                    }
+                } else
+                {
+                    fvo = formViewObj;
+                }
+                
+                if (fvo != null)
+                {
+                    FVOFieldInfo fldInfo = fvo.getFieldInfoForName("prepType");
+                    if (fldInfo != null)
+                    {
+                        FormCellFieldIFace fcf = (FormCellFieldIFace)fldInfo.getFormCell();
+                        if (StringUtils.isEmpty(fcf.getDefaultValue()) && 
+                            fldInfo.getComp() instanceof ValComboBox)
+                        {
+                            ValComboBox cbx = (ValComboBox)fldInfo.getComp();
+                            if (cbx.getComboBox().getModel().getSize() > 0)
+                            {
+                                cbx.getComboBox().setSelectedIndex(0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    */
+    
+    /**
+     * @return FormCellFieldIFace object for the Prep Type field on the form.
+     */
+    public static FormCellFieldIFace getPrepTypeFieldCellField()
+    {
+        ViewIFace view = AppContextMgr.getInstance().getView("Preparation");
+        if (view != null)
+        {
+            AltViewIFace altView = view.getAltView("Preparation Edit");
+            if (altView != null && altView.getViewDef() instanceof FormViewDef)
+            {
+                FormViewDef fvd = (FormViewDef)altView.getViewDef();
+                return (FormCellFieldIFace)fvd.getFormCellByName("prepType");
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Checks to see if the PrepType Field on the PrepType Form as a Default Value
+     * @return true if there is a default value for the Prep Tyep on the Prep Form
+     */
+    public static String getDefValForPrepTypeHaveOnForm()
+    {
+        FormCellFieldIFace fcf = getPrepTypeFieldCellField();
+        if (fcf != null)
+        {
+            return fcf.getDefaultValue();
+        }
+        return null;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -505,8 +611,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             } else
             {
                 log.error("The CE "+cachedColEve+" was null or the CO "+colObj+" was null");
-            }
-                    
+            }     
         }
         
     }

@@ -32,6 +32,7 @@ import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -112,6 +113,7 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tasks.services.PickListUtils;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
@@ -286,7 +288,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 navBoxes.add(collNavBox);
             }*/
             
-            if (AppPreferences.getLocalPrefs().getBoolean("SHOW_ADDOBJ_PREF", false))
+            if (AppPreferences.getLocalPrefs().getBoolean("SHOW_ADDOBJ_PREF", true))
             {
                 collNavBox.add(NavBox.createBtnWithTT("Adding Data Prefs", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
@@ -308,20 +310,46 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         Integer    colId      = collection.getId();
-        
+
+        boolean isPrepTypeOK = false;
+        String defVal = CollectionObjectBusRules.getDefValForPrepTypeHaveOnForm();
+        if (StringUtils.isNotEmpty(defVal))
+        {
+            isPrepTypeOK = CollectionObjectBusRules.getPrepTypeIdFromDefVal(defVal) != null;
+        }
+
         AppPreferences remote = AppPreferences.getRemote();
+        String CO_CREATE_PREP = "CO_CREATE_PREP";
         
-        String[] keys = {"CO_CREATE_COA", "CO_CREATE_PREP", "CO_CREATE_DET", };
+        String[] keys = {"CO_CREATE_COA", CO_CREATE_PREP, "CO_CREATE_DET", };
         Properties props = new Properties();
+        int i = 0;
         for (String key : keys)
         {
-            props.put(key, remote.getBoolean(key+"_"+colId, false));
+            String fullKey = key+"_"+colId;
+            if (i == 1 && !isPrepTypeOK)
+            {
+                remote.putBoolean(fullKey, false);
+            }
+            props.put(key, remote.getBoolean(fullKey, false));
+            i++;
         }
         
         FormPane     pane = new FormPane("AddObjPrefs", this, "SystemSetup", "AddObjPrefs", "edit", props, MultiView.NO_OPTIONS | MultiView.DONT_USE_EMBEDDED_SEP, null); // not new data object
-        CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), "Add Object Preferences", true, pane);
+        CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), getResourceString("SYSSTP_AOBTN"), true, pane);
         pane.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         dlg.createUI();
+        
+        if (!isPrepTypeOK)
+        {
+            Component comp = pane.getMultiView().getCurrentViewAsFormViewObj().getControlByName(CO_CREATE_PREP);
+            if (comp != null)
+            {
+                comp.setEnabled(false);
+                UIRegistry.showLocalizedError("SYSSTP_AOPREP_ERR");
+            }
+        }
+        
         pane.getMultiView().setData(props);
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
