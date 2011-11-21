@@ -231,11 +231,11 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             uncertTxt.addFocusListener(focLis);
             uncertBtn = UIHelper.createI18NButton("Apply");
             
-            PanelBuilder uncertaintyPB = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,4px,f:p:g,p"));
-            uncertaintyPB.addSeparator(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"), cc.xyw(1, 1, 3));
+            PanelBuilder uncertaintyPB = new PanelBuilder(new FormLayout("p,2px,p:g,p", "p,2px,p,4px,f:p:g,p"));
+            uncertaintyPB.addSeparator(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"), cc.xyw(1, 1, 4));
             uncertaintyPB.add(UIHelper.createI18NFormLabel("In meters"), cc.xy(1, 3));
-            uncertaintyPB.add(uncertTxt, cc.xy(3, 3));
-            uncertaintyPB.add(uncertBtn, cc.xy(3, 6));
+            uncertaintyPB.add(uncertTxt, cc.xyw(3, 3, 2));
+            uncertaintyPB.add(uncertBtn, cc.xy(4, 6));
             
             corMarkerPB.add(uncertaintyPB.getPanel(), cc.xy(3, 1));
 
