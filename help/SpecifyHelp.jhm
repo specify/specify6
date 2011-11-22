@@ -374,7 +374,13 @@
    <mapID target="sgr_matchresults_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_matcher"/>
    <mapID target="sgr_matchresults_properties" url="SpecifyHelp/Plugins/SGR.html#sgr_matchresults_properties"/>
    <mapID target="sgr_edit_matcher" url="SpecifyHelp/Plugins/SGR.html#sgr_edit_matcher"/>   
-   <mapID target="lm" url="SpecifyHelp/Plugins/Plugins.html#lm"/>      
-    
+   <mapID target="lm" url="SpecifyHelp/Plugins/Plugins.html#lm"/>
+   <mapID target="sys_import_picklist" url="SpecifyHelp/PickList/system_picklist.html#system_picklist_import"/>      
+   <mapID target="user_import_picklist" url="SpecifyHelp/PickList/Pick_List.html#user_picklist_import"/>
+   <mapID target="block_logins" url="SpecifyHelp/Configuration/system_setup.html#block_logins"/>
+   <mapID target="wb_geolocate" url="SpecifyHelp/Workbench/BioGeomancer.html#wb_geolocate"/>      
+   <mapID target="form_geolocate" url="SpecifyHelp/Data_Entry/Data_Entry.html#form_geolocate"/>
+   <mapID target="attach_path" url="SpecifyHelp/Prefs/Attachments.html#attach_path"/>
+   <mapID target="attach_services" url="SpecifyHelp/Prefs/Attachments.html#attach_services"/>        
                   
 </map>
