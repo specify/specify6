@@ -229,7 +229,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         
         wwPanel = new WorldWindPanel(false);
         wwPanel.setPreferredSize(new Dimension(currentSize, currentSize));
-        wwPanel.setZoomInMeters(600000.0);
+        wwPanel.setZoomInMeters(1000000.0);
         
         imgDisplay.setDoShowText(false);
         
@@ -512,7 +512,6 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 @Override
                 public void noItems()
                 {
-                    
                 }
                 
                 /* (non-Javadoc)
@@ -872,10 +871,6 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                 }
                             }
                         }
-                        
-                    } else
-                    {
-                        
                     }
 
                 } catch (InterruptedException e)
@@ -956,7 +951,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         // check the website for the info about the latest version
         final HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        httpClient.getParams().setParameter("http.socket.timeout", 15000); 
+        httpClient.getParams().setParameter("http.socket.timeout", 20000); 
         
         if (list.getSelectedIndex() < 0)
         {
@@ -1074,6 +1069,19 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 if (isError)
                 {
                     showErrorMsg(glassPane, "LifeMapperTask.PROC_ERR");
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(3000);
+                            } catch (Exception e) {}
+                            list.clearSelection();
+                        }
+                    });
+                    
                 } else
                 {
                     clearSimpleGlassPaneMsg();
