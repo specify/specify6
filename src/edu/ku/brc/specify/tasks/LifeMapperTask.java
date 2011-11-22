@@ -112,7 +112,6 @@ public class LifeMapperTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         UsageTracker.incrUsageCount("LM.OpenLifemapper");
-        //starterPane = null; // for debug
         if (starterPane == null || lmPane.hasSizeChanged())
         {
             if (lmPane != null)
@@ -123,7 +122,21 @@ public class LifeMapperTask extends BaseTask
         }
         return starterPane;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    @Override
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        
+        if (subPane == starterPane)
+        {
+            starterPane = lmPane = null;
+        }
+    }
+
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------

@@ -302,25 +302,33 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+                    if (list.getSelectedIndex() == -1)
                     {
-                        @Override
-                        protected Boolean doInBackground() throws Exception
+                        wwPanel.reset();
+                        imgDisplay.setImage(blueMarble);
+                        
+                    } else
+                    {
+                        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
                         {
-                            if (doResetWWPanel)
+                            @Override
+                            protected Boolean doInBackground() throws Exception
                             {
-                                wwPanel.reset();
+                                if (doResetWWPanel)
+                                {
+                                    wwPanel.reset();
+                                }
+                                doSearchOccur();
+                                return null;
                             }
-                            doSearchOccur();
-                            return null;
-                        }
-                        @Override
-                        protected void done()
-                        {
-                            imgDisplay.repaint();
-                        }
-                    };
-                    worker.execute();
+                            @Override
+                            protected void done()
+                            {
+                                imgDisplay.repaint();
+                            }
+                        };
+                        worker.execute();
+                    }
                 }
             }
         });
@@ -486,6 +494,8 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
      */
     public void doSearchGenusSpecies(final String searchStr, final boolean doSetTextField)
     {
+        imgDisplay.setImage(blueMarble);
+        
         listModel.clear();
         occurList.clear();
         
@@ -955,8 +965,8 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         
         UsageTracker.incrUsageCount("LM.OccurSearch");
         
-        final String lmURL = String.format("http://www.lifemapper.org/services/occurrences/%s/json?fillPoints=true", occurrenceId);
-        //System.out.println(url);
+        final String lmURL = String.format("http://www.lifemapper.org/services/occurrences/%s/json?format=specify&fillPoints=true", occurrenceId);
+        //System.out.println(lmURL);
         
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
         {
