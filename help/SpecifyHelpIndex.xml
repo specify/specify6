@@ -76,8 +76,12 @@
 		<indexitem text="User Defined Pick List" target="User_Pick_List" />
 	</indexitem>
 	<indexitem text="Pick Lists" mergetype="javax.help.SortMerge">
-		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge" />
-		<indexitem text="User Defined" target="User_Pick_List" mergetype="javax.help.SortMerge" />
+		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge">
+			<indexitem text="Import/Export" target="sys_import_picklist" mergetype="javax.help.SortMerge" />
+		</indexitem>
+		<indexitem text="User Defined" target="User_Pick_List" mergetype="javax.help.SortMerge">
+			<indexitem text="Import/Export" target="user_import_picklist" mergetype="javax.help.SortMerge" />
+		</indexitem>
 	</indexitem>
 	<indexitem text="Plugins" target="Plugins" mergetype="javax.help.SortMerge">
 		<indexitem text="GEOLocate" target="BioGeo" mergetype="javax.help.SortMerge" />
@@ -240,4 +244,13 @@
 		<indexitem text="Working with Images" target="WorkbenchWorkingWithImages" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Keyboard Shortcuts" target="Keyboard_Functions" mergetype="javax.help.SortMerge" />
+	<indexitem text="Block Logins" target="block_logins" mergetype="javax.help.SortMerge" />
+	<indexitem text="Lifemapper" target="Lifemapper" mergetype="javax.help.SortMerge" />
+	<indexitem text="SGR" target="SGR" mergetype="javax.help.SortMerge" />
+	<indexitem text="Attachments">
+		<indexitem text="Using Forms" target="Data_Entry_Attachments" mergetype="javax.help.SortMerge" />
+		<indexitem text="Setting Preferences" target="PrefsAttachments" mergetype="javax.help.SortMerge" />
+		<indexitem text="File Path" target="attach_path" mergetype="javax.help.SortMerge" />
+		<indexitem text="Web Services" target="attach_services" mergetype="javax.help.SortMerge" />
+	</indexitem>
 </index>
