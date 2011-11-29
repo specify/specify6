@@ -209,8 +209,20 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             add("rangePanel", rangePanel);
             validate();
         }   
+
+        /* (non-Javadoc)
+    	 * @see javax.swing.JComponent#getPreferredSize()
+    	 */
+    	@Override
+    	public Dimension getPreferredSize() 
+    	{
+    		Dimension result = super.getPreferredSize();
+    		result.setSize(Math.min((sortCheckbox.getX() - 4) - (operatorCBX.getX() + operatorCBX.getWidth() + 4), result.getWidth()), result.getHeight());
+    		return result;
+    	}
+
         
-        /**
+		/**
          * @param entry
          * @param op
          * 
@@ -350,6 +362,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         return null;
     }
     
+
     /**
      * @param ownerQuery
      * @param fieldQRI
@@ -1820,6 +1833,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
     	return schemaItemLabel == null ? compIdx == 4 : compIdx == 5;
     }
+    
     /**
      * @param iconSize
      * @param widths
