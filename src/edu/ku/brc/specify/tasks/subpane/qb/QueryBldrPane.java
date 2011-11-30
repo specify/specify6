@@ -3058,7 +3058,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				return false;
 			}
 		}
-        
+
+    	
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
         
         //This is necessary to indicate that a query has been changed when only field deletes have occurred.
@@ -3097,6 +3098,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
+            if (!checkCriteriaLengths(query))
+            {    	
+            	return false;
+            }
+
             //Remove query fields for which panels could be created in order to prevent
             //repeat of missing fld message in getQueryFieldPanels() whenever this query is loaded.
             for (Integer qfId : queryFldsWithoutPanels)
@@ -3111,7 +3117,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		}
             	}
             }
-            
+
             if (query.getSpQueryId() == null || saveAs)
             {
                 if (query.getSpQueryId() != null && saveAs)
@@ -3169,6 +3175,69 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             log.error("No Context selected!");
             return false;
         }
+    }
+
+    /**
+     * @param query
+     * @return true if query can be saved
+     * 
+     * checks that criteria lengths can fit in to the db fields that store them.
+     * if un-saveable values exists, user is allowed to cancel save or
+     * save with the un-saveable values discarded.
+     */
+    protected boolean checkCriteriaLengths(final SpQuery query)
+    {
+    	boolean result = true;
+    	Set<SpQueryField> flds = query.getFields();
+    	
+    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName("spqueryfield");
+    	int maxStartLen = tblInfo.getFieldByColumnName("StartValue").getLength();
+    	int maxEndLen = tblInfo.getFieldByColumnName("EndValue").getLength();
+    	Vector<String> badFields = new Vector<String>();
+    	if (flds != null)
+    	{
+    		for (SpQueryField fld : flds)
+    		{
+    			Integer startLen = fld.getStartValue() == null ? 0 : fld.getStartValue().length();
+    			Integer endLen = fld.getEndValue() == null ? 0 : fld.getEndValue().length();
+    			if (startLen > maxStartLen || endLen > maxEndLen)
+    			{
+    				badFields.add(fld.getColumnAliasTitle());
+    			}
+    		}
+    		if (badFields.size() > 0)
+    		{
+    			String fldList = "";
+    			for (int f = 0; f < 5 && f < badFields.size(); f++)
+    			{
+    				if (f > 0) fldList += ", ";
+    				fldList += badFields.get(f);
+    			}
+    			if (badFields.size() > 5) fldList += ", ... ";
+    			result = UIRegistry.displayConfirm(UIRegistry.getResourceString("QueryTask.CRITERIA_TOO_LONG_TITLE"), 
+    					String.format(UIRegistry.getResourceString("QueryTask.CRITERIA_TOO_LONG_MSG"), fldList), 
+    					UIRegistry.getResourceString("Ok"),
+    					UIRegistry.getResourceString("Cancel"),
+    					JOptionPane.WARNING_MESSAGE);
+    			if (result)
+    			{
+    	    		for (SpQueryField fld : flds)
+    	    		{
+    	    			Integer startLen = fld.getStartValue() == null ? 0 : fld.getStartValue().length();
+    	    			Integer endLen = fld.getEndValue() == null ? 0 : fld.getEndValue().length();
+    	    			if (startLen > maxStartLen)
+    	    			{
+    	    				fld.setStartValue("");
+    	    			}
+    	    			if (endLen > maxEndLen)
+    	    			{
+    	    				fld.setEndValue("");
+    	    			}
+    	    		}
+    			}
+    		}
+    	}
+    	return result;
     }
 
     /**
