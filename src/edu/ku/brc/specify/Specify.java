@@ -619,55 +619,52 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String msgPath  = "";
         String errorKey = "NOT_AVAIL";
         
-        if (StringUtils.isNotEmpty(attchURL) || StringUtils.isNotEmpty(filePath))
+        if (StringUtils.isNotEmpty(attchURL)) // Using Web Server for Attachments
         {
-            if (StringUtils.isNotEmpty(attchURL)) // Using Web Server for Attachments
+            useFilePath = false;
+            AttachmentUtils.setConfigForPath(useFilePath);
+
+            WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
+            if (webAssetMgr.isInitialized())
             {
-                useFilePath = false;
-                AttachmentUtils.setConfigForPath(useFilePath);
-    
-                WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-                if (webAssetMgr.isInitialized())
+                attachMgr = webAssetMgr;
+            }
+        } else
+        {
+            useFilePath = true;
+            
+            File       attLoc   = null;
+            final File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+            try
+            {
+                attLoc = filePath != null && !UIRegistry.isMobile() ? new File(filePath) : location;
+                if (!AttachmentUtils.isAttachmentDirMounted(attLoc))
                 {
-                    attachMgr = webAssetMgr;
+                    try
+                    {
+                        msgPath = attLoc.getCanonicalPath();
+                    } catch (IOException e)
+                    {
+                        msgPath = attLoc.getAbsolutePath();
+                    }
+                } else
+                {
+                    attachMgr = new FileStoreAttachmentManager(attLoc);
                 }
-            } else
-            {
-                useFilePath = true;
                 
-                File       attLoc   = null;
-                final File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
-                try
+                if (filePath == null)
                 {
-                    attLoc = filePath != null && !UIRegistry.isMobile() ? new File(filePath) : location;
-                    if (!AttachmentUtils.isAttachmentDirMounted(attLoc))
-                    {
-                        try
-                        {
-                            msgPath = attLoc.getCanonicalPath();
-                        } catch (IOException e)
-                        {
-                            msgPath = attLoc.getAbsolutePath();
-                        }
-                    } else
-                    {
-                        attachMgr = new FileStoreAttachmentManager(attLoc);
-                    }
-                    
-                    if (filePath == null)
-                    {
-                        localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
-                    }
-                }
-                catch (IOException e1)
-                {
-                    log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                    // TODO RELEASE -  Instead of exiting we need to disable Attachments
-                    //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                    localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
                 }
             }
-            errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
+            catch (IOException e1)
+            {
+                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                // TODO RELEASE -  Instead of exiting we need to disable Attachments
+                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
+        errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
         
         if (attachMgr == null)
         {
