@@ -26,6 +26,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -172,16 +174,66 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public List<String> getDatabaseListForUser(final String username)
     {
+        String[] permsArray = new String[] {"SELECT", "DELETE", "UPDATE", "INSERT", "LOCK TABLES", };
+        HashSet<String> permsHash = new HashSet<String>();
+        Collections.addAll(permsHash, permsArray);
+        
         ArrayList<String> dbNames = new ArrayList<String>();
         try
         {
             if (connection != null)
             {
-                String sql = String.format("SELECT DISTINCT TABLE_SCHEMA FROM information_schema.SCHEMA_PRIVILEGES SP INNER JOIN information_schema.SCHEMATA S ON SP.TABLE_SCHEMA = S.SCHEMA_NAME " +
-                		                   "WHERE SCHEMA_NAME <> 'information_schema' AND SCHEMA_NAME <> 'mysql' AND GRANTEE = \"'%s'@'%s'\" ORDER BY TABLE_SCHEMA", username, hostName);
+                String userStr = String.format("'%s'@'%s'", username, hostName);
+                String sql = "SHOW GRANTS";
                 for (Object obj : BasicSQLUtils.querySingleCol(connection, sql))
                 {
-                    dbNames.add(obj.toString());
+                    boolean isAllDBs = false;
+                    String  data     = (String)obj;
+                    String  dbName   = null;
+                    System.out.println("->["+data+"]");
+                    if (StringUtils.contains(data, userStr))
+                    {
+                        // get database name
+                        String[] toks = StringUtils.split(data, '`');
+                        if (toks.length > 2)
+                        {
+                            dbName = toks[1];
+                        }
+                    } else if (StringUtils.contains(data, "ON *.* TO"))
+                    {
+                        //dbNames.add(obj.toString());   
+                        isAllDBs = true;
+                    }
+                    
+                    // get permissions
+                    
+                    
+                    String permsStr = StringUtils.substringBetween(data, "GRANT ", " ON");
+                    String[] pToks = StringUtils.split(permsStr, ',');
+                    if (pToks != null && pToks.length >= permsHash.size())
+                    {
+                        int cnt = 0;
+                        for (String p : pToks)
+                        {
+                            if (permsHash.contains(p.trim()))
+                            {
+                                cnt++;
+                            }
+                        }
+                        
+                        if (cnt == permsHash.size())
+                        {
+                            if (isAllDBs)
+                            {
+                                dbNames.addAll(getDatabaseList());
+                                break;
+                                
+                            } else if (dbName != null)
+                            {
+                                dbNames.add(dbName);   
+                            }
+                        }
+                    }
                 }
             }
         } catch (Exception ex)
