@@ -17,9 +17,9 @@
  */
 package edu.ku.brc.specify.plugins.sgr;
 
-import java.util.Map;
+import java.util.Collection;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 
 import edu.ku.brc.sgr.SGRRecord;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -36,11 +36,11 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  */
 public class Workbench2SGR
 {
-    private final Map<String, Short> fieldName2Index;
+    private final ImmutableMultimap<String, Short> fieldName2Index;
     
     public Workbench2SGR(Workbench workbench)
     {
-        final ImmutableMap.Builder<String, Short> mb = new ImmutableMap.Builder<String, Short>();
+        final ImmutableMultimap.Builder<String, Short> mb = new ImmutableMultimap.Builder<String, Short>();
         
         for (WorkbenchTemplateMappingItem item : 
             workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
@@ -77,7 +77,7 @@ public class Workbench2SGR
         return doc.build(); 
     }
     
-    public Short getFieldFor(String specifyField)
+    public Collection<Short> getFieldsFor(String specifyField)
     {
         return fieldName2Index.get(specifyField);
     }
@@ -91,8 +91,8 @@ public class Workbench2SGR
             for (String field : 
                 new String [] {"collectorFirstName", "collectorMiddle", "collectorLastName"})
             {
-                Short ind = fieldName2Index.get(field + c);
-                if (ind != null) sb.append(row.getData(ind) + " ");
+                for (short ind : getFieldsFor(field + c))
+                    sb.append(row.getData(ind) + " ");
             }
             if (sb.length() > 0) doc.put("collectors", sb.toString().trim());
         }
@@ -107,8 +107,8 @@ public class Workbench2SGR
             for (String field : 
                 new String [] {"genus", "species", "subspecies"})
             {
-                Short ind = fieldName2Index.get(field + c);
-                if (ind != null) sb.append(row.getData(ind) + " ");
+                for (short ind : getFieldsFor(field + c))
+                    sb.append(row.getData(ind) + " ");
             }
         }
         
@@ -122,11 +122,8 @@ public class Workbench2SGR
         
         for (String field : inputFields)
         {
-            Short ind = fieldName2Index.get(field);
-            if (ind != null) 
-            {
+            for (short ind : getFieldsFor(field))
                 sb.append(row.getData(ind) + " ");
-            }
         }
         
         if (sb.length() > 0) doc.put(outputField, sb.toString().trim());

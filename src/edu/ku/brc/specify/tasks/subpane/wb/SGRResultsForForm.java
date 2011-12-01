@@ -278,12 +278,9 @@ public class SGRResultsForForm extends JPanel
         int modelIndex = workbenchPaneSS.getSpreadSheet().convertRowIndexToModel(currentIndex);
         WorkbenchRow row = workbench.getRow(modelIndex);     
         
-        Short i;
-
         Workbench2SGR wb2sgr = sgrPlugin.getWorkbench2SGR();
-        i = wb2sgr.getFieldFor(field);
-            
-        row.setData(StringUtils.join(values.toArray()), i, true);
+        for (short i : wb2sgr.getFieldsFor(field))
+            row.setData(StringUtils.join(values.toArray()), i, true);
 //
 //        Map<Short, WorkbenchDataItem> dis = row.getItems();
 //        WorkbenchDataItem di = dis.get(i);
