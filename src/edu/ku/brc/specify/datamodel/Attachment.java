@@ -46,6 +46,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
@@ -667,7 +668,10 @@ public class Attachment extends DataModelObjBase implements Serializable
         {
             if (doDisplayErrors)
             {
-                UIRegistry.showLocalizedError("ATTCH_NOT_SAVED_REPOS", origFilename);
+                boolean useFilePath = AppPreferences.getLocalPrefs().getBoolean("attachment.use_path", true);
+                String  msgKey      = "ATTCH_NOT_SAVED_REPOS" + (useFilePath ? "" : "_WEB");
+                String  errMsg      = ex.getMessage();
+                UIRegistry.showLocalizedError(msgKey, origFilename, StringUtils.isNotEmpty(errMsg) ? errMsg : "");
                 return;
             }
             throw ex;

@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -53,6 +54,7 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -348,7 +350,19 @@ public class AttachmentBusRules extends BaseBusRules
             thumbFile = null;
         }
         
-        attachmentMgr.storeAttachmentFile(attachment, origFile, thumbFile);
+        try
+        {
+            attachmentMgr.storeAttachmentFile(attachment, origFile, thumbFile);
+            
+        } catch (IOException ex)
+        {
+            boolean useFilePath = AppPreferences.getLocalPrefs().getBoolean("attachment.use_path", true);
+            String  msgKey      = "ATTCH_NOT_SAVED_REPOS" + (useFilePath ? "" : "_WEB");
+            String  errMsg      = ex.getMessage();
+            UIRegistry.showLocalizedError(msgKey, origFile.getName(), StringUtils.isNotEmpty(errMsg) ? errMsg : "");
+            throw ex;
+        }
+        
         return true;
     }
 
