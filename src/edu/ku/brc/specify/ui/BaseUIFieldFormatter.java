@@ -201,7 +201,6 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public UIFieldFormatterField getYear()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -229,6 +228,14 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     public int getLength()
     {
         return length;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#resetLength()
+     */
+    @Override
+    public void resetLength()
+    {
     }
 
     /* (non-Javadoc)

@@ -133,13 +133,19 @@ public interface UIFieldFormatterIFace
      * @return the character length of the entire format.
      */
     public abstract int getLength();
-
+    
     /**
      * Return true if the length is ok, for some formatters the length may not matter.
      * @param lengthOfData the length of the data string
      * @return true if it is ok (even though it may not be equal), false if it isn't ok.
      */
     public abstract boolean isLengthOK(int lengthOfData);
+
+    /**
+     * This is used by the editor, it tells the formatter to recalculate
+     * the length (for formats where calculating the length is expensive).
+     */
+    public abstract void resetLength();
     
     /**
      * a hint at how many characters to the UI should use for the field, most of the time this will return the 

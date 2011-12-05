@@ -138,6 +138,14 @@ public abstract class ExportFieldFormatter implements UIFieldFormatterIFace
 	}
 
 	/* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#resetLength()
+     */
+    @Override
+    public void resetLength()
+    {
+    }
+
+    /* (non-Javadoc)
 	 * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#getMaxValue()
 	 */
 	@Override

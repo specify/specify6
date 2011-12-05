@@ -184,6 +184,8 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fields.remove(inx);
                 fields.insertElementAt(item, inx-1);
                 fieldsTbl.getSelectionModel().setSelectionInterval(inx-1, inx-1);
+                selectedFormat.resetLength();
+                
                 updateEnabledState();
                 updateUIEnabled();
             }
@@ -198,6 +200,8 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fields.remove(inx);
                 fields.insertElementAt(item, inx+1);
                 fieldsTbl.getSelectionModel().setSelectionInterval(inx+1, inx+1);
+                selectedFormat.resetLength();
+                
                 updateEnabledState();
                 updateUIEnabled();
             }
@@ -637,6 +641,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         if (!fields.contains(currentField))
         {
             fields.add(currentField);
+            selectedFormat.resetLength();
         }
         
         FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
@@ -734,6 +739,8 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fieldTypeCbx.setSelectedIndex(-1);
                 fieldTxt.setText(""); // DL attached to this field will set fieldHasChanged to true 
                 fields.remove(fieldsTbl.getSelectedRow());
+                selectedFormat.resetLength();
+
                 // we must unhook the fields table SL to avoid popping up a dialog asking to save or discard data  
                 unhookFieldsTblSelectionListener();
                 fieldHasChanged = false;
