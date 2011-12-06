@@ -157,7 +157,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
             isCarryForwardOK = cfInfo.getFieldList().size() > 0;
         }
         
-        boolean isManualCatNumOK = isNewObj && !isAutoNumOn;
+        boolean isManualCatNumOK = !isAutoNumOn;
         boolean isOKToExpand     = isManualCatNumOK && isCarryForwardOK;
         textFieldStart.setAutoNumberEnabled(!isManualCatNumOK);
         textFieldEnd.setAutoNumberEnabled(!isManualCatNumOK);
