@@ -28,6 +28,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -173,8 +175,9 @@ public class InstitutionBusRules extends BaseBusRules
                 final Institution inst = (Institution)viewable.getDataObj();
                 if (inst != null)
                 {
-                    Vector<String> releases = new Vector<String>();
-                    String curRelease = AppPreferences.getGlobalPrefs().get(RELEASES, null);
+                    Vector<String> releases   = new Vector<String>();
+                    String         curRelease = AppPreferences.getGlobalPrefs().get(RELEASES, null);
+                    
                     if (curRelease == null)
                     {
                         curRelease = UIHelper.getInstall4JInstallString();
@@ -188,12 +191,15 @@ public class InstitutionBusRules extends BaseBusRules
                         managedRelease = curRelease;
                         inst.setCurrentManagedRelVersion(managedRelease);
                     }
-                    if (!managedRelease.equals(curRelease))
+                    
+                    boolean releaseNumMismatch = !managedRelease.equals(curRelease);
+                    if (releaseNumMismatch)
                     {
                         releases.insertElementAt(managedRelease, 0);
                     }
                     
                     relCombobox.getComboBox().setModel(new DefaultComboBoxModel(releases));
+                    relCombobox.getComboBox().setSelectedIndex(releaseNumMismatch ? 1 : 0);
                     SwingUtilities.invokeLater(new Runnable()
                     {
                         @Override
@@ -227,6 +233,14 @@ public class InstitutionBusRules extends BaseBusRules
         Institution inst = (Institution)dataObj;
         
         AppPreferences.getLocalPrefs().putBoolean("MANAGED_RELEASES", inst.getIsReleaseManagedGlobally());
+        String managedRel = inst.getCurrentManagedRelVersion();
+        if (StringUtils.isNotEmpty(managedRel))
+        {
+            AppPreferences.getGlobalPrefs().put(RELEASES, managedRel);
+        } else
+        {
+            AppPreferences.getGlobalPrefs().remove(RELEASES);
+        }
 
         return super.afterSaveCommit(dataObj, session);
     }

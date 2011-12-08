@@ -248,6 +248,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
+    private static final String MANAGED_RELEASES     = "MANAGED_RELEASES";  
     
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 1024;
@@ -3160,13 +3161,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   
                   // Managed Releases
                   // it's never managed for the Release Manager
-                  boolean isReleaseManager = AppPreferences.getLocalPrefs().getBoolean("RELEASE_MANAGER", false);
-                  boolean isManagedRelease = AppPreferences.getLocalPrefs().getBoolean("MANAGED_RELEASES", false);
+                  boolean isReleaseManager = localPrefs.getBoolean("RELEASE_MANAGER", false);
+                  boolean isManagedRelease = localPrefs.getBoolean(MANAGED_RELEASES, false);
                   boolean isMgrRel         = !isReleaseManager && isManagedRelease;
 
                   // Never check if it is a managed release
                   if (localPrefs.getBoolean(VERSION_CHECK, true) && !isMgrRel)
                   {
+                      if (!isMgrRel)
+                      {
+                          localPrefs.getBoolean(MANAGED_RELEASES, false); // remove it in case it was turned on
+                      }
+                      
                       try
                       {
                     	 com.install4j.api.launcher.SplashScreen.hide();
