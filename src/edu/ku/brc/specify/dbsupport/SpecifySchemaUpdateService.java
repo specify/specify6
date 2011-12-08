@@ -375,7 +375,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 DBMSUserMgr dbmsMgr = DBMSUserMgr.getInstance();
                                 if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
                                 {
-                                    int permissions = dbmsMgr.getPermissions(itUserNamePassword.first, dbConn.getDatabaseName());
+                                    int permissions = dbmsMgr.getPermissionsForUpdate(itUserNamePassword.first, dbConn.getDatabaseName());
                                     if (!((permissions & DBMSUserMgr.PERM_ALTER_TABLE) == DBMSUserMgr.PERM_ALTER_TABLE))
                                     {
                                         dbmsMgr.close();

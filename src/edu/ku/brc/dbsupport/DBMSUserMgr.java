@@ -228,14 +228,22 @@ public abstract class DBMSUserMgr
 	 */
 	public abstract boolean removeUser(String username, String password);
 	
-	/**
-	 * Gets the permissions for a user for a database.
-	 * @param username the user
-	 * @param dbName the database
-	 * @return the mask of bits indicating the permissions setting
-	 */
-	public abstract int getPermissions(String username, String dbName);
-	
+    /**
+     * Gets the permissions to update the schema of a database by a user.
+     * @param username the user
+     * @param dbName the database
+     * @return the mask of bits indicating the permissions setting
+     */
+    public abstract int getPermissionsForUpdate(String username, String dbName);
+    
+    /**
+     * Gets the permissions to access a database.
+     * @param username the user
+     * @param dbName the database
+     * @return the mask of bits indicating the permissions setting
+     */
+    public abstract int getPermissionsForAccess(String username, String dbName);
+    
 	/**
 	 * Sets permissions for a user on a database 
 	 * @param username the user
@@ -267,7 +275,7 @@ public abstract class DBMSUserMgr
     /**
      * Checks to see which permissions a user has.
      * @param userName the user
-     * @return the mask of premissions
+     * @return the mask of permissions
      */
     public abstract int getPermissionsForUser(String userName);
     

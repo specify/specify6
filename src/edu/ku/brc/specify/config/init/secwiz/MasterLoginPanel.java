@@ -389,11 +389,11 @@ public class MasterLoginPanel extends GenericFormPanel
                 
             } else
             {
-                // Now check all the databases that the Mast has access to to make sure 
+                // Now check all the databases that the Master has access to to make sure 
                 // they have the correct permissions.
                 for (String dbn : dbNamesForMaster)
                 {
-                    int perms = mgr.getPermissions(saUserName, dbn);
+                    int perms = mgr.getPermissionsForAccess(saUserName, dbn);
                     //System.out.println(dbn+" => "+perms+"  "+DBMSUserMgr.PERM_ALL_BASIC+" ("+(perms & DBMSUserMgr.PERM_ALL_BASIC)+") => "+((perms & DBMSUserMgr.PERM_ALL_BASIC) != DBMSUserMgr.PERM_ALL_BASIC));
                     if ((perms & DBMSUserMgr.PERM_ALL_BASIC) != DBMSUserMgr.PERM_ALL_BASIC)
                     {
