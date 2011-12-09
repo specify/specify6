@@ -129,6 +129,7 @@ public class SGRTask extends BaseTask
         super(SGR, getResourceString("SGR"));
         
         CommandDispatcher.register(SGR, this);
+        CommandDispatcher.register("App", this);
     }
     
     private void loadDefaultMatchers()
@@ -169,11 +170,6 @@ public class SGRTask extends BaseTask
                     return DBConnection.getInstance().createConnection();
             }});
 
-            //if (!AppPreferences.getRemote().getBoolean("SGR_DEFAULT_MATCHERS_LOADED", false))
-            {
-                loadDefaultMatchers();
-            }
-
             toolsNavBoxList.clear();
 
             if (isVisible)
@@ -200,6 +196,12 @@ public class SGRTask extends BaseTask
     private NavBox makeMatchersNavBox()
     {
         NavBox matchersBox = new NavBox(getResourceString("SGR_MATCHERS_TITLE"));
+        fillMatchersNavBox(matchersBox);
+        return matchersBox;
+    }
+    
+    private void fillMatchersNavBox(NavBox matchersBox)
+    {
         List<MatchConfiguration> matchers = DataModel.getMatcherConfigurations();
         
         for (MatchConfiguration mc : matchers)
@@ -207,6 +209,8 @@ public class SGRTask extends BaseTask
              NavBoxItemIFace nbi = addMatcherToNavBox(mc, matchersBox, true);
         }
         
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+
         final RolloverCommand createMatcherBtn = 
             (RolloverCommand)makeDnDNavBtn(matchersBox, 
                     getResourceString("SGR_CREATE_MATCHER"), "PlusSign", 
@@ -228,8 +232,9 @@ public class SGRTask extends BaseTask
                         getResourceString("SGR_IMPORT_MATCHERS"), "PlusSign", 
                         new CommandAction(SGR, "import_matchers"), 
                         null, false, false);
-        }        
-        return matchersBox;
+        }
+        
+        UIRegistry.popResourceBundle();
     }
             
     private NavBoxItemIFace addMatcherToNavBox(MatchConfiguration mc, NavBox nb, boolean addSorted)
@@ -505,7 +510,20 @@ public class SGRTask extends BaseTask
         else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
         {
             prefsChanged(cmdAction);
-        } 
+        }
+        else if (cmdAction.isType("App"))
+        {
+            if (cmdAction.isAction("AppRestart"))
+            {
+                loadDefaultMatchers();
+                matchersNavBox.clear();
+                fillMatchersNavBox(matchersNavBox);
+            }
+            else if (cmdAction.isAction("StartUp"))
+            {
+                loadDefaultMatchers();
+            }
+        }
     }
 
     private void createNewMatcher()
