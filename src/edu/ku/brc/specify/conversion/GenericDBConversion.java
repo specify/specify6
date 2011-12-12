@@ -136,6 +136,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
+import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -9224,6 +9225,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             rs.close();
             
+            IdMapperIFace  bioStratIdMapper = IdMapperMgr.getInstance().get("biostratmapper");
+
+            
             Statement updateStatement = newDBConn.createStatement();
             
             //Hashtable<Integer, Integer> ceToPCHash = new Hashtable<Integer, Integer>();
@@ -9247,6 +9251,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             TreeSet<Integer> missingStratIds = new TreeSet<Integer>();
+            
+            bioStratIdMapper.setShowLogErrors(false);
 
             int missingStrat = 0;
             int missingGTP   = 0;
@@ -9270,15 +9276,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
                 
                 // Use the new StratID to get the new GTP Id (ChronosStratigraphy) 
-                Integer gtpId = stratGTPIdHash.get(newLithoId);
+                Integer gtpId       = stratGTPIdHash.get(newLithoId);
+                Integer bioStratId = null;
                 if (gtpId == null)
                 {
                     missingGTP++;
+                } else
+                {
+                    bioStratId = bioStratIdMapper.get(ceId);
                 }
                 
                 try
                 {
-                    String updateStr = "INSERT INTO paleocontext (TimestampCreated, TimestampModified, CollectionMemberID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID) "
+                    
+                    String updateStr = "INSERT INTO paleocontext (TimestampCreated, TimestampModified, CollectionMemberID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID, BioStratID) "
                             + "VALUES ('"
                             + nowStr
                             + "','"
@@ -9289,6 +9300,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) 
                             +"," + newLithoId
                             +"," + (gtpId != null ? gtpId : "NULL")
+                            +"," + (bioStratId != null ? bioStratId : "NULL")
                             + ")";
                     updateStatement.executeUpdate(updateStr);
                     
@@ -9300,6 +9312,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     
                     String sqlUpdate = "UPDATE collectionobject SET PaleoContextID=" + paleoContextID + " WHERE CollectionObjectID = " + coId;
                     updateStatement.executeUpdate(sqlUpdate);
+
                     coUpdateCnt++;
                     
                 } catch (SQLException e)
@@ -9315,6 +9328,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             rs.close();
             stmt.close();
+            
+            bioStratIdMapper.setShowLogErrors(true);
             
             if (frame != null) frame.setProcess(processCnt);
             

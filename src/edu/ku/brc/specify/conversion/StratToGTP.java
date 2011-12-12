@@ -313,9 +313,6 @@ public class StratToGTP
         {
             ex.printStackTrace();
         }
-        
-        // Now in this Step we Add the PaleoContext to the Collecting Events
-        
     }
 
     /**
@@ -340,15 +337,16 @@ public class StratToGTP
                 setProcess(0, count);
             }
             
-            IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+            IdTableMapper gtpIdMapper      = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+            IdHashMapper  bioStratIdMapper = IdMapperMgr.getInstance().addHashMapper("biostratmapper", true);
             
             Hashtable<Integer, Integer> ceToNewStratIdHash = new Hashtable<Integer, Integer>();
             
             IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
 
             // get all of the old records
-            //  Future GTP                           System        Series       Stage
-            String sql  = "SELECT s.StratigraphyID, s.Formation, s.SuperGroup, s.Text1 FROM stratigraphy s ORDER BY s.StratigraphyID";
+            //  Future GTP                           System        Series       Stage   BioStrat
+            String sql  = "SELECT s.StratigraphyID, s.Formation, s.SuperGroup, s.Text2, s.Text1 FROM stratigraphy s ORDER BY s.StratigraphyID";
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs   = stmt.executeQuery(sql);
@@ -370,31 +368,15 @@ public class StratToGTP
                 }
     
                 // grab the important data fields from the old record
-                int oldStratId = rs.getInt(1);
-                String system  = rs.getString(2);
-                String series  = rs.getString(3);
-                String stage   = rs.getString(4);
-                
-                if (StringUtils.isNotEmpty(stage))
-                {
-                    if (StringUtils.isNotEmpty(series))
-                    {
-                        series += ' ' + stage;
-                        
-                    } else
-                    {
-                        series = stage;
-                    }
-                }
-                
-                if (StringUtils.isEmpty(series))
-                {
-                    series = "(Empty)";
-                }
+                int oldStratId  = rs.getInt(1);
+                String system   = rs.getString(2);
+                String series   = rs.getString(3);
+                String stage    = rs.getString(4);
+                String bioStrat = rs.getString(5);
                 
                 // create a new Geography object from the old data
                 GeologicTimePeriod newStrat = convertOldStratRecord(localSession, eraNode, null, null, null, system, series, stage);
-
+                
                 counter++;
     
                 // Map Old GeologicTimePeriod ID to the new Tree Id
@@ -405,7 +387,15 @@ public class StratToGTP
                 if (ceId != null)
                 {
                     ceToNewStratIdHash.put(ceId, newStrat.getGeologicTimePeriodId());
-                } else
+                    
+                    if (StringUtils.isNotEmpty(bioStrat) && newStrat.getParent() != null)
+                    {
+                        GeologicTimePeriod bioStratNode = buildGeologicTimePeriodLevel(bioStrat, newStrat.getParent(), localSession);
+                        bioStratNode.setIsBioStrat(true);
+                        localSession.save(bioStratNode);
+                        bioStratIdMapper.put(ceId, bioStratNode.getGeologicTimePeriodId());
+                    }
+               } else
                 {
                     String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
                     tblWriter.logError(msg);
@@ -435,9 +425,6 @@ public class StratToGTP
         {
             ex.printStackTrace();
         }
-        
-        // Now in this Step we Add the PaleoContext to the Collecting Events
-        
     }
 
 
