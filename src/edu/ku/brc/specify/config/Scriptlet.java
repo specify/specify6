@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.config;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,6 +48,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -842,6 +844,73 @@ public class Scriptlet extends JRDefaultScriptlet
         return formatDate((Date)sqlDate, format);
     }
 
+    /**
+     * @param parentTable - the owner table of the records to be aggregated
+     * @param childTable - the one-to-many -related child table
+     * @param getter - the method in parentTable that gets the related records from childTable
+     * @param aggregator - the aggregator to use. Use null to use the default aggregator
+     * @param parentID - the ID of the owner record in parentTable
+     * @return aggregation of records in childTable linked to record in parentTable with ID = parentID
+     * @throws Exception
+     */
+    public String getAggregated(final String parentTable, final String childTable, final String getter,
+    		final String aggregator, final Integer parentID) throws Exception
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        //System.out.println(colEvId);
+        try
+        {
+        	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(parentTable);
+        	String parentKeyFld = tblInfo.getPrimaryKeyName();
+        	Class<?> parentClass = tblInfo.getClassObj();
+        	Method getMethod = parentClass.getMethod(getter, (Class<?>[] )null);
+        	tblInfo = DBTableIdMgr.getInstance().getByShortClassName(childTable);
+        	Class<?> childClass = tblInfo.getClassObj();
+        	List<?> list = session.getDataList(parentClass, parentKeyFld, parentID);
+        	if (list.size() > 0)
+        	{
+        		Object parent = list.get(0);
+        		Set<?> children = (Set<?> )getMethod.invoke(parentClass.cast(parent), (Object[] )null);
+        		if (children.size() > 0)
+        		{
+        			//result = DataObjFieldFormatMgr.getInstance().aggregate(collectors, Collector.class);
+        			if (StringUtils.isNotBlank(aggregator))
+        			{
+        				DataObjAggregator agg = DataObjFieldFormatMgr.getInstance().getAggregator(aggregator);
+        				if (agg != null && agg.getDataClass().equals(childClass))
+        				{
+        					return DataObjFieldFormatMgr.getInstance().aggregate(children, aggregator);
+        				}
+        				else
+        				{
+        					log.error("Unable to find aggregator for " + childTable + " named " + aggregator + ". Using default aggregator.");
+        				}
+        			}
+        			//use default
+        			return DataObjFieldFormatMgr.getInstance().aggregate(children, childClass);
+        		}       
+        	} else
+        	{
+        		log.error("Couldn't locate " + parentTable + " [" + parentID + "]");
+        	}
+        } finally
+        {
+        	session.close();
+        }
+        return "";
+    }
+    
+    /**
+     * @param colEvId
+     * @param aggregator
+     * @return Collectors for colEvId aggregated with specified aggregator
+     * @throws Exception
+     */
+    public String getCollectorsWithAggregator(final Integer colEvId, final String aggregator) throws Exception
+    {
+    	return getAggregated("CollectingEvent", "Collector", "getCollectors", aggregator, colEvId);
+    }
+    
     /**
      * Returns a list of collectors
      * @param colEvId
