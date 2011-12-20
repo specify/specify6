@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -100,8 +101,10 @@ import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
@@ -219,9 +222,14 @@ public class UploadTable implements Comparable<UploadTable>
     protected Vector<DefaultFieldEntry>                 missingRequiredFlds;
 
     protected UploadMatchSetting                        matchSetting;
-    protected Integer 									exportedRecordID = null;
     protected boolean 									matchRecordId = false;	
     protected Integer									exportedRecordId = null;
+    protected boolean									reusingExportedRec = false;
+    //for a one-to-many child, exportedRecordId will hold the parent's ID,
+    //exportedOneToManyID stores the child's recordID for the current 'sequence' - 1st collector, 2nd collector... 
+    protected Integer 									exportedOneToManyId = null;
+	protected boolean 									exportedOneToManyDelete = false;
+
     /**
      * i.e. is this a many of 1 - many. (eg: Determination 1, 2. Collector 1, 2, ...)
      */
@@ -231,7 +239,7 @@ public class UploadTable implements Comparable<UploadTable>
      * If true then matching records are updated with values in uploading dataset.
      * 
      */
-    protected boolean                                   updateMatches                = false;
+    protected boolean                                   updateMatches                = true;
 
     /**
      * If true then Match Status will be displayed
@@ -262,7 +270,23 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected boolean                                   plugHoles = true;    //if false then blank one-to-many records are allowed. 
     											                             //Eg. Prep2 fields are allowed to contain data when all prep1 fields are blank.
-    
+
+    protected boolean									deleteUnusedRecs			 = true;
+    protected Set<Pair<Integer, String>>           		disUsedRecs		             = new TreeSet<Pair<Integer, String>>(new Comparator<Pair<Integer, String>>() {
+
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		@Override
+		public int compare(Pair<Integer, String> arg0,
+				Pair<Integer, String> arg1) {
+			return arg0.getFirst().compareTo(arg1.getFirst());
+		}
+    	
+    });
+
+    protected List<Pair<Integer, String>>           	deletedRecs		             = new Vector<Pair<Integer, String>>();
+
     /**
      * @author timbo
      *
@@ -521,6 +545,8 @@ public class UploadTable implements Comparable<UploadTable>
     	isUploadRoot = uploader.getRootTable() == this;
         uploadedRecs.clear();
         matchSetting.clear();
+        deletedRecs.clear();
+        disUsedRecs.clear();
         isSecurityOn = AppContextMgr.isSecurityOn();
         if (matchRecordId)
         {
@@ -548,11 +574,67 @@ public class UploadTable implements Comparable<UploadTable>
         return false;
     }
 
+    
+    protected boolean colIsNullable(javax.persistence.Column col)
+    {
+        if (!tblClass.equals(Locality.class) || 
+        		!(col.name().equalsIgnoreCase("LatLongType") || 
+        				col.name().equalsIgnoreCase("Latitude1") || col.name().equalsIgnoreCase("Longitude1") ||
+        				col.name().equalsIgnoreCase("Latitude2") || col.name().equalsIgnoreCase("Longitude2")))
+        {
+        	return col.nullable();
+        }
+        
+    	//if 2nd geocoord is present then LatLongType is required
+        for (Vector<UploadField> flds : uploadFields)
+        {
+             for (UploadField fld : flds)
+             {
+             	String fldName = fld.getField().getName();
+                if (col.name().equalsIgnoreCase("LatLongType"))
+                {
+                	if (fldName.equalsIgnoreCase("Latitude2") || fldName.equalsIgnoreCase("Longitude2"))
+                	{
+                		return false;
+                	}
+                } else if (col.name().equalsIgnoreCase("Latitude1"))
+                {
+                	if (fldName.equalsIgnoreCase("LatLongType") || fldName.equalsIgnoreCase("Longitude1") || fldName.equalsIgnoreCase("Latitude2") || fldName.equalsIgnoreCase("Longitude2"))
+                	{
+                		return false;
+                	}
+                } else if (col.name().equalsIgnoreCase("Latitude2"))
+                {
+                	if (fldName.equalsIgnoreCase("Longitude2"))
+                	{
+                		return false;
+                	}
+                } else if (col.name().equalsIgnoreCase("Longitude1"))
+                {
+                	if (fldName.equalsIgnoreCase("LatLongType") || fldName.equalsIgnoreCase("Latitude1") || fldName.equalsIgnoreCase("Latitude2") || fldName.equalsIgnoreCase("Longitude2"))
+                	{
+                		return false;
+                	}
+                }
+                else if (col.name().equalsIgnoreCase("Longitude2"))
+                {
+                	if (fldName.equalsIgnoreCase("Latitude2"))
+                	{
+                		return false;
+                	}
+                }
+
+
+             }
+        }
+        return true;
+    	
+    }
     /**
      * @throws NoSuchMethodException
      * 
      * Builds vector of non-nullable fields in tblClass that are not present in the uploading
-     * dataset. SIDE EFFECT: UploadFields' required properties are set.
+     * dataset. SIDE EFFECT: Required uploadFields, that are present may get their required properties set to true.
      */
     protected void buildMissingRequiredFlds() throws NoSuchMethodException
     {
@@ -564,7 +646,7 @@ public class UploadTable implements Comparable<UploadTable>
             if (a != null && b == null)
             {
                 javax.persistence.Column col = (javax.persistence.Column) a;
-                if (!col.nullable() && !col.name().startsWith("Timestamp") 
+                if (!colIsNullable(col) && !col.name().startsWith("Timestamp") 
                 		&& !col.name().equalsIgnoreCase("srcLatLongUnit"))
                 {
                     if (!fldInDataset(col.name()))
@@ -578,33 +660,34 @@ public class UploadTable implements Comparable<UploadTable>
                             fldName = "collectionMemberId";
                         }
                         DefaultFieldEntry dfe;
-                        // Now find UploadField corresponding to field and set Required to true.
-                        UploadField uploadField = null;
-                        for (Vector<UploadField> ufs : uploadFields)
-                        {
-                            for (UploadField uf : ufs)
-                            {
-                                if (uf.getField().getName().equalsIgnoreCase(col.name()))
-                                {
-                                    uf.setRequired(true);
-                                    uploadField = uf;
-                                }
-                            }
-                        }
                         if (table.getName().equalsIgnoreCase("collector") && fldName.equalsIgnoreCase("isprimary"))
                         {
                             //Creating a new DefaultFieldEntry class makes it possible to handle
                             //the conditional/parameterized default behavior of isPrimary without spreading these
                             //cheezy field by field conditions to code that is not yet infected.by cheezy fld by fld conditions.
                             dfe = new DefaultIsPrimaryEntry(this, m.getReturnType(),
-                                    setter, fldName, uploadField);
+                                    setter, fldName, null);
                         }
                         else
                         {
                             dfe = new DefaultFieldEntry(this, m.getReturnType(),
-                                    setter, fldName, uploadField);
+                                    setter, fldName, null);
                         }
                         missingRequiredFlds.add(dfe);
+                    } else if (col.name().equalsIgnoreCase("LatLongType"))
+                    {
+                        //Find UploadField corresponding to field and make sure Required to true.
+                        for (Vector<UploadField> ufs : uploadFields)
+                        {
+                            for (UploadField uf : ufs)
+                            {
+                                if (!uf.getField().isRequired() && uf.getField().getName().equalsIgnoreCase(col.name()))
+                                {
+                                    uf.setRequired(true);
+                                }
+                            }
+                        }
+
                     }
                 }
             }
@@ -955,6 +1038,25 @@ public class UploadTable implements Comparable<UploadTable>
     {
         return parentTables;
     }
+    
+    /**
+     * @param parent
+     * @return
+     */
+    public ParentTableEntry getParentTableEntry(final UploadTable parent)
+    {
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			if (pte.getImportTable() == parent)
+    			{
+    				return pte;
+    			}
+    		}
+    	}
+    	return null;
+    }
 
     /**
      * @param parentTables the parentTables to set
@@ -1024,7 +1126,10 @@ public class UploadTable implements Comparable<UploadTable>
     protected DataModelObjBase getCurrentRecordForSave(int index) throws IllegalAccessException,
             InstantiationException
     {
-        if (index > currentRecords.size() - 1 || currentRecords.get(index) == null) { return createRecord(); }
+        if (index > currentRecords.size() - 1 || currentRecords.get(index) == null) 
+        { 
+        	return createRecord(); 
+        }
         return currentRecords.get(index);
     }
 
@@ -1062,6 +1167,15 @@ public class UploadTable implements Comparable<UploadTable>
     	return !pte.getImportTable().specialChildren.contains(this) || !pte.getImportTable().needToMatchChild(tblClass);
     }
     
+    /**
+     * @param pte
+     * @return 
+     */
+    protected boolean shouldClearParent(ParentTableEntry pte)
+    {
+    	return shouldLoadParent(pte);
+    }
+    
     protected void clearCurrentRecords()
     {
     	for (int r = 0; r < uploadFields.size(); r++)
@@ -1072,7 +1186,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		for (ParentTableEntry pte : ptes)
     		{
-    			if (shouldLoadParent(pte))
+    			if (shouldClearParent(pte))
     			{
     				pte.getImportTable().clearCurrentRecords();
     			}
@@ -1080,6 +1194,45 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     }
     
+    /**
+     * @return
+     */
+    protected DataModelObjBase getExportedRecord()
+    {
+    	if (exportedRecordId != null)
+    	{
+    		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    		try
+    		{
+    			DataModelObjBase obj = (DataModelObjBase )session.get(tblClass, exportedRecordId);
+    			if (obj != null)
+    			{
+    				obj.forceLoad();
+    				return obj;
+    			}
+    		
+    		} finally
+    		{
+    			session.close();
+    		}
+    	}
+    	return null;
+    }
+    	
+    /**
+     * @param row
+     * @param id
+     * @throws Exception
+     */
+    public void loadExportedRecord(Integer id) throws Exception
+    {
+    	exportedRecordId = id;
+    	DataModelObjBase rec = getExportedRecord();
+    	if (rec != null)
+    	{
+    		loadRecord(rec, 0);
+    	}
+    }
     /**
      * @param rec
      * @throws Exception
@@ -1176,12 +1329,28 @@ public class UploadTable implements Comparable<UploadTable>
     		{
     			result.add(element);
     		}
-    		//XXX need to order...
-    		//Collections.sort(result);
+    		orderChildRecordsForLoad(child, result);
     	}
     	return result;
     }
     
+	/**
+	 * @param child
+	 * @param childRecords
+	 * @throws Exception
+	 */
+	protected void orderChildRecordsForLoad(final UploadTable child, final List<DataModelObjBase> childRecords) throws Exception
+	{
+		if (childRecords != null && childRecords.size() > 0)
+		{
+			RecordComparator rc = RecordComparator.createRecordComparator(child.getTblClass());
+			if (rc != null)
+			{
+				Collections.sort(childRecords, rc);
+			}
+		}
+	}
+	
     /**
      * @param rec
      * @throws Exception
@@ -1303,7 +1472,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Sets parent classes for rec.
      */
-    protected boolean setParents(DataModelObjBase rec, int recNum) throws InvocationTargetException,
+    protected boolean setParents(DataModelObjBase rec, int recNum, boolean isForWrite) throws InvocationTargetException,
             IllegalArgumentException, IllegalAccessException, UploaderException
     {
         boolean requirementsMet = true;
@@ -1326,6 +1495,10 @@ public class UploadTable implements Comparable<UploadTable>
             	if (!isNewRecord && !result)
             	{
             		result = valueChange(rec, pt.getGetter(), arg);
+            		if (isForWrite && result && !pt.getImportTable().matchRecordId && pt.getImportTable().deleteUnusedRecs)
+            		{
+            			addDisusedRec(rec, pt);
+            		}
             	}
                 pt.getSetter().invoke(rec, arg);
                 requirementsMet = requirementsMet && (arg[0] != null || !pt.isRequired());
@@ -1749,7 +1922,7 @@ public class UploadTable implements Comparable<UploadTable>
     	throws InvocationTargetException, IllegalAccessException
     {
 		boolean result = false;
-		if (getter != null)
+		if (getter != null && rec != null)
 		{
 			Object currentVal = getter.invoke(rec);
 			Object newValObj = newVal[0]; 
@@ -1772,7 +1945,7 @@ public class UploadTable implements Comparable<UploadTable>
 				}
 				else if (currentVal instanceof Comparable<?>)
 				{
-					result = ((Comparable )currentVal).compareTo((Comparable )newValObj) != 0;
+					result = ((Comparable<Object> )currentVal).compareTo((Comparable<?> )newValObj) != 0;
 				}
 				else
 				{
@@ -1920,10 +2093,10 @@ public class UploadTable implements Comparable<UploadTable>
                         			{
                         				return false;
                         			}
-                        			if (!coll1.getIsPrimary().equals(coll2.getIsPrimary()))
-                        			{
-                        				return false;
-                        			}
+//                        			if (!coll1.getIsPrimary().equals(coll2.getIsPrimary() == null ? false : coll2.getIsPrimary()))
+//                        			{
+//                        				return false;
+//                        			}
                         		}
                         	} 
                         } finally
@@ -2583,6 +2756,47 @@ public class UploadTable implements Comparable<UploadTable>
     
     
     /**
+     * Relevant for update uploads only.
+     * 
+     * @return the (presumably one and only parent) that 'owns' this table and is matched by exported record id. 
+     */
+    protected ParentTableEntry getControllingIDMatchingParent()
+    {
+		for (Vector<ParentTableEntry> ptes : parentTables)
+		{
+			for (ParentTableEntry pte : ptes)
+			{
+				if (pte.getImportTable().specialChildren.contains(this)  
+						&& (pte.getImportTable().isMatchRecordId() || pte.getImportTable().reusingExportedRec))
+				{
+					return pte; 
+				}
+			}
+		}
+		return null;
+    }
+   
+    /**
+     * Relevant for update uploads only.
+     * 
+     * @return the (presumably one and only parent) that 'owns' this table and is matched by exported record id. 
+     */
+    protected ParentTableEntry getControllingParent()
+    {
+		for (Vector<ParentTableEntry> ptes : parentTables)
+		{
+			for (ParentTableEntry pte : ptes)
+			{
+				if (pte.getImportTable().getSpecialChildren().indexOf(this) != -1)
+				{
+					return pte; 
+				}
+			}
+		}
+		return null;
+    }
+
+    /**
      * @param parents
      * @param critter
      * @param recNum
@@ -2633,10 +2847,11 @@ public class UploadTable implements Comparable<UploadTable>
 			throws UploaderException, IllegalAccessException,
 			NoSuchMethodException, InvocationTargetException 
 	{
-		// XXX Updates
-		if (matchRecordId) 
+		ParentTableEntry lordAndMaster = getControllingIDMatchingParent();
+		boolean reUsingParent = lordAndMaster != null && lordAndMaster.getImportTable().reusingExportedRec;
+		if (matchRecordId || reUsingParent) 
 		{
-			if (exportedRecordId != null) 
+			if (exportedRecordId != null || reUsingParent) 
 			{
 				if (getTable().getTableInfo().getTableId() == uploader
 						.getUpdateTableId()) 
@@ -2655,7 +2870,20 @@ public class UploadTable implements Comparable<UploadTable>
 				{
 					//must be a child of a table for which matchRecordid is true.
 					//Assuming that there is only parent table with matchRecordId true.
-					boolean gotIt = checkParentsForMatchCriteria(parentTables, critter, recNum, null);
+					if (lordAndMaster != null)
+					{
+						//exportedOneToManyId should have been set from writeRowOrNot
+						if (exportedOneToManyId != null)
+						{
+							addRestriction(critter, "id", exportedOneToManyId, true);
+						} else
+						{
+							getInsertMatchCriteria(critter, recNum, restrictedVals, overrideParentParams);
+						}
+					}
+	
+						//XXX special situation for one-to-ones -- XXXXAttribute tables. ???...
+//					boolean gotIt = checkParentsForMatchCriteria(parentTables, critter, recNum, null);
 //					if (!gotIt && isOneToOneChild())
 //					{
 //						//This is SO lame...stinking Attribute tables.
@@ -2676,6 +2904,7 @@ public class UploadTable implements Comparable<UploadTable>
 //							}
 //						}
 //					}
+					
 				}
 
 			} // else an insert?
@@ -2684,6 +2913,60 @@ public class UploadTable implements Comparable<UploadTable>
 		return getInsertMatchCriteria(critter, recNum, restrictedVals, overrideParentParams);
 	}
 
+	/**
+	 * @param recNum
+	 * 
+	 * get and set the RecordID and IsDeleted status for the current row and recNum
+	 * for a 'controlled' one-to-many table
+	 */
+	protected void updateExportedRecInfo(int recNum)
+	{
+		exportedOneToManyId = null;
+		exportedOneToManyDelete = false;
+		ParentTableEntry controllingParent = getControllingIDMatchingParent();	
+		
+		if (controllingParent == null)
+		{
+			return;
+		}
+		//if (matchRecordId && exportedRecordId != null && getControllingIDMatchingParent() != null)
+		if ((matchRecordId && exportedRecordId != null) ||  controllingParent.getImportTable().reusingExportedRec)
+		{
+			Pair<Integer, Boolean> info = getExportedRecInfo(recNum);
+			if (info != null)
+			{
+				exportedOneToManyId = info.getFirst();
+				exportedOneToManyDelete = info.getSecond();
+			}
+		}
+	}
+	
+	/**
+	 * @param recNum
+	 * @return the RecordID and IsDeleted status for the current row and recNum
+	 * for a 'controlled' one-to-many table
+	 */
+	protected Pair<Integer, Boolean> getExportedRecInfo(int recNum)
+	{
+		String sql = "select wber.RecordID  from workbenchrow wbr inner join "
+			+ "workbenchrowexportedrelationship wber on wber.workbenchrowid = wbr.workbenchrowID "
+			+ " where wber.Sequence = " + recNum + " and "
+			+ "wber.TableName = '" + tblClass.getSimpleName().toLowerCase() + "' and "
+			+ "wbr.RowNumber = " + wbCurrentRow + " and "
+			+ "wbr.WorkbenchID = " + uploader.getWbSS().getWorkbench().getId();
+		Vector<Object[]> recInfo = BasicSQLUtils.query(sql);
+		if (recInfo == null || recInfo.size() == 0)
+		{
+			return null;
+		}
+		if (recInfo.size() > 1)
+		{
+			log.warn("Multiple exported rec info records found. Table=" + tblClass.getSimpleName().toLowerCase() +
+					" row=" + wbCurrentRow  + " seq=" + recNum);
+		}
+		return new Pair<Integer, Boolean>((Integer )recInfo.get(0)[0], false /*(Boolean )recInfo.get(0)[1]*/);
+	}
+	
 	protected boolean getMatchCriteria(CriteriaIFace critter, final int recNum,
 			Vector<MatchRestriction> restrictedVals, 
 			HashMap<UploadTable, DataModelObjBase> overrideParentParams) throws UploaderException,
@@ -2697,6 +2980,18 @@ public class UploadTable implements Comparable<UploadTable>
 		return getInsertMatchCriteria(critter, recNum, restrictedVals, overrideParentParams);
 	}
 
+	/**
+	 * @param uf
+	 * @return true if field needs to be used when creating match criteria
+	 */
+	protected boolean isFieldToMatchOn(final UploadField uf)
+	{
+		if (tblClass.equals(Collector.class) && uf.getField().getFieldInfo() != null && uf.getField().getFieldInfo().getColumn().equalsIgnoreCase("isprimary"))
+		{
+			return false;
+		}
+		return uf.getSetter() != null;
+	}
     /**
      * 
      * 
@@ -2719,7 +3014,7 @@ public class UploadTable implements Comparable<UploadTable>
     	boolean ignoringBlankCell = false;
         for (UploadField uf : uploadFields.get(recNum))
         {
-            if (uf.getSetter() != null)
+            if (isFieldToMatchOn(uf))
             {
                 String restriction = addRestriction(critter, deCapitalize(uf.getField().getName()),
                         getArgForSetter(uf)[0], true);
@@ -2985,8 +3280,8 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected List<ParentMatchInfo> getMatchInfoInternal(int row, int recNum, 
     		Set<Integer> invalidColNums, HashMap<UploadTable, DataModelObjBase> matchChildrenParents) throws UploaderException,
-		InvocationTargetException, IllegalAccessException, ParseException,
-		NoSuchMethodException
+    		InvocationTargetException, IllegalAccessException, ParseException,
+    		NoSuchMethodException, InstantiationException, SQLException
     {
     	//XXX still need to follow matchChildren links
     	//XXX when doing children need to do all recnums - collector1 2 3 ...
@@ -3154,7 +3449,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public List<UploadTableMatchInfo> getMatchInfo(int row, int recNum, Set<Integer> invalidColNums) throws UploaderException,
     	InvocationTargetException, IllegalAccessException, ParseException,
-    	NoSuchMethodException
+    	NoSuchMethodException, InstantiationException, SQLException
     {
     	//XXX assuming that an upload is NOT in progress!!
     	wbCurrentRow = row;
@@ -3198,7 +3493,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected boolean findMatch(int recNum, boolean forceMatch, List<DataModelObjBase> returnMatches, 
     		HashMap<UploadTable, DataModelObjBase> overrideParentParams) throws UploaderException,
             InvocationTargetException, IllegalAccessException, ParseException,
-            NoSuchMethodException
+            NoSuchMethodException, InstantiationException, SQLException
     {
         // if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false;
         // }
@@ -3284,7 +3579,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
 //                }
             }
-        	setCurrentRecord(match, recNum);
+        	setCurrentRecordFromMatch(match, recNum);
             if (match != null)
             {
                 if (updateMatches && matchRecordId)
@@ -3314,6 +3609,92 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    
+    
+    
+    /**
+     * @param match
+     * @param recNum
+     */
+    protected void setCurrentRecordFromMatch(final DataModelObjBase match, int recNum)
+    	throws IllegalAccessException, InstantiationException, SQLException
+    {
+        if (updateMatches && !matchRecordId)
+        {
+        	DataModelObjBase expRec = getExportedRecord(); //Assumes updateExportedRecInfo has been called for recNum
+        	
+        	if (expRec == null && match == null)
+        	{
+        		setCurrentRecord(null, recNum);
+        		return;
+        	}
+        	
+        	if (expRec != null && match != null && expRec.getId().equals(match.getId()))
+        	{
+        		setCurrentRecord(match, recNum);
+        		return;
+        	}
+        	
+        	//boolean recIsShared = true;
+        	//DeleteHelper can return records using a record - I think - could possibly do something
+        	//similar to what uploader.recIsShared does - note the recursion - that would
+        	//work for ALL related tables not just those in the upload.
+        	//boolean recIsShared = expRec == null ? false
+        	//		: uploader.recIsShared(this, expRec.getId());
+        	//Get currently used rec. If it is not used by any other records, use it as current.
+        	//If it is used by other recs, then copy its current non-system contents to a new rec
+        	
+        	boolean recIsShared = false;
+        	
+            if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass))
+            {
+            	System.out.println("Assuming shared for class: " + tblClass);
+            	recIsShared = true;
+            }
+
+        	//XXX need to create SpecifyHelperObject - probably in Uploader so UploadTables can share it.
+        	SpecifyDeleteHelper delhel = new SpecifyDeleteHelper();
+        	recIsShared = expRec == null ? false : delhel.isRecordShared(tblClass, expRec.getId());
+        	delhel.done(true);
+        	if (!recIsShared)
+        	{
+        		if (match == null)
+        		{
+        		//Changes have been made, no other records use the current record, so apply the changes to it
+        			setCurrentRecord(expRec, recNum);
+        			reusingExportedRec = true;
+        		}
+        		else 
+        		{
+        			//should delete the expRec - expRec should get added
+        			//to disUsedRecs by child...
+            		setCurrentRecord(match, recNum);
+        		}
+        	} else
+        	{
+        		if (match == null)
+        		{
+        			DataModelObjBase newRec = createRecord();
+        			if (expRec != null)
+        			{
+        				//copy expRec to new rec
+        				//Including related recs - locdetail, geocoord, attributes, collectors 
+        				//---A lot like carry forward??  -- yes, for tables NOT in the upload
+        				System.out.println("!!!!setCurrentRecordFromMatch NOT copying old rec to new rec!!!");
+        			}         		
+    				setCurrentRecord(newRec, recNum);
+        		} else
+        		{
+                	setCurrentRecord(match, recNum); 
+        		}
+        	}
+        } else
+        {
+        	setCurrentRecord(match, recNum);
+        }
+
+    }
+    
     public void onAddNewMatch(final Vector<MatchRestriction> restrictedVals)
     {
         // yuck. Only want to create one new record for each set values. If cell values 'Roger'
@@ -3413,7 +3794,21 @@ public class UploadTable implements Comparable<UploadTable>
                                   int row,
                                   int seq) throws UploaderException
     {
-        boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+        
+    	boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+        if (blankButRequired && tblClass.equals(Locality.class) && fld.getField().getName().equalsIgnoreCase("LatLongType"))
+        {
+        	boolean geoDataPresent = false;
+        	for (UploadField f : getLatLongFlds())
+        	{
+        		if (StringUtils.isNotBlank(f.getValue()))
+        		{
+        			geoDataPresent = true;
+        			break;
+        		}
+        	}
+        	blankButRequired = geoDataPresent;
+        }
         boolean isAutoAssignable = fld.getField().getFieldInfo() != null && fld.getField().getFieldInfo().getFormatter() != null
             && fld.getField().getFieldInfo().getFormatter().isIncrementer(); 
             //&& fld.getField().getFieldInfo().getFormatter().isNumeric();
@@ -3466,19 +3861,29 @@ public class UploadTable implements Comparable<UploadTable>
         
         return validValues.containsKey(fld.getValue());
    }
-    
+  
     /**
      * @param fld
      * @return a (possibly really really long) message listing the valid values for the fld.
      */
     protected String getInvalidPicklistValErrMsg(final UploadField fld)
     {
+    	return getInvalidPicklistValErrMsg(fld, fld.getValidValues().keySet());
+    }
+
+    /**
+     * @param fld
+     * @param vals
+     * @return a (possibly really really long) message listing the valid values for the fld.
+     */
+    protected String getInvalidPicklistValErrMsg(final UploadField fld, final Set<String> vals)
+    {
         String valList = "";
-        Map<String, PickListItemIFace> vals = fld.getValidValues();
+        //Map<String, PickListItemIFace> vals = fld.getValidValues();
         if (vals != null)
         {
             int valCount = 0;
-        	for (String val : vals.keySet())
+        	for (String val : vals)
             {
                 if (!StringUtils.isEmpty(valList))
                 {
@@ -3579,7 +3984,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		return !uploader.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
     	}
-    	
+    	    	
     	if (!isBlankRow(row, uploadData, seq))
     	{
     		return true;
@@ -3729,6 +4134,57 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @return for an exported dataset, fields that are not the same
+     * as the corresponding fields in the database for the given row, because 
+     * they have been edited in the workbench or by other means.
+     * 
+     * NOTE: Assumes loadRecord() has been called for row for the 'root' table
+     * of the dataset.
+     */
+    protected List<UploadField> getChangedFields(int row) throws UploaderException,
+		InvocationTargetException, IllegalAccessException,
+		NoSuchMethodException
+    {
+    	Vector<UploadField> result = new Vector<UploadField>();
+    	if (uploadFields.size() > 1)
+    	{
+    		//ouch
+    	} else
+    	{
+    		result.addAll(getChangedFields(row, 0));
+     	}
+    	return result;
+    }
+        
+    /**
+     * @return for an exported dataset, fields that are not the same
+     * as the corresponding fields in the database for the given row and seq, because 
+     * they have been edited in the workbench or by other means.
+     * 
+     * NOTE: Assumes loadRecord() has been called for row for the 'root' table
+     * of the dataset.
+     */
+   protected List<UploadField> getChangedFields(int row, int seq) throws UploaderException,
+		InvocationTargetException, IllegalAccessException,
+		NoSuchMethodException
+    {
+    	DataModelObjBase rec = getCurrentRecord(seq); //'root'.loadRecord(..., row) has been called!!!
+    	Vector<UploadField> result = new Vector<UploadField>();
+    	for (UploadField fld : uploadFields.get(seq))
+    	{
+    		if(fld.getIndex() != -1) 
+    		{
+    			//XXX it would be good to get valueChange to return the 
+    			//db value, and return it with the fld...
+    			if (valueChange(rec, fld.getGetter(), getArgForSetter(fld)))
+    			{
+    				result.add(fld);
+    			} 
+    		}
+    	}
+    	return result;
+    }
+    /**
      * @param row
      * @param uploadData
      * @param invalidValues
@@ -3736,7 +4192,7 @@ public class UploadTable implements Comparable<UploadTable>
      * Validates user-entered fields for the row.
      * Validation issues are added to invalidValues vector.
      */
-    public void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues)
+    public void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues) 
     {
         
     	if (uploadData.isEmptyRow(row))
@@ -3812,7 +4268,11 @@ public class UploadTable implements Comparable<UploadTable>
 								}
 							}
 							Object[] finalVal = getArgForSetter(fld);
-							checkUniqueness(finalVal, fld);
+							if (!updateMatches)
+							{
+								//XXX But what if catnum has been changed... Shouldn't CatNum be made unchangeable???
+								checkUniqueness(finalVal, fld);
+							}
 						} catch (Exception e)
 						{
 							invalidValues.add(new UploadTableInvalidValue(
@@ -3857,6 +4317,65 @@ public class UploadTable implements Comparable<UploadTable>
 													new Exception(
 															UIRegistry
 																	.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
+								}
+							}
+						}
+						//Check LatLongType
+						if (fldName.equalsIgnoreCase("LatLongType") && StringUtils.isNotBlank(fld.getValue()))
+						{
+							boolean hasLat1 = false, hasLong1 = false, hasLat2 = false, hasLong2 = false;
+							for (UploadField f : getLatLongFlds())
+							{
+								String coordName = f.getField().getName();
+								if (coordName.equalsIgnoreCase("latitude1") && StringUtils.isNotBlank(f.getValue()))
+								{
+									hasLat1 = true;
+								} else if (coordName.equalsIgnoreCase("longitude1") && StringUtils.isNotBlank(f.getValue()))
+								{
+									hasLong1 = true;
+								} else if (coordName.equalsIgnoreCase("latitude2") && StringUtils.isNotBlank(f.getValue()))
+								{
+									hasLat2 = true;
+								} else if (coordName.equalsIgnoreCase("longitude2") && StringUtils.isNotBlank(f.getValue()))
+								{
+									hasLong2 = true;
+								}
+							}
+							boolean hasCoord1 = hasLat1 && hasLong1;
+							boolean hasCoord2 = hasLat2 && hasLong2;
+							
+											
+							//Assuming the pick list is localized...
+							String pntStr = UIRegistry.getResourceString("Locality.LL_TYPE_POINT");
+							String lineStr = UIRegistry.getResourceString("Locality.LL_TYPE_LINE");
+							String rectStr = UIRegistry.getResourceString("Locality.LL_TYPE_RECTANGLE");
+
+							Set<String> validValues = new TreeSet<String>();
+							for (String item : fld.getValidValues().keySet())
+							{
+								if (item.equals(pntStr) && hasCoord1 && !hasCoord2)
+								{
+									validValues.add(item);
+								} else if ((item.equals(lineStr) || item.equals(rectStr)) && hasCoord1 && hasCoord2)
+								{
+									validValues.add(item);
+								}
+							}
+							if (!validValues.contains(fld.getValue()))
+							{
+								if (uploader != Uploader.currentUpload)
+								{
+									invalidValues
+										.add(new UploadTableInvalidValue(
+											null,
+											this,
+											fld,
+											null,
+											row,
+											new Exception(
+													getInvalidPicklistValErrMsg(fld, validValues)),
+											false));
+									continue;
 								}
 							}
 						}
@@ -4051,6 +4570,75 @@ public class UploadTable implements Comparable<UploadTable>
 		}
 
     }
+    
+    
+    /**
+     * @param rec
+     * @param pt
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    protected void addDisusedRec(DataModelObjBase rec, ParentTableEntry pt) throws InvocationTargetException,
+     	IllegalAccessException
+    {
+    	//XXX See comments for disUseRecs()
+    	UploadTable parentTbl = pt.getImportTable();
+    	DataModelObjBase parentRec = (DataModelObjBase )pt.getGetter().invoke(rec);
+    	Set<Pair<Integer, String>> parentDisUsed = pt.getImportTable().disUsedRecs;
+    	if (!parentDisUsed.contains(parentRec.getId()))
+    	{
+    		String text = DataObjFieldFormatMgr.getInstance().format(parentRec, parentTbl.getTable().getTableInfo().getDataObjFormatter());
+    		parentDisUsed.add(new Pair<Integer, String>(parentRec.getId(), text));
+    	}
+    }
+    
+    /**
+     * @param theDisUsed
+     */
+    protected void disUseRecs(Set<Pair<Integer, String>> theDisUsed)
+    {
+    	//This is called during FinishUpload, by the Uploader in reverse order of the upload graph.
+    	//An attempt is made to delete any record that was dereferenced during the upload. 
+    	//XXX should test if deletable before trying. Current process is to delete and see if it works.
+    	//XXX Also need to recurse upwards. If a locality is disused, then it's geography needs to be disused, and the geography's parent, ...
+        if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass))
+        {
+        	System.out.println("Not attempting to remove disused recs for class: " + tblClass);
+        	return;
+        }
+
+    	
+    	SpecifyDeleteHelper delhel = new SpecifyDeleteHelper();
+    	for (Pair<Integer, String> disUsedOne : theDisUsed)
+    	{
+    		disUseRec(disUsedOne, delhel);
+    	}
+    	delhel.done(true);
+    	for (Pair<Integer, String> deletedRec : deletedRecs)
+    	{
+    		System.out.println("Deleted " + tblClass.getSimpleName() + "[" + deletedRec.getFirst() + "]: " + deletedRec.getSecond());
+    	}
+    }
+    
+    /**
+     * @param disUsee
+     */
+    protected void disUseRec(final Pair<Integer, String> disUsedRec, final SpecifyDeleteHelper delhel)
+    {
+    	System.out.println("deleting " + disUsedRec);
+    	try
+    	{
+    		delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true);
+    		//System.out.println("deleted " + tblClass.getSimpleName() + ":" + disUsedRec.getFirst());
+    		deletedRecs.add(disUsedRec);
+    	} catch (SQLException sqex)
+    	{
+    		delhel.rollback();
+    		System.out.println("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
+    	}
+    }
+    
+
     /**
      * @param uploadTable
      * @param blankSeq
@@ -4201,15 +4789,22 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch) throws UploaderException
     {
-        int recNum = 0;
+        //int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
-        for (Vector<UploadField> seq : uploadFields)
+        reusingExportedRec = false;
+        //for (Vector<UploadField> seq : uploadFields)
+        for (int recNum = uploadFields.size() - 1; recNum >= 0; recNum--)
         {
-            try
+            Vector<UploadField> seq = uploadFields.get(recNum);
+        	try
             {
-                if (needToWrite(recNum))
+                if (updateMatches)
+                {
+                	updateExportedRecInfo(recNum);
+                }
+            	if (needToWrite(recNum))
                 {
                     if (skipMatch || !findMatch(recNum, false, null, null) || updateMatches)
                     {
@@ -4220,6 +4815,13 @@ public class UploadTable implements Comparable<UploadTable>
                     	}
                     	DataModelObjBase rec = getCurrentRecordForSave(recNum);
                         boolean isNewRecord = rec.getId() == null;
+                        //XXX is it not possible to skip all the field setting here
+                        //if no changes have been made? getChangedFields() could be used 
+                        // ... and if no fields have been changed then skip the rest (or nearly the rest)
+                        //of this method, else use the changed fields to make the rest more efficient???.
+                        //
+                        //XXX But HEY!!! getChangedFields does not check parents. It was originally designed
+                        //to be run for all tables during getChangedFields(row)..
                         if (isNewRecord || !updateMatches)
                         {
                         	rec.initialize();
@@ -4229,8 +4831,8 @@ public class UploadTable implements Comparable<UploadTable>
                         boolean gotRequiredParents = true;
                         try
                         {
-                        	valuesChanged |= setParents(rec, recNum);
-                        	isUpdate |= updateMatches && !isNewRecord && valuesChanged;
+                        	valuesChanged |= setParents(rec, recNum, !doNotWrite);
+                        	isUpdate |= valuesChanged;
                         } catch (UploaderException ex)
                         {
                         	if ("MissingRequiredParent".equals(ex.getMessage()))
@@ -4246,13 +4848,13 @@ public class UploadTable implements Comparable<UploadTable>
                         	setRequiredFldDefaults(rec, recNum);
                         	setRelatedDefaults(rec, recNum);
                         }
-                        finalizeWrite(rec, recNum);
-                        if (!gotRequiredParents && hasChildren)
+                        if (!(doNotWrite || (updateMatches && !isUpdate && !isNewRecord)))
                         {
-                                throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
-                        }
-                        if (!doNotWrite)
-                        {
+                            finalizeWrite(rec, recNum);
+                            if (!gotRequiredParents && hasChildren)
+                            {
+                                    throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
+                            }
                         	doWrite(rec);
                             if (!updateMatches || isNewRecord)
                             {
@@ -4271,7 +4873,11 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
-                    setCurrentRecord(null, recNum);
+                    if (exportedOneToManyId != null)
+                    {
+                    	banishChild();
+                    }
+                	setCurrentRecord(null, recNum);
                 }
             }
             catch (InstantiationException ieEx)
@@ -4298,10 +4904,23 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 throw new UploaderException(peEx, UploaderException.ABORT_IMPORT);
             }
-            recNum++;
+            catch (SQLException sqEx)
+            {
+                throw new UploaderException(sqEx, UploaderException.ABORT_IMPORT);
+            }
+            //recNum++;
         }
     }
 
+    protected void banishChild()
+    {
+    	//XXX isOkToDelete check??? 
+    	//XXX recs in related tables that need to be deleted first ???
+    	//XXX tracking deletes for feedback to user ???
+    	String sql = "delete from " + tblClass.getSimpleName().toLowerCase() + " where " + getTable().getTableInfo().getPrimaryKeyName() + " = " + exportedOneToManyId;
+    	int r = BasicSQLUtils.update(sql);
+    	System.out.println(r + " deleted (" + sql + ")");
+    }
     /**
      * @param rec
      * 
@@ -5133,6 +5752,10 @@ public class UploadTable implements Comparable<UploadTable>
     public void finishUpload(boolean cancelled) throws UploaderException
     {
         //nothing to do here.
+    	if (updateMatches)
+    	{
+    		disUseRecs(disUsedRecs);
+    	}
     }
     
     /**

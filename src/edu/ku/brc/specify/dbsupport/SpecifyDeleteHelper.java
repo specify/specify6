@@ -46,6 +46,7 @@ import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
+import org.jfree.util.Log;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -58,11 +59,14 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAuditLog;
@@ -122,8 +126,8 @@ public class SpecifyDeleteHelper
         /* Need for when we test from main()
         DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", 
                                                           "org.hibernate.dialect.MySQLDialect", 
-                                                          "testfish", 
-                                                          "jdbc:mysql://localhost/testfish", 
+                                                          "wpupdater", 
+                                                          "jdbc:mysql://localhost/wbupdater", 
                                                           "root", 
                                                           "root");*/
                                                           
@@ -221,8 +225,28 @@ public class SpecifyDeleteHelper
         }
     }
     
+
     /**
      * 
+     */
+    public void rollback()
+    {
+        try
+        {
+            if (connection != null)
+            {
+                connection.rollback();
+            }
+        } catch (SQLException ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * @param doClose
      */
     public void done(final boolean doClose)
     {
@@ -230,7 +254,7 @@ public class SpecifyDeleteHelper
         {
             worker.firePropertyChange(CNT, SwingWorker.StateValue.DONE, SwingWorker.StateValue.DONE);
         }
-        
+
         if (doClose)
         {
             try
@@ -247,7 +271,143 @@ public class SpecifyDeleteHelper
             }
         }
     }
+    
+    /**
+     * @param cls
+     * @param id
+     * @return true if there are no referential integrity, or other, constraints preventing the record from being deleted.
+     * 
+     * Quick (or not), dirty, easy, loutish approach.
+     */
+    public boolean isRecordDeletable(final Class<?>  cls, final int id)
+    {
+    	boolean result;
+    	try
+    	{
+    		try 
+    		{
+    			delRecordFromTable(cls, id, true);
+    			result = true;
+    		} catch (SQLException ex)
+    		{
+    			result = false;
+    		}
+    	} finally
+    	{
+    		rollback();
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param cls
+     * @param id
+     * @param excludeCls
+     * @param excludeFromRequirement
+     * @return
+     * @throws SQLException
+     */
+    public boolean isRecordRequired(final Class<?> cls, final int id, final Class<?> excludeCls, final int[] excludeFromRequirement) throws SQLException
+    {
+        StackItem root      = new StackItem(null, null, null);
+        DBTableInfo tblInfo = tblMgr.getByShortClassName(cls.getSimpleName());
+        
+        String sqlStr = "SELECT "+tblInfo.getIdColumnName()+" FROM "+ tblInfo.getName() + " WHERE " +tblInfo.getIdColumnName()+" = ";
+        
+        getSubTables(root, cls, id, sqlStr, null, 0, null, true);
 
+        Statement stmt = connection.createStatement();
+        try 
+        {
+        	if (stmt != null)
+        	{
+        		for (StackItem si : root.getStack())
+        		{
+        			if (checkRequiredRecs(si, 0, id, excludeCls, excludeFromRequirement))
+        			{
+        				return true;
+        			}
+        		}
+        	}
+        } finally
+        {
+        	 stmt.close();	
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * @param rec
+     * @return
+     */
+    public boolean isRecordShared(final Class<?> cls, final Integer id) throws SQLException
+    {
+    	StackItem root      = new StackItem(null, null, null);
+        getSubTables(root, cls, id, null, null, 0, null, true);
+        StackItem s = root.getStack().peek();
+    	for (StackItem si : s.getStack())
+    	{
+    		System.out.println(si.getSql() + id);
+    		Vector<Integer> ids = getIds(si.getSql() + id, -1);
+    		if (ids != null && ids.size() > 1)
+    		{
+    			return true;
+    		}
+    		if (ids != null && ids.size() == 1)
+    		{
+    			if (isRecordShared(si.getTableInfo().getClassObj(), ids.get(0)))
+    			{
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
+     * @param si
+     * @param level
+     * @param excludeCls
+     * @param excludeFromRequirement
+     * @return
+     * @throws SQLException
+     */
+    public boolean checkRequiredRecs(final StackItem si, 
+    		final int level, 
+    		final int id,
+    		final Class<?> excludeCls, 
+    		final int[] excludeFromRequirement) throws SQLException
+    {
+    	Vector<Integer> ids = getIds(si.getSql() + id, level);
+    	if (si.getTableInfo().getClassObj().equals(excludeCls))
+    	{
+    		for (int exid : excludeFromRequirement)
+    		{
+    			int idx = ids.indexOf(exid);
+    			if (idx != -1)
+    			{
+    				ids.remove(idx); //assuming no dups in ids
+    			}
+    		}
+    	}
+    	
+    	if (ids.size() > 0)
+    	{
+    		return true;
+    	}
+    	
+//    	for (StackItem s : si.getStack())
+//    	{
+//    		if (checkRequiredRecs(s, level+1, excludeCls, excludeFromRequirement))
+//    		{
+//    			return true;
+//    		}
+//    	}
+    	
+    	return false;
+    }
     
     /**
      * @param cls
@@ -267,7 +427,7 @@ public class SpecifyDeleteHelper
         
         fireMsg("INITIALIZING");
 
-        getSubTables(root, cls, id, sqlStr, delStr, 0, null);
+        getSubTables(root, cls, id, sqlStr, delStr, 0, null, false);
         
         debug = false;
         if (debug)
@@ -341,7 +501,9 @@ public class SpecifyDeleteHelper
                                      final String    sqlStr,
                                      final String    delSqlStr,
                                      final int       level,
-                                     final Hashtable<String, Boolean> inUseHashArg)
+                                     final Hashtable<String, Boolean> inUseHashArg,
+                                     final boolean checkIfIsShared/*,
+                                     final int excludeId /*check if is required by anything other than this id*/)
     {
         if (classHash.contains(cls))
         {
@@ -444,6 +606,7 @@ public class SpecifyDeleteHelper
 
             String  colName   = null;
             boolean isOKToDel = false;
+            boolean includeSubTable = false;
             if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
             {
                 String nm = method.getName();
@@ -474,10 +637,17 @@ public class SpecifyDeleteHelper
                         }
                     }
                 }
+                
+                
                 isOKToDel = !doDel ? isOKToDel(method) : true;
+                if (checkIfIsShared && cls.equals(Geography.class) && method.getName().equals("getLocalities")) //Hibernate!?. Looks like the Cascade annotation is wrong.
+                {
+                	isOKToDel = false;
+                }
+                includeSubTable = !checkIfIsShared ? isOKToDel : !isOKToDel;
                 colName = tblInfo.getIdColumnName();
                 
-            } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+            } else if (!checkIfIsShared && method.isAnnotationPresent(javax.persistence.ManyToOne.class))
             {
                 boolean doDel = false;
                 javax.persistence.ManyToOne oneToMany = (javax.persistence.ManyToOne)method.getAnnotation(javax.persistence.ManyToOne.class);
@@ -489,7 +659,8 @@ public class SpecifyDeleteHelper
                     }
                 }
                 isOKToDel = !doDel ? isOKToDel(method) : true;
-                if (isOKToDel)
+                includeSubTable = !checkIfIsShared ? isOKToDel : !isOKToDel;
+                if (includeSubTable)
                 {
                     javax.persistence.JoinColumn joinCol = (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class);
                     if (joinCol != null)
@@ -537,7 +708,10 @@ public class SpecifyDeleteHelper
                         }
                         
                         DBTableInfo ti = tblMgr.getByShortClassName(relInfo.getDataClass().getSimpleName());
-                        child.push(ti, sql, delSql);
+                        if (!checkIfIsShared)
+                        {
+                        	child.push(ti, sql, delSql);
+                        }
                         
                     } else
                     {
@@ -545,9 +719,9 @@ public class SpecifyDeleteHelper
                     }
 
                 }
-            }
+            } 
             
-            if (isOKToDel)
+            if (includeSubTable)
             {
                 //System.out.println(method.getName()+"  "+method.getReturnType().getSimpleName());
                 String             relName = method.getName().substring(3);
@@ -591,7 +765,13 @@ public class SpecifyDeleteHelper
                             
                             if (ti.getClassObj() != cls || (doTrees && !Treeable.class.isAssignableFrom(cls)))
                             {
-                                getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash);
+                                if (!checkIfIsShared)
+                                {
+                                	getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash, checkIfIsShared);
+                                } else
+                                {
+                                	child.push(ti, sql, delSql);
+                                }
                                 
                             } else if (debug)
                             {
@@ -646,7 +826,10 @@ public class SpecifyDeleteHelper
                             }
                             
                             if (inUseHash != null) inUseHash.put(ti.getClassName(), true);
-                            getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash);
+                            //if (!checkIfIsShared)
+                            {
+                            	getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash, checkIfIsShared);
+                            }
                             
                         } else if (ri.getDataClass() == tblInfo.getClassObj() && !hashOK && StringUtils.isEmpty(ri.getOtherSide()))
                         {
@@ -848,6 +1031,15 @@ public class SpecifyDeleteHelper
                                     if (si.getTableInfo().getClassObj() == Division.class && StringUtils.contains(delSql, "FROM division"))
                                     {
                                         cleanUpAgentsForDivision(id);
+                                    } else if (si.getTableInfo().getName().endsWith("attribute")) 
+                                    {
+                                    	String preDelSql = "update " + si.getTableInfo().getName().replace("attribute", "")
+                                    			+ " set " + si.getTableInfo().getPrimaryKeyName() + " = null where "
+                                    			+ si.getTableInfo().getPrimaryKeyName() + " = " + itemId;
+                                        if (debugUpdate) System.err.println(preDelSql);
+                                        int count = stmt.executeUpdate(preDelSql);
+                                        if (debugUpdate) System.err.println("Count: "+count);
+                                    	
                                     }
                                     
                                     if (debugUpdate) System.err.println(delSql);
@@ -1526,5 +1718,45 @@ public class SpecifyDeleteHelper
         //s.getSubTables(Discipline.class);
         //s.getSubTables(Division.class);
     }*/
+
+    
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        DBTableIdMgr.getInstance().getByShortClassName(CollectingEvent.class.getSimpleName()); // Preload
+        
+        SpecifyDeleteHelper sdh = new SpecifyDeleteHelper();
+        try
+        {
+//        	if (sdh.isRecordShared(CollectingEvent.class, 1016))
+//        	{
+//        		System.out.println("CollectingEvent 1016 is shared");
+//        	} else
+//        	{
+//        		System.out.println("CollectingEvent 1016 is NOT shared");
+//        	}
+//        	if (sdh.isRecordShared(Locality.class, 132))
+//        	{
+//        		System.out.println("Locality 132 is shared");
+//        	} else
+//        	{
+//        		System.out.println("Locality 132 is NOT shared");
+//        	}
+        	if (sdh.isRecordShared(Geography.class, 54907))
+        	{
+        		System.out.println("Geography 54907 is shared");
+        	} else
+        	{
+        		System.out.println("Geography 54907 is NOT shared");
+        	}
+        		
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        
+    }
 
 }

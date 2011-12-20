@@ -814,10 +814,10 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#setParents(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
     @Override
-    protected boolean setParents(DataModelObjBase rec, int recNum)
+    protected boolean setParents(DataModelObjBase rec, int recNum, boolean isForWrite)
             throws InvocationTargetException, IllegalArgumentException, IllegalAccessException, UploaderException
     {
-        boolean result = super.setParents(rec, recNum);
+        boolean result = super.setParents(rec, recNum, isForWrite);
         //return true; //don't worry. It will be OK in the end.
         return result;
     }
@@ -1078,6 +1078,16 @@ public class UploadTableTree extends UploadTable
 	public UploadTableTree getChild()
 	{
 		return child;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shouldClearParent(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry)
+	 */
+	@Override
+	protected boolean shouldClearParent(ParentTableEntry pte) 
+	{
+		return true;
 	}
 
 	/* (non-Javadoc)

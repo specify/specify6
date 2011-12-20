@@ -54,6 +54,7 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
         LatLonConverter.FORMAT fmt = new GeoRefConverter().getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
         loc.setOriginalLatLongUnit(fmt.ordinal());
         loc.setSrcLatLongUnit((byte )fmt.ordinal());
+        
     }
 
 }

@@ -33,6 +33,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -84,7 +85,6 @@ import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
@@ -92,14 +92,9 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
-import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
-import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
-import edu.ku.brc.specify.datamodel.Collector;
-import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
@@ -108,7 +103,6 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
-import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -1643,6 +1637,80 @@ public class Uploader implements ActionListener, KeyListener
             result.addAll(validateLengths(tbl, row, col));
             tbl.validateRowValues(row, uploadData, result);
         }
+        //XXX not the right place!!!!!!!!
+        try 
+        {
+        	checkChangedData(row);
+        } catch (Exception ex)
+        {
+        	ex.printStackTrace();
+        }
+    	return result;
+    }
+    
+    public Vector<UploadField> checkChangedData(int row) throws Exception
+    {
+    	
+    	getRootTable().loadExportedRecord(/*row, */wbSS.getWorkbench().getRow(row).getRecordId());
+    	
+    	Vector<UploadField> result = new Vector<UploadField>();
+    	for (UploadTable ut : uploadTables)
+    	{
+    		result.addAll(ut.getChangedFields(row));
+    	}
+    	if (result.size() > 0)
+    	{
+    		for (UploadField fld : result)
+    		{
+    			System.out.println(fld.getWbFldName());
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param ut
+     * @param recID primary key value for record in ut
+     * @return true if other records than the current exported rec for child tables use 
+     * the specified ut record.
+     */
+    public boolean recIsShared(final UploadTable ut, final Integer recID)
+    {
+    	int utIndex = -1;
+    	boolean result = false;
+    	for (int t = 0; t < uploadTables.size(); t++)
+    	{
+    		if (ut == uploadTables.get(t))
+    		{
+    			utIndex = t;
+    			break;
+    		}
+    	}
+    	if (utIndex != -1)
+    	{
+    		for (int t = utIndex+1; t < uploadTables.size(); t++)
+    		{
+    			UploadTable tbl = uploadTables.get(t);
+    			ParentTableEntry pte = tbl.getParentTableEntry(ut);
+    			if (pte != null)
+    			{
+    				String sql = "select count(*) from " + tbl.getTblClass().getSimpleName().toLowerCase() 
+    					+ " where " + pte.getParentRel().getRelatedField() + " = " 
+    					+ ut.getExportedRecord().getId() + " and " 
+    					+ tbl.getTable().getTableInfo().getPrimaryKeyName() + " != "
+    					+ tbl.getExportedRecord().getId();
+    				Integer cnt = BasicSQLUtils.getCount(sql);
+    				if (cnt != null && cnt > 0)
+    				{
+    					return true;
+    				} else if (recIsShared(tbl, tbl.getExportedRecord().getId()))
+    				{
+    					return true;
+    				}
+    			}
+    		}
+    	}
+    	
     	return result;
     }
     
@@ -1708,7 +1776,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     public List<UploadTableMatchInfo> matchData(int row, int col, List<UploadTableInvalidValue> invalidCols) throws UploaderException,
 		InvocationTargetException, IllegalAccessException, ParseException,
-		NoSuchMethodException
+		NoSuchMethodException, InstantiationException, SQLException
     {
     	//Whereas, a match or non-match in any column X depends on matches or non-matches for columns whose tables are parents to X's table, and
     	//whereas, a match or non-match in X can change the match status for columns whose tables are children of X's tables, and
@@ -2092,7 +2160,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @return true if the upload is updating existing records
      */
-    protected boolean isUpdateUpload()
+    public boolean isUpdateUpload()
     {
     	UploadTable root = getRootTable();
     	return wbSS.getWorkbench().getExportedFromTableName() != null && root != null && root.isUpdateMatches();
@@ -2105,28 +2173,28 @@ public class Uploader implements ActionListener, KeyListener
     {
     	//currently this just checks for 1-many tables, which is a temporary restriction, but
     	//it is possible that some tables just won't be updatable.
-    	for (UploadTable ut : uploadTables)
-    	{
-    		if (ut.getUploadFields().size() > 1)
-    		{
-    			return false;
-    		} else 
-    		{
-    			if (ut.getTblClass().equals(Determination.class)
-    					|| ut.getTblClass().equals(Collector.class)
-    					|| ut.getTblClass().equals(Preparation.class)
-    					|| ut.getTblClass().equals(CollectionObjectAttribute.class)
-    					|| ut.getTblClass().equals(CollectingEventAttribute.class)
-    					|| ut.getTblClass().equals(AccessionAuthorization.class)
-    					|| ut.getTblClass().equals(CollectionObjectCitation.class)
-    					|| ut.getTblClass().equals(LocalityCitation.class)
-    					|| ut.getTblClass().equals(DNASequence.class)
-    					)
-    			{
-    				return false;
-    			}		
-    		}
-    	}
+//    	for (UploadTable ut : uploadTables)
+//    	{
+//    		if (ut.getUploadFields().size() > 1)
+//    		{
+//    			return false;
+//    		} else 
+//    		{
+//    			if (ut.getTblClass().equals(Determination.class)
+//    					|| ut.getTblClass().equals(Collector.class)
+//    					|| ut.getTblClass().equals(Preparation.class)
+//    					|| ut.getTblClass().equals(CollectionObjectAttribute.class)
+//    					|| ut.getTblClass().equals(CollectingEventAttribute.class)
+//    					|| ut.getTblClass().equals(AccessionAuthorization.class)
+//    					|| ut.getTblClass().equals(CollectionObjectCitation.class)
+//    					|| ut.getTblClass().equals(LocalityCitation.class)
+//    					|| ut.getTblClass().equals(DNASequence.class)
+//    					)
+//    			{
+//    				return false;
+//    			}		
+//    		}
+//    	}
     	return true;
     }
     
@@ -4190,9 +4258,10 @@ public class Uploader implements ActionListener, KeyListener
                 {
                     try
                     {
-                    	for (UploadTable t : uploadTables)
+                    	//for (UploadTable t : uploadTables)
+                    	for (int t = uploadTables.size() - 1; t >= 0; t--)
                     	{
-                    		t.finishUpload(cancelled && !paused);
+                    		uploadTables.get(t).finishUpload(cancelled && !paused);
                     	}
                     } catch (Exception ex)
                     {
@@ -5507,6 +5576,7 @@ public class Uploader implements ActionListener, KeyListener
 						row.getWorkbenchRowExportedRelationships().add(wber);
 						wber.setTableName(ut.getTblClass().getSimpleName());
 						wber.setSequence(seq);
+						//wber.setIsDeleted(false);
 						wber.setRecordId(ut.getCurrentRecord(seq).getId());
 					}
 					//wber.setRelationshipName() ??? - skipping it: assuming that for uploader a table is only one-to-many'ed once from a parent.
