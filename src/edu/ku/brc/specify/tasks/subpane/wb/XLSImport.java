@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.LatLonConverter;
 
 /**
  * @author timbo
@@ -105,6 +107,16 @@ public class XLSImport extends DataImport implements DataImportIFace
         this.config = config;
     }
 
+    /**
+     * @param wbtmi
+     * @return true if wbtmi maps a geo-coordinate
+     */
+    protected boolean isGeoCoordinate(final WorkbenchTemplateMappingItem wbtmi)
+    {
+    	String fld = wbtmi.getFieldName().toLowerCase();
+    	return fld.equals("latitude1") || fld.equals("latitude2") || fld.equals("longitude1") || fld.equals("longitude2");
+    }
+    
     /* (non-Javadoc)
      * Loads data from the file configured by the config member into a workbench.
      * @param workbench - the workbench to be loaded
@@ -131,7 +143,11 @@ public class XLSImport extends DataImport implements DataImportIFace
                 nf.setMinimumFractionDigits(0);
                 nf.setMaximumFractionDigits(20);
                 nf.setGroupingUsed(false); //gets rid of commas
-                
+                NumberFormat nfGeoCoord = NumberFormat.getInstance();
+                nfGeoCoord.setMinimumFractionDigits(0);
+                nfGeoCoord.setMaximumFractionDigits(LatLonConverter.DECIMAL_SIZES[LatLonConverter.FORMAT.DDDDDD.ordinal()]);
+                nfGeoCoord.setGroupingUsed(false); //gets rid of commas
+                char decSep = new DecimalFormatSymbols().getDecimalSeparator();
                 wbtmiList.addAll(wbtmiSet);
                 
                 Collections.sort(wbtmiList);
@@ -199,11 +215,28 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
                                     {
                                         value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-                                    } else
+                                    } else 
                                     {
                                         double numeric = cell.getNumericCellValue();
                                         value = nf.format(numeric);
-                                     }
+                                        if (isGeoCoordinate(wbtmi))
+                                        {
+                                        	if (value.substring(value.indexOf(decSep)).length() > nfGeoCoord.getMaximumFractionDigits())
+                                        	{
+                                        		String value2 = nfGeoCoord.format(numeric);
+                                        		int maxlen = wbtmi.getFieldName().startsWith("latitude") 
+                                        			? nfGeoCoord.getMaximumFractionDigits() + 3 
+                                        			: nfGeoCoord.getMaximumFractionDigits() + 4;
+                                        		if (numeric < 0)
+                                        		{
+                                        			maxlen++;
+                                        		}
+                                        		System.out.println(value + " " + trackTrunc(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption(), 
+                                        				maxlen) + " " + value2);
+                                        		value = value2;
+                                        	}
+                                        }    
+                                    }
                                 }
                                 break;
                             }

@@ -72,7 +72,7 @@ public class DataImportTruncation
      */
     public String getExcluded()
     {
-        return this.originalValue.substring(len-1);
+        return this.originalValue.substring(len);
     }
     
     public DataImportTruncation(final int row, final short col, final int len, final String colHeader, final String originalValue)

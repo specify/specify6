@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -197,6 +198,9 @@ public class UploadTable implements Comparable<UploadTable>
      * Converts from strings to Calendar.
      */
     protected DateConverter                             dateConverter;
+    
+    protected char 										decSep = new DecimalFormatSymbols().getDecimalSeparator();
+    
     /**
      * true if an edge in the import graph leads from this table. Used to determine whether to
      * search for matches before writing to the database.
@@ -4294,6 +4298,7 @@ public class UploadTable implements Comparable<UploadTable>
 											.stripToNull(fld.getValue()));
 							LatLonConverter.FORMAT llFmt = fldName
 									.endsWith("1") ? llFmt1 : llFmt2;
+							boolean checkDecimalPlaces = true;
 							if (llFmt == null)
 							{
 								llFmt = fmt;
@@ -4308,6 +4313,7 @@ public class UploadTable implements Comparable<UploadTable>
 							{
 								if (!llFmt.equals(fmt))
 								{
+									checkDecimalPlaces = false;
 									invalidValues
 											.add(new UploadTableInvalidValue(
 													null,
@@ -4317,6 +4323,29 @@ public class UploadTable implements Comparable<UploadTable>
 													new Exception(
 															UIRegistry
 																	.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
+								} 
+							}
+							if (checkDecimalPlaces && fmt != null && fmt != LatLonConverter.FORMAT.None)
+							{
+								//check decimal places
+								//lame
+								int c = fld.getValue().indexOf(decSep);
+								if (c > -1)
+								{
+									int d;
+									String points = fld.getValue().substring(c+1);
+									for (d = 0; d < points.length(); d++)
+									{
+										System.out.println(points.substring(d, d+1));
+										if (!"0123456789".contains(points.substring(d, d+1))) break;
+									}
+									if (d > LatLonConverter.DECIMAL_SIZES[fmt.ordinal()])
+									{
+										invalidValues.add(new UploadTableInvalidValue(null, this, fld, row,
+												new Exception(String.format(
+														UIRegistry.getResourceString("WB_UPLOADER_TOO_MANY_FRACTION_DIGITS"),
+														LatLonConverter.DECIMAL_SIZES[fmt.ordinal()]))));
+									}
 								}
 							}
 						}
@@ -4382,11 +4411,13 @@ public class UploadTable implements Comparable<UploadTable>
 					}
 				}
 
-				if (tblClass.equals(Locality.class) && llFmt1 != llFmt2
+				if (tblClass.equals(Locality.class))
+				{
+					if (llFmt1 != llFmt2
 						&& llFmt2 != null
 						&& llFmt2 != LatLonConverter.FORMAT.None)
-				{
-					invalidValues
+					{
+						invalidValues
 							.add(new UploadTableInvalidValue(
 									null,
 									this,
@@ -4395,7 +4426,9 @@ public class UploadTable implements Comparable<UploadTable>
 									new Exception(
 											UIRegistry
 													.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
-				}
+					}				
+				}	
+				
 				isBlank = isBlankSequence(isBlank, uploadData, row, seq/*
 																		 * ,
 																		 * getSequedParentClasses

@@ -55,7 +55,8 @@ public class LatLonConverter
     protected final static int DDMMMM_LEN = 5;
     protected final static int DDMMSS_LEN = 3;
     
-    public static int[] DECIMAL_SIZES = {7, 5, 3, 0};
+    //public static int[] DECIMAL_SIZES = {7, 5, 3, 0};
+    public static int[] DECIMAL_SIZES = {DDDDDD_LEN, DDMMSS_LEN, DDMMMM_LEN, 0};
     
     public enum LATLON          {Latitude, Longitude}
     public enum FORMAT          {DDDDDD, DDMMSS, DDMMMM, None} // None must be at the end so the values match Specify 5

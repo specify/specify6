@@ -4531,10 +4531,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 						//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
 						synchronized(wbItem)
 						{
+							wbItem.setStatusText(issue.getStatusText());
 							if (wbItem.getEditorValidationStatus() != issue.getStatus())
 							{
 								wbItem.setEditorValidationStatus(issue.getStatus());
-								wbItem.setStatusText(issue.getStatusText());
 								if (issue.getStatus() == WorkbenchDataItem.VAL_ERROR
 										|| issue.getStatus() == WorkbenchDataItem.VAL_ERROR_EDIT)
 								{
@@ -6042,7 +6042,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				{
 					if (condition == status)
 					{
-						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
+						System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
 						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
 						return true;
 					} 				

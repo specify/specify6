@@ -87,7 +87,7 @@ public class DataImport
                                 final int len)
     {
         truncations.add(new DataImportTruncation(row, col, len, colHeader, value));
-        return value.substring(0, len - 1);
+        return value.substring(0, len);
     }
 
     public Vector<DataImportTruncation> getTruncations()
