@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setFieldsToIgnoreWhenMappingNames;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer;
@@ -41,7 +39,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -275,7 +272,7 @@ public class ConvertTaxonHelper
         // KU Vert Paleo
         //taxonomyTypeIdInClause = " in (0,1,2,3,4,7)";
         
-        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
+        idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);  // makes it (do not comment it out)
         //taxonomyTypeMapper.mapAllIds();
         
         //---------------------------------
@@ -730,7 +727,7 @@ public class ConvertTaxonHelper
                         }
                     }
                     
-                    pStmtTx.setInt(colInx, conversion.getCurAgentModifierID());
+                    pStmtTx.setInt(modifiedByAgentInx, conversion.getCurAgentModifierID());
                     continue;
                     
                 } else if (colInx != 20)
@@ -1062,7 +1059,7 @@ public class ConvertTaxonHelper
                 
         } catch(Exception ex)
         {
-            session.rollback();
+            if (session != null) session.rollback();
             
             log.error("Error while setting TaxonTreeDef into the Discipline.");
             ex.printStackTrace();

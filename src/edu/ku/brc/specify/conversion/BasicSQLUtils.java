@@ -587,16 +587,16 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static Object[] getRow(final String sql)
+    public static Object[] queryForRow(final String sql)
     {
-        return getRow(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+        return queryForRow(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
     }
     
     /**
      * @param sql
      * @return
      */
-    public static Object[] getRow(final Connection connection, final String sql)
+    public static Object[] queryForRow(final Connection connection, final String sql)
     {
         Object[]  row  = null;
         Statement stmt = null;

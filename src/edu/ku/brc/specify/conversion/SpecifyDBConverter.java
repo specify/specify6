@@ -187,6 +187,8 @@ public class SpecifyDBConverter extends AppBase
         
         appIcon = new JLabel("  "); //$NON-NLS-1$
         setAppIcon(null); //$NON-NLS-1$
+        
+        UIHelper.attachUnhandledException();
 
     }
 
@@ -695,6 +697,20 @@ public class SpecifyDBConverter extends AppBase
         
         if (!isOldDBOK(oldDBConn))
         {
+            return;
+        }
+        
+        /*boolean doFixSrcLatLonUnit = true;
+        if (doFixSrcLatLonUnit)
+        {
+            ConvertMiscData.fixSrcLatLongUnit(newDBConn);
+            return;
+        }*/
+        
+        boolean doFixPrepAgents = false;
+        if (doFixPrepAgents)
+        {
+            ConvertMiscData.fixPreparedByAgent(oldDBConn, newDBConn, 28); // 28 -> ColObjTypeID for Prep
             return;
         }
         
@@ -1234,6 +1250,7 @@ public class SpecifyDBConverter extends AppBase
 
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
+                
                 // GTP needs to be converted here so the stratigraphy conversion can use the IDs
                 boolean doGTP = doAll;
                 if (doGTP)

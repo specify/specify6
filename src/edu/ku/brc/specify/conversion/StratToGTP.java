@@ -337,16 +337,15 @@ public class StratToGTP
                 setProcess(0, count);
             }
             
-            IdTableMapper gtpIdMapper      = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
-            IdHashMapper  bioStratIdMapper = IdMapperMgr.getInstance().addHashMapper("biostratmapper", true);
+            IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
             
             Hashtable<Integer, Integer> ceToNewStratIdHash = new Hashtable<Integer, Integer>();
             
             IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
 
-            // get all of the old records
-            //  Future GTP                           System        Series       Stage   BioStrat
-            String sql  = "SELECT s.StratigraphyID, s.Formation, s.SuperGroup, s.Text2, s.Text1 FROM stratigraphy s ORDER BY s.StratigraphyID";
+            // Get all of the old records
+            //  Future GTP                           System        Series       Stage
+            String sql  = "SELECT s.StratigraphyID, s.Formation, s.SuperGroup, s.Text2 FROM stratigraphy s ORDER BY s.StratigraphyID";
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs   = stmt.executeQuery(sql);
@@ -368,34 +367,42 @@ public class StratToGTP
                 }
     
                 // grab the important data fields from the old record
-                int oldStratId  = rs.getInt(1);
-                String system   = rs.getString(2);
-                String series   = rs.getString(3);
-                String stage    = rs.getString(4);
-                String bioStrat = rs.getString(5);
+                int oldStratId = rs.getInt(1);
+                String system  = rs.getString(2);
+                String series  = rs.getString(3);
+                String stage   = rs.getString(4);
+                
+                if (StringUtils.isNotEmpty(stage))
+                {
+                    if (StringUtils.isNotEmpty(series))
+                    {
+                        series += ' ' + stage;
+                        
+                    } else
+                    {
+                        series = stage;
+                    }
+                }
+                
+                //if (StringUtils.isEmpty(series))
+                //{
+                //    series = "(Empty)";
+                //}
                 
                 // create a new Geography object from the old data
-                GeologicTimePeriod newStrat = convertOldStratRecord(localSession, eraNode, null, null, null, system, series, stage);
-                
+                GeologicTimePeriod newGTP = convertOldStratRecord(localSession, eraNode, null, null, null, system, series, stage);
+
                 counter++;
     
                 // Map Old GeologicTimePeriod ID to the new Tree Id
-                gtpIdMapper.put(oldStratId, newStrat.getGeologicTimePeriodId());
+                gtpIdMapper.put(oldStratId, newGTP.getGeologicTimePeriodId());
                 
                 // Convert Old CEId to new CEId, then map the new CEId -> new StratId
                 Integer ceId = ceMapper.get(oldStratId);
                 if (ceId != null)
                 {
-                    ceToNewStratIdHash.put(ceId, newStrat.getGeologicTimePeriodId());
-                    
-                    if (StringUtils.isNotEmpty(bioStrat) && newStrat.getParent() != null)
-                    {
-                        GeologicTimePeriod bioStratNode = buildGeologicTimePeriodLevel(bioStrat, newStrat.getParent(), localSession);
-                        bioStratNode.setIsBioStrat(true);
-                        localSession.save(bioStratNode);
-                        bioStratIdMapper.put(ceId, bioStratNode.getGeologicTimePeriodId());
-                    }
-               } else
+                    ceToNewStratIdHash.put(ceId, newGTP.getGeologicTimePeriodId());
+                } else
                 {
                     String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
                     tblWriter.logError(msg);
@@ -859,7 +866,7 @@ public class StratToGTP
      */
     public void convertStratKUINVP(final TableWriter stratTblWriter, final boolean isPaleo) throws SQLException
     {
-        convStratGTPToStratKUINVP();
+        convStratGTPToStratKUINVP(); // Reads the CE, Strat, & GTP Joined Tables and creates the table `stratigraphy2`
         
         Transaction trans  = null;
         Session lclSession = null;
@@ -890,7 +897,7 @@ public class StratToGTP
                 LithoStratTreeDefItem group      = createLithoStratTreeDefItem(superGroup,        "Group",       200, false);
                 LithoStratTreeDefItem formation  = createLithoStratTreeDefItem(group,             "Formation",   300, false);
                 LithoStratTreeDefItem member     = createLithoStratTreeDefItem(formation,         "Member",      400, false);
-                                                   createLithoStratTreeDefItem(member,            "Unit",        500, false);
+                                                   createLithoStratTreeDefItem(member,            "Bed",         500, false);
                 lclSession.saveOrUpdate(earth);
                 
                 // setup the root Geography record (planet Earth)
@@ -924,7 +931,7 @@ public class StratToGTP
             ex.printStackTrace();
         } finally
         {
-            lclSession.close();
+            if (lclSession != null) lclSession.close();
         }
     }
     
@@ -955,10 +962,22 @@ public class StratToGTP
             
             BasicSQLUtils.update(oldDBConn, sqlCreate);
 
+            //--------------------------------------------------------------
+            // Used for Querying Sp5 for the LithoStrat Columns
+            // the values are loaded into a `stratigraphy2` table
+            // The StratirgaphyID is from Sp5 CollectingEventID
+            //
+            // Sp5         Sp6
+            //------------------
+            // Group    -> Group
+            // GTP.Name -> Formation
+            // Member   -> Member
+            // Bed      -> Bed
+            //--------------------------------------------------------------
             String postfix = " FROM collectingevent AS ce " +
                              "Inner Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +    
                              "Left Join geologictimeperiod AS g ON s.GeologicTimePeriodID = g.GeologicTimePeriodID " +
-                             "WHERE s.`Group` IS NOT NULL OR g.Name IS NOT NULL OR s.Member IS NOT NULL OR s.Bed IS NOT NULL OR g.GeologicTimePeriodID IS NOT NULL";
+                             "WHERE s.`Group` IS NOT NULL OR g.Name IS NOT NULL OR s.Member IS NOT NULL OR s.Bed IS NULL OR g.GeologicTimePeriodID IS NOT NULL";
             
             String sql = "SELECT ce.CollectingEventID, s.`Group`, g.Name, s.Member, s.Bed, s.TimestampCreated, s.TimestampModified " + postfix;
             log.debug(sql);

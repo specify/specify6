@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,12 +32,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 
+import com.mysql.jdbc.PreparedStatement;
+
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -60,10 +65,14 @@ public class CollectionInfo implements Comparable<CollectionInfo>
 {
     protected static final Logger           log         = Logger.getLogger(CollectionInfo.class);
     
-    protected static Vector<CollectionInfo> collectionInfoList = new Vector<CollectionInfo>();
-    protected static boolean                askForFix = false;
-    protected static PrintWriter            pw        = null;
-    protected static int                    pwPassCnt = 1;
+    protected static Vector<CollectionInfo>   collectionInfoList                = new Vector<CollectionInfo>();
+    protected static HashMap<String, Integer> kingdomTaxTypToTaxUnitRootIDHash  = new HashMap<String, Integer>();
+    protected static HashMap<String, Pair<Integer, Integer>> kingdomTaxTypToTaxUnitRootIDHash2 = new HashMap<String, Pair<Integer, Integer>>();
+    protected static Vector<Integer>          kingdomTaxTypToTaxUnitRootIDList  = new Vector<Integer>();
+
+    protected static boolean                  askForFix = false;
+    protected static PrintWriter              pw        = null;
+    protected static int                      pwPassCnt = 1;
     
     public static boolean        DOING_ACCESSSION = false;
 
@@ -86,7 +95,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected Integer            taxonomyTypeId;
     protected String             taxonomyTypeName;
     protected Integer            taxonomicUnitTypeID;
-    protected int                kingdomId;
+    protected int                kingdom;
     
     protected TaxonTreeDef       taxonTreeDef = null;
     
@@ -114,7 +123,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected Integer                            taxonRootId         = null;
     
     protected Connection   oldDBConn;
-    
     
     /**
      * 
@@ -338,6 +346,73 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         pw.println(sql);
         pw.println();
     }
+    
+    /**
+     * @param kingdom
+     * @param taxType
+     * @return
+     */
+    private static String createHashKey(final Integer kingdom, final Integer taxType)
+    {
+        return String.format("%d_%d", kingdom, taxType);
+    }
+    
+    /**
+     * A list if Ids of the Root TaxonomicUnitTypeID that are actually being used.
+     * @param oldDBConn connection
+     */
+    private static void retrieveTaxonomyUnitTypeRoots(final Connection oldDBConn)
+    {
+        String sql = "SELECT DISTINCT t.TaxonomicUnitTypeID FROM collectionobjectcatalog AS cc " +
+                     "Inner Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
+                     "Inner Join determination AS d ON co.CollectionObjectID = d.BiologicalObjectID " +
+                     "Inner Join taxonname AS t ON d.TaxonNameID = t.TaxonNameID";
+        log.debug(sql);
+        
+        for (Integer tutId : BasicSQLUtils.queryForInts(oldDBConn, sql))
+        {
+            sql = "SELECT RankID, Kingdom, TaxonomyTypeID FROM taxonomicunittype WHERE TaxonomicUnitTypeID = " + tutId;
+            log.debug(sql);
+            Object[] row = BasicSQLUtils.queryForRow(oldDBConn, sql);
+            Integer rankID         = (Integer)row[0];
+            Integer kingdom        = (Integer)row[1];
+            Integer taxonomyTypeID = (Integer)row[2];
+            
+            Integer taxUnitTypeID;
+            if (rankID > 0)
+            {
+                sql = String.format("SELECT TaxonomicUnitTypeID FROM taxonomicunittype WHERE TaxonomyTypeID = %d AND Kingdom = %d ORDER BY RankID ASC", taxonomyTypeID, kingdom);
+                log.debug(sql);
+                taxUnitTypeID = BasicSQLUtils.querySingleObj(oldDBConn, sql);
+            } else
+            {
+                taxUnitTypeID = tutId;
+            }
+            
+            if (taxUnitTypeID == null)
+            {
+                String msg = String.format("Unable to find the lowest RankID for kingdom[%d] taxonomyTypeID[%d]", kingdom, taxonomyTypeID);
+                log.error(msg);
+                UIRegistry.showError(msg);
+            }
+            
+            Integer taxUnitId = kingdomTaxTypToTaxUnitRootIDHash.get(createHashKey(kingdom, taxonomyTypeID));
+            if (taxUnitId == null)
+            {
+                log.debug(String.format("Adding - Kingdom: %d, TaxonType: %d -> TaxonomicUnitTypeID: %d", kingdom, taxonomyTypeID, taxUnitTypeID));
+                
+                kingdomTaxTypToTaxUnitRootIDHash.put(createHashKey(kingdom, taxonomyTypeID), taxUnitTypeID);
+                kingdomTaxTypToTaxUnitRootIDHash2.put(createHashKey(kingdom, taxonomyTypeID), new Pair<Integer, Integer>(kingdom, taxonomyTypeID));
+                kingdomTaxTypToTaxUnitRootIDList.add(taxUnitTypeID);
+                
+            } else if (!taxUnitId.equals(taxUnitTypeID))
+            {
+                String msg = String.format("Multiple kingdom [%d], taxonomyTypeID [%d] have different taxUnitTypeID [%d] [%d]", kingdom, taxonomyTypeID, taxUnitId, taxUnitTypeID);
+                log.error(msg);
+                UIRegistry.showError(msg);
+            }
+        }
+    }
 
     /**
      * @param oldDBConn
@@ -348,6 +423,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         //collectionInfoList.clear();
         if (collectionInfoList.isEmpty())
         {        
+            retrieveTaxonomyUnitTypeRoots(oldDBConn);
             
             String hostTaxonID = "SELECT Count(tn.TaxonomicUnitTypeID) FROM habitat h " + 
                                  "INNER JOIN taxonname tn ON h.HostTaxonID = tn.TaxonNameID WHERE tn.TaxonomyTypeId = ";
@@ -508,7 +584,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     }*/
                     
                     // This represents a mapping from what would be the Discipline (Biological Object Type) to the Taxonomic Root
-                    sql = String.format("SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tu.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
+                    sql = String.format("SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tu.Kingdom, tn.TaxonNameID, tn.TaxonName, tu.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
                                         "INNER JOIN taxonomicunittype AS tu ON tt.TaxonomyTypeID = tu.TaxonomyTypeID " +
                                         "INNER JOIN taxonname AS tn ON tu.TaxonomyTypeID = tn.TaxonomyTypeID " +
                                         "INNER JOIN collectiontaxonomytypes AS ct ON tn.TaxonomyTypeID = ct.TaxonomyTypeID " +
@@ -526,7 +602,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         
                         info.setTaxonomyTypeId(taxonomyTypeID);
                         info.setTaxonomyTypeName((String)row[1]);
-                        info.setKingdomId((Integer)row[2]);
+                        info.setKingdom((Integer)row[2]);
                         info.setTaxonNameId((Integer)row[3]);
                         info.setTaxonName((String)row[4]);
                         info.setTaxonomicUnitTypeID((Integer)row[5]);
@@ -560,9 +636,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                 }
                 rs.close();
                 
-                
                 // Here we figure out whether a Taxon Tree that is used by HostTaxonID is associated with a Collection.
-                String sql = "SELECT DISTINCT tt.TaxonomyTypeID, tt.TaxonomyTypeName FROM habitat AS h " +
+                String sql = "SELECT DISTINCT tt.TaxonomyTypeID FROM habitat AS h " +
                              "INNER JOIN taxonname AS tn ON h.HostTaxonID = tn.TaxonNameID " +
                              "INNER JOIN taxonomytype AS tt ON tn.TaxonomyTypeID = tt.TaxonomyTypeID";
                 logSQL("Check for HostID", sql);
@@ -593,7 +668,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     Integer taxonomyTypeID = iter.next();
                     System.out.println(taxonomyTypeID);
                     
-                    sql = "SELECT tt.TaxonomyTypeName, tn.TaxonName, tt.KingdomID, tn.TaxonNameID, tn.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
+                    sql = "SELECT tt.TaxonomyTypeName, tn.TaxonName, tut.Kingdom, tn.TaxonNameID, tn.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
                           "INNER JOIN taxonomicunittype AS tut ON tt.TaxonomyTypeID = tut.TaxonomyTypeID " +
                           "INNER JOIN taxonname AS tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID AND tut.TaxonomicUnitTypeID = tn.TaxonomicUnitTypeID " +    
                           "WHERE tt.TaxonomyTypeID =  "+taxonomyTypeID+" AND tn.RankID =  0";
@@ -633,7 +708,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     
                     colInfo.setTaxonomyTypeId(taxonomyTypeID);
                     colInfo.setTaxonomyTypeName(taxonTypeName);
-                    colInfo.setKingdomId((Integer)rows.get(0)[2]);
+                    colInfo.setKingdom((Integer)rows.get(0)[2]);
                     colInfo.setTaxonNameId((Integer)rows.get(0)[3]);
                     colInfo.setTaxonName(taxonRootName);
                     colInfo.setTaxonomicUnitTypeID((Integer)rows.get(0)[4]);
@@ -645,56 +720,67 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     collectionInfoList.add(colInfo);
                 }
                 
-                // Do All
-                /*String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
-                                  "FROM collectionobjecttype AS cot " +
-                                  "INNER JOIN collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
-                                  "INNER JOIN taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
-                                  "INNER JOIN taxonname as tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID " + 
-                                  "WHERE  cot.Category = 'Biological' AND tn.ParentTaxonNameID IS NULL";
-                
-                log.debug(sqlAllTx);
-                Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sqlAllTx);
-                for (Object[] row : rows)
+                int cnt = getFilteredCollectionInfoList().size();
+                if (kingdomTaxTypToTaxUnitRootIDList.size() > cnt)
                 {
-                    int taxonomyTypeID = (Integer)row[2];
-                    if (taxonTypeIdHash.get(taxonomyTypeID) == null)
+                    String msg = String.format("There are %d TaxonomicUnitType Roots being used and there are only %d Collection(s) with ColObjs.",  kingdomTaxTypToTaxUnitRootIDList.size(), cnt);
+                    log.error(msg);
+                    //UIRegistry.showError(msg);
+                    
+                    HashMap<Integer, Integer> checkHash = new HashMap<Integer, Integer>();
+                    for (Pair<Integer, Integer> p : kingdomTaxTypToTaxUnitRootIDHash2.values())
                     {
-                        CollectionInfo info = new CollectionInfo(oldDBConn);
-                        
-                        info.setColObjTypeId((Integer)row[0]);
-                        info.setColObjTypeName((String)row[1]);
-                        info.setCatSeriesDefId(null);
-                        info.setCatSeriesId(null);
-                        info.setCatSeriesName("");
-                        info.setCatSeriesPrefix("");
-                        info.setCatSeriesRemarks("");
-                        info.setCatSeriesLastEditedBy("");
-                        
-                        info.setTaxonomyTypeId(taxonomyTypeID);
-                        info.setTaxonomyTypeName((String)row[3]);
-                        info.setKingdomId((Integer)row[4]);
-                        info.setTaxonNameId((Integer)row[5]);
-                        info.setTaxonName((String)row[6]);
-                        
-                        info.setTaxonomicUnitTypeID((Integer)row[7]);
-                        
-                        info.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
-                        
-                        Vector<Object> ttNames = BasicSQLUtils.querySingleCol(oldDBConn, hostTaxonID + taxonomyTypeID);
-                        if (ttNames != null && ttNames.size() > 0 && ((Long)ttNames.get(0)) > 0)
-                        {
-                            info.setSrcHostTaxonCnt((Long)ttNames.get(0));
-                        } else
-                        {
-                            info.setSrcHostTaxonCnt(0);
-                        }
-                        
-                        taxonTypeIdHash.put(taxonomyTypeID, true);
-                        
-                        collectionInfoList.add(info);
+                        Integer ttCnt = checkHash.get(p.second);
+                        if (ttCnt == null) ttCnt = 0;
+                        ttCnt++;
+                        checkHash.put(p.second, ttCnt);
                     }
-                }*/
+                    
+                    if (checkHash.size() == 1)
+                    {
+                        int ttCnt = checkHash.values().iterator().next();
+                        UIRegistry.showError(JOptionPane.INFORMATION_MESSAGE, String.format("There are %d trees, they will be merged into a single tree.", ttCnt));
+                        
+                    } else
+                    {
+                        msg = String.format("There are %d different types of trees and the converter cannot handle that right now.", checkHash.size());
+                        log.error(msg);
+                        UIRegistry.showError(msg);
+                        return null;
+                    }
+                    
+                    HashMap<String, Integer> hash  = new HashMap<String, Integer>(kingdomTaxTypToTaxUnitRootIDHash);
+                    for (CollectionInfo ci : getFilteredCollectionInfoList())
+                    {
+                        hash.remove(createHashKey(ci.getKingdom(),ci.getTaxonomyTypeId()));
+                    }
+                    
+                    /*for (String key : hash.keySet())
+                    {
+                        Pair<Integer, Integer> p = kingdomTaxTypToTaxUnitRootIDHash2.get(key);
+                        if (p != null)
+                        {
+                            makeNewCollection(oldDBConn, p.first, p.second, kingdomTaxTypToTaxUnitRootIDHash.get(key));
+                        }
+                    }*/
+                }
+                
+                for (CollectionInfo ci : getFilteredCollectionInfoList())
+                {
+                    Integer tutId = kingdomTaxTypToTaxUnitRootIDHash.get(createHashKey(ci.getKingdom(),ci.getTaxonomyTypeId()));
+                    if (tutId == null)
+                    {
+                        String msg = String.format("No TaxonomicUnitTypeID for Kingdom [%d] and TaxonomyTypeId [%d]", ci.getKingdom(),ci.getTaxonomyTypeId());
+                        log.error(msg);
+                        UIRegistry.showError(msg);
+                        
+                    } else if (!tutId.equals(ci.getTaxonomicUnitTypeID()))
+                    {
+                        String msg = String.format("Bad match between CI's TaxonomicUnitTypeID [%d] and the the independent look up [%d]", ci.getTaxonomicUnitTypeID(), tutId);
+                        log.error(msg);
+                        UIRegistry.showError(msg);
+                    }
+                }
 
                 dump();
                 
@@ -720,6 +806,124 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         return collectionInfoList;
     }
     
+    private static Vector<Integer> getTaxonLevels(final int taxType, final int kingdom)
+    {
+        Vector<Integer> items = new Vector<Integer>();
+        
+        return items;
+    }
+    
+    private static void mergeTrees(final Connection oldDBConn)
+    {
+        CollectionInfo collInfo = getFilteredCollectionInfoList().get(0);
+        
+        String sql = "SELECT RankID, TaxonomicUnitTypeID FROM taxonomicunittype WHERE TaxonomyTypeID = %s AND Kingdom = %d"; 
+        //Vector<Integer> mainTreeLevels = BasicSQLUtils.queryForInts(String.format(sql, collInfo.getTaxonomyTypeId(), collInfo.getKingdom());
+        
+        
+    }
+    
+    /**
+     * @return
+     */
+    /*private static CollectionInfo getCollInfoToCopy(final Connection oldDBConn, final Integer kingdom, final Integer taxonTypeID)
+    {
+        Vector<CollectionInfo> ciList = getFilteredCollectionInfoList();
+        if (ciList.size() == 1)
+        {
+            return ciList.get(0);
+        }
+        
+        String sql = "SELECT tut.TaxonomicUnitTypeID, tut.Kingdom, tut.TaxonomyTypeID, tut.RankID, tt.TaxonomyTypeName, ctt.CollectionTaxonomyTypesID, `cot`.CollectionObjectTypeID, " +
+        		     "`cot`.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID, cs.SeriesName FROM taxonomicunittype AS tut " +
+                     "Inner Join taxonomytype AS tt ON tut.TaxonomyTypeID = tt.TaxonomyTypeID " +
+                     "Inner Join collectiontaxonomytypes AS ctt ON tt.TaxonomyTypeID = ctt.TaxonomyTypeID " +
+                     "Inner Join collectionobjecttype AS `cot` ON ctt.BiologicalObjectTypeID = `cot`.CollectionObjectTypeID " +
+                     "Inner Join catalogseriesdefinition AS csd ON `cot`.CollectionObjectTypeID = csd.ObjectTypeID " +
+                     "Inner Join catalogseries AS cs ON csd.CatalogSeriesID = cs.CatalogSeriesID " +    " WHERE tut.RankID <  20 " +
+                     "ORDER BY tut.Kingdom ASC, tut.TaxonomyTypeID ASC, tut.RankID ASC";
+        UIRegistry.showError("Not implemented yet!");
+        throw new RuntimeException("Not implemented yet!");
+    }*/
+    
+    /**
+     * @param kingdom
+     * @param taxonTypeID
+     * @param taxUnitTypeID
+     */
+    /*public static int getNewIdFromTable(final Connection oldDBConn, final String tableName, final String primaryKeyName)
+    {
+       int id = 1;
+        do
+        {
+            String sql = String.format("SELECT COUNT(*) FROM %s WHERE %s = %d", tableName, primaryKeyName, id);
+            if (BasicSQLUtils.getCountAsInt(oldDBConn, sql) == 0)
+            {
+                return id;
+            }
+            id++;
+        } while (true);
+    }
+    
+    private Integer updateSQL(final Connection oldDBConn, final String updateSQL) throws SQLException
+    {
+        Statement stmt = null;
+        try
+        {
+            stmt = oldDBConn.createStatement();
+            stmt.executeUpdate(updateSQL);
+            return BasicSQLUtils.getInsertedId(stmt);
+            
+        } finally
+        {
+            if (stmt != null) stmt.close();
+        }
+    }
+    
+    public static void makeNewCollection(final Connection oldDBConn, final Integer kingdom, final Integer taxonTypeID, final Integer taxUnitTypeID)
+    {
+        CollectionInfo collInfo = getCollInfoToCopy(oldDBConn, kingdom, taxonTypeID); // Find a simalr one
+        if (collInfo == null) return;
+        
+        try
+        {
+            String dateStr = "2011-12-15 00:00:00";
+            
+            String insSQL1 = "INSERT INTO catalogseries (CatalogSeriesID, CollectionID, SeriesName, CatalogSeriesPrefix, Remarks, TimestampModified, TimestampCreated, LastEditedBy) VALUES (%d,%d,'%s','%s','%s','%s','%s','%s')";
+            String insSQL2 = "INSERT INTO catalogseriesdefinition (CatalogSeriesDefinitionID, CatalogSeriesID, ObjectTypeID, Remarks,TimestampModified,TimestampCreated,LastEditedBy) VALUES (%d,%d,'%s','%s','%s','%s','%s')";
+            String insSQL3 = "INSERT INTO collectiontaxonomytypes (CollectionTaxonomyTypesID, CollectionID, BiologicalObjectTypeID, TaxonomyTypeID, TimestampModified, TimestampCreated, LastEditedBy, DisplaySubSpecificTaxaLevelIndicators) " +
+            		         "VALUES (%d,%d,%d,%d,'%s','%s','%s',1)";
+            
+            int newCatSeriesID    = getNewIdFromTable(oldDBConn, "catalogseries", "CatalogSeriesID");
+            int newCatSeriesDefID = getNewIdFromTable(oldDBConn, "catalogseriesdefinition", "CatalogSeriesDefinitionID");
+            int newCollTaxObjID   = getNewIdFromTable(oldDBConn, "collectiontaxonomytypes", "CollectionTaxonomyTypesID");
+            
+            String insertSQL1 = String.format(insSQL1, newCatSeriesID, 0, collInfo.getCatSeriesName(), collInfo.getCatSeriesPrefix(), "", dateStr, dateStr, "conv");
+            BasicSQLUtils.update(oldDBConn, insertSQL1);
+            
+            String insertSQL2 = String.format(insSQL2, newCatSeriesDefID, newCatSeriesID, collInfo.getCatSeriesName(), collInfo.getCatSeriesPrefix(), "", dateStr, dateStr, "conv");
+            BasicSQLUtils.update(oldDBConn, insertSQL2);
+            
+            String insertSQL3 = String.format(insSQL3, newCatSeriesID, 0, collInfo.getCatSeriesName(), collInfo.getCatSeriesPrefix(), "", dateStr, dateStr, "conv");
+            BasicSQLUtils.update(oldDBConn, insertSQL3);
+            
+            //String sql3 = "UPDATE collectionobjectcatalog SET CatalogSeriesID=%d WHERE CatalogSeriesID=%d AND CollectionObjectTypeID=%d";
+            //String sql4 = "SELECT COUNT(*) FROM collectionobjectcatalog WHERE CatalogSeriesID=%d AND CollectionObjectTypeID=%d";
+            
+
+            
+            
+            
+                        
+            CollectionInfo.getCollectionInfoList().clear();
+            collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn, false);
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }*/
+
     /**
      * @return the determinationTaxonType
      */
@@ -1170,9 +1374,9 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @return the kingdomId
      */
-    public int getKingdomId()
+    public int getKingdom()
     {
-        return kingdomId;
+        return kingdom;
     }
 
     public boolean isInUse()
@@ -1190,11 +1394,11 @@ public class CollectionInfo implements Comparable<CollectionInfo>
 
 
     /**
-     * @param kingdomId the kingdomId to set
+     * @param kingdom the kingdomId to set
      */
-    public void setKingdomId(int kingdomId)
+    public void setKingdom(int kingdom)
     {
-        this.kingdomId = kingdomId;
+        this.kingdom = kingdom;
     }
 
     /**
