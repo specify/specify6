@@ -592,33 +592,35 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
     {
         // visit every character in the document text looking for fields
         // store characters not associated with components (jbutton) to make up the separator text
-
         DefaultStyledDocument doc = (DefaultStyledDocument) formatEditor.getStyledDocument();
         String text         = formatEditor.getText(); 
         int    docLen       = doc.getLength();
         int    lastFieldPos = 0;
         
         Vector<DataObjDataField> fields = new Vector<DataObjDataField>();
+        //int cnt = 0;
         for (int i = 0; i < docLen; ++i)
         {
             Element      element = doc.getCharacterElement(i);
             AttributeSet attrs   = element.getAttributes();
             Object       obj     = attrs.getAttribute(StyleConstants.ComponentAttribute);
-            int cnt = 0;
+            //System.out.print(String.format("i: %d, lastFieldPos: %d cnt: %d, F: %s", i, lastFieldPos, cnt, (obj instanceof FieldDefinitionComp ? "Y" : "N")));
             if (obj instanceof FieldDefinitionComp)
             {
-                //System.out.println(cnt+"  "+obj);
+                //System.out.println(cnt+"  "+(obj instanceof FieldDefinitionComp));
                 // found button at the current position
                 // create corresponding field
-                String sepStr = (lastFieldPos < i - 1) ? text.substring(lastFieldPos, i) : "";
+                String sepStr = (lastFieldPos <= i - 1) ? text.substring(lastFieldPos, i) : "";
 
                 FieldDefinitionComp fieldDefBtn = (FieldDefinitionComp) obj;
                 DataObjDataField    fmtField    = fieldDefBtn.getValue();
                 fmtField.setSep(sepStr);
                 fields.add(fmtField);
                 
+                //System.out.print(" Sep: ["+sepStr+"]");
+                
                 lastFieldPos = i+1;
-                cnt++;
+                //cnt++;
             }
         }
 
