@@ -221,7 +221,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                         value = nf.format(numeric);
                                         if (isGeoCoordinate(wbtmi))
                                         {
-                                        	if (value.substring(value.indexOf(decSep)).length() > nfGeoCoord.getMaximumFractionDigits())
+                                        	if (value.indexOf(decSep) != -1 && value.substring(value.indexOf(decSep)).length() > nfGeoCoord.getMaximumFractionDigits())
                                         	{
                                         		String value2 = nfGeoCoord.format(numeric);
                                         		int maxlen = wbtmi.getFieldName().startsWith("latitude") 
