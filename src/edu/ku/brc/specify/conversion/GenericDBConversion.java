@@ -6729,7 +6729,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                   "CollectionObjectID", "VisibilitySetBy", "ContainerOwnerID", "InventoryDate",
                                   "ObjectCondition", "Notifications", "ProjectNumber", "Restrictions", "YesNo3",
                                   "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
-                                  "DNASequenceID", "AppraisalID", "TotalValue", "Description" };
+                                  "DNASequenceID", "AppraisalID", "TotalValue", "Description", "SGRStatus" };
 
         HashSet<String> fieldsToSkipHash = new HashSet<String>();
         for (String fName : fieldsToSkip)
