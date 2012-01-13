@@ -375,10 +375,16 @@ public class ImportFileSplitter extends CustomDialog
 					boolean go = false;
 					if (!isCancelled())
 					{
+						String msg = leftover > 0 ?
+								String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfo"), 
+										numRows, numFiles-1, 
+										aChunkSize, leftover) :
+								String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfoCleanCut"), 
+										numRows, numFiles-1, 
+										aChunkSize);
+											
 						go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
-							String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfo"), 
-							numRows, numFiles-1, 
-							aChunkSize, leftover),
+							msg,
 							UIRegistry.getResourceString("OK"), UIRegistry.getResourceString("CANCEL"), JOptionPane.INFORMATION_MESSAGE);
 					}
 					if (!go || isCancelled())
@@ -586,11 +592,15 @@ public class ImportFileSplitter extends CustomDialog
 					int				numFiles = numRows / aChunkSize;
 					int             leftover = numRows - (numFiles * aChunkSize);
 					numFiles++;
-					boolean go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
+					String msg = leftover > 0 ?
 							String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfo"), 
-							numRows, 
-							numFiles-1, 
-							aChunkSize, leftover),
+									numRows, numFiles-1, 
+									aChunkSize, leftover) :
+							String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfoCleanCut"), 
+									numRows, numFiles-1, 
+									aChunkSize);
+					boolean go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
+							msg,
 							UIRegistry.getResourceString("OK"), UIRegistry.getResourceString("CANCEL"), JOptionPane.INFORMATION_MESSAGE);
 					if (!go || isCancelled())
 					{
