@@ -854,26 +854,32 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         if (year != null)
         {
             String val     = text.substring(yearInx, yearInx+year.getSize());
-            yearVal = Integer.parseInt(val);
-            if (yearVal == 0 || yearVal > 2500)
+            if (StringUtils.isNumericSpace(val))
+            {
+                yearVal = Integer.parseInt(val);
+                if (yearVal == 0 || yearVal > 2500)
+                {
+                    return false;
+                }
+            } else
             {
                 return false;
             }
         }
         
+        
         if (month != null)
         {
-            String val    = text.substring(monthInx, monthInx+month.getSize()).trim();
-            int    monVal = 0;
-            try
+            int monVal = 0;
+            String val = text.substring(monthInx, monthInx+month.getSize()).trim();
+            if (StringUtils.isNumericSpace(val))
             {
                 monVal = Integer.parseInt(val);
-            } catch (NumberFormatException ex)
-            {
-                log.debug(ex.toString());
-                return false;
-            }
-            if (monVal < 1 || monVal > 12)
+                if (monVal < 1 || monVal > 12)
+                {
+                    return false;
+                }
+            } else
             {
                 return false;
             }
@@ -883,9 +889,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 daysInMon[1] = isLeapYear(yearVal) ? 29 : 28;
                 
                 val    = text.substring(dayInx, dayInx+day.getSize());
-                int    dayVal = Integer.parseInt(val);
-                
-                if (dayVal < 1 || dayVal > daysInMon[monVal-1])
+                if (StringUtils.isNumericSpace(val))
+                {
+                    int    dayVal = Integer.parseInt(val);
+                    if (dayVal < 1 || dayVal > daysInMon[monVal-1])
+                    {
+                        return false;
+                    }                    
+                } else
                 {
                     return false;
                 }
