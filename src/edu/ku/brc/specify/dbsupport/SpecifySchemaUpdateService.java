@@ -230,35 +230,38 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
-                Vector<Object[]> data = BasicSQLUtils.query(dbMgr.getConnection(), "SELECT IsReleaseManagedGlobally, CurrentManagedRelVersion FROM institution");
-                if (data != null && data.size() > 0)
+                if (dbMgr.doesFieldExistInTable("institution", "IsReleaseManagedGlobally"))
                 {
-                    Object[] row              = data.get(0);
-                    Boolean  isManagedByDB    = (Boolean)row[0];
-                    String   managedRelNumber = (String)row[1];
-                    
-                    // Managed Releases
-                    // it's never managed for the Release Manager
-                    boolean isReleaseManager = AppPreferences.getLocalPrefs().getBoolean("RELEASE_MANAGER", false);
-                    boolean isManagedRelease = !isReleaseManager && isManagedByDB != null && isManagedByDB;
-                    AppPreferences.getLocalPrefs().putBoolean("MANAGED_RELEASES", isManagedRelease);
-                    
-                    if (isManagedRelease)
+                    Vector<Object[]> data = BasicSQLUtils.query(dbMgr.getConnection(), "SELECT IsReleaseManagedGlobally, CurrentManagedRelVersion FROM institution");
+                    if (data != null && data.size() > 0)
                     {
-                        String curRelease = UIHelper.getInstall4JInstallString();
+                        Object[] row              = data.get(0);
+                        Boolean  isManagedByDB    = (Boolean)row[0];
+                        String   managedRelNumber = (String)row[1];
                         
-                        if (StringUtils.isNotEmpty(curRelease) && 
-                            StringUtils.isNotEmpty(managedRelNumber) &&
-                            !curRelease.equals(managedRelNumber))
+                        // Managed Releases
+                        // it's never managed for the Release Manager
+                        boolean isReleaseManager = AppPreferences.getLocalPrefs().getBoolean("RELEASE_MANAGER", false);
+                        boolean isManagedRelease = !isReleaseManager && isManagedByDB != null && isManagedByDB;
+                        AppPreferences.getLocalPrefs().putBoolean("MANAGED_RELEASES", isManagedRelease);
+                        
+                        if (isManagedRelease)
                         {
-                            SwingUtilities.invokeLater(new Runnable()
+                            String curRelease = UIHelper.getInstall4JInstallString();
+                            
+                            if (StringUtils.isNotEmpty(curRelease) && 
+                                StringUtils.isNotEmpty(managedRelNumber) &&
+                                !curRelease.equals(managedRelNumber))
                             {
-                                @Override
-                                public void run()
+                                SwingUtilities.invokeLater(new Runnable()
                                 {
-                                    CommandDispatcher.dispatch(new CommandAction("App", "CheckForUpdates"));
-                                }
-                            });
+                                    @Override
+                                    public void run()
+                                    {
+                                        CommandDispatcher.dispatch(new CommandAction("App", "CheckForUpdates"));
+                                    }
+                                });
+                            }
                         }
                     }
                 }
