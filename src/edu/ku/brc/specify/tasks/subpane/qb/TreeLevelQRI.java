@@ -231,8 +231,8 @@ public class TreeLevelQRI extends FieldQRI
 			boolean forSchemaExport, boolean negate)
 	{
         String result = "exists (select treetbl.nodeNumber from " + table.getTableTree().getName() + " treetbl where "
-        		+ "treetbl.rankId = " + rankId + " and " + ta.getAbbreviation(table.getTableTree()) + ".nodeNumber between "
-        		+ "treetbl.nodeNumber and treetbl.highestChildNodeNumber)";
+		+ "treetbl.rankId = " + rankId + " and " + ta.getAbbreviation(table.getTableTree()) + ".nodeNumber between "
+		+ "treetbl.nodeNumber and treetbl.highestChildNodeNumber and " + ta.getAbbreviation(table.getTableTree()) + ".definition = treetbl.definition)";
         if (!negate)
         {
         	result = "not " + result;
