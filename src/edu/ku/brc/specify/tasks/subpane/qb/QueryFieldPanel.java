@@ -551,7 +551,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 lbl = RelQRI.stripDescriptiveStuff(lbl);    
             }
             qField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
-            qField.setColumnAliasTitle(lbl);
+            qField.setColumnAliasTitle(lbl, fieldQRI instanceof TreeLevelQRI);
             qField.setIsRelFld(fieldQRI instanceof RelQRI);
             
             Vector<Integer> idList = new Vector<Integer>();

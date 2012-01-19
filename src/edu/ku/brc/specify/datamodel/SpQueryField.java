@@ -747,7 +747,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
      * 
      * Substitutes the field's name for it's title in columnAliasTitle and sets columnAlias.
      */
-    public void setColumnAliasTitle(String columnAliasTitle)
+    public void setColumnAliasTitle(String columnAliasTitle, boolean doNotReportError)
     {
     	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(contextTableIdent);
     	if (tbl != null)
@@ -767,7 +767,10 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     			}
     		}
     	}
-    	log.error("Setting unprocessed alias because FieldInfo was not found: " + columnAliasTitle);
+    	if (!doNotReportError)
+    	{
+    		log.error("Setting unprocessed alias because FieldInfo was not found: " + columnAliasTitle);
+    	}
     	setColumnAlias(columnAliasTitle);
     }
     
