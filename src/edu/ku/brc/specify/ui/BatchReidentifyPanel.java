@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
 
 import java.awt.Dialog;
@@ -39,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -64,8 +66,8 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
@@ -112,8 +114,10 @@ public class BatchReidentifyPanel extends JPanel
     private Vector<ColObjTaxa>    items      = new Vector<ColObjTaxa>();
     private EditDeleteAddPanel    edaPanel;
     private UIFieldFormatterIFace fmtr      = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
-    private ViewBasedDisplayPanel vbPanel;
+    private ViewBasedDisplayPanel vbPanel = null;
     private AtomicBoolean         handlingValidatorUpdate = new AtomicBoolean(false);
+    
+    
     /**
      * 
      */
@@ -122,16 +126,51 @@ public class BatchReidentifyPanel extends JPanel
         super();
     }
 
+    public CustomDialog createDlg()
+    {
+        @SuppressWarnings("serial")
+    	final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("DET_BTCH_REIDENT_MENU"), true, CustomDialog.OKCANCELAPPLY, this) {
+
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
+			 */
+			@Override
+			protected void cancelButtonPressed() {
+		        btnPressed  = CANCEL_BTN;
+			}
+
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+			 */
+			@Override
+			protected void okButtonPressed() {
+				btnPressed  = OK_BTN;
+			}
+        };
+        
+        dlg.createUI();
+    	setDlg(dlg);
+    	return dlg;
+    }
+    
     /**
      * @param dlg a CustomDialog with a created UI.
      * 
      * Connects ViewBasedDisplayPanel vbPanel to dlg's OK Cancel butttons.
      */
-    public void setDlg(CustomDialog dlg)
+    private void setDlg(final CustomDialog dlg)
     {
+    	dlg.getApplyBtn().setVisible(true);
+    	
     	dlg.getOkBtn().setEnabled(false);
+    	
+    	dlg.setOkLabel(UIRegistry.getResourceString("DET_BTCH_.RE_IDEE"));
+    	dlg.setCancelLabel(UIRegistry.getResourceString("DET_BTCH_.SELECT_SPECIMENS"));
+    	dlg.setApplyLabel(UIRegistry.getResourceString("CLOSE"));
+    	
     	dlg.getOkBtn().addChangeListener(new ChangeListener() {
 
+    
 			/* (non-Javadoc)
 			 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
 			 */
@@ -143,14 +182,39 @@ public class BatchReidentifyPanel extends JPanel
 			}
     		
     	});
+    	
+    	dlg.getOkBtn().addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                doReIdentify(dlg);
+            }
+        });
+
+    	dlg.getCancelBtn().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+            	boolean closeIt = !askForColObjs(); //this might not be desirable behavior
+            	if (closeIt)
+            	{
+            		dlg.setVisible(false);
+            	}
+            }
+    		
+    	});
+    	
+    	dlg.setCloseOnApplyClk(true);
+    	
     	vbPanel.setOkCancelBtns(dlg.getOkBtn(), dlg.getCancelBtn());
     }
+    
     /**
      * 
      */
     protected void createUI()
     {
-        ActionListener editAL = new ActionListener()
+        
+    	ActionListener editAL = new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -252,7 +316,6 @@ public class BatchReidentifyPanel extends JPanel
         edaPanel.getEditBtn().setEnabled(isRowSelected);
         edaPanel.getDelBtn().setEnabled(isRowSelected);
         edaPanel.getAddBtn().setEnabled(true);
-        
         if (getParent() != null)
         {
         	Dialog parentDlg = UIHelper.getDialog(this);
@@ -387,7 +450,14 @@ public class BatchReidentifyPanel extends JPanel
         recordSet = colObjSrcHelper.getRecordSet(null);
         if (recordSet != null && colObjSrcHelper.getAskTypeRV() != ASK_TYPE.Cancel)
         {
-            createUI();
+            if (vbPanel == null)
+            {
+            	createUI();
+            } else
+            {
+            	loadColObjInfo();
+            	model.fireDataChanged();
+            }
             return true;
         }
         return false;
@@ -456,9 +526,9 @@ public class BatchReidentifyPanel extends JPanel
     /**
      * 
      */
-    public void doReIdentify()
+    public void doReIdentify(final CustomDialog dlg)
     {
-        final String GLASSKEY = "REIDENTIFY";
+    	final String GLASSKEY = "REIDENTIFY";
         
         vbPanel.getMultiView().getDataFromUI();
         
@@ -467,9 +537,9 @@ public class BatchReidentifyPanel extends JPanel
            final Vector<Integer> errors = new Vector<Integer>();
            
            /**
-         * @return
-         */
-        protected RecordSetIFace getErrorRecordSet()
+            * @return
+            */
+           protected RecordSetIFace getErrorRecordSet()
            {
         	   RecordSet result = new RecordSet();
         	   result.initialize();
