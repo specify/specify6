@@ -1825,6 +1825,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         String chunk = criteria.replace(tblAlias + ".", getAcceptedChildrenAlias(tblAlias) + ".");
         if (isNegated)
         {
+        	chunk = "(" + getAcceptedChildrenAlias(tblAlias) + ".nodeNumber is null or " + chunk.substring(1);
         	result += " AND " + chunk;
         } else
         {
@@ -1833,6 +1834,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         chunk = criteria.replace(tblAlias + ".", getAcceptedParentAlias(tblAlias) + ".");
         if (isNegated)
         {
+        	chunk = "(" + getAcceptedParentAlias(tblAlias) + ".nodeNumber is null or " + chunk.substring(1);
         	result += " AND " + chunk;
         } else
         {
@@ -1841,6 +1843,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         chunk = criteria.replace(tblAlias + ".", getAcceptedParentChildrenAlias(tblAlias) + ".");
         if (isNegated)
         {
+        	chunk = "(" + getAcceptedParentChildrenAlias(tblAlias) + ".nodeNumber is null or " + chunk.substring(1);
         	result += " AND " + chunk + ") ";
         } else
         {
