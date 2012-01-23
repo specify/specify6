@@ -341,7 +341,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
             if (!nm.startsWith(".")) cnt++;
         }
-        if (cnt == 0)
+        if (cnt < 2)
         {
             doCreateNewLocale(true);
         }
