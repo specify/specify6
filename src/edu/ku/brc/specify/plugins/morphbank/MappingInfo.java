@@ -153,7 +153,7 @@ public class MappingInfo implements Comparable<MappingInfo>
 	/**
 	 * @return tableid for the table containing this field
 	 */
-	protected int getMyContextTblId()
+	public int getMappedTblId()
 	{
 		String[] tbls = mapping.split(",");
 		String tblSeg = tbls[tbls.length-1];
@@ -161,13 +161,14 @@ public class MappingInfo implements Comparable<MappingInfo>
 		String tbl = tblSegs[0];
 		return Integer.parseInt(tbl.split("-")[0]);
 	}
+	
 	/**
 	 * @return true if the field represents a field associated with a specified rank in a treeable table
 	 */
 	public boolean isTreeRank()
 	{
 		//This is a little iffy, but will probably work.
-		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(getMyContextTblId());
+		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(getMappedTblId());
 		if (Treeable.class.isAssignableFrom(tbl.getClassObj()))
 		{
 			return getTreeRanks(tbl.getClassObj()).contains(getMappedFieldName());

@@ -52,7 +52,7 @@ public class MorphBankTest
 	protected static XmlBaseObject createXmlSpecimen(CollectionObjectFieldMapper mapper) throws Exception
 	{
 		XmlBaseObject xmlSpecimen = new XmlBaseObject("Specimen");
-		xmlSpecimen.addDescription("From specimen " + mapper.getCollectionObjectId());
+		xmlSpecimen.addDescription("From specimen " + mapper.getSpecNumber(null));
 		mapper.setXmlSpecimenFields(xmlSpecimen);
 		//addLocalId(xmlSpecimen);
 		return xmlSpecimen;
@@ -89,10 +89,12 @@ public class MorphBankTest
 		insert.setContributor(owner);
 		request.getInsert().add(insert);
 		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
+		xmlSpecimen.setOwner(owner);
 		insert.getXmlObjectList().add(xmlSpecimen);
 		Vector<XmlBaseObject> xmlImages = fieldMapper.getXmlImages();
 		for (XmlBaseObject xmlImage : xmlImages)
 		{
+			xmlImage.setOwner(owner);
 			xmlImage.getView().add(new XmlId(77407));			
 			insert.getXmlObjectList().add(xmlImage);
 		}

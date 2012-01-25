@@ -21,6 +21,7 @@ import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -48,6 +49,8 @@ public class CollectionObjectFieldMapper
 	protected DwcMapper dwcMapper;
 	protected Vector<QName> morphBankDwcQNames;
 	protected DarwinCoreSpecimen spec;
+	protected RedactorIFace redactor = new NonRedactor();
+	//protected RedactorIFace redactor = new RedactorAuburn();
 
 	public static Connection connection; //for testing
 
@@ -158,43 +161,93 @@ public class CollectionObjectFieldMapper
 		}
 	}
 	
+	public Object getSpecNumber(DarwinCoreSpecimen aSpec)
+	{
+		DarwinCoreSpecimen dws = aSpec == null ? spec : aSpec;
+		if (dws.isMapped("CatalogNumberNumeric"))
+		{
+			return dws.get("CatalogNumberNumeric");
+		}
+		
+		if (dws.isMapped("CatalogNumberText"))
+		{
+			return dws.get("CatalogNumberText");
+		}
+
+		if (dws.isMapped("CatalogNumber"))
+		{
+			return dws.get("CatalogNumber");
+		}
 	
+		return dws.getCollectionObjectId();
+	}
 	/**
 	 * 
 	 * @param spec
 	 * @return unique id in the form InstitutionCode-CollectionCodeCatalogNumber
 	 * 
+	 * 
 	 * If catalognumber is not available then CollectionObjectId is used instead.
+	 * 
+	 * NOTE: This is specifically designed to meet the ID requirements for
+	 * the Troy database! 
 	 */
 	protected String getSpecId(DarwinCoreSpecimen spec, boolean isImage)
 	{
 		String result = "";
-		if (spec.isMapped("InstitutionCode") && spec.isMapped("CollectionCode"))
+		if (!isImage)
 		{
-			result = spec.get("InstitutionCode") + "-" + spec.get("CollectionCode");
-		}
-		else 
-		{
-			result = AppContextMgr.getInstance().getClassObject(Institution.class).getCode() + "-" 
-				+ AppContextMgr.getInstance().getClassObject(Collection.class).getCode();
+			if (spec.isMapped("InstitutionCode") && spec.isMapped("CollectionCode"))
+			{
+				result = spec.get("InstitutionCode") + "-" + spec.get("CollectionCode");
+			}
+			else 
+			{
+				result = AppContextMgr.getInstance().getClassObject(Institution.class).getCode()
+			 		+ "-" 
+					+ AppContextMgr.getInstance().getClassObject(Collection.class).getCode()
+					+ "-";
+			}
 		}
 		
 		if (isImage)
 		{
-			result += "-I";
+			result += "I:"; 		
 		}
 		
-		if (spec.isMapped("CatalogNumberNumeric"))
+		return result + getSpecNumber(spec);
+		
+		/* for auburn 
+		String result = "";
+		if (!isImage)
 		{
-			return result + spec.get("CatalogNumberNumeric");
+			if (spec.isMapped("InstitutionCode")) //&& spec.isMapped("CollectionCode"))
+			{
+				//result = spec.get("InstitutionCode") + "-" + spec.get("CollectionCode");
+				//result = (String )spec.get("InstitutionCode") + "-" + getSpecNumber(spec);
+				//Auburn...The BarCode has been stashed in the CollectionCode field in the cache!
+				result = (String )spec.get("InstitutionCode") + ":" + BasicSQLUtils.querySingleObj(connection, "select CollectionCode from tdwgtermsa where tdwgtermsaid = "
+								+ spec.getCollectionObjectId());
+			}
+			else 
+			{
+				result = AppContextMgr.getInstance().getClassObject(Institution.class).getCode()
+			 		+ "-" + getSpecNumber(spec);// + "-" 
+					//+ AppContextMgr.getInstance().getClassObject(Collection.class).getCode();
+			}
 		}
 		
-		if (spec.isMapped("CatalogNumberText"))
+		if (isImage)
 		{
-			return result + spec.get("CatalogNumberText");
+			//XXX HACK! The BarCode has been stashed in the CollectionCode field in the cache!
+			result = spec.get("InstitutionCode") + "-I:" + BasicSQLUtils.querySingleObj(connection, "select CollectionCode from tdwgtermsa where tdwgtermsaid = "
+					+ spec.getCollectionObjectId());
+			
 		}
+		return result; // + getSpecNumber(spec);
+		-- end auburn */
 		
-		return result + spec.getCollectionObjectId();
+
 	}
 	
 	
@@ -233,6 +286,12 @@ public class CollectionObjectFieldMapper
 			}
 			try
 			{
+				if (redactor.isRedacted(spec, mi))
+				{
+					//just skip. don't even add a tag for the concept.
+					System.out.println(getSpecId(spec, false));
+					continue; 
+				}
 				Object val = spec.get(mi.getName());
 				//System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName() + ")");
 				String miName = getMiName(mi);
@@ -244,13 +303,27 @@ public class CollectionObjectFieldMapper
 						val = Double.valueOf(val.toString());
 					}
 				} 
+//				else if (miName.equals("CatalogNumberNumeric"))
+//				{
+//					dataType = Integer.class;
+//					if (val != null)
+//					{
+//						val = Integer.valueOf(val.toString());
+//					}
+//				}
 //				else if (val != null && Number.class.isAssignableFrom(dataType) && !dataType.equals(GregorianCalendar.class))
 //				{
 //					val = ((Number )val).doubleValue();
 //				}
 				Method m = factory.getMethod("create" + miName, dataType);
 				//System.out.println("invoking " + m.getName() + "(" + val + ")");
-				xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(val)));
+				try
+				{
+					xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(val)));
+				} catch (ClassCastException ex)
+				{
+					xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(val == null ? "" : val.toString())));
+				}
 			} catch(NoSuchMethodException ex)
 			{
 				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": no create method in Object Factory");
@@ -269,14 +342,19 @@ public class CollectionObjectFieldMapper
 		
 		if (spec.isMapped("ScientificName"))
 		{
-			if (spec.isMapped("ScientificNameAuthor"))
+			String sciNameAuthor = spec.isMapped("ScientificNameAuthor") ? (String )spec.get("ScientificNameAuthor") : null;
+			if (sciNameAuthor == null)
+			{
+				 sciNameAuthor = spec.isMapped("AuthorYearOfScientificName") ? (String)spec.get("AuthorYearOfScientificName") : null;
+			}
+			if (StringUtils.isNotBlank(sciNameAuthor))
 			{
 				//xmlSpec.setDetermination(
 				//		MapFsuHerbSpreadsheetToXml.getXmlExternalId(
 				//				XmlTaxonNameUtilities.getTaxonSciNameAuthorExtId((String )spec.get("ScientificName"), 
 				//						(String )spec.get("ScientificNameAuthor"))));				
 				xmlSpec.setDetermination(
-						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_PREFIX + spec.get("ScientificNameAuthor")));				
+						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_AUTHOR_PREFIX + spec.get("ScientificName") + "|" + sciNameAuthor));				
 			}
 			else
 			{
@@ -433,7 +511,9 @@ public class CollectionObjectFieldMapper
 		for (AttachmentRecord image : images)
 		{
 			XmlBaseObject xmlImage = new XmlBaseObject("Image");
-			xmlImage.addDescription("From specimen " + getCollectionObjectId());
+			xmlImage.addDescription("From specimen " + getSpecNumber(spec));
+			//xmlImage.addUserProperty("imageUrl", "http://www.specimenimaging.com/images/AUA/" + image.getOrigFileName());
+			//xmlImage.setDateToPublish(new Date("2012/09/01"));
 			setXmlImageFields(xmlImage, image);
 			result.add(xmlImage);
 		}
@@ -452,7 +532,7 @@ public class CollectionObjectFieldMapper
 		}
 		AttachmentRecord imageRec = getImage(image);
 		XmlBaseObject xmlImage = new XmlBaseObject("Image");
-		xmlImage.addDescription("From specimen " + getCollectionObjectId());
+		xmlImage.addDescription("From specimen " + getSpecNumber(spec));
 		setXmlImageFields(xmlImage, imageRec);
 		return xmlImage;
 	}
@@ -473,6 +553,7 @@ public class CollectionObjectFieldMapper
 
 	}
 
+	@SuppressWarnings("unused")
 	private class AttachmentRecord
 	{
 		private String attachmentLocation;

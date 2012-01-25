@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -25,9 +26,9 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.subpane.qb.DateAccessorQRI;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.ExportPanel;
-import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -241,6 +242,7 @@ public class DwcMapper
 		//Using hibernate objects and reflection ...
 		for (MappingInfo mi : concepts)
 		{
+			//System.out.println("DwcMapper.setDarwinCoreValuesForObj -- setting " + mi.getName() + " : " + mi.getMappedFieldName());
 			spec.set(mi.getName(), getMappedValue(mi, spec.getCollectionObject()));
 		}
 		
@@ -320,13 +322,13 @@ public class DwcMapper
 		{
 			return (DataModelObjBase )objs;
 		}
-		if (((Collection )objs).size() == 0)
+		if (((Collection<?> )objs).size() == 0)
 		{
 			return null;
 		}
-		if (((Collection )objs).size() == 1)
+		if (((Collection<?> )objs).size() == 1)
 		{
-			return (DataModelObjBase )((Collection )objs).iterator().next();
+			return (DataModelObjBase )((Collection<?> )objs).iterator().next();
 		}
 		return selectRelatedObject(object, (Collection<DataModelObjBase> )objs);
 	}
@@ -398,16 +400,83 @@ public class DwcMapper
 		throw new Exception("Unsupported parent class " + parent.getClass().getName());
 	}
 	
+	protected boolean isDatePartAccessor(String methodName)
+	{
+		return methodName.endsWith(DateAccessorQRI.DATEPART.NumericDay.toString())
+			|| methodName.endsWith(DateAccessorQRI.DATEPART.NumericMonth.toString())
+			|| methodName.endsWith(DateAccessorQRI.DATEPART.NumericYear.toString());		
+	}
+	
+	protected String getDateFieldNameForDatePartAccessor(String methodName)
+	{
+		String strippee = null;
+		if (methodName.endsWith(DateAccessorQRI.DATEPART.NumericDay.toString()))
+		{
+			strippee = DateAccessorQRI.DATEPART.NumericDay.toString();
+		} else if (methodName.endsWith(DateAccessorQRI.DATEPART.NumericMonth.toString()))
+		{
+			strippee = DateAccessorQRI.DATEPART.NumericMonth.toString();
+		} else if (methodName.endsWith(DateAccessorQRI.DATEPART.NumericYear.toString()))
+		{
+			strippee = DateAccessorQRI.DATEPART.NumericYear.toString();
+		}
+		return methodName.replace(strippee, "");
+				
+	}
+	
+	protected Integer getDatePart(Calendar object, String methodName) throws Exception
+	{
+		if (methodName.endsWith(DateAccessorQRI.DATEPART.NumericDay.toString()))
+		{
+			return object.get(Calendar.DAY_OF_MONTH);
+		} else if (methodName.endsWith(DateAccessorQRI.DATEPART.NumericMonth.toString()))
+		{
+			return object.get(Calendar.MONTH) + 1;
+		} else if (methodName.endsWith(DateAccessorQRI.DATEPART.NumericYear.toString()))
+		{
+			return object.get(Calendar.YEAR);
+		}
+		throw new Exception("DwcMapper.getDatePart: unable to process " + methodName);
+	}
+	
 	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted, 
 			boolean isTreeRank, DataProviderSessionIFace session) throws Exception
 	{
 		if (!isFormatted && !isTreeRank)
 		{
 			String fieldName = mapping.split("\\.")[2];
-			String methodName = "get" + fieldName.substring(0, 1).toUpperCase().concat(fieldName.substring(1));
-			Method method = object.getClass().getMethod(methodName);
+			Vector<String> methNames = new Vector<String>();
+			methNames.add("get" + fieldName.substring(0, 1).toUpperCase().concat(fieldName.substring(1)));
+			if (isDatePartAccessor(methNames.get(0)))
+			{
+				methNames.add(getDateFieldNameForDatePartAccessor(methNames.get(0)));
+			}
+			boolean useDatePartAccessor = false;
+			Method method = null;
+			for (int m = 0; m < methNames.size(); m++)
+			{
+				String methodName = methNames.get(m);
+				try 
+				{
+					method = object.getClass().getMethod(methodName);
+					break;
+				} catch (NoSuchMethodException ex)
+				{
+					useDatePartAccessor = true;
+					continue;
+				}
+			}
+			if (method == null)
+			{
+				throw new NoSuchMethodException(mapping);
+			}
 			//System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
-			return method.invoke(object);
+			Object result = method.invoke(object);
+			if (useDatePartAccessor && result != null)
+			{
+				result = getDatePart((Calendar )result, methNames.get(0));
+			}
+			return result;
 		}
 		else
 		{
