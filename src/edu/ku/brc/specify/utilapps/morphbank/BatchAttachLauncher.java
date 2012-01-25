@@ -25,6 +25,7 @@ import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.UIRegistry;
@@ -182,7 +183,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
 			
 			//For troy+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//Attach 'blank' attachments from list of image file names
-			//BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
+			//BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser("altCatalogNumber"),
 			//		new File("/media/Terror/ConversionsAndFixes/Troy/Troy_directory_listing.txt"));
 			//baf.attachFiles();
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -209,7 +210,12 @@ public class BatchAttachLauncher implements DatabaseLoginListener
 			
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
-			
+			//for Auburn +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//Attach 'blank' attachments from list of image file names
+			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser("altCatalogNumber"),
+					new File("/media/Terror/ConversionsAndFixes/auburn/ImageFileNames.txt"));
+			baf.attachFiles();
+			//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
 			System.exit(0);
 		} catch (Exception ex)

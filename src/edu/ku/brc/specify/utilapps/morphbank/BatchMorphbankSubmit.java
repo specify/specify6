@@ -13,6 +13,8 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
+
 import net.morphbank.mbsvc3.xml.Credentials;
 import net.morphbank.mbsvc3.xml.Request;
 import net.morphbank.mbsvc3.xml.XmlUtils;
@@ -43,6 +45,9 @@ public class BatchMorphbankSubmit
 	protected final int dwcMapId;
 	protected DwcMapper dwcMapper = null;
 	
+	protected Integer mbUserID = null;
+	protected Integer mbGroupID = null;
+	
 	/**
 	 * @param requestsPerFile
 	 * @param tblClass
@@ -54,6 +59,10 @@ public class BatchMorphbankSubmit
 			File destinationDir, int dwcMapId)
 	{
 		super();
+		//for Auburn
+		mbUserID = 691554; 
+		mbGroupID = 692592;
+		
 		this.requestsPerFile = requestsPerFile;
 		this.tblClass = tblClass;
 		this.attachmentClass = attachmentClass;
@@ -103,8 +112,8 @@ public class BatchMorphbankSubmit
 	 */
 	protected Request generateSubmission(Integer key) throws Exception
 	{
-		return MorphBankTest.createRequestFromCollectionObjectId(key, new Credentials(0, 0), 
-				new Credentials(0, 0), dwcMapper);
+		return MorphBankTest.createRequestFromCollectionObjectId(key, new Credentials(691554, 692592), 
+				new Credentials(mbUserID, mbGroupID), dwcMapper);
 	}
 	
 	/**
@@ -126,7 +135,88 @@ public class BatchMorphbankSubmit
 		}
 		out.close();
 		outFile.close();
-
+		
+		//Now strip out redundant headers and stuff
+		File f = new File(fileName);
+		List<?> objLines = FileUtils.readLines(f);
+		List<String> lines = new Vector<String>(objLines.size());
+		//copying to workaround generics issues
+		for (Object obj : objLines)
+		{
+			lines.add((String)obj);
+		}
+		String header = (String )lines.get(0);
+		String requestHeaderStart = "<mb:request xsi:";
+		String requestFooter = "</mb:request>";
+		String insertHeader = "<insert>";
+		String insertFooter = "</insert>";
+		//String footer = (String )lines.get(lines.size()-1);
+		int numLines = lines.size();
+		for (int l = numLines - 1; l > 0; l--)
+		{
+			String line = (String )lines.get(l);
+//			if (l == 0) 
+//			{
+//				lines.set(0, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+//				continue;
+//			}
+			if (header.equals(line))
+			{
+				lines.remove(l);
+			} else if (line.trim().startsWith(requestHeaderStart)) 
+			{
+				if (l > 2)
+				{
+					//remove the submitter id
+					lines.remove(l+4);
+					lines.remove(l+3);
+					lines.remove(l+2);
+					lines.remove(l+1);
+					lines.remove(l);
+				} else
+				{
+					//lines.set(l, "<ns2:request xsi:schemaLocation=\"http://www.morphbank.net/mbsvc3/ http://www.morphbank.net/schema/mbsvc3.xsd\">");
+					lines.set(l, "<ns2:request xsi:schemaLocation=\"http://www.morphbank.net/mbsvc3/ http://www.morphbank.net/schema/mbsvc3.xsd\" "
+						+ "xmlns:dwc=\"http://rs.tdwg.org/dwc/dwcore/\" "
+						+ "xmlns:ns2=\"http://www.morphbank.net/mbsvc3/\" "
+						+ "xmlns:dwcg=\"http://rs.tdwg.org/dwc/geospatial/\" "
+						+ "xmlns:dwce=\"http://rs.tdwg.org/dwc/dwelement\" "
+						+ "xmlns:dwcc=\"http://rs.tdwg.org/dwc/curatorial/\" "
+						+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+				}
+			} else if (requestFooter.equals(line.trim()))
+			{
+				if (l == numLines - 1)
+				{
+					lines.set(l, "</ns2:request>");
+				} else
+				{
+					lines.remove(l);
+				}
+			} else if (insertFooter.equals(line.trim()))
+			{
+				if (l != numLines - 2)
+				{
+					lines.remove(l);
+				}
+			} else if (insertHeader.equals(line.trim()))
+			{
+				if (l > 7)
+				{
+					//remove the submitter id
+					lines.remove(l+4);
+					lines.remove(l+3);
+					lines.remove(l+2);
+					lines.remove(l+1);
+					lines.remove(l);
+				} 
+			} else if (line.contains("CatalogNumberNumeric"))
+			{
+				lines.set(l, line.replace(".0</", "</"));
+			}
+		}
+		//FileUtils.writeLines(f, lines);
+		FileUtils.writeLines(f, "ISO-8859-1", lines);
 	}
 	
 		
@@ -173,12 +263,24 @@ public class BatchMorphbankSubmit
 	{
 		try
 		{
-			String connStr = "jdbc:mysql://localhost/troysp6?characterEncoding=UTF-8&autoReconnect=true"; 
+			//String connStr = "jdbc:mysql://localhost/troy?characterEncoding=UTF-8&autoReconnect=true"; 
+			String connStr = "jdbc:mysql://localhost/auburn?characterEncoding=UTF-8&autoReconnect=true"; 
+			
 			DwcMapper.connection = DriverManager.getConnection(connStr, "Master", "Master");
 			CollectionObjectFieldMapper.connection = DwcMapper.connection;
 			
 			Statement stmt = DwcMapper.connection.createStatement();
+			//filter out records with messy taxon info or barcode or other known problems...
+//			String sql = "select coa.collectionobjectid from collectionobjectattachment coa inner join "
+//				+ "collectionobject co on co.collectionobjectid = coa.collectionobjectid inner join "
+//				+ "determination d on d.collectionobjectid = co.collectionobjectid inner join "
+//				+ "taxon t on t.taxonid = d.taxonid or t.taxonid = d.preferredtaxonid "
+//				+ "where t.fullname not like '%unplaced%' "
+//				//+ " and co.AltCatalogNumber not in (select AltCatalogNumber from DupBarCodes) "
+//				+ "order by 1";
+			
 			ResultSet rs = stmt.executeQuery("select collectionobjectid from collectionobjectattachment order by 1");
+			//ResultSet rs = stmt.executeQuery(sql);
 			List<Integer> keys = new Vector<Integer>();
 			while (rs.next())
 			{
@@ -187,9 +289,14 @@ public class BatchMorphbankSubmit
 			rs.close();
 			stmt.close();
 			
+//			BatchMorphbankSubmit mbs = new BatchMorphbankSubmit(100, CollectionObject.class, 
+//				CollectionObjectAttachment.class, keys, "troymbsubmission", 
+//				new File("/media/Terror/ConversionsAndFixes/Troy/BSII"), 1);
+
 			BatchMorphbankSubmit mbs = new BatchMorphbankSubmit(100, CollectionObject.class, 
-				CollectionObjectAttachment.class, keys, "troymbsubmission", 
-				new File("/media/Terror/ConversionsAndFixes/Troy/"), 1);
+					CollectionObjectAttachment.class, keys, "auburn", 
+					new File("/media/Terror/ConversionsAndFixes/auburn"), 2 /*the GoodA mapping */);
+
 			mbs.generateSubmissions();
 			System.out.println("done.");
 		} catch (Exception e)
