@@ -221,7 +221,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                                         value = nf.format(numeric);
                                         if (isGeoCoordinate(wbtmi))
                                         {
-                                        	if (value.indexOf(decSep) != -1 && value.substring(value.indexOf(decSep)).length() > nfGeoCoord.getMaximumFractionDigits())
+                                            int sepInx = value.indexOf(decSep);
+                                        	if (sepInx > -1 && value.substring(sepInx).length() > nfGeoCoord.getMaximumFractionDigits())
                                         	{
                                         		String value2 = nfGeoCoord.format(numeric);
                                         		int maxlen = wbtmi.getFieldName().startsWith("latitude") 
@@ -231,8 +232,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                                         		{
                                         			maxlen++;
                                         		}
-                                        		System.out.println(value + " " + trackTrunc(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption(), 
-                                        				maxlen) + " " + value2);
+                                        		//System.out.println(value + " " + trackTrunc(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption(), 
+                                        		//		maxlen) + " " + value2);
                                         		value = value2;
                                         	}
                                         }    

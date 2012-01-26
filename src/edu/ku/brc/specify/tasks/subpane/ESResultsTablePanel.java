@@ -462,38 +462,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             public void mouseClicked(MouseEvent e) 
             {
-                synchronized (((JTable)e.getSource()).getTreeLock()) 
-                {
-                    if (e.getClickCount() == 2 && e.getButton() == 1)
-                    {
-                        if (propChangeListener != null) 
-                        {
-                            propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
-                        }
-                        
-                        if (serviceBtns != null)
-                        {
-                            for (ServiceInfo si : serviceBtns.keySet())
-                            {
-                                if (si.isDefault())
-                                {
-                                    final JButton defBtn = serviceBtns.get(si);
-                                    if (defBtn != null)
-                                    {
-                                        SwingUtilities.invokeLater(new Runnable() {
-                                            @Override
-                                            public void run()
-                                            {
-                                                defBtn.doClick();
-                                            }
-                                        });
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                //synchronized (((JTable)e.getSource()).getTreeLock()) 
+                //{
+                doDoubleClickOnRow(e);
+                //}
             }
         });
         
@@ -502,6 +474,48 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         for (int i=0;i<tableColModel.getColumnCount();i++)
         {
             tableColModel.getColumn(i).setCellRenderer(new BiColorTableCellRenderer());
+        }
+    }
+    
+    /**
+     * @param e
+     */
+    protected void doDoubleClickOnRow(final MouseEvent e)
+    {
+        if (e.getClickCount() == 2 && e.getButton() == 1)
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    if (propChangeListener != null) 
+                    {
+                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
+                    }
+                    
+                    if (serviceBtns != null)
+                    {
+                        for (ServiceInfo si : serviceBtns.keySet())
+                        {
+                            if (si.isDefault())
+                            {
+                                final JButton defBtn = serviceBtns.get(si);
+                                if (defBtn != null)
+                                {
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run()
+                                        {
+                                            defBtn.doClick();
+                                        }
+                                    });
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
     

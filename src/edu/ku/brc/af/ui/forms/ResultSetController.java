@@ -54,6 +54,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.apache.commons.lang.StringUtils;
@@ -503,31 +504,48 @@ public class ResultSetController implements ValidationListener
     {
         if (currentInx < 1) return;
         
-        if (notifyListenersAboutToChangeIndex(currentInx, currentInx-1))
+        setUIEnabled(false);
+        
+        SwingUtilities.invokeLater(new Runnable()
         {
-            // Note: notifyListenersAboutToChangeIndex sometimes can call a method
-            // that ends up setting the currentInx and therefore we should make
-            // sure that by decrementing it will still have a good value
-            if (currentInx > 0)
+            @Override
+            public void run()
             {
-                currentInx--;
-                updateUI();
-                notifyListeners();
+                if (notifyListenersAboutToChangeIndex(currentInx, currentInx-1))
+                {
+                    // Note: notifyListenersAboutToChangeIndex sometimes can call a method
+                    // that ends up setting the currentInx and therefore we should make
+                    // sure that by decrementing it will still have a good value
+                    if (currentInx > 0)
+                    {
+                        currentInx--;
+                        updateUI();
+                        notifyListeners();
+                    }
+                }
             }
-        }
-
+        });
     }
     
     public void nextRecord()
     {
         if (currentInx > numRecords-2) return;
-            
-        if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
+        
+        setUIEnabled(false);
+        
+        SwingUtilities.invokeLater(new Runnable()
         {
-            currentInx++;
-            updateUI();
-            notifyListeners();
-        }
+            @Override
+            public void run()
+            {
+                if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
+                {
+                    currentInx++;
+                    updateUI();
+                    notifyListeners();
+                }
+            }
+        });
     }
     
     /**
