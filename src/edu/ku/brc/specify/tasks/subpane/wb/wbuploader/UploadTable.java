@@ -3798,8 +3798,9 @@ public class UploadTable implements Comparable<UploadTable>
                                   int row,
                                   int seq) throws UploaderException
     {
-        
-    	boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+        if ("latlongtype".equalsIgnoreCase(fld.getField().getName())) return false;
+
+     	boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
         if (blankButRequired && tblClass.equals(Locality.class) && fld.getField().getName().equalsIgnoreCase("LatLongType"))
         {
         	boolean geoDataPresent = false;
@@ -4350,7 +4351,7 @@ public class UploadTable implements Comparable<UploadTable>
 							}
 						}
 						//Check LatLongType
-						if (fldName.equalsIgnoreCase("LatLongType") && StringUtils.isNotBlank(fld.getValue()))
+						if (fldName.equalsIgnoreCase("LatLongType"))
 						{
 							boolean hasLat1 = false, hasLong1 = false, hasLat2 = false, hasLong2 = false;
 							for (UploadField f : getLatLongFlds())
@@ -4372,7 +4373,18 @@ public class UploadTable implements Comparable<UploadTable>
 							}
 							boolean hasCoord1 = hasLat1 && hasLong1;
 							boolean hasCoord2 = hasLat2 && hasLong2;
-							
+
+							if ((hasCoord1 || hasCoord2) && StringUtils.isBlank(fld.getValue())) {
+								invalidNulls.add(new UploadTableInvalidValue(
+										getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA"), this, fld, row, null));		
+								continue;
+
+							}
+								
+							if (!hasCoord1 && !hasCoord2 && StringUtils.isBlank(fld.getValue())) {
+								continue;
+							}
+
 											
 							//Assuming the pick list is localized...
 							String pntStr = UIRegistry.getResourceString("Locality.LL_TYPE_POINT");
