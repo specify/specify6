@@ -2288,7 +2288,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String[] ignoredFields = {"VisibilitySetByID", "CollectingTripID",
                                           "EndDateVerbatim", "EndDatePrecision", 
                                           "StartDatePrecision", "HabitatAttributeID", "Version", "CreatedByAgentID",
-                                          "CollectionMemberID", "CollectingEventAttributeID", "DisciplineID" };
+                                          "CollectionMemberID", "CollectingEventAttributeID", "DisciplineID",
+                                          "SGRStatus"};
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 setOneToOneIDHash(createFieldNameMap(new String[] {"HabitatAttributeID", "HabitatAttributeID" }));
                 
@@ -8451,7 +8452,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // Special String
                 "LocalityName",
                 "NamedPlace",
-                "RelationToNamedPlace"};
+                "RelationToNamedPlace",
+                "SGRStatus"};
         
         setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
