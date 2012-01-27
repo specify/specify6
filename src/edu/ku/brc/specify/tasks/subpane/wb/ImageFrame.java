@@ -790,7 +790,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                 
                 Object retVal = get();
                 
-                if (retVal != null && retVal instanceof List)
+                if (retVal != null && retVal instanceof List && ((List )retVal).size() > 0)
                 {
                     Vector<Integer> newIndexes = (Vector<Integer>)retVal;
                     int lowestNewIndex = newIndexes.get(0);
