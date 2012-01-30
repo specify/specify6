@@ -20,7 +20,6 @@
 package edu.ku.brc.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -155,13 +154,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             }
             
             // find an unused filename in the originals dir
-            File storageFile = new File(originalsDir +File.separator + "xxx" + suffix);//File.createTempFile("sp6-", suffix, originalsDir);
-            System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
-            FileOutputStream fos = new FileOutputStream(storageFile);
-            fos.write(1);
-            fos.flush();
-            fos.close();
-            
+            File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
             if (storageFile.exists())
             {
                 attachment.setAttachmentLocation(storageFile.getName());
