@@ -1491,13 +1491,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 boolean isDisplayOnly = StringUtils.isEmpty(criteria);
                 if (!isDisplayOnly)
                 {
-                    if (!isDisplayOnly && criteriaStr.length() > 0)
+                    if (criteria.equals("2+2=2") && qfi.isNegated()) 
                     {
-                        criteriaStr.append(disjunct ? " OR " : " AND ");
+                    	criteria = "";
                     }
-                    if (hqlHasSynJoins && isSynSearchable(qfi.getFieldQRI()) && !qfi.isEmptyCriterion())
+                	if (criteria.length() > 0 && hqlHasSynJoins && isSynSearchable(qfi.getFieldQRI()) && !qfi.isEmptyCriterion())
                     {
                         criteria = adjustForSynSearch(tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTable().getTableTree()), criteria, qfi.isNegated());
+                    }
+                    if (!isDisplayOnly && criteriaStr.length() > 0 && criteria.length() > 0)
+                    {
+                        criteriaStr.append(disjunct ? " OR " : " AND ");
                     }
                     criteriaStr.append(criteria);
                 }
@@ -1822,6 +1826,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static String adjustForSynSearch(final String tblAlias, final String criteria, final boolean isNegated)
     {
         String result = "(" + criteria;
+        
         String chunk = criteria.replace(tblAlias + ".", getAcceptedChildrenAlias(tblAlias) + ".");
         if (isNegated)
         {
@@ -1834,7 +1839,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         chunk = criteria.replace(tblAlias + ".", getAcceptedParentAlias(tblAlias) + ".");
         if (isNegated)
         {
-        	chunk = "(" + getAcceptedParentAlias(tblAlias) + ".nodeNumber is null or " + chunk.substring(1);
+        	chunk = "(" + getAcceptedParentAlias(tblAlias) + ".nodeNumber is null or " +chunk.substring(1);
         	result += " AND " + chunk;
         } else
         {
@@ -1843,7 +1848,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         chunk = criteria.replace(tblAlias + ".", getAcceptedParentChildrenAlias(tblAlias) + ".");
         if (isNegated)
         {
-        	chunk = "(" + getAcceptedParentChildrenAlias(tblAlias) + ".nodeNumber is null or " + chunk.substring(1);
+        	chunk = "(" + getAcceptedParentChildrenAlias(tblAlias) + ".nodeNumber is null or " +chunk.substring(1);
         	result += " AND " + chunk + ") ";
         } else
         {
