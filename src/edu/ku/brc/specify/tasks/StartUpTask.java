@@ -32,6 +32,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -41,6 +42,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.specify.config.FixDBAfterLogin;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -72,6 +74,27 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     {
         super();
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.StartUpTask#getStarterPane()
+     */
+    @Override
+    public SubPaneIFace getStarterPane()
+    {
+        if (AppPreferences.getRemote().getBoolean("CHECK_ATTCH_ERR", true))
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    FixDBAfterLogin fix = new FixDBAfterLogin();
+                    fix.checkForBadAttachments();
+                }
+            });
+        }
+        return super.getStarterPane();
     }
 
     /* (non-Javadoc)

@@ -202,14 +202,23 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
     public int getTableId()
     {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
+    {
         return 115;
     }
+
 
     @Transient
     public Locality getObject()

@@ -199,14 +199,23 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
     public int getTableId()
     {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
+    {
         return 109;
     }
+
 
     @Transient
     public Agent getObject()

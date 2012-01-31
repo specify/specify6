@@ -205,13 +205,23 @@ public class FieldNotebookPageSetAttachment extends DataModelObjBase implements 
         return fieldNotebookPageSetAttachmentId;
     }
 
-    @Transient
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
     @Override
+    @Transient
     public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 129;
     }
-    
     
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)

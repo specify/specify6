@@ -205,12 +205,24 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
         return fieldNotebookAttachmentId;
     }
 
-    @Transient
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
     @Override
+    @Transient
     public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 127;
     }
+
     
     
     /* (non-Javadoc)

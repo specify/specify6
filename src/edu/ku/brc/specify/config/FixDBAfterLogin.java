@@ -23,8 +23,14 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCount;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.update;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
+import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,10 +41,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.swing.JEditorPane;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -60,10 +74,35 @@ import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
+import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
+import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
+import edu.ku.brc.specify.datamodel.LoanAttachment;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
+import edu.ku.brc.specify.datamodel.PermitAttachment;
+import edu.ku.brc.specify.datamodel.PreparationAttachment;
+import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rods
@@ -706,4 +745,335 @@ public class FixDBAfterLogin
         return rv;
     }
 
+    
+    /**
+     * @param agentId
+     * @param colMemId
+     * @param inclColMemId
+     * @param tableId
+     * @return
+     */
+    private Vector<Object[]> getImageData(final int agentId, 
+                                                 final int tableId,
+                                                 final HashMap<Integer, String> tblTypeHash) throws Exception
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+        
+        String sql = String.format("SELECT a.AttachmentID, a.AttachmentLocation, a.OrigFilename, ag.AgentID " +
+                 	 "FROM attachment a INNER JOIN %s x ON a.AttachmentID = x.AttachmentID " +
+                     "INNER JOIN agent ag ON a.CreatedByAgentID = ag.AgentID " +
+                     "WHERE a.AttachmentLocation LIKE 'xxx.att.%c' AND ag.AgentID = %d", ti.getName(), '%', agentId);
+        
+        String title = ti.getTitle();
+        if (ti.getRelationshipByName("division") != null)
+        {
+            Division div = AppContextMgr.getInstance().getClassObject(Division.class);
+            sql += " AND x.DivisionID = " + div.getId();
+            title += " (Division Level)";//div.getName());
+            
+        } else if (ti.getFieldByColumnName("CollectionMemberID") != null)
+        {
+            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            sql += " AND x.CollectionMemberID = " + collection.getId();
+            title += " (Collection Level)";//tblTypeHash.put(tableId, collection.getCollectionName());
+            
+        } else if (ti.getRelationshipByName("discipline") != null)
+        {
+            Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            sql += " AND x.DisciplineID = " + dsp.getId();
+            title += " (Discipline Level)";//tblTypeHash.put(tableId, "Discipline: "+dsp.getName());
+        } else
+        {
+            System.err.println("Error: "+title);
+            title += " (Global Level)";
+        }
+        tblTypeHash.put(tableId, title);
+        //System.out.println(sql);
+        return BasicSQLUtils.query(sql);
+    }
+    
+    /**
+     * @param resultsHashMap
+     * @param tableHash
+     * @param totalFiles
+     */
+    private void reattachFiles(final HashMap<Integer, Vector<Object[]>> resultsHashMap,
+                               final HashMap<Integer, AttchTableModel> tableHash,
+                               final int totalFiles)
+    {
+        final String CNT  = "CNT";
+        final SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
+        {
+            int filesCnt = 0;
+            
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                if (session != null)
+                {
+                    try
+                    {
+                        for (int tblId : resultsHashMap.keySet())
+                        {
+                            AttchTableModel model = tableHash.get(tblId);
+                            for (int r=0;r<model.getRowCount();r++)
+                            {
+                                if (model.isRecoverable(r))
+                                {
+                                    Thread.currentThread().sleep(100);
+                                    
+                                    session.beginTransaction();
+                                    Integer    attachID   = model.getAttachmentId(r);
+                                    Attachment attachment = session.get(Attachment.class, attachID);
+                                    AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(attachment, false);
+                                    attachment.storeFile(true); // false means do not display an error dialog
+                                    session.saveOrUpdate(attachment);
+                                    session.commit();
+                                    filesCnt++;
+                                    firePropertyChange(CNT, 0, (int)((double)filesCnt / (double)totalFiles * 100.0));
+                                }
+                            }
+                        }
+                    } catch (Exception ex)
+                    {
+                        session.rollback();
+                        
+                    } finally
+                    {
+                        session.close();
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                UIRegistry.clearSimpleGlassPaneMsg();
+                UIRegistry.displayInfoMsgDlg(String.format("Files recovered: %d / %d", filesCnt, totalFiles));
+                super.done();
+            }
+        };
+        
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format("Recovering %d files.", totalFiles), 24);
+        glassPane.setProgress(0);
+        
+        worker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        if (CNT.equals(evt.getPropertyName())) 
+                        {
+                            glassPane.setProgress((Integer)evt.getNewValue());
+                        }
+                    }
+                });
+        
+        worker.execute();
+    }
+    
+    /**
+     * 
+     */
+    public void checkForBadAttachments()
+    {
+        try
+        {
+            String sql = "SELECT COUNT(*) FROM attachment WHERE AttachmentLocation LIKE 'xxx.att%'";
+            int count = BasicSQLUtils.getCountAsInt(sql);
+            if (count == 0)
+            {
+                return;
+            }
+            
+            int totalFiles = 0;
+            HashMap<Integer, Vector<Object[]>> resultsHashMap = new HashMap<Integer, Vector<Object[]>>();
+            HashMap<Integer, String>           tblTypeHash    = new HashMap<Integer, String>();
+            int[] tableIds = 
+            { 
+                    AccessionAttachment.getClassTableId(), AgentAttachment.getClassTableId(), 
+                    CollectingEventAttachment.getClassTableId(), CollectionObjectAttachment.getClassTableId(), 
+                    ConservDescriptionAttachment.getClassTableId(), ConservEventAttachment.getClassTableId(), 
+                    DNASequencingRunAttachment.getClassTableId(), FieldNotebookAttachment.getClassTableId(), 
+                    FieldNotebookPageAttachment.getClassTableId(), FieldNotebookPageSetAttachment.getClassTableId(), 
+                    LoanAttachment.getClassTableId(), LocalityAttachment.getClassTableId(), 
+                    PermitAttachment.getClassTableId(), PreparationAttachment.getClassTableId(), 
+                    RepositoryAgreementAttachment.getClassTableId(), TaxonAttachment.getClassTableId()
+            };
+    
+            Agent userAgent  = AppContextMgr.getInstance().getClassObject(Agent.class);
+            
+            for (int tableId : tableIds)
+            {
+                Vector<Object[]> results = getImageData(userAgent.getId(), tableId, tblTypeHash);
+                if (results != null && results.size() > 0)
+                {
+                    resultsHashMap.put(tableId, results);
+                    //System.out.println(tableId+"  ->  "+results.size());
+                }
+            }
+            
+            if (resultsHashMap.size() == 0) // Shouldn't happen
+            {
+                return;
+            }
+            
+            CellConstraints cc = new CellConstraints();
+            HashMap<Integer, String>          agentHash = new HashMap<Integer, String>();
+            HashMap<Integer, AttchTableModel> tableHash = new HashMap<Integer, AttchTableModel>();
+            
+            int          y      = 1;
+            String       rowDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", resultsHashMap.size());
+            PanelBuilder pb     = new PanelBuilder(new FormLayout("f:p:g", rowDef));
+            for (int tblId : resultsHashMap.keySet())
+            {
+                Vector<Object[]> dataRows = new Vector<Object[]>();
+                Vector<Object[]> results = resultsHashMap.get(tblId);
+                for (Object[] row : results)
+                {
+                    Integer agentId = (Integer)row[3];
+                    String userName = agentHash.get(agentId); 
+                    if (userName == null)
+                    {
+                        userName = BasicSQLUtils.querySingleObj("SELECT su.Name FROM agent a INNER JOIN specifyuser su ON a.SpecifyUserID = su.SpecifyUserID WHERE a.AgentID = "+row[3]);
+                        agentHash.put(agentId, userName);
+                    }
+                    boolean doesExist = (new File((String)row[2])).exists();
+                    String fullPath = (String)row[2];
+                    Object[] rowObjs = new Object[5];
+                    rowObjs[0] = FilenameUtils.getName(fullPath);
+                    rowObjs[1] = fullPath;
+                    rowObjs[2] = userName;
+                    rowObjs[3] = doesExist;
+                    rowObjs[4] = row[0];
+                    
+                    dataRows.add(rowObjs);
+                    
+                    if (doesExist)
+                    {
+                        totalFiles++;
+                    }
+                }
+                PanelBuilder    pb2   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
+                AttchTableModel model = new AttchTableModel(dataRows);
+                JTable          table = new JTable(model);
+                if (resultsHashMap.size() > 1)
+                {
+                    UIHelper.calcColumnWidths(table, dataRows.size() < 15 ? dataRows.size()+1 : 15);
+                } else
+                {
+                    UIHelper.calcColumnWidths(table);
+                }
+                pb2.add(UIHelper.createLabel(tblTypeHash.get(tblId)), cc.xy(1, 1));
+                pb2.add(UIHelper.createScrollPane(table), cc.xy(1, 3));
+                pb.add(pb2.getPanel(), cc.xy(1, y));
+                tableHash.put(tblId, model);
+                y += 2;
+            }
+            
+            CustomDialog dlg = new CustomDialog((Dialog)null, "Attachment Information", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(pb.getPanel()));
+            dlg.setCancelLabel("Skip");
+            dlg.setOkLabel("Recover Files");
+            dlg.createUI();
+            dlg.pack();
+            Dimension dim = dlg.getSize();
+            dim.height = Math.max(600, dim.height);
+            dlg.setSize(dim);
+            dlg.setVisible(true);
+            
+            if (!dlg.isCancelled())
+            {
+                reattachFiles(resultsHashMap, tableHash, totalFiles);
+            }
+            
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    
+    class AttchTableModel extends DefaultTableModel
+    {
+        protected String[] headers = {"File Name", "Full Path", "Agent", "Is Recoverable"};
+        protected Vector<Object[]> dataRows;
+        
+        /**
+         * @param fileName
+         * @param agentName
+         */
+        public AttchTableModel(final Vector<Object[]> dataRows)
+        {
+            super();
+            this.dataRows = dataRows;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getColumnCount()
+         */
+        @Override
+        public int getColumnCount()
+        {
+            return headers != null ? headers.length : 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getColumnName(int)
+         */
+        @Override
+        public String getColumnName(int column)
+        {
+            return headers[column];
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+         */
+        @Override
+        public Class<?> getColumnClass(int col)
+        {
+            return col == 3 ? Boolean.class : String.class;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getRowCount()
+         */
+        @Override
+        public int getRowCount()
+        {
+            return dataRows != null ? dataRows.size() : 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getValueAt(int, int)
+         */
+        @Override
+        public Object getValueAt(int row, int column)
+        {
+            Object[] r = dataRows.get(row);
+            return r[column];
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
+         */
+        @Override
+        public boolean isCellEditable(int row, int column)
+        {
+            return false;
+        }
+        
+        public int getAttachmentId(final int row)
+        {
+            Object[] r = dataRows.get(row);
+            return (Integer)r[r.length-1];
+        }
+        
+        public boolean isRecoverable(final int row)
+        {
+            Object[] r = dataRows.get(row);
+            return (Boolean)r[3];
+        }
+    }
 }
