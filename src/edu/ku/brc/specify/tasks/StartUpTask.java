@@ -42,7 +42,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.config.FixDBAfterLogin;
+import edu.ku.brc.specify.config.FixAttachments;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -82,15 +82,15 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        if (AppPreferences.getRemote().getBoolean("CHECK_ATTCH_ERR", true))
+        if (AppPreferences.getGlobalPrefs().getBoolean("CHECK_ATTCH_ERR", true))
         {
             SwingUtilities.invokeLater(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    FixDBAfterLogin fix = new FixDBAfterLogin();
-                    fix.checkForBadAttachments();
+                    FixAttachments fixAttachments = new FixAttachments();
+                    fixAttachments.checkForBadAttachments();
                 }
             });
         }
