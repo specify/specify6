@@ -20,6 +20,7 @@
 package edu.ku.brc.af.core;
 
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -43,6 +44,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class SpecialMsgNotifier
 {
     private static final Logger log = Logger.getLogger(SpecialMsgNotifier.class);
+    private static AtomicBoolean blockMsg = new AtomicBoolean(false);
     
     /**
      * 
@@ -55,6 +57,11 @@ public class SpecialMsgNotifier
     
     public void checkForMessages()
     {
+        if (blockMsg.get())
+        {
+            return;
+        }
+        
         SwingWorker<Integer, Integer> msgCheckWorker = new SwingWorker<Integer, Integer>()
         {
             protected String msg = null;
@@ -65,19 +72,22 @@ public class SpecialMsgNotifier
             @Override
             protected Integer doInBackground() throws Exception
             {
-                try
+                if (!blockMsg.get())
                 {
-                    Thread.sleep(15000); // 15 seconds
-                    
-                    String url       = UIRegistry.getResourceString("CGI_BASE_URL") + "/getmsg2.php";
-                    String installID = UsageTracker.getInstallId();
-                    
-                    msg = send(url, installID);
-                    
-                } catch (Exception ex)
-                {
-                    // die silently
-                }                
+                    try
+                    {
+                        Thread.sleep(15000); // 15 seconds
+                        
+                        String url       = UIRegistry.getResourceString("CGI_BASE_URL") + "/getmsg2.php";
+                        String installID = UsageTracker.getInstallId();
+                        
+                        msg = send(url, installID);
+                        
+                    } catch (Exception ex)
+                    {
+                        // die silently
+                    }      
+                }
                 return null;
             }
 
@@ -164,5 +174,13 @@ public class SpecialMsgNotifier
             // die silently
         }
         return null;
+    }
+
+    /**
+     * @param blockMsg the blockMsg to set
+     */
+    public static void setBlockMsg(boolean blockMsg)
+    {
+        SpecialMsgNotifier.blockMsg.set(blockMsg);
     }
 }

@@ -323,7 +323,7 @@ public class FixAttachments
                                       final HashMap<Integer, AttchTableModel> tableHash,
                                       final int totalFiles)
     {
-        String path = UIRegistry.getDefaultWorkingPath() + File.separator + "att_rec_summary.html";
+        String path = UIRegistry.getAppDataDir() + File.separator + "att_rec_summary.html";
         try
         {
             TableWriter tw = new TableWriter(path, "Attachment Recovery Summary", true);
@@ -428,7 +428,7 @@ public class FixAttachments
         String sql = String.format("SELECT a.AttachmentID, a.AttachmentLocation, a.OrigFilename, ag.AgentID, %s " +
                      "FROM attachment a INNER JOIN %s x ON a.AttachmentID = x.AttachmentID " +
                      "INNER JOIN agent ag ON a.CreatedByAgentID = ag.AgentID " +
-                     "WHERE a.AttachmentLocation LIKE 'xxx.att.%c' AND ag.AgentID = %d", 
+                     "WHERE (a.AttachmentLocation IS NULL OR a.AttachmentLocation LIKE 'xxx.att.%c') AND ag.AgentID = %d", 
                      ti.getIdColumnName(), ti.getName(), '%', agentId);
         
         String title = ti.getTitle();
