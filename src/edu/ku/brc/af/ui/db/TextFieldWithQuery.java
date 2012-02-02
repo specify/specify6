@@ -1025,7 +1025,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                             
                             String valStr = (String)UIHelper.getFormattedValue(format, values);
                             
-                            if (fontMetrics.stringWidth(valStr) > dim.width)
+                            if (returnCount <= popupDlgThreshold && fontMetrics.stringWidth(valStr) > dim.width)
                             {
                                 int len = valStr.length() - 5;
                                 while (len > 25)
@@ -1129,7 +1129,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         final JList listBox = new JList(model);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH); //$NON-NLS-1$
-        panel.add(UIHelper.createScrollPane(listBox), BorderLayout.CENTER);
+        panel.add(UIHelper.createScrollPane(listBox, true), BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
         // Had to do inner class in order to get it to select an item
