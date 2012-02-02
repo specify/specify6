@@ -354,7 +354,7 @@ public class ResultSetTableModel extends DefaultTableModel implements SQLExecuti
                 return rowArray.get(column);
             }
         }
-        return "No Data";
+        return null;
     }
     /**
      * Gets the value of the row col.
