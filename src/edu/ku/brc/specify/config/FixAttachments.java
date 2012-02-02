@@ -134,7 +134,7 @@ public class FixAttachments
                             {
                                 if (model.isRecoverable(r))
                                 {
-                                    Thread.currentThread().sleep(100);
+                                    Thread.sleep(100);
                                     
                                     session.beginTransaction();
                                     Integer    attachID   = model.getAttachmentId(r);
@@ -200,6 +200,10 @@ public class FixAttachments
         worker.execute();
     }
     
+    /**
+     * @param data
+     * @return
+     */
     private String getVal(final Object data)
     {
         String str = "&nbsp;";
@@ -399,17 +403,21 @@ public class FixAttachments
         {
             btn.removeActionListener(al);
         }
-        btn.addActionListener(new ActionListener()
+        
+        if (uri != null)
         {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
+            btn.addActionListener(new ActionListener()
             {
-                try
+                @Override
+                public void actionPerformed(ActionEvent arg0)
                 {
-                    AttachmentUtils.openURI(uri);
-                } catch (Exception e) {}
-            }
-        });
+                    try
+                    {
+                        AttachmentUtils.openURI(uri);
+                    } catch (Exception e) {}
+                }
+            });
+        }
     }
 
     /**
@@ -505,7 +513,7 @@ public class FixAttachments
             infoDlg.setOkLabel("Print in Browser");
             infoDlg.createUI();
             infoDlg.setSize(1024,600);
-            hookupAction(infoDlg.getOkBtn(), url.toURI());
+            hookupAction(infoDlg.getOkBtn(), url != null ? url.toURI() : null);
             infoDlg.setVisible(true);
             
             int totalFiles = 0;
@@ -622,6 +630,8 @@ public class FixAttachments
             
             JScrollPane panelSB = UIHelper.createScrollPane(pb.getPanel());
             panelSB.setBorder(BorderFactory.createEmptyBorder());
+            Dimension dim = panelSB.getPreferredSize();
+            panelSB.setPreferredSize(new Dimension(dim.width+10, 600));
 
             final int totFiles = totalFiles;
             CustomDialog dlg = new CustomDialog((Dialog)null, "Attachment Information", true, CustomDialog.OKCANCELAPPLYHELP, panelSB)
@@ -652,9 +662,9 @@ public class FixAttachments
             dlg.setApplyLabel("Delete References");
             dlg.createUI();
             dlg.pack();
-            Dimension dim = dlg.getSize();
-            dim.height = Math.max(600, dim.height);
-            dlg.setSize(dim);
+            //Dimension dim = dlg.getSize();
+            //dim.height = Math.max(600, dim.height);
+            //dlg.setSize(dim);
             
             dlg.setVisible(true);
             
