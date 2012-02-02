@@ -616,6 +616,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             		exportQuery.getSearchSynonymy() == null ? false : exportQuery.getSearchSynonymy(),
             				true, null);
         		uniquenessHQL = sql2.getHql();
+        		sql = sql2;
         	}
         	else
         	{
