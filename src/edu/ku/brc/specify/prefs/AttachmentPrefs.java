@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.prefs;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -28,8 +31,10 @@ import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
@@ -56,23 +61,33 @@ import edu.ku.brc.util.WebStoreAttachmentMgr;
  */
 public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace
 {
+    protected static final String USE_GLOBAL_PREFS    = "USE_GLOBAL_PREFS";
+    protected static final String EDT_GLOBAL_PREFS    = "EDT_GLOBAL_PREFS";
+    
+    protected static final String ATTACHMENT_USE_PATH = "attachment.use_path";
     protected static final String ATTACHMENT_PATH     = "attachment.path";
     protected static final String ATTACHMENT_URL      = "attachment.url";
     protected static final String ATTCH_PATH_ID       = "attch_path";
     protected static final String ATTCH_URL_ID        = "attch_url";
     
-    protected static final String ATTACHMENT_USE_PATH = "attachment.use_path";
+    protected boolean           isUsingGlobalAttchPrefs = false;
+    protected boolean           canEditGlobalAttchPrefs = false;
+    
+    protected AppPreferences    remotePrefs = AppPreferences.getRemote();
+    protected AppPreferences    localPrefs  = AppPreferences.getLocalPrefs();
+    protected AppPreferences    globalPrefs = AppPreferences.getLocalPrefs();
+    
+    protected ValBrowseBtnPanel pathBrwse;
+    protected JLabel            pathLbl;
+    protected ValTextField      urlTxt;
+    protected JLabel            urlLbl; 
 
+    protected boolean           isInitialized       = false;
+    protected String            oldAttachmentPath   = null;
+    protected String            oldAttachmentURL    = null;
     
-    protected AppPreferences remotePrefs = AppPreferences.getRemote();
-    protected AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
-    
-    protected String oldAttachmentPath   = null;
-    protected String oldAttachmentURL    = null;
-    
-    protected JRadioButton pathRB;
-    protected JRadioButton urlRB;
-
+    protected JRadioButton      pathRB;
+    protected JRadioButton      urlRB;
 
     /**
      * 
@@ -86,9 +101,24 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         PanelViewable pathPanel = form.getCompById("path_panel");
         PanelViewable urlPanel  = form.getCompById("url_panel");
         
+        pathBrwse = form.getCompById(ATTCH_PATH_ID);
+        pathLbl   = form.getLabelFor(ATTCH_PATH_ID);
+        urlTxt    = form.getCompById(ATTCH_URL_ID);
+        urlLbl    = form.getLabelFor(ATTCH_URL_ID); 
+        
+        isInitialized = pathPanel != null && urlPanel != null && pathBrwse != null && pathLbl != null && urlTxt != null && urlLbl != null;
+        if (!isInitialized)
+        {
+            UIRegistry.showError("The form is not setup correctly.");
+            return;
+        }
+        
+        isUsingGlobalAttchPrefs = AppPreferences.getGlobalPrefs().getBoolean(USE_GLOBAL_PREFS, false);
+        canEditGlobalAttchPrefs = AppPreferences.getGlobalPrefs().getBoolean(EDT_GLOBAL_PREFS, false);
+        
         UIRegistry.loadAndPushResourceBundle("preferences");
         pathRB = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_PATH"));
-        urlRB = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_URL"));
+        urlRB  = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_URL"));
         UIRegistry.popResourceBundle();
         
         ButtonGroup group = new ButtonGroup();
@@ -97,76 +127,121 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         
         CellConstraints cc = new CellConstraints();
         pathPanel.add(pathRB, cc.xy(1, 1));
-        urlPanel.add(urlRB,  cc.xy(1, 1));
+        urlPanel.add(urlRB,   cc.xy(1, 1));
         
-        ValBrowseBtnPanel browse = form.getCompById(ATTCH_PATH_ID);
-        if (browse != null)
+        JButton saveGGblPrefs  = form.getCompById("SaveGGblPrefs");
+        JButton clearGGblPrefs = form.getCompById("ClearGGblPrefs");
+        if (saveGGblPrefs != null)
         {
-            oldAttachmentPath = localPrefs.get(ATTACHMENT_PATH, null);
-            browse.setValue(oldAttachmentPath, null);
+            saveGGblPrefs.setVisible(isUsingGlobalAttchPrefs && canEditGlobalAttchPrefs);
+            saveGGblPrefs.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0)
+                {
+                    AppPreferences.getGlobalPrefs().put(ATTACHMENT_PATH, oldAttachmentPath);
+                    AppPreferences.getGlobalPrefs().put(ATTACHMENT_URL, oldAttachmentURL);
+                    AppPreferences.getGlobalPrefs().putBoolean(ATTACHMENT_USE_PATH, pathRB.isSelected());
+                }
+            });
+        }
+        
+        if (clearGGblPrefs != null)
+        {
+            clearGGblPrefs.setVisible(isUsingGlobalAttchPrefs && canEditGlobalAttchPrefs);
+            clearGGblPrefs.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0)
+                {
+                    AppPreferences.getGlobalPrefs().remove(ATTACHMENT_PATH);
+                    AppPreferences.getGlobalPrefs().remove(ATTACHMENT_URL);
+                    AppPreferences.getGlobalPrefs().remove(ATTACHMENT_USE_PATH);
+                }
+            });
+        }
+        
+        if (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs)
+        {
+            pathBrwse.getTextField().addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e)
+                {
+                    verifyAttachmentPath();
+                    toggleAttachmentsEnabledState(pathRB.isSelected(), true);
+                    if (pathRB.isEnabled())
+                    {
+                        configAttachmentMgr(oldAttachmentPath, pathRB.isSelected());
+                    }
+                }
+            });
+            urlTxt.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e)
+                {
+                    verifyAttachmentPath();
+                    toggleAttachmentsEnabledState(pathRB.isSelected(), true);
+                    if (urlRB.isEnabled())
+                    {
+                        configAttachmentMgr(oldAttachmentURL, pathRB.isSelected());
+                    }
+                }
+            });
             
-            browse.getTextField().addFocusListener(new FocusAdapter() {
+            ActionListener al = new ActionListener() {
                 @Override
-                public void focusLost(FocusEvent e)
+                public void actionPerformed(ActionEvent e)
                 {
-                    super.focusLost(e);
-                    verifyAttachmentPath();
+                    toggleAttachmentsEnabledState(pathRB.isSelected(), true);
                 }
-            });
-        }
-        
-        boolean isUsingPath = localPrefs.getBoolean(ATTACHMENT_USE_PATH, true);
-        
-        toggleAttachmentsEnabledState(isUsingPath, false);
-        pathRB.setSelected(isUsingPath);
-        
-        ActionListener al = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                toggleAttachmentsEnabledState(pathRB.isSelected(), true);
-            }
-         };
-         pathRB.addActionListener(al);
-         urlRB.addActionListener(al);
-
-        oldAttachmentURL = localPrefs.get(ATTACHMENT_URL, "");
-        ValTextField urlTF = form.getCompById(ATTCH_URL_ID);
-        if (urlTF != null)
+            };
+            pathRB.addActionListener(al);
+            urlRB.addActionListener(al);
+        } else
         {
-            urlTF.setValue(oldAttachmentURL, null);
-            urlTF.addFocusListener(new FocusAdapter()
-            {
-                @Override
-                public void focusLost(FocusEvent e)
-                {
-                    verifyAttachmentPath();
-                }
-            });
+            pathBrwse.setEnabled(false);
+            urlTxt.setEnabled(false);
+            pathRB.setEnabled(false);
+            urlRB.setEnabled(false);
         }
+        
+        setDataIntoUI();
     }
     
     /**
-     * @param isSelected
+     * @param isUsingPath
+     */
+    private void setRadio(final boolean isUsingPath)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                pathRB.setSelected(isUsingPath);
+                urlRB.setSelected(!isUsingPath);
+            }
+        });
+    }
+    
+    /**
+     * @param isPathSelected
      * @param doClearFields
      */
-    protected void toggleAttachmentsEnabledState(final boolean isSelected, final boolean doClearFields)
+    protected void toggleAttachmentsEnabledState(final boolean isPathSelected, 
+                                                 final boolean doClearFields)
     {
+        if (!isInitialized) return;
         //System.out.println("isSelected:"+isSelected);
         
-        ValBrowseBtnPanel pathBrwse = form.getCompById(ATTCH_PATH_ID);
-        JLabel            pathLbl   = form.getLabelFor(ATTCH_PATH_ID);
-        
-        ValTextField      urlTxt    = form.getCompById(ATTCH_URL_ID);
-        JLabel            urlLbl    = form.getLabelFor(ATTCH_URL_ID); 
-        pathBrwse.setEnabled(isSelected);
-        pathLbl.setEnabled(isSelected);
-        urlTxt.setEnabled(!isSelected);
-        urlLbl.setEnabled(!isSelected);
+        pathBrwse.setEnabled(isPathSelected);
+        pathLbl.setEnabled(isPathSelected);
+        urlTxt.setEnabled(!isPathSelected);
+        urlLbl.setEnabled(!isPathSelected);
         
         if (doClearFields)
         {
-            if (isSelected)
+            if (isPathSelected)
             {
                 urlTxt.setValue("", null);
             } else
@@ -174,6 +249,39 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 pathBrwse.setValue("", null);
             }
         }
+    }
+    
+    /**
+     * @param prefs
+     * @return
+     */
+    private boolean setDataIntoUI()
+    {
+        AppPreferences prefs = (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs) ? AppPreferences.getLocalPrefs() : AppPreferences.getGlobalPrefs();
+        return setDataIntoUI(prefs);
+    }
+    
+    /**
+     * @param prefs
+     * @return
+     */
+    private boolean setDataIntoUI(final AppPreferences prefs)
+    {
+        boolean isUsingPath = true;
+        
+        oldAttachmentPath = prefs.get(ATTACHMENT_PATH, null);
+        oldAttachmentURL  = prefs.get(ATTACHMENT_URL, null);
+        
+        if (isEmpty(oldAttachmentPath) && isNotEmpty(oldAttachmentURL))
+        {
+            isUsingPath = false;
+        }
+        pathBrwse.setValue(oldAttachmentPath, null);
+        urlTxt.setValue(oldAttachmentURL, null);
+
+        setRadio(isUsingPath);
+        
+        return true;
     }
 
     
@@ -183,19 +291,70 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     @Override
     public void savePrefs()
     {
-        if (form.getValidator() == null || form.getValidator().hasChanged())
+        if (!isInitialized) return;
+        
+        if (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs)
         {
-            super.savePrefs();
-            
-            Boolean usingPath = (Boolean)pathRB.isSelected();
-            localPrefs.putBoolean(ATTACHMENT_USE_PATH, usingPath == null ? false : usingPath);  
-            verifyAttachmentPath();
-            
+            if (form.getValidator() == null || form.getValidator().hasChanged())
+            {
+                super.savePrefs();
+                
+                boolean usingPath = pathRB.isSelected();
+                localPrefs.putBoolean(ATTACHMENT_USE_PATH, usingPath); 
+                
+                verifyAttachmentPath();
+                
+                try
+                {
+                    localPrefs.flush();
+                    
+                } catch (BackingStoreException ex) {}
+            }
+        }
+    }
+    
+    /**
+     * @param configStr
+     * @param isUsingPath
+     */
+    private void configAttachmentMgr(final String configStr, final boolean isUsingPath)
+    {
+        if (isUsingPath)
+        {
+            localPrefs.put(ATTACHMENT_PATH, configStr);
             try
             {
-                localPrefs.flush();
+                if (AttachmentUtils.getAttachmentManager() == null)
+                {
+                    AttachmentUtils.setAttachmentManager(new FileStoreAttachmentManager(new File(configStr)));
+                } else
+                {
+                    AttachmentUtils.getAttachmentManager().setDirectory(new File(configStr));
+                }
+                localPrefs.put(ATTACHMENT_URL, "");
                 
-            } catch (BackingStoreException ex) {}
+            } catch (IOException ex)
+            {
+                UIRegistry.showLocalizedError("SystemPrefs.ESA");
+            }
+        } else
+        {
+            localPrefs.put(ATTACHMENT_URL, configStr);
+            localPrefs.put(ATTACHMENT_PATH, "");
+            
+            WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
+            if (!webAssetMgr.isInitialized())
+            {
+                webAssetMgr = null;
+            }
+            
+            AttachmentUtils.setAttachmentManager(webAssetMgr);
+            if (webAssetMgr == null)
+            {
+                UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
+                //urlTF.setValue(oldAttachmentURL, oldAttachmentURL);
+                // http://129.237.201.34/web_asset_store.xml
+            }
         }
     }
     
@@ -204,174 +363,42 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
      */
     private void verifyAttachmentPath()
     {
-        boolean isUsingPath = pathRB.isSelected();
+        if (!isInitialized) return;
         
+        boolean isUsingPath       = pathRB.isSelected();
+        String  newAttachmentPath = pathBrwse.getValue().toString();
+        String  newAttachmentURL  = urlTxt.getValue().toString();
+
         if (isUsingPath)
         {
-            ValBrowseBtnPanel browse = form.getCompById(ATTCH_PATH_ID);
-            if (browse != null)
+            if (isNotEmpty(newAttachmentPath))
             {
-                String newAttachmentPath = browse.getValue().toString();
-                if (newAttachmentPath != null && !oldAttachmentPath.equals(newAttachmentPath))
+                if (!oldAttachmentPath.equals(newAttachmentPath))
                 {
-                    if (newAttachmentPath.isEmpty())
-                    {
-                        UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
-                        browse.setValue(oldAttachmentPath, oldAttachmentPath);
-                        
-                    } else if (okChangeAttachmentPath(oldAttachmentPath, newAttachmentPath))
-                    {
-                        if (!oldAttachmentPath.equals(newAttachmentPath))
-                        {
-                            localPrefs.put(ATTACHMENT_PATH, newAttachmentPath);
-                            try
-                            {
-                                if (AttachmentUtils.getAttachmentManager() == null)
-                                {
-                                    AttachmentUtils.setAttachmentManager(new FileStoreAttachmentManager(new File(newAttachmentPath)));
-                                } else
-                                {
-                                    AttachmentUtils.getAttachmentManager().setDirectory(new File(newAttachmentPath));
-                                }
-                                localPrefs.put(ATTACHMENT_URL, "");
-                            } catch (IOException ex)
-                            {
-                                UIRegistry.showLocalizedError("SystemPrefs.ESA");
-                            }
-                        }
-                        
-                    } else
-                    {
-                        UIRegistry.showLocalizedError("SystemPrefs.DOESNT_EXIST", newAttachmentPath);
-                        browse.setValue(oldAttachmentPath, oldAttachmentPath);
-                    }
+                    oldAttachmentPath = newAttachmentPath;
                 }
+            } else
+            {
+                UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
             }
+            
+            urlTxt.setValue("", null);
         } else
         {
-            ValTextField urlTF = form.getCompById(ATTCH_URL_ID);
-            if (urlTF != null)
+            if (isNotEmpty(newAttachmentURL))
             {
-                String newAttachmentURL = urlTF.getValue().toString();
-                
-                if (newAttachmentURL != null && !oldAttachmentURL.equals(newAttachmentURL))
+                if (!oldAttachmentURL.equals(newAttachmentURL))
                 {
-                    if (newAttachmentURL.isEmpty())
-                    {
-                        UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
-                        urlTF.setValue(oldAttachmentURL, oldAttachmentURL);
-                        
-                    } else 
-                    {
-                        localPrefs.put(ATTACHMENT_URL, newAttachmentURL);
-                        WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-                        if (!webAssetMgr.isInitialized())
-                        {
-                            webAssetMgr = null;
-                        } else
-                        {
-                            localPrefs.put(ATTACHMENT_PATH, "");
-                        }
-                        AttachmentUtils.setAttachmentManager(webAssetMgr);
-                        
-                        if (webAssetMgr == null)
-                        {
-                            UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
-                            //urlTF.setValue(oldAttachmentURL, oldAttachmentURL);
-                            // http://129.237.201.34/web_asset_store.xml
-                        }
-                    }
+                    oldAttachmentURL = newAttachmentURL;
                 }
+            } else
+            {
+                UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
             }
+            pathBrwse.setValue("", null);
         }
     }
     
-    
-    /**
-     * @param oldPath
-     * @param newPath
-     * @return
-     */
-    protected boolean okChangeAttachmentPath(final String oldPath, final String newPath)
-    {
-        /*if (false)
-        {
-            File  oldDir = new File(oldPath);
-            if (oldDir.exists())
-            {
-                File origDir = new File(oldPath + File.separator + "originals");
-                
-                boolean doMoveFiles = false;
-                int numFiles = origDir.listFiles().length;
-                if (numFiles > 0)
-                {
-                    Object[] options = { getResourceString("SystemPrefs.MV_FILES"),  //$NON-NLS-1$
-                                         getResourceString("CANCEL")  //$NON-NLS-1$
-                                       };
-                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                getLocalizedMessage("SystemPrefs.MV_FILES_MSG"),  //$NON-NLS-1$
-                                                                getResourceString("SystemPrefs.ATTCH_TITLE"),  //$NON-NLS-1$
-                                                                JOptionPane.YES_NO_OPTION,
-                                                                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    if (userChoice == JOptionPane.YES_OPTION)
-                    {
-                        doMoveFiles = true;
-                    } else
-                    {
-                        return false;
-                    }
-                }
-                
-                if (doMoveFiles)
-                {
-                    File newDir = new File(newPath);
-                    try
-                    {
-                        AttachmentUtils.getAttachmentManager().setDirectory(newDir);
-                        
-                        //File newParentDir = new File(newDir.getParent());
-                        for (File file : oldDir.listFiles())
-                        {
-                            if (file.isDirectory())
-                            {
-                                FileUtils.copyDirectoryToDirectory(file, newDir);
-                                
-                            } else if (!file.getName().equals(".") && !file.getName().equals(".."))
-                            {
-                                FileUtils.copyFileToDirectory(file, newDir);
-                            }
-                        }
-                        //FileUtils.copyDirectoryToDirectory(oldDir, newParentDir);
-                        
-                    } catch (Exception ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemPrefs.class, ex);
-                        ex.printStackTrace();
-                        try
-                        {
-                            AttachmentUtils.getAttachmentManager().setDirectory(oldDir);
-                            
-                        } catch (Exception ex2)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemPrefs.class, ex);
-                            ex2.printStackTrace();
-                        }
-                        UIRegistry.showLocalizedError("SystemPrefs.NO_MOVE_ATTCH", newDir.getAbsoluteFile());
-                        return false;
-                    }
-                }
-            }
-        } else
-        {*/
-            return AttachmentUtils.isAttachmentDirMounted(new File(newPath));
-        //}
-        
-        //return true;
-    }
-
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
      */

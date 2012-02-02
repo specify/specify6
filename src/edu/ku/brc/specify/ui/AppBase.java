@@ -337,52 +337,6 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * 
      */
-    protected void openLocalPrefs()
-    {
-        String titleStr = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
-        final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
-        String okLabel = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
-        dialog.setOkLabel(okLabel);
-        dialog.pack();
-        UIHelper.centerAndShow(dialog);
-        if (!dialog.isCancelled())
-        {
-            try
-            {
-                AppPreferences.getLocalPrefs().flush();
-            } catch (BackingStoreException ex) { }
-            
-            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
-        }
-    }
-
-    /**
-     * 
-     */
-    protected void openRemotePrefs()
-    {
-        String titleStr = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
-        final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
-        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
-        dialog.setOkLabel(okLabel); 
-        dialog.pack();
-        UIHelper.centerAndShow(dialog);
-        if (!dialog.isCancelled())
-        {
-            try
-            {
-                AppPreferences.getRemote().flush();
-            } catch (BackingStoreException ex)
-            {
-                
-            }
-            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote())); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-    }
-    
-    /**
-     * 
-     */
     protected void checkForUpdates()
     {
         try
@@ -573,7 +527,55 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
             }
             
         } catch (FileNotFoundException e) {}
-    }    
+    }
+    
+    
+    /**
+     * 
+     */
+    private void openPrefsEditor(final AppPreferences prefs, final String titleKey)
+    {
+        String             titleStr = UIRegistry.getResourceString("Specify."+titleKey); //$NON-NLS-1$
+        final CustomDialog dialog   = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(prefs));
+        String             okLabel  = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
+        dialog.setOkLabel(okLabel);
+        dialog.pack();
+        UIHelper.centerAndShow(dialog);
+        if (!dialog.isCancelled())
+        {
+            try
+            {
+                prefs.flush();
+            } catch (BackingStoreException ex) { }
+            
+            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", prefs));
+        }
+    }
+
+    /**
+     * 
+     */
+    private void openLocalPrefs()
+    {
+        openPrefsEditor(AppPreferences.getLocalPrefs(), "LOCAL_PREFS");
+    }
+
+    /**
+     * 
+     */
+    private void openRemotePrefs()
+    {
+        openPrefsEditor(AppPreferences.getRemote(), "REMOTE_PREFS");
+    }
+
+    /**
+     * 
+     */
+    private void openGlobalPrefs()
+    {
+        openPrefsEditor(AppPreferences.getGlobalPrefs(), "GLOBAL_PREFS");
+    }
+    
     /**
      * Shows the About dialog.
      */

@@ -668,7 +668,9 @@ public class Attachment extends DataModelObjBase implements Serializable
         {
             if (doDisplayErrors)
             {
-                boolean useFilePath = AppPreferences.getLocalPrefs().getBoolean("attachment.use_path", true);
+                AppPreferences prefs = AppPreferences.getGlobalPrefs().getBoolean("USE_GLOBAL_PREFS", false) ? 
+                                            AppPreferences.getGlobalPrefs() : AppPreferences.getLocalPrefs();
+                boolean useFilePath = prefs.getBoolean("attachment.use_path", true);
                 String  msgKey      = "ATTCH_NOT_SAVED_REPOS" + (useFilePath ? "" : "_WEB");
                 String  errMsg      = ex.getMessage();
                 UIRegistry.showLocalizedError(msgKey, origFilename, StringUtils.isNotEmpty(errMsg) ? errMsg : "");

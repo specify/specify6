@@ -65,11 +65,11 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
     protected JButton            addBtn;
     
     /**
-     * @param isRemote
+     * @param preferences
      */
-    public AppPrefsEditor(final boolean isRemote)
+    public AppPrefsEditor(final AppPreferences preferences)
     {
-        appPrefs = isRemote ? AppPreferences.getRemote(): AppPreferences.getLocalPrefs();         
+        appPrefs = preferences;         
         for (Enumeration<Object> enumerator = appPrefs.getProperties().keys();enumerator.hasMoreElements();)
         {
             items.add((String)enumerator.nextElement());

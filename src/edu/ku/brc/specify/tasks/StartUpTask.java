@@ -25,6 +25,8 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -33,6 +35,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -50,6 +55,10 @@ import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentManagerIface;
+import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.WebStoreAttachmentMgr;
 
 /**
  * @author rod
@@ -61,6 +70,12 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
 {
+    private static final Logger  log = Logger.getLogger(StartUpTask.class);
+    
+    private static final String USE_FILE_PATH_PREF   = "attachment.use_path";
+    private static final String ATTACHMENT_URL_PREF  = "attachment.url";
+    private static final String ATTACHMENT_PATH_PREF = "attachment.path";
+
     private static final String WELCOME_BTN_PREF = "StartupTask.OnTaskbar";
     private static final String SPECIFY_SPLASH   = "SpecifySplash";
     
@@ -74,7 +89,120 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     {
         super();
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
+        
+        configureAttachmentManager();
     }
+    
+    /**
+     * @param localPrefs
+     */
+    protected void configureAttachmentManager()
+    {
+        if (!configureAttachmentManager(AppPreferences.getGlobalPrefs()))
+        {
+            if (!configureAttachmentManager(AppPreferences.getLocalPrefs()))
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        UIRegistry.showLocalizedError("AttachmentUtils.NOT_AVAIL");
+                    }
+                });
+            }
+        }
+    }
+    
+    /**
+     * @param prefs
+     */
+    protected boolean configureAttachmentManager(final AppPreferences prefs)
+    {
+        Boolean useFilePath = prefs.getBoolean(USE_FILE_PATH_PREF, null);
+        String  attchURL    = prefs.get(ATTACHMENT_URL_PREF, null);
+        String  filePath    = prefs.get(ATTACHMENT_PATH_PREF, null);
+        
+        if (useFilePath == null && attchURL == null && filePath == null)
+        {
+            return false;
+        }
+        
+        useFilePath = useFilePath == null ? true : useFilePath;
+        
+        AttachmentManagerIface attachMgr = null;
+        String msgPath  = "";
+        String errorKey = "NOT_AVAIL";
+        
+        if (StringUtils.isNotEmpty(attchURL)) // Using Web Server for Attachments
+        {
+            useFilePath = false;
+            AttachmentUtils.setConfigForPath(useFilePath);
+
+            WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
+            if (webAssetMgr.isInitialized())
+            {
+                attachMgr = webAssetMgr;
+            }
+        } else
+        {
+            useFilePath = true;
+            
+            File       attLoc   = null;
+            final File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+            try
+            {
+                attLoc = filePath != null && !UIRegistry.isMobile() ? new File(filePath) : location;
+                if (!AttachmentUtils.isAttachmentDirMounted(attLoc))
+                {
+                    try
+                    {
+                        msgPath = attLoc.getCanonicalPath();
+                    } catch (IOException e)
+                    {
+                        msgPath = attLoc.getAbsolutePath();
+                    }
+                } else
+                {
+                    attachMgr = new FileStoreAttachmentManager(attLoc);
+                }
+                
+                if (filePath == null)
+                {
+                    prefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
+                }
+            }
+            catch (IOException e1)
+            {
+                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                // TODO RELEASE -  Instead of exiting we need to disable Attachments
+                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        }
+        errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
+        
+        if (attachMgr == null)
+        {
+            final String errKey = errorKey;
+            log.warn("Problems setting the AttachmentManager at ["+msgPath+"]");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    UIRegistry.showLocalizedError("AttachmentUtils."+errKey);
+                }
+            });
+        }
+        
+        prefs.putBoolean(USE_FILE_PATH_PREF, useFilePath);
+        AttachmentUtils.setAttachmentManager(attachMgr);
+        
+        return true;
+    }
+    
+
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.StartUpTask#getStarterPane()

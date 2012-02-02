@@ -218,14 +218,11 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
-import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.CacheManager;
 import edu.ku.brc.util.FileCache;
-import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.MemoryWarningSystem;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.WebStoreAttachmentMgr;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -244,7 +241,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static final boolean IS_DEVELOPMENT       = true;
     private static final String sendStatsPrefName    = "usage_tracking.send_stats";
     private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
-    private static final String ATTACHMENT_PATH_PREF = "attachment.path";
     private static final String UPDATE_CHK_ERROR     = "Specify.UPDATE_CHK_ERROR";
     private static final String ERRMSG               = "ERRMSG";
     private static final String STATS_SEND_DONE      = "STATS_SEND_DONE";
@@ -417,8 +413,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             SystemPrefs.changeSplashImage();
         }
-        
-        configureAttachmentManager(localPrefs);
         
         AttachmentUtils.setThumbnailer(thumb);
         DefaultClassActionHandler defClassActionHandler = DefaultClassActionHandler.getInstance();
@@ -604,88 +598,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         localPrefs.load();
     }
     
-    /**
-     * @param localPrefs
-     */
-    protected void configureAttachmentManager(final AppPreferences localPrefs)
-    {
-        String USE_FILE_PATH_PREF  = "attachment.use_path";
-        String ATTACHMENT_URL_PREF = "attachment.url";
-        
-        boolean useFilePath = localPrefs.getBoolean(USE_FILE_PATH_PREF, true);
-        String  attchURL    = localPrefs.get(ATTACHMENT_URL_PREF, null);
-        String  filePath    = localPrefs.get(ATTACHMENT_PATH_PREF, null);
-        
-        AttachmentManagerIface attachMgr = null;
-        String msgPath  = "";
-        String errorKey = "NOT_AVAIL";
-        
-        if (StringUtils.isNotEmpty(attchURL)) // Using Web Server for Attachments
-        {
-            useFilePath = false;
-            AttachmentUtils.setConfigForPath(useFilePath);
-
-            WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-            if (webAssetMgr.isInitialized())
-            {
-                attachMgr = webAssetMgr;
-            }
-        } else
-        {
-            useFilePath = true;
-            
-            File       attLoc   = null;
-            final File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
-            try
-            {
-                attLoc = filePath != null && !UIRegistry.isMobile() ? new File(filePath) : location;
-                if (!AttachmentUtils.isAttachmentDirMounted(attLoc))
-                {
-                    try
-                    {
-                        msgPath = attLoc.getCanonicalPath();
-                    } catch (IOException e)
-                    {
-                        msgPath = attLoc.getAbsolutePath();
-                    }
-                } else
-                {
-                    attachMgr = new FileStoreAttachmentManager(attLoc);
-                }
-                
-                if (filePath == null)
-                {
-                    localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
-                }
-            }
-            catch (IOException e1)
-            {
-                log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                // TODO RELEASE -  Instead of exiting we need to disable Attachments
-                //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-        errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
-        
-        if (attachMgr == null)
-        {
-            final String errKey = errorKey;
-            log.warn("Problems setting the AttachmentManager at ["+msgPath+"]");
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    UIRegistry.showLocalizedError("AttachmentUtils."+errKey);
-                }
-            });
-        }
-        
-        localPrefs.putBoolean(USE_FILE_PATH_PREF, useFilePath);
-        AttachmentUtils.setAttachmentManager(attachMgr);
-    }
-    
-
     /**
      * Setup all the System properties. This names all the needed factories. 
      */
@@ -967,11 +879,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * 
      */
-    private void openLocalPrefs()
+    private void openPrefsEditor(final AppPreferences prefs, final String titleKey)
     {
-        String titleStr = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
-        final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
-        String okLabel = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
+        String             titleStr = UIRegistry.getResourceString("Specify."+titleKey); //$NON-NLS-1$
+        final CustomDialog dialog   = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(prefs));
+        String             okLabel  = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
         dialog.setOkLabel(okLabel);
         dialog.pack();
         UIHelper.centerAndShow(dialog);
@@ -979,11 +891,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             try
             {
-                AppPreferences.getLocalPrefs().flush();
+                prefs.flush();
             } catch (BackingStoreException ex) { }
             
-            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
+            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", prefs));
         }
+    }
+
+    /**
+     * 
+     */
+    private void openLocalPrefs()
+    {
+        openPrefsEditor(AppPreferences.getLocalPrefs(), "LOCAL_PREFS");
     }
 
     /**
@@ -991,23 +911,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     private void openRemotePrefs()
     {
-        String titleStr = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
-        final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
-        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
-        dialog.setOkLabel(okLabel); 
-        dialog.pack();
-        UIHelper.centerAndShow(dialog);
-        if (!dialog.isCancelled())
-        {
-            try
-            {
-                AppPreferences.getRemote().flush();
-            } catch (BackingStoreException ex)
-            {
-                
-            }
-            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote())); //$NON-NLS-1$ //$NON-NLS-2$
-        }
+        openPrefsEditor(AppPreferences.getRemote(), "REMOTE_PREFS");
+    }
+
+    /**
+     * 
+     */
+    private void openGlobalPrefs()
+    {
+        openPrefsEditor(AppPreferences.getGlobalPrefs(), "GLOBAL_PREFS");
     }
 
     /**
@@ -1957,8 +1869,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             });
             infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
-            
+            infoPB.add(lbl = UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
+            lbl.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    if (e.getClickCount() == 2)
+                    {
+                        openGlobalPrefs();
+                    }
+                }
+            });
+
             infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
             infoPB.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
             
@@ -3083,6 +3005,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       
       AppBase.processArgs(args);
       AppBase.setupTeeForStdErrStdOut(true, false);
+      
+      UIHelper.attachUnhandledException();
       
       SwingUtilities.invokeLater(new Runnable() {
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$
