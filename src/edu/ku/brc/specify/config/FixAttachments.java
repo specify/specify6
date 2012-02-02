@@ -178,7 +178,7 @@ public class FixAttachments
                 
                 if (getNumberofBadAttachments() == 0)
                 {
-                    AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", false);
+                    AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", true);
                 }
                 super.done();
             }
@@ -295,7 +295,7 @@ public class FixAttachments
                 {
                     if (getNumberofBadAttachments() == 0)
                     {
-                        AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", false);
+                        AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", true);
                     }
                 }
                 super.done();
@@ -488,6 +488,7 @@ public class FixAttachments
             int count = getNumberofBadAttachments();
             if (count == 0)
             {
+                AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", true);
                 return;
             }
             
