@@ -225,8 +225,10 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             {
                 if (mgr == null || mgr.closePrefs())
                 {
-                    savePrefs();
-                    BackupServiceFactory.getInstance().doBackUp();
+                    if (isOKToSave())
+                    {
+                        BackupServiceFactory.getInstance().doBackUp();
+                    }
                 }
             }
         });
@@ -235,8 +237,11 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                savePrefs();
-                doRestore();
+                if (isOKToSave()) 
+                {
+                    savePrefs();
+                    doRestore();
+                }
             }
         });
         
@@ -282,6 +287,15 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
                 }
             });
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsSavable#isOKToSave()
+     */
+    @Override
+    public boolean isOKToSave()
+    {
+        return true;
     }
 
     /* (non-Javadoc)

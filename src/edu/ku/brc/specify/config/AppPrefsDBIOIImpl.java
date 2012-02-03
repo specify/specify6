@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
@@ -261,6 +262,14 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 for (Object key : currentProps.keySet())
                 {
                     dbProps.put(key, currentProps.get(key));
+                }
+                
+                for (Object key : new HashSet<Object>(dbProps.keySet()))
+                {
+                    if (currentProps.get(key) == null)
+                    {
+                        dbProps.remove(key);
+                    }
                 }
                 
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();

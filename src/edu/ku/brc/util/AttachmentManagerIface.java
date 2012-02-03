@@ -36,9 +36,10 @@ public interface AttachmentManagerIface
 {
     /**
      * Whether it was initialized OK.
+     * @param urlStr null for File-based stores and not null for web-based stores
      * @return true if initialized and can be used.
      */
-    public abstract boolean isInitialized();
+    public abstract boolean isInitialized(String urlStr);
     
     /**
      * Sets the attachmentLocation field in the passed in Attachment

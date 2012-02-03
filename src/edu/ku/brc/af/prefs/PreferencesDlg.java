@@ -211,7 +211,10 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     {
         final Properties changesHash = new Properties();
         
-        saveChangedPrefs(changesHash); // This flushes
+        if (!saveChangedPrefs(changesHash))
+        {
+            return;
+        }
         
         super.okButtonPressed();
         
@@ -242,8 +245,16 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     /**
      * Save any Preferences that have changed.
      */
-    protected synchronized void saveChangedPrefs(final Properties changesHash)
+    protected synchronized boolean saveChangedPrefs(final Properties changesHash)
     {
+        for (PrefsPanelIFace pp : prefPanelsHash.values())
+        {
+            if (!((PrefsSavable)pp).isOKToSave())
+            {
+                return false;
+            }
+        }
+
         for (PrefsPanelIFace pp : prefPanelsHash.values())
         {
             pp.getChangedFields(changesHash);
@@ -262,6 +273,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             // XXX FIXME
             log.error(ex);
         }
+        return true;
     }
 
     /**

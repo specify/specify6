@@ -111,7 +111,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#isInitialized()
      */
     @Override
-    public boolean isInitialized()
+    public boolean isInitialized(final String urlStr)
     {
         if (isInitialized == null)
         {
@@ -133,7 +133,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                 shortTermCache.setSuffix("");
                 shortTermCache.setUsingExtensions(true);
                 
-                return isInitialized = getURLSetupXML();
+                return isInitialized = getURLSetupXML(urlStr);
                 
             } catch (IOException e)
             {
@@ -154,11 +154,10 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     /**
      * @return
      */
-    private boolean getURLSetupXML()
+    private boolean getURLSetupXML(final String urlStr)
     {
         try
         {
-            String urlStr = AppPreferences.getLocalPrefs().get("attachment.url", null);
             if (StringUtils.isNotEmpty(urlStr))
             {
                 File tmpFile = File.createTempFile("sp6", ".xml", cacheDir.getAbsoluteFile());

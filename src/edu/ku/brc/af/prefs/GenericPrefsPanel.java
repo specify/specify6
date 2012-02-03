@@ -204,6 +204,15 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsSavable#isOKToSave()
+     */
+    @Override
+    public boolean isOKToSave()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.PrefsSavable#savePrefs()
      */
     public void savePrefs()

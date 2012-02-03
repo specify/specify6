@@ -370,9 +370,12 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
             {
                 if (mainPanel != null)
                 {
-                    mainPanel.savePrefs();
-                    AppPreferences.getLocalPrefs().flush();
-                    AppPreferences.shutdownLocalPrefs();
+                    if (mainPanel.isOKToSave())
+                    {
+                        mainPanel.savePrefs();
+                        AppPreferences.getLocalPrefs().flush();
+                        AppPreferences.shutdownLocalPrefs();
+                    }
                 }                
 
                 /*try

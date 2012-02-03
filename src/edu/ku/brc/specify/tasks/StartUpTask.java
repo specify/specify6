@@ -140,7 +140,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
             AttachmentUtils.setConfigForPath(useFilePath);
 
             WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-            if (webAssetMgr.isInitialized())
+            if (webAssetMgr.isInitialized(attchURL))
             {
                 attachMgr = webAssetMgr;
             }
@@ -195,7 +195,6 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
             });
         }
         
-        prefs.putBoolean(USE_FILE_PATH_PREF, useFilePath);
         AttachmentUtils.setAttachmentManager(attachMgr);
         
         return true;

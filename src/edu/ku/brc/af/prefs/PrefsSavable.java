@@ -29,6 +29,13 @@ package edu.ku.brc.af.prefs;
  */
 public interface PrefsSavable
 {    
+    
+    /**
+     * @return checks to see if the pref is valid and whether it can be saved.
+     * returning false stop saving.
+     */
+    public boolean isOKToSave();
+    
     /**
      * Indicates the prefs should be saved (like now)
      */

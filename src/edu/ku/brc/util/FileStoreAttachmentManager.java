@@ -71,14 +71,12 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         setDirectory(baseDirectory);
     }
-    
-    
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#isInitialized()
+     * @see edu.ku.brc.util.AttachmentManagerIface#isInitialized(java.lang.String)
      */
     @Override
-    public boolean isInitialized()
+    public boolean isInitialized(final String urlStr)
     {
         return false;
     }
@@ -155,7 +153,12 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             }
             
             // find an unused filename in the originals dir
-            File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
+            File storageFile = new File(originalsDir +File.separator + "xxx" + suffix);//File.createTempFile("sp6-", suffix, originalsDir);
+            System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
+            FileOutputStream fos = new FileOutputStream(storageFile);
+            fos.write(1);
+            fos.flush();
+            fos.close();
             if (storageFile.exists())
             {
                 attachment.setAttachmentLocation(storageFile.getName());
