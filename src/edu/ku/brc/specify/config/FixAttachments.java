@@ -27,8 +27,10 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -43,13 +45,13 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.SpecialMsgNotifier;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -130,6 +132,7 @@ public class FixAttachments
                         for (int tblId : resultsHashMap.keySet())
                         {
                             AttchTableModel model = tableHash.get(tblId);
+                            int cnt = 0;
                             for (int r=0;r<model.getRowCount();r++)
                             {
                                 if (model.isRecoverable(r))
@@ -140,13 +143,21 @@ public class FixAttachments
                                     Integer    attachID   = model.getAttachmentId(r);
                                     Attachment attachment = session.get(Attachment.class, attachID);
                                     AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(attachment, false);
-                                    attachment.storeFile(true); // false means do not display an error dialog
-                                    session.saveOrUpdate(attachment);
-                                    session.commit();
-                                    model.setRecovered(r, true);
-                                    filesCnt++;
-                                    firePropertyChange(CNT, 0, (int)((double)filesCnt / (double)totalFiles * 100.0));
+                                    try
+                                    {
+                                    	attachment.storeFile(true); // false means do not display an error dialog
+                                    	session.saveOrUpdate(attachment);
+                                    	session.commit();
+                                    	model.setRecovered(r, true);
+                                    	filesCnt++;
+                                    	
+                                    } catch (IOException ex)
+                                    {
+                                    	 session.rollback();
+                                    }
                                 }
+                                cnt++;
+                                firePropertyChange(CNT, 0, (int)((double)cnt / (double)totalFiles * 100.0));
                             }
                         }
                     } catch (Exception ex)
@@ -436,7 +447,7 @@ public class FixAttachments
         String sql = String.format("SELECT a.AttachmentID, a.AttachmentLocation, a.OrigFilename, ag.AgentID, %s " +
                      "FROM attachment a INNER JOIN %s x ON a.AttachmentID = x.AttachmentID " +
                      "INNER JOIN agent ag ON a.CreatedByAgentID = ag.AgentID " +
-                     "WHERE (a.AttachmentLocation IS NULL OR a.AttachmentLocation LIKE 'xxx.att.%c') AND ag.AgentID = %d", 
+                     "WHERE (a.AttachmentLocation IS NULL OR a.AttachmentLocation LIKE 'xxx.att.%c')",// AND ag.AgentID = %d", 
                      ti.getIdColumnName(), ti.getName(), '%', agentId);
         
         String title = ti.getTitle();
@@ -463,7 +474,7 @@ public class FixAttachments
             title += " (Global Level)";
         }
         tblTypeHash.put(tableId, title);
-        //System.out.println(sql);
+        System.out.println(sql);
         return BasicSQLUtils.query(sql);
     }
     
@@ -481,207 +492,296 @@ public class FixAttachments
      */
     public void checkForBadAttachments()
     {
-        SpecialMsgNotifier.setBlockMsg(true);
+        int count = getNumberofBadAttachments();
+        if (count == 0)
+        {
+            AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", true);
+            return;
+        }
         
+        URL url = null;
+        JEditorPane htmlPane;
         try
         {
-            int count = getNumberofBadAttachments();
-            if (count == 0)
-            {
-                AppPreferences.getGlobalPrefs().putBoolean("CHECK_ATTCH_ERR", true);
-                return;
-            }
-            
-            URL url = null;
-            JEditorPane htmlPane;
-            try
-            {
-                url = new URL("http://files.specifysoftware.org/attachment_recovery.html");
-                htmlPane = new JEditorPane(url);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-                htmlPane = new JEditorPane("text/html", "<html><body><h1>Network Error - You must have a network conneciton to get the instructions.</H1></body>"); //$NON-NLS-1$
-            }
-            JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane);
-            htmlPane.setEditable(false);
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.add(scrollPane, BorderLayout.CENTER);
-            panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-            CustomDialog infoDlg = new CustomDialog((Dialog)null, "Recovery Information", true, CustomDialog.OKCANCEL, panel);
-            
-            infoDlg.setCancelLabel("Close");
-            infoDlg.setOkLabel("Print in Browser");
-            infoDlg.createUI();
-            infoDlg.setSize(1024,600);
+            url = new URL("http://files.specifysoftware.org/attachment_recovery.html");
+            htmlPane = new JEditorPane(url);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            htmlPane = new JEditorPane("text/html", "<html><body><h1>Network Error - You must have a network conneciton to get the instructions.</H1></body>"); //$NON-NLS-1$
+        }
+        JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane);
+        htmlPane.setEditable(false);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        CustomDialog infoDlg = new CustomDialog((Dialog)null, "Recovery Information", true, CustomDialog.OKCANCEL, panel);
+        
+        infoDlg.setCancelLabel("Close");
+        infoDlg.setOkLabel("Print in Browser");
+        infoDlg.createUI();
+        infoDlg.setSize(1024,600);
+        try
+        {
             hookupAction(infoDlg.getOkBtn(), url != null ? url.toURI() : null);
             infoDlg.setVisible(true);
-            
-            int totalFiles = 0;
-            final HashMap<Integer, Vector<Object[]>> resultsHashMap = new HashMap<Integer, Vector<Object[]>>();
-            final HashMap<Integer, String>           tblTypeHash    = new HashMap<Integer, String>();
-            int[] tableIds = 
-            { 
-                    AccessionAttachment.getClassTableId(), AgentAttachment.getClassTableId(), 
-                    CollectingEventAttachment.getClassTableId(), CollectionObjectAttachment.getClassTableId(), 
-                    ConservDescriptionAttachment.getClassTableId(), ConservEventAttachment.getClassTableId(), 
-                    DNASequencingRunAttachment.getClassTableId(), FieldNotebookAttachment.getClassTableId(), 
-                    FieldNotebookPageAttachment.getClassTableId(), FieldNotebookPageSetAttachment.getClassTableId(), 
-                    LoanAttachment.getClassTableId(), LocalityAttachment.getClassTableId(), 
-                    PermitAttachment.getClassTableId(), PreparationAttachment.getClassTableId(), 
-                    RepositoryAgreementAttachment.getClassTableId(), TaxonAttachment.getClassTableId()
-            };
-    
-            Agent userAgent  = AppContextMgr.getInstance().getClassObject(Agent.class);
-            
-            for (int tableId : tableIds)
-            {
-                Vector<Object[]> results = getImageData(userAgent.getId(), tableId, tblTypeHash);
-                if (results != null && results.size() > 0)
-                {
-                    resultsHashMap.put(tableId, results);
-                    //System.out.println(tableId+"  ->  "+results.size());
-                }
-            }
-            
-            if (resultsHashMap.size() == 0) // Shouldn't happen
-            {
-                return;
-            }
-            
-            CellConstraints cc = new CellConstraints();
-            final HashMap<Integer, String>          agentHash = new HashMap<Integer, String>();
-            final HashMap<Integer, AttchTableModel> tableHash = new HashMap<Integer, AttchTableModel>();
-            
-            int          y      = 1;
-            String       rowDef = UIHelper.createDuplicateJGoodiesDef("p", "10px", resultsHashMap.size());
-            PanelBuilder pb     = new PanelBuilder(new FormLayout("f:p:g", rowDef));
-            
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                int i = 1;
-                for (int tblId : resultsHashMap.keySet())
-                {
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tblId);
-                    
-                    Vector<Object[]> dataRows = new Vector<Object[]>();
-                    Vector<Object[]> results = resultsHashMap.get(tblId);
-                    for (Object[] row : results)
-                    {
-                        Integer agentId = (Integer)row[3];
-                        String userName = agentHash.get(agentId); 
-                        if (userName == null)
-                        {
-                            userName = BasicSQLUtils.querySingleObj("SELECT su.Name FROM agent a INNER JOIN specifyuser su ON a.SpecifyUserID = su.SpecifyUserID WHERE a.AgentID = "+row[3]);
-                            agentHash.put(agentId, userName);
-                        }
-                        //userName = i == 1 ? "bill.johnson" : "joe.smith";
-                        
-                        int attachJoinID = (Integer)row[4];
-                        String identTitle = getIdentityTitle(session, ti, attachJoinID);
-                        
-                        //boolean doesExist = (new File((String)row[2])).exists() && i != 1;
-                        boolean doesExist = (new File((String)row[2])).exists();
-                        String fullPath   = (String)row[2];
-                        //String str        = i != 1 ? "/Users/joe/Desktop/xxx.png" : "/Users/bill/Desktop/xxx.png";
-                        //String fullPath   = FilenameUtils.getFullPath(str) + String.format("DSC_%05d.png", i);
-                        Object[] rowObjs  = new Object[8];
-                        rowObjs[0] = identTitle;
-                        rowObjs[1] = FilenameUtils.getName(fullPath);
-                        rowObjs[2] = fullPath;
-                        rowObjs[3] = userName;
-                        rowObjs[4] = doesExist;
-                        rowObjs[5] = Boolean.FALSE;
-                        rowObjs[6] = row[0];
-                        rowObjs[7] = attachJoinID;
-                        
-                        dataRows.add(rowObjs);
-                        
-                        if (doesExist)
-                        {
-                            totalFiles++;
-                        }
-                        i++;
-                    }
-                    PanelBuilder    pb2   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
-                    AttchTableModel model = new AttchTableModel(dataRows);
-                    JTable          table = new JTable(model);
-                    if (resultsHashMap.size() > 1)
-                    {
-                        UIHelper.calcColumnWidths(table, dataRows.size() < 15 ? dataRows.size()+1 : 15);
-                    } else
-                    {
-                        UIHelper.calcColumnWidths(table);
-                    }
-                    pb2.addSeparator(tblTypeHash.get(tblId), cc.xy(1, 1));
-                    pb2.add(UIHelper.createScrollPane(table), cc.xy(1, 3));
-                    pb.add(pb2.getPanel(), cc.xy(1, y));
-                    tableHash.put(tblId, model);
-                    y += 2;
-                }
-            }  catch (Exception ex)
-            {
-                ex.printStackTrace();
-            } finally
-            {
-                session.close();
-            }  
-            pb.setDefaultDialogBorder();
-            
-            JScrollPane panelSB = UIHelper.createScrollPane(pb.getPanel());
-            panelSB.setBorder(BorderFactory.createEmptyBorder());
-            Dimension dim = panelSB.getPreferredSize();
-            panelSB.setPreferredSize(new Dimension(dim.width+10, 600));
-
-            final int totFiles = totalFiles;
-            CustomDialog dlg = new CustomDialog((Dialog)null, "Attachment Information", true, CustomDialog.OKCANCELAPPLYHELP, panelSB)
-            {
-                @Override
-                protected void helpButtonPressed()
-                {
-                    File file = produceSummaryReport(resultsHashMap, tableHash, totFiles);
-                    try
-                    {
-                        AttachmentUtils.openURI(file.toURI());
-                    } catch (Exception e) {}
-                }
-                @Override
-                protected void applyButtonPressed()
-                {
-                    boolean isOK = UIRegistry.displayConfirm("Clean up", "Are you sure you want to remove all references to the missing attachments?", "Remove", "Cancel", JOptionPane.WARNING_MESSAGE);
-                    if (isOK)
-                    {
-                        super.applyButtonPressed();
-                    }
-                }
-            };
-            dlg.setCloseOnApplyClk(true);
-            dlg.setCancelLabel("Skip");
-            dlg.setOkLabel("Recover Files");
-            dlg.setHelpLabel("Show Summary");
-            dlg.setApplyLabel("Delete References");
-            dlg.createUI();
-            dlg.pack();
-            //Dimension dim = dlg.getSize();
-            //dim.height = Math.max(600, dim.height);
-            //dlg.setSize(dim);
-            
-            dlg.setVisible(true);
-            
-            if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
-            {
-                reattachFiles(resultsHashMap, tableHash, totalFiles);
-                
-            } else if (dlg.getBtnPressed() == CustomDialog.APPLY_BTN)
-            {
-                doAttachmentRefCleanup(resultsHashMap, tableHash, totFiles);
-            }
-            
+        	
         } catch (Exception ex)
         {
-            ex.printStackTrace();
+        	
         }
+
+        
+        final String CNT  = "CNT";
+        final SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
+        {
+            int totalFiles = 0;
+            
+            HashMap<Integer, Vector<Object[]>> resultsHashMap = new HashMap<Integer, Vector<Object[]>>();
+            HashMap<Integer, String>           tblTypeHash    = new HashMap<Integer, String>();
+            HashMap<Integer, String>           agentHash = new HashMap<Integer, String>();
+            HashMap<Integer, AttchTableModel>  tableHash = new HashMap<Integer, AttchTableModel>();
+            ArrayList<JTable>                  tableList   = new ArrayList<JTable>();
+            ArrayList<Integer>                 tableIdList = new ArrayList<Integer>();
+
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                DataProviderSessionIFace session = null;
+
+                try
+                {
+                    int[] tableIds = 
+                    { 
+                            AccessionAttachment.getClassTableId(), AgentAttachment.getClassTableId(), 
+                            CollectingEventAttachment.getClassTableId(), CollectionObjectAttachment.getClassTableId(), 
+                            ConservDescriptionAttachment.getClassTableId(), ConservEventAttachment.getClassTableId(), 
+                            DNASequencingRunAttachment.getClassTableId(), FieldNotebookAttachment.getClassTableId(), 
+                            FieldNotebookPageAttachment.getClassTableId(), FieldNotebookPageSetAttachment.getClassTableId(), 
+                            LoanAttachment.getClassTableId(), LocalityAttachment.getClassTableId(), 
+                            PermitAttachment.getClassTableId(), PreparationAttachment.getClassTableId(), 
+                            RepositoryAgreementAttachment.getClassTableId(), TaxonAttachment.getClassTableId()
+                    };
+            
+                    Agent userAgent  = AppContextMgr.getInstance().getClassObject(Agent.class);
+                    
+                    int totFiles = 0;
+                    firePropertyChange(CNT, 0, 0);
+                    int cnt = 0;
+                    for (int tableId : tableIds)
+                    {
+                        Vector<Object[]> results = getImageData(userAgent.getId(), tableId, tblTypeHash);
+                        if (results != null && results.size() > 0)
+                        {
+                            resultsHashMap.put(tableId, results);
+                            totFiles += results.size();
+                            //System.out.println(tableId+"  ->  "+results.size());
+                        }
+                        firePropertyChange(CNT, 0, (int)((double)cnt / (double)tableIds.length * 100.0));
+                        cnt++;
+                    }
+                    
+                    if (resultsHashMap.size() == 0) // Shouldn't happen
+                    {
+                        return null;
+                    }
+                    
+                    session = DataProviderFactory.getInstance().createSession();
+                    
+                    firePropertyChange(CNT, 0, 0);
+                    int i = 1;
+                    for (int tblId : resultsHashMap.keySet())
+                    {
+                        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tblId);
+                        
+                        Vector<Object[]> dataRows = new Vector<Object[]>();
+                        Vector<Object[]> results = resultsHashMap.get(tblId);
+                        for (Object[] row : results)
+                        {
+                            Integer agentId = (Integer)row[3];
+                            String userName = agentHash.get(agentId); 
+                            if (userName == null)
+                            {
+                                userName = BasicSQLUtils.querySingleObj("SELECT su.Name FROM agent a INNER JOIN specifyuser su ON a.SpecifyUserID = su.SpecifyUserID WHERE a.AgentID = "+row[3]);
+                                agentHash.put(agentId, userName);
+                            }
+                            //userName = i == 1 ? "bill.johnson" : "joe.smith";
+                            
+                            int attachJoinID = (Integer)row[4];
+                            String identTitle = getIdentityTitle(session, ti, attachJoinID);
+                            
+                            String fullPath   = (String)row[2];
+                            //fullPath = StringUtils.replace(fullPath, "darwin\\", "darwin2\\");
+                            
+                            //boolean doesExist = (new File(fullPath)).exists() && i != 1;
+                            boolean doesExist = (new File(fullPath)).exists();
+                            //String str        = i != 1 ? "/Users/joe/Desktop/xxx.png" : "/Users/bill/Desktop/xxx.png";
+                            //String fullPath   = FilenameUtils.getFullPath(str) + String.format("DSC_%05d.png", i);
+                            
+                            Object[] rowObjs  = new Object[8];
+                            rowObjs[0] = StringUtils.isEmpty(identTitle) ? "" : (identTitle.length() > 30 ? identTitle.substring(0, 30) + "..." : identTitle);
+                            rowObjs[1] = FilenameUtils.getName(fullPath);
+                            rowObjs[2] = fullPath;
+                            rowObjs[3] = userName;
+                            rowObjs[4] = doesExist;
+                            rowObjs[5] = Boolean.FALSE;
+                            rowObjs[6] = row[0];
+                            rowObjs[7] = attachJoinID;
+                            
+                            dataRows.add(rowObjs);
+                            
+                            if (doesExist)
+                            {
+                                totalFiles++;
+                            }
+                            firePropertyChange(CNT, 0, (int)((double)i / (double)totFiles * 100.0));
+                            i++;
+                        }
+                        AttchTableModel model = new AttchTableModel(dataRows);
+                        JTable          table = new JTable(model);
+                        tableHash.put(tblId, model);
+                        tableList.add(table);
+                        tableIdList.add(tblId);
+                    }
+                }  catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    session.close();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                UIRegistry.clearSimpleGlassPaneMsg();
+                
+                if (tableList.size() > 0)
+                {
+                	displayBadAttachments(tableList, tableIdList, resultsHashMap, tblTypeHash, tableHash, totalFiles);
+                }
+                super.done();
+            }
+        };
+        
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg("Verifying attachments in the repository...", 24);
+        glassPane.setProgress(0);
+        
+        worker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        if (CNT.equals(evt.getPropertyName())) 
+                        {
+                            glassPane.setProgress((Integer)evt.getNewValue());
+                        }
+                    }
+                });
+        
+        worker.execute();
+    }
+    
+    /**
+     * @param tableList
+     * @param tableIdList
+     * @param resultsHashMap
+     * @param tblTypeHash
+     * @param tableHash
+     * @param totalFiles
+     */
+    private void displayBadAttachments(final ArrayList<JTable>  tableList,
+                                       final ArrayList<Integer> tableIdList,
+                                       final HashMap<Integer, Vector<Object[]>> resultsHashMap,
+                                       final HashMap<Integer, String>           tblTypeHash,
+                                       final HashMap<Integer, AttchTableModel>  tableHash,
+                                       final int totalFiles)
+    {
+        CellConstraints cc = new CellConstraints();
+        
+        int          maxWidth = 200;
+        int          y        = 1;
+        String       rowDef   = tableList.size() == 1? "f:p:g" : UIHelper.createDuplicateJGoodiesDef("p", "10px", tableList.size());
+        PanelBuilder pb       = new PanelBuilder(new FormLayout("f:p:g", rowDef));
+        if (tableList.size() > 1)
+        {
+            int i = 0;
+            for (JTable table : tableList)
+            {
+                Integer tblId   = tableIdList.get(i++);
+                int     numRows = table.getModel().getRowCount();
+                
+                PanelBuilder    pb2   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
+                if (resultsHashMap.size() > 1)
+                {
+                    UIHelper.calcColumnWidths(table, numRows < 15 ? numRows+1 : 15, maxWidth);
+                } else
+                {
+                    UIHelper.calcColumnWidths(table, 15, maxWidth);
+                }
+                pb2.addSeparator(tblTypeHash.get(tblId), cc.xy(1, 1));
+                pb2.add(UIHelper.createScrollPane(table), cc.xy(1, 3));
+                pb.add(pb2.getPanel(), cc.xy(1, y));
+                y += 2;
+            }
+        } else
+        {
+            UIHelper.calcColumnWidths(tableList.get(0), 15, maxWidth);
+            pb.add(UIHelper.createScrollPane(tableList.get(0)), cc.xy(1, 1));
+        }
+        tableList.clear();
+
+        pb.setDefaultDialogBorder();
+        
+        JScrollPane panelSB = UIHelper.createScrollPane(pb.getPanel());
+        panelSB.setBorder(BorderFactory.createEmptyBorder());
+        Dimension dim = panelSB.getPreferredSize();
+        panelSB.setPreferredSize(new Dimension(dim.width+10, 600));
+
+        final int totFiles = totalFiles;
+        String title = String.format("Attachment Information - %d files to recover.", totalFiles);
+        CustomDialog dlg = new CustomDialog((Dialog)null, title, true, CustomDialog.OKCANCELAPPLYHELP, panelSB)
+        {
+            @Override
+            protected void helpButtonPressed()
+            {
+                File file = produceSummaryReport(resultsHashMap, tableHash, totFiles);
+                try
+                {
+                    AttachmentUtils.openURI(file.toURI());
+                } catch (Exception e) {}
+            }
+            @Override
+            protected void applyButtonPressed()
+            {
+                boolean isOK = UIRegistry.displayConfirm("Clean up", "Are you sure you want to remove all references to the missing attachments?", "Remove", "Cancel", JOptionPane.WARNING_MESSAGE);
+                if (isOK)
+                {
+                    super.applyButtonPressed();
+                }
+            }
+        };
+        
+        dlg.setCloseOnApplyClk(true);
+        dlg.setCancelLabel("Skip");
+        dlg.setOkLabel("Recover Files");
+        dlg.setHelpLabel("Show Summary");
+        dlg.setApplyLabel("Delete References");
+        dlg.createUI();
+        dlg.pack();
+        
+        dlg.setVisible(true);
+        
+        if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        {
+            reattachFiles(resultsHashMap, tableHash, totalFiles);
+            
+        } else if (dlg.getBtnPressed() == CustomDialog.APPLY_BTN)
+        {
+            doAttachmentRefCleanup(resultsHashMap, tableHash, totFiles);
+        }
+
     }
     
     

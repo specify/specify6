@@ -646,6 +646,9 @@ public class Attachment extends DataModelObjBase implements Serializable
         // Copy the attachment file to the file storage system
         Thumbnailer            thumbnailGen  = AttachmentUtils.getThumbnailer();
         AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
+        
+        //String fName = StringUtils.replace(origFilename, "darwin\\", "darwin2\\");
+        //File                   origFile      = new File(fName);//origFilename);
         File                   origFile      = new File(origFilename);
         File                   thumbFile     = null;
         
