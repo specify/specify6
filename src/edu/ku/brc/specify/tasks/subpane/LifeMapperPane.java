@@ -1012,27 +1012,33 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                     if (StringUtils.isNotEmpty(responseString) && StringUtils.contains(responseString.toLowerCase(), "{"))
                     {
                         JSONTokener tok = new JSONTokener(responseString);
-                        while (tok.more())
+                        while (tok != null && tok.more())
                         {
                             JSONObject obj = (JSONObject)tok.nextValue();
-                            
-                            //JSONArray titleArray = (JSONArray)obj.get("title");
-                            //System.out.println(titleArray.get(0));
-                            
-                            JSONArray pointArray = (JSONArray)obj.get("point");
-                            Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
-                            while (iter.hasNext())
+                            if (obj != null)
                             {
-                                JSONObject pObj = (JSONObject)iter.next();
-                                String lat  = (String)pObj.get("latitude");
-                                String lon  = (String)pObj.get("longitude");
-                                //System.out.println(lat+"  "+lon);
-                                
-                                LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
-                                points.add(plcMark);
+                                JSONArray pointArray = (JSONArray)obj.get("point");
+                                if (pointArray != null)
+                                {
+                                    Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
+                                    while (iter.hasNext())
+                                    {
+                                        JSONObject pObj = (JSONObject)iter.next();
+                                        if (pObj != null)
+                                        {
+                                            String lat  = (String)pObj.get("latitude");
+                                            String lon  = (String)pObj.get("longitude");
+                                            //System.out.println(lat+"  "+lon);
+                                            if (lat != null && lon != null)
+                                            {
+                                                LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
+                                                points.add(plcMark);
+                                            }
+                                        }
+                                    }
+                                    isError = false;
+                                }
                             }
-                            
-                            isError = false;
                         }
                         
                         boolean hasPnts = points.size() > 0;
