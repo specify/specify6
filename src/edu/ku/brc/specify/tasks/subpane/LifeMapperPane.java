@@ -1,4 +1,4 @@
-/* Copyright (C) 2011, University of Kansas Center for Research
+/* Copyright (C) 2012, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -119,7 +119,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     protected static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
     private static final String URL_FMT  = "http://lifemapper.org/ogc?%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=%d&height=%d&styles=&color=ff0000";
-    private static final String BG_URL   = "http://lifemapper.org/ogc?LAYERS=bmnglowres&MAP=nasalocal.map&SERVICE=WMS&VERSION=1.0.0&FORMAT=image%2Fgif&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-180,-90,180,90&";
+    private static final String BG_URL   = "http://lifemapper.org/ogc?LAYERS=bmnglowres&MAP=anc_nasalocal.map&SERVICE=WMS&VERSION=1.0.0&FORMAT=image%2Fgif&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-180,-90,180,90&";
     private static final String BBOX_STR = "-180.0,-90.0,180.0,90.0";
     
     protected static final int MAP_WIDTH  = 600;
@@ -229,7 +229,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         
         wwPanel = new WorldWindPanel(false);
         wwPanel.setPreferredSize(new Dimension(currentSize, currentSize));
-        wwPanel.setZoomInMeters(1000000.0);
+        wwPanel.setZoomInMeters(600000.0);
         
         imgDisplay.setDoShowText(false);
         
@@ -512,6 +512,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 @Override
                 public void noItems()
                 {
+                    
                 }
                 
                 /* (non-Javadoc)
@@ -703,7 +704,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             conn   = DBConnection.getInstance().createConnection();
             coStmt = conn.prepareStatement("SELECT CollectingEventID FROM collectionobject WHERE CollectionObjectID = ?");
             ceStmt = conn.prepareStatement("SELECT Latitude1, Longitude1 FROM locality l INNER JOIN collectingevent ce ON ce.LocalityID = l.LocalityID " +
-            		                       "WHERE CollectingEventID = ? And Latitude1 IS NOT NULL AND Longitude1 IS NOT NULL");
+                                           "WHERE CollectingEventID = ? And Latitude1 IS NOT NULL AND Longitude1 IS NOT NULL");
 
             HashSet<Integer> ceSet = new HashSet<Integer>();
             
@@ -951,7 +952,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         // check the website for the info about the latest version
         final HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        httpClient.getParams().setParameter("http.socket.timeout", 20000); 
+        httpClient.getParams().setParameter("http.socket.timeout", 15000); 
         
         if (list.getSelectedIndex() < 0)
         {
@@ -974,12 +975,17 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                     httpClient.executeMethod(getMethod);
                     
                     // get the server response
-                    String responseString = getMethod.getResponseBodyAsString();
+                    //String responseString = getMethod.getResponseBodyAsString();
+                    byte[] bytes = getMethod.getResponseBody();
+                    if (bytes != null && bytes.length > 0)
+                    {
+                        return new String(bytes, "UTF-8");
+                    }
                     //if (StringUtils.isNotEmpty(responseString))
                     //{
                     //    System.err.println(responseString);
                     //}
-                    return responseString;
+                    return null;
                 }
                 catch (java.net.UnknownHostException uex)
                 {
@@ -1003,44 +1009,68 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             {
                 super.done();
                 
-                boolean isError = true;
-                
+                boolean isError    = true;
+                boolean parseError = false;
+
                 try
                 {
                     String responseString = get();
                     
                     if (StringUtils.isNotEmpty(responseString) && StringUtils.contains(responseString.toLowerCase(), "{"))
                     {
-                        JSONTokener tok = new JSONTokener(responseString);
-                        while (tok != null && tok.more())
+                        // Need to change this to using regex to strip away unwanted chars
+                        StringBuilder sb = new StringBuilder();
+                        String[] lines = StringUtils.split(responseString, '\n');
+                        for (String str : lines)
                         {
-                            JSONObject obj = (JSONObject)tok.nextValue();
-                            if (obj != null)
+                            if (str.indexOf("resname") == -1)
                             {
-                                JSONArray pointArray = (JSONArray)obj.get("point");
-                                if (pointArray != null)
-                                {
-                                    Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
-                                    while (iter.hasNext())
-                                    {
-                                        JSONObject pObj = (JSONObject)iter.next();
-                                        if (pObj != null)
-                                        {
-                                            String lat  = (String)pObj.get("latitude");
-                                            String lon  = (String)pObj.get("longitude");
-                                            //System.out.println(lat+"  "+lon);
-                                            if (lat != null && lon != null)
-                                            {
-                                                LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
-                                                points.add(plcMark);
-                                            }
-                                        }
-                                    }
-                                    isError = false;
-                                }
+                                sb.append(str);
                             }
                         }
+                        String cleaned = sb.toString();
                         
+                        parseError = false;
+                        try
+                        {
+                            JSONTokener tok = new JSONTokener(cleaned);
+                            if (tok != null)
+                            {
+                                while (tok.more())
+                                {
+                                    JSONObject obj = (JSONObject)tok.nextValue();
+                                    if (obj != null)
+                                    {
+                                        JSONArray pointArray = (JSONArray)obj.get("feature");
+                                        if (pointArray != null)
+                                        {
+                                            Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
+                                            while (iter.hasNext())
+                                            {
+                                                JSONObject pObj = (JSONObject)iter.next();
+                                                if (pObj != null)
+                                                {
+                                                    String lat  = (String)pObj.get("lat");
+                                                    String lon  = (String)pObj.get("lon");
+                                                    //System.out.println(lat+"  "+lon);
+                                                    if (lat != null && lon != null)
+                                                    {
+                                                        LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
+                                                        points.add(plcMark);
+                                                    }
+                                                }
+                                            }
+                                            isError = false;
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (net.sf.json.JSONException ex)
+                        {
+                            System.err.println(ex.getLocalizedMessage());
+                            parseError = true;
+                        }
+
                         boolean hasPnts = points.size() > 0;
                         updateMyDataUIState(hasPnts && StringUtils.isNotEmpty(myDataTF.getText()));
                         if (hasPnts)
@@ -1072,22 +1102,9 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                     e.printStackTrace();
                 }
                 
-                if (isError)
+                if (isError || parseError)
                 {
                     showErrorMsg(glassPane, "LifeMapperTask.PROC_ERR");
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            try
-                            {
-                                Thread.sleep(3000);
-                            } catch (Exception e) {}
-                            list.clearSelection();
-                        }
-                    });
-                    
                 } else
                 {
                     clearSimpleGlassPaneMsg();
