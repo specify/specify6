@@ -3006,7 +3006,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       AppBase.processArgs(args);
       AppBase.setupTeeForStdErrStdOut(true, false);
       
-      UIHelper.attachUnhandledException();
+      //UIHelper.attachUnhandledException();
       
       SwingUtilities.invokeLater(new Runnable() {
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$

@@ -2791,29 +2791,38 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (result)
                 {
                     UIRegistry.displayStatusBarText(msg);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                            //UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
-                            if (query != null && runningResults != null && runningResults.get() != null)
+                    if (query != null && runningResults != null && runningResults.get() != null)
+                    {
+                        final String qName    = query.getName();
+                        final int    qResults = results;
+                        final int    qMaxRows = runningResults.get().getMaxTableRows();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
                             {
-                                UIRegistry.getStatusBar().setProgressRange(query.getName(), 0, 
-                                        Math.min(results, runningResults.get().getMaxTableRows()));
+                                //UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
+                                UIRegistry.getStatusBar().setProgressRange(qName, 0, Math.min(qResults, qMaxRows));
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
-            if (!result || countOnly || runningResults.get().getQuery().isCancelled() || runningResults.get().getQuery().isInError())
+            
+            boolean isExtraOK = false;
+            if (runningResults != null && runningResults.get() != null && runningResults.get().getQuery() != null)
             {
-                
+                isExtraOK = runningResults.get().getQuery().isCancelled() || runningResults.get().getQuery().isInError();
+            }
+            
+            if (!result || countOnly || isExtraOK)
+            {
                 UIRegistry.displayStatusBarText("");
+                final String qName = query.getName();
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
                         String searchLbl = schemaMapping == null ? getResourceString("QB_SEARCH") : getResourceString("QB_EXPORT_PREVIEW");
                         QueryBldrPane.this.searchBtn.setText(searchLbl); 
-                        UIRegistry.getStatusBar().setProgressDone(query.getName());
+                        UIRegistry.getStatusBar().setProgressDone(qName);
                         
                     }
                 });
