@@ -156,7 +156,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null && formViewObj.isEditing())
         {
-            checkFieldNumberDupl = true;//AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
+            checkFieldNumberDupl = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
             
             Component comp = formViewObj.getControlByName("generateLabelBtn");
             if (comp instanceof JButton)
