@@ -125,20 +125,20 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     /**
      * @return the relationships
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionRelType")
+    /*@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionRelType")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionRelationship> getRelationships()
     {
         return relationships;
-    }
+    }*/
 
     /**
      * @param relationships the relationships to set
      */
-    public void setRelationships(final Set<CollectionRelationship> relationships)
+    /*public void setRelationships(final Set<CollectionRelationship> relationships)
     {
         this.relationships = relationships;
-    }
+    }*/
 
     /**
      * @return the leftSideCollection

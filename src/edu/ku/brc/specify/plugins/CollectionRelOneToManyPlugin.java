@@ -136,7 +136,6 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                 {
                     leftSideCol  = colRelType.getLeftSideCollection();
                     rightSideCol = colRelType.getRightSideCollection();
-                    colRelType.getRelationships().size();
                     rightSideCol.getCollectionId();
                     leftSideCol.getCollectionId();
                     
@@ -299,12 +298,11 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
                         CollectionRelationship collectionRel = new CollectionRelationship();
                         collectionRel.initialize();
                         collectionRel.setCollectionRelType(colRelType);
-                        colRelType.getRelationships().add(collectionRel);
+                        //colRelType.getRelationships().add(collectionRel);
                         
                         collectionRel.setLeftSide(currentColObj);
                         collectionRel.setRightSide(colObj);
                         currentColObj.getLeftSideRels().add(collectionRel);
-                        
                         colObjs.add(collectionRel);
                         
                         DataProviderSessionIFace tmpSession = null;

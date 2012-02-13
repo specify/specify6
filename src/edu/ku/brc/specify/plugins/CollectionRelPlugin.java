@@ -119,7 +119,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 {
                     leftSideCol  = colRelType.getLeftSideCollection();
                     rightSideCol = colRelType.getRightSideCollection();
-                    colRelType.getRelationships().size();
+                    //colRelType.getRelationships().size();
                     rightSideCol.getCollectionId();
                     leftSideCol.getCollectionId();
                     
@@ -399,7 +399,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                     collectionRel = new CollectionRelationship();
                     collectionRel.initialize();
                     collectionRel.setCollectionRelType(colRelType);
-                    colRelType.getRelationships().add(collectionRel);
+                    //colRelType.getRelationships().add(collectionRel);
                 }
                 
                 // Force Load 
@@ -416,12 +416,12 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 {
                     if (isLeftSide)
                     {
-                        removeFromCollectionRel(otherSideColObj.getRightSideRels(), collectionRel);
+                        //removeFromCollectionRel(otherSideColObj.getRightSideRels(), collectionRel);
                         collectionRel.setRightSide(null);
                         
                     } else
                     {
-                        removeFromCollectionRel(otherSideColObj.getLeftSideRels(), collectionRel);
+                        //removeFromCollectionRel(otherSideColObj.getLeftSideRels(), collectionRel);
                         collectionRel.setLeftSide(null);
                     }
                 }
@@ -525,8 +525,8 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             currentColObj   = (CollectionObject)value;
             if (currentColObj.getId() != null)
             {
-                currentColObj.getLeftSideRels().size();
-                currentColObj.getRightSideRels().size();
+                System.out.println("Left: "+currentColObj.getLeftSideRels().size());
+                System.out.println("Left: "+currentColObj.getRightSideRels().size());
             }
             otherSideColObj = null;
             
