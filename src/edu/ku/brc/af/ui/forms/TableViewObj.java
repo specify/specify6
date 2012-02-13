@@ -999,10 +999,10 @@ public class TableViewObj implements Viewable,
                 
                 if (classToCreate != null)
                 {
-                    dObj = FormHelper.createAndNewDataObj(classToCreate);
+                    dObj = FormHelper.createAndNewDataObj(classToCreate, businessRules);
                 } else
                 {
-                    dObj = FormHelper.createAndNewDataObj(view.getClassName());
+                    dObj = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
                 }
                 
                 dObj = editRow(dObj, rowIndex, isNew);

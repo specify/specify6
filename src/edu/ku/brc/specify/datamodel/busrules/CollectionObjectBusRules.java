@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,10 +59,9 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
@@ -136,6 +136,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private Integer          defaultPrepTypeId    = null;
     private String           defValForPrepType    = null;
     
+    protected boolean        checkFieldNumberDupl = false;
+    
     /**
      * Constructor.
      */
@@ -154,6 +156,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null && formViewObj.isEditing())
         {
+            checkFieldNumberDupl = true;//AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
+            
             Component comp = formViewObj.getControlByName("generateLabelBtn");
             if (comp instanceof JButton)
             {
@@ -299,6 +303,21 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 colObj.addReference(coa, "collectionObjectAttribute");
             }
             
+            CollectionObject   carryFwdCO      = null;
+            List<FVOFieldInfo> fieldList       = null;
+            boolean            isCarryFwdReady = false;
+            
+            if (formViewObj != null && 
+                formViewObj.getCarryFwdDataObj() != null &&
+                formViewObj.isDoCarryForward() && 
+                formViewObj.getCarryFwdInfo() != null)
+            {
+                carryFwdCO = (CollectionObject)formViewObj.getCarryFwdDataObj();
+                fieldList  = formViewObj.getCarryFwdInfo().getFieldList();
+                isCarryFwdReady = fieldList.size() > 0;
+            }
+
+            
             if (remotePrefs.getBoolean("CO_CREATE_PREP_"+colId, false))
             {
                 if (StringUtils.isEmpty(defValForPrepType))
@@ -313,27 +332,48 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 
                 if (defaultPrepTypeId != null)
                 {
-                    PrepType prepType = getPrepTypeFromId(defaultPrepTypeId);
-                    if (prepType != null)
+                    boolean isOKToCreate = true;
+                    if (isCarryFwdReady)
                     {
-                        Preparation prep = new Preparation();
-                        prep.initialize();
-                        prep.addReference(prepType, "prepType");
-                        colObj.addReference(prep, "preparations");
-                        
-                    } else
+                        isOKToCreate = fieldList.contains("Preparations") &&
+                                       carryFwdCO.getPreparations().size() == 0;
+                    }
+                    
+                    if (isOKToCreate)
                     {
-                        UIRegistry.showError("Unable to load PrepType with id: "+defaultPrepTypeId);
+                        PrepType prepType = getPrepTypeFromId(defaultPrepTypeId);
+                        if (prepType != null)
+                        {
+                            Preparation prep = new Preparation();
+                            prep.initialize();
+                            prep.addReference(prepType, "prepType");
+                            colObj.addReference(prep, "preparations");
+                            
+                        } else
+                        {
+                            UIRegistry.showError("Unable to load PrepType with id: "+defaultPrepTypeId);
+                        }
                     }
                 }
             }
             
+            
             if (remotePrefs.getBoolean("CO_CREATE_DET_"+colId, false))
             {
-                Determination det = new Determination();
-                det.initialize();
-                det.setIsCurrent(true);
-                colObj.addReference(det, "determinations");
+                boolean isOKToCreate = true;
+                if (isCarryFwdReady)
+                {
+                    isOKToCreate = fieldList.contains("Determinations") &&
+                                   carryFwdCO.getDeterminations().size() == 0;
+                }
+                
+                if (isOKToCreate)
+                {
+                    Determination det = new Determination();
+                    det.initialize();
+                    det.setIsCurrent(true);
+                    colObj.addReference(det, "determinations");
+                }
             }
         }
     }
@@ -395,9 +435,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             if ((fmt != null && fmt.getAutoNumber() == null) || !formViewObj.isAutoNumberOn())
             {
                 status = processBusinessRules(null, dataObj, true);
+                
+            } else if (checkFieldNumberDupl)
+            {
+                status = checkForFieldNumDup(dataObj);
             }
-
         }
+        
         if (status == STATUS.OK)
         {
             // check that a current determination exists
@@ -1223,13 +1267,31 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                                                                 (FormDataObjIFace)dataObj, 
                                                                 CollectionObject.class, 
                                                                 "collectionObjectId");
+        
+        if (duplicateNumberStatus == STATUS.OK && checkFieldNumberDupl)
+        {
+            duplicateNumberStatus = checkForFieldNumDup(dataObj);
+        }
+        
        	if (!processingSeries.get())
        	{
       		//Now check series catnums, kind of awkward.
        		return  isCheckDuplicateBatchNumbersOK(!duplicateNumberStatus.equals(STATUS.OK));
        	}
-       	
+
        	return duplicateNumberStatus;
+    }
+    
+    /**
+     * @param dataObj
+     * @return
+     */
+    private STATUS checkForFieldNumDup(final Object dataObj)
+    {
+        return isCheckDuplicateNumberOK("fieldNumber", 
+                                        (FormDataObjIFace)dataObj, 
+                                        CollectionObject.class, 
+                                        "collectionObjectId");
     }
 
     /* (non-Javadoc)

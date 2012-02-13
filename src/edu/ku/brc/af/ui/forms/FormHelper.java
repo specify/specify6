@@ -178,19 +178,34 @@ public final class FormHelper
     {
         return createAndNewDataObj(newDataClass, null);
     }
+    
+    /**
+     * Creates a new data object and initializes it.
+     * @param newDataClass class of new Object to be created and initialized
+     * @param busRules the business rules from the view
+     */
+    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass,
+                                                       final BusinessRulesIFace busRules)
+    {
+        return createAndNewDataObj(newDataClass, null, busRules);
+    }
+
 
     /**
       * Creates a new data object and initializes it.
       * @param newDataClass class of new Object to be created and initialized
       * @param overrideAddKids whether to override the business rules as to whether to add children
+      * @param busRules the business rules from the view
      */
-    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass, final Boolean overrideAddKids)
+    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass, 
+                                                       final Boolean overrideAddKids,
+                                                       final BusinessRulesIFace busRules)
     {
         try
         {
             FormDataObjIFace formDataObj = (FormDataObjIFace)newDataClass.newInstance();
             formDataObj.initialize();
-            BusinessRulesIFace br = DBTableIdMgr.getInstance().getBusinessRule(newDataClass);
+            BusinessRulesIFace br = busRules != null ? busRules : DBTableIdMgr.getInstance().getBusinessRule(newDataClass);
             if (((overrideAddKids != null && overrideAddKids) || overrideAddKids == null) && br != null)
             {
                 br.addChildrenToNewDataObjects(formDataObj);
@@ -223,16 +238,29 @@ public final class FormHelper
        return createAndNewDataObj(newDataClassName, null);
    }
    
+    /**
+     * Creates a new data object and initializes it.
+     * @param newDataClass class of new Object to be created and initialized
+     * @param busRules the business rules from the view
+     */
+    public static FormDataObjIFace createAndNewDataObj(final String newDataClassName, final BusinessRulesIFace busRules)
+    {
+        return createAndNewDataObj(newDataClassName, null, busRules);
+    }
+  
    /**
      * Creates a new data object and initializes it.
      * @param newDataClass class of new Object to be created and initialized
      * @param overrideAddKids whether to override the business rules as to whether to add children
+     * @param busRules the business rules from the view
     */
-   public static FormDataObjIFace createAndNewDataObj(final String newDataClassName, final Boolean overrideAddKids)
+   public static FormDataObjIFace createAndNewDataObj(final String newDataClassName, 
+                                                      final Boolean overrideAddKids,
+                                                      final BusinessRulesIFace busRules)
    {
         try
         {
-            return createAndNewDataObj(Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class), overrideAddKids);
+            return createAndNewDataObj(Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class), overrideAddKids, busRules);
             
         } catch (ClassNotFoundException ex)
         {

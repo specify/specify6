@@ -593,8 +593,8 @@ public class SecurityAdminPane extends BaseSubPane
         
         for (SpPrincipal group : groups)
         {
-            log.debug(scope.getId()+"  "+scope.getTableId());
-            log.debug("      Group: "+group.getName()+"  "+ group.getGroupType()+"  "+ group.getGroupSubClass()+"  "+ group.getId());
+            //log.debug(scope.getId()+"  "+scope.getTableId());
+            //log.debug("      Group: "+group.getName()+"  "+ group.getGroupType()+"  "+ group.getGroupSubClass()+"  "+ group.getId());
             
             String subClass = group.getGroupSubClass();
             if (group.getGroupType() == null && StringUtils.isNotEmpty(subClass) && subClass.equals(userPrin)) continue;
@@ -614,7 +614,7 @@ public class SecurityAdminPane extends BaseSubPane
                 user.getSpPrincipals().size();
                 DefaultMutableTreeNode userNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(user));
                 groupNode.add(userNode);
-                log.debug("        SpUser: "+user.getName());
+                //log.debug("        SpUser: "+user.getName());
             }
         }
     }

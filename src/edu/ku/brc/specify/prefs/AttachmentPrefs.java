@@ -117,7 +117,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         }
         
         isUsingGlobalAttchPrefs = AppPreferences.getGlobalPrefs().getBoolean(USE_GLOBAL_PREFS, false);
-        canEditGlobalAttchPrefs = AppPreferences.getGlobalPrefs().getBoolean(EDT_GLOBAL_PREFS, false);
+        canEditGlobalAttchPrefs = AppPreferences.getLocalPrefs().getBoolean(EDT_GLOBAL_PREFS, false);
         
         UIRegistry.loadAndPushResourceBundle("preferences");
         pathRB = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_PATH"));

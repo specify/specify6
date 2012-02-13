@@ -490,10 +490,10 @@ public class IconViewObj implements Viewable
         FormDataObjIFace newObject;
         if (classToCreate != null)
         {
-            newObject = FormHelper.createAndNewDataObj(classToCreate);
+            newObject = FormHelper.createAndNewDataObj(classToCreate, businessRules);
         } else
         {
-            newObject = FormHelper.createAndNewDataObj(view.getClassName());
+            newObject = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
         }
 
         FileImportProcessor importer = FileImportProcessor.getInstance();
@@ -548,10 +548,10 @@ public class IconViewObj implements Viewable
             FormDataObjIFace newObject;
             if (classToCreate != null)
             {
-                newObject = FormHelper.createAndNewDataObj(classToCreate);
+                newObject = FormHelper.createAndNewDataObj(classToCreate, businessRules);
             } else
             {
-                newObject = FormHelper.createAndNewDataObj(view.getClassName());
+                newObject = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
             }
             setNewObject(newObject);
         }
