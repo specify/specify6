@@ -1383,6 +1383,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationID" othersidename="exchangeOutPreps" updatable="false" required="false" save="false" likemanytoone="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.Exsiccata" table="exsiccata" tableid="89" searchable="true" abbrv="exsic">
+      <display view="Exsiccata" newobjdlg="ExsiccataDisplay"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Title" name="title" type="java.lang.String" length="255" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>

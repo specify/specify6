@@ -88,6 +88,28 @@
                 <altview name="Determination View"       viewdef="Determination" mode="view" default="true"/>
             </altviews>
         </view>
+        
+        <view name="Exsiccata"
+            class="edu.ku.brc.specify.datamodel.Exsiccata"
+            resourcelabels="false"
+            isexternal="true"
+            >
+            <desc><![CDATA[Exsiccata form.]]></desc>
+            <altviews>
+                <altview name="Exsiccata View" viewdef="Exsiccata" mode="view"/>
+                <altview name="Exsiccata Edit" viewdef="Exsiccata" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="ExsiccataItem"
+            class="edu.ku.brc.specify.datamodel.ExsiccataItem"
+            resourcelabels="false">
+            <desc><![CDATA[Project form.]]></desc>
+            <altviews>
+                <altview name="ExsiccataItem View" viewdef="ExsiccataItem" mode="view"/>
+                <altview name="ExsiccataItem Edit" viewdef="ExsiccataItem" mode="edit" default="true"/>
+            </altviews>
+        </view>
 
         <view name="Preparation"
               class="edu.ku.brc.specify.datamodel.Preparation"
@@ -182,6 +204,10 @@
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
                 </row>
+                <row>
+                    <cell type="subview" id="exsiccataitem" viewname="ExsiccataItem" name="exsiccataItems" initialize="align=right;btn=true" colspan="1"/>
+                </row>
+                
                 <!--<row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
                     <cell type="field" id="colrel" uitype="plugin" name="this" initialize="name=CollectionRelOneToManyPlugin;relname=xxxx;" colspan="9"/>
@@ -704,5 +730,54 @@
              </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="Exsiccata"
+            class="edu.ku.brc.specify.datamodel.Exsiccata"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+           
+            <desc><![CDATA[Form for ExsiccataItem]]></desc>
+           <columnDef>p,2px,p,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+               
+            <rows>
+                <row>
+                     <cell type="label" labelfor="1"/>
+                     <cell type="field" id="1" name="title"  uitype="text"/>
+                </row>
+                <row>
+                     <cell type="label" labelfor="referenceWork"/>
+                     <cell type="field" id="referenceWork" uitype="querycbx" initialize="name=ReferenceWork" name="referenceWork"/>
+                </row>
+                
+            </rows>
+        </viewdef>
+ 
+        <viewdef
+            type="form"
+            name="ExsiccataItem"
+            class="edu.ku.brc.specify.datamodel.ExsiccataItem"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+           
+            <desc><![CDATA[Form for ExsiccataItem]]></desc>
+            <!--columnDef>p,2px,p,2px,100px,2px,p,2px,100px,2px,100px,p:g</columnDef-->
+            <columnDef>p,2px,100px,2px,p,2px,100px,2px,p,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+               
+            <rows>
+                 <row>
+                     <cell type="label" labelfor="exsiccata"/>
+                      <cell type="field" id="exsiccata" name="exsiccata" uitype="querycbx" initialize="name=Exsiccata"  colspan="5"/>
+                 </row>
+                 <row>
+                     <cell type="label" labelfor="1"/>
+                     <cell type="field" id="1" name="fascicle" uitype="text"/>
+                     <cell type="label" labelfor="2"/>
+                     <cell type="field" id="2" name="number" uitype="text"/>
+                 </row>
+            </rows>
+        </viewdef>        
     </viewdefs>
 </viewset>

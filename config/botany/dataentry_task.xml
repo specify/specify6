@@ -12,6 +12,7 @@
 	
 	<misc>
         <!-- <view sidebar="true"  title="Deaccession"        viewset="Common"       view="Deaccession"        iconname="Deaccession"        tooltip=""/> --> 
-		<view sidebar="true"  title="Storage"            view="Storage"            iconname="Storage"           tooltip=""/>
+        <view sidebar="true"  title="Storage"            view="Storage"            iconname="Storage"           tooltip=""/>
+        <view sidebar="true"  title="Exsiccata"          view="Exsiccata"          iconname="Exsiccata"           tooltip=""/>
 	</misc>
 </views>

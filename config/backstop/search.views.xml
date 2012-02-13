@@ -322,6 +322,16 @@
             </altviews>
         </view>
         
+        <view 
+            name="ExsiccataSearch"
+            class="edu.ku.brc.specify.datamodel.Exsiccata"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <altviews>
+                <altview name="ExsiccataSearch" viewdef="ExsiccataSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
         
     </views>
 
@@ -1036,6 +1046,26 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="OrigFilename" label="Filename"/>
                     <cell type="field" id="OrigFilename" name="OrigFilename" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="ExsiccataSearch"
+            class="edu.ku.brc.specify.datamodel.Exsiccata"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Exsiccata Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="Title" label="Title"/>
+                    <cell type="field" id="Title" name="Title" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
