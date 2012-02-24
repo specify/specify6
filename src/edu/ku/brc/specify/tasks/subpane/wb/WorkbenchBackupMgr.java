@@ -35,6 +35,8 @@ import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIHelper.OSTYPE;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -108,7 +110,31 @@ public class WorkbenchBackupMgr
             }
         }
     }
+    
+    protected static String getNameForBackupFileName(Workbench workbench) {
+    
+    	String invalidChars;
+    	UIHelper.OSTYPE os = UIHelper.getOSType();
+    	if (os.equals(OSTYPE.Windows)) {
+    	    invalidChars = "\\/:*?\"<>|";
+    	} else if (os.equals(OSTYPE.MacOSX)) {
+    	    invalidChars = "/:";
+    	} else { // assume Unix/Linux
+    	    invalidChars = "/";
+    	}
+    	char[] chars = workbench.getName().toCharArray();
+    	for (int i = 0; i < chars.length; i++) {
+    	    if ((invalidChars.indexOf(chars[i]) >= 0) // OS-invalid
+    	        || (chars[i] < '\u0020') // ctrls
+    	        || (chars[i] > '\u007e' && chars[i] < '\u00a0') // ctrls
+    	    ) {
+    	        chars[i] = '_';
+    	    }
+    	}
+    	return new String(chars);
 
+    }
+    
     protected static String getFileName(final Workbench workbench)
     {
         String result;
@@ -116,7 +142,7 @@ public class WorkbenchBackupMgr
         int tries = 0;
         do
         {
-            result = getPrefix(workbench) + Math.round(Math.random() * 1000) + "_" + workbench.getName()
+            result = getPrefix(workbench) + Math.round(Math.random() * 1000) + "_" + getNameForBackupFileName(workbench)
                     + ".xls";
             file = new File(result);
         } while (tries++ < 100 && file.exists());
