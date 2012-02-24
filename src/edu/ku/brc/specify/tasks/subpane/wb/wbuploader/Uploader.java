@@ -856,6 +856,7 @@ public class Uploader implements ActionListener, KeyListener
         buildUploadFields();
         buildUploadTables();
         addEmptyUploadTables();
+        addRequiredUploadTables(); 
         buildUploadGraph();
         processTreeMaps();
         for (UploadTable ut : uploadTables)
@@ -1586,6 +1587,36 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    /**
+     * Currently this just adds CollectingEvent if it is not present if the current collection
+     * has embedded CollectingEvents
+     */
+    protected void addRequiredUploadTables() throws UploaderException
+    {
+    	if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+    	{
+    		boolean hasCO = false;
+    		boolean hasCE = false;
+    		for (UploadTable t : uploadTables)
+    		{
+    			if (t.getTblClass().equals(CollectionObject.class))
+    			{
+    				hasCO = true;
+    			} else if (t.getTblClass().equals(CollectingEvent.class))
+    			{
+    				hasCE = true;
+    			}
+    		}
+    		if (!hasCE && hasCO)
+    		{
+    	        UploadTable ce = new UploadTable(this, db.getSchema().getTable("CollectingEvent"), null);
+    	        ce.init();
+    	        ce.addField(new UploadField(db.getSchema().getField("collectingevent",
+    	               "stationfieldnumber"), -1, null, null));
+    			uploadTables.add(ce);
+    		}
+    	}
+    }
     	
     /**
      * @param uploadTable
@@ -4781,7 +4812,7 @@ public class Uploader implements ActionListener, KeyListener
         for (UploadField field : uploadFields)
         {
             logDebug("   uploading field: " + field.getWbFldName());
-            //System.out.println("   uploading field: " + field.getWbFldName());
+            System.out.println("   uploading field: " + field.getWbFldName());
         	if (field.getField().getTable().equals(t.getTable()))
             {
                 if (field.getIndex() != -1)
