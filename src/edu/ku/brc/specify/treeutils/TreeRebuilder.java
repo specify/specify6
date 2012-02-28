@@ -84,7 +84,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
             initProgress();
             initCacheInfo();
             fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
-            rebuildTree(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName()), 
+            rebuildTree(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName(), root.getIsAccepted()), 
             		new LinkedList<TreeNodeInfo>(), 1);
             traversalSession.commit();
             return hasCompletedOK = true;
@@ -115,7 +115,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
     @Override
     protected void buildChildrenQuery()
     {
-        String childrenSQL = "select " + getNodeKeyFldName() + ", " + getNodeTblName() + ".Name, RankId from " + getNodeTblName()
+        String childrenSQL = "select " + getNodeKeyFldName() + ", " + getNodeTblName() + ".Name, RankId, IsAccepted from " + getNodeTblName()
                 + " where " + getNodeParentFldName() + " =:parentArg  order by name";
         childrenQuery = traversalSession.createQuery(childrenSQL, true);
     }
@@ -133,7 +133,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
         int nn = nodeNumber;
 		List<?> children = getChildrenInfo(node);
 		boolean addParent = false;
-        if (doFullNames) 
+        if (doFullNames && node.isAccepted()) 
         {
         	if (fullNameBuilder.isInFullName(node.getRank()))
         	{
@@ -145,14 +145,15 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
         {
             Object child = children.get(0);
             Object[] childInfo = (Object[] )child;
-            nn = rebuildTree(new TreeNodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1]),
+            nn = rebuildTree(new TreeNodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1],
+            		(Boolean)childInfo[3]),
         			parents, nn + 1);
         	children.remove(0);
         	child = null;
        }
        children = null;
        String fullName = null;
-       if (doFullNames) 
+       if (doFullNames && node.isAccepted()) 
        {
            if (addParent)
            {
@@ -160,7 +161,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
            }
            fullName = fullNameBuilder.buildFullName(node, parents);
        }
-       writeNode(node.getId(), fullName, nodeNumber, nn);
+       writeNode(node.getId(), fullName, nodeNumber, nn, node.isAccepted());
        incrementProgress();
        checkCache();
        return nn;
@@ -185,7 +186,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
      * 
      * sets parameters for updataNodeQuery and executes it.
      */
-    protected void writeNode(int nodeId, String fullName, int nodeNumber, int highestChildNodeNumber) throws Exception
+    protected void writeNode(int nodeId, String fullName, int nodeNumber, int highestChildNodeNumber, boolean isAccepted) throws Exception
     {
     	updateNodeQuery.setParameter("keyArg", nodeId);
     	if (doFullNames) 
@@ -216,7 +217,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 		}
 		if (doFullNames) 
 		{
-			updateSQL += "FullName=:fnArg";
+			updateSQL += "FullName=case when :fnArg is not null then :fnArg else FullName end";
 		}
 		updateSQL += " where " + getNodeKeyFldName() + "=:keyArg";
 		updateNodeQuery = traversalSession.createQuery(updateSQL, true);

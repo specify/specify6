@@ -73,7 +73,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
             initProgress();
             initCacheInfo();
             fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
-            rebuildFullNames(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName()), new LinkedList<TreeNodeInfo>());
+            rebuildFullNames(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName(), root.getIsAccepted()), new LinkedList<TreeNodeInfo>());
             if (ownsSession)
             {
             	traversalSession.commit();
@@ -113,7 +113,8 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
         for (Object child : children)
         {
             Object[] childInfo = (Object[] )child;
-        	rebuildFullNames(new TreeNodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1]),
+        	rebuildFullNames(new TreeNodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1],
+        			(Boolean )childInfo[3]),
         			parents);
         }
         parents.removeLast();

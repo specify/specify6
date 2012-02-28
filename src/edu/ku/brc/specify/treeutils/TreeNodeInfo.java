@@ -29,13 +29,15 @@ public class TreeNodeInfo
 {
 	protected final int id;
 	protected final int rank;
+	protected final boolean accepted;
 	protected final String name;
 	
-	public TreeNodeInfo(final int id, final int rank, final String name)
+	public TreeNodeInfo(final int id, final int rank, final String name, final boolean accepted)
 	{
 		this.id = id;
 		this.rank = rank;
 		this.name = name;
+		this.accepted = accepted;
 	}
 
 	/**
@@ -61,5 +63,15 @@ public class TreeNodeInfo
 	{
 		return name;
 	}
+
+	/**
+	 * @return the accepted
+	 */
+	public boolean isAccepted() 
+	{
+		return accepted;
+	}
+	
+	
 
 }    	

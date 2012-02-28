@@ -272,12 +272,17 @@ public class TreeHelper
      */
     public static void fixFullnameForNodeAndDescendants(Taxon taxon)
     {
-        String generated = generateFullname(taxon);
+        //if taxon is a synonym its full name WILL be changed
+    	//which might mean that the part of the name derived from ancestors
+    	//will be considered by some users.
+    	String generated = generateFullname(taxon);
         taxon.setFullName(generated);
         
         for (Taxon child: taxon.getChildren())
         {
-            fixFullnameForNodeAndDescendants(child);
+            if (child.getIsAccepted()) /*don't change full names of synonyms*/ {
+            	fixFullnameForNodeAndDescendants(child);
+            }
         }
     }
     
