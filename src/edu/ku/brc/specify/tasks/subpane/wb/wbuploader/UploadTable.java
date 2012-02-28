@@ -4479,6 +4479,7 @@ public class UploadTable implements Comparable<UploadTable>
 				// check that isCurrent is ok. 1 and only one true.
 				boolean isCurrentPresent = false;
 				UploadField anIsCurrentFld = null;
+				boolean isBlank = true;
 				// for (int row = 0; row < uploadData.getRows(); row++)
 				// {
 				int trueCount = 0;
@@ -4486,11 +4487,16 @@ public class UploadTable implements Comparable<UploadTable>
 				{
 					for (UploadField fld : flds)
 					{
+						if (isBlank && StringUtils.isNotBlank(uploadData.get(row, fld.getIndex()))) {
+							isBlank = false;
+						}
 						if (fld.getField().getName().equalsIgnoreCase(
 								"iscurrent"))
 						{
 							isCurrentPresent = true;
-							anIsCurrentFld = fld;
+							if (anIsCurrentFld == null) {
+								anIsCurrentFld = fld;
+							}
 							fld.setValue(uploadData.get(row, fld.getIndex()));
 							try
 							{
@@ -4507,7 +4513,7 @@ public class UploadTable implements Comparable<UploadTable>
 						}
 					}
 				}
-				if (isCurrentPresent && trueCount != 1)
+				if (isCurrentPresent && !isBlank && trueCount != 1)
 				{
 					invalidValues
 							.add(new UploadTableInvalidValue(
