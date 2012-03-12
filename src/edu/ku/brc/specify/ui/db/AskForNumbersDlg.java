@@ -70,6 +70,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class AskForNumbersDlg extends CustomDialog implements ChangeListener
 {
     private static final Logger log = Logger.getLogger(AskForNumbersDlg.class);
+    private static final String AND_COLLID = " AND CollectionMemberID = COLLID";
     
     protected Class<? extends FormDataObjIFace> dataClass;
     protected Vector<String>      numbersList   = new Vector<String>();
@@ -167,49 +168,43 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         
         boolean isOK = true;
         
-        String catNumbersStr = textArea.getText().trim();
-        if (formatter.isNumeric())
+        String fieldStr = textArea.getText().trim();
+        if (formatter != null && formatter.isNumeric() && ti.getTableId() == 1 && fieldName.equals("catalogNumber"))
         {
-        	catNumbersStr = CatalogNumberFormatter.preParseNumericCatalogNumbers(catNumbersStr, formatter);
+        	fieldStr = CatalogNumberFormatter.preParseNumericCatalogNumbers(fieldStr, formatter);
         }
-        if (StringUtils.isNotEmpty(catNumbersStr))
+        
+        if (StringUtils.isNotEmpty(fieldStr))
         {
             DataProviderSessionIFace session = null;
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
                 
-                String[] toks = StringUtils.split(catNumbersStr, ',');
-                for (String catNumStr : toks)
+                String[] toks = StringUtils.split(fieldStr, ',');
+                for (String fldStr : toks)
                 {
-                    String numToken = catNumStr.trim();
+                    String numToken = fldStr.trim();
                     if (formatter != null && StringUtils.contains(numToken, rangeSeparator))
                     {
-                        String   catNum    = null;
-                        String   endCatNum = null;
+                        String   fldNum    = null;
+                        String   endFldNum = null;
                         String[] tokens    =  StringUtils.split(numToken, rangeSeparator);
                         if (tokens.length == 2)
                         {
                             try
                             {
-                                if (formatter != null)
+                                if (formatter.isNumeric())
                                 {
-                                    if (formatter.isNumeric())
+                                    if (!StringUtils.isNumeric(fldNum) || !StringUtils.isNumeric(endFldNum))
                                     {
-                                        if (!StringUtils.isNumeric(catNum) || !StringUtils.isNumeric(endCatNum))
-                                        {
-                                            numErrorList.add(catNumStr.trim());
-                                            isOK = false;
-                                            continue;
-                                        }
+                                        numErrorList.add(fldStr.trim());
+                                        isOK = false;
+                                        continue;
                                     }
-                                    catNum    = (String)formatter.formatFromUI(tokens[0].trim());
-                                    endCatNum = (String)formatter.formatFromUI(tokens[1].trim());
-                                } else
-                                {
-                                    catNum    = tokens[0].trim();
-                                    endCatNum = tokens[1].trim();
                                 }
+                                fldNum    = (String)formatter.formatFromUI(tokens[0].trim());
+                                endFldNum = (String)formatter.formatFromUI(tokens[1].trim());
                                 
                             } catch (java.lang.NumberFormatException ex)
                             {
@@ -220,7 +215,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                             }
                             
                             String sql = String.format("SELECT id FROM %s WHERE %s >= '%s' AND %s <= '%s' %s", 
-                                                        ti.getClassName(), fieldName, catNum, fieldName, endCatNum, (hasColMemID ? " AND CollectionMemberID = COLLID" : ""));
+                                                        ti.getClassName(), fieldName, fldNum, fieldName, endFldNum, (hasColMemID ? AND_COLLID : ""));
                             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                             List<?> list = session.getDataList(sql);
                             for (Object obj : list)
@@ -237,7 +232,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                         continue;
                     }
                     
-                    String catNumForDB = numToken;
+                    String fldValForDB = numToken;
                     try
                     {
                         if (formatter != null)
@@ -251,10 +246,10 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                                     continue;
                                 }
                             }
-                            catNumForDB = (String)formatter.formatFromUI(numToken);
+                            fldValForDB = (String)formatter.formatFromUI(numToken);
                         } else
                         {
-                            catNumForDB = numToken;
+                            fldValForDB = numToken;
                         }
                         
                     } catch (java.lang.NumberFormatException ex)
@@ -265,16 +260,16 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                         isOK = false;
                     }
                 
-                    if (StringUtils.isNotEmpty(catNumForDB))
+                    if (StringUtils.isNotEmpty(fldValForDB))
                     {
-                        String sql = String.format("SELECT id FROM %s WHERE %s = '%s' %s", ti.getClassName(), fieldName, catNumForDB, (hasColMemID ? " AND CollectionMemberID = COLLID" : ""));
+                        String sql = String.format("SELECT id FROM %s WHERE %s = '%s' %s", ti.getClassName(), fieldName, fldValForDB, (hasColMemID ? AND_COLLID : ""));
                         sql        = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                         //log.debug(sql);
-                        Integer colObjId = (Integer)session.getData(sql);
+                        Integer recordId = (Integer)session.getData(sql);
                         
-                        if (colObjId != null)
+                        if (recordId != null)
                         {
-                            dataObjsIds.add(colObjId);
+                            dataObjsIds.add(recordId);
                             numbersList.add(numToken);
                         } else
                         {
