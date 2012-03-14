@@ -182,14 +182,14 @@ abstract class WorkbenchEditorCreator
                          rowImages = new HashSet<WorkbenchRowImage>();
                          row.setWorkbenchRowImages(rowImages);
                      }
-                     if (row.getCardImageFullPath() != null && 
+                     if (row.getCardImageFullPath() != null/* && 
                              row.getCardImageData() != null && 
-                             row.getCardImageData().length > 0)
+                             row.getCardImageData().length > 0*/)
                      {
                          // create the WorkbenchRowImage record
                          WorkbenchRowImage rowImage = new WorkbenchRowImage();
                          rowImage.initialize();
-                         rowImage.setCardImageData(row.getCardImageData());
+                         //rowImage.setCardImageData(row.getCardImageData());
                          rowImage.setCardImageFullPath(row.getCardImageFullPath());
                          rowImage.setImageOrder(0);
                          

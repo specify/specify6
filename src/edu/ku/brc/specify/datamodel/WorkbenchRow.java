@@ -230,7 +230,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public void setCardImageData(byte[] cardImageData)
     {
         imgIcon = null;
-        this.cardImageData = cardImageData;
+        //this.cardImageData = cardImageData;
     }
         
     /**
@@ -258,7 +258,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 byte[] newImageData = readAndScaleCardImage(imgOrig);
                 if (newImageData != null)
                 {
-                    img.setCardImageData(newImageData);
+                    //img.setCardImageData(newImageData);
                     img.setCardImageFullPath(imgOrig.getAbsolutePath());
                     return;
                 }
@@ -301,7 +301,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             newRowImage.initialize();
             newRowImage.setImageOrder(order);
             newRowImage.setCardImageFullPath(orig.getAbsolutePath());
-            newRowImage.setCardImageData(imgData);
+            //newRowImage.setCardImageData(imgData);
             newRowImage.setWorkbenchRow(this);
             newRowImage.setAttachToTableName(attachToTblName);
             workbenchRowImages.add(newRowImage);
@@ -411,7 +411,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         
         if (imgIcon == null)
         {
-            imgIcon = new ImageIcon(cardImageData);
+            //imgIcon = new ImageIcon(cardImageData);
+            imgIcon = new ImageIcon(cardImageFullPath);
         }
         return imgIcon;
     }
@@ -538,8 +539,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         
         if (imgData != null)
         {
-            setCardImageData(imgData);
-            setCardImageFullPath(imageFile.getAbsolutePath());
+           setCardImageData(imgData);
+           setCardImageFullPath(imageFile.getAbsolutePath());
         }
     }
     
