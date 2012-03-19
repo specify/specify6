@@ -1880,11 +1880,18 @@ public class Uploader implements ActionListener, KeyListener
     				|| GeoCoordDetail.class.isAssignableFrom(t.getTblClass()))
     		{
     	        //XXX testing!
-    			if (AppPreferences.getLocalPrefs().getBoolean("WB_HighlightNewLocRecs", false))
+    			if (AppPreferences.getRemote().getBoolean("WB_HighlightNewLocRecs", true) || AppPreferences.getRemote().getBoolean("WB_HighlightNewCERecs", false))
     	        {
     	        	t.setCheckMatchInfo(true);
     	        }
-    		}else
+    		} else if (CollectingEvent.class.isAssignableFrom(t.getTblClass())) 
+    		{
+    			if (AppPreferences.getRemote().getBoolean("WB_HighlightNewCERecs", false))
+    	        {
+    	        	t.setCheckMatchInfo(true);
+    	        }
+    			
+    		} else
     		{
     			t.setCheckMatchInfo(false);
     		}
