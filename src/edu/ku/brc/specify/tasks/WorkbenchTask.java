@@ -834,7 +834,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
+            //List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = " + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
+            List<?> list = session.getDataList("From WorkbenchTemplate");
             for (Object obj : list)
             {
                 WorkbenchTemplate template = (WorkbenchTemplate)obj;
