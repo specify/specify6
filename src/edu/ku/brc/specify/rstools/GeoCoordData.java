@@ -42,7 +42,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     private String longitude;
     private String xml;
     private String errorPolygon;
-    private BigDecimal errorExtimate;
+    private BigDecimal errorEstimate;
     
     /**
      * @param id
@@ -66,7 +66,7 @@ public class GeoCoordData implements GeoCoordDataIFace
         this.county = county;
         this.localityStr = localityStr;
         this.errorPolygon = errorPolygon;
-        this.errorExtimate = errorRadius;
+        this.errorEstimate = errorRadius;
     }
 
     /* (non-Javadoc)
@@ -165,7 +165,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     @Override
     public BigDecimal getErrorEstimate()
     {
-        return errorExtimate;
+        return errorEstimate;
     }
     
     /* (non-Javadoc)
@@ -174,7 +174,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     @Override
     public void setErrorEstimate(BigDecimal errorEstimate)
     {
-        this.errorExtimate = errorEstimate;
+        this.errorEstimate = errorEstimate;
     }
 
     /* (non-Javadoc)
