@@ -213,7 +213,9 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                                                    country,
                                                                    state,
                                                                    county,
-                                                                   locality.getLocalityName());
+                                                                   locality.getLocalityName(),
+                                                                   locality.getErrorPolygon(),
+                                                                   locality.getErrorEstimate());
                             geoRefDataList.add(geoRefData);
                             
                             if (locality.getLatitude1() != null && locality.getLongitude1() != null)

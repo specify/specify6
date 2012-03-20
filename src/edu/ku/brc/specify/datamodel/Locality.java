@@ -38,6 +38,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -1081,6 +1082,79 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public Set<LocalityAttachment> getAttachmentReferences()
     {
         return localityAttachments;
+    }
+    
+    // Helpers for GeoCoord
+    @Transient
+    private GeoCoordDetail getGeoCoordDetail()
+    {
+        return geoCoordDetails == null || geoCoordDetails.size() == 0 ? null :
+               geoCoordDetails.iterator().next();
+    }
+    
+    @Transient
+    public String getErrorPolygon()
+    {
+        GeoCoordDetail gcd = getGeoCoordDetail();
+        if (gcd != null)
+        {
+            return gcd.getErrorPolygon();
+        }
+        return null;
+    }
+
+    @Transient
+    public BigDecimal getErrorEstimate()
+    {
+        GeoCoordDetail gcd = getGeoCoordDetail();
+        if (gcd != null)
+        {
+            return gcd.getMaxUncertaintyEst();
+        }
+        return null;
+    }
+    
+    /**
+     * @return
+     */
+    private GeoCoordDetail createGeoCoordDetail()
+    {
+        GeoCoordDetail gcd = new GeoCoordDetail();
+        gcd.initialize();
+        gcd.setLocality(this);
+        if (geoCoordDetails == null)
+        {
+            geoCoordDetails = new HashSet<GeoCoordDetail>();
+        }
+        geoCoordDetails.add(gcd);
+        return gcd;
+    }
+    
+    /**
+     * @param errPolygon
+     */
+    public void setErrorPolygon(final String errorPolygon)
+    {
+        GeoCoordDetail gcd = getGeoCoordDetail();
+        if (gcd == null)
+        {
+            gcd = createGeoCoordDetail();
+        }
+        gcd.setErrorPolygon(errorPolygon);
+    }
+
+    
+    /**
+     * @param errEst
+     */
+    public void setErrorEstimate(final BigDecimal errEst)
+    {
+        GeoCoordDetail gcd = getGeoCoordDetail();
+        if (gcd == null)
+        {
+            gcd = createGeoCoordDetail();
+        }
+        gcd.setMaxUncertaintyEst(errEst);
     }
 
     /**

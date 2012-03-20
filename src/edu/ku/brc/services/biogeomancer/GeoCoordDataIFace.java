@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.services.biogeomancer;
 
+import java.math.BigDecimal;
+
 /**
  * @author rod
  *
@@ -50,6 +52,10 @@ public interface GeoCoordDataIFace
     
     public abstract String getCounty();
     
+    public abstract String getErrorPolygon();
+    
+    public abstract BigDecimal getErrorEstimate();
+    
     //--------------------------------------------
     //-- This portion is used for setting the data
     //--------------------------------------------
@@ -57,6 +63,10 @@ public interface GeoCoordDataIFace
     public abstract void set(final String latitude, String longitude);
     
     public abstract void setXML(String xml);
+    
+    public abstract void setErrorPolygon(String errorPolygon);
+    
+    public abstract void setErrorEstimate(BigDecimal errorEstimate);
     
     public abstract String getXML();
 }

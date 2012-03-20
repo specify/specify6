@@ -53,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -69,10 +70,15 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanel.CompType;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MacBtnBorder;
 import edu.ku.brc.ui.UIHelper;
@@ -162,6 +168,11 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected boolean            isNew      = false;
     protected String             reason     = null;
     
+    // GeoCoorddetail
+    protected MultiView          gcdMV = null;
+    protected FVOFieldInfo       errPolyFieldInfo = null;
+    protected FVOFieldInfo       errEstFieldInfo  = null;
+    protected boolean            didGCDFieldCheck = false;
     
     /**
      * Constructs the UI for entering in Lat/Lon data for a Locality Object.
@@ -685,6 +696,85 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         }
     }
     
+    /**
+     * @param errorPoly
+     * @param errorEstimate
+     */
+    public void setErrorInfo(final String errorPoly, final BigDecimal errorEstimate)
+    {
+        didGCDFieldCheck = false;
+        
+        if (fvo != null && gcdMV == null)
+        {
+            for (MultiView kidMV : fvo.getKids())
+            {
+                if (kidMV.isEditable() && kidMV.getView().getClassName().equals(GeoCoordDetail.class.getName()))
+                {
+                    gcdMV = kidMV;
+                    break;
+                }
+            }
+        }
+        
+        GeoCoordDetail geoCoordDetail = null;
+        
+        if (gcdMV != null)
+        {
+            Object  formData       = gcdMV.getCurrentViewAsFormViewObj().getDataObj();
+            boolean alreadyHasData = formData != null;
+            
+            if (formData instanceof GeoCoordDetail)
+            {
+                geoCoordDetail = (GeoCoordDetail)formData;
+            } else
+            {
+                geoCoordDetail = new GeoCoordDetail();
+                geoCoordDetail.initialize();
+                
+                locality.getGeoCoordDetails().add(geoCoordDetail);
+                geoCoordDetail.setLocality(locality);
+                
+                if (!alreadyHasData && geoCoordDetail.getId() == null)
+                {
+                    gcdMV.setData(locality.getGeoCoordDetails());
+                }
+            }
+            
+            if (!didGCDFieldCheck)
+            {
+                for (Viewable view : gcdMV.getViewables())
+                {
+                    if (view.isSubform() && view instanceof FormViewObj)
+                    {
+                        FormViewObj kidFVO = (FormViewObj)view;
+                        //kidFVO.getFormViewObjForControlName(name)
+                        errEstFieldInfo = kidFVO.getFieldInfoForName("maxUncertaintyEst");
+                        errPolyFieldInfo = kidFVO.getFieldInfoForName("errorPolygon");
+                    }
+                }
+                didGCDFieldCheck = true;
+            }
+            
+            if (errEstFieldInfo != null)
+            {
+                ((GetSetValueIFace)errEstFieldInfo.getComp()).setValue(errorEstimate, null);
+                
+            } else 
+            {
+                geoCoordDetail.setMaxUncertaintyEst(errorEstimate);
+            }
+            
+            if (errPolyFieldInfo != null)
+            {
+                ((GetSetValueIFace)errPolyFieldInfo.getComp()).setValue(errorPoly, null);
+                
+            } else 
+            {
+                geoCoordDetail.setErrorPolygon(errorPoly);
+            }
+        }
+    }
+    
     //--------------------------------------------------------
     // GetSetValueIFace Interface
     //--------------------------------------------------------
@@ -860,7 +950,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     @Override
     public void setParent(FormViewObj parent)
     {
-        
+        super.setParent(parent);
     }
     
     /* (non-Javadoc)

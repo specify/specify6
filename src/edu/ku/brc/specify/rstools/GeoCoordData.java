@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.rstools;
 
+import java.math.BigDecimal;
+
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 
 /**
@@ -39,6 +41,8 @@ public class GeoCoordData implements GeoCoordDataIFace
     private String latitude;
     private String longitude;
     private String xml;
+    private String errorPolygon;
+    private BigDecimal errorExtimate;
     
     /**
      * @param id
@@ -47,7 +51,13 @@ public class GeoCoordData implements GeoCoordDataIFace
      * @param county
      * @param localityStr
      */
-    public GeoCoordData(final int id, final String country, final String state, final String county, final String localityStr)
+    public GeoCoordData(final int id, 
+                        final String country, 
+                        final String state, 
+                        final String county, 
+                        final String localityStr,
+                        final String errorPolygon,
+                        final BigDecimal errorRadius)
     {
         super();
         this.id = id;
@@ -55,11 +65,14 @@ public class GeoCoordData implements GeoCoordDataIFace
         this.state = state;
         this.county = county;
         this.localityStr = localityStr;
+        this.errorPolygon = errorPolygon;
+        this.errorExtimate = errorRadius;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCountry()
      */
+    @Override
     public String getCountry()
     {
         return country;
@@ -68,6 +81,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCounty()
      */
+    @Override
     public String getCounty()
     {
         return county;
@@ -76,6 +90,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getId()
      */
+    @Override
     public Integer getGeoCoordId()
     {
         return id;
@@ -84,6 +99,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLatitude()
      */
+    @Override
     public String getLatitude()
     {
         return latitude;
@@ -92,6 +108,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLocalityString()
      */
+    @Override
     public String getLocalityString()
     {
         return localityStr;
@@ -100,6 +117,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLongitude()
      */
+    @Override
     public String getLongitude()
     {
         return longitude;
@@ -108,6 +126,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getState()
      */
+    @Override
     public String getState()
     {
         return state;
@@ -116,6 +135,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getTitle()
      */
+    @Override
     public String getTitle()
     {
         return "???";
@@ -124,9 +144,46 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getXML()
      */
+    @Override
     public String getXML()
     {
         return xml;
+    }
+
+    /**
+     * @return the errorPolygon
+     */
+    @Override
+    public String getErrorPolygon()
+    {
+        return errorPolygon;
+    }
+
+    /**
+     * @return the errorRadius
+     */
+    @Override
+    public BigDecimal getErrorEstimate()
+    {
+        return errorExtimate;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorEstimate(java.lang.String)
+     */
+    @Override
+    public void setErrorEstimate(BigDecimal errorEstimate)
+    {
+        this.errorExtimate = errorEstimate;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorPolygon(java.lang.String)
+     */
+    @Override
+    public void setErrorPolygon(String errorPolygon)
+    {
+        this.errorPolygon = errorPolygon;
     }
 
     /* (non-Javadoc)

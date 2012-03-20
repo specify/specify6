@@ -7,6 +7,8 @@
 
 package edu.ku.brc.services.geolocate.prototype.client;
 
+import java.math.BigDecimal;
+
 public class Georef_Result  implements java.io.Serializable {
     private edu.ku.brc.services.geolocate.prototype.client.GeographicPoint WGS84Coordinate;
 
@@ -25,6 +27,10 @@ public class Georef_Result  implements java.io.Serializable {
     private double displacedDistanceMiles;
 
     private double displacedHeadingDegrees;
+    
+    private String errorPolygon;
+    private BigDecimal errorEstimate;
+
 
     private java.lang.String debug;
 
@@ -41,7 +47,10 @@ public class Georef_Result  implements java.io.Serializable {
            java.lang.String referenceLocation,
            double displacedDistanceMiles,
            double displacedHeadingDegrees,
-           java.lang.String debug) {
+           String errorPolygon,
+           BigDecimal errorEstimate,
+           java.lang.String debug) 
+    {
            this.WGS84Coordinate = WGS84Coordinate;
            this.parsePattern = parsePattern;
            this.precision = precision;
@@ -52,6 +61,8 @@ public class Georef_Result  implements java.io.Serializable {
            this.displacedDistanceMiles = displacedDistanceMiles;
            this.displacedHeadingDegrees = displacedHeadingDegrees;
            this.debug = debug;
+           this.errorPolygon = errorPolygon;
+           this.errorEstimate = errorEstimate;
     }
 
 
@@ -234,6 +245,38 @@ public class Georef_Result  implements java.io.Serializable {
         this.displacedHeadingDegrees = displacedHeadingDegrees;
     }
 
+
+    /**
+     * @return the errorPolygon
+     */
+    public String getErrorPolygon()
+    {
+        return errorPolygon;
+    }
+
+    /**
+     * @param errorPolygon the errorPolygon to set
+     */
+    public void setErrorPolygon(String errorPolygon)
+    {
+        this.errorPolygon = errorPolygon;
+    }
+
+    /**
+     * @return the errorEstimate
+     */
+    public BigDecimal getErrorEstimate()
+    {
+        return errorEstimate;
+    }
+
+    /**
+     * @param errorEstimate the errorEstimate to set
+     */
+    public void setErrorEstimate(BigDecimal errorEstimate)
+    {
+        this.errorEstimate = errorEstimate;
+    }
 
     /**
      * Gets the debug value for this Georef_Result.

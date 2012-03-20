@@ -9,12 +9,15 @@ import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.geolocate.prototype.LocalityWaypoint;
@@ -198,7 +201,7 @@ public class GeoLocateResultsChooser extends CustomDialog
         
         else
         {
-        	LocalityWaypoint accResult = resultsDisplayPanel.geoMapper.getMostAccurateResultPt();;
+        	LocalityWaypoint accResult = resultsDisplayPanel.geoMapper.getMostAccurateResultPt();
         	result = new Georef_Result();
         	result.setParsePattern(getResourceString("GeoLocateResultsDisplay.USRDEF"));
         	result.setPrecision(accResult.getLocality().getPrecision());
@@ -207,6 +210,19 @@ public class GeoLocateResultsChooser extends CustomDialog
         	result.setUncertaintyRadiusMeters(accResult.getLocality().getUncertaintyMeters());
         	result.setWGS84Coordinate(new GeographicPoint(accResult.getLocality().getLatitude(), 
         			accResult.getLocality().getLongitude()));
+            result.setErrorPolygon(accResult.getLocality().getErrorPolygon());
+            
+            BigDecimal errEst       = null;
+            String     uncertMeters = accResult.getLocality().getUncertaintyMeters();
+            if (StringUtils.isNotEmpty(uncertMeters))
+            {
+                try
+                {
+                    double value = Double.parseDouble(uncertMeters);
+                    errEst = new BigDecimal(value);
+                } catch (NumberFormatException ex) {}
+            }
+            result.setErrorEstimate(errEst);
         }
         
         chosenResults.set(rowIndex, result);

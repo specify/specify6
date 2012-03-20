@@ -278,15 +278,14 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
             
             for (int i = 0; i < results.size(); ++i)
             {
-                GeoCoordDataIFace item = withResults.get(i).first;
-                GeorefResult chosenResult = results.get(i);
+                GeoCoordDataIFace item         = withResults.get(i).first;
+                GeorefResult      chosenResult = results.get(i);
                 
                 if (chosenResult != null)
                 {
-                    Double latitude = chosenResult.getWGS84Coordinate().getLatitude();
+                    Double latitude  = chosenResult.getWGS84Coordinate().getLatitude();
                     Double longitude = chosenResult.getWGS84Coordinate().getLongitude();
                     item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude)); //$NON-NLS-1$ //$NON-NLS-2$
-                    
                     itemsUpdated++;
                 }
             }

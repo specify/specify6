@@ -203,6 +203,44 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     }
     
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getErrorPolygon()
+     */
+    @Transient
+    @Override
+    public String getErrorPolygon()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getErrorRadius()
+     */
+    @Transient
+    @Override
+    public BigDecimal getErrorEstimate()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorEstimate(java.math.BigDecimal)
+     */
+    @Override
+    public void setErrorEstimate(BigDecimal errorEstimate)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorPolygon(java.lang.String)
+     */
+    @Override
+    public void setErrorPolygon(String errorPolygon)
+    {
+        // TODO Auto-generated method stub
+    }
+
     /**
      * @return
      */

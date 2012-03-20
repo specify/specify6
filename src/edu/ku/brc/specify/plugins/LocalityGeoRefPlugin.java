@@ -46,6 +46,7 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
+import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
@@ -201,7 +202,9 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                                                              country,
                                                              state,
                                                              county == null ? "" : county,
-                                                             locName);
+                                                             locName,
+                                                             locality.getErrorPolygon(),
+                                                             locality.getErrorEstimate());
                 
                 List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
                 items.add(geoCoordData);
@@ -387,6 +390,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                String latStr = LatLonConverter.ensureFormattedString(lat1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Latitude);
                String lonStr = LatLonConverter.ensureFormattedString(lon1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Longitude);
                latLonUI.setLatLon(latStr, lonStr, null, null);
+               latLonUI.setErrorInfo(gcData.getErrorPolygon(), gcData.getErrorEstimate());
            }
        }
     }

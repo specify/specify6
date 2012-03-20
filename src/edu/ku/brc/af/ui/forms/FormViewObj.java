@@ -4131,12 +4131,9 @@ public class FormViewObj implements Viewable,
     @Override
     public void doneBuilding()
     {
-        for (FVOFieldInfo fi : controlsById.values())
+        for (UIPluginable plugin : uiPlugins)
         {
-            if (fi.getUiPlugin() != null)
-            {
-                fi.getUiPlugin().setParent(this);
-            }
+            plugin.setParent(this);
         }
         
         notifyUIPluginsOfChanges(false, isNewlyCreatedDataObj);
