@@ -1374,14 +1374,19 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         pb.add(UIHelper.createI18NFormLabel("IT_Password"), cc.xy(1, 3));
         pb.add(passwordTF, cc.xy(3, 3));
-        
         pb.add(statusLbl, cc.xyw(1, 5, 3));
         
-        pb.setDefaultDialogBorder();
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+        JLabel icon = new JLabel(IconManager.getIcon("MySQLFull")); // Not DB agnostic
+        icon.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 2));
+        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+        outerPanel.add(icon, cc.xy(1, 1));
+        outerPanel.add(pb.getPanel(), cc.xy(3, 1));
+        //outerPanel.setDefaultDialogBorder();
         
         while (true)
         {
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, pb.getPanel());
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, outerPanel.getPanel());
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {

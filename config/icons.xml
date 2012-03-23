@@ -6,6 +6,7 @@
         <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
     -->
     
+    <icon name="MySQLFull"            file="mysql_logo_name.png" sizes="NonStd"/>
     <icon name="AppIcon"          file="specify32.png" sizes="all"/>
     <icon name="AppIconE"         file="specify32E.png" sizes="all"/>
     <icon name="AppIconM"         file="specify32M.png" sizes="all"/>
