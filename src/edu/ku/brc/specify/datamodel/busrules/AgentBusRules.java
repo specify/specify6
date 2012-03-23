@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +34,12 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -55,6 +62,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.plugins.PartialDateUI;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -610,6 +618,73 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         }
         
         return super.beforeSaveCommit(dataObj, session);
+    }
+    
+    /**
+     * @param specifyUser
+     * @param division
+     * @return
+     */
+    public static boolean createUserAgent(final SpecifyUser specifyUser, 
+                                          final Division    division)
+    {
+        final JTextField fName = UIHelper.createTextField(20);
+        final JTextField lName = UIHelper.createTextField();
+        final JTextField email = UIHelper.createTextField();
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,4px,p,4px"));
+        pb.add(UIHelper.createFormLabel("First Name"), cc.xy(1, 1));
+        pb.add(UIHelper.createFormLabel("Last Name"),  cc.xy(1, 3));
+        pb.add(UIHelper.createFormLabel("Email"),      cc.xy(1, 5));
+        
+        pb.add(fName, cc.xy(3, 1));
+        pb.add(lName, cc.xy(3, 3));
+        pb.add(email, cc.xy(3, 5));
+        
+        pb.setDefaultDialogBorder();
+        CustomDialog dlg = new CustomDialog((Dialog)null, "Create Agent", true, CustomDialog.OKCANCEL, pb.getPanel());   
+        UIHelper.centerAndShow(dlg);
+        
+        boolean hasData = StringUtils.isNotEmpty(lName.getText()) && StringUtils.isNotEmpty(fName.getText());
+        if (hasData && !dlg.isCancelled())
+        {
+            Agent usrAgent = new Agent();
+            usrAgent.initialize();
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                session.beginTransaction();
+                SpecifyUser spUser = session.merge(specifyUser);
+                usrAgent.setLastName(lName.getText());
+                usrAgent.setFirstName(fName.getText());
+                usrAgent.setEmail(email.getText());
+                
+                usrAgent.setSpecifyUser(spUser);
+                spUser.getAgents().add(usrAgent);
+                usrAgent.setDivision(division); // Set the new Division
+                
+                session.saveOrUpdate(usrAgent);
+                session.saveOrUpdate(spUser);
+                session.commit();
+                
+                return true;
+                
+            } catch (Exception ex)
+            {
+                if (session != null)
+                {
+                    session.rollback();
+                }
+            } finally
+            {
+                if (session != null) session.close();
+            }
+        }
+        return false;
     }
 
 }

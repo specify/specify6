@@ -32,7 +32,9 @@ import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -54,8 +56,12 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -299,6 +305,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 navBoxes.add(collNavBox);
             }
             
+            collNavBox.add(NavBox.createBtnWithTT("SYSSTP_SHOW_USERS_LOGGED", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    showUsersLoggedIn();
+                }
+            })); 
+            navBoxes.add(collNavBox);
         }
         isShowDefault = true;
     }
@@ -364,6 +377,28 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
             }
         }
+    }
+    
+    /**
+     * 
+     */
+    private void showUsersLoggedIn()
+    {
+        String sql = " SELECT Name, IsLoggedIn, IsLoggedInReport, LoginCollectionName, LoginDisciplineName FROM specifyuser WHERE IsLoggedIn <> 0";
+        Vector<Object[]> dataRows = BasicSQLUtils.query(sql);
+        DefaultTableModel model = new DefaultTableModel((Object[][])dataRows.toArray(), new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
+        JTable table = new JTable(model);
+        
+        JScrollPane scrollPane = UIHelper.createScrollPane(table);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        CustomDialog infoDlg = new CustomDialog((Dialog)null, "Users Logged In", true, CustomDialog.OK_BTN, panel);
+        
+        infoDlg.setCancelLabel("Close");
+        infoDlg.createUI();
+        infoDlg.setSize(600,300);
+        infoDlg.setVisible(true);
     }
     
     /**

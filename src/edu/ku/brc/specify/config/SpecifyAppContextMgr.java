@@ -27,6 +27,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
+import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
@@ -46,8 +48,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -614,7 +621,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             setClassObject(Institution.class, institution);
             
-            Agent.setUserAgent(spUser, discipline.getDivision());
+            if (!Agent.setUserAgent(spUser, discipline.getDivision()))
+            {
+                return null;
+            }
             
             AppContextMgr am = AppContextMgr.getInstance();
             discipline.getTaxonTreeDef().forceLoad();
@@ -3196,16 +3206,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             sb.setLength(0);
             sb.append("SELECT ag FROM SpecifyUser spu INNER JOIN spu.agents ag ");
-            if (discipline != null)
-            {
-                sb.append("INNER JOIN ag.division dv INNER JOIN dv.disciplines dsp  WHERE dsp.id = ");
-                sb.append(discipline.getId());
-                sb.append(" AND spu.id in (");
-            }
-            else
-            {
-                sb.append("WHERE spu.id in (");
-            }
+            sb.append("INNER JOIN ag.division dv INNER JOIN dv.disciplines dsp  WHERE dsp.id = ");
+            sb.append(discipline.getId());
+            sb.append(" AND spu.id in (");
             for (int i=0;i<ids.size();i++)
             {
                 if (i > 0) sb.append(",");
@@ -3286,6 +3289,24 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (logins.size() > 0)
         {
+            String sql = " SELECT Name, IsLoggedIn, IsLoggedInReport, LoginCollectionName, LoginDisciplineName FROM specifyuser WHERE IsLoggedIn <> 0";
+            Vector<Object[]> dataRows = BasicSQLUtils.query(sql);
+            DefaultTableModel model = new DefaultTableModel((Object[][])dataRows.toArray(), new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
+            JTable table = new JTable(model);
+            
+            JScrollPane scrollPane = UIHelper.createScrollPane(table);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(scrollPane, BorderLayout.CENTER);
+            panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+            CustomDialog infoDlg = new CustomDialog((Dialog)null, "Users Logged In", true, CustomDialog.OK_BTN, panel);
+            
+            infoDlg.setCancelLabel("Close");
+            infoDlg.createUI();
+            infoDlg.setSize(600,300);
+            infoDlg.setVisible(true);
+            return infoDlg.getBtnPressed();
+        }
+/*
             String loginStr = "";
             for (int l = 0; l < logins.size(); l++)
             {
@@ -3318,7 +3339,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (includeOverride) dlg.setOkLabel(L10N + "LOGIN_OVRDE");
             UIHelper.centerAndShow(dlg);
             return dlg.getBtnPressed();
-        }
+        }*/
         return CustomDialog.NONE_BTN;
     }
     

@@ -51,6 +51,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
 import edu.ku.brc.specify.dbsupport.TypeCode;
 import edu.ku.brc.specify.dbsupport.TypeCodeItem;
 import edu.ku.brc.ui.CommandAction;
@@ -1150,11 +1151,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
-     * Make all agents in a set point to a single specifyUser 
-     * @param user User that agents will point to
-     * @param agents Agents that will all point to the given user
+     * Make all agents in a set point to a single specifyUser.
+     * @param user User that Agent will point to
+     * @param division current Division
+     * @return true if one was found or created
      */
-    public static void setUserAgent(final SpecifyUser user, final Division division)
+    public static boolean setUserAgent(final SpecifyUser user, 
+                                       final Division division)
     {
         
         String sql = "SELECT a.AgentID FROM agent AS a WHERE a.DivisionID = " + division.getId() + " AND a.SpecifyUserID = " + user.getId();
@@ -1179,9 +1182,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         
         if (notFndErr)
         {
+            AgentBusRules.createUserAgent(user, division);
+            
             UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
             CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+            return false;
         }
+        return true;
     }
     
     /**
