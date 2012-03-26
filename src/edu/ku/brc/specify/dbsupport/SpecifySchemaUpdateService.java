@@ -100,6 +100,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -1373,7 +1374,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     createSGRTables(conn, databaseName);
                     frame.incOverall(); // #25
                     
-                    if (!miscSchema16Updates(conn, databaseName)) // Steps 26 - 28
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //                                                                                                              //
+                    // Schema Changes 1.7                                                                                     //
+                    //                                                                                                              //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    tblName = getTableTitleForFrame(SpQuery.getClassTableId());
+                    len = getFieldLength(conn, databaseName, tblName, "SqlStr");
+                    if (len == 64)
+                    {
+                    	if (!fixSpQuerySQLLength(conn, databaseName))
+                    	{
+                    		return false;
+                    	}
+                    }                     	
+                    frame.incOverall(); // #26
+                  
+                    
+                    if (!miscSchema16Updates(conn, databaseName)) // Steps 27 - 29
                     {
                         return false;
                     }
@@ -3467,4 +3486,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 });
         worker.execute();
     }
+    
+    private boolean fixSpQuerySQLLength(Connection conn, String databaseName)
+    {
+		BasicSQLUtils.setSkipTrackExceptions(false);
+		try {
+			update(conn, "ALTER TABLE SpQuery CHANGE COLUMN `SqlStr` `SqlStr` TEXT NULL DEFAULT NULL");
+		} catch (Exception ex) {
+			errMsgList.add(String.format(
+					"Error - Updating %s SpQuery.SqlStr - varchar(64) -> text  Excpt: %s",
+					databaseName, "SpQuery", ex.getMessage()));
+			return false;
+		}
+		BasicSQLUtils.setSkipTrackExceptions(false);
+		return true;
+    }
+
 }
