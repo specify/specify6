@@ -670,7 +670,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             }
             
             HashMap<String, Integer> hostHash = new HashMap<String, Integer>();
-            Vector<Object[]>         rows     = BasicSQLUtils.query(connection, sb.toString());
+            BasicSQLUtils.setSkipTrackExceptions(true);
+            Vector<Object[]> rows = BasicSQLUtils.query(connection, sb.toString());
+            BasicSQLUtils.setSkipTrackExceptions(false);
+            
             for (Object[] row : rows)
             {
                 String host = (String)row[0];

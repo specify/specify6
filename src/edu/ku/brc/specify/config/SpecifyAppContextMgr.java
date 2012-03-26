@@ -20,14 +20,11 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIHelper.createI18NLabel;
-import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
-import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -48,12 +45,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -3277,6 +3272,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @param titleKey
      * @param msgKey
+     * @param logins
      * @param includeOverride whether to include asking the user to clear all logged in users
      * @return CustomDialog.NONE_BTN - no one on, CustomDialog.OK_BTN user are on do override, 
      * CustomDialog.OK_CANCEL users logged on, but don't override
@@ -3289,62 +3285,49 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (logins.size() > 0)
         {
-            String sql = " SELECT Name, IsLoggedIn, IsLoggedInReport, LoginCollectionName, LoginDisciplineName FROM specifyuser WHERE IsLoggedIn <> 0";
+            SpecifyUser currUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            
+            String sql = "SELECT Name, IsLoggedIn, IsLoggedInReport, LoginCollectionName, LoginDisciplineName FROM specifyuser WHERE IsLoggedIn <> 0 AND SpecifyUserID <> "+currUser.getId();
             Vector<Object[]> dataRows = BasicSQLUtils.query(sql);
-            DefaultTableModel model = new DefaultTableModel((Object[][])dataRows.toArray(), new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
+            Object[][] rows = new Object[dataRows.size()][4];
+            for (int i=0;i<rows.length;i++)
+            {
+                rows[i] = dataRows.get(i);
+            }
+            DefaultTableModel model = new DefaultTableModel(rows, new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
             JTable table = new JTable(model);
+            UIHelper.calcColumnWidths(table, 5);
+            UIHelper.makeTableHeadersCentered(table, true);
             
             JScrollPane scrollPane = UIHelper.createScrollPane(table);
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.add(scrollPane, BorderLayout.CENTER);
-            panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-            CustomDialog infoDlg = new CustomDialog((Dialog)null, "Users Logged In", true, CustomDialog.OK_BTN, panel);
             
-            infoDlg.setCancelLabel("Close");
-            infoDlg.createUI();
-            infoDlg.setSize(600,300);
-            infoDlg.setVisible(true);
-            return infoDlg.getBtnPressed();
-        }
-/*
-            String loginStr = "";
-            for (int l = 0; l < logins.size(); l++)
-            {
-                if (l > 0)
-                {
-                    loginStr += ", ";
-                }
-                loginStr += "'" + logins.get(l) + "'";
-            }
+            String          rowDef   = "f:p:g, 2dlu, f:p:g, 2dlu, f:p:g";
+            int             btns     = includeOverride ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN;
+            String          titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : L10N + "OU_TITLE");
+            CellConstraints cc       = new CellConstraints();
+            PanelBuilder    pb       = new PanelBuilder(new FormLayout("f:p:g", rowDef));
             
-            String rowDef = "f:p:g, 2dlu, f:p:g, 2dlu, f:p:g";
-            int    btns   = includeOverride ? CustomDialog.OKCANCELHELP : CustomDialog.OKHELP;
-            
-            CellConstraints cc = new CellConstraints();
-            String titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : L10N + "OU_TITLE");
-            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", rowDef));
-            
-            pb.add(createI18NLabel(L10N + "OTHER_USERS"), cc.xy(1, 1));
-            pb.add(createLabel(loginStr),   cc.xy(1, 3));
-            pb.add(createI18NLabel(msgKey), cc.xy(1, 5));
-            
+            pb.add(UIHelper.createI18NLabel(L10N + "OTHER_USERS"), cc.xy(1, 1));
+            pb.add(scrollPane,   cc.xy(1, 3));
+            pb.add(UIHelper.createI18NLabel(msgKey), cc.xy(1, 5));
+
             pb.setDefaultDialogBorder();
             
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                                                titleStr,
-                                                true,
-                                                btns,
-                                                pb.getPanel());
+            CustomDialog infoDlg = new CustomDialog((Dialog)null, titleStr, true, btns, pb.getPanel());
             
-            if (includeOverride) dlg.setOkLabel(L10N + "LOGIN_OVRDE");
-            UIHelper.centerAndShow(dlg);
-            return dlg.getBtnPressed();
-        }*/
+            if (includeOverride) infoDlg.setOkLabel(UIRegistry.getResourceString(L10N + "LOGIN_OVRDE"));
+            
+            infoDlg.createUI();
+            infoDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            UIHelper.centerAndShow(infoDlg);
+            return infoDlg.getBtnPressed();
+        }
         return CustomDialog.NONE_BTN;
     }
     
     /**
-     * 
+     * @param currentUserName
+     * @return
      */
     public boolean checkToOverrideLogins(final String currentUserName)
     {
@@ -3363,9 +3346,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 ArrayList<String> userNames = new ArrayList<String>();
                 String sql = String.format("SELECT name FROM specifyuser WHERE name <> '%s'", currentUserName);
-                for (Object user : BasicSQLUtils.querySingleCol(sql))
+                for (Object usr : BasicSQLUtils.querySingleCol(sql))
                 {
-                    userNames.add((String)user);
+                    userNames.add((String)usr);
                 }
                 logins = userNames;
             }

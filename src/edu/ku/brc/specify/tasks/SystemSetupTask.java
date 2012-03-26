@@ -1020,9 +1020,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        //SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).checkToOverrideLogins(null);
-        //boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
+        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).checkToOverrideLogins(spUser.getName());
         if (!ok)
         {
             TaskMgr.getTask("Startup").requestContext();

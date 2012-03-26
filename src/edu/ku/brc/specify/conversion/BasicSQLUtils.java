@@ -727,6 +727,15 @@ public class BasicSQLUtils
                 doCloseConn   = true;
                 doSkipConnSet = true;
                 
+            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException e)
+            {
+                e.printStackTrace();
+                if (!skipTrackExceptions)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, e);
+                }
+
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
@@ -836,6 +845,15 @@ public class BasicSQLUtils
                 doCloseConn   = true;
                 doSkipConnSet = true;
                 
+            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException e)
+            {
+                e.printStackTrace();
+                if (!skipTrackExceptions)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, e);
+                }
+
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
