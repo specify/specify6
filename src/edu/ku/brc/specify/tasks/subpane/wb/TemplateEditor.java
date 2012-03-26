@@ -34,9 +34,11 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -55,6 +57,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -125,7 +128,7 @@ public class TemplateEditor extends CustomDialog
     protected JButton                        unmapBtn;
     protected JButton                        upBtn;
     protected JButton                        downBtn;
-    
+    protected JLabel						 descriptionLbl;
     protected JList                          mapList;
     protected DefaultModifiableListModel<FieldMappingPanel> mapModel;
     protected JScrollPane                    mapScrollPane;
@@ -177,6 +180,7 @@ public class TemplateEditor extends CustomDialog
         
         helpContext = dataFileInfo == null ? "WorkbenchNewMapping" : "WorkbenchEditMapping";
         
+        buildUploadDefs();
         createUI();
     }
     
@@ -195,6 +199,7 @@ public class TemplateEditor extends CustomDialog
         
         helpContext = "WorkbenchEditMapping";
         
+        buildUploadDefs();
         createUI();
     }
     
@@ -217,19 +222,36 @@ public class TemplateEditor extends CustomDialog
                                                        SchemaI18NService.getCurrentLocale());
 
         
+        
         // Create the Table List
         Vector<TableInfo> tableInfoList = new Vector<TableInfo>();
         for (DBTableInfo ti : databaseSchema.getTables())
         {
             if (StringUtils.isNotEmpty(ti.toString()))
             {
-                TableInfo tableInfo = new TableInfo(ti, IconManager.STD_ICON_SIZE);
+            	TableInfo tableInfo = new TableInfo(ti, IconManager.STD_ICON_SIZE);
                 tableInfoList.add(tableInfo); 
                 
                 Vector<FieldInfo> fldList = new Vector<FieldInfo>();
                 for (DBFieldInfo fi : ti.getFields())
                 {
-                    fldList.add(new FieldInfo(ti, fi));
+                    String fldTitle = fi.getTitle().replace(" ", "");
+                    if (fldTitle.equalsIgnoreCase(fi.getName()))
+                    {
+                    	//get title from mapped field
+                    	UploadInfo upInfo = getUploadInfo(fi);
+                    	DBFieldInfo mInfo = getMappedFieldInfo(fi);
+                    	if (mInfo != null)
+                    	{
+                    		String title = mInfo.getTitle();
+                    		if (upInfo != null && upInfo.getSequence() != -1)
+                    		{
+                    			title += " " + (upInfo.getSequence() + 1);
+                    		}
+                    		fi.setTitle(title);
+                    	}
+                    }
+                	fldList.add(new FieldInfo(ti, fi));
                 }
                 //Collections.sort(fldList);
                 tableInfo.setFieldItems(fldList);
@@ -280,6 +302,7 @@ public class TemplateEditor extends CustomDialog
                 if (!e.getValueIsAdjusting())
                 {
                     updateEnabledState();
+                    updateFieldDescription();
                 }
             }
         });
@@ -312,6 +335,7 @@ public class TemplateEditor extends CustomDialog
                                     fillFieldList(tblInfo);
                                     //System.out.println(fldInfo.hashCode()+" "+fldInfo.getFieldInfo().hashCode());
                                     fieldList.setSelectedValue(fldInfo, true);
+                                    updateFieldDescription();
                                     break;
                                 }
                             }
@@ -447,7 +471,16 @@ public class TemplateEditor extends CustomDialog
         builder.add(upDownPanel.getPanel(), cc.xy(9, 3));
                     
         mainLayoutPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPanel = mainLayoutPanel;
+        
+        JPanel megaPanel = new JPanel(new BorderLayout());
+        megaPanel.add(mainLayoutPanel, BorderLayout.CENTER);
+        descriptionLbl = createLabel("  ", SwingConstants.LEFT);
+        //PanelBuilder descBuilder = new PanelBuilder(new FormLayout("f:p:g, 3dlu","p"));
+        //descBuilder.add(descriptionLbl, cc.xy(1, 1));
+        //megaPanel.add(descBuilder.getPanel(), BorderLayout.SOUTH);
+        megaPanel.add(descriptionLbl, BorderLayout.SOUTH);
+        //contentPanel = mainLayoutPanel;
+        contentPanel = megaPanel;
         
         Color bgColor = btnPanel.getBackground();
         int inc = 16;
@@ -488,6 +521,7 @@ public class TemplateEditor extends CustomDialog
                 cancelBtn.requestFocus();
                 fieldModel.clear();
                 fieldList.clearSelection();
+                updateFieldDescription();
                 updateEnabledState();
                 
                 if (mapModel.size() > 1)
@@ -591,6 +625,119 @@ public class TemplateEditor extends CustomDialog
         mapList.setSelectedValue(fmp, true);
         
         return fmp;
+    }
+    
+    protected UploadInfo getUploadInfo(DBFieldInfo fInfo)
+    {
+		String key = fInfo.getTableInfo().getName().toLowerCase() + "." + fInfo.getName().toLowerCase();
+		return uploadDefs.get(key);    	
+    }
+    
+    protected DBFieldInfo getMappedFieldInfo(DBFieldInfo fInfo)
+    {
+		UploadInfo upInfo = getUploadInfo(fInfo);
+		if (upInfo == null) 
+		{
+			return getFieldInfoByTableField(fInfo.getTableInfo().getName(), fInfo.getName());
+		} else
+		{
+			return upInfo.getFieldInfo();
+		}    	
+    	
+    }
+    protected DBFieldInfo getMappedFieldInfo(FieldInfo fldItem)
+    {
+		DBFieldInfo fInfo = ((FieldInfo )fldItem).getFieldInfo();
+		return getMappedFieldInfo(fInfo);
+    }
+    
+    protected void updateFieldDescription()
+    {
+    	TableListItemIFace fldItem = (TableListItemIFace)fieldList.getSelectedValue();
+    	//fieldList.setToolTipText(null);
+    	descriptionLbl.setText("   ");
+		descriptionLbl.setToolTipText(null);
+    	if (fldItem != null && fldItem instanceof FieldInfo)
+    	{
+    		DBFieldInfo mInfo = getMappedFieldInfo((FieldInfo)fldItem);
+    		if (mInfo == null)
+    		{
+    			//System.out.println("UploadInfo not found for " + fldItem);
+    		} else
+    		{
+    			//System.out.println(mInfo.getDescription());
+    			if (!mInfo.getDescription().equalsIgnoreCase(mInfo.getTitle()) && !mInfo.getDescription().equalsIgnoreCase(mInfo.getName()))
+    			{
+    				//fieldList.setToolTipText(mInfo.getDescription());
+    				String desc = "  " + getResourceString("TemplateEditor.SpFldDesc") + " " + mInfo.getDescription(); 
+    				descriptionLbl.setText(desc);
+    				descriptionLbl.setToolTipText(desc);
+    			}
+    		}
+    	}
+    }
+    
+    protected Map<String, UploadInfo> uploadDefs = new HashMap<String, UploadInfo>();
+    
+    @SuppressWarnings("unchecked")
+    protected void buildUploadDefs()
+    {
+        Element defs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
+		List<Object> flds = defs.selectNodes("field");
+		uploadDefs.clear();
+		for (Object fld : flds)
+		{
+			String table = XMLHelper.getAttr((Element )fld, "table", null);
+			String actualTable = XMLHelper.getAttr((Element )fld, "actualtable", null);
+			if (actualTable == null)
+			{
+				actualTable = table;
+			}
+			String field = XMLHelper.getAttr((Element )fld, "name", null);
+			String actualField = XMLHelper.getAttr((Element )fld, "actualname", null);
+			String relatedField = XMLHelper.getAttr((Element )fld, "relatedfieldname", null);
+			String mappedField = field;
+			if (actualField != null)
+			{
+				mappedField = actualField;
+			}
+			if (relatedField != null)
+			{
+				mappedField = relatedField;
+			}
+			int sequence = XMLHelper.getAttr((Element)fld, "onetomanysequence", -1);
+			String key = table.toLowerCase() + "." + field.toLowerCase();
+			DBFieldInfo fInfo = getFieldInfoByTableField(actualTable, actualField);
+			if (fInfo != null) 
+			{
+				//System.out.println("putting " + key + " => " + actualTable.toLowerCase() + "." + mappedField.toLowerCase());
+				uploadDefs.put(key, new UploadInfo(fInfo, sequence));
+			}
+		}
+    }
+    
+    protected DBFieldInfo getFieldInfoByTableField(String tbl, String fld)
+    {
+		DBTableInfo tInfo = null;
+		for (DBTableInfo t : DBTableIdMgr.getInstance().getTables())
+		{
+			if (t.getName().equalsIgnoreCase(tbl))
+			{
+				tInfo = t;
+				break;
+			}
+		}
+		if (tInfo != null)
+		{
+			for (DBFieldInfo f : tInfo.getFields())
+			{
+				if (f.getName().equalsIgnoreCase(fld))
+				{
+					return f;
+				}
+			}
+		}
+    	return null;
     }
     
     /**
@@ -1753,10 +1900,10 @@ public class TemplateEditor extends CustomDialog
                     fldName = fldName.substring(0, fldName.length()-1);
                 }
                 FieldInfo newInfo = null;
-                System.out.println("re-mapping " + fldName);
+                //System.out.println("re-mapping " + fldName);
                 for (FieldInfo fi : taxaOnly.getFieldItems())
                 {
-                    System.out.println("  checking " + fi.getFieldInfo().getName());
+                    //System.out.println("  checking " + fi.getFieldInfo().getName());
                 	if (fi.getFieldInfo().getName().equalsIgnoreCase(fldName))
                     {
                         newInfo = fi;
@@ -2430,6 +2577,38 @@ public class TemplateEditor extends CustomDialog
         
     }
 
+    
+    //Stores info about the mappings of fields in the Workbench Schema
+    private class UploadInfo 
+    {
+    	protected final DBFieldInfo fieldInfo;
+    	protected final int sequence;
+		/**
+		 * @param fieldInfo
+		 * @param sequence
+		 */
+		public UploadInfo(DBFieldInfo fieldInfo, int sequence) 
+		{
+			super();
+			this.fieldInfo = fieldInfo;
+			this.sequence = sequence;
+		}
+		/**
+		 * @return the fieldInfo
+		 */
+		public DBFieldInfo getFieldInfo() 
+		{
+			return fieldInfo;
+		}
+		/**
+		 * @return the sequence
+		 */
+		public int getSequence() 
+		{
+			return sequence;
+		}
+    	
+    }
     /**
      * @return the isReadOnly
      */
