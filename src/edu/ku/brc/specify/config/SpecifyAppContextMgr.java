@@ -457,7 +457,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             SpecifyUser spUser = session.getData(SpecifyUser.class, "id", userArg.getId(), DataProviderSessionIFace.CompareType.Equals); //$NON-NLS-1$
             
             String  alwaysAskPref = "ALWAYS.ASK.COLL"; //$NON-NLS-1$
-            boolean askForColl    = remotePrefs.getBoolean(alwaysAskPref, false);
+            boolean askForColl    = remotePrefs.getBoolean(alwaysAskPref, true);
             String   prefName     = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
             
             // First get the Collections the User has access to.
@@ -581,6 +581,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     collection.forceLoad();
                     remotePrefs.put(prefName, (Long.toString(collection.getCollectionId())));
+                    remotePrefs.flush();
                 }
             }
             
