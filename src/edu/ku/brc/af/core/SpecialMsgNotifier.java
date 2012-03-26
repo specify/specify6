@@ -132,12 +132,16 @@ public class SpecialMsgNotifier
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         
         postParams.add(new NameValuePair("id", id)); //$NON-NLS-1$
+        
+        String resAppVersion = UIRegistry.getAppVersion();
+        resAppVersion = StringUtils.isEmpty(resAppVersion) ? "Unknown" : resAppVersion;
 
         // get the OS name and version
         postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
         postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
         postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
         postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("app_version",  UIRegistry.getAppVersion())); //$NON-NLS-1$
         
         // create an array from the params
         NameValuePair[] paramArray = new NameValuePair[postParams.size()];
