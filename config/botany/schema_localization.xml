@@ -3,23 +3,6 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Collector Number</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Collector Number</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -37,6 +20,23 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
+      <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Collector Number</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Collector Number</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
     </items>
     <names/>
     <descs/>
@@ -45,23 +45,6 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Specimen\nDescription</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Image, Sound, Preparation, Container(Container Label?).</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -75,6 +58,23 @@
           <str language="en" country="" variant="">
             <version>0</version>
             <text>User definable.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Specimen\nDescription</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Image, Sound, Preparation, Container(Container Label?).</text>
           </str>
         </descs>
         <spExportSchemaItems/>

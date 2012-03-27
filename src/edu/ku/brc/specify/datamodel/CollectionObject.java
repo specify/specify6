@@ -110,6 +110,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        notifications;
     protected BigDecimal                    totalValue;
     protected Byte							sgrStatus;
+    protected String						ocr;
     
     // Security
     protected Byte                          visibility;
@@ -1204,8 +1205,28 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
 	{
 		this.sgrStatus = sgrStatus;
 	}
+	
+	
 
-    /* (non-Javadoc)
+    /**
+	 * @return the ocr
+	 */
+    @Lob
+    @Column(name = "OCR", length = 4096)
+    public String getOcr() 
+	{
+		return ocr;
+	}
+
+	/**
+	 * @param ocr the ocr to set
+	 */
+	public void setOcr(String ocr) 
+	{
+		this.ocr = ocr;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
      */
     @Override

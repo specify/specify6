@@ -243,7 +243,8 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     /**
      * @return the sql
      */
-    @Column(name = "SqlStr", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Lob
+    @Column(name = "SqlStr", length = 4096)
     public String getSqlStr()
     {
         return sqlStr;
