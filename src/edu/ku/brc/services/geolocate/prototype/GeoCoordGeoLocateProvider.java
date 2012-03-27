@@ -19,7 +19,6 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
-import edu.ku.brc.services.geolocate.prototype.ui.GeoLocateResultsChooser;
 import edu.ku.brc.services.geolocate.prototype.client.GeolocatesvcLocator;
 import edu.ku.brc.services.geolocate.prototype.client.GeolocatesvcSoap;
 import edu.ku.brc.services.geolocate.prototype.client.Georef_Result;
@@ -245,7 +244,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
                 
                         // create the UI for displaying the BG results
                         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-                        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, withResults); //$NON-NLS-1$
+                        edu.ku.brc.services.geolocate.prototype.ui.GeoLocateResultsChooser bgResChooser = new edu.ku.brc.services.geolocate.prototype.ui.GeoLocateResultsChooser(topFrame, withResults); //$NON-NLS-1$
                         
                         List<Georef_Result> results = bgResChooser.getResultsChosen();
                         
