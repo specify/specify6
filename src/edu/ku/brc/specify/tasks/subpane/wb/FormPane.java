@@ -661,7 +661,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
 				public void actionPerformed(ActionEvent arg0) {
 					if (arg0.getSource() == comboBox)
 					{
-						System.out.println("ComboBox Action!" + ((JComboBox )arg0.getSource()).getName());
+						//System.out.println("ComboBox Action!" + ((JComboBox )arg0.getSource()).getName());
 						stateChange();
 					}
 				}
@@ -1278,6 +1278,15 @@ public class FormPane extends JPanel implements FormPaneWrapper
             	WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(currentIndex);
             	copyDataFromForm();
             	workbenchPane.updateRowValidationStatus(currentIndex, -1, null);
+				SwingUtilities.invokeLater(new Runnable(){
+
+					@Override
+					public void run() 
+					{
+						workbenchPane.updateBtnUI();
+					}
+	    		
+				});
             	updateValidationUI(wbRow);
             	ignoreChanges = false;
             }
