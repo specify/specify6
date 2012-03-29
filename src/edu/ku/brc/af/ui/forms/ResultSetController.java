@@ -680,6 +680,16 @@ public class ResultSetController implements ValidationListener
     public void updateUI()
     {
         if (panel == null) return;
+        
+        // This needs to be done first because the enabling of the other buttons
+        // may rely on the 'New Btn'
+        if (newRecBtn != null)
+        {
+            //log.debug("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
+            boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || 
+                    (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : formValidator.isEnabled()));
+            newRecBtn.setEnabled(enable);
+        }
                 
         boolean isNewAndValid = newRecBtn == null ? true : newRecBtn.isEnabled();
         
@@ -706,13 +716,6 @@ public class ResultSetController implements ValidationListener
         if (delRecBtn != null)
         {
             delRecBtn.setEnabled(numRecords > 0);
-        }
-        if (newRecBtn != null)
-        {
-            //log.debug("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
-            boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || 
-                    (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : formValidator.isEnabled()));
-            newRecBtn.setEnabled(enable);
         }
  
         panel.validate();
