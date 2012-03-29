@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -42,6 +43,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -316,23 +318,30 @@ public class XLSExport implements DataExport
 		}
         try
         {
-            //write the workbook
-            FileOutputStream fos = new FileOutputStream(getConfig().getFileName());
-            workBook.write(fos);
-            fos.close();
-            
-            //Now write the mappings.
-            //NOT (hopefully) the best way to write the mappings, but (sadly) the easiest way. 
-            //May need to do this another way if this slows performance for big wbs.
-            if (mappings != null)
+            // Write the workbook
+            File file = new File(getConfig().getFileName());
+            if (file.canWrite())
             {
-                InputStream is = new FileInputStream(getConfig().getFileName());
-                POIFSFileSystem poifs = new POIFSFileSystem(is);
-                is.close();
-                mappings.write(poifs.getRoot(), DocumentSummaryInformation.DEFAULT_STREAM_NAME);
-                fos = new FileOutputStream(getConfig().getFileName());
-                poifs.writeFilesystem(fos);
+                FileOutputStream fos = new FileOutputStream(file);
+                workBook.write(fos);
                 fos.close();
+                
+                //Now write the mappings.
+                //NOT (hopefully) the best way to write the mappings, but (sadly) the easiest way. 
+                //May need to do this another way if this slows performance for big wbs.
+                if (mappings != null)
+                {
+                    InputStream is = new FileInputStream(file);
+                    POIFSFileSystem poifs = new POIFSFileSystem(is);
+                    is.close();
+                    mappings.write(poifs.getRoot(), DocumentSummaryInformation.DEFAULT_STREAM_NAME);
+                    fos = new FileOutputStream(file);
+                    poifs.writeFilesystem(fos);
+                    fos.close();
+                }
+            } else
+            {
+                UIRegistry.displayErrorDlgLocalized("WB_EXPORT_PERM_ERR");
             }
         } 
         catch (Exception e)
