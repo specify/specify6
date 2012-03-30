@@ -243,7 +243,7 @@ public class UploadTable implements Comparable<UploadTable>
      * If true then matching records are updated with values in uploading dataset.
      * 
      */
-    protected boolean                                   updateMatches                = true;
+    protected boolean                                   updateMatches                = false;
 
     /**
      * If true then Match Status will be displayed
