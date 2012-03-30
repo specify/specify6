@@ -4356,6 +4356,7 @@ public class UploadTable implements Comparable<UploadTable>
 							boolean hasLat1 = false, hasLong1 = false, hasLat2 = false, hasLong2 = false;
 							for (UploadField f : getLatLongFlds())
 							{
+			                	f.setValue(uploadData.get(row, f.getIndex()));
 								String coordName = f.getField().getName();
 								if (coordName.equalsIgnoreCase("latitude1") && StringUtils.isNotBlank(f.getValue()))
 								{
