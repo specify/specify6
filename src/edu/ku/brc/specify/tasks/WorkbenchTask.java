@@ -188,7 +188,8 @@ public class WorkbenchTask extends BaseTask
             getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
 
     
-    protected static SoftReference<DBTableIdMgr> databasechema = null;
+    protected static SoftReference<DBTableIdMgr> 	databasechema = null;
+    protected static boolean					  	isCustomizedSchema = false; //true if schema and upload_defs are loaded from a user-customized file
 
     // Data Members
     protected NavBox                      workbenchNavBox;
@@ -202,9 +203,17 @@ public class WorkbenchTask extends BaseTask
     protected boolean                     doingStarterPane = false;
 
     public final DatasetNavBoxMgr datasetNavBoxMgr;
+    
 
     //for batch upload hack
     //protected boolean testingJUNK = false;
+
+	/**
+	 * @return the isCustomizedSchema
+	 */
+	public static boolean isCustomizedSchema() {
+		return isCustomizedSchema;
+	}
 
 	/**
 	 * Constructor. 
@@ -237,6 +246,8 @@ public class WorkbenchTask extends BaseTask
             }
             WorkbenchDataItem.setMaxWBCellLength(max);
         }
+        
+        getDatabaseSchema();
 	}
 
     /* (non-Javadoc)
@@ -394,7 +405,27 @@ public class WorkbenchTask extends BaseTask
         if (schema == null)
         {
             schema = new DBTableIdMgr(false);
-            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+            
+            //check for custom config files in appdatadir
+            File customSchemaFile = new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_datamodel.xml");
+            File customDefFile = new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml");
+            if (customSchemaFile.exists() && !customDefFile.exists()) 
+            {
+            	log.error("a customized specify_workbench_datamodel.xml was found but not loaded because a customized specify_workbench_upload_def.xml was not found");
+            } else if (!customSchemaFile.exists() && customDefFile.exists()) 
+            {
+            	log.error("a customized specify_workbench_upload_def.xml was found but not loaded because a customized specify_workbench_datamodel.xml was not found");
+            }
+            
+            if (customSchemaFile.exists() && customDefFile.exists())
+            {
+            	schema.initialize(customSchemaFile);
+            	isCustomizedSchema = true;
+            }
+            else
+            {
+            	schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+            }
             databasechema = new SoftReference<DBTableIdMgr>(schema);
             
             SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
@@ -665,9 +696,10 @@ public class WorkbenchTask extends BaseTask
      */
     protected TemplateEditor showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
                                                  final WorkbenchTemplate  template,
-                                                 final String             titleKey)
+                                                 final String             titleKey) throws Exception
     {
-        TemplateEditor  mapper;
+        
+    	TemplateEditor  mapper;
         if (template != null)
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), template);
@@ -1616,13 +1648,24 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
         if (workbenchTemplate == null)
         {
-            TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, "WB_MAPPING_EDITOR");
-            if (!dlg.isCancelled())
+            TemplateEditor dlg = null;
+            try 
+            {
+            	dlg = showColumnMapperDlg(dataFileInfo, null, "WB_MAPPING_EDITOR");
+            } catch (Exception ex)
+            {	                    
+            	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+            	log.error(ex);
+            }
+            if (dlg != null && !dlg.isCancelled())
             {   
                 workbenchTemplate = createTemplate(dlg, inputFile != null ? inputFile.getAbsolutePath() : "");
-             }
-            dlg.dispose();
-            
+            }
+            if (dlg != null)
+            {
+            	dlg.dispose();
+            }
         } else 
         {
             //workbenchTemplate = cloneWorkbenchTemplate(workbenchTemplate);
@@ -3031,9 +3074,18 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     protected void editTemplate(final WorkbenchTemplate wbTemplate)
     {
         loadTemplateFromData(wbTemplate);
+        TemplateEditor dlg = null;
         wbTemplate.checkMappings(getDatabaseSchema());
-        TemplateEditor dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR");
-        if (!dlg.isCancelled())
+        try 
+        {
+        	dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR");
+        } catch (Exception ex)
+        {	                    
+        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+        	log.error(ex);
+        }
+        if (dlg != null && !dlg.isCancelled())
         {
         	updateGeoRefInfoAfterTemplateEdit(wbTemplate,
         			dlg.getDeletedItems(), dlg.updateAndGetNewItems());
@@ -3152,7 +3204,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 //                }  
 //            }
         }
-        dlg.dispose();
+        if (dlg != null)
+        {
+        	dlg.dispose();
+        }
     }
     
     protected void updateGeoRefInfoAfterTemplateEdit(final WorkbenchTemplate wbTemplate,
@@ -3711,12 +3766,24 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             if (workbenchTemplate == null)
             {
                 // create a new WorkbenchTemplate
-                TemplateEditor dlg = showColumnMapperDlg(null, null, "WB_MAPPING_EDITOR");
-                if (!dlg.isCancelled())
+                TemplateEditor dlg = null;
+                try 
+                {
+                	dlg = showColumnMapperDlg(null, null, "WB_MAPPING_EDITOR");
+                } catch (Exception ex)
+                {	                    
+                	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                	log.error(ex);
+                }
+                if (dlg != null && !dlg.isCancelled())
                 {   
                     workbenchTemplate = createTemplate(dlg, null);
                 }
-                dlg.dispose();
+                if (dlg != null)
+                {
+                	dlg.dispose();
+                }
 
             }
             else
@@ -3780,11 +3847,20 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         getBoxByTitle(workbenchNavBox, importWB.getName()).setEnabled(false);
                         
                         // show the WorkbenchPaneSS
-                        pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted());
-                        addSubPaneToMgr(pane);
+                        try
+                        {
+                        	pane = new WorkbenchPaneSS(importWB.getName(), WorkbenchTask.this, importWB, false,  !isPermitted());
+                        	addSubPaneToMgr(pane);
                         
-                        // the importImages() call will save the wb if it was just created
-                        pane.setChanged(false);
+                        	// the importImages() call will save the wb if it was just created
+                        	pane.setChanged(false);
+                        } catch (Exception ex)
+                        {
+                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                        	log.error(ex);
+                        	return;
+                        }
                     }
                     else // the Workbench already existed and a pane was already showing
                     {

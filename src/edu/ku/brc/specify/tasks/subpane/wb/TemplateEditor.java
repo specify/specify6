@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,7 +58,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -170,7 +170,7 @@ public class TemplateEditor extends CustomDialog
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo)
+    public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo) throws Exception
     {
         super(frame, title, true, OKCANCELHELP, null);
         
@@ -189,7 +189,7 @@ public class TemplateEditor extends CustomDialog
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate)
+    public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate) throws Exception
     {
         super(frame, title, true, OKCANCELHELP, null);
         
@@ -680,9 +680,17 @@ public class TemplateEditor extends CustomDialog
     protected Map<String, UploadInfo> uploadDefs = new HashMap<String, UploadInfo>();
     
     @SuppressWarnings("unchecked")
-    protected void buildUploadDefs()
+    protected void buildUploadDefs() throws Exception
     {
-        Element defs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
+        Element defs;
+        if (WorkbenchTask.isCustomizedSchema()) 
+        {
+        		defs = XMLHelper.readFileToDOM4J(new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml"));
+        } else
+        {
+        	defs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
+        }
+        		
 		List<Object> flds = defs.selectNodes("field");
 		uploadDefs.clear();
 		for (Object fld : flds)

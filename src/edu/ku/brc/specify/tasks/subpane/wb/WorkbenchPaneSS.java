@@ -342,7 +342,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                            final Taskable  task,
                            final Workbench workbenchArg,
                            final boolean   showImageView,
-                           final boolean isReadOnly)
+                           final boolean isReadOnly) throws Exception
     {
         super(name, task);
         
@@ -3284,7 +3284,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
      * @param tableArg the table that should have it's columns adjusted
      */
-    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) 
+    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) throws Exception
     {
         TableModel  tblModel    = tableArg.getModel();
         TableColumn column      = null;
@@ -3293,7 +3293,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         int         cellWidth   = 0;
         
         
-        Element uploadDefs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
+        Element uploadDefs = null;
+        if (WorkbenchTask.isCustomizedSchema()) 
+        {
+        	uploadDefs = XMLHelper.readFileToDOM4J(new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml"));
+        } else
+        {
+        	uploadDefs = XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
+        }
         
         //UIRegistry.getInstance().hookUpUndoableEditListener(cellEditor);
         
