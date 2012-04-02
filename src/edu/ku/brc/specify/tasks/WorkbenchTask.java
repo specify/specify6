@@ -2334,16 +2334,25 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             @Override
             public void completed(WorkbenchPaneSS workbenchPane)
             {
-                addSubPaneToMgr(workbenchPane);
-                
-                if (glassPane != null)
+                if (workbenchPane != null)
                 {
-                    UIRegistry.clearSimpleGlassPaneMsg();
-                }
+                	addSubPaneToMgr(workbenchPane);
                 
-                if (workbenchPane != null && workbenchPane.isDoIncremental())
+                	if (glassPane != null)
+                	{
+                		UIRegistry.clearSimpleGlassPaneMsg();
+                	}
+                
+                	if (workbenchPane != null && workbenchPane.isDoIncremental())
+                	{
+                		workbenchPane.validateAll(null);
+                	}
+                } //else something went wrong during the creation. Assume/hope execptions or warnings have already occurred. Better than hanging.
                 {
-                    workbenchPane.validateAll(null);
+                	if (glassPane != null)
+                	{
+                		UIRegistry.clearSimpleGlassPaneMsg();
+                	}
                 }
             }
         };
