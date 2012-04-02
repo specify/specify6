@@ -320,7 +320,7 @@ public class XLSExport implements DataExport
         {
             // Write the workbook
             File file = new File(getConfig().getFileName());
-            if (file.canWrite())
+            if (file.canWrite() || (!file.exists() && file.createNewFile()))
             {
                 FileOutputStream fos = new FileOutputStream(file);
                 workBook.write(fos);
