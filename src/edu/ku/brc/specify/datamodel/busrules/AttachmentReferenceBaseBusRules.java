@@ -27,11 +27,11 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.BorrowAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
@@ -69,6 +69,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     {
         super( AccessionAttachment.class,
                AgentAttachment.class,
+               BorrowAttachment.class,
                CollectingEventAttachment.class,
                CollectionObjectAttachment.class,
                ConservDescriptionAttachment.class,

@@ -62,6 +62,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Borrow"/>
+        <mapping class="edu.ku.brc.specify.datamodel.BorrowAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowMaterial"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collection"/>
@@ -118,7 +119,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GroupPerson"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Gift"/>
+        <mapping class="edu.ku.brc.specify.datamodel.Gift"/>
+        <mapping class="edu.ku.brc.specify.datamodel.GiftAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GiftAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GiftPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
@@ -155,7 +157,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Project"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RecordSet"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RecordSetItem"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ReferenceWork"/>
+        <mapping class="edu.ku.brc.specify.datamodel.ReferenceWork"/>
+        <mapping class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>

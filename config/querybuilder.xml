@@ -61,6 +61,9 @@
         <table name="BorrowAgent" field="borrowAgents">
             <alias name="Agent"/>
         </table>
+        <table name="BorrowAttachment" field="borrowAttachments">
+            <alias name="Attachment"/>
+        </table>
         <table name="BorrowMaterial" field="borrowMaterials"/>
         <alias name="Shipment" field="shipments"/>
     </table>
@@ -296,6 +299,9 @@
        			<alias name="Agent" field="createdByAgent" />
       			<alias name="Agent" field="modifiedByAgent" />
        	</table>
+        <table name="GiftAttachment" field="giftAttachments">
+            <alias name="Attachment"/>
+        </table>
       	<alias name="Agent" field="modifiedByAgent"/>
       	<alias name="Shipment" field="shipments"/>
     </table>    
@@ -414,6 +420,9 @@
       	<alias name="Agent" field="modifiedByAgent" />
         <table name="LocalityCitation" field="localityCitations">
             <alias name="Locality"/>
+        </table>
+        <table name="ReferenceWorkAttachment" field="referenceWorkAttachments">
+            <alias name="Attachment"/>
         </table>
         <table name="CollectionObjectCitation" field="collectionObjectCitations">
             <alias name="CollectionObject"/>

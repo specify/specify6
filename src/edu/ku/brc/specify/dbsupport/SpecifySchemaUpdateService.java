@@ -130,7 +130,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 28;
+    private final int OVERALL_TOTAL = 29;
+    
     private static final String TINYINT4 = "TINYINT(4)";
     
     private static final String APP                     = "App";
@@ -443,6 +444,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     return SchemaUpdateType.Error;
                                 }
                                 
+                                frame.setDesc("Updating Schema...");
                                 ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first, itUserNamePassword.second);
                                 if (!ok)
                                 {
@@ -1396,7 +1398,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         return false;
                     }
-
+                    
                     return true;
                     
                 } catch (Exception ex)
@@ -2664,8 +2666,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             {
                 // Add New Fields to Determination
                 tblName = getTableTitleForFrame(Determination.getClassTableId());
-                addColumn(conn, databaseName, tblName, "VarQualifer",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
-                addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifer");
+                addColumn(conn, databaseName, tblName, "VarQualifier",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
+                addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifier");
                 frame.incOverall();
 
                 // CollectingEventAttributes
@@ -3491,7 +3493,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
 		BasicSQLUtils.setSkipTrackExceptions(false);
 		try {
-			update(conn, "ALTER TABLE SpQuery CHANGE COLUMN `SqlStr` `SqlStr` TEXT NULL DEFAULT NULL");
+			update(conn, "ALTER TABLE spquery CHANGE COLUMN `SqlStr` `SqlStr` TEXT NULL DEFAULT NULL");
 		} catch (Exception ex) {
 			errMsgList.add(String.format(
 					"Error - Updating %s SpQuery.SqlStr - varchar(64) -> text  Excpt: %s",

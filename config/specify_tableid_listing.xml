@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 142 or 532
+    Last used ID is 145 or 532
     
     [0] are available
     
@@ -69,6 +69,10 @@
         </table>
          <table name="edu.ku.brc.specify.datamodel.BorrowAgent" abbrev="boa" id="19" searchable="true">
             <display view="BorrowAgent" newobjdlg="BorrowAgentDisplay"/>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.BorrowAttachment" abbrev="bat" id="145" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="BorrowAttachmentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true"/>
@@ -220,6 +224,10 @@
         <table name="edu.ku.brc.specify.datamodel.GiftAgent" abbrev="gfp" id="133" searchable="true">
             <display view="GiftAgent" newobjdlg="GiftAgentDisplay"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.GiftAttachment" abbrev="gat" id="144" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="GiftAttachmentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.GiftPreparation" abbrev="gfa" id="132" searchable="true">
             <display view="GiftItems" dataobjformatter="GiftPreparation" newobjdlg="GiftItemsDisplay"/>  
         </table>
@@ -336,6 +344,10 @@
         <table name="edu.ku.brc.specify.datamodel.ReferenceWork" abbrev="rw" id="69" searchable="true">
             <display view="ReferenceWork" searchdlg="ReferenceWorkSearch" newobjdlg="ReferenceWorkDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ReferenceWorkBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment" abbrev="rwat" id="143" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="ReferenceWorkAttachmentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" abbrev="ra" id="70" searchable="true">
             <display view="RepositoryAgreement" searchdlg="RepositoryAgreementSearch" newobjdlg="RepositoryAgreementDisplay"/>

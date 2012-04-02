@@ -88,6 +88,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     // data model classes that can have Attachments
     protected Set<AccessionAttachment>               accessionAttachments;
     protected Set<AgentAttachment>                   agentAttachments;
+    protected Set<BorrowAttachment>                  borrowAttachments;
     protected Set<CollectingEventAttachment>         collectingEventAttachments;
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
@@ -96,10 +97,12 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
     protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
     protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;
+    protected Set<GiftAttachment>                    giftAttachments;
     protected Set<LoanAttachment>                    loanAttachments;
     protected Set<LocalityAttachment>                localityAttachments;
     protected Set<PermitAttachment>                  permitAttachments;
     protected Set<PreparationAttachment>             preparationAttachments;
+    protected Set<ReferenceWorkAttachment>           referenceWorkAttachments;
     protected Set<RepositoryAgreementAttachment>     repositoryAgreementAttachments;
     protected Set<TaxonAttachment>                   taxonAttachments;
     
@@ -141,15 +144,18 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
+        borrowAttachments              = new HashSet<BorrowAttachment>();
         collectionObjectAttachments    = new HashSet<CollectionObjectAttachment>();
         collectingEventAttachments     = new HashSet<CollectingEventAttachment>();
         conservDescriptionAttachments  = new HashSet<ConservDescriptionAttachment>();
         conservEventAttachments        = new HashSet<ConservEventAttachment>();
+        giftAttachments                = new HashSet<GiftAttachment>();
         loanAttachments                = new HashSet<LoanAttachment>();
         localityAttachments            = new HashSet<LocalityAttachment>();
         permitAttachments              = new HashSet<PermitAttachment>();
         preparationAttachments         = new HashSet<PreparationAttachment>();
         repositoryAgreementAttachments = new HashSet<RepositoryAgreementAttachment>();
+        referenceWorkAttachments       = new HashSet<ReferenceWorkAttachment>();
         taxonAttachments               = new HashSet<TaxonAttachment>();
     }
 
@@ -563,6 +569,60 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setTaxonAttachments(Set<TaxonAttachment> taxonAttachments)
     {
         this.taxonAttachments = taxonAttachments;
+    }
+
+    /**
+     * @return the borrowAttachments
+     */
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<BorrowAttachment> getBorrowAttachments()
+    {
+        return borrowAttachments;
+    }
+
+    /**
+     * @param borrowAttachments the borrowAttachments to set
+     */
+    public void setBorrowAttachments(Set<BorrowAttachment> borrowAttachments)
+    {
+        this.borrowAttachments = borrowAttachments;
+    }
+
+    /**
+     * @return the giftAttachments
+     */
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<GiftAttachment> getGiftAttachments()
+    {
+        return giftAttachments;
+    }
+
+    /**
+     * @param giftAttachments the giftAttachments to set
+     */
+    public void setGiftAttachments(Set<GiftAttachment> giftAttachments)
+    {
+        this.giftAttachments = giftAttachments;
+    }
+
+    /**
+     * @return the referenceWorkAttachments
+     */
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<ReferenceWorkAttachment> getReferenceWorkAttachments()
+    {
+        return referenceWorkAttachments;
+    }
+
+    /**
+     * @param referenceWorkAttachments the referenceWorkAttachments to set
+     */
+    public void setReferenceWorkAttachments(Set<ReferenceWorkAttachment> referenceWorkAttachments)
+    {
+        this.referenceWorkAttachments = referenceWorkAttachments;
     }
 
     /**

@@ -84,17 +84,13 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
@@ -102,14 +98,12 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
@@ -4892,37 +4886,42 @@ public class Uploader implements ActionListener, KeyListener
      * @param cls
      * @return an initialized instance of the appropriate OjbectAttachmentIFace implementation.
      */
+    @SuppressWarnings("unchecked")
     protected ObjectAttachmentIFace<? extends DataModelObjBase> getAttachmentObject(final Class<?> cls)
     {
     	ObjectAttachmentIFace<? extends DataModelObjBase> result = null;
-    	if (cls.equals(Accession.class))
-    	{
-    		result = new AccessionAttachment();
-    	}
-    	else if (cls.equals(Taxon.class))
-    	{
-    		result =  new TaxonAttachment();
-    	}
-    	else if (cls.equals(Locality.class))
-    	{
-    		result =  new LocalityAttachment();
-    	}
-    	else if (cls.equals(CollectingEvent.class))
-    	{
-    		result =  new CollectingEventAttachment();
-    	}
-    	else if (cls.equals(CollectionObject.class))
-    	{
-    		result =  new CollectionObjectAttachment();
-    	}
-    	else if (cls.equals(Agent.class))
-    	{
-    		result = new AgentAttachment();
-    	}
-    	if (result != null)
-    	{
-    		((DataModelObjBase )result).initialize();
-    	}
+    	
+    	// Redesigned to handle anytime of Attachment upload
+    	Exception ex       = null;
+    	String   className = cls.getSimpleName() + "Attachment";
+        try
+        {
+            Class<?> createClass = Class.forName(className);
+            result = (ObjectAttachmentIFace)createClass.newInstance();
+            if (result != null)
+            {
+                ((DataModelObjBase)result).initialize();
+            }            
+        } catch (ClassNotFoundException e)
+        {
+            ex = e;
+            e.printStackTrace();
+        } catch (InstantiationException e)
+        {
+            ex = e;
+            e.printStackTrace();
+        } catch (IllegalAccessException e)
+        {
+            ex = e;
+            e.printStackTrace();
+        }
+
+        if (ex != null)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
+        }
+
     	return result;
     }
     

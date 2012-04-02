@@ -77,6 +77,7 @@
 	<!-- Attachment-related displays -->
     <dialog type="display" view="ObjectAttachment" name="AccessionAttachmentDisplay"            class="edu.ku.brc.specify.datamodel.AccessionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="AgentAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.AgentAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="BorrowAttachmentDisplay"               class="edu.ku.brc.specify.datamodel.BorrowAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="CollectingEventAttachmentDisplay"      class="edu.ku.brc.specify.datamodel.CollectingEventAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" helpcontext="CBXQViewEdit"/>
@@ -85,10 +86,12 @@
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageAttachmentDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageSetAttachmentDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="GiftAttachmentDisplay"                 class="edu.ku.brc.specify.datamodel.GiftAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="LoanAttachmentDisplay"                 class="edu.ku.brc.specify.datamodel.LoanAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="LocalityAttachmentDisplay"             class="edu.ku.brc.specify.datamodel.LocalityAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="PermitAttachmentDisplay"               class="edu.ku.brc.specify.datamodel.PermitAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="PreparationAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.PreparationAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ReferenceWorkAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="TaxonAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.TaxonAttachment" helpcontext="CBXQViewEdit"/>
 	

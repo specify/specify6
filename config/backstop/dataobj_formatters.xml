@@ -727,6 +727,17 @@
                 orderfieldname="ordinal"
                />
 
+    <aggregator name="BorrowAttachment"
+                title="BorrowAttachment"
+                class="edu.ku.brc.specify.datamodel.ABorrowAttachment"
+                default="true"
+                separator="; "
+                ending=""
+                count=""
+                format="identity"
+                orderfieldname="ordinal"
+               />
+
     <aggregator name="CollectingEventAttachment"
                 title="CollectingEventAttachment"
                 class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"
@@ -848,6 +859,17 @@
                 orderfieldname="ordinal"
                />
 
+    <aggregator name="GiftAttachment"
+                title="GiftAttachment"
+                class="edu.ku.brc.specify.datamodel.GiftAttachment"
+                default="true"
+                separator="; "
+                ending=""
+                count=""
+                format="LoanAgent"
+                orderfieldname=""
+               />
+
     <aggregator name="LoanAgent"
                 title="LoanAgent"
                 class="edu.ku.brc.specify.datamodel.LoanAgent"
@@ -928,6 +950,17 @@
     <aggregator name="PreparationAttachment"
                 title="PreparationAttachment"
                 class="edu.ku.brc.specify.datamodel.PreparationAttachment"
+                default="true"
+                separator="; "
+                ending=""
+                count=""
+                format="identity"
+                orderfieldname="ordinal"
+               />
+
+    <aggregator name="ReferenceWorkAttachment"
+                title="ReferenceWorkAttachment"
+                class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment"
                 default="true"
                 separator="; "
                 ending=""

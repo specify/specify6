@@ -173,7 +173,7 @@
 	      <picklistitem title="Epitype" value="epitype"/>
 	      <picklistitem title="Ex Epitype" value="exepitype"/>
 	      <picklistitem title="Ex Holotype" value="exholotype"/>
-	      <picklistitem title="Ex Isotype" value="isotype"/>
+	      <picklistitem title="Ex Isotype" value="exisotype"/>
 	      <picklistitem title="Ex Lectotype" value="exlectotype"/>
 	      <picklistitem title="Ex Neotype" value="exneotype"/>
 	      <picklistitem title="Ex Paratype" value="exparatype"/>

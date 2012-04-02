@@ -67,12 +67,13 @@ public class AttachmentBusRules extends BaseBusRules
 {
     protected Logger log = Logger.getLogger(AttachmentBusRules.class);
 
-	String[] tableNames = {"accessionattachment",          "agentattachment",             "collectingeventattachment",
-                          "collectionobjectattachment",    "conservdescriptionattachment","conserveventattachment",
-                          "dnasequenceattachment",         "fieldnotebookattachment",     "fieldnotebookpageattachment",
-                          "fieldnotebookpagesetattachment","loanattachment",              "localityattachment",
-                          "permitattachment",              "preparationattachment",       "repositoryagreementattachment",
-                          "taxonattachment"};
+	String[] tableNames = {"accessionattachment",          "agentattachment",               "borrowAttachment",
+	                       "collectingeventattachment",    "collectionobjectattachment",    "conservdescriptionattachment",
+	                       "conserveventattachment",       "dnasequenceattachment",         "fieldnotebookattachment",     
+	                       "fieldnotebookpageattachment", "fieldnotebookpagesetattachment", "giftAttachment",
+	                       "loanattachment",              "localityattachment",             "permitattachment",              
+	                       "preparationattachment",       "referenceWorkAttachment",        "repositoryagreementattachment", 
+	                       "taxonattachment"};
     
     static private String BROWSE_DIR_PREF = "AttachmentBrowseDir";
     private ValBrowseBtnPanel browser = null;

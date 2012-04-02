@@ -33,6 +33,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -101,7 +102,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     
     protected ReferenceWork                 containedRFParent;
     protected Set<ReferenceWork>            containedReferenceWorks;
-    
+    protected Set<ReferenceWorkAttachment>  referenceWorkAttachments;
+       
     // Constructors
 
     /** default constructor */
@@ -559,10 +561,26 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         this.exsiccatae = exsiccatae;
     }
 
+    /**
+     * @return the referenceWorkAttachments
+     */
+    @OneToMany(mappedBy = "referenceWork")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+     public Set<ReferenceWorkAttachment> getReferenceWorkAttachments()
+    {
+        return referenceWorkAttachments;
+    }
 
+    /**
+     * @param referenceWorkAttachments the referenceWorkAttachments to set
+     */
+    public void setReferenceWorkAttachments(Set<ReferenceWorkAttachment> referenceWorkAttachments)
+    {
+        this.referenceWorkAttachments = referenceWorkAttachments;
+    }
 
     // Add Methods
-
     public void addLocalityCitations(final LocalityCitation localityCitation)
     {
         this.localityCitations.add(localityCitation);

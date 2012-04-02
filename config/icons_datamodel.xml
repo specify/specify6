@@ -39,7 +39,6 @@
     <icon name="conservevent"         file="conserv_event.png" sizes="all"/>
     <icon name="datatype"             file="data_type.png" sizes="all"/>
     <icon name="determination"        file="determination.png" sizes="all"/>
-    <!-- <icon name="determinationstatus"  file="determination_status.png" sizes="all"/>-->
     <icon name="discipline"           file="discipline.png" sizes="all"/>
     <icon name="division"             file="division.png" sizes="all"/>
     <icon name="dnasequence"          file="dna.png" sizes="all"/>
@@ -88,7 +87,8 @@
     <!--  Attachment Icons -->
     <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="NonStd"/>
 	<icon name="AgentAttachment"                 file="agent_attachment.png" sizes="NonStd"/>
-	<icon name="CollectingEventAttachment"       file="collecting_event_attachment.png" sizes="NonStd"/>
+    <icon name="BorrowAttachment"                file="borrow_attachment.png" sizes="NonStd"/>
+    <icon name="CollectingEventAttachment"       file="collecting_event_attachment.png" sizes="NonStd"/>
 	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="NonStd"/>
 	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="NonStd"/>
 	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="NonStd"/>
@@ -96,10 +96,12 @@
 	<icon name="FieldNotebookAttachment"         file="field_notebook_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookPageAttachment"     file="field_notebook_page_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookPageSetAttachment"  file="field_notebook_page_set_attachment.png" sizes="NonStd"/>
+    <icon name="GiftAttachment"                  file="gift_attachment.png" sizes="NonStd"/>
 	<icon name="LoanAttachment"                  file="loan_attachment.png" sizes="NonStd"/>
 	<icon name="LocalityAttachment"              file="locality_attachment.png" sizes="NonStd"/>
 	<icon name="PermitAttachment"                file="permit_attachment.png" sizes="NonStd"/>
 	<icon name="PreparationAttachment"           file="preparation_attachment.png" sizes="NonStd"/>
+    <icon name="ReferenceWorkAttachment"         file="refwork_attachment.png" sizes="NonStd"/>
 	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="NonStd"/>
 	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="NonStd"/> 
 	

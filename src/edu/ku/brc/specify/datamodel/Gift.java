@@ -32,6 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -78,6 +79,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     
     protected AddressOfRecord         addressOfRecord;
     protected Set<GiftAgent>          giftAgents;
+    protected Set<GiftAttachment>     giftAttachments;
     protected Set<GiftPreparation>    giftPreparations;
     protected Set<Shipment>           shipments;
     
@@ -131,6 +133,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
         
         division        = null;
         addressOfRecord = null;
+        giftAttachments =  null;
 
     }
     // End Initializer
@@ -496,6 +499,25 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
         this.shipments = shipments;
     }
     
+    /**
+     * @return the giftAttachments
+     */
+    @OneToMany(mappedBy = "gift")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<GiftAttachment> getGiftAttachments()
+    {
+        return giftAttachments;
+    }
+
+    /**
+     * @param giftAttachments the giftAttachments to set
+     */
+    public void setGiftAttachments(Set<GiftAttachment> giftAttachments)
+    {
+        this.giftAttachments = giftAttachments;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.PreparationsProviderIFace#getPreparations()
      */

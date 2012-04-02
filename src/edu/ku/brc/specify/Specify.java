@@ -170,6 +170,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.BorrowAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -183,12 +184,14 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
+import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
+import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
@@ -418,25 +421,33 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         DefaultClassActionHandler defClassActionHandler = DefaultClassActionHandler.getInstance();
         ActionListener            attachmentDisplayer   = AttachmentUtils.getAttachmentDisplayer();
         
-        defClassActionHandler.registerActionHandler(Attachment.class,                     attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(AccessionAttachment.class,            attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(AgentAttachment.class,                attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(CollectingEventAttachment.class,      attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(CollectionObjectAttachment.class,     attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(ConservDescriptionAttachment.class,   attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(ConservEventAttachment.class,         attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(DNASequencingRunAttachment.class,     attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(FieldNotebookAttachment.class,        attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(FieldNotebookPageAttachment.class,    attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(FieldNotebookPageSetAttachment.class, attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(LoanAttachment.class,                 attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(LocalityAttachment.class,             attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(PermitAttachment.class,               attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(PreparationAttachment.class,          attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(RepositoryAgreementAttachment.class,  attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(TaxonAttachment.class,                attachmentDisplayer);
-        
-        //defClassActionHandler.registerActionHandler(Collector.class, new CollectorActionListener());
+        Class<?>[] attachmentClasses = {
+            Attachment.class,
+            AccessionAttachment.class,
+            AgentAttachment.class,
+            BorrowAttachment.class,
+            CollectingEventAttachment.class,
+            CollectionObjectAttachment.class,
+            ConservDescriptionAttachment.class,
+            ConservEventAttachment.class,
+            DNASequencingRunAttachment.class,
+            FieldNotebookAttachment.class,
+            FieldNotebookPageAttachment.class,
+            FieldNotebookPageSetAttachment.class,
+            GiftAttachment.class,
+            LoanAttachment.class,
+            LocalityAttachment.class,
+            PermitAttachment.class,
+            PreparationAttachment.class,
+            ReferenceWorkAttachment.class,
+            RepositoryAgreementAttachment.class,
+            TaxonAttachment.class,
+        };
+
+        for (Class<?> cls : attachmentClasses)
+        {
+            defClassActionHandler.registerActionHandler(cls, attachmentDisplayer);
+        }
        
         UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$
         

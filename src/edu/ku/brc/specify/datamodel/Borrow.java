@@ -32,6 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -77,6 +78,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
     protected Set<Shipment>       shipments;
     protected Set<BorrowAgent>    borrowAgents;
     protected Set<BorrowMaterial> borrowMaterials;
+    protected Set<BorrowAttachment> borrowAttachments;
 
 
     // Constructors
@@ -115,6 +117,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
         addressOfRecord = null;
         shipments = new HashSet<Shipment>();
         borrowAgents = new HashSet<BorrowAgent>();
+        borrowAttachments = new HashSet<BorrowAttachment>();
         borrowMaterials = new HashSet<BorrowMaterial>();
     }
 
@@ -448,6 +451,26 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
     {
         this.addressOfRecord = addressOfRecord;
     }
+    
+    /**
+     * @return the borrowAttachments
+     */
+    @OneToMany(mappedBy = "borrow")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<BorrowAttachment> getBorrowAttachments()
+    {
+        return borrowAttachments;
+    }
+
+    /**
+     * @param borrowAttachments the borrowAttachments to set
+     */
+    public void setBorrowAttachments(Set<BorrowAttachment> borrowAttachments)
+    {
+        this.borrowAttachments = borrowAttachments;
+    }
+
     /*
      * (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
