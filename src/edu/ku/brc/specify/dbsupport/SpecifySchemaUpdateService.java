@@ -2546,8 +2546,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // AttachmentImageAttribute Table
         /////////////////////////////
-        alterFieldLength(conn, databaseName, "attachmentimageattribute", "CreativeCommons", 128, 500);
-        frame.incOverall();
+        if (doesTableExist(databaseName, "attachmentimageattribute"))
+        {
+        	alterFieldLength(conn, databaseName, "attachmentimageattribute", "CreativeCommons", 128, 500);
+        	frame.incOverall();
+        }
         
         /////////////////////////////
         // LocalityDetail
