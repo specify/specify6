@@ -3247,6 +3247,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                         if (itemsUpdated > 0)
                         {
                             setChanged(true);
+                            int[] selection = spreadSheet.getSelectedRowModelIndexes();  
+                            if (selection.length > 0)
+                            {
+                            	validateRows(selection);
+                            } else 
+                            {
+                            	validateAll(null);
+                            }
                             model.fireDataChanged();
                             spreadSheet.repaint();
                         }
