@@ -80,6 +80,7 @@ import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservEvent;
@@ -1376,9 +1377,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     createSGRTables(conn, databaseName);
                     frame.incOverall(); // #25
                     
+                    if (!miscSchema16Updates(conn, databaseName)) // Steps 26 - 28
+                    {
+                        return false;
+                    }
+
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     //                                                                                                              //
-                    // Schema Changes 1.7                                                                                     //
+                    // Schema Changes 1.7                                                                                           //
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1386,18 +1392,58 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     len = getFieldLength(conn, databaseName, tblName, "SqlStr");
                     if (len == 64)
                     {
-                    	if (!fixSpQuerySQLLength(conn, databaseName))
-                    	{
-                    		return false;
-                    	}
-                    }                     	
-                    frame.incOverall(); // #26
-                  
+                        if (!fixSpQuerySQLLength(conn, databaseName))
+                        {
+                            return false;
+                        }
+                    }                       
                     
-                    if (!miscSchema16Updates(conn, databaseName)) // Steps 27 - 29
+                    frame.incOverall(); // #29
+                    //-----------------------------------------------------------------------------
+                    //-- Determination fix
+                    //-----------------------------------------------------------------------------
+                    String varQualNameBad  = "VarQualifer";
+                    String varQualNameGood = "VarQualifier";
+                    
+                    tblName = getTableTitleForFrame(Determination.getClassTableId());
+                    if (doesColumnExist(databaseName, tblName, varQualNameBad) &&
+                        !doesColumnExist(databaseName, tblName, varQualNameGood))
                     {
-                        return false;
+                        if (addColumn(conn, databaseName, tblName, varQualNameGood,  "VARCHAR(16)", "TypeStatusName"))
+                        {
+                            update(conn, String.format("UPDATE determination SET %s=%s WHERE %s IS NOT NULL", varQualNameGood, varQualNameBad, varQualNameBad));
+                            update(conn, String.format("ALTER TABLE determination DROP COLUMN %s", varQualNameBad));
+                            
+                            update(conn, String.format("UPDATE splocalecontaineritem SET Name='%s' WHERE Name = '%s'", varQualNameGood, varQualNameBad));
+                            
+                        } else
+                        {
+                            return false;
+                        }
                     }
+                    
+                    //-----------------------------------------------------------------------------
+                    // Fix Bug 8747 - PickList item has wrong value
+                    //-----------------------------------------------------------------------------
+                    String updateStr = "UPDATE picklistitem SET Value = 'exisotype' WHERE Title = 'Ex Isotype' AND Value = 'isotype'";
+                    BasicSQLUtils.update(updateStr);
+                    
+                    frame.incOverall(); // #30
+                    
+                    //-----------------------------------------------------------------------------
+                    // Adds new OCR field to CollectionObject
+                    //-----------------------------------------------------------------------------
+                    frame.setDesc("Adding OCR field to Collection Object"); // I18N
+                    String ocrField = "OCR";
+                    tblName = getTableTitleForFrame(CollectionObject.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, ocrField))
+                    {
+                        if (!addColumn(conn, databaseName, tblName, ocrField,  "TEXT", "DNASequenceID"))
+                        {
+                            return false;
+                        }
+                    }
+                    frame.incOverall(); // #31
                     
                     return true;
                     
