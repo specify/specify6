@@ -729,7 +729,7 @@
 
     <aggregator name="BorrowAttachment"
                 title="BorrowAttachment"
-                class="edu.ku.brc.specify.datamodel.ABorrowAttachment"
+                class="edu.ku.brc.specify.datamodel.BorrowAttachment"
                 default="true"
                 separator="; "
                 ending=""

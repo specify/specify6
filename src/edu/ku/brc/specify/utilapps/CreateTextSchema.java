@@ -63,7 +63,7 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class CreateTextSchema
 {
-    private static Locale currLang  = new Locale("pt");
+    private static Locale currLang  = new Locale("en");
     
     private static byte SCHEMATYPE = SpLocaleContainer.CORE_SCHEMA;
     

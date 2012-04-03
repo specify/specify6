@@ -131,7 +131,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 29;
+    private final int OVERALL_TOTAL = 31;
     
     private static final String TINYINT4 = "TINYINT(4)";
     
