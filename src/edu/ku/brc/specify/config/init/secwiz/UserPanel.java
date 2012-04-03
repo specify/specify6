@@ -415,7 +415,7 @@ public class UserPanel extends BaseSetupPanel
             try
             {
                 if (pStmtSp != null)pStmtSp.close();
-                if (pStmtAg != null)pStmtSp.close();
+                if (pStmtAg != null)pStmtAg.close();
                 mgr.close();
             } catch (SQLException e){}
         }
@@ -699,13 +699,13 @@ public class UserPanel extends BaseSetupPanel
         int[] inxs = list.getSelectedIndices();
         for (int inx : inxs)
         {
-            String databaseName = (String)list.getModel().getElementAt(inx);
-            if (mgr.setPermissions(saUserName, databaseName, doGainAccess ? DBMSUserMgr.PERM_ALL_BASIC : DBMSUserMgr.PERM_NONE))
+            String dbNm = (String)list.getModel().getElementAt(inx);
+            if (mgr.setPermissions(saUserName, dbNm, doGainAccess ? DBMSUserMgr.PERM_ALL_BASIC : DBMSUserMgr.PERM_NONE))
             {
-                changedNames.add(databaseName);
+                changedNames.add(dbNm);
             } else
             {
-                noChangeNames.add(databaseName);
+                noChangeNames.add(dbNm);
             }
         }
         
@@ -848,6 +848,13 @@ public class UserPanel extends BaseSetupPanel
                 }
                 
                 label.setText(getFormattedResStr("MSTR_USR_DB", databaseName));
+                
+                if (!mgr.doesDBHaveTable(databaseName, "specifyuser"))
+                {
+                    items.remove(0);
+                    databaseName = isInitial ? items.get(0) : (String)dbList.getSelectedValue();
+                    continue;
+                }
                 
                 Vector<UserData> userDataList = new Vector<UserData>();
                 String           sql          = "SELECT SpecifyUserId, Name, Password, EMail FROM specifyuser";

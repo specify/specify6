@@ -223,27 +223,35 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                     
                     String permsStr = StringUtils.substringBetween(data, "GRANT ", " ON");
                     String[] pToks = StringUtils.split(permsStr, ',');
-                    if (pToks != null && pToks.length >= permsHash.size())
+                    
+                    if (pToks != null)
                     {
-                        int cnt = 0;
-                        for (String p : pToks)
+                        if (pToks.length == 1 && pToks[0].equalsIgnoreCase("ALL PRIVILEGES") && isAllDBs)
                         {
-                            if (permsHash.contains(p.trim()))
+                            dbNames.addAll(getDatabaseList());
+                            
+                        } else if (pToks.length >= permsHash.size())
+                        {
+                            int cnt = 0;
+                            for (String p : pToks)
                             {
-                                cnt++;
+                                if (permsHash.contains(p.trim()))
+                                {
+                                    cnt++;
+                                }
                             }
-                        }
-                        
-                        if (cnt == permsHash.size())
-                        {
-                            if (isAllDBs)
+                            
+                            if (cnt == permsHash.size())
                             {
-                                dbNames.addAll(getDatabaseList());
-                                break;
-                                
-                            } else if (dbName != null)
-                            {
-                                dbNames.add(dbName);   
+                                if (isAllDBs)
+                                {
+                                    dbNames.addAll(getDatabaseList());
+                                    break;
+                                    
+                                } else if (dbName != null)
+                                {
+                                    dbNames.add(dbName);   
+                                }
                             }
                         }
                     }
@@ -679,7 +687,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 String host = (String)row[0];
                 if (StringUtils.isNotEmpty(host))
                 {
-                    String permStr = (String)row[1];
+                    String permStr = (String)row[3];
                     if (StringUtils.isNotEmpty(permStr))
                     {
                         int perms = PERM_NONE;

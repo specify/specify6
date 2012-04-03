@@ -30,7 +30,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -356,29 +355,38 @@ public class MasterLoginPanel extends GenericFormPanel
             String saUserName = properties.getProperty("saUserName");
             
             boolean doFix = false;
-            dbNameList          = new ArrayList<String>();
-            dbNamesForMaster    = mgr.getDatabaseListForUser(saUserName);
-            List<String> allDBs = getSpecifyDatabases(mgr, mgr.getDatabaseList());
+            dbNameList                  = new ArrayList<String>();
+            List<String> mastersDBNames = mgr.getDatabaseListForUser(saUserName);
+            List<String> allSp6DBs      = getSpecifyDatabases(mgr, mgr.getDatabaseList()); // returns all database that are Specify 6
             
-            HashSet<String> hash = new HashSet<String>(dbNamesForMaster);
-            // Look for Specify Databases that the Master doesn't have access to
-            // dbNameList will contain that list of Specify databases
-            for (String dbNm : allDBs)
+            HashSet<String> sp6DBNameHash  = new HashSet<String>(allSp6DBs);
+            HashSet<String> mstrDBNameHash = new HashSet<String>(mastersDBNames);
+            
+            if (dbNamesForMaster == null)
             {
-                if (!hash.contains(dbNm) && mgr.doesDBExists(dbNm))
+                dbNamesForMaster = new ArrayList<String>();
+            } else
+            {
+                dbNamesForMaster.clear();
+            }
+            
+            // Loop through all the Master User's databases and 
+            // see if they are a Specify 6 database
+            for (String dbName : mastersDBNames)
+            {
+                if (sp6DBNameHash.contains(dbName) && mgr.doesDBExists(dbName))
                 {
-                    try
-                    {
-                        mgr.getConnection().setCatalog(dbNm);
-                        if (mgr.doesDBHaveTable("specifyuser"))
-                        {
-                            dbNameList.add(dbNm);
-                        }
-                        
-                    } catch (SQLException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    dbNamesForMaster.add(dbName);
+                }
+            }
+            
+            // Loop through all the Specify 6's databases and 
+            // see if they are they are in the Master's list
+            for (String dbName : allSp6DBs)
+            {
+                if (!mstrDBNameHash.contains(dbName) && mgr.doesDBExists(dbName))
+                {
+                    dbNameList.add(dbName);
                 }
             }
             
