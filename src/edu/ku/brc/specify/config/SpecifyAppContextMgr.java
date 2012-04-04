@@ -3290,38 +3290,41 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             String sql = "SELECT Name, IsLoggedIn, IsLoggedInReport, LoginCollectionName, LoginDisciplineName FROM specifyuser WHERE IsLoggedIn <> 0 AND SpecifyUserID <> "+currUser.getId();
             Vector<Object[]> dataRows = BasicSQLUtils.query(sql);
-            Object[][] rows = new Object[dataRows.size()][4];
-            for (int i=0;i<rows.length;i++)
+            if (dataRows.size() > 0)
             {
-                rows[i] = dataRows.get(i);
+                Object[][] rows = new Object[dataRows.size()][4];
+                for (int i=0;i<rows.length;i++)
+                {
+                    rows[i] = dataRows.get(i);
+                }
+                DefaultTableModel model = new DefaultTableModel(rows, new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
+                JTable table = new JTable(model);
+                UIHelper.calcColumnWidths(table, 5);
+                UIHelper.makeTableHeadersCentered(table, true);
+                
+                JScrollPane scrollPane = UIHelper.createScrollPane(table);
+                
+                String          rowDef   = "f:p:g, 2dlu, f:p:g, 2dlu, f:p:g";
+                int             btns     = includeOverride ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN;
+                String          titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : L10N + "OU_TITLE");
+                CellConstraints cc       = new CellConstraints();
+                PanelBuilder    pb       = new PanelBuilder(new FormLayout("f:p:g", rowDef));
+                
+                pb.add(UIHelper.createI18NLabel(L10N + "OTHER_USERS"), cc.xy(1, 1));
+                pb.add(scrollPane,   cc.xy(1, 3));
+                pb.add(UIHelper.createI18NLabel(msgKey), cc.xy(1, 5));
+    
+                pb.setDefaultDialogBorder();
+                
+                CustomDialog infoDlg = new CustomDialog((Dialog)null, titleStr, true, btns, pb.getPanel());
+                
+                if (includeOverride) infoDlg.setOkLabel(UIRegistry.getResourceString(L10N + "LOGIN_OVRDE"));
+                
+                infoDlg.createUI();
+                infoDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                UIHelper.centerAndShow(infoDlg);
+                return infoDlg.getBtnPressed();
             }
-            DefaultTableModel model = new DefaultTableModel(rows, new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
-            JTable table = new JTable(model);
-            UIHelper.calcColumnWidths(table, 5);
-            UIHelper.makeTableHeadersCentered(table, true);
-            
-            JScrollPane scrollPane = UIHelper.createScrollPane(table);
-            
-            String          rowDef   = "f:p:g, 2dlu, f:p:g, 2dlu, f:p:g";
-            int             btns     = includeOverride ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN;
-            String          titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : L10N + "OU_TITLE");
-            CellConstraints cc       = new CellConstraints();
-            PanelBuilder    pb       = new PanelBuilder(new FormLayout("f:p:g", rowDef));
-            
-            pb.add(UIHelper.createI18NLabel(L10N + "OTHER_USERS"), cc.xy(1, 1));
-            pb.add(scrollPane,   cc.xy(1, 3));
-            pb.add(UIHelper.createI18NLabel(msgKey), cc.xy(1, 5));
-
-            pb.setDefaultDialogBorder();
-            
-            CustomDialog infoDlg = new CustomDialog((Dialog)null, titleStr, true, btns, pb.getPanel());
-            
-            if (includeOverride) infoDlg.setOkLabel(UIRegistry.getResourceString(L10N + "LOGIN_OVRDE"));
-            
-            infoDlg.createUI();
-            infoDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            UIHelper.centerAndShow(infoDlg);
-            return infoDlg.getBtnPressed();
         }
         return CustomDialog.NONE_BTN;
     }
