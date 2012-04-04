@@ -3359,7 +3359,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         
         int rv = CustomDialog.NONE_BTN;
-        if (logins != null)
+        if (logins != null && spUser != null)
         {
             rv = displayAgentsLoggedInDlg(null, L10N + "OVRDE_MSG",  logins, true);
             if (rv == CustomDialog.OK_BTN)
@@ -3367,7 +3367,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (BasicSQLUtils.update("UPDATE specifyuser SET IsLoggedIn=0 WHERE SpecifyUserID <> "+spUser.getId()) > 0)
                 {
-                    return false;
+                    return true;
                 }
             }
         }
