@@ -1438,7 +1438,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     tblName = getTableTitleForFrame(CollectionObject.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, ocrField))
                     {
-                        if (!addColumn(conn, databaseName, tblName, ocrField,  "TEXT", "DNASequenceID"))
+                        if (!addColumn(conn, databaseName, tblName, ocrField,  "TEXT", "SGRStatus"))
                         {
                             return false;
                         }
