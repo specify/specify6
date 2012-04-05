@@ -110,7 +110,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
-		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
+        <mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
+        <mapping class="edu.ku.brc.specify.datamodel.FundingAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeoCoordDetail"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Geography"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeographyTreeDef"/>

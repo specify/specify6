@@ -300,6 +300,19 @@
         </switch>
     </format>
 
+    <format
+        name="FundingAgent"
+        title="FundingAgent"
+        class="edu.ku.brc.specify.datamodel.FundingAgent"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+            </fields>
+        </switch>
+    </format>
+
 
     <format
         name="Geography"
@@ -857,6 +870,17 @@
                 count=""
                 format="identity"
                 orderfieldname="ordinal"
+               />
+
+    <aggregator name="FundingAgent"
+                title="FundingAgent"
+                class="edu.ku.brc.specify.datamodel.FundingAgent"
+                default="true"
+                separator="; "
+                ending=""
+                count=""
+                format="FundingAgent"
+                orderfieldname="orderNumber"
                />
 
     <aggregator name="GiftAttachment"

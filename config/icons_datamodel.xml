@@ -51,6 +51,7 @@
     <icon name="fieldnotebook"        file="field_notebook.png" sizes="all"/>
     <icon name="fieldnotebookpage"    file="field_notebook_page.png" sizes="all"/>
     <icon name="fieldnotebookpageset" file="field_notebook_page_set.png" sizes="all"/>
+    <icon name="fundingagent"         file="fundingagent.png" sizes="all"/>
     <icon name="geocoorddetail"       file="geo_coord_detail.png" sizes="all"/>
     <icon name="geography"            file="geography.png" sizes="all"/>
     <icon name="gift"                 file="gift.png" sizes="all"/>
@@ -251,6 +252,7 @@
     <icon name="FieldNotebookPage"      alias="fieldnotebookpage"/>
     <icon name="FieldNotebookPageSet"   alias="fieldnotebookpageset"/>
     <icon name="FieldNotebook"          alias="fieldnotebook"/>
+    <icon name="FundingAgent"           alias="fundingagent"/>
     <icon name="GeoCoordDetail"         alias="geocoorddetail"/>
     <icon name="Geography"              alias="geography"/>
     <icon name="GeologicTimePeriod"     alias="geologictimeperiod"/>

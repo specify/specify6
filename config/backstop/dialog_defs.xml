@@ -55,6 +55,7 @@
     <dialog type="display" view="Exsiccata"          name="ExsiccataDisplay"         class="edu.ku.brc.specify.datamodel.Exsiccata" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ExchangeOutPrep"    name="ExchangeOutPrepDisplay"    class="edu.ku.brc.specify.datamodel.ExchangeOutPrep" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="FundingAgent"       name="FundingAgentDisplay"      class="edu.ku.brc.specify.datamodel.FundingAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="GiftAgent"          name="GiftAgentDisplay"         class="edu.ku.brc.specify.datamodel.GiftAgent" helpcontext="CBXQViewEdit"/>

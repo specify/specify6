@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 145 or 532
+    Last used ID is 146 or 532
     
     [0] are available
     
@@ -194,6 +194,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeoCoordDetailBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.FundingAgent" abbrev="fa" id="146" searchable="true">
+            <display view="FundingAgent" dataobjformatter="" newobjdlg="FundingAgentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.FundingAgentBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Geography" abbrev="geo" id="3" workbench="true" searchable="true">
             <display view="Geography" dataobjformatter="Geography" searchdlg="GeographySearch" newobjdlg="GeographyDisplay"/>

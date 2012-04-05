@@ -27,6 +27,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DeaccessionAgent;
+import edu.ku.brc.specify.datamodel.FundingAgent;
 import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
@@ -69,27 +70,31 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         if (o instanceof Agent)
         {
             a = (Agent)o;
-        }
+        } else
         if (o instanceof BorrowAgent)
         {
             a = ((BorrowAgent)o).getAgent();
-        }
+        } else
         if (o instanceof AccessionAgent)
         {
             a = ((AccessionAgent)o).getAgent();
-        }
+        } else
         if (o instanceof Collector)
         {
             a = ((Collector)o).getAgent();
-        }
+        } else
         if (o instanceof DeaccessionAgent)
         {
             a = ((DeaccessionAgent)o).getAgent();
-        }
+        } else
         if (o instanceof LoanAgent)
         {
             a = ((LoanAgent)o).getAgent();
-        }
+        } else
+        if (o instanceof FundingAgent)
+        {
+            a = ((FundingAgent)o).getAgent();
+        } else
         if (a==null)
         {
             return null;

@@ -509,6 +509,30 @@
             </altviews>
         </view>
         
+         <view name="FundingAgent"
+            class="edu.ku.brc.specify.datamodel.FundingAgent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.FundingAgentBusRules"
+            >
+            <desc><![CDATA[The FundingAgents Form.]]></desc>
+            <altviews>
+                <altview name="FundingAgent View" viewdef="FundingAgent" mode="view" validated="false" default="true"/>                
+                <altview name="FundingAgent Edit" viewdef="FundingAgent" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="FundingAgents"
+            class="edu.ku.brc.specify.datamodel.FundingAgent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.FundingAgentBusRules"
+            >
+            <desc><![CDATA[The FundingAgents Subform.]]></desc>
+            <altviews>
+                <!-- <altview name="FundingAgents Icon View"  viewdef="FundingAgentsIconView" mode="view"/>
+                <altview name="FundingAgents Icon Edit"  viewdef="FundingAgentsIconView" mode="edit"/>  -->
+                <altview name="FundingAgents Table View" viewdef="FundingAgents Table"   mode="view"/>
+                <altview name="FundingAgents Table Edit" viewdef="FundingAgents Table"   mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="GeoCoordDetail"
             class="edu.ku.brc.specify.datamodel.GeoCoordDetail"
             isinternal="true"
@@ -1675,6 +1699,9 @@
                     <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>                  
                 </row>              
                 <row>
+                    <cell type="subview" viewname="FundingAgents" id="8" name="fundingAgents" colspan="10" rows="3"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" colspan="10" rows="2"/>
                 </row>
@@ -1710,6 +1737,9 @@
                 </row>
                 <row>
                     <cell type="subview" id="3" name="collectingEvents" viewname="CollectingEventSubform" colspan="13" initialize="addsearch=true"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="FundingAgents" id="8" name="fundingAgents" colspan="10" rows="3"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="sp"/>
@@ -5744,6 +5774,81 @@
                 </row>                
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="FundingAgent"
+            class="edu.ku.brc.specify.datamodel.FundingAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The FundingAgent form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>105px,2px,210px,5px,100px,2px,98px,300px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,230px,5px,120px,2px,118px,325px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,140px,2px,138px,395px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,p:g(2),p:g</columnDef>
+            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="formtable"
+            name="FundingAgents Table"
+            class="edu.ku.brc.specify.datamodel.FundingAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[FundingAgents grid view for CollectingTrip form.]]></desc>
+            <definition>FundingAgents</definition>
+        </viewdef>
+        
+        <viewdef
+            type="iconview"
+            name="FundingAgentsIconView"
+            class="edu.ku.brc.specify.datamodel.FundingAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The FundingAgents Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="FundingAgents"
+            class="edu.ku.brc.specify.datamodel.FundingAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The FundingAgents form - UNKNOWN use in database.]]></desc>
+            <enableRules/>
+
+            <columnDef>p,5dlu,p:g,5dlu,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="text" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
+        
 
     </viewdefs>
 </viewset>
