@@ -3028,6 +3028,40 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     /**
+     * @param clonedQuery
+     * @return
+     * 
+     */
+    protected SpExportSchemaMapping cloneTheSchemaMapping(SpQuery clonedQuery)
+    {
+    	SpExportSchemaMapping result = new SpExportSchemaMapping();
+    	result.initialize();
+    	result.setMappingName(schemaMapping.getMappingName());
+    	result.setDescription(schemaMapping.getDescription());
+    	result.setSpExportSchema(schemaMapping.getSpExportSchema());
+    	for (SpExportSchemaItemMapping item : schemaMapping.getMappings())
+    	{
+    		SpExportSchemaItemMapping newItem = new SpExportSchemaItemMapping();
+    		newItem.initialize();
+    		newItem.setExportSchemaItem(item.getExportSchemaItem());
+    		SpQueryField qf = item.getQueryField();
+    		for (SpQueryField newQf : clonedQuery.getFields())
+    		{
+    			if (qf.getStringId().equalsIgnoreCase(newQf.getStringId()))
+    			{
+    				newItem.setQueryField(newQf);
+    				newQf.setMapping(newItem);
+    				break;
+    			}
+    		}
+    		newItem.setExportSchemaMapping(result);
+    		result.getMappings().add(newItem);
+    		
+    	}
+    	return result;
+    }
+    
+    /**
      * @return an un-used name based on the schema name and version.
      * 
      * 
@@ -3070,12 +3104,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			}
 		} else
 		{
-			if (!query.isNamed() && !getExportMappingQueryName())
+			if (!query.isNamed() || saveAs)
 			{
-				return false;
-			}
+				if (!getExportMappingQueryName())
+				{
+					return false;
+				}
+			}		
 		}
-
     	
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
         
@@ -3140,6 +3176,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (query.getSpQueryId() != null && saveAs)
                 {
                     query = cloneTheQuery();
+                    schemaMapping = cloneTheSchemaMapping(query);
                     queryNavBtn.setEnabled(true);
                 }
                 
