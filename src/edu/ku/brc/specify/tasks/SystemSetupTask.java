@@ -305,7 +305,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 navBoxes.add(collNavBox);
             }
             
-            collNavBox.add(NavBox.createBtnWithTT("SYSSTP_SHOW_USERS_LOGGED", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            collNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_SHOW_USERS_LOGGED"), SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     showUsersLoggedIn();
@@ -386,8 +386,14 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         String sql = " SELECT Name, IsLoggedIn, IsLoggedInReport, LoginCollectionName, LoginDisciplineName FROM specifyuser WHERE IsLoggedIn <> 0";
         Vector<Object[]> dataRows = BasicSQLUtils.query(sql);
-        DefaultTableModel model = new DefaultTableModel((Object[][])dataRows.toArray(), new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
+        Object[][] data = new Object[dataRows.size()][5];
+        for (int i=0;i<dataRows.size();i++)
+        {
+            data[i] = dataRows.get(i);
+        }
+        DefaultTableModel model = new DefaultTableModel(data, new Object[] {"User", "Is Logged In", "Is Logged In to Report", "Login Collection", "Login Discipline"});
         JTable table = new JTable(model);
+        UIHelper.makeTableHeadersCentered(table, true);
         
         JScrollPane scrollPane = UIHelper.createScrollPane(table);
         JPanel panel = new JPanel(new BorderLayout());
