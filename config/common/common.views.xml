@@ -401,7 +401,8 @@
         
         <view name="DNASequenceRun"
               objtitle="DNA SequencingRun"
-              class="edu.ku.brc.specify.datamodel.DNASequencingRun">
+              class="edu.ku.brc.specify.datamodel.DNASequencingRun"
+              busrules="edu.ku.brc.specify.datamodel.busrules.DNASequencingRunBusRules">
             <desc><![CDATA[DNA SequencingRun]]> </desc>
             <altviews>
                 <altview name="DNASequenceRun View" viewdef="DNASequenceRun" mode="view"/>

@@ -27,8 +27,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.FundingAgent;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.FundingAgent;
 
 /**
  * @author rod

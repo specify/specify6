@@ -551,15 +551,16 @@ public class FixAttachments
 
                 try
                 {
+                    // This doesn't need to include the new attachments
                     int[] tableIds = 
                     { 
-                            AccessionAttachment.getClassTableId(), AgentAttachment.getClassTableId(), 
-                            CollectingEventAttachment.getClassTableId(), CollectionObjectAttachment.getClassTableId(), 
-                            ConservDescriptionAttachment.getClassTableId(), ConservEventAttachment.getClassTableId(), 
-                            DNASequencingRunAttachment.getClassTableId(), FieldNotebookAttachment.getClassTableId(), 
-                            FieldNotebookPageAttachment.getClassTableId(), FieldNotebookPageSetAttachment.getClassTableId(), 
-                            LoanAttachment.getClassTableId(), LocalityAttachment.getClassTableId(), 
-                            PermitAttachment.getClassTableId(), PreparationAttachment.getClassTableId(), 
+                            AccessionAttachment.getClassTableId(),           AgentAttachment.getClassTableId(), 
+                            CollectingEventAttachment.getClassTableId(),     CollectionObjectAttachment.getClassTableId(), 
+                            ConservDescriptionAttachment.getClassTableId(),  ConservEventAttachment.getClassTableId(), 
+                            DNASequencingRunAttachment.getClassTableId(),    FieldNotebookAttachment.getClassTableId(), 
+                            FieldNotebookPageAttachment.getClassTableId(),   FieldNotebookPageSetAttachment.getClassTableId(), 
+                            LoanAttachment.getClassTableId(),                LocalityAttachment.getClassTableId(), 
+                            PermitAttachment.getClassTableId(),              PreparationAttachment.getClassTableId(), 
                             RepositoryAgreementAttachment.getClassTableId(), TaxonAttachment.getClassTableId()
                     };
             

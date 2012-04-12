@@ -25,7 +25,6 @@ import java.awt.Component;
 
 import javax.swing.JCheckBox;
 
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -46,7 +45,7 @@ import edu.ku.brc.ui.CommandDispatcher;
  * Apr 2, 2008
  *
  */
-public class GiftBusRules extends BaseBusRules
+public class GiftBusRules extends AttachmentOwnerBaseBusRules
 {
     public static final String CMDTYPE  = "Interactions";
     public final String NEW_GIFT = "NEW_GIFT";

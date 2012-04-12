@@ -26,12 +26,12 @@ package edu.ku.brc.specify.datamodel.busrules;
  * Created Date: Jan 26, 2010
  *
  */
-public class DNASequencingRunAttachmentBusRules extends AttachmentOwnerBaseBusRules
+public class DNASequencingRunBusRules extends AttachmentOwnerBaseBusRules
 {
     /**
      * 
      */
-    public DNASequencingRunAttachmentBusRules()
+    public DNASequencingRunBusRules()
     {
         super();
     }

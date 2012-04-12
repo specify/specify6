@@ -146,14 +146,14 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         String storageFilename = "";
         try
         {
-            if (originalsDir == null || !originalsDir.exists())
+            if (originalsDir == null || !originalsDir.exists() || !originalsDir.canWrite())
             {
                 errMsg = UIRegistry.getLocalizedMessage("ATTCH_STRG_DIR_ERR", (originalsDir != null ? originalsDir.getAbsolutePath() : "(missing dir name)"));
-                log.error("originalsDir doesn't exist["+(originalsDir != null ? originalsDir.getAbsolutePath() : "null")+"]");
+                log.error("originalsDir doesn't exist["+(originalsDir != null ? originalsDir.getAbsolutePath() : "null ")+"]");
             }
             
             // find an unused filename in the originals dir
-            File storageFile = new File(originalsDir +File.separator + "xxx" + suffix);//File.createTempFile("sp6-", suffix, originalsDir);
+            File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
             System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
             FileOutputStream fos = new FileOutputStream(storageFile);
             fos.write(1);
@@ -167,8 +167,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             }
             errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", (storageFile != null ? storageFile.getAbsolutePath() : "(missing file name)"));
             log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace();
             

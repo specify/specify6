@@ -42,11 +42,13 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
+import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
+import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.util.AttachmentUtils;
@@ -80,10 +82,12 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                FieldNotebookAttachment.class,
                FieldNotebookPageAttachment.class,
                FieldNotebookPageSetAttachment.class,
+               GiftAttachment.class,
                LoanAttachment.class,
                LocalityAttachment.class,
                PermitAttachment.class,
                PreparationAttachment.class,
+               ReferenceWorkAttachment.class,
                RepositoryAgreementAttachment.class,
                TaxonAttachment.class );
     }

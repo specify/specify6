@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -32,7 +31,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  *Added in case of need to manage ContainingReferenceWork relationship.
  */
-public class ReferenceWorkBusRules extends BaseBusRules
+public class ReferenceWorkBusRules extends AttachmentOwnerBaseBusRules
 {
 
 	/**

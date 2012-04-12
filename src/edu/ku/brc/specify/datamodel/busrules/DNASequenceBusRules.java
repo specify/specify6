@@ -26,7 +26,6 @@ import javax.swing.event.DocumentEvent;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.IllustrativeBarCodeUI;
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
@@ -35,9 +34,9 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.DocumentAdaptor;
 
-public class DNASequenceBusRules extends BaseBusRules implements CommandListener
+public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements CommandListener
 {
-    private static final Logger log = Logger.getLogger(DNASequenceBusRules.class);
+    private static final Logger dnalog = Logger.getLogger(DNASequenceBusRules.class);
     
     protected IllustrativeBarCodeUI  barCodeUI = null;
     
@@ -129,7 +128,7 @@ public class DNASequenceBusRules extends BaseBusRules implements CommandListener
             tf.setText(Integer.toString(value));    
         } else
         {
-            log.debug("Couldn't find id["+id+"] " + value);
+            dnalog.debug("Couldn't find id["+id+"] " + value);
         }
         
     }

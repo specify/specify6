@@ -21,7 +21,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.util.Hashtable;
 
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
@@ -35,7 +34,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Feb 11, 2008
  *
  */
-public class BorrowBusRules extends BaseBusRules
+public class BorrowBusRules extends AttachmentOwnerBaseBusRules
 {
 
     public BorrowBusRules()

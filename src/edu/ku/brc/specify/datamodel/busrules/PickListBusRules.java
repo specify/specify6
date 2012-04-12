@@ -45,7 +45,6 @@ import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
