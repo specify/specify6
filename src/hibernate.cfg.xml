@@ -96,6 +96,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Discipline"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Division"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequence"/>
+        <mapping class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRun"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRunCitation"/>

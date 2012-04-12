@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 146 or 532
+    Last used ID is 147 or 532
     
     [0] are available
     
@@ -147,6 +147,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DNASequenceAttachment" abbrev="dnaat" id="147" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="DNASequenceAttachmentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DNASequencingRun" abbrev="dnar" id="88" searchable="true" />
         <table name="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" abbrev="dnarat" id="135" searchable="true">

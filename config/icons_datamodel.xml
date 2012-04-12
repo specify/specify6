@@ -93,7 +93,8 @@
 	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="NonStd"/>
 	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="NonStd"/>
 	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="NonStd"/>
-	<icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="NonStd"/>
+    <icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="NonStd"/>
+    <icon name="DNASequencingRunAttachment"      file="dna_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookAttachment"         file="field_notebook_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookPageAttachment"     file="field_notebook_page_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookPageSetAttachment"  file="field_notebook_page_set_attachment.png" sizes="NonStd"/>
@@ -146,7 +147,8 @@
 	<icon name="collectionobjectattachment"     alias="CollectionObjectAttachment"/>
 	<icon name="conservdescriptionattachment"   alias="ConservDescriptionAttachment"/>
 	<icon name="conserveventattachment"         alias="ConservEventAttachment"/>
-	<icon name="dnasequenceattachment"          alias="DNASequenceAttachment"/>
+    <icon name="dnasequenceattachment"          alias="DNASequenceAttachment"/>
+    <icon name="dnasequencingrunattachment"     alias="DNASequencingRunAttachment"/>
 	<icon name="fieldnotebookattachment"        alias="FieldNotebookAttachment"/>
 	<icon name="fieldnotebookpageattachment"    alias="FieldNotebookPageAttachment"/>
 	<icon name="fieldnotebookpagesetattachment" alias="FieldNotebookPageSetAttachment"/>

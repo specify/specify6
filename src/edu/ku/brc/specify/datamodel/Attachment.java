@@ -93,7 +93,8 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
-    protected Set<DNASequencingRunAttachment>        dnaSequenceAttachments;
+    protected Set<DNASequenceAttachment>             dnaSequenceAttachments;
+    protected Set<DNASequencingRunAttachment>        dnaSequencingRunAttachments;
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
     protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
     protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;
@@ -149,6 +150,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         collectingEventAttachments     = new HashSet<CollectingEventAttachment>();
         conservDescriptionAttachments  = new HashSet<ConservDescriptionAttachment>();
         conservEventAttachments        = new HashSet<ConservEventAttachment>();
+        dnaSequenceAttachments         = new HashSet<DNASequenceAttachment>();
+        dnaSequencingRunAttachments    = new HashSet<DNASequencingRunAttachment>();
         giftAttachments                = new HashSet<GiftAttachment>();
         loanAttachments                = new HashSet<LoanAttachment>();
         localityAttachments            = new HashSet<LocalityAttachment>();
@@ -453,14 +456,26 @@ public class Attachment extends DataModelObjBase implements Serializable
 
     @OneToMany(mappedBy = "attachment")
     @Cascade( {CascadeType.ALL} )
-    public Set<DNASequencingRunAttachment> getDnaSequenceAttachments()
+    public Set<DNASequenceAttachment> getDnaSequenceAttachments()
     {
         return dnaSequenceAttachments;
     }
 
-    public void setDnaSequenceAttachments(Set<DNASequencingRunAttachment> dnaSequenceAttachments)
+    public void setDnaSequenceAttachments(Set<DNASequenceAttachment> dnaSequenceAttachments)
     {
         this.dnaSequenceAttachments = dnaSequenceAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<DNASequencingRunAttachment> getDnaSequencingRunAttachments()
+    {
+        return dnaSequencingRunAttachments;
+    }
+
+    public void setDnaSequencingRunAttachments(Set<DNASequencingRunAttachment> dnaSequencingRunAttachments)
+    {
+        this.dnaSequencingRunAttachments = dnaSequencingRunAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

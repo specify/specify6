@@ -83,6 +83,7 @@
     <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ConservEventAttachmentDisplay"         class="edu.ku.brc.specify.datamodel.ConservEventAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookPageAttachmentDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" helpcontext="CBXQViewEdit"/>

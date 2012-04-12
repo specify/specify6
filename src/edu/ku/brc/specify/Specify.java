@@ -177,6 +177,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -430,6 +431,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             CollectionObjectAttachment.class,
             ConservDescriptionAttachment.class,
             ConservEventAttachment.class,
+            DNASequenceAttachment.class,
             DNASequencingRunAttachment.class,
             FieldNotebookAttachment.class,
             FieldNotebookPageAttachment.class,

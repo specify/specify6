@@ -68,7 +68,8 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	protected String sequencePrimerSequence5_3;
 	protected Boolean sequenceCocktailPrimer;
 	protected String traceFileName;
-	protected String scoreFileName;
+    protected String scoreFileName;
+    protected String geneSequence;
 	protected String remarks;
 	
 	protected Float number1;
@@ -118,6 +119,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
         sequenceCocktailPrimer = null;
         traceFileName = null;
         scoreFileName = null;
+        geneSequence = null;
         remarks = null;
 
         number1 = null;
@@ -326,10 +328,25 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 		return remarks;
 	}
 
-
-
-
 	/**
+     * @return the geneSequence
+     */
+    @Lob
+    @Column(name = "GeneSequence", unique = false,nullable = true, insertable = true, updatable = true)
+    public String getGeneSequence()
+    {
+        return geneSequence;
+    }
+
+    /**
+     * @param geneSequence the geneSequence to set
+     */
+    public void setGeneSequence(String geneSequence)
+    {
+        this.geneSequence = geneSequence;
+    }
+
+    /**
 	 * @return the number1
 	 */
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
@@ -337,9 +354,6 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	{
 		return number1;
 	}
-
-
-
 
 	/**
 	 * @return the number2

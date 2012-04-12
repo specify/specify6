@@ -131,7 +131,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 31;
+    private final int OVERALL_TOTAL = 32;
     
     private static final String TINYINT4 = "TINYINT(4)";
     
@@ -278,7 +278,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Integer spverId         = null;
                 Integer recVerNum       = 1;
                 
-                log.debug("appVerNumArg:  ["+appVerNumber+"] dbVersion from XML["+dbVersion+"] "+ dbVersion.compareTo("1.6"));
+                //log.debug("appVerNumArg:  ["+appVerNumber+"] dbVersion from XML["+dbVersion+"] "+ dbVersion.compareTo("1.6"));
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
@@ -1438,12 +1438,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     tblName = getTableTitleForFrame(CollectionObject.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, ocrField))
                     {
-                        if (!addColumn(conn, databaseName, tblName, ocrField,  "TEXT", "SGRStatus"))
+                        if (!addColumn(conn, databaseName, tblName, ocrField,  "TEXT", "TotalValue"))
                         {
                             return false;
                         }
                     }
                     frame.incOverall(); // #31
+                    
+                    updateDNAAttachments(conn);
+                    
+                    frame.incOverall(); // #32
                     
                     return true;
                     
@@ -1520,7 +1524,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param databaseName
      * @throws SQLException
      */
-    public static void createSGRTables(Connection conn, String databaseName) throws SQLException
+    public static void createSGRTables(final Connection conn, String databaseName) throws SQLException
     {
 
         if (!doesTableExist(databaseName, "sgrmatchconfiguration"))
@@ -1600,6 +1604,83 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         return fmt;
     }
+    
+
+    /**
+     * @param conn
+     * @return
+     */
+    public static boolean updateDNAAttachments(final Connection conn)
+    {
+        String dnaSeqRunAttSQL = "CREATE TABLE `dnasequencerunattachment` ( `DnaSequencingRunAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
+                "`Ordinal` int(11) DEFAULT NULL, `Remarks` text, `ModifiedByAgentID` int(11) DEFAULT NULL, `AttachmentID` int(11) NOT NULL, `CreatedByAgentID` int(11) DEFAULT NULL, `DnaSequencingRunID` int(11) NOT NULL, " +
+                "PRIMARY KEY (`DnaSequencingRunAttachmentId`), KEY `FKD0DAEB167699B003` (`CreatedByAgentID`), KEY `FKD0DAEB1678F036AA` (`DnaSequencingRunID`), KEY `FKD0DAEB16C7E55084` (`AttachmentID`), KEY `FKD0DAEB165327F942` (`ModifiedByAgentID`), " +
+                "CONSTRAINT `FKD0DAEB165327F942` FOREIGN KEY (`ModifiedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKD0DAEB167699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`AgentID`), " +
+                "CONSTRAINT `FKD0DAEB1678F036AA` FOREIGN KEY (`DnaSequencingRunID`) REFERENCES `dnasequencingrun` (`DNASequencingRunID`), CONSTRAINT `FKD0DAEB16C7E55084` FOREIGN KEY (`AttachmentID`) REFERENCES `attachment` (`AttachmentID`) ) " +
+                "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+        
+        String dnaSeqAttSQL = "CREATE TABLE `dnasequenceattachment` ( `DnaSequenceAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
+                            "`Ordinal` int(11) DEFAULT NULL, `Remarks` text, `AttachmentID` int(11) NOT NULL, `CreatedByAgentID` int(11) DEFAULT NULL, `DnaSequenceID` int(11) NOT NULL, `ModifiedByAgentID` int(11) DEFAULT NULL, PRIMARY KEY (`DnaSequenceAttachmentId`), " +
+                            "KEY `FKFFC2E0FB265FB168` (`DnaSequenceID`), KEY `FKFFC2E0FB7699B003` (`CreatedByAgentID`), KEY `FKFFC2E0FBC7E55084` (`AttachmentID`), KEY `FKFFC2E0FB5327F942` (`ModifiedByAgentID`), " +
+                            "CONSTRAINT `FKFFC2E0FB5327F942` FOREIGN KEY (`ModifiedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKFFC2E0FB265FB168` FOREIGN KEY (`DnaSequenceID`) REFERENCES `dnasequence` (`DnaSequenceID`), " +
+                            "CONSTRAINT `FKFFC2E0FB7699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKFFC2E0FBC7E55084` FOREIGN KEY (`AttachmentID`) REFERENCES `attachment` (`AttachmentID`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+        String insert = "INSERT INTO dnasequencerunattachment ( DnaSequencingRunAttachmentId, TimestampCreated, TimestampModified, Version, " +
+                        "Ordinal, Remarks, AttachmentID, CreatedByAgentID, DnaSequencingRunID, ModifiedByAgentID) " +
+                        "SELECT DnaSequencingRunAttachmentId, TimestampCreated, TimestampModified, Version, " +
+                        "Ordinal, Remarks, AttachmentID, CreatedByAgentID, DnaSequencingRunID, ModifiedByAgentID FROM dnasequenceattachment ORDER BY DnaSequencingRunAttachmentId ASC";
+
+        DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+        dbMgr.setConnection(conn);
+        if (dbMgr.doesDBHaveTable("dnasequencerunattachment"))
+        {
+            log.error("dnasequencerunattachment already exists");
+            return false;
+        }
+        int rv;
+        
+        //rv = BasicSQLUtils.update(conn, "DROP TABLE dnasequencerunattachment"); // Testing and Debug Only
+        //log.debug("Dropped Old table dnasequenceattachment: "+rv);
+        rv = BasicSQLUtils.update(conn, dnaSeqRunAttSQL);
+        log.debug("Created dnasequencerunattachment: "+rv);
+        if (rv != 0)
+        {
+            log.info("Failed creating dnasequencerunattachment: "+rv);
+            return false;
+        }
+        
+        int recCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM dnasequenceattachment");
+        log.debug("Number of dnasequenceattachment records: "+recCnt);
+        if (recCnt > 0)
+        {
+            rv = BasicSQLUtils.update(conn, insert);
+            log.debug("Moved Records dnasequencerunattachment: "+rv);
+            if (rv != 0)
+            {
+                log.info("Failed moving records dnasequencerunattachment: "+rv);
+                return false;
+            }
+        }
+        
+        rv = BasicSQLUtils.update(conn, "DROP TABLE dnasequenceattachment");
+        log.debug("Dropped Old table dnasequenceattachment: "+rv);
+        if (rv != 0)
+        {
+            log.info("Failed dropping dnasequenceattachment: "+rv);
+            return false;
+        }
+        
+        rv = BasicSQLUtils.update(conn, dnaSeqAttSQL);
+        log.debug("Created New table dnasequenceattachment: "+rv);
+        if (rv != 0)
+        {
+            log.info("Failed creating dnasequenceattachment: "+rv);
+            return false;
+        }
+        
+        return true;
+    }
+
 
     /**
      * @param oldDBConn

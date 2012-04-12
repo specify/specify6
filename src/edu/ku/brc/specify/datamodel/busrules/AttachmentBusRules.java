@@ -69,11 +69,11 @@ public class AttachmentBusRules extends BaseBusRules
 
 	String[] tableNames = {"accessionattachment",          "agentattachment",               "borrowAttachment",
 	                       "collectingeventattachment",    "collectionobjectattachment",    "conservdescriptionattachment",
-	                       "conserveventattachment",       "dnasequenceattachment",         "fieldnotebookattachment",     
-	                       "fieldnotebookpageattachment", "fieldnotebookpagesetattachment", "giftAttachment",
-	                       "loanattachment",              "localityattachment",             "permitattachment",              
-	                       "preparationattachment",       "referenceWorkAttachment",        "repositoryagreementattachment", 
-	                       "taxonattachment"};
+	                       "conserveventattachment",       "dnasequenceattachment",         "dnasequencerunattachment",         
+	                       "fieldnotebookattachment",      "fieldnotebookpageattachment",   "fieldnotebookpagesetattachment", 
+	                       "giftAttachment",               "loanattachment",                "localityattachment",             
+	                       "permitattachment",             "preparationattachment",         "referenceWorkAttachment",        
+	                       "repositoryagreementattachment", "taxonattachment"};
     
     static private String BROWSE_DIR_PREF = "AttachmentBrowseDir";
     private ValBrowseBtnPanel browser = null;

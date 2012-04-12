@@ -817,6 +817,17 @@
                 orderfieldname="ordinal"
                />
 
+    <aggregator name="DNASequenceAttachment"
+                title="DNASequenceAttachment"
+                class="edu.ku.brc.specify.datamodel.DNASequencenAttachment"
+                default="true"
+                separator="; "
+                ending=""
+                count=""
+                format="identity"
+                orderfieldname="ordinal"
+               />
+
     <aggregator name="DNASequencingRunAttachment"
                 title="DNASequencingRunAttachment"
                 class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment"

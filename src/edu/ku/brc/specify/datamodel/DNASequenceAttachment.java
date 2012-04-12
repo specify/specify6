@@ -40,34 +40,34 @@ import edu.ku.brc.util.Orderable;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "dnasequencerunattachment")
-public class DNASequencingRunAttachment extends DataModelObjBase implements ObjectAttachmentIFace<DNASequencingRun>, 
+@Table(name = "dnasequenceattachment")
+public class DNASequenceAttachment extends DataModelObjBase implements ObjectAttachmentIFace<DNASequence>, 
                                                                        Orderable, 
                                                                        Serializable,
-                                                                       Comparable<DNASequencingRunAttachment>
+                                                                       Comparable<DNASequenceAttachment>
 {
-    protected Integer     dnaSequencingRunAttachmentId;
-    protected DNASequencingRun dnaSequencingRun;
+    protected Integer     dnaSequenceAttachmentId;
+    protected DNASequence dnaSequence;
     protected Attachment  attachment;
     protected Integer     ordinal;
     protected String      remarks;
     
-    public DNASequencingRunAttachment()
+    public DNASequenceAttachment()
     {
         
     }
 
     @Id
     @GeneratedValue
-    @Column(name = "DnaSequencingRunAttachmentId")
-    public Integer getDnaSequencingRunAttachmentId()
+    @Column(name = "DnaSequenceAttachmentId")
+    public Integer getDnaSequenceAttachmentId()
     {
-        return dnaSequencingRunAttachmentId;
+        return dnaSequenceAttachmentId;
     }
 
-    public void setDnaSequencingRunAttachmentId(Integer dnaSequencingRunAttachmentId)
+    public void setDnaSequenceAttachmentId(Integer dnaSequenceAttachmentId)
     {
-        this.dnaSequencingRunAttachmentId = dnaSequencingRunAttachmentId;
+        this.dnaSequenceAttachmentId = dnaSequenceAttachmentId;
     }
 
     @Override
@@ -75,8 +75,8 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     {
         super.init();
 
-        dnaSequencingRunAttachmentId = null;
-        dnaSequencingRun             = null;
+        dnaSequenceAttachmentId = null;
+        dnaSequence             = null;
         attachment              = null;
         ordinal                 = null;
         remarks                 = null;
@@ -106,15 +106,15 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DnaSequencingRunID", nullable = false)
-    public DNASequencingRun getDnaSequencingRun()
+    @JoinColumn(name = "DnaSequenceID", nullable = false)
+    public DNASequence getDnaSequence()
     {
-        return dnaSequencingRun;
+        return dnaSequence;
     }
 
-    public void setDnaSequencingRun(DNASequencingRun dnaSequencingRun)
+    public void setDnaSequence(DNASequence dnaSequence)
     {
-        this.dnaSequencingRun = dnaSequencingRun;
+        this.dnaSequence = dnaSequence;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -131,14 +131,14 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     }
 
     @Transient
-    public DNASequencingRun getObject()
+    public DNASequence getObject()
     {
-        return getDnaSequencingRun();
+        return getDnaSequence();
     }
 
-    public void setObject(DNASequencingRun dnaSequencingRun)
+    public void setObject(DNASequence dnaSequence)
     {
-        this.dnaSequencingRun = dnaSequencingRun;
+        this.dnaSequence = dnaSequence;
     }
 
     @Transient
@@ -169,7 +169,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     @Transient
     public Integer getParentTableId()
     {
-        return DNASequencingRun.getClassTableId();
+        return DNASequence.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -179,7 +179,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     @Transient
     public Integer getParentId()
     {
-        return dnaSequencingRun != null ? dnaSequencingRun.getId() : null;
+        return dnaSequence != null ? dnaSequence.getId() : null;
     }
     
     /* (non-Javadoc)
@@ -189,14 +189,14 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     @Transient
     public Class<?> getDataClass()
     {
-        return DNASequencingRunAttachment.class;
+        return DNASequenceAttachment.class;
     }
 
     @Override
     @Transient
     public Integer getId()
     {
-        return dnaSequencingRunAttachmentId;
+        return dnaSequenceAttachmentId;
     }
 
 	/**
@@ -205,7 +205,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
 	@Transient
     public static int getClassTableId()
     {
-    	return 135;
+    	return 147;
     }
 	
     @Override
@@ -219,7 +219,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(DNASequencingRunAttachment obj)
+    public int compareTo(DNASequenceAttachment obj)
     {
         if (ordinal != null && obj != null && obj.ordinal != null)
         {
