@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -59,7 +60,7 @@ import org.hibernate.annotations.Index;
         @Index (name="BOLDBarcodeIDX", columnNames={"BOLDBarcodeID"}),
         @Index (name="BOLDSampleIDX", columnNames=("BOLDSampleID"))
     })
-public class DNASequence extends CollectionMember
+public class DNASequence extends CollectionMember implements AttachmentOwnerIFace<DNASequenceAttachment>
 {
 	protected Integer						dnaSequenceId;
 	protected String						moleculeType;
@@ -89,6 +90,7 @@ public class DNASequence extends CollectionMember
 
 	protected Agent							sequencer;
 	protected CollectionObject				collectionObject;
+    protected Set<DNASequenceAttachment>    attachments;
 	protected Set<DNASequencingRun>			dnaSequencingRuns;
     
     /**
@@ -136,6 +138,7 @@ public class DNASequence extends CollectionMember
 
         sequencer = null;
         collectionObject = null;
+        attachments = new TreeSet<DNASequenceAttachment>();
         dnaSequencingRuns = new HashSet<DNASequencingRun>();
     }
     
@@ -388,8 +391,7 @@ public class DNASequence extends CollectionMember
 		return boldLastUpdateDate;
 	}
 
-
-	/**
+    /**
 	 * @param targetMarker the targetMarker to set
 	 */
 	public void setTargetMarker(String targetMarker) 
@@ -623,6 +625,15 @@ public class DNASequence extends CollectionMember
 
 
     /**
+     * @param attachments the attachments to set
+     */
+    public void setAttachments(Set<DNASequenceAttachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+
+
+    /**
      * @param dnaSequence the dnaSequence to set
      */
     public void setCollectionObject(CollectionObject collectionObject)
@@ -685,7 +696,30 @@ public class DNASequence extends CollectionMember
 		this.dnaSequencingRuns = dnaSequencingRuns;
 	}
     
+	
+    @OneToMany(mappedBy = "dnaSequence")
+    @Cascade( {CascadeType.ALL} )
+    @OrderBy("ordinal ASC")
+    public Set<DNASequenceAttachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    //---------------------------------------------------------------
+    //AttachmentOwnerIFace implementation
+    //---------------------------------------------------------------
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<DNASequenceAttachment> getAttachmentReferences()
+    {
+        return attachments;
+    }
+
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------

@@ -819,7 +819,7 @@
 
     <aggregator name="DNASequenceAttachment"
                 title="DNASequenceAttachment"
-                class="edu.ku.brc.specify.datamodel.DNASequencenAttachment"
+                class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"
                 default="true"
                 separator="; "
                 ending=""

@@ -288,6 +288,8 @@ public class BaseBusRules implements BusinessRulesIFace
      */
     protected String getExtraWhereColumns(final DBTableInfo tableInfo)
     {
+        System.out.println(tableInfo != null ? tableInfo.getTableId():"  is null");
+        
         return QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false, false, tableInfo.getAbbrev());
     }
     
