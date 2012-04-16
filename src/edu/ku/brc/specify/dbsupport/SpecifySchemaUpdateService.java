@@ -1612,18 +1612,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     public static boolean updateDNAAttachments(final Connection conn)
     {
-        String dnaSeqRunAttSQL = "CREATE TABLE `dnasequencerunattachment` ( `DnaSequencingRunAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
+        String dbType = UIRegistry.isEmbedded() ? "MyISAM" : "InnoDB";
+        String dnaSeqRunAttSQL = String.format("CREATE TABLE `dnasequencerunattachment` ( `DnaSequencingRunAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
                 "`Ordinal` int(11) DEFAULT NULL, `Remarks` text, `ModifiedByAgentID` int(11) DEFAULT NULL, `AttachmentID` int(11) NOT NULL, `CreatedByAgentID` int(11) DEFAULT NULL, `DnaSequencingRunID` int(11) NOT NULL, " +
                 "PRIMARY KEY (`DnaSequencingRunAttachmentId`), KEY `FKD0DAEB167699B003` (`CreatedByAgentID`), KEY `FKD0DAEB1678F036AA` (`DnaSequencingRunID`), KEY `FKD0DAEB16C7E55084` (`AttachmentID`), KEY `FKD0DAEB165327F942` (`ModifiedByAgentID`), " +
                 "CONSTRAINT `FKD0DAEB165327F942` FOREIGN KEY (`ModifiedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKD0DAEB167699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`AgentID`), " +
                 "CONSTRAINT `FKD0DAEB1678F036AA` FOREIGN KEY (`DnaSequencingRunID`) REFERENCES `dnasequencingrun` (`DNASequencingRunID`), CONSTRAINT `FKD0DAEB16C7E55084` FOREIGN KEY (`AttachmentID`) REFERENCES `attachment` (`AttachmentID`) ) " +
-                "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+                "ENGINE=%s DEFAULT CHARSET=utf8;", dbType);
         
-        String dnaSeqAttSQL = "CREATE TABLE `dnasequenceattachment` ( `DnaSequenceAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
+        String dnaSeqAttSQL = String.format("CREATE TABLE `dnasequenceattachment` ( `DnaSequenceAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
                             "`Ordinal` int(11) DEFAULT NULL, `Remarks` text, `AttachmentID` int(11) NOT NULL, `CreatedByAgentID` int(11) DEFAULT NULL, `DnaSequenceID` int(11) NOT NULL, `ModifiedByAgentID` int(11) DEFAULT NULL, PRIMARY KEY (`DnaSequenceAttachmentId`), " +
                             "KEY `FKFFC2E0FB265FB168` (`DnaSequenceID`), KEY `FKFFC2E0FB7699B003` (`CreatedByAgentID`), KEY `FKFFC2E0FBC7E55084` (`AttachmentID`), KEY `FKFFC2E0FB5327F942` (`ModifiedByAgentID`), " +
                             "CONSTRAINT `FKFFC2E0FB5327F942` FOREIGN KEY (`ModifiedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKFFC2E0FB265FB168` FOREIGN KEY (`DnaSequenceID`) REFERENCES `dnasequence` (`DnaSequenceID`), " +
-                            "CONSTRAINT `FKFFC2E0FB7699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKFFC2E0FBC7E55084` FOREIGN KEY (`AttachmentID`) REFERENCES `attachment` (`AttachmentID`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+                            "CONSTRAINT `FKFFC2E0FB7699B003` FOREIGN KEY (`CreatedByAgentID`) REFERENCES `agent` (`AgentID`), CONSTRAINT `FKFFC2E0FBC7E55084` FOREIGN KEY (`AttachmentID`) REFERENCES `attachment` (`AttachmentID`) ) " +
+                            "ENGINE=%s DEFAULT CHARSET=utf8;", dbType);
 
         String insert = "INSERT INTO dnasequencerunattachment ( DnaSequencingRunAttachmentId, TimestampCreated, TimestampModified, Version, " +
                         "Ordinal, Remarks, AttachmentID, CreatedByAgentID, DnaSequencingRunID, ModifiedByAgentID) " +
@@ -1639,8 +1641,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         int rv;
         
-        //rv = BasicSQLUtils.update(conn, "DROP TABLE dnasequencerunattachment"); // Testing and Debug Only
-        //log.debug("Dropped Old table dnasequenceattachment: "+rv);
         rv = BasicSQLUtils.update(conn, dnaSeqRunAttSQL);
         log.debug("Created dnasequencerunattachment: "+rv);
         if (rv != 0)
