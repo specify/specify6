@@ -537,10 +537,12 @@ public class ResourceImportExportDlg extends CustomDialog
                 
             } else
             {
-                boolean enable = !activeList.isSelectionEmpty();
+                boolean hasOthersTab = tabbedPane.getTabCount() > 2;
+                boolean enable       = !activeList.isSelectionEmpty();
+                int     numItems     = ((DefaultListModel )activeList.getModel()).size();   
                 
-                importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 2);
-                exportBtn.setEnabled(enable && ((DefaultListModel )activeList.getModel()).size() > 1);
+                importBtn.setEnabled(enable && (levelCBX.getSelectedIndex() < 2 || (numItems > 1 && hasOthersTab)));
+                exportBtn.setEnabled(enable &&  numItems > 1);
                 
                 SpAppResource appRes = (SpAppResource)activeList.getSelectedValue();
                 enable = false;
@@ -1346,8 +1348,10 @@ public class ResourceImportExportDlg extends CustomDialog
     
                     } else
                     {
-                        JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
-                        int resIndex = theList.getSelectedIndex();
+                        boolean isResourcePanel = tabbedPane.getSelectedComponent() == repPanel;
+                        JList   theList         = isResourcePanel ? repList : resList;
+                        int     resIndex        = theList.getSelectedIndex();
+                        Object  selObj          = theList.getSelectedValue();
                         if (resIndex > -1)
                         {
                             if (resIndex == 0) // means we are adding a new resource
@@ -1450,27 +1454,42 @@ public class ResourceImportExportDlg extends CustomDialog
                                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
                                 }
-                            } else
+                            } else if (selObj instanceof AppResourceIFace)
                             {
-                                resIndex++;
-                                AppResourceIFace appRes = resources.get(resIndex-1);
-                                importedName = appRes.getName();
-    
-                                String fName      = FilenameUtils.getName(importedName);
-                                String dbBaseName = FilenameUtils.getBaseName(fileName);
-                                log.debug("["+fName+"]["+dbBaseName+"]");
-                                
-                                boolean doOverwrite = true;
-                                if (!dbBaseName.equals(fName))
+                                //if (isResourcePanel) resIndex++;
+                                AppResourceIFace fndAppRes = null;
+                                for (AppResourceIFace appRes : resources)
                                 {
-                                    String msg = getLocalizedMessage("RIE_OVRDE_MSG", dbBaseName, fName);
-                                    doOverwrite = displayConfirm(getResourceString("RIE_OVRDE_TITLE"), msg, "RIE_OVRDE", "CANCEL", JOptionPane.QUESTION_MESSAGE);
+                                    if (appRes == selObj)
+                                    {
+                                        fndAppRes = appRes;
+                                        break;
+                                    }
                                 }
                                 
-                                if (doOverwrite)
+                                if (fndAppRes != null)
                                 {
-                                    appRes.setDataAsString(data);
-                                    contextMgr.saveResource(appRes);
+                                    importedName = fndAppRes.getName();
+        
+                                    String fName      = FilenameUtils.getName(importedName);
+                                    String dbBaseName = FilenameUtils.getBaseName(fileName);
+                                    log.debug("["+fName+"]["+dbBaseName+"]");
+                                    
+                                    boolean doOverwrite = true;
+                                    if (!dbBaseName.equals(fName))
+                                    {
+                                        String msg = getLocalizedMessage("RIE_OVRDE_MSG", dbBaseName, fName);
+                                        doOverwrite = displayConfirm(getResourceString("RIE_OVRDE_TITLE"), msg, getResourceString("RIE_OVRDE"), getResourceString("CANCEL"), JOptionPane.QUESTION_MESSAGE);
+                                    }
+                                    
+                                    if (doOverwrite)
+                                    {
+                                        fndAppRes.setDataAsString(data);
+                                        contextMgr.saveResource(fndAppRes);
+                                    }
+                                } else
+                                {
+                                    UIRegistry.showError("Strange error - Couldn't resource.");
                                 }
                             }
                         }
@@ -1572,9 +1591,10 @@ public class ResourceImportExportDlg extends CustomDialog
             Collections.sort(resources);
             if (true)
             {
+                log.debug("Level Selected - Filling Resources:");
                 for (SpAppResource appRes : resources)
                 {
-                    System.err.println(appRes.getName());
+                    log.debug("> "+appRes.getName());
                 }
             }
             
