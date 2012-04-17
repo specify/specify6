@@ -380,6 +380,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     doInsert = true;
                 }
                 
+                doSchemaUpdate = true;
                 try
                 {
                     if (doSchemaUpdate || doInsert || doUpdateAppVer)
@@ -1627,7 +1628,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     public static boolean updateDNAAttachments(final Connection conn)
     {
-        String dbType = UIRegistry.isEmbedded() ? "MyISAM" : "InnoDB";
+    	boolean isInnoDB = true;
+        Object[] createRow = BasicSQLUtils.queryForRow("SHOW CREATE TABLE collectionobject");
+        if (createRow != null && createRow.length > 1)
+        {
+        	isInnoDB = StringUtils.containsIgnoreCase(createRow[1].toString(), "InnoDB");
+        }
+
+        String dbType = isInnoDB ? "InnoDB" : "MyISAM";
         String dnaSeqRunAttSQL = String.format("CREATE TABLE `dnasequencerunattachment` ( `DnaSequencingRunAttachmentId` int(11) NOT NULL AUTO_INCREMENT, `TimestampCreated` datetime NOT NULL, `TimestampModified` datetime DEFAULT NULL, `Version` int(11) DEFAULT NULL, " +
                 "`Ordinal` int(11) DEFAULT NULL, `Remarks` text, `ModifiedByAgentID` int(11) DEFAULT NULL, `AttachmentID` int(11) NOT NULL, `CreatedByAgentID` int(11) DEFAULT NULL, `DnaSequencingRunID` int(11) NOT NULL, " +
                 "PRIMARY KEY (`DnaSequencingRunAttachmentId`), KEY `FKD0DAEB167699B003` (`CreatedByAgentID`), KEY `FKD0DAEB1678F036AA` (`DnaSequencingRunID`), KEY `FKD0DAEB16C7E55084` (`AttachmentID`), KEY `FKD0DAEB165327F942` (`ModifiedByAgentID`), " +
