@@ -432,14 +432,14 @@
     </table>
     <table classname="edu.ku.brc.specify.datamodel.BorrowAgent" table="borrowagent" tableid="19" searchable="true" abbrv="boa">
       <display view="BorrowAgent" newobjdlg="BorrowAgentDisplay"/>
-      <field column="CollectionMemberID" name="collectionMemberId" type="java.lang.Integer" indexName="BorColMemIDX" updatable="true" required="true" unique="false" indexed="true" partialDate="false"/>
+      <field column="CollectionMemberID" name="collectionMemberId" type="java.lang.Integer" indexName="BorColMemIDX2" updatable="true" required="true" unique="false" indexed="true" partialDate="false"/>
       <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Role" name="role" type="java.lang.String" length="32" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <id column="BorrowAgentID" name="borrowAgentId" type="java.lang.Integer"/>
-      <tableindex indexName="BorColMemIDX" columnNames="CollectionMemberID"/>
+      <tableindex indexName="BorColMemIDX2" columnNames="CollectionMemberID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="AgentID" updatable="false" required="true" save="false" likemanytoone="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Borrow" relationshipname="borrow" columnname="BorrowID" othersidename="borrowAgents" updatable="false" required="true" save="false" likemanytoone="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false" save="false" likemanytoone="false"/>
@@ -1380,7 +1380,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationID" othersidename="exchangeInPreps" updatable="false" required="false" save="false" likemanytoone="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.ExchangeOut" table="exchangeout" tableid="40" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules" abbrv="exo">
-      <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="120" indexName="DescriptionOfMaterialIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="120" indexName="DescriptionOfMaterialIDX2" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="ExchangeDate" name="exchangeDate" type="java.util.Calendar" indexName="ExchangeOutdateIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="Number1" name="number1" type="java.lang.Float" length="24" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Number2" name="number2" type="java.lang.Float" length="24" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
@@ -1397,7 +1397,7 @@
       <field column="YesNo2" name="yesNo2" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <id column="ExchangeOutID" name="exchangeOutId" type="java.lang.Integer"/>
       <tableindex indexName="ExchangeOutdateIDX" columnNames="ExchangeDate"/>
-      <tableindex indexName="DescriptionOfMaterialIDX" columnNames="DescriptionOfMaterial"/>
+      <tableindex indexName="DescriptionOfMaterialIDX2" columnNames="DescriptionOfMaterial"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AddressOfRecord" relationshipname="addressOfRecord" columnname="AddressOfRecordID" othersidename="exchangeOuts" updatable="false" required="false" save="true" likemanytoone="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentCatalogedBy" columnname="CatalogedByID" updatable="false" required="true" save="false" likemanytoone="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentSentTo" columnname="SentToOrganizationID" updatable="false" required="true" save="false" likemanytoone="false"/>

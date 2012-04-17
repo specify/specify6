@@ -63,7 +63,7 @@ import edu.ku.brc.ui.UIRegistry;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spappresource")
-@org.hibernate.annotations.Table(appliesTo="spuiviewset", indexes =
+@org.hibernate.annotations.Table(appliesTo="spappresource", indexes =
     {   @Index (name="SpAppResNameIDX", columnNames={"Name"}),
         @Index (name="SpAppResMimeTypeIDX", columnNames={"MimeType"})
     })

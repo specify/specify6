@@ -54,7 +54,7 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "splocalecontaineritem")
-@org.hibernate.annotations.Table(appliesTo="localecontaineritem", indexes =
+@org.hibernate.annotations.Table(appliesTo="splocalecontaineritem", indexes =
     {   @Index (name="SpLocaleContainerItemNameIDX", columnNames={"Name"})
     })
 public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableItemIFace, Comparable<SpLocaleContainerItem>

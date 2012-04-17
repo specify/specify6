@@ -44,7 +44,7 @@ import org.hibernate.annotations.Index;
         })
 @org.hibernate.annotations.Table(appliesTo="borrowagent", indexes =
 {
-        @Index (name="BorColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="BorColMemIDX2", columnNames={"CollectionMemberID"})
 })
 public class BorrowAgent extends CollectionMember implements java.io.Serializable 
 {

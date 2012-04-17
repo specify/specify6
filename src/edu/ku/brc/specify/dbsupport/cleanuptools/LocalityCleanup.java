@@ -43,8 +43,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
+
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
+
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -414,7 +417,7 @@ public class LocalityCleanup
                 String str = new String(s.getBytes(), "UTF8");
                 //System.out.println(str);
                 
-                String[] toks = StringUtils.tokenizeToStringArray(str, "\t");
+                String[] toks = new StrTokenizer(str, "\t").getTokenArray(); //StringUtils.tokenizeToStringArray(str, "\t");
                 Integer key = Integer.parseInt(toks[0]);
                 
                 if (BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*) FROM geoname WHERE geonameId = "+key) == 1)

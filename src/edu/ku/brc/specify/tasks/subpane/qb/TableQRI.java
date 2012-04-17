@@ -281,7 +281,7 @@ public class TableQRI extends ExpandableQRI
     protected Integer getHostCollId(String hostTaxonRelName)
     {
         SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
-        String sql = String.format("SELECT RightSideCollectionID FROM collectionreltype WHERE Name = \"%s\" AND LeftSideCollectionID = %d", 
+        String sql = String.format("SELECT RightSideCollectionID FROM collectionreltype WHERE Name = \'%s\' AND LeftSideCollectionID = %d", 
         		hostTaxonRelName,  spMgr.getClassObject(Collection.class).getId());
         //System.err.println(sql);
         return BasicSQLUtils.getCount(sql);

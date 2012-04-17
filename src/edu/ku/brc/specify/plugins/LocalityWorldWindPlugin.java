@@ -37,8 +37,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import mondrian.rolap.BitKey.Big;
-
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.specify.datamodel.CollectingEvent;

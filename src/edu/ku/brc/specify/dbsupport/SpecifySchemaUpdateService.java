@@ -131,7 +131,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 32;
+    private final int OVERALL_TOTAL = 33;
     
     private static final String TINYINT4 = "TINYINT(4)";
     
@@ -1449,6 +1449,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     frame.incOverall(); // #32
                     
+                    // Fix indexes
+                    
+                    if (doesIndexExist("borrowagent", "BorColMemIDX"))
+                    {
+                        update(conn, "DROP INDEX BorColMemIDX on borrowagent");
+                        update(conn, "CREATE INDEX BorColMemIDX2 ON borrowagent(CollectionMemberID)");
+                    }
+
+                    if (doesIndexExist("exchangeout", "DescriptionOfMaterialIDX"))
+                    {
+                        update(conn, "DROP INDEX DescriptionOfMaterialIDX on exchangeout");
+                        update(conn, "CREATE INDEX DescriptionOfMaterialIDX2 ON exchangeout(DescriptionOfMaterial)");
+                    }
+                    frame.incOverall(); // #33
+
                     return true;
                     
                 } catch (Exception ex)
@@ -3208,6 +3223,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return BasicSQLUtils.getCountAsInt(sql) == 1;
     }
     
+    /**
+     * @param tableName
+     * @param indexName
+     * @return
+     */
+    protected boolean doesIndexExist(final String tableName, final String indexName)
+    {
+        String  sql  = String.format("SHOW INDEX IN %s WHERE Key_name = '%s'", tableName, indexName);
+        Vector<Object[]> rows =  BasicSQLUtils.query(sql);
+        return rows != null && rows.size() > 0;
+    }
+    
+    /**
+     * @param dbName
+     * @param tableName
+     * @return
+     */
     protected static boolean doesTableExist(final String dbName, final String tableName)
     {
         String  sql  = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", dbName, tableName);

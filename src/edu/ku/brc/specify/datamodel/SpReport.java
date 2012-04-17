@@ -60,7 +60,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spreport")
-@org.hibernate.annotations.Table(appliesTo="spquery", indexes =
+@org.hibernate.annotations.Table(appliesTo="spreport", indexes =
     {   @Index (name="SpReportNameIDX", columnNames={"Name"})
     })
 public class SpReport extends DataModelObjBase

@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.swing.JPopupMenu;
 
-import common.Logger;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
