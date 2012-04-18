@@ -53,13 +53,8 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     
     protected final AtomicBoolean loadCancelled = new AtomicBoolean(false);
     
-    protected JPAQuery theQuery = null;
     protected boolean firstRow = true;
     protected int currentRow = 0;
-    protected Long firstResult = 0L;
-    protected Long maxResults = 0L;
-    
-    protected boolean removeReadRows = true; //if true remove rows after they are iterated. A memory-conservation thing.
     
     /**
      * hql that produces the data.
@@ -259,20 +254,11 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         
     	if (rows.get().hasNext())
         {
-            if (!firstRow && removeReadRows)
+            if (!firstRow)
             {
                 if (!sorting)
                 {
-                    try 
-                    {
-                    	rows.get().remove();
-                    } catch (IllegalStateException isex)
-                    {
-                    	log.warn(isex);
-                    } catch (UnsupportedOperationException onsex)
-                    {
-                    	log.warn(onsex);
-                    }
+                    rows.get().remove();
                 }
             }
             else
@@ -298,18 +284,6 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             return true;
         }
         rowVals = null;
-        rows.set(null);
-        if (theQuery != null)
-        {
-        	//clear out pointers and caches to aid garbage collection
-        	theQuery.getDataObjects().clear();
-        	if (theQuery.getDataObjects() instanceof ArrayList)
-        	{
-        		((ArrayList<?> )theQuery.getDataObjects()).trimToSize();
-        	}
-        	theQuery.clearCql();
-        	//theQuery = null;
-        }
         return false;
     }
     
@@ -465,20 +439,9 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
      */
     public void startDataAcquisition()
     {
-        firstRow = true;
-        currentRow = 0;
-        theQuery = new JPAQuery(hql, this);
-        
-        if (firstResult > 0) 
-        {
-        	theQuery.setFirstResult(firstResult.intValue());
-        }
-        if (maxResults > 0)
-        {
-        	theQuery.setMaxResults(maxResults.intValue());
-        }
-        theQuery.setParams(params);
-        theQuery.start();
+        JPAQuery q = new JPAQuery(hql, this);
+        q.setParams(params);
+        q.start();
     }
 
     /* (non-Javadoc)
@@ -553,55 +516,5 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
 			listener.filling();
 		}
 	}
-
-	/**
-	 * @return the firstRecord
-	 */
-	public long getFirstResult() 
-	{
-		return firstResult;
-	}
-
-	/**
-	 * @param firstRecord the firstRecord to set
-	 */
-	public void setFirstResult(long firstRecord) 
-	{
-		this.firstResult = firstRecord;
-	}
-
-	/**
-	 * @return the maxRecords
-	 */
-	public long getMaxResults() 
-	{
-		return maxResults;
-	}
-
-	/**
-	 * @param maxRecords the maxRecords to set
-	 */
-	public void setMaxResults(long maxRecords) 
-	{
-		this.maxResults = maxRecords;
-	}
-
-	/**
-	 * @return the removeReadRows
-	 */
-	public boolean isRemoveReadRows() 
-	{
-		return removeReadRows;
-	}
-
-	/**
-	 * @param removeReadRows the removeReadRows to set
-	 */
-	public void setRemoveReadRows(boolean removeReadRows) 
-	{
-		this.removeReadRows = removeReadRows;
-	}
-	
-	
     
 }

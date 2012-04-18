@@ -25,6 +25,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
+import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoTreeLevel;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -185,12 +186,6 @@ public class ExportToMySQLDB
 			sql.append(")");
 			sql.append(" CHARSET=utf8");
 			stmt.execute(sql.toString());
-			
-			//should do this in the create statement
-			String keySql = "ALTER TABLE " + tblName + " CHANGE COLUMN " + getIdFieldName(tblName) + " " + getIdFieldName(tblName) + " INT(11) NOT NULL, "
-				+ "ADD PRIMARY KEY (" + getIdFieldName(tblName) + ")";
-			stmt.execute(keySql);
-			
 		} finally
 		{
 			stmt.close();
@@ -238,11 +233,11 @@ public class ExportToMySQLDB
 	 */
 	public static long exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
 	    boolean newTable = false;
 	    String tblName = fixTblNameForMySQL(originalTblName);
-	    if (firstPass && (overwrite || !tableExists(toConnection, tblName)))
+	    if (overwrite || !tableExists(toConnection, tblName))
 	    {
 	    	if (tableExists(toConnection, tblName))
 	    	{
@@ -252,7 +247,7 @@ public class ExportToMySQLDB
 	    	newTable = true;
 	    }
 	    
-	    if (firstPass && update)
+	    if (update)
 	    {
 	    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(baseTableId);
 	    	
@@ -314,7 +309,7 @@ public class ExportToMySQLDB
 	    finally
 	    {
 	    	stmt.close();
-	    	//toConnection.close(); 
+	    	toConnection.close(); 
 	    }
 	}
 	
@@ -332,9 +327,9 @@ public class ExportToMySQLDB
 	 */
 	public static long exportToTable(List<ERTICaptionInfoQB> columns, QBDataSource rows, 
 			String tblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
-		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId, firstPass);
+		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId);
 	}
 	
 	/**

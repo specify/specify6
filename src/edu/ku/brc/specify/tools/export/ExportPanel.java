@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
@@ -112,8 +111,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     
-    protected static final long maxExportRowCount = 250000;
-    
     protected JTable mapsDisplay;
 	protected DefaultTableModel mapsModel;
 	protected JButton exportToDbTblBtn;
@@ -128,8 +125,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected String itPw = null;
 	
 	protected long rowCount = 0;
-	protected long rowsExported = 0;
-	protected long cacheRowCount = 0;
 	protected int mapUpdating = -1;
 	protected int stupid = -1;
 	protected javax.swing.SwingWorker<Object, Object> updater = null;
@@ -175,18 +170,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	public void createUI()
 	{
     	buildTableModel();
-		mapsDisplay = new JTable(mapsModel) {
-
-			/* (non-Javadoc)
-			 * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
-			 */
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-			
-		};
-
+		mapsDisplay = new JTable(mapsModel);
 		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
 		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
@@ -354,7 +338,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
     	status.setFont(status.getFont().deriveFont(Font.ITALIC));
     	Dimension pref = status.getPreferredSize();
-    	pref.setSize(Math.max(300, pref.getWidth()), pref.getHeight());
+    	pref.setSize(Math.max(250, pref.getWidth()), pref.getHeight());
     	status.setPreferredSize(pref);
     	pbb.add(status, cc.xy(2, 1));
     	pbb.add(this.showIPTSQLBtn, cc.xy(3, 1));
@@ -482,7 +466,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		headers.add(UIRegistry.getResourceString("ExportPanel.MappingTitle"));
 		headers.add(UIRegistry.getResourceString("ExportPanel.MappingExportTimeTitle"));
 		headers.add(UIRegistry.getResourceString("ExportPanel.Status"));
-		mapsModel = new DefaultTableModel(data, headers);	
+		mapsModel = new DefaultTableModel(data, headers);
 	}
 
 	/**
@@ -594,7 +578,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param getColInfo
 	 * @return
 	 */
-	protected List<Specs> getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
+	protected Specs getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
 			boolean getColInfo, boolean rebuildExistingTbl)
 	{
         UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
@@ -664,9 +648,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         List<ERTICaptionInfoQB> cols = getColInfo ?
         	QueryBldrPane.getColumnInfo(qfps, false, rootQRI.getTableInfo(), true) : null;
         
-        List<Specs> result = new ArrayList<Specs>();
-        result.add(new Specs(sql, cols, uniquenessHQL, uniquenessSql));
-        return result;
+        return new Specs(sql, cols, uniquenessHQL, uniquenessSql);
 	}
 	
     protected javax.swing.SwingWorker<Object, Object> exportToTable(final SpExportSchemaMapping theMapping, final boolean rebuildExistingTbl)
@@ -687,26 +669,34 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		}
         
 		final boolean includeRecordIds = true;
-        List<Specs> specs = getSpecs(theMapping, includeRecordIds, true, rebuildExistingTbl);
+        Specs specs = getSpecs(theMapping, includeRecordIds, true, rebuildExistingTbl);
         if (specs == null)
         {
         	return null;
         }
         
-        final List<ERTICaptionInfoQB> cols = specs.get(0).getCols();
-        final HQLSpecs hql = specs.get(0).getSpecs();
-        final String uniquenessHql = specs.get(0).getUniquenessHQL();
-        final HQLSpecs uniquenessSpecs = specs.get(0).getUniquenessSpecs();
+        final List<ERTICaptionInfoQB> cols = specs.getCols();
+        final HQLSpecs hql = specs.getSpecs();
+        final String uniquenessHql = specs.getUniquenessHQL();
+        final HQLSpecs uniquenessSpecs = specs.getUniquenessSpecs();
+        final QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(), hql
+                .getSortElements(), cols,
+                includeRecordIds);
+        for (QBDataSourceListenerIFace l : dataSrcListeners)
+        {
+        	src.addListener(l);
+        }
+        src.startDataAcquisition();
         
         //XXX need progress report for data acquisition step too.
                 
         final DBConnection itDbConn = !rebuildExistingTbl ? null : getItDBConnection(it); 
-        final Connection conn = !rebuildExistingTbl  ? DBConnection.getInstance().getConnection()
-        		: itDbConn.getConnection();        
+        final Connection conn = !rebuildExistingTbl  ? DBConnection.getInstance().createConnection()
+        		: itDbConn.createConnection();        
         javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()  {
         	private Exception killer = null;
         	private boolean success = false;
-        	
+        	private long rowsExported = 0;
 
 			/* (non-Javadoc)
 			 * @see javax.swing.SwingWorker#doInBackground()
@@ -714,10 +704,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			@Override
 			protected Object doInBackground() throws Exception
 			{
+				//Vector<QBDataSourceListenerIFace> listeners = new Vector<QBDataSourceListenerIFace>();
+				//listeners.add(listener);
 				try
 				{
-            		Pair<Boolean, Long> ucheck = QueryBldrPane.checkUniqueRecIds(uniquenessHql, uniquenessSpecs.getArgs());
-					if (!ucheck.getFirst())
+            		if (!QueryBldrPane.checkUniqueRecIds(uniquenessHql, uniquenessSpecs.getArgs()))
             		{
             			SwingUtilities.invokeLater(new Runnable() {
 
@@ -729,55 +720,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			});
             			return null;
             		}
-					
-            		cacheRowCount = ucheck.getSecond() - rowsExported;
-            		boolean rebuild = rebuildExistingTbl;
-            		boolean firstPass = true;
-            		Connection loopConn = conn;
-            		/* debug aid
-            		ArrayList<Pair<Long, Double>> stats = new ArrayList<Pair<Long,Double>>(1000);
-            		for (int i = 0; i < 1000; i++)
-            		{
-            			stats.add(new Pair<Long, Double>(-1L, -1.0));
-            		}
-            		*/
-            		while (rowsExported < cacheRowCount)
-            		{
-            	        //long startTime = System.nanoTime();
-            			QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(), hql
-            	                .getSortElements(), cols,
-            	                includeRecordIds);
-            	        for (QBDataSourceListenerIFace l : dataSrcListeners)
-            	        {
-            	        	src.addListener(l);
-            	        }
-
-            	        src.setFirstResult(rowsExported);
-            	        src.setMaxResults(ExportPanel.maxExportRowCount);
-            			src.startDataAcquisition();
-            			loading();
-            			
-            			//XXX Assuming specimen-based export - 1 for baseTableId.
-            			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild, !rebuildExistingTbl, 1, firstPass);
-            			
-            			rebuild = false;
-            			firstPass = false;
-            			
-            			
-            		  /* debugging aids...
-            			Object obj = new Object();
-            		     WeakReference<Object> ref = new WeakReference<Object>(obj);
-            		     obj = null;
-            		     while(ref.get() != null) {
-            		       System.gc();
-            		     }
-            		     
-            		     Pair<Long, Double> stat = stats.get(iteration++);
-            		     stat.setFirst(Runtime.getRuntime().freeMemory());
-            		     stat.setSecond(new Double(System.nanoTime() - startTime) / maxExportRowCount);
-            		     
-            			*/
-            		}
+					//XXX Assuming specimen-based export - 1 for baseTableId.
+					rowsExported = ExportToMySQLDB.exportToTable(conn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuildExistingTbl, true, 1);
 					boolean transOpen = false;
 					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
 			        try
@@ -894,12 +838,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	@Override
 	public void done(long rows)
 	{
-		if (rows != -1 && rowsExported + rows < cacheRowCount)
-		{
-			prog.setValue(0);
-			return;
-		}
-		
 		unlock(mapUpdating);
 		if (rows == -1 || (stupid == 0 && mapUpdating != -1))
 		{
@@ -987,18 +925,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				if (rowCount > 0 && prog.isIndeterminate())
+				if (rowCount > 0)
 				{
 					prog.setIndeterminate(false);
-					prog.setValue(0);
 				}
-				if (rowCount < cacheRowCount) 
-				{
-					status.setText(String.format(UIRegistry.getResourceString("ExportPanel.UpdatingCacheChunk"), rowsExported+1, rowsExported + rowCount, cacheRowCount));
-				} else
-				{
-					status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache"));
-				}
+				status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache")); 
 			}
 		});
 	}
@@ -1093,7 +1024,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
 						int otherRecs = 0; 
 						
-						HQLSpecs hql = getSpecs(map, true, false, false).get(0).getSpecs();
+						HQLSpecs hql = getSpecs(map, true, false, false).getSpecs();
 						DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
 				        try
 				        {
