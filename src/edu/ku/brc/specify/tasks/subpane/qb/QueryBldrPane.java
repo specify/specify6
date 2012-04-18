@@ -1706,7 +1706,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * NOTE: for large databases this method might take a long time.
      * It probably should be called from a SwingWorker. 
      */
-    public static boolean checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
+    public static Pair<Boolean, Long> checkUniqueRecIds(final String hql, final List<Pair<String, Object>> params)
     {
     	String countHql = getCountHql(hql);
     	String distinctHql = getCountDistinctHql(hql);
@@ -1723,7 +1723,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         			q1.setParameter(param.getFirst(), param.getSecond());
         			q2.setParameter(param.getFirst(), param.getSecond());
         		}
-        		return q1.list().get(0).equals(q2.list().get(0));
+        		Long q1Size = Long.valueOf(q1.list().get(0).toString());
+        		Long q2Size = Long.valueOf(q2.list().get(0).toString());
+        		return new Pair<Boolean, Long>(q1Size.equals(q2Size), q1Size);
         	} catch (Exception ex) 
         	{
                 UsageTracker.incrHandledUsageCount();
@@ -1733,7 +1735,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
         	session.close();
         }
-    	return false;
+    	return new Pair<Boolean, Long>(false, 0L);
     }
     /**
      * @param rootAlias
@@ -2949,7 +2951,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
             	if (schemaMapping != null && !countOnly /*this means the duplicate msg won't appear when counts are done */)
             	{
-            		if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()))
+            		if (!checkUniqueRecIds(hqlSpecs.getHql(), hqlSpecs.getArgs()).getFirst())
             		{
             			SwingUtilities.invokeLater(new Runnable() {
 

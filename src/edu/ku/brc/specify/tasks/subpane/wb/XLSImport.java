@@ -214,7 +214,9 @@ public class XLSImport extends DataImport implements DataImportIFace
         
                                     } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
                                     {
-                                        value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
+                                        Date cellDate = cell.getDateCellValue();
+                                        Double numb = cell.getNumericCellValue();
+                                    	value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
                                     } else 
                                     {
                                         double numeric = cell.getNumericCellValue();
