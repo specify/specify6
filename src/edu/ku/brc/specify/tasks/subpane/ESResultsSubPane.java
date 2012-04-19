@@ -231,7 +231,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
      * Removes a table from the content pane.
      * @param expressTableResultsBase the table of results to be removed
      */
-    public synchronized void removeTable(final ESResultsTablePanelIFace expressTableResultsBase)
+    public void removeTable(final ESResultsTablePanelIFace expressTableResultsBase)
     {
 
         expTblResults.remove(expressTableResultsBase);
@@ -251,7 +251,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public synchronized void addTable(final ESResultsTablePanelIFace expTblRes)
+    public void addTable(final ESResultsTablePanelIFace expTblRes)
     {
         expTblResultsCache.remove(expTblRes);
         
@@ -360,10 +360,17 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     /**
      * Revalidate the scroll pane.
      */
-    public synchronized void revalidateScroll()
+    public void revalidateScroll()
     {
-        contentPanel.invalidate();
-        scrollPane.revalidate();
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                contentPanel.invalidate();
+                scrollPane.revalidate();
+            }
+        });
     }
     
     /* (non-Javadoc)
