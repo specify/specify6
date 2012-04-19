@@ -380,7 +380,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     doInsert = true;
                 }
                 
-                doSchemaUpdate = true;
                 try
                 {
                     if (doSchemaUpdate || doInsert || doUpdateAppVer)
