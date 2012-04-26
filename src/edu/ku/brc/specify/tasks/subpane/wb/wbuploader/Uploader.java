@@ -4893,7 +4893,7 @@ public class Uploader implements ActionListener, KeyListener
     	
     	// Redesigned to handle anytime of Attachment upload
     	Exception ex       = null;
-    	String   className = cls.getSimpleName() + "Attachment";
+    	String   className = cls.getName() + "Attachment";
         try
         {
             Class<?> createClass = Class.forName(className);
