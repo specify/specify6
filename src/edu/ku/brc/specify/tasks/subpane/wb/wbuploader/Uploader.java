@@ -336,6 +336,7 @@ public class Uploader implements ActionListener, KeyListener
      *
      * Stores information about rows that were not uploaded during an upload.
      */
+    @SuppressWarnings("unused")
     private class SkippedRow extends BaseUploadMessage
     {
         protected UploaderException cause;
@@ -4886,7 +4887,6 @@ public class Uploader implements ActionListener, KeyListener
      * @param cls
      * @return an initialized instance of the appropriate OjbectAttachmentIFace implementation.
      */
-    @SuppressWarnings("unchecked")
     protected ObjectAttachmentIFace<? extends DataModelObjBase> getAttachmentObject(final Class<?> cls)
     {
     	ObjectAttachmentIFace<? extends DataModelObjBase> result = null;
@@ -4897,7 +4897,7 @@ public class Uploader implements ActionListener, KeyListener
         try
         {
             Class<?> createClass = Class.forName(className);
-            result = (ObjectAttachmentIFace)createClass.newInstance();
+            result = (ObjectAttachmentIFace<?>)createClass.newInstance();
             if (result != null)
             {
                 ((DataModelObjBase)result).initialize();
@@ -5031,7 +5031,7 @@ public class Uploader implements ActionListener, KeyListener
 			{
 				busRule.afterSaveCommit(rec, session);
 			}
-			for (ObjectAttachmentIFace att : currentAttachees)
+			for (ObjectAttachmentIFace<?> att : currentAttachees)
 			{
 				newAttachments.add(new UploadedRecordInfo(att.getAttachment().getId(), -1, 0, null, false, null,
 							t.getWriteTable().getName()));
