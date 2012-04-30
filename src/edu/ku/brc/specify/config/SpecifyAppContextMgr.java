@@ -1293,6 +1293,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 FixDBAfterLogin.fixUserPermissions(false);
             }
             
+            if (!AppPreferences.getGlobalPrefs().getBoolean("ExsiccataUpdateFor1_7", false))
+            {
+                FixDBAfterLogin.fixExsiccata();
+            }
+
+            
             Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
             

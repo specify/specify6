@@ -706,4 +706,58 @@ public class FixDBAfterLogin
         return rv;
     }
     
+    /**
+     * 
+     */
+    public static void fixExsiccata()
+    {
+        final String typeSearchTag = "<typesearches>";
+        String sql =  "SELECT d.SpAppResourceDataID, Data FROM spappresource AS r " +
+                      "Inner Join spappresourcedata AS d ON r.SpAppResourceID = d.SpAppResourceID WHERE LOWER(r.Name) LIKE 'typesearch%'";
+        
+        Object[] row = BasicSQLUtils.queryForRow(sql);
+        if (row != null && row.length > 0)
+        {
+            Integer id    = (Integer)row[0];
+            byte[]  bytes = (byte[])row[1];
+            if (bytes != null && bytes.length> 0)
+            {
+                String contents = new String(bytes);
+                if (StringUtils.isNotEmpty(contents))
+                {
+                    String extStr = "\n    <typesearch tableid=\"89\" name=\"Exsiccata\" searchfield=\"title\" displaycols=\"title\" format=\"%s\" dataobjformatter=\"\"/>";
+                    int inx = contents.indexOf(typeSearchTag) + typeSearchTag.length();
+                    if (inx > -1 && inx < contents.length())
+                    {
+                        String newContents = contents.substring(0, inx) + extStr + contents.substring(inx);
+                        //System.out.println(newContents);
+                        Connection conn = DBConnection.getInstance().getConnection();
+                        if (conn != null)
+                        {
+                            try
+                            {
+                                PreparedStatement ps = conn.prepareStatement("UPDATE spappresourcedata SET Data=? WHERE SpAppResourceDataID=?");
+                                if (ps != null)
+                                {
+                                    ps.setString(1, newContents);
+                                    ps.setInt(2, id);
+                                    int rv = ps.executeUpdate();
+                                    if (rv == 1)
+                                    {
+                                        AppPreferences.getGlobalPrefs().putBoolean("ExsiccataUpdateFor1_7", true);
+                                    }
+                                    ps.close();
+                                }
+                                
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+   }
+    
 }
