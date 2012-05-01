@@ -123,11 +123,6 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         String  attchURL    = prefs.get(ATTACHMENT_URL_PREF, null);
         String  filePath    = prefs.get(ATTACHMENT_PATH_PREF, null);
         
-        if (useFilePath == null && attchURL == null && filePath == null)
-        {
-            return false;
-        }
-        
         useFilePath = useFilePath == null ? true : useFilePath;
         
         AttachmentManagerIface attachMgr = null;
@@ -193,6 +188,9 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
                     UIRegistry.showLocalizedError("AttachmentUtils."+errKey);
                 }
             });
+        } else
+        {
+            prefs.putBoolean(USE_FILE_PATH_PREF, useFilePath);
         }
         
         AttachmentUtils.setAttachmentManager(attachMgr);
