@@ -517,7 +517,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         Integer lastDisplayedSize = rowToImageSizeHash.get(row.hashCode());
         if (lastDisplayedSize == null || lastDisplayedSize == REDUCED_SIZE)
         {
-            image = rowImage.getImage();
+            image = rowImage.getReducedImage();
             reduceMI.setSelected(true);
         }
         else

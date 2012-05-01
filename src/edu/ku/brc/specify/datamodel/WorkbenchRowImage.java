@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.SoftReference;
 
 import javax.persistence.Column;
@@ -56,6 +57,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     protected String       attachToTableName; //which table to attach the image when uploaded
     protected WorkbenchRow workbenchRow;
     protected SoftReference<ImageIcon> fullSizeImageSR = null;
+    protected SoftReference<ImageIcon> reducedSizeImageSR = null;
     protected ImageIcon thumbnail = null;
     
     /**
@@ -174,14 +176,52 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     ////////////////////////////////////
     
     @Transient
-    public ImageIcon getImage()
+    public ImageIcon getReducedImage()
     {
-        if (cardImageData != null)
-        {
-            return new ImageIcon(cardImageData);
-        }
-        
-        return getFullSizeImage();
+    	ImageIcon reducedSizeImage = null;
+    	if (this.reducedSizeImageSR != null) 
+    	{
+    		reducedSizeImage = reducedSizeImageSR.get();
+    	}
+    	
+    	if (reducedSizeImage == null || reducedSizeImage.getIconWidth() == -1)
+    	{
+    
+    		ImageIcon iconImage = null;
+    		
+            File file = new File(cardImageFullPath);
+            if (file.exists())
+            {
+                byte[] imgData = null;
+            	try 
+            	{
+            		imgData = workbenchRow.readAndScaleCardImage(file);
+            	} catch (IOException ex)
+            	{
+            		imgData = null;
+            	}
+            	if (imgData != null)
+            	{
+            		iconImage = new ImageIcon(imgData);
+            	}
+            }
+            
+            if (iconImage == null || iconImage.getIconHeight() == -1)
+            {
+                reducedSizeImageSR = null;
+            } else
+            {
+            	reducedSizeImageSR = new SoftReference<ImageIcon>(iconImage);
+            }
+    	}
+    	
+    	if (reducedSizeImageSR != null)
+    	{
+    		return reducedSizeImageSR.get();
+    	} else
+    	{
+    		return getFullSizeImage();
+    	}
     }
     
     @Transient

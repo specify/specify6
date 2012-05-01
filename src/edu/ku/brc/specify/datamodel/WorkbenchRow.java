@@ -489,52 +489,44 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             throw (IOException )loadException;
         }
         
-        if (imageFile.length() < this.maxImageSize)
-        {
-            byte[] imgBytes = null;
-            try
-            {
-                // read the original
-                byte[] bytes = GraphicsUtils.readImage(imageFile);
-                
-                ImageIcon img = new ImageIcon(bytes);
-    
-                // determine if we need to scale
-                int     origWidth  = img.getIconWidth();
-                int     origHeight = img.getIconHeight();
-                boolean scale      = false;
-    
-                if (origWidth > this.maxWidth || origHeight > maxHeight)
-                {
-                    scale = true;
-                }
-    
-                if (scale)
-                {
-                    imgBytes = GraphicsUtils.scaleImage(bytes, this.maxHeight, this.maxWidth, true, false);
-                }
-                else
-                {
-                    // since we don't need to scale the image, just grab its bytes
-                    imgBytes = bytes;
-                }
-                
-            } catch (javax.imageio.IIOException ex)
-            {
-                UIRegistry.showLocalizedError("WB_IMG_BAD_FMT");
-                loadStatus = LoadStatus.Error;
-                loadException = ex;
+		byte[] imgBytes = null;
+		try 
+		{
+			// read the original
+			byte[] bytes = GraphicsUtils.readImage(imageFile);
 
-                return null;
-            }
-            
-            return imgBytes;
-        }
-        // else, image is too large
-        String msg = String.format(UIRegistry.getResourceString("WB_IMG_TOO_BIG"), this.maxImageSize);
-        UIRegistry.showError(msg);
-        loadStatus = LoadStatus.Error;
-        return null;
+			ImageIcon img = new ImageIcon(bytes);
+
+			// determine if we need to scale
+			int origWidth = img.getIconWidth();
+			int origHeight = img.getIconHeight();
+			boolean scale = false;
+
+			if (origWidth > this.maxWidth || origHeight > maxHeight) 
+			{
+				scale = true;
+			}
+
+			if (scale) 
+			{
+				imgBytes = GraphicsUtils.scaleImage(bytes, this.maxHeight,
+						this.maxWidth, true, false);
+			} else 
+			{
+				// since we don't need to scale the image, just grab its bytes
+				imgBytes = bytes;
+			}
+
+		} catch (javax.imageio.IIOException ex) 
+		{
+			UIRegistry.showLocalizedError("WB_IMG_BAD_FMT");
+			loadStatus = LoadStatus.Error;
+			loadException = ex;
+
+			return null;
+		}
+
+		return imgBytes;
     }
     
     /**
