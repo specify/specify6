@@ -26,6 +26,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -37,7 +38,8 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
  *
  */
 @SuppressWarnings("serial")
-@Entity(name="recordsetitem")
+@Entity
+@Table(name="recordsetitem")
 public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
 
     // Fields
