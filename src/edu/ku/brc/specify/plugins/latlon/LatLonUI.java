@@ -53,7 +53,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -83,6 +82,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MacBtnBorder;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
 import edu.ku.brc.util.LatLonConverter.LATLON;
@@ -158,6 +158,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected Pair<String, String> srcLatLon2 = new Pair<String, String>();
     protected FORMAT               srcFormat;
     protected FORMAT               choosenFormat;
+    protected GeoRefConverter      geoRefCnv = new GeoRefConverter();
     
     protected PrefsPanel           prefsPanel = null;
     
@@ -688,7 +689,15 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             
             srcLatLon2.first  = latStr2;
             srcLatLon2.second = lonStr2;
-
+            
+            // Correct the format if it is wrong
+            FORMAT checkFmt = geoRefCnv.getLatLonFormat(latStr1);
+            //log.debug("srcFormat: "+srcFormat+" <-  checkFmt: "+checkFmt);
+            if (checkFmt != srcFormat)
+            {
+                srcFormat = checkFmt;
+            }
+ 
             panels[currentInx*2].set(srcFormat, latStr1, lonStr1);
             panels[(currentInx*2)+1].set(srcFormat, latStr2, lonStr2);
             
@@ -867,13 +876,13 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         {
             locality.setLatLongType(typeMapper.get(currentType));
             locality.setOriginalLatLongUnit(choosenFormat.ordinal());
-            log.debug("choosenFormat "+choosenFormat);
+            log.debug("getValue - choosenFormat " + choosenFormat);
             
             int curInx = formatSelector.getSelectedIndex() * 2;
             DDDDPanel prevPanel1 = panels[curInx];
             DDDDPanel prevPanel2 = panels[curInx+1];
             
-            prevPanel1.getDataFromUI();   // get data for Lat/Long One
+            prevPanel1.getDataFromUI(); // get data for Lat/Long One
             prevPanel2.getDataFromUI(); // get data for Lat/Long Two
             
             //boolean srcFormatHasChanged = prevPanel1.getDefaultFormat() != srcFormat; // same for either panel 1 or 2
