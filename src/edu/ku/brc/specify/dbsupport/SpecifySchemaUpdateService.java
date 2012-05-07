@@ -131,7 +131,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 33;
+    private final int OVERALL_TOTAL = 34;
     
     private static final String TINYINT4 = "TINYINT(4)";
     
@@ -604,7 +604,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     private String getFieldColumnType(final Connection conn, final String databaseName, final String tableName, final String fieldName)
     {
-        //XXX portability. This is MySQL -specific.
+        // XXX portability. This is MySQL -specific.
         Vector<Object[]> rows = query(conn, "SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
                 databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
         if (rows.size() == 0)
@@ -1464,6 +1464,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall(); // #33
 
+                    fixCollectorOrder(conn);
+                    
+                    frame.incOverall(); // #34
                     return true;
                     
                 } catch (Exception ex)
@@ -1488,6 +1491,52 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+    
+    /**
+     * @param conn
+     */
+    public static void fixCollectorOrder(final Connection conn)
+    {
+        try
+        {
+            String sql = "SELECT ID FROM (SELECT ce.CollectingEventID ID, COUNT(c.OrderNumber) CNT, MAX(c.OrderNumber) MX, MIN(c.OrderNumber) MN " +
+                         "FROM collectingevent ce " +
+                         "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID " +
+                         "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 1 OR MX <> CNT ";
+            
+            PreparedStatement pStmt  = conn.prepareStatement("SELECT CollectorID FROM collector WHERE CollectingEventID = ? ORDER BY OrderNumber");
+            PreparedStatement pStmt2 = conn.prepareStatement("UPDATE collector SET OrderNumber = ? WHERE CollectorID = ?");
+            Statement         stmt   = conn.createStatement();
+            ResultSet         rs     = stmt.executeQuery(sql);
+            int               cnt    = 0;
+            while (rs.next())
+            {
+                int order = 1;
+                pStmt.setInt(1, rs.getInt(1));
+                ResultSet rs2 = pStmt.executeQuery();
+                while (rs2.next())
+                {
+                    pStmt2.setInt(1, order++);
+                    pStmt2.setInt(2, rs2.getInt(1));
+                    if (pStmt2.executeUpdate() != 1)
+                    {
+                        log.error("Error updating CollectorID "+rs2.getInt(1));
+                    }
+                }
+                rs2.close();
+                cnt++;
+                if (cnt % 10 == 0) log.debug("Fixing Collector Ordering: " + cnt);
+            }
+            rs.close();
+            stmt.close();
+            pStmt.close();
+            pStmt2.close();
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     
     /**
