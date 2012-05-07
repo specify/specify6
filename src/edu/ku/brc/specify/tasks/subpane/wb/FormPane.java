@@ -532,7 +532,10 @@ public class FormPane extends JPanel implements FormPaneWrapper
         if (fieldType != null)
         {
             return fieldType == WorkbenchTemplateMappingItem.TEXTFIELD ||
-                fieldType == WorkbenchTemplateMappingItem.TEXTFIELD_DATE;
+                fieldType == WorkbenchTemplateMappingItem.TEXTFIELD_DATE ||
+                fieldType == WorkbenchTemplateMappingItem.CHECKBOX; //check-boxes aren't actually in table view and allowance of 0/1/Yes/No/True/False 
+            														//makes using checkboxes in form view tricky (bug  #8796)
+            														
         }
         
         if (fieldLen > TEXTFIELD_DATA_LEN_MAX)
@@ -637,14 +640,14 @@ public class FormPane extends JPanel implements FormPaneWrapper
             focusComp = comp;
             uiType = WorkbenchTemplateMappingItem.TEXTFIELD_DATE;
         }
-        else if (dbFieldType.equals(Boolean.class)) // strings
-        {
-            ValCheckBox checkBox = new ValCheckBox(caption, false, false);
-            checkBox.addChangeListener(changeListener);
-            comp      = checkBox;
-            focusComp = comp;
-            uiType = WorkbenchTemplateMappingItem.CHECKBOX;
-        }
+//        else if (dbFieldType.equals(Boolean.class)) // strings
+//        {
+//            ValCheckBox checkBox = new ValCheckBox(caption, false, false);
+//            checkBox.addChangeListener(changeListener);
+//            comp      = checkBox;
+//            focusComp = comp;
+//            uiType = WorkbenchTemplateMappingItem.CHECKBOX;
+//        }
         else if (useComboBox(wbtmi))
         {
         	//ValComboBox comboBox = new ValComboBox(getValues(wbtmi), true);
@@ -1073,7 +1076,7 @@ public class FormPane extends JPanel implements FormPaneWrapper
             
             if (p.getComp() instanceof GetSetValueIFace)
             {
-                ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
+            	((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
                 
             } else if (p.getComp() instanceof JComboBox)
             {
@@ -1124,8 +1127,14 @@ public class FormPane extends JPanel implements FormPaneWrapper
             if (workbenchPane.isDoIncremental())
             {
             	updateValidationUI();
+            } else
+            {
+            	for (InputPanel ip : uiComps)
+            	{
+            		ip.getLabel().setToolTipText(null);
+            		ip.getLabel().setBorder(null);
+            	}
             }
-            
             if (firstComp != null)
             {
                 SwingUtilities.invokeLater(new Runnable()
