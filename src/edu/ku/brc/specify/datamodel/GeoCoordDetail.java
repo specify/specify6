@@ -338,6 +338,11 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
      */
     public void setErrorPolygon(String errorPolygon)
     {
+        if (errorPolygon != null && errorPolygon.length() > 65534)
+        {
+            this.errorPolygon = errorPolygon.substring(0, 65534);
+            return;
+        }
         this.errorPolygon = errorPolygon;
     }
 
