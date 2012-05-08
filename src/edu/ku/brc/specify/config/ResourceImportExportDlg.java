@@ -1469,11 +1469,10 @@ public class ResourceImportExportDlg extends CustomDialog
                                 
                                 if (fndAppRes != null)
                                 {
-                                    importedName = fndAppRes.getName();
-        
-                                    String fName      = FilenameUtils.getName(importedName);
-                                    String dbBaseName = FilenameUtils.getBaseName(fileName);
-                                    log.debug("["+fName+"]["+dbBaseName+"]");
+                                    String importedFileName = fndAppRes.getFileName();
+                                    String fName            = FilenameUtils.getName(importedFileName);
+                                    String dbBaseName       = FilenameUtils.getBaseName(fileName);
+                                    //log.debug("["+fName+"]["+dbBaseName+"]");
                                     
                                     boolean doOverwrite = true;
                                     if (!dbBaseName.equals(fName))
