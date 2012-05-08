@@ -96,7 +96,7 @@ public class EMailHelper
 
     // Data Members
     protected String            lastErrorMsg = ""; //$NON-NLS-1$
-    protected boolean           isDebugging  = true;
+    protected boolean           isDebugging  = false;
     protected List<MailBoxInfo> mailBoxCache = new ArrayList<MailBoxInfo>();
 
     /**

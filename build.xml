@@ -131,6 +131,17 @@
 		<delete dir="${installer.dir}/jar-src"/>
 	</target>
 	
+    <target name="ipad-jar" depends="">
+        <jar destfile="ipad.jar">
+            <fileset dir="${class.root}/edu/ku/brc/specify/plugins/ipadexporter">
+                <include name="**/*.class" />
+                <include name="**/*.properties" />
+                <include name="**/*.xml" />
+                <include name="**/*.png" />
+            </fileset>
+        </jar>
+    </target>
+	
 	<target name="buildinfo">
 	    <tstamp>
 	        <format property="builtat" pattern="MM/dd/yyyy hh:mm aa" timezone="America/Chicago"/>

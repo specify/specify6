@@ -112,16 +112,20 @@ public class ProgressGlassPane extends JComponent
             }
             
             // computes the damaged area
-            FontMetrics metrics = getGraphics().getFontMetrics(getFont());
-            int w = (int) (barWidth * ((float) oldProgress / 100.0f));
-            int x = w + (getWidth() - barWidth) / 2;
-            int y = (getHeight() - barHeight) / 2;
-            y += metrics.getDescent() / 2;
-            y += textOffset;
-            w = (int) (barWidth * ((float) this.progress / 100.0f)) - w;
-            int h = barHeight;
-    
-            repaint(x, y, x+barWidth, h+1);
+            Graphics g = getGraphics();
+            if (g != null)
+            {
+                FontMetrics metrics = g.getFontMetrics(getFont());
+                int w = (int) (barWidth * ((float) oldProgress / 100.0f));
+                int x = w + (getWidth() - barWidth) / 2;
+                int y = (getHeight() - barHeight) / 2;
+                y += metrics.getDescent() / 2;
+                y += textOffset;
+                w = (int) (barWidth * ((float) this.progress / 100.0f)) - w;
+                int h = barHeight;
+        
+                repaint(x, y, x+barWidth, h+1);
+            }
         }
     }
 

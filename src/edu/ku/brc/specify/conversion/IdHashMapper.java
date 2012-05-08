@@ -46,6 +46,8 @@ public class IdHashMapper implements IdMapperIFace
     protected static final Logger log = Logger.getLogger(IdHashMapper.class);
     
     protected static TableWriter tblWriter = null;
+    protected static boolean     enableDelete  = true;
+
 
     protected String            sql           = null;
     protected boolean           isUsingSQL    = false;
@@ -162,6 +164,14 @@ public class IdHashMapper implements IdMapperIFace
     }
 
     /**
+     * @param enableDelete the enableDelete to set
+     */
+    public static void setEnableDelete(boolean enableDelete)
+    {
+        IdHashMapper.enableDelete = enableDelete;
+    }
+
+    /**
      * Initializes the Hash Database Table.
      */
     protected void init(final boolean checkOldDB)
@@ -178,7 +188,7 @@ public class IdHashMapper implements IdMapperIFace
         try
         {
 
-            if (doDelete || mappingCount == 0)
+            if ((doDelete || mappingCount == 0) && enableDelete)
             {
                 wasEmpty = true;
                 Statement stmt = oldConn.createStatement();
@@ -360,7 +370,18 @@ public class IdHashMapper implements IdMapperIFace
      */
     public void reset()
     {
-        BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
+        try
+        {
+            BasicSQLUtils.setSkipTrackExceptions(false);
+            BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
+            
+        } catch (Exception ex)
+        {
+            // May fail if the table doesn't exist
+        } finally
+        {
+            BasicSQLUtils.setSkipTrackExceptions(false);
+        }
     }
 
     /**
