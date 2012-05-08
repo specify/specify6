@@ -156,9 +156,9 @@ import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
-import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -205,18 +205,18 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -1612,12 +1612,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (currentPanelType == PanelType.Spreadsheet)
         {
-            log.debug("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
+            //log.debug("ss.RowCnt: "+spreadSheet.getRowCount()+" ss.SelRow"+spreadSheet.getSelectedRow()+" model.RowCnt: "+model.getRowCount());
             spreadSheet.scrollToRow(rowIndex);
             spreadSheet.setRowSelectionInterval(rowIndex, rowIndex);
             spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
             spreadSheet.repaint();
-            log.debug("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
+            //log.debug("ss.RowCnt: "+spreadSheet.getRowCount()+" ss.SelRow"+spreadSheet.getSelectedRow()+" model.RowCnt: "+model.getRowCount());
             
         } else
         {
@@ -1770,6 +1770,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (spreadSheet != null)
         {
             spreadSheet.addRow();
+            model.fireTableStructureChanged();
             
             resultsetController.setLength(model.getRowCount());
             
@@ -1795,7 +1796,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         }
         */
-        
         adjustSelectionAfterAdd(model.getRowCount()-1);
     }
     
