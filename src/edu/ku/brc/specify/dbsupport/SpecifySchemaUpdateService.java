@@ -131,7 +131,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 34;
+    private final int OVERALL_TOTAL = 35;
     
     private static final String TINYINT4 = "TINYINT(4)";
     
@@ -1464,9 +1464,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall(); // #33
 
-                    fixCollectorOrder(conn);
+                    fixCollectorOrder(conn); // fixes the Ordinal number of Collectors
                     
                     frame.incOverall(); // #34
+                    
+                    // Update Schema for iPad Exporter
+                    // this was added for 1.7 (second release), but it is OK if not all 1.7 schemas
+                    // have the two additional tables because it will ask the user for IT U/P
+                    // if the tables don't exist when they are needed. 
+                    // These tables are not used by Hibernate or JPA, just the iPad Exporter plugin.
+                    updateSchemaForiPadExporter(databaseName); 
+                    
+                    frame.incOverall(); // #35
+                    
                     return true;
                     
                 } catch (Exception ex)
@@ -1491,6 +1501,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+    
+    /**
+     * @param databaseName
+     */
+    private void updateSchemaForiPadExporter(final String databaseName)
+    {
+        final String  GEOLOCTBLNAME  = "sp_geoloc";
+        final String  TAXCNTSTBLNAME = "sp_taxoncounts";
+
+        if (!doesTableExist(databaseName, GEOLOCTBLNAME))
+        {
+            String createTblSQL = "CREATE TABLE `sp_geoloc` ( `OldID` int(11) NOT NULL DEFAULT '0', `NewID` int(11) NOT NULL DEFAULT '0', PRIMARY KEY (`OldID`), KEY `INX_geoloc` (`NewID`)) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+            BasicSQLUtils.update(createTblSQL);
+        }
+        if (!doesTableExist(databaseName, TAXCNTSTBLNAME))
+        {
+            String createTblSQL = "CREATE TABLE `sp_taxoncounts` ( `OldID` int(11) NOT NULL DEFAULT '0', `NewID` int(11) NOT NULL DEFAULT '0', PRIMARY KEY (`OldID`), KEY `INX_taxoncounts` (`NewID`)) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+            BasicSQLUtils.update(createTblSQL);
+        }
     }
     
     /**
@@ -1588,7 +1618,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param databaseName
      * @throws SQLException
      */
-    public static void createSGRTables(final Connection conn, String databaseName) throws SQLException
+    public static void createSGRTables(final Connection conn, final String databaseName) throws SQLException
     {
 
         if (!doesTableExist(databaseName, "sgrmatchconfiguration"))
