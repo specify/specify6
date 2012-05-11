@@ -642,6 +642,14 @@ public class TaskMgr implements CommandListener
             for (PluginInfo pi : list)
             {
                 String prefName = pi.getPrefName();
+                if (prefName != null)
+                {
+                    if (!AppPreferences.getLocalPrefs().getBoolean(prefName, false))
+                    {
+                        continue;
+                    }
+                }
+                
                 Object newObj = null;
                 try
                 {
@@ -692,14 +700,6 @@ public class TaskMgr implements CommandListener
                         }
                     }
                     
-                    if (prefName != null)
-                    {
-                        if (!AppPreferences.getLocalPrefs().getBoolean(prefName, false))
-                        {
-                            continue;
-                        }
-                    }
-
                     register(task, shouldAddToUI); //$NON-NLS-1$
 
                 } else
