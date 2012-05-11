@@ -804,7 +804,7 @@ public class DataEntryTask extends BaseTask
                     ContextMgr.registerService(10, dev.getView(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
                 }
 
-            } else
+            } else if (!dev.getView().startsWith("Exsi")) // XXX temporary FIX! for release 6.4.08
             {
                 UIRegistry.showError("Couldn't find view["+dev.getView()+"] for entry in dataentry_task.xml");
             }
@@ -1009,7 +1009,10 @@ public class DataEntryTask extends BaseTask
                 NavBoxButton roc = (NavBoxButton)nbi;
                 for (DataEntryView dev : availMiscViews)
                 {
-                    roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, RecordSetTask.RECORD_SET, dev.getTableInfo().getTableId()));
+                    if (dev.getTableInfo() != null)
+                    {
+                        roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, RecordSetTask.RECORD_SET, dev.getTableInfo().getTableId()));
+                    }
                 }
                 viewsNavBox.add(nbi);
             }
