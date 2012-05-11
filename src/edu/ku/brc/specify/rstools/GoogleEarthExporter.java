@@ -338,7 +338,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 Color  geFGColor = AppPreferences.getRemote().getColor("google.earth.fgcolor", new Color(255, 255, 255));
                 String fgColor   = UIHelper.getBGRHexFromColor(geFGColor);
 
-                kmlGen.setBalloonStyleBgColor("AA"+bgColor);
+                kmlGen.setBalloonStyleBgColor("FF"+bgColor);
                 kmlGen.setBalloonStyleTextColor("FF" + fgColor);
                 kmlGen.setBalloonStyleText(getBalloonText(fgColor));
                 kmlGen.setTextColor(fgColor);
@@ -436,7 +436,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         String fgColor   = UIHelper.getBGRHexFromColor(geFGColor);
         
         // setup all of the general style stuff
-        kmlGenerator.setBalloonStyleBgColor("AA"+bgColor);
+        kmlGenerator.setBalloonStyleBgColor("FF"+bgColor);
         kmlGenerator.setBalloonStyleTextColor("FF" + fgColor);
         kmlGenerator.setBalloonStyleText(getBalloonText(fgColor));
 

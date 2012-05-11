@@ -223,11 +223,11 @@ public class CollectingEventLocalityKMLGenerator
 		
 		if (isDoingCollectingEvents)
 		{
-		    String kmlStr = generatePathForLocalities();
+		    /*String kmlStr = generatePathForLocalities();
 		    if (kmlStr != null)
             {
                 writer.write(kmlStr);
-            }
+            }*/
 		}
 		
 		writer.write("</Document>\n");
