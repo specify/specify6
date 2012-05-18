@@ -1,0 +1,36 @@
+localityNameStr[Les Trois Dames off Port Glaud] county[Port Glaud] state[null] country[Seychelles]
+Old Results: 1
+New Results: 1
+
+localityNameStr[Les Trois Dames off Port Glaud] county[null] state[null] country[Seychelles]
+Old Results: 5
+New Results: 5
+
+localityNameStr[Les Trois Dames off Port Glaud] county[Port Glaud] state[Mahe] country[Seychelles]
+Old Results: 5
+New Results: 5
+
+localityNameStr[Les Trois Dames off Port Glaud] county[null] state[Mahe] country[Seychelles]
+Old Results: 5
+New Results: 5
+
+localityNameStr[Beeds Lake] county[Franklin] state[Iowa] country[United States]
+Old Results: 1
+New Results: 1
+
+localityNameStr[Beeds Lake] county[Franklin County] state[Iowa] country[United States]
+Old Results: 1
+New Results: 1
+
+localityNameStr[Clinton Lake] county[Douglas] state[Kansas] country[United States]
+Old Results: 2
+New Results: 2
+
+localityNameStr[Clinton Lake] county[Douglas County] state[Kansas] country[United States]
+Old Results: 2
+New Results: 2
+
+localityNameStr[San Diego] county[San Diego] state[California] country[United States]
+Old Results: 1
+New Results: 1
+

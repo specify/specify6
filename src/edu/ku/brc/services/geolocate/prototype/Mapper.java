@@ -4,10 +4,14 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -59,19 +63,28 @@ public class Mapper extends JXMapKit {
 	private WaypointPainter<JXMapViewer> polyCursorPainter;
 	private WaypointPainter<JXMapViewer> uncertaintyHandlePainter;
 	private Painter<JXMapViewer> polygonOverlayPainter;
-	Painter<JXMapViewer> uPolygonOverlayPainter;
+	private Painter<JXMapViewer> uPolygonOverlayPainter;
+	private WaypointPainter<JXMapViewer> rulerCursorPainter;
+	private Painter<JXMapViewer> rulerOverlayPainter;
 	private boolean isGreenPtSelected;
 	private boolean isUHandleSelected;
 	private boolean mouseDragged;
 	private boolean drawErrorPolygon;
+	private boolean measureDistance;
+	private boolean isEditUncertaintyHandlePersisted;
 	private long uncertaintyRadius;
 	private List<GeoPosition> errorRegion;
 	private List<GeoPosition> uncertaintyRegion;
+	private List<GeoPosition> rulerSegments;
 	private LocalityWaypoint mostAccurateResultPt;
 	private Set<LocalityWaypoint> resultPoints;
 	private GeoPosition handlePos;
+	private double handleAz;
 	private double handleOffsetX;
 	private double handleOffsetY;
+	private ScaleLine scaleLine;
+	private boolean scaleLineVisible = true;
+	private Point scaleLineLocation;
 	
 	protected EventListenerList mapPointerMoveListeners = new EventListenerList();
 	protected EventListenerList mostAccuratePointReleaseListeners = new EventListenerList();
@@ -81,6 +94,183 @@ public class Mapper extends JXMapKit {
 	protected EventListenerList uncertaintyCircleResizeListeners = new EventListenerList();
 	protected EventListenerList uncertaintyCircleResizeCancelListeners = new EventListenerList();
 	protected EventListenerList uncertaintyCircleChangeListeners = new EventListenerList();
+	protected EventListenerList measureDistanceListeners = new EventListenerList();
+	protected EventListenerList measureDistanceCancelListeners = new EventListenerList();
+	
+	public ScaleLine getScaleLine() {
+		return this.scaleLine;
+	}
+	
+	public boolean isScaleLineVisible() {
+		return scaleLineVisible;
+	}
+	
+	public void setScaleLineVisible(boolean scaleLineVisible) {
+		this.scaleLineVisible = scaleLineVisible;
+		scaleLine.setVisible(scaleLineVisible);
+	}
+	
+	//Converts distance in kilometers or meters to miles.
+	private double metricToMiles(double metricDist, boolean isMeters) {
+	    double cFactor = 0.621371192; //km to mi conversion factor.
+	    
+	    if (isMeters)
+	    	metricDist /= 1000; //Convert m to km.
+	    double distInMiles = metricDist * cFactor;
+
+	    return distInMiles; 
+	}
+	
+	//Converts distance in miles or feet to meters.
+	private double imperialToMeters(double imperialDist, boolean isFeet) {
+		int miToFtFactor = 5280; // mi to ft conversion factor.
+		double cFactor = 0.621371192; //km to mi conversion factor.
+		if (isFeet)
+			imperialDist /= miToFtFactor; //Convert ft to mi;
+		
+		double distInMeters = 1000 * (imperialDist / cFactor);
+		return distInMeters;
+	}
+	
+	//Converts miles to feet.
+	private double milesToFeet(double distInMiles) {
+		int miToFtFactor = 5280; // mi to ft conversion factor.
+		double distInFeet = miToFtFactor * distInMiles;
+		
+		return distInFeet;
+	}
+	
+	//Normalizes imperial distance.
+	private int[] normalizeImperial(double distInMiles) {
+		int isMi = 1;
+		
+		if (distInMiles < 1) { //Convert to feet.
+			distInMiles = milesToFeet(distInMiles);
+			isMi = 0;
+		}
+		
+		//calculate an even multiple of 1000.
+		double mod = distInMiles % 1000;
+		if ((mod > 0) && ((mod - distInMiles) != 0)) {
+			distInMiles = distInMiles - mod;
+		}
+		
+		//calculate an even multiple of 100.
+		mod = distInMiles % 100;
+		if ((mod > 0) && ((mod - distInMiles) != 0)) {
+			distInMiles = distInMiles - mod;
+		}
+		
+		//calculate an even multiple of 10.
+		mod = distInMiles % 10;
+		if ((mod > 0) && ((mod - distInMiles) != 0)) {
+			distInMiles = distInMiles - mod;
+		}
+		
+		return new int[] {(int)Math.round(distInMiles), isMi};
+	}
+	
+	//Normalizes metric distance.
+	private int[] normalizeMetric(double distInMeters) {
+		int isKm = 0;
+		//Is the distance big enough to be in km?
+		double mod = distInMeters % 1000;
+		if ((mod > 0) && ((mod - distInMeters) != 0)) {
+			//About how many km?
+			isKm = 1;
+			distInMeters = (distInMeters - mod) / 1000; //Distance is now in kilometers.
+		}
+		
+		//calculate an even multiple of 100.
+		mod = distInMeters % 100;
+		if ((mod > 0) && ((mod - distInMeters) != 0)) {
+			distInMeters = distInMeters - mod;
+		}
+		
+		//calculate an even multiple of 10.
+		mod = distInMeters % 10;
+		if ((mod > 0) && ((mod - distInMeters) != 0)) {
+			distInMeters = distInMeters - mod;
+		}
+		
+		return new int[] {(int)Math.round(distInMeters), isKm};
+	}
+	
+	private void adjustScaleLine() {
+		//The goal is to find the greatest whole multiple on 10 (in geo-distance) we can fit in the
+		//maximum pixel length of the bar.
+		int maxPxLength = 90;
+		int startPxX = scaleLineLocation.x;
+		int endPxX = startPxX + maxPxLength;
+		
+		Point endScaleLineLocation = new Point(endPxX, scaleLineLocation.y);
+		
+		GeoPosition startGP = getMainMap().convertPointToGeoPosition(scaleLineLocation);
+		startGP = new GeoPosition(startGP.getLatitude(), getSphericalLon(startGP.getLongitude()));
+		GeoPosition endGP = getMainMap().convertPointToGeoPosition(endScaleLineLocation);
+		endGP = new GeoPosition(endGP.getLatitude(), getSphericalLon(endGP.getLongitude()));
+		
+		GeodeticPosition geodaticP = computeGeod(startGP, endGP); //Distance in meters.
+		double distInMiles = metricToMiles(geodaticP.getDist(), true); 
+		
+		int[] normalizedMetric = normalizeMetric(geodaticP.getDist());
+		boolean isKm = (normalizedMetric[1] == 1);
+		int dist = normalizedMetric[0];
+		int[] normalizedImperial = normalizeImperial(distInMiles);
+		boolean isMi = (normalizedImperial[1] == 1);
+		int impDist = normalizedImperial[0];
+				
+		String metricCaption = dist + " " + ((isKm)? "km" : "m");
+		String imperialCaption = impDist + " " + ((isMi)? "mi" : "ft");
+		endGP = computeGeog(startGP, ((isKm)? dist * 1000 : dist), -90);
+		GeoPosition endGPImp = computeGeog(startGP, imperialToMeters(impDist, !isMi), -90);
+		Point2D metricTickLocation2D = getMainMap().convertGeoPositionToPoint(endGP);
+		Point2D imperialTickLocation2D = getMainMap().convertGeoPositionToPoint(endGPImp);
+		
+		
+		int mapWidth = getMainMap().getBounds().width;
+		Point metricTickLocation = new Point((int)metricTickLocation2D.getX(),  (int)metricTickLocation2D.getY());
+		Point imperialTickLocation = new Point((int)imperialTickLocation2D.getX(),  (int)imperialTickLocation2D.getY());
+		if (metricTickLocation.getX() > mapWidth)
+		{
+			Point2D rightMostPt = getMainMap().getTileFactory().geoToPixel(new GeoPosition(0, 180), 
+					getMainMap().getZoom());
+	        int fullMapWidth = (int) rightMostPt.getX();
+			int newX = metricTickLocation.x % fullMapWidth;
+			metricTickLocation.setLocation(newX, metricTickLocation.y);
+		}
+		
+		else if (metricTickLocation.getX() < 0)
+		{
+			Point2D rightMostPt = getMainMap().getTileFactory().geoToPixel(new GeoPosition(0, 180), 
+					getMainMap().getZoom());
+	        int fullMapWidth = (int) rightMostPt.getX();
+			int newX = fullMapWidth - (Math.abs(metricTickLocation.x) % fullMapWidth);
+			fullMapWidth = newX;
+			metricTickLocation.setLocation(newX, metricTickLocation.y);
+		}
+		
+		if (imperialTickLocation.getX() > mapWidth)
+		{
+			Point2D rightMostPt = getMainMap().getTileFactory().geoToPixel(new GeoPosition(0, 180), 
+					getMainMap().getZoom());
+	        int fullMapWidth = (int) rightMostPt.getX();
+			int newX = imperialTickLocation.x % fullMapWidth;
+			imperialTickLocation.setLocation(newX, imperialTickLocation.y);
+		}
+		
+		else if (imperialTickLocation.getX() < 0)
+		{
+			Point2D rightMostPt = getMainMap().getTileFactory().geoToPixel(new GeoPosition(0, 180), 
+					getMainMap().getZoom());
+	        int fullMapWidth = (int) rightMostPt.getX();
+			int newX = fullMapWidth - (Math.abs(imperialTickLocation.x) % fullMapWidth);
+			fullMapWidth = newX;
+			imperialTickLocation.setLocation(newX, imperialTickLocation.y);
+		}
+		
+		scaleLine.adjust(metricCaption, metricTickLocation, imperialCaption, imperialTickLocation, scaleLineLocation.x);
+	}
 	
 	public Mapper()
 	{
@@ -94,6 +284,43 @@ public class Mapper extends JXMapKit {
         this.setMinimumSize(mapDim);
         this.setMaximumSize(mapDim);
         
+        scaleLine = new ScaleLine();
+        GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+	    gridBagConstraints.gridy = 0;
+	    gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+	    gridBagConstraints.weightx = 1.0;
+	    gridBagConstraints.weighty = 1.0;
+	    gridBagConstraints.insets = new java.awt.Insets(4, 50, 4, 4);
+		getMainMap().add(scaleLine, gridBagConstraints);
+		
+		scaleLine.addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				scaleLineLocation = scaleLine.getLocation();
+				adjustScaleLine();
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
         greenPainter = null;
         redPainter = null;
         polyCursorPainter = null;
@@ -104,8 +331,11 @@ public class Mapper extends JXMapKit {
         isUHandleSelected = false;
         mouseDragged = false;
         drawErrorPolygon = false;
+        measureDistance = false;
+        isEditUncertaintyHandlePersisted = false;
         errorRegion = null;
         uncertaintyRegion  = null;
+        rulerSegments = null;
         uncertaintyRadius = 0;
         mostAccurateResultPt = null;
         resultPoints = new HashSet<LocalityWaypoint>();
@@ -118,6 +348,14 @@ public class Mapper extends JXMapKit {
 				
 				if (!((propName.equals("mapoverlay")) || (propName.equals("panenabled"))))
 				{
+					if (propName.equals("centerposition"))
+					{
+						if (scaleLineLocation != null) {
+							//redraw scale bar.
+							adjustScaleLine();
+						}
+					}
+					
 					if ((!drawErrorPolygon) && propName.equals("centerposition"))
 					{
 						boolean frameChanged = frameChanged();
@@ -139,6 +377,15 @@ public class Mapper extends JXMapKit {
 			    				clearUncertaintyOverlay();
 			    				uncertaintyRegion = tempURegion;
 			    				drawUncertaintyOverlay(uncertaintyRegion);
+			    			}
+			    			
+			    			if (rulerSegments != null)
+			    			{
+			    				List<GeoPosition> tempRSegments = rulerSegments;
+			    				rulerSegments = null;
+			    				clearRulerOverlay();
+			    				rulerSegments = tempRSegments;
+			    				drawRulerOverlay(rulerSegments);
 			    			}
 						}
 					}
@@ -179,7 +426,21 @@ public class Mapper extends JXMapKit {
             		}
         		}
         		
-        			map.setCursor(cCursor);
+        		if (measureDistance)
+        		{
+        			Waypoint newWPt = new Waypoint(gp.getLatitude(), getSphericalLon(gp.getLongitude()));
+        			drawRulerCursor(newWPt);
+        			
+        			if ((rulerSegments != null) && (rulerSegments.size() > 0))
+            		{
+            			List<GeoPosition> dynamicSegments = new ArrayList<GeoPosition>();
+            			dynamicSegments.addAll(rulerSegments);
+            			dynamicSegments.add(gp);
+            			drawRulerOverlay(dynamicSegments);
+            		}
+        		}
+        		
+    			map.setCursor(cCursor);
         		
         		double lat = decimalRound(gp.getLatitude(), 6);
         		double lon = decimalRound(getSphericalLon(gp.getLongitude()), 6);
@@ -264,10 +525,18 @@ public class Mapper extends JXMapKit {
                 		GeoPosition gp = map.convertPointToGeoPosition(pt);
         				double lat = decimalRound(gp.getLatitude(), 6);
                 		double lon = decimalRound(getSphericalLon(gp.getLongitude()), 6);
+                		
+                		//Redraw the uncertainty circle.
+               	 		clearEditUncertaintyHandle();
+               	 		uncertaintyRegion = getUncertaintyRegion(mostAccurateResultPt.getPosition(), uncertaintyRadius);
+               	 		drawUncertaintyOverlay(uncertaintyRegion);
+               	 		
         				//Fire most accurate point release event.
                 		GeoPosition MapPMELocation = new GeoPosition(lat, lon);
                 		MapPointerMoveEvent MapPME = new MapPointerMoveEvent(map, MapPMELocation);
                 		fireMostAccuratePointReleaseEvent(MapPME);
+                		
+                		
         			}
         			
         			else if (isUHandleSelected)
@@ -279,19 +548,20 @@ public class Mapper extends JXMapKit {
         				resizeUncertainty((LocalityWaypoint) mostAccurateResultPt.clone(), handlePos);
         			}
         			
-        			if (isGreenPtSelected)
-        			{
-        				//Redraw the uncertainty circle.
-               	 		clearEditUncertaintyHandle();
-               	 		uncertaintyRegion = getUncertaintyRegion(mostAccurateResultPt.getPosition(), uncertaintyRadius);
-               	 		drawUncertaintyOverlay(uncertaintyRegion);
-        			}
+        			if (isEditUncertaintyHandlePersisted)
+           	 			drawEditUncertaintyHandle(mostAccurateResultPt.getPosition(), uncertaintyRadius, handleAz);
         			
         			mouseDragged = false;
+        			isEditUncertaintyHandlePersisted = false;
         		}
         		
-        		else if (isEventOnRedPt(me.getPoint()))
+        		else {
+        			//Potential panning, redraw scale bar.
+        			adjustScaleLine();
+        			
+        			if (isEventOnRedPt(me.getPoint()))
         			getMainMap().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        		}
         		
         		isGreenPtSelected = false;
         		isUHandleSelected = false;
@@ -308,21 +578,17 @@ public class Mapper extends JXMapKit {
                 boolean greenClicked = isEventOnGreenPt(pt);
                 boolean redClicked  = false;
                 
-                if (greenClicked)
+                if (greenClicked && !drawErrorPolygon && !measureDistance)
                 {
-               	 	me.consume();
-               	 	if (!drawErrorPolygon)
-               	 	{
-               	 		//Remove the uncertainty radius marker.
-               	 		clearEditUncertaintyHandle();
-               	 		fireUncertaintyCircleResizeCancelEvent();
-               	 	}
+           	 		//Remove the uncertainty radius marker.
+           	 		clearEditUncertaintyHandle();
+           	 		fireUncertaintyCircleResizeCancelEvent();
                 }
                 
                 else
                 {
                 	redClicked = isEventOnRedPt(pt);
-                	if (redClicked && !drawErrorPolygon)
+                	if (redClicked && !drawErrorPolygon && !measureDistance)
                 	{
                    	 	//Snap most accurate point to this one.
                 		mostAccurateResultPt = getClickedWpt(pt);
@@ -372,7 +638,7 @@ public class Mapper extends JXMapKit {
                	        }
                 	}
                 	
-                	else if (isEventOnUHandle(pt) && !drawErrorPolygon)
+                	else if (isEventOnUHandle(pt) && !drawErrorPolygon && !measureDistance)
                 	{
                	 		//Remove the uncertainty radius marker.
                	 		clearEditUncertaintyHandle();
@@ -391,34 +657,72 @@ public class Mapper extends JXMapKit {
                     errorRegion.add(vertex);
                 }
                 
-                if (me.getClickCount() == 2 && !me.isConsumed()) {
-                	if (drawErrorPolygon)
+                if (measureDistance)
+                {
+                	GeoPosition gp = map.convertPointToGeoPosition(pt);
+                	if (rulerSegments == null)
+                		rulerSegments = new ArrayList<GeoPosition>();
+                	
+                	GeoPosition vertex = new GeoPosition(decimalRound(gp.getLatitude(), 6), decimalRound(gp.getLongitude(), 6));
+                	if (!rulerSegments.contains(vertex))
+                		rulerSegments.add(vertex);
+                }
+                
+                if (me.getClickCount() == 2) {
+                	if (drawErrorPolygon || measureDistance)
                 	{
-                		//In order to stay consistent with the polygon offset calculations, redraw the polygon after re-adjusting 
-                        //the vertices' longitudes to spherical.
-                		List<GeoPosition> tempERegion = new ArrayList<GeoPosition>();
-                		String polyStr = "";
-                        Iterator<GeoPosition> it = errorRegion.iterator();
-                        while (it.hasNext()) {
-                            GeoPosition gp = it.next();
-                            double lat = gp.getLatitude();
-                            double lon = decimalRound(getSphericalLon(gp.getLongitude()), 6);
-                            polyStr += lat + "," + lon + ",";
-                            tempERegion.add(new GeoPosition(lat, lon));
-                        }
-                        
-                        polyStr = polyStr.substring(0, polyStr.length() - 1);
-                        errorRegion = null;
-        				clearPolygonOverlay();
-        				clearPolyCursor();
-        				drawErrorPolygon = false;
-        				errorRegion = tempERegion;
-        				mostAccurateResultPt.getLocality().setErrorPolygon(polyStr);
-        				drawPolygonOverlay(errorRegion);
-        				
-        				//Fire error polygon draw event.
-                		ErrorPolygonDrawEvent errorPolyDrawEvt = new ErrorPolygonDrawEvent(map, tempERegion);
-                		fireErrorPolygonDrawEvent(errorPolyDrawEvt);
+                		if (drawErrorPolygon)
+                    	{
+                    		//In order to stay consistent with the polygon offset calculations, redraw the polygon after re-adjusting 
+                            //the vertices' longitudes to spherical.
+                    		List<GeoPosition> tempERegion = new ArrayList<GeoPosition>();
+                    		String polyStr = "";
+                            Iterator<GeoPosition> it = errorRegion.iterator();
+                            while (it.hasNext()) {
+                                GeoPosition gp = it.next();
+                                double lat = gp.getLatitude();
+                                double lon = decimalRound(getSphericalLon(gp.getLongitude()), 6);
+                                polyStr += lat + "," + lon + ",";
+                                tempERegion.add(new GeoPosition(lat, lon));
+                            }
+                            
+                            polyStr = polyStr.substring(0, polyStr.length() - 1);
+                            errorRegion = null;
+            				clearPolygonOverlay();
+            				clearPolyCursor();
+            				drawErrorPolygon = false;
+            				errorRegion = tempERegion;
+            				mostAccurateResultPt.getLocality().setErrorPolygon(polyStr);
+            				drawPolygonOverlay(errorRegion);
+            				
+            				//Fire error polygon draw event.
+                    		ErrorPolygonDrawEvent errorPolyDrawEvt = new ErrorPolygonDrawEvent(map, tempERegion);
+                    		fireErrorPolygonDrawEvent(errorPolyDrawEvt);
+                    	}
+                		
+                		if (measureDistance)
+                    	{
+                    		List<GeoPosition> tempRSegments = new ArrayList<GeoPosition>();
+                            Iterator<GeoPosition> it = rulerSegments.iterator();
+                            while (it.hasNext()) {
+                                GeoPosition gp = it.next();
+                                double lat = gp.getLatitude();
+                                double lon = decimalRound(getSphericalLon(gp.getLongitude()), 6);
+                                tempRSegments.add(new GeoPosition(lat, lon));
+                            }
+                            
+                            rulerSegments = null;
+            				clearRulerOverlay();
+            				clearRulerCursor();
+            				measureDistance = false;
+            				rulerSegments = tempRSegments;
+            				drawRulerOverlay(rulerSegments);
+            				rulerSegments = null;
+            				
+            				//Fire measure distance event.
+                    		MeasureDistanceEvent MeasureDistEvt = new MeasureDistanceEvent(map, tempRSegments);
+                    		fireMeasureDistanceEvent(MeasureDistEvt);
+                    	}
                 	}
                 	
                 	else
@@ -433,14 +737,27 @@ public class Mapper extends JXMapKit {
                 }
 
                 if (me.getButton() == MouseEvent.BUTTON3) {
-                	if (drawErrorPolygon)
+                	if (drawErrorPolygon || measureDistance)
                 	{
-                		drawErrorPolygon = false;
-    					errorRegion = null;
-    					clearPolygonOverlay();
-    					clearPolyCursor();
-    					fireErrorPolygonDrawCancelEvent();
+                		if (drawErrorPolygon)
+                    	{
+                    		drawErrorPolygon = false;
+        					errorRegion = null;
+        					clearPolygonOverlay();
+        					clearPolyCursor();
+        					fireErrorPolygonDrawCancelEvent();
+                    	}
+                		
+                		if (measureDistance)
+                		{
+                			measureDistance = false;
+        					rulerSegments = null;
+        					clearRulerOverlay();
+        					clearRulerCursor();
+        					fireMeasureDistanceCancelEvent();
+                		}
                 	}
+                	
                 	
                 	else
                 	{
@@ -633,6 +950,12 @@ public class Mapper extends JXMapKit {
 		clearPolygonOverlay();
 	}
 	
+	public void removeRuler()
+	{
+		clearRulerCursor();
+		clearRulerOverlay();
+	}
+	
 	public void drawPolygon(List<GeoPosition> vertices)
 	{
 		clearPolygonOverlay();
@@ -710,6 +1033,26 @@ public class Mapper extends JXMapKit {
 	public void removeErrorPolygonDrawCancelListener(ErrorPolygonDrawCancelListener listener)
 	{
 		errorPolygonDrawCancelListeners.remove(ErrorPolygonDrawCancelListener.class, listener);
+	}
+	
+	public void addMeasureDistanceListener(MeasureDistanceListener listener)
+	{
+		measureDistanceListeners.add(MeasureDistanceListener.class, listener);
+	}
+	
+	public void removeMeasureDistanceListener(MeasureDistanceListener listener)
+	{
+		measureDistanceListeners.remove(MeasureDistanceListener.class, listener);
+	}
+	
+	public void addMeasureDistanceCancelListener(MeasureDistanceCancelListener listener)
+	{
+		measureDistanceCancelListeners.add(MeasureDistanceCancelListener.class, listener);
+	}
+	
+	public void removeMeasureDistanceCancelListener(MeasureDistanceCancelListener listener)
+	{
+		measureDistanceCancelListeners.remove(MeasureDistanceCancelListener.class, listener);
 	}
 	
 	public void addUncertaintyCircleResizeListener(UncertaintyCircleResizeListener listener)
@@ -797,6 +1140,28 @@ public class Mapper extends JXMapKit {
 		}
 	}
 	
+	private void fireMeasureDistanceEvent(MeasureDistanceEvent evt)
+	{
+		Object[] listeners = measureDistanceListeners.getListenerList();
+		
+		for (int i=0; i<listeners.length; i++)
+		{
+			if (listeners[i] == MeasureDistanceListener.class)
+				((MeasureDistanceListener)listeners[i+1]).distanceMeasured(evt);
+		}
+	}
+	
+	private void fireMeasureDistanceCancelEvent()
+	{
+		Object[] listeners = measureDistanceCancelListeners.getListenerList();
+		
+		for (int i=0; i<listeners.length; i++)
+		{
+			if (listeners[i] == MeasureDistanceCancelListener.class)
+				((MeasureDistanceCancelListener)listeners[i+1]).measureDistanceCancelled();
+		}
+	}
+	
 	private void fireUncertaintyCircleResizeEvent(UncertaintyCircleResizeEvent evt)
 	{
 		Object[] listeners = uncertaintyCircleResizeListeners.getListenerList();
@@ -867,6 +1232,142 @@ public class Mapper extends JXMapKit {
         	frameChanged = false;
         
         return frameChanged;
+	}
+	
+	private Painter<JXMapViewer> getRulerPainter(final  List<GeoPosition> segments)
+	{
+		Painter<JXMapViewer> segmentOverlay = new Painter<JXMapViewer>() {
+            public void paint(Graphics2D g, JXMapViewer map, int w, int h) {
+            	/**************************Determine if the polygon needs to be offset to the current view port**************************/
+        		double minLat, maxLat, minLon, maxLon;
+                minLat = maxLat = minLon = maxLon = Double.NaN;
+                Iterator<GeoPosition> it = segments.iterator();
+                while (it.hasNext()) {
+                    GeoPosition gp = it.next();
+                    if (Double.isNaN(minLat))
+                    {
+                        minLat = gp.getLatitude();
+                        maxLat = gp.getLatitude();
+                        minLon = gp.getLongitude();
+                        maxLon = gp.getLongitude();
+                    }
+                        
+                    else
+                    {
+                        if (gp.getLatitude() < minLat)
+                        		minLat = gp.getLatitude();
+                        if (gp.getLatitude() > maxLat)
+                        	maxLat = gp.getLatitude();
+                        if (gp.getLongitude() < minLon)
+                        	minLon = gp.getLongitude();
+                        if (gp.getLongitude() > maxLon)
+                        	maxLon = gp.getLongitude();
+                    }
+                }
+                    
+                Rectangle bounds = map.getViewportBounds();
+                int xOffset = 0;
+                    
+                Point2D topleft = map.getTileFactory().geoToPixel(new GeoPosition(minLat, minLon), map.getZoom());
+                Point2D botright = map.getTileFactory().geoToPixel(new GeoPosition(maxLat, maxLon), map.getZoom());
+                if ((!bounds.contains(topleft) && !bounds.contains(botright)) || shiftRegion)
+                {
+                    Point2D rightMostPt = map.getTileFactory().geoToPixel(new GeoPosition(0, 180), map.getZoom());
+                    double fullMapWidth = rightMostPt.getX();
+                        
+                    it = segments.iterator();
+                    if (it.hasNext())
+                    {
+                        //Offset x by how many times we've scrolled the full length of the map.
+                        xOffset = (int) (fullMapWidth * previousFrameCount);
+                        double minBoundX = (bounds.getX() - Math.floor(bounds.getX()/fullMapWidth) * fullMapWidth);
+                        double maxBoundX = minBoundX + bounds.getWidth();
+                            	
+                        if ((minBoundX < botright.getX()) && (botright.getX() < maxBoundX))
+                        {
+                            xOffset = (int) (Math.floor(bounds.getX()/fullMapWidth) * fullMapWidth);
+                        }
+                        
+                        if (shiftRegion)
+                        	shiftRegion = false;
+                    }
+                }
+        		/***********************************************************************************************************/
+                
+                g = (Graphics2D) g.create();
+                //convert from viewport to world bitmap
+                Rectangle rect = map.getViewportBounds();
+                g.translate(-rect.x + xOffset, -rect.y);
+                //create a polyline.
+                int[] xPoints = new int[segments.size()];
+                int[] yPoints = new int[segments.size()];
+                
+                double dist = 0;
+                GeoPosition prevVertex = null;
+                GeoPosition currentVertex = null;
+                int count = 0;
+                for (GeoPosition gp : segments) {
+                    //convert geo to world bitmap pixel
+                    Point2D pt = map.getTileFactory().geoToPixel(gp, map.getZoom());
+                    xPoints[count] = (int) pt.getX();
+                    yPoints[count] = (int) pt.getY();
+                    count++;
+                    
+                    if (prevVertex == null)
+                    {
+                    	prevVertex = gp;
+                    	currentVertex = gp;
+                    }
+                    
+                    else
+                    {
+                    	currentVertex = gp;
+                    	GeodeticPosition geodP = computeGeod(prevVertex, currentVertex);
+                    	dist += geodP.getDist();
+                    	prevVertex = currentVertex;
+                    }
+                }
+                
+                double impDist = metricToMiles(dist, true);
+                boolean isKm = false;
+                boolean isMi = true;
+                
+                if (dist > 1000)
+                {
+                	dist /= 1000;
+                	isKm = true;
+                }
+                
+                if (impDist < 1)
+                {
+                	impDist = milesToFeet(impDist);
+                	isMi = false;
+                }
+                
+                dist = decimalRound(dist, 2);
+                impDist = decimalRound(impDist, 2);
+                String distanceCaption = dist + " " + (isKm? "km" : "m") + " (" + impDist + " "	+ (isMi? "mi" : "ft") + 
+                		")";
+                
+              //Do the drawing.
+            	g.setColor(Color.RED);
+            	float dash[] = { 8.0f, 3.0f };
+                
+            	g.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
+            	        BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f));
+
+            	g.drawPolyline(xPoints, yPoints, segments.size());
+            	
+            	g.setColor(Color.BLUE);
+            	g.setFont(new Font("Arial", Font.BOLD, 11));
+            	Rectangle2D labelBounds = g.getFontMetrics().getStringBounds(distanceCaption, g);
+                int strOffsetX = ((int)labelBounds.getWidth()/2);
+            	g.drawString(distanceCaption, xPoints[segments.size()-1] - ptStrokeOffsetX/2 - strOffsetX, 
+            			yPoints[segments.size()-1] + ptStrokeOffsetY/2 - 1);
+            }
+		};
+		
+		return segmentOverlay;
 	}
 	
 	private Painter<JXMapViewer> getPolygonPainter(final List<GeoPosition> region, final boolean isUncertaintyCircle)
@@ -977,12 +1478,29 @@ public class Mapper extends JXMapKit {
 	public void showEditPolygonHandle()
 	{
 		drawErrorPolygon = true;
+		if (measureDistance)
+		{
+			clearRulerCursor();
+			clearRulerOverlay();
+			measureDistance = false;
+		}
 	}
 	
 	public void hideEditPolygonHandle()
 	{
 		clearPolyCursor();
 		drawErrorPolygon = false;
+	}
+	
+	public void showMeasureDistanceHandle()
+	{
+		measureDistance = true;
+	}
+	
+	public void hideMeasureDistanceHandle()
+	{
+		clearRulerCursor();
+		measureDistance = false;
 	}
 	
 	public void hideEditUncertaintyHandle()
@@ -998,11 +1516,21 @@ public class Mapper extends JXMapKit {
 		drawEditUncertaintyHandle(mostAccurateResultPt.getPosition(), uncertaintyRadius, uRotationAngleDeg);
 	}
 	
+	public void persistEditUncertaintyHandle()
+	{
+		clearEditUncertaintyHandle();
+		uncertaintyRadius = Long.parseLong(mostAccurateResultPt.getLocality().getUncertaintyMeters());
+		
+		if (handlePos != null)
+			isEditUncertaintyHandlePersisted = true;
+	}
+	
 	private void resizeUncertainty(LocalityWaypoint centerWaypt, GeoPosition radialPos)
     {
 		GeoPosition centerPos = centerWaypt.getPosition();
         GeodeticPosition geodetics = computeGeod(centerPos, radialPos);
         uncertaintyRadius = Math.round(geodetics.getDist());
+		handleAz = -1 * geodetics.getFBearing();
         mostAccurateResultPt.getLocality().setUncertaintyMeters(Long.toString(uncertaintyRadius));
         uncertaintyRegion = getUncertaintyRegion(centerPos, uncertaintyRadius);
         drawUncertaintyOverlay(uncertaintyRegion);
@@ -1097,11 +1625,37 @@ public class Mapper extends JXMapKit {
 		        map.setOverlayPainter(cpaint);
 			}
 		}
+		
+		if (rulerCursorPainter != null)
+		{
+			if (map.getOverlayPainter() == null)
+				map.setOverlayPainter(rulerCursorPainter);
+			else
+			{
+				CompoundPainter<JXMapViewer> cpaint = new CompoundPainter<JXMapViewer>();
+				cpaint.setPainters(rulerCursorPainter, map.getOverlayPainter());
+		        cpaint.setCacheable(false);
+		        map.setOverlayPainter(cpaint);
+			}
+		}
+		
+		if (rulerOverlayPainter != null)
+		{
+			if (map.getOverlayPainter() == null)
+				map.setOverlayPainter(rulerOverlayPainter);
+			else
+			{
+				CompoundPainter<JXMapViewer> cpaint = new CompoundPainter<JXMapViewer>();
+				cpaint.setPainters(rulerOverlayPainter, map.getOverlayPainter());
+		        cpaint.setCacheable(false);
+		        map.setOverlayPainter(cpaint);
+			}
+		}
 	}
 	
 	private void clearUncertaintyOverlay()
 	{
-		uncertaintyRegion = new ArrayList<GeoPosition>();
+		uncertaintyRegion = null;
 		uPolygonOverlayPainter = null;
 		setOverlayPainters();
 	}
@@ -1114,7 +1668,7 @@ public class Mapper extends JXMapKit {
     
     private void clearPolygonOverlay()
     {
-    	errorRegion = new ArrayList<GeoPosition>();
+    	errorRegion = null;
     	polygonOverlayPainter = null;
     	setOverlayPainters();
     }
@@ -1122,6 +1676,18 @@ public class Mapper extends JXMapKit {
 	private void drawPolygonOverlay(List<GeoPosition> region) {
 		polygonOverlayPainter = getPolygonPainter(region, false);
 		setOverlayPainters(); 
+	}
+	
+	private void clearRulerOverlay()
+    {
+		rulerSegments = null;
+    	rulerOverlayPainter = null;
+    	setOverlayPainters();
+    }
+	
+	private void drawRulerOverlay(List<GeoPosition> segments) {
+		rulerOverlayPainter = getRulerPainter(segments);
+		setOverlayPainters();
 	}
 	
 	private void clearPolyCursor()
@@ -1143,6 +1709,29 @@ public class Mapper extends JXMapKit {
             	g.drawOval(ptStrokeOffsetX, ptStrokeOffsetY, ptStrokeWidth, ptStrokeHeight);
             	g.drawOval(ptFillOffsetX, ptFillOffsetY, ptFillWidth, ptFillHeight);
             	g.fillOval(ptFillOffsetX+4, ptFillOffsetY+4, ptFillWidth-7, ptFillHeight-7);
+                return true;
+            }
+        });
+        
+        setOverlayPainters();
+	}
+	
+	private void clearRulerCursor()
+	{
+		rulerCursorPainter = null;
+		setOverlayPainters();
+	}
+	
+	private void drawRulerCursor(Waypoint rulerWPt)
+	{
+		rulerCursorPainter = new WaypointPainter<JXMapViewer>();
+        Set<Waypoint> waypoints = new HashSet<Waypoint>();
+        waypoints.add(rulerWPt);
+        rulerCursorPainter.setWaypoints(waypoints);
+        rulerCursorPainter.setRenderer(new WaypointRenderer() {
+            public boolean paintWaypoint(Graphics2D g, JXMapViewer map, Waypoint wp) {
+            	g.setColor(Color.BLUE); //Outline.
+            	g.fillRect(ptStrokeOffsetX/2, ptStrokeOffsetY/2, ptStrokeWidth/2, ptStrokeHeight/2);
                 return true;
             }
         });

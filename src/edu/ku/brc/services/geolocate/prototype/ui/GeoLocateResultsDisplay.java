@@ -18,12 +18,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.rmi.RemoteException;
+import java.rmi.ServerException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,7 +45,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPElement;
 
+import org.apache.axis.message.MessageElement;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
@@ -57,6 +65,9 @@ import edu.ku.brc.services.geolocate.prototype.LocalityWaypoint;
 import edu.ku.brc.services.geolocate.prototype.MapPointerMoveEvent;
 import edu.ku.brc.services.geolocate.prototype.MapPointerMoveListener;
 import edu.ku.brc.services.geolocate.prototype.Mapper;
+import edu.ku.brc.services.geolocate.prototype.MeasureDistanceCancelListener;
+import edu.ku.brc.services.geolocate.prototype.MeasureDistanceEvent;
+import edu.ku.brc.services.geolocate.prototype.MeasureDistanceListener;
 import edu.ku.brc.services.geolocate.prototype.MostAccuratePointReleaseListener;
 import edu.ku.brc.services.geolocate.prototype.MostAccuratePointSnapListener;
 import edu.ku.brc.services.geolocate.prototype.UncertaintyCircleChangeEvent;
@@ -70,6 +81,9 @@ import edu.ku.brc.services.geolocate.prototype.client.Georef_Result_Set;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.services.usgs.elevation.Elevation_ServiceLocator;
+import edu.ku.brc.services.usgs.elevation.Elevation_ServiceSoap;
+import edu.ku.brc.services.usgs.elevation.GetElevationResponseGetElevationResult;
 import edu.ku.brc.specify.ui.ClickAndGoSelectListener;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
@@ -146,6 +160,16 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 	protected JLabel statusLonLbl;
 	protected JLabel statusURLbl;
 	protected JLabel statusErrorLbl;
+	
+	protected JButton getElevBtn;
+	protected JCheckBox statusMeasureTool;
+	protected JButton statusClearRulerBtn;
+	protected JPanel statusElevPanel;
+	protected JPanel statusClearRulerPanel;
+	protected JPanel statusPanel;
+	protected JLabel statusElevLbl;
+	protected JLabel statusElevInfoLbl;
+	protected boolean isElevBtnDown = false;
     
     /**
      * Constructor.
@@ -276,6 +300,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                         uncertTxt.setEditable(false);
                         uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
                         ucBtnState = UnCertBtnStateType.eEdit;
+    					statusURLbl.setText("");
                     } else
                     {
                         uncertTxt.setEditable(true);
@@ -324,6 +349,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                         errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
                         errBtnState = ErrBtnStateType.eClear;
                         errorPTxt.setEditable(false);
+                        statusMeasureTool.setEnabled(true);
+                        statusClearRulerBtn.setEnabled(true);
                         
                     } else if (errBtnState == ErrBtnStateType.eDraw)
                     {
@@ -331,6 +358,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                         errorPBtn.setText(UIRegistry.getResourceString("Apply"));
                         errBtnState = ErrBtnStateType.eApply;
                         geoMapper.showEditPolygonHandle();
+                        
+                        statusMeasureTool.setSelected(false);
+                        statusMeasureTool.setEnabled(false);
                         
                     } else if (errBtnState == ErrBtnStateType.eClear)
                     {
@@ -350,47 +380,291 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         	//geoMapper.setZoomButtonsVisible(false);
         	//geoMapper.setZoomSliderVisible(false);
         	
-        	JPanel statusPanel = new JPanel();
+        	statusPanel = new JPanel();
         	statusPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        	statusPanel.setPreferredSize(new Dimension(MAP_WIDTH2, 16));
+        	statusPanel.setPreferredSize(new Dimension(MAP_WIDTH2, 46));
         	statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
         	
         	Font font = new Font("Arial", Font.PLAIN, 10);
         	
         	statusLatLbl = new JLabel("Lat: ,", SwingConstants.LEFT);
-        	statusLatLbl.setPreferredSize(new Dimension(100, 12));
+        	statusLatLbl.setPreferredSize(new Dimension(80, 12));
         	statusLatLbl.setFont(font);
         	
         	statusLonLbl = new JLabel("Lon: ", SwingConstants.LEFT);
-        	statusLonLbl.setPreferredSize(new Dimension(100, 12));
+        	statusLonLbl.setPreferredSize(new Dimension(85, 12));
         	statusLonLbl.setFont(font);
         	
-        	statusURLbl = new JLabel("", SwingConstants.LEFT);
-        	statusURLbl.setPreferredSize(new Dimension(100, 12));
+        	statusMeasureTool = new JCheckBox("Measure");
+        	statusMeasureTool.setPreferredSize(new Dimension(60, 12));
+        	statusMeasureTool.setFocusable(false);
+        	statusMeasureTool.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (statusMeasureTool.isSelected())
+					{
+						geoMapper.showMeasureDistanceHandle();
+						statusClearRulerBtn.setEnabled(false);
+					}
+					
+					else
+					{
+						geoMapper.hideMeasureDistanceHandle();
+						statusClearRulerBtn.setEnabled(true);
+					}
+				}
+			});
+        	statusMeasureTool.setFont(font);
+        	
+        	statusURLbl = new JLabel("U. Radius: ", SwingConstants.LEFT);
+        	statusURLbl.setPreferredSize(new Dimension(115, 12));
         	statusURLbl.setFont(font);
         	
+        	//////////////////////////////////////////////////////////////////////////////////////////////////////
+        	statusElevPanel = new JPanel();
+        	statusElevPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 2));
+        	statusElevPanel.setPreferredSize(new Dimension(176, 16));
+        	statusElevPanel.setBorder(BorderFactory.createEmptyBorder());
+        	
+        	getElevBtn = new JButton("Get Elevation");
+        	getElevBtn.setPreferredSize(new Dimension(80, 15));
+        	getElevBtn.setFont(font);
+        	getElevBtn.setFocusable(false);
+        	statusElevPanel.add(getElevBtn);
+        	
+        	getElevBtn.addMouseListener(new MouseListener() {
+				
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					isElevBtnDown = false;
+				}
+				
+				@Override
+				public void mousePressed(MouseEvent e) {
+					isElevBtnDown = true;
+					LocalityWaypoint mostAccurate = geoMapper.getMostAccurateResultPt();
+					Double lat = mostAccurate.getPosition().getLatitude();
+					Double lon = mostAccurate.getPosition().getLongitude();
+					Double rLat = geoMapper.decimalRound(lat, 6);
+					Double rLon = geoMapper.decimalRound(lon, 6);
+					
+					statusElevInfoLbl.setForeground(Color.BLACK);
+					statusElevInfoLbl.setText("Getting Elevation @(" + rLat + ", " + rLon + ")...");
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent e) {
+					if (isElevBtnDown)
+					{
+						isElevBtnDown = false;
+						statusElevInfoLbl.setText("");
+					}
+					
+				}
+				
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+        	
+        	getElevBtn.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					Elevation_ServiceLocator service = null;
+					Elevation_ServiceSoap port = null;
+					
+					String elevInfo = "";
+					Double elev = 0d;
+					
+					LocalityWaypoint mostAccurate = geoMapper.getMostAccurateResultPt();
+					Double lat = mostAccurate.getPosition().getLatitude();
+					Double lon = mostAccurate.getPosition().getLongitude();
+					//Double rLat = geoMapper.decimalRound(lat, 6);
+					//Double rLon = geoMapper.decimalRound(lon, 6);
+					
+					//statusElevInfoLbl.setForeground(Color.BLACK);
+					//statusElevInfoLbl.setText("Getting Elevation at (" + rLat + ", " + rLon + ")...");
+					
+					try
+					{
+						service = new Elevation_ServiceLocator();
+						if (service != null)
+						{
+							port = service.getElevation_ServiceSoap();
+							if (port != null)
+							{
+								try
+								{
+									GetElevationResponseGetElevationResult result = 
+											port.getElevation(lon.toString(), lat.toString(), "meters", "", "");
+
+									Iterator<?> it = result.get_any()[0].getChildElements();
+									while (it.hasNext()) {
+										MessageElement msgEle = (MessageElement) it.next();
+										if (msgEle.getName().toLowerCase().equals("Elevation_Query".toLowerCase()))
+										{
+											Iterator<?> it2 = msgEle.getChildElements();
+											
+											
+											while (it2.hasNext()) {
+												Object it2Obj = it2.next();
+												if(it2Obj.getClass() == MessageElement.class)
+												{
+													MessageElement msgEle2 = (MessageElement) it2Obj;
+													if (msgEle2.getName().toLowerCase().equals(
+															"Data_Source".toLowerCase()))
+													{
+														elevInfo = msgEle2.getValue();
+													}
+													
+													if (msgEle2.getName().toLowerCase().equals(
+															"Elevation".toLowerCase()))
+													{
+														String elevStr = msgEle2.getValue();
+														elev = geoMapper.decimalRound(Double.parseDouble(elevStr), 2);
+													}
+												}
+												
+												else
+												{
+													//The elevation query node contains a string describing
+													//the error. mostly:
+													//"ERROR: No Elevation values were returned from any source".
+													elevInfo = "";
+													statusElevInfoLbl.setForeground(Color.BLACK);
+													statusElevInfoLbl.setText("");
+													statusElevLbl.setText("N/A");
+													break;
+												}
+											}
+											
+											if (elevInfo.length() > 0)
+											{
+												statusElevInfoLbl.setForeground(Color.BLACK);
+												statusElevInfoLbl.setText(elevInfo);
+												statusElevLbl.setText(elev.toString() + "m");
+											}
+											
+											break;
+										}
+									}
+								}
+								
+								catch (RemoteException remEx)
+								{
+									statusElevInfoLbl.setForeground(Color.RED);
+									statusElevInfoLbl.setText("Error: unable to parse elevation data.");
+								}
+							}
+						}
+					}
+					
+					catch (ServiceException servEx) {
+						statusElevInfoLbl.setForeground(Color.RED);
+						statusElevInfoLbl.setText("Error: elevation service unavailable.");
+						servEx.printStackTrace();
+					} catch (OutOfMemoryError em1) {
+					    SwingUtilities.invokeLater(new Runnable()
+	                    {
+	                        @Override
+	                        public void run()
+	                        {
+	                            UIRegistry.showError("Out of Memory! Please restart Specify.");
+	                        }
+	                    });
+					    
+					    return;
+					}
+				}
+			});
+        	
+        	statusElevLbl = new JLabel("", SwingConstants.LEFT);
+        	statusElevLbl.setPreferredSize(new Dimension(90, 12));
+        	statusElevLbl.setFont(font);
+        	statusElevPanel.add(statusElevLbl);
+        	
+        	statusElevInfoLbl = new JLabel("", SwingConstants.LEFT);
+        	statusElevInfoLbl.setPreferredSize(new Dimension(596, 12));
+        	statusElevInfoLbl.setFont(font);
+        	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        	//////////////////////////////////////////////////////////////////////////////////////////////////////
+        	statusClearRulerPanel = new JPanel();
+        	statusClearRulerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 2));
+        	statusClearRulerPanel.setPreferredSize(new Dimension(80, 16));
+        	statusClearRulerPanel.setBorder(BorderFactory.createEmptyBorder());
+        	
+        	statusClearRulerBtn = new JButton("Clear Ruler");
+        	statusClearRulerBtn.setPreferredSize(new Dimension(70, 15));
+        	statusClearRulerBtn.setFont(font);
+        	statusClearRulerBtn.setFocusable(false);
+        	statusClearRulerBtn.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					geoMapper.removeRuler();
+					if (statusMeasureTool.isSelected())
+						geoMapper.showMeasureDistanceHandle();
+				}
+			});
+        	statusClearRulerPanel.add(statusClearRulerBtn);
+        	//////////////////////////////////////////////////////////////////////////////////////////////////////
+        	
         	statusErrorLbl = new JLabel("", SwingConstants.LEFT);
-        	statusErrorLbl.setPreferredSize(new Dimension(290, 12));
+        	statusErrorLbl.setPreferredSize(new Dimension(596, 12));
         	statusErrorLbl.setForeground(Color.RED);
         	statusErrorLbl.setFont(font);
         	
-        	statusPanel.add(statusErrorLbl);
+        	statusPanel.add(statusElevPanel);
         	statusPanel.add(statusURLbl);
+        	statusPanel.add(statusMeasureTool);
+        	statusPanel.add(statusClearRulerPanel);
         	statusPanel.add(statusLatLbl);
         	statusPanel.add(statusLonLbl);
+        	statusPanel.add(statusElevInfoLbl);
+        	statusPanel.add(statusErrorLbl);
         	
         	JPanel mPanel = new JPanel((LayoutManager) (new BorderLayout(0, 2)));
         	mPanel.setPreferredSize(new Dimension(MAP_WIDTH2, MAP_HEIGHT2 + statusPanel.getHeight()));
         	mPanel.setMinimumSize(new Dimension(MAP_WIDTH2, MAP_HEIGHT2 + statusPanel.getHeight()));
         	
+        	geoMapper.addMeasureDistanceListener(new MeasureDistanceListener() {
+				
+				@Override
+				public void distanceMeasured(MeasureDistanceEvent evt) {
+					statusMeasureTool.setSelected(false);
+					statusClearRulerBtn.setEnabled(true);
+				}
+			});
+        	
+        	geoMapper.addMeasureDistanceCancelListener(new MeasureDistanceCancelListener() {
+				
+				@Override
+				public void measureDistanceCancelled() {
+					statusMeasureTool.setSelected(false);
+					statusClearRulerBtn.setEnabled(true);
+				}
+			});
+        	
         	geoMapper.addUncertaintyCircleResizeCancelListener(new UncertaintyCircleResizeCancelListener() {
 				
 				@Override
 				public void uncertaintyCircleResizeCancelled() {
-					geoMapper.hideEditUncertaintyHandle();
                     uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
                     ucBtnState = UnCertBtnStateType.eEdit;
 					uncertTxt.setEditable(false);
+					statusURLbl.setText("");
 				}
 			});
         	
@@ -402,6 +676,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 					errorPTxt.setEditable(false);
                     errorPBtn.setText(UIRegistry.getResourceString(L10N+"DRW_POLYGON"));
                     errBtnState = ErrBtnStateType.eDraw;
+                    statusMeasureTool.setEnabled(true);
+                    statusClearRulerBtn.setEnabled(true);
 				}
 			});
         	
@@ -414,6 +690,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                     errorPBtn.setText(UIRegistry.getResourceString(L10N+"CLR_POLYGON"));
                     errBtnState = ErrBtnStateType.eClear;
 					errorPTxt.setEditable(false);
+					statusMeasureTool.setEnabled(true);
+					statusClearRulerBtn.setEnabled(true);
 				}
 			});
         	
@@ -424,11 +702,11 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 					uncertTxt.setText(geoMapper.getMostAccurateResultPt().getLocality()
 							.getUncertaintyMeters());
 					
-					geoMapper.hideEditUncertaintyHandle();
-                    uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
-                    ucBtnState = UnCertBtnStateType.eEdit;
-					uncertTxt.setEditable(false);
-					statusURLbl.setText("");
+					//geoMapper.hideEditUncertaintyHandle();
+                    //uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
+                    //ucBtnState = UnCertBtnStateType.eEdit;
+					//uncertTxt.setEditable(false);
+					//statusURLbl.setText("U. Radius: ");
 				}
 			});
         	
@@ -459,6 +737,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                 	latText.setText(Double.toString(geoMapper.decimalRound(lat, 6)));
 					lonText.setText(Double.toString(geoMapper.decimalRound(lon, 6)));
 					
+					statusElevInfoLbl.setText("");
+			        statusElevLbl.setText("");
+					
 					String resUncert = mostAccurate.getLocality().getUncertaintyMeters();
 					if ((resUncert != null) && !(resUncert.equalsIgnoreCase("unavailable")))
 						uncertTxt.setText(resUncert);
@@ -470,6 +751,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						setTextIntoErrorPolygonTA(resErrorP);
 					else
 						errorPTxt.setText("");
+					
+					if (ucBtnState == UnCertBtnStateType.eApply)
+						geoMapper.persistEditUncertaintyHandle();
 				}
 			});
         	
@@ -511,6 +795,14 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 							break;
 						}
 					}
+					
+					uncertBtn.setText(UIRegistry.getResourceString(L10N+"UNCRT_RADIUS"));
+					ucBtnState = UnCertBtnStateType.eEdit;
+					uncertTxt.setEditable(false);
+					statusURLbl.setText("");
+					statusElevInfoLbl.setText("");
+			        statusElevLbl.setText("");
+					
 					// Auto select the row corresponding to the point snapped on.
 			        resultsTable.getSelectionModel().setSelectionInterval(index, index);
 			        resultsTable.repaint();
@@ -610,6 +902,15 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 						lonText.setText(Double.toString(geoMapper.decimalRound(lon, 6)));
 						geoMapper.hideEditUncertaintyHandle();
 						geoMapper.hideEditPolygonHandle();
+						geoMapper.hideMeasureDistanceHandle();
+						geoMapper.removeRuler();
+						statusMeasureTool.setSelected(false);
+						statusMeasureTool.setEnabled(true);
+						statusClearRulerBtn.setEnabled(true);
+						statusURLbl.setText("");
+						statusElevInfoLbl.setText("");
+						statusElevLbl.setText("");
+						statusErrorLbl.setText("");
 						
 						String resUncert = res.getUncertaintyRadiusMeters();
 						if ((resUncert != null) && !(resUncert.equalsIgnoreCase("unavailable")))
@@ -715,6 +1016,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             return;
         }
 
+        statusElevInfoLbl.setText("");
+        statusElevLbl.setText("");
         geoMapper.snapMostAccuratePointTo(new GeoPosition(lat, lon));
     }
 
@@ -1159,7 +1462,31 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                 }
                 case 3:
                 {
-                	return res.getParsePattern();
+                	String pattern = res.getParsePattern();
+                	String debugStr = res.getDebug();
+                	if ((debugStr != null) && (debugStr.length() > 0))
+                	{
+                		String[] debugPairs = debugStr.split("\\|");
+                		for (int i = 0; i < debugPairs.length; i++)
+                		{
+                			String key = "";
+                			String value = "";
+                			
+                			if (debugPairs[i].split("=").length > 1)
+                			{
+                				key = debugPairs[i].split("=")[0];
+                    			value = debugPairs[i].split("=")[1];
+                			}
+                			
+                			if (key.toLowerCase().indexOf(":adm") == 0)
+                			{
+                				pattern += " (Adm: " + value + ")";
+                				break;
+                			}
+                		}
+                	}
+                	
+                	return pattern;
                 }
                 case 4:
                 {
