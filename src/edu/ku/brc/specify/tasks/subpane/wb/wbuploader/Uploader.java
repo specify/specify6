@@ -1664,13 +1664,13 @@ public class Uploader implements ActionListener, KeyListener
             tbl.validateRowValues(row, uploadData, result);
         }
         //XXX not the right place!!!!!!!!
-        try 
-        {
-        	checkChangedData(row);
-        } catch (Exception ex)
-        {
-        	ex.printStackTrace();
-        }
+//        try 
+//        {
+//        	checkChangedData(row);
+//        } catch (Exception ex)
+//        {
+//        	ex.printStackTrace();
+//        }
     	return result;
     }
     
@@ -1688,7 +1688,7 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		for (UploadField fld : result)
     		{
-    			System.out.println(fld.getWbFldName());
+    			//System.out.println(fld.getWbFldName());
     		}
     	}
     	return result;
