@@ -27,6 +27,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +38,13 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -330,8 +337,9 @@ public class BuildSearchIndex
                     sb.setLength(0);
                     for (int i=idIndex;i<colToTblId.length;i++)
                     {
-                        if (i>idIndex) sb.append(',');
-                        sb.append(String.format("%d=%d", colToTblId[i], rs.getInt(i+1)));
+                        //if (i>idIndex) sb.append(',');
+                        //sb.append(String.format("%d=%d", colToTblId[i], rs.getInt(i+1)));
+                        doc.add(new Field(Integer.toString(colToTblId[i]), Integer.toString(rs.getInt(i+1)), Field.Store.YES, Field.Index.NOT_ANALYZED)); 
                     }
                     doc.add(new Field("xref", sb.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED)); 
                     //writers[0].addDocument(doc);
@@ -973,6 +981,83 @@ public class BuildSearchIndex
             }
         }
     }*/
+    
+    public void testSearch()
+    {
+        Statement stmt = null;
+        
+        String querystr = "23033";//(Pengelly) OR (Castilleja AND applegatei)";
+        String term     = "1";//"contents"
+        try
+        {
+            //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            
+            analyzers = new Analyzer[fileNames.length];
+            for (int i=0;i<analyzers.length;i++)
+            {
+                files[i]     = new File(fileNames[i]);
+                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
+                readers[i]   = IndexReader.open(FSDirectory.open(files[i]), true);
+            }
+            
+            HashMap<Integer, Integer> tblIdHash = new HashMap<Integer, Integer>();
+            
+            for (int inx=0;inx<analyzers.length;inx++)
+            {
+                long  startTime   = System.currentTimeMillis();
+                QueryParser queryParser = new QueryParser(Version.LUCENE_30, term, analyzers[inx]);
+                Query query = queryParser.parse(querystr);
+                
+                int   hitsPerPage = 10;
+                searcher = new IndexSearcher(readers[inx]);
+                
+                TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+                searcher.search(query, collector);
+                ScoreDoc[] hits = collector.topDocs().scoreDocs;
+                
+                System.out.println("\n------------- "+fileNames[inx] + " - Found: " + hits.length + " hits.");
+                
+                for (int i=0;i<hits.length;++i) 
+                {
+                    int docId = hits[i].doc;
+                    Document d = searcher.doc(docId);
+                    System.out.println((i + 1) + ". " + d.get("1"));
+                    
+                    //tblIdHacssh.clear();
+                }
+                    
+                System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis() - startTime) / 1000.0));
+                searcher.close();
+            }
+            
+            
+            for (int i=0;i<analyzers.length;i++)
+            {
+                readers[i].close();
+                analyzers[i].close();
+            }
+            
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+            
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     /**
      * @param args
@@ -981,10 +1066,10 @@ public class BuildSearchIndex
     {
         BuildSearchIndex bsi = new BuildSearchIndex();
         //bsi.createDBConnection("localhost", "3306", "so_oregon_6", "root", "root");
-        bsi.createDBConnection("localhost", "3306", "kui_fish_dbo_6", "root", "root");
+        //bsi.createDBConnection("localhost", "3306", "kui_fish_dbo_6", "root", "root");
         //bsi.createDBConnection("localhost", "3306", "entosp_dbo_6", "root", "root");
-        bsi.index();
-        //bsi.testSearch();
+        //bsi.index();
+        bsi.testSearch();
     }
 
 }
