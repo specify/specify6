@@ -986,6 +986,8 @@ public class DataEntryTask extends BaseTask
                 if (view != null)
                 {
                     DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                    dev.setTableInfo(tableInfo);
+                    
                     if (AppContextMgr.isSecurityOn())
                     {
                         if (!tableInfo.getPermissions().canView())
