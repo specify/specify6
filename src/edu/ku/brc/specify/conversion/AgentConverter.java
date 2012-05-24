@@ -444,6 +444,24 @@ public class AgentConverter
                             sqlStr.append(",");
                             sqlStr.append(conv.getCurDivisionID());
 
+                        } else if (agentColumns[i].equals("agent.ParentOrganizationID"))
+                        {
+                            Object obj = rs.getObject(indexFromNameMap.get(agentColumns[i]));
+                            if (obj != null)
+                            {
+                                int oldId = rs.getInt(agentColumns[i]);
+                                Integer newID = agentIDMapper.get(oldId);
+                                if (newID == null)
+                                {
+                                    log.error("Couldn't map ParentOrganizationID [" + oldId + "]");
+                                }
+                                sqlStr.append(BasicSQLUtils.getStrValue(newID));
+
+                            } else
+                            {
+                                sqlStr.append("NULL");
+                            }
+
                         } else if (agentColumns[i].equals("agent.LastName") || agentColumns[i].equals("LastName"))
                         {
                             
@@ -804,47 +822,6 @@ public class AgentConverter
             log.info(String.format("Added %d new Addresses", fixCnt));
             
             pStmt.close();
-
-            
-            //------------------------------------------------------------
-            // Fix all ParentOrganizationID
-            //------------------------------------------------------------
-
-            String sql = "SELECT AgentID, ParentOrganizationID FROM agent WHERE ParentOrganizationID IS NOT NULL";
-            String upd = "UPDATE agent SET ParentOrganizationID=? WHERE AgentID =?";
-
-            pStmt = newDBConn.prepareStatement(upd);
-            stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            stmt.setFetchSize(Integer.MIN_VALUE);
-            rs    = stmt.executeQuery(sql);
-            recordCnt = 0;
-            while (rs.next())
-            {
-                Integer   agentId = rs.getInt(1);
-                Integer   newId   = agentIDMapper.get(agentId);
-                if (newId != null)
-                {
-                    Integer newPrtOrgId = agentIDMapper.get(agentId);
-                    if (newPrtOrgId != null)
-                    {
-                        pStmt.setInt(1, newPrtOrgId);
-                        pStmt.setInt(2, newId);
-                        pStmt.executeUpdate();
-                    } else
-                    {
-                        tblWriter.logError("Mapping missing for old ParentOrganizationID Agent id["+newPrtOrgId+"]");
-                    }
-                } else
-                {
-                    tblWriter.logError("Mapping missing for old Agent id["+agentId+"]");
-                }
-                recordCnt++;
-                if (recordCnt % 50 == 0)
-                {
-                    conv.setProcess(recordCnt);
-                }
-            }
-            conv.setProcess(recordCnt);
             
             //------------------------------------------------------------------
             // Step #2 - Now duplicate the addresses for the agents that had 

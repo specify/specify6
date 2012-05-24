@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import java.net.URI;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -103,56 +105,56 @@ public class ConvertMiscData
     /**
      * @param oldDBConn
      * @param newDBConn
-     * @param disciplineID
      * @return
      */
     public static void convertImagesToWebLinks(final Connection oldDBConn, final Connection newDBConn)
     {
-        IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
-        IdMapperIFace mapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
+        IdMapperIFace ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
         
         PreparedStatement pStmt1 = null;
         try
         {
+            Timestamp now = new Timestamp(System .currentTimeMillis());
             pStmt1 = newDBConn.prepareStatement("UPDATE collectingevent SET VerbatimDate=? WHERE CollectingEventID=?");
             
             int errCnt = 0;
             int cnt    = 0;
             
-            String sql = "SELECT VerbatimDate, CollectingEventID, StartDate, EndDate FROM collectingevent WHERE VerbatimDate IS NOT NULL";
+            String sql = "SELECT VerbatimDate, CollectingEventID FROM collectingevent WHERE VerbatimDate IS NOT NULL";
             Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
             for (Object[] row : rows)
             {
-                String fileName    = (String)row[0];
-                String shortenName = fileName.substring(fileName.lastIndexOf('/')+1, fileName.length());
-                //System.out.println("["+shortenName+"]["+fileName+"]");
-                if (shortenName.length() < 51)
+                Integer newId = ceMapper.get((Integer)row[1]);
+                if (newId != null)
                 {
-                    pStmt1.setString(1, shortenName);
-                    Integer newId = mapper.get((Integer)row[1]);
-                    if (newId != null)
+                    String fileName    = (String)row[0];
+                    String shortenName = fileName.substring(fileName.lastIndexOf('/')+1, fileName.length());
+                    shortenName = URLDecoder.decode( shortenName, "UTF-8");
+                    
+                    URI uri = new URI("file", "/"+shortenName, null);
+                    String uriStr = uri.getRawPath();
+                    System.out.println("["+shortenName+"]["+uriStr+"]");
+                    shortenName   = uriStr.substring(uriStr.lastIndexOf('/')+1, uriStr.length());
+                    
+                    System.out.println("["+shortenName+"]["+fileName+"]");
+                    if (shortenName.length() < 51)
                     {
+                        pStmt1.setString(1, shortenName);
                         pStmt1.setInt(2, newId);
                         pStmt1.execute();
                         cnt++;
                     } else
                     {
-                        System.err.println("Error mapping oldID["+row[1]+"]");
+                        System.err.println(String.format("Name Length Error %d [%s]", shortenName.length(), shortenName));
+                        errCnt++;
                     }
                 } else
                 {
-                    String sDate = row[2] != null ? ((Integer)row[2]).toString() : "";
-                    String eDate = row[3] != null ? ((Integer)row[3]).toString() : "";
-                    System.err.println(String.format("Name Length Error[%d] [%s]  StartDate[%s]  EndDate[%s]", shortenName.length(), shortenName, sDate, eDate));
+                    System.err.println(String.format("Couldn't map OldID %d", (Integer)row[1]));
                     errCnt++;
                 }
             }
             System.out.println(String.format("Done - convertImagesToWebLinks Transfered : %d,  Errors: %d", cnt, errCnt));
-            
-            sql = "SELECT COUNT(*) FROM collectingevent WHERE VerbatimDate IS NOT NULL";
-            int oldCnt = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
-            int newCnt = BasicSQLUtils.getCountAsInt(newDBConn, sql);
-            System.out.println(String.format("Old Count: %d,  New Count: %d", oldCnt, newCnt));
             
         } catch (Exception ex)
         {
@@ -263,7 +265,7 @@ public class ConvertMiscData
                 if (newCOId != null)
                 {
                     sql = "SELECT CollectionObjectAttributeID, CollectionMemberID FROM collectionobject WHERE CollectionObjectID = " + newCOId;
-                    Object[] row = BasicSQLUtils.queryForRow(sql);
+                    Object[] row = BasicSQLUtils.getRow(sql);
                     if (row == null || row.length == 0)
                     {
                         log.error("Couldn't get record for  newCOId "+newCOId);
@@ -356,7 +358,7 @@ public class ConvertMiscData
                 if (newCOId != null)
                 {
                     sql = "SELECT CollectionObjectAttributeID, CollectionMemberID FROM collectionobject WHERE CollectionObjectID = " + newCOId;
-                    Object[] row = BasicSQLUtils.queryForRow(sql);
+                    Object[] row = BasicSQLUtils.getRow(sql);
                     if (row == null || row.length == 0)
                     {
                         log.error("Couldn't get record for  newCOId "+newCOId);
@@ -1030,177 +1032,5 @@ public class ConvertMiscData
         }
 
     }
-    
-    /**
-     * @param oldDBConn
-     * @param newDBConn
-     */
-    public static void fixPreparedByAgent(final Connection oldDBConn, final Connection newDBConn, final int colObjTypeID)
-    {
-        String sql = "SELECT co.CollectionObjectID, a.AgentID FROM preparation p INNER JOIN agent a ON p.PreparedByID = a.AgentID " +
-                     "INNER JOIN collectionobject co ON co.CollectionObjectID = p.PreparationID WHERE CollectionObjectTypeID = " + colObjTypeID;
-        System.out.println(sql);
-        
-        IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
-        IdMapperIFace coMapper = IdMapperMgr.getInstance().addTableMapper("collectionobject", "CollectionObjectID", false);
-        IdMapperIFace agMapper = IdMapperMgr.getInstance().addTableMapper("agent", "AgentID", false);
-        
-        int cnt = 0;
-        PreparedStatement pStmt1 = null;
-        try
-        {
-            pStmt1 = newDBConn.prepareStatement("UPDATE preparation SET PreparedByID=? WHERE CollectionObjectID = ?");
-            Statement stmt  = oldDBConn.createStatement();
-            ResultSet rs    = stmt.executeQuery(sql);
-            while (rs.next())
-            {
-                int     oldCOId = rs.getInt(1);
-                int     oldAgId = rs.getInt(2);
-                
-                Integer newCOId = coMapper.get(oldCOId);
-                Integer newAgId = agMapper.get(oldAgId);
-                if (newCOId != null && newAgId != null)
-                {
-                    pStmt1.setInt(1, newAgId);
-                    pStmt1.setInt(2, newCOId);
-                    int rv = pStmt1.executeUpdate();
-                    if (rv == 0)
-                    {
-                        String msg = "Update Error oldCOId "+oldCOId+"  oldAgId:"+oldAgId+"  newCOId:"+newCOId+"  newAgId:"+newAgId;
-                        System.out.println(msg);
-                        log.error(msg);
-                    }
-                    
-                    cnt++;
-                    if (cnt % 500 == 0)
-                    {
-                        System.out.println("Cnt: "+cnt);
-                    }
-                        
-                } else
-                {
-                    String msg = "No mapped CO for oldCOId "+oldCOId+"  oldAgId:"+oldAgId+"  newCOId:"+newCOId+"  newAgId:"+newAgId;
-                    System.out.println(msg);
-                    log.error(msg);
-                }
-            }
-            rs.close();
-            stmt.close();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                if (pStmt1 != null) pStmt1.close();
-            } catch (Exception ex) {}
-        }
-        
-        System.out.println("Fixed "+cnt+" preparation records.");
-
-    }
-
-    /**
-     * @param latLonStr
-     * @return
-     */
-    /*public static LatLonConverter.FORMAT discoverUnitType(final String latLonStr)
-    {
-        LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.None;
-        if (StringUtils.isNotEmpty(latLonStr))
-        {
-            int colonCnt = StringUtils.countMatches(latLonStr, ":");
-            
-            if (colonCnt == 0)
-            {
-                fmt = LatLonConverter.FORMAT.DDDDDD;
-                
-            } else if (colonCnt == 1)
-            {
-                fmt = LatLonConverter.FORMAT.DDMMMM;
-                
-            } else if (colonCnt == 2)
-            {
-                fmt = LatLonConverter.FORMAT.DDMMSS;
-            }
-        }
-        return fmt;
-    }*/
-
-    /**
-     * @param newDBConn
-     */
-    /*public static void fixSrcLatLongUnit(final Connection newDBConn)
-    {
-        String post   = " FROM locality WHERE Lat1Text IS NOT NULL AND Long1Text IS NOT NULL AND OriginalLatLongUnit <> SrcLatLongUnit";
-        String cntSQL = "SELECT COUNT(*)" + post;
-        String sql    = "SELECT LocalityID, OriginalLatLongUnit, SrcLatLongUnit, Lat1Text, Long1Text" + post;
-        
-        int total = BasicSQLUtils.getCountAsInt(newDBConn, cntSQL);
-        int cnt = 0;
-        int updated = 0;
-        PreparedStatement pStmt1 = null;
-        try
-        {
-            pStmt1 = newDBConn.prepareStatement("UPDATE locality SET SrcLatLongUnit=? WHERE LocalityID = ?");
-            Statement stmt  = newDBConn.createStatement();
-            ResultSet rs    = stmt.executeQuery(sql);
-            while (rs.next())
-            {
-                int locID       = rs.getInt(1);
-                //Integer orgUnit = rs.getInt(2);
-                Integer srcUnit = rs.getInt(3);
-                String  latStr  = rs.getString(4);
-                String  lonStr  = rs.getString(5);
-                
-                LatLonConverter.FORMAT latFmt = discoverUnitType(latStr);
-                LatLonConverter.FORMAT lonFmt = discoverUnitType(lonStr);
-                
-                LatLonConverter.FORMAT fmt;
-                if (latFmt == LatLonConverter.FORMAT.DDMMSS || 
-                    lonFmt == LatLonConverter.FORMAT.DDMMSS)
-                {
-                    fmt = LatLonConverter.FORMAT.DDMMSS;
-                } else
-                {
-                    fmt = latFmt.ordinal() > lonFmt.ordinal() ? latFmt : lonFmt;
-                }
-                int fmtUnit = fmt.ordinal();
-                if (fmtUnit != srcUnit)
-                {
-                    pStmt1.setInt(1, fmtUnit);
-                    pStmt1.setInt(2, locID);
-                    //pStmt1.executeUpdate();
-                    updated++;
-                }
-                
-                cnt++;
-                if (cnt % 500 == 0)
-                {
-                    System.out.println(String.format("%d / %d", cnt, total));
-                }
-            }
-            rs.close();
-            stmt.close();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                if (pStmt1 != null) pStmt1.close();
-            } catch (Exception ex) {}
-        }
-        
-        System.out.println("Fixed "+cnt+" Locality records and updated "+updated);
-
-    }*/
-
 
 }

@@ -156,7 +156,7 @@ class CollectionInfoModel extends DefaultTableModel
             case  5 : return ci.taxonNameId;
             case  6 : return ci.taxonomyTypeName;
             case  7 : return ci.disciplineTypeObj != null ? ci.disciplineTypeObj.getTitle() : "N/A"; 
-            case  8 : return ci.kingdom;
+            case  8 : return ci.kingdomId;
             case  9 : return ci.taxonName;
             case 10 : return ci.taxonNameCnt;
             case 11 : return ci.colObjDetTaxCnt;

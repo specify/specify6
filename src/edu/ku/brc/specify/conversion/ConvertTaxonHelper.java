@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setFieldsToIgnoreWhenMappingNames;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer;
@@ -39,6 +41,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -49,6 +52,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -272,7 +276,7 @@ public class ConvertTaxonHelper
         // KU Vert Paleo
         //taxonomyTypeIdInClause = " in (0,1,2,3,4,7)";
         
-        idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);  // makes it (do not comment it out)
+        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
         //taxonomyTypeMapper.mapAllIds();
         
         //---------------------------------
@@ -391,10 +395,11 @@ public class ConvertTaxonHelper
                 
                 if (rankId2TxnUntTypId.get(rank) != null)
                 {
-                    String msg = String.format("Old TreeDef has two of the same Rank %d, throwing it out.", rank);
+                    String msg = String.format("Old TreeDef has two of the same Rank %d, throwing it out.\n\nYou must fix this before proceeding.", rank);
                     tblWriter.logError(msg);
                     log.debug(msg);
-                    continue;
+                    UIRegistry.displayErrorDlg(msg);
+                    System.exit(0);
                 }
                 rankId2TxnUntTypId.put(rank, taxUnitTypeId);
                 
@@ -727,7 +732,7 @@ public class ConvertTaxonHelper
                         }
                     }
                     
-                    pStmtTx.setInt(modifiedByAgentInx, conversion.getCurAgentModifierID());
+                    pStmtTx.setInt(colInx, conversion.getCurAgentModifierID());
                     continue;
                     
                 } else if (colInx != 20)
@@ -1059,7 +1064,7 @@ public class ConvertTaxonHelper
                 
         } catch(Exception ex)
         {
-            if (session != null) session.rollback();
+            session.rollback();
             
             log.error("Error while setting TaxonTreeDef into the Discipline.");
             ex.printStackTrace();

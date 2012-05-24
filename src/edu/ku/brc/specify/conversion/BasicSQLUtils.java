@@ -587,6 +587,56 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
+    public static Object[] getRow(final String sql)
+    {
+        return getRow(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+    }
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static Object[] getRow(final Connection connection, final String sql)
+    {
+        Object[]  row  = null;
+        Statement stmt = null;
+        try
+        {
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next())
+            {
+                row = new Object[rs.getMetaData().getColumnCount()];
+                
+                for (int i=1;i<=rs.getMetaData().getColumnCount();i++)
+                {
+                    row[i-1] = rs.getObject(i);
+                }
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                    
+                } catch (Exception ex) {}
+            }
+        }
+
+        return row;
+    }
+    /**
+     * @param sql
+     * @return
+     */
     public static Object[] queryForRow(final String sql)
     {
         return queryForRow(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
@@ -633,7 +683,7 @@ public class BasicSQLUtils
 
         return row;
     }
-
+    
     /**
      * @param sql
      * @return
@@ -845,15 +895,6 @@ public class BasicSQLUtils
                 doCloseConn   = true;
                 doSkipConnSet = true;
                 
-            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException e)
-            {
-                e.printStackTrace();
-                if (!skipTrackExceptions)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, e);
-                }
-
             } catch (SQLException ex)
             {
                 ex.printStackTrace();

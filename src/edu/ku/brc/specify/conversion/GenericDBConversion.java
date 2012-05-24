@@ -207,7 +207,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Connection                                    oldDBConn;
     protected Connection                                    newDBConn;
 
-    protected String[]                                      standardDataTypes      = { "Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
+    protected String[]                                      standardDataTypes      = { "Plant", "Animal", "Mineral", "Fungi",};
     protected Hashtable<String, Integer>                    dataTypeNameIndexes    = new Hashtable<String, Integer>();                   // Name to Index in Array
     protected Hashtable<String, Integer>                    dataTypeNameToIds      = new Hashtable<String, Integer>();                   // name  to Record ID
     
@@ -293,13 +293,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         loadAgentIdMappings();
         
-        //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13   
-        int[]     objTypes  = {10,      14,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,    0,  };
-        boolean[] isEmbdded = {false, true,  true, true, true, true, true, true, true, true, true, true, true, true, };
+        //                      0        1     2     3     4     5    6      7     8     9    10    11    
+        int[]     objTypes  = {10,      14,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,   };
+        boolean[] isEmbdded = {false, true,  true, true, true, true, true, true, true, true, true, true, };
         
         /*
-            0            1            2            3          4     5       6       7       8       9            10      11       12        
-         fish, herpetology, paleobotany, invertpaleo, vertpaleo, bird, mammal, insect, botany, invertebrate, minerals, fungi, anthropology
+            0            1            2            3          4     5       6       7       8       9            10      11            
+         fish, herpetology, paleobotany, invertpaleo, vertpaleo, bird, mammal, insect, botany, invertebrate, minerals, fungi, 
          */
         for (STD_DISCIPLINES dt : STD_DISCIPLINES.values())
         {
@@ -2073,12 +2073,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (!doBrief)
         {
             tablesToMoveOver = new String[] { 
-                    "CollectingEvent",
+                "CollectingEvent",
                 "AccessionAgent", 
                 "Accession", 
                 "AccessionAuthorization",
                 "Author", 
-                "BiologicalObjectAttributes", 
+                "BiologicalObjectAttributes", // ZZZ 
                 "Borrow", 
                 "BorrowAgent", 
                 "BorrowMaterial",
@@ -2655,8 +2655,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "Number8", "HeightAboveGround", 
                 "Text11",  "NearestNeighbor",
                 // "remarks",
-                "Number13", "minDepth", 
-                "Number12", "maxDepth",
+                "Number13", "MinDepth", 
+                "Number12", "MaxDepth",
                 "ModifiedByAgentID", "LastEditedBy",
         // "text1",
         // "text2",
@@ -3151,8 +3151,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         if (checkName(new String[] { "Mineral", "Rock" }, collectionObjTypeName)) { return "Mineral"; }
 
-        if (checkName(new String[] { "Anthro" }, collectionObjTypeName)) { return "Anthropology"; }
-
         if (checkName(new String[] { "Fungi" }, collectionObjTypeName)) { return "Fungi"; }
         
         String msg = "****** Unable to Map [" + collectionObjTypeName + "] to a standard DataType.";
@@ -3270,7 +3268,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         { 
             type = STD_DISCIPLINES.fish;
             
-        } else if (checkName(new String[] { "FishHerps", "Herps", "Herp", "Frog" }, name)) 
+        } else if (checkName(new String[] { "FishHerps", "Herps", "Herp", "Frog", "Reptile", "Amphib"}, name)) 
         { 
             type = STD_DISCIPLINES.herpetology; 
             
@@ -3289,10 +3287,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         } else if (checkName(new String[] { "mammal", "mammals", "mammology"}, name)) 
         { 
             type = STD_DISCIPLINES.mammal;
-            
-        } else if (checkName(new String[] { "history", "art", "anthro"}, name)) 
-        { 
-            type = STD_DISCIPLINES.anthropology;
         }
         
         if (type != null)
@@ -3853,7 +3847,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             tblWriter.close();
             
-            HashMap<Integer, Vector<Integer>> catSeriesToOldCollectionID = new HashMap<Integer, Vector<Integer>>();        
             for (CollectionInfo ci : collectionInfoShortList)
             {
                 if (ci.getCatSeriesId() != null)
@@ -3874,10 +3867,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Vector<Integer> colList = catSeriesToNewCollectionID.get(catSeriesId);
                 if (colList.size() > 1)
                 {
-                    UIRegistry.showError("1 - There are multiple Collections assigned to the same CatalogSeries\n\nThis will be fixed and you will need to start the conversion over.");
-                    
-                    fixMultiCollectionPerCatSeries();
-                    
+                    UIRegistry.showError("There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
                     return false;
                 }
             }
@@ -3893,111 +3883,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         
         return false;
-    }
-    
-    protected void fixMultiCollectionPerCatSeries()
-    {
-        Statement         uStmt  = null;
-        PreparedStatement pStmt  = null;
-        
-        try
-        {
-            uStmt = oldDBConn.createStatement();
-            
-            String csFields  = "CatalogSeriesID,CollectionID,SeriesName,CatalogSeriesPrefix,Remarks,TimestampModified,TimestampCreated,LastEditedBy";
-            String csdFields = "CatalogSeriesDefinitionID, CatalogSeriesID, ObjectTypeID, Remarks, TimestampModified, TimestampCreated, LastEditedBy";
-            
-
-
-
-            HashSet<Integer> catSeriesIdHash = new HashSet<Integer>();
-            
-            for (CollectionInfo ci : collectionInfoShortList)
-            {
-                if (ci.getCatSeriesId() != null)
-                {
-                    
-                    log.debug("Cat Series: " + ci.getCatSeriesId() + " "+ci.getCollectionId());
-                    if (catSeriesIdHash.contains(ci.getCatSeriesId()))
-                    {
-                        // Duplicate CatalogSeries
-                        String insertSQL = String.format("INSERT INTO catalogseries (%s) VALUES(?,?,?,?,?,?,?,?)",csFields);
-                        pStmt = oldDBConn.prepareStatement(insertSQL);
-
-                        int newCatSeriesId = ci.getCatSeriesId() + 1;
-                        while (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM catalogseries WHERE CatalogSeriesID = "+newCatSeriesId) > 0)
-                        {
-                            newCatSeriesId++;
-                        }
-                        
-                        String           selectSQL = String.format("SELECT %s FROM catalogseries WHERE CatalogSeriesID = %d", csFields, ci.getCatSeriesId());
-                        Vector<Object[]> rows      = BasicSQLUtils.query(oldDBConn, selectSQL);
-                        Object[]         row       = rows.get(0);
-                        for (int i=1;i<row.length;i++)
-                        {
-                            pStmt.setObject(i+1, row[i]);
-                        }
-                        pStmt.setInt(1, newCatSeriesId);
-                        
-                        System.out.println(insertSQL);
-                        pStmt.execute();
-                        pStmt.close();
-                        
-                        int colObjTypeId = ci.getColObjTypeId();
-                        
-                        String updateSQL = String.format("UPDATE collectionobjectcatalog SET CatalogSeriesId=%d WHERE CatalogSeriesId=%d AND CollectionObjectTypeID=%d", newCatSeriesId, ci.getCatSeriesId(), colObjTypeId);
-                        System.out.println(updateSQL);
-                        uStmt.executeUpdate(updateSQL);
-                        
-                        // Duplicate CatalogSeriesDefinition
-                        /*insertSQL = String.format("INSERT INTO catalogseriesdefinition (%s) VALUES(?,?,?,?,?,?,?)",csdFields);
-                        pStmt = oldDBConn.prepareStatement(insertSQL);
-
-                        int newCatSeriesDefId = ci.getCatSeriesDefId() + 1;
-                        while (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM catalogseriesdefinition WHERE CatalogSeriesDefinitionID = "+newCatSeriesDefId) > 0)
-                        {
-                            newCatSeriesDefId++;
-                        }
-                        
-                        selectSQL = String.format("SELECT %s FROM catalogseriesdefinition WHERE CatalogSeriesDefinitionID = %d", csdFields, ci.getCatSeriesDefId());
-                        rows = BasicSQLUtils.query(oldDBConn, selectSQL);
-                        row = rows.get(0);
-                        for (int i=2;i<row.length;i++)
-                        {
-                            pStmt.setObject(i+1, row[i]);
-                        }
-                        pStmt.setInt(1, newCatSeriesDefId);
-                        pStmt.setInt(2, newCatSeriesId);
-                        
-                        System.out.println(insertSQL);
-                        pStmt.execute();*/
-                        
-                        updateSQL = String.format("UPDATE catalogseriesdefinition SET CatalogSeriesId=%d WHERE CatalogSeriesDefinitionID=%d", newCatSeriesId, ci.getCatSeriesId());
-                        System.out.println(updateSQL);
-                        uStmt.executeUpdate(updateSQL);
-                        
-                    } else
-                    {
-                        catSeriesIdHash.add(ci.getCatSeriesId());
-                    }
-                }
-            }
-        
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        } finally
-        {
-            try
-            {
-                if (uStmt != null) uStmt.close();
-                if (pStmt != null) pStmt.close();
-                
-            } catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
-        }
     }
     
     /**
@@ -5583,11 +5468,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         deleteAllRecordsFromTable(newDBConn, "preparation", BasicSQLUtils.myDestinationServerType);
         
-        if (agentIdMapper == null)
-        {
-            agentIdMapper = idMapperMgr.get("agent", "AgentID");
-        }
-        
         TimeLogger timeLogger = new TimeLogger();
         
         // BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "preparation",
@@ -5670,7 +5550,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             String    insertStmtStr        = null;
-            boolean   shouldCheckPrepAttrs = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM preparation WHERE PreparedByID IS NOT NULL OR PreparedDate IS NOT NULL") > 0;
+            boolean   shouldCheckPrepAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM preparation WHERE PreparedByID IS NOT NULL OR PreparedDate IS NOT NULL") > 0;
             Statement prepTypeStmt         = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             prepTypeStmt.setFetchSize(Integer.MIN_VALUE);
 
@@ -5695,7 +5575,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Integer preparedById = null;
                 if (shouldCheckPrepAttrs)
                 {
-                    Integer   recordId    = rs.getInt(idIndex);
+                    Integer   recordId    = rs.getInt(idIndex + 1);
                     
                     String    subQueryStr = "select PreparedByID, PreparedDate from preparation where PreparationID = " + recordId;
                     ResultSet subQueryRS  = prepTypeStmt.executeQuery(subQueryStr);
@@ -5729,7 +5609,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 if (collectionIdList.size() > 1)
                 {
-                    UIRegistry.showError("2 - There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
+                    UIRegistry.showError("There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
                     return false;
                 }
                 
@@ -6165,11 +6045,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             throw new RuntimeException(e);
         }
         
-        if (tblWriter != null && timeLogger != null)
-        {
-            tblWriter.log(String.format("Preparations Processing Time: %s", timeLogger.end()));
-            tblWriter.close();
-        }
+        tblWriter.log(String.format("Preparations Processing Time: %s", timeLogger.end()));
+        tblWriter.close();
         
         return true;
     }
@@ -6285,7 +6162,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             PartialDateConv partialDateConv = new PartialDateConv();
             
-            IdMapperIFace detIdMapper = IdMapperMgr.getInstance().get("determination", "DeterminationID");
+            IdMapperIFace detIdMapper       = IdMapperMgr.getInstance().get("determination", "DeterminationID");
+            IdMapperIFace colObjIdMapper    = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
+            IdMapperIFace colObjCatIdMapper = idMapperMgr.get("collectionobject", "CollectionObjectID");
+
             
             Integer catSeriesIdInx  = oldNameIndex.get("CatSeriesID");
             Integer oldRecIDInx     = oldNameIndex.get("DeterminationID");
@@ -6323,7 +6203,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 String lastEditedBy = rs.getString(lastEditedByInx);
                 
-                Integer         catSeriesId      = rs.getInt(catSeriesIdInx);
+                Integer catSeriesId = rs.getInt(catSeriesIdInx);
+                if (catSeriesId != null && rs.wasNull())
+                {
+                    String msg = String.format("Error - The Determination had a null CatalogSeries DeterminationID %d; it's CollectionObjectID: %d", rs.getInt(1), rs.getInt(6));
+                    log.error(msg);
+                    tblWriter.logError(msg);
+                    
+                    //if (rs.next())
+                    //{
+                        continue;
+                    //}
+                    //break;
+                }
+                
                 Vector<Integer> collectionIdList = catSeriesToNewCollectionID.get(catSeriesId);
                 if (collectionIdList == null)
                 {
@@ -6333,7 +6226,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 if (collectionIdList.size() > 1)
                 {
-                    UIRegistry.showError("3 - There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
+                    UIRegistry.showError("There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
                 }
                 
                 Integer collectionId = collectionIdList.get(0);
@@ -6504,24 +6397,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             	
                             	if (oldMappedColName.equals("BiologicalObjectID"))
                                 {
-                                    idMapper = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
+                            	    data = colObjIdMapper.get(oldId);
+                            	    if (data == null)
+                            	    {
+                            	        data = colObjCatIdMapper.get(oldId);
+                            	    }
 
                                 } else
                                 {
                                     idMapper = idMapperMgr.get(tableName, oldMappedColName);
+                                    if (idMapper != null)
+                                    {
+                                        data = idMapper.get(oldId);
+                                    } else
+                                    {
+                                        String msg = "No Map for [" + tableName + "][" + oldMappedColName + "]"; 
+                                        log.error(msg);
+                                        tblWriter.logError(msg);
+                                        isError = true;
+                                        break;
+                                    }
                                 }
                                 
-                                if (idMapper != null)
-                                {
-                                    data = idMapper.get(oldId);
-                                } else
-                                {
-                                	String msg = "No Map for [" + tableName + "][" + oldMappedColName + "]"; 
-                                    log.error(msg);
-                                    tblWriter.logError(msg);
-                                    isError = true;
-                                    break;
-                                }
                                 
                                 if (data == null)
                                 {
@@ -6824,7 +6721,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
-            int boaCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM biologicalobjectattributes");
+            int boaCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM biologicalobjectattributes"); // ZZZ
             
             PartialDateConv partialDateConv = new PartialDateConv();
             
@@ -6990,25 +6887,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             
                             if (catalogNumber != null)
                             {
-                                int catNumInt = (int)rs.getDouble(catNumInx);
-                                if (catNumInt > -1)
+                                int catNumInt = (int)Math.abs(rs.getDouble(catNumInx));
+                                catalogNumber = Integer.toString(catNumInt);
+                                    
+                                if (catalogNumber.length() > 0 && catalogNumber.length() < ZEROES.length())
                                 {
-                                    catalogNumber = Integer.toString((int)Math.abs(catNumInt));
-                                        
-                                    if (catalogNumber.length() > 0 && catalogNumber.length() < ZEROES.length())
-                                    {
-                                        catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
-                                        
-                                    } else if (catalogNumber.length() > ZEROES.length())
-                                    {
-                                        showError("Catalog Number["+catalogNumber+"] is too long for formatter of 9");
-                                    }
-                                } else
+                                    catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
+                                    
+                                } else if (catalogNumber.length() > ZEROES.length())
                                 {
-                                    String mssg = "Catalog Number was negative["+catNumInt+"]";
-                                    log.debug(mssg);
-                                    tblWriter.logError(mssg);
-                                    catalogNumber = "NULL";
+                                    showError("Catalog Number["+catalogNumber+"] is too long for formatter of 9");
                                 }
                                 
                             } else
@@ -8283,11 +8171,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         } else if (bool == 0)
                         {
                             value = "0";
-                            hasData = true;
                         } else
                         {
                             value = "1";
-                            hasData = true;
                         }
                     } else if (isGeoCoordDetail && colName.equals("AgentID"))
                     {
@@ -9209,7 +9095,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         Statement stmt = null;
         ResultSet rs   = null;
-        
+        String s = "";
         try
         {
             // get a Hibernate session for saving the new records
@@ -9225,7 +9111,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             // create an ID mapper for the geography table (mainly for use in converting localities)
-            IdHashMapper lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid", true);
+            IdHashMapper lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_StratigraphyID", true);
             if (lithoStratIdMapper == null)
             {
                 UIRegistry.showError("The lithoStratIdMapper was null.");
@@ -9240,12 +9126,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             Hashtable<Integer, Integer> stratGTPIdHash     = new Hashtable<Integer, Integer>();
+            //Hashtable<Integer, Integer> newCEIdToNewStratIdHash = new Hashtable<Integer, Integer>();
             
             // stratigraphy2 goes here.
-            IdHashMapper newCEIdToNewStratIdHash = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid_2", true);
+            IdHashMapper newCEIdToNewStratIdHash = IdMapperMgr.getInstance().addHashMapper("stratigraphy_StratigraphyID_2", true);
+            newCEIdToNewStratIdHash.setShowLogErrors(false);
             
-            IdHashMapper ceMapper = (IdHashMapper)IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
-
+            IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
+            if (ceMapper == null)
+            {
+                ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", null, false);
+            }
             // get all of the old records
             String sql  = String.format("SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s ORDER BY s.StratigraphyID", srcTableName);
             
@@ -9287,7 +9178,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Double number2    = rs.getObject(11) != null ? rs.getDouble(11) : null;
                 Boolean yesNo1    = rs.getObject(12) != null ? rs.getBoolean(12) : null;
                 Boolean yesNo2    = rs.getObject(13) != null ? rs.getBoolean(13) : null;
-                Integer gtpId     = doMapGTPIds ? (rs.getObject(14) != null ? rs.getInt(14) : null) : oldStratId;
+                Integer gtpId     = doMapGTPIds ? rs.getObject(14) != null ? rs.getInt(14) : null : oldStratId;
                 
                 if (gtpId != null)
                 {
@@ -9311,35 +9202,35 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 counter++;
     
                 // Map Old LithoStrat ID to the new Tree Id
-                lithoStratIdMapper.put(oldStratId, newStrat.getLithoStratId());
-                
-                // Convert Old CEId (StratID) to new CEId, then map the new CEId -> new StratId
-                Integer newCEId = ceMapper.get(oldStratId);
-                if (newCEId != null)
+                //System.out.println(oldStratId + " " + newStrat.getLithoStratId());
+                if (newStrat != null)
                 {
-                    newCEIdToNewStratIdHash.put(newCEId, newStrat.getLithoStratId());
+                    lithoStratIdMapper.put(oldStratId, newStrat.getLithoStratId());
+                    
+                    // Convert Old CEId (StratID) to new CEId, then map the new CEId -> new StratId
+                    Integer newCEId = ceMapper.get(oldStratId);
+                    if (newCEId != null)
+                    {
+                        newCEIdToNewStratIdHash.put(newCEId, newStrat.getLithoStratId());
+                    } else
+                    {
+                        String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
+                        tblWriter.logError(msg);
+                        log.error(msg);
+                        missingCEMapping++;
+                    }
+                    
+                    // Map the New StratId to the new GTP Id
+                    if (gtpId != null && stratGTPIdHash.get(newStrat.getLithoStratId()) == null)
+                    {
+                        stratGTPIdHash.put(newStrat.getLithoStratId(), gtpId);  // new ID to new ID
+                    }
                 } else
                 {
-                    String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
+                    String msg = String.format("Strat Fields were all null for oldID", oldStratId);
                     tblWriter.logError(msg);
                     log.error(msg);
                     missingCEMapping++;
-                }
-                
-                // Map the New StratId to the new GTP Id
-                
-                if (gtpId != null)
-                {
-                    Integer newGTP = stratGTPIdHash.get(oldStratId);
-                    if (newGTP == null)
-                    {
-                        stratGTPIdHash.put(oldStratId, gtpId);  // old ID to new ID
-                    } else
-                    {
-                        String msg = String.format("Old StratID %d is already mapped to %d  NewMapping: %d", oldStratId, newGTP, gtpId);
-                        tblWriter.logError(msg);
-                        log.error(msg);
-                    }
                 }
             }
             stmt.close();
@@ -9394,9 +9285,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             rs   = stmt.executeQuery(sql);
             while (rs.next())
             {
-                int     coId    = rs.getInt(1); // New CO Id
-                Integer ceId    = rs.getInt(2); // New CE Id
-                Integer oldCEId = ceMapper.reverseGet(ceId);
+                int     coId = rs.getInt(1); // New CO Id
+                Integer ceId = rs.getInt(2); // New CE Id
                 
                 // Use the new CE ID to get the new Strat Id
                 Integer newLithoId = newCEIdToNewStratIdHash.get(ceId);
@@ -9409,7 +9299,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
                 
                 // Use the new StratID to get the new GTP Id (ChronosStratigraphy) 
-                Integer gtpId = stratGTPIdHash.get(oldCEId);
+                Integer gtpId = stratGTPIdHash.get(newLithoId);
                 if (gtpId == null)
                 {
                     missingGTP++;

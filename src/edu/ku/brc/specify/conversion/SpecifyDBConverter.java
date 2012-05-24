@@ -187,8 +187,6 @@ public class SpecifyDBConverter extends AppBase
         
         appIcon = new JLabel("  "); //$NON-NLS-1$
         setAppIcon(null); //$NON-NLS-1$
-        
-        UIHelper.attachUnhandledException();
 
     }
 
@@ -700,20 +698,6 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
         
-        /*boolean doFixSrcLatLonUnit = true;
-        if (doFixSrcLatLonUnit)
-        {
-            ConvertMiscData.fixSrcLatLongUnit(newDBConn);
-            return;
-        }*/
-        
-        boolean doFixPrepAgents = false;
-        if (doFixPrepAgents)
-        {
-            ConvertMiscData.fixPreparedByAgent(oldDBConn, newDBConn, 28); // 28 -> ColObjTypeID for Prep
-            return;
-        }
-        
         boolean doUserAgents = false;
         if (doUserAgents)
         {
@@ -827,6 +811,8 @@ public class SpecifyDBConverter extends AppBase
         
         boolean doKUINVP  = StringUtils.contains(dbNameDest, "kuinvp4_dbo");
         boolean doCUPaleo = StringUtils.contains(dbNameDest, "cupaleo");
+        boolean ndgs      = StringUtils.contains(dbNameDest, "ndgs");
+        
         if (doCUPaleo)
         {
             ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
@@ -1235,7 +1221,7 @@ public class SpecifyDBConverter extends AppBase
                 
                 
                 TableWriter gtpTblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
-                StratToGTP  stratToGTP   = doCUPaleo || doKUINVP ? new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter, conversion) : null;
+                StratToGTP  stratToGTP   = doCUPaleo || doKUINVP || ndgs ? new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter, conversion) : null;
 
                 
                 frame.setDesc("Converting Geography");
@@ -1250,7 +1236,6 @@ public class SpecifyDBConverter extends AppBase
 
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
-                
                 // GTP needs to be converted here so the stratigraphy conversion can use the IDs
                 boolean doGTP = doAll;
                 if (doGTP)
@@ -1263,6 +1248,9 @@ public class SpecifyDBConverter extends AppBase
                         } else if (doKUINVP)
                         {
                             stratToGTP.createGTPTreeDefKUINVP();
+                        } else if (ndgs)
+                        {
+                            stratToGTP.createGTPTreeDefNDGS();
                         }
                     } else
                     {
@@ -1301,7 +1289,7 @@ public class SpecifyDBConverter extends AppBase
                 if (doDeterminations)
                 {
                     frame.incOverall();
-                    conversion.convertDeterminationRecords();
+                    conversion.convertDeterminationRecords();// ZZZ 
                 } else
                 {
                     frame.incOverall();
@@ -1381,7 +1369,7 @@ public class SpecifyDBConverter extends AppBase
                                 // So Cache a Map of PrepTYpes for each Collection
                                 collToPrepTypeHash.put(collection.getCollectionId(), prepTypeMap);
                             }
-                            conversion.convertPreparationRecords(collToPrepTypeHash);
+                            conversion.convertPreparationRecords(collToPrepTypeHash);// ZZZ 
 
                         } catch (Exception ex)
                         {
@@ -1424,8 +1412,8 @@ public class SpecifyDBConverter extends AppBase
                     frame.incOverall();
                 }
                 
-                conversion.updateBioLogicalObjAttrIds();;
-                conversion.updatePrepAttrIds();
+                conversion.updateBioLogicalObjAttrIds();// ZZZ 
+                conversion.updatePrepAttrIds();// ZZZ 
 
                 conversion.convertHostTaxonId();
                 
@@ -1445,6 +1433,10 @@ public class SpecifyDBConverter extends AppBase
                     } else if (doKUINVP)
                     {
                         stratToGTP.convertStratToGTPKUIVP();
+                        
+                    } else if (ndgs)
+                    {
+                        stratToGTP.convertStratToGTPNDGS();
                     }
                 }
                 
@@ -1456,9 +1448,10 @@ public class SpecifyDBConverter extends AppBase
                      TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
                      if (stratToGTP != null)
                      {
-                         if (doCUPaleo)
+                         if (doCUPaleo || ndgs)
                          {
-                             stratToGTP.convertStrat(tblWriter, conversion.isPaleo());
+                             stratToGTP.convertStrat(tblWriter, conversion.isPaleo(), doCUPaleo);
+                             
                          } else if (doKUINVP)
                          {
                              stratToGTP.convertStratKUINVP(tblWriter, conversion.isPaleo());

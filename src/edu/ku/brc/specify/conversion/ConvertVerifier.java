@@ -81,9 +81,9 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
@@ -119,8 +119,7 @@ public class ConvertVerifier extends AppBase
     public static final long DO_CO_COLLECTORS       =  8192; 
     public static final long DO_AGENTS              = 16384; 
     public static final long DO_LOANS               = 32768; 
-    public static final long DO_LOCALITY            = 65536; 
-    public static final long DO_CO_ALL              = 131071;
+    public static final long DO_CO_ALL              = 65535;
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
@@ -394,7 +393,7 @@ public class ConvertVerifier extends AppBase
                 
                 //if (oldCatNum < 1643) continue;
                 
-                if (isCOOn(DO_CO_DETERMINER))
+                /*if (isCOOn(DO_CO_DETERMINER))
                 {
                     tblWriter = tblWriterHash.get(DO_CO_DETERMINER);
                     if (!verifyDeterminer(oldCatNum, newCatNum))
@@ -491,7 +490,7 @@ public class ConvertVerifier extends AppBase
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
-                } 
+                } */
                 
                 if ((i % 100) == 0)
                 {
@@ -515,11 +514,6 @@ public class ConvertVerifier extends AppBase
         }
         
         progressFrame.setProcess(numColObjs);
-        
-        if (isCOOn(DO_LOCALITY))
-        {
-            verifyLocalityDetail();
-        }
         
         if (isCOOn(DO_COLLECTORS))
         {
@@ -1115,43 +1109,6 @@ public class ConvertVerifier extends AppBase
         return status == StatusType.COMPARE_OK;
     }
 
-
-    /**
-     * @param oldCatNum
-     * @param newCatNum
-     * @throws SQLException
-     */
-    private boolean verifyLocalityDetail() throws SQLException
-    {
-        IdTableMapper locIdMapper = idMapperMgr.addTableMapper("locality", "LocalityID", false);
-        
-        newSQL = "SELECT l.LocalityID, l.LocalityName, ld.YesNo1 FROM locality l LEFT JOIN localitydetail ld ON l.LocalityID = ld.LocalityID WHERE l.LocalityID = %d";
-        oldSQL = "SELECT LocalityID, LocalityName, YesNo1 FROM locality WHERE LocalityID = %d";
-        if (debug)
-        {
-             log.debug("New SQL: "+newSQL);
-             log.debug("Old SQL: "+oldSQL);
-        }
-        
-        StatusType status = StatusType.NO_COMPARE;
-        Vector<Integer> ids = BasicSQLUtils.queryForInts(oldDBConn, "SELECT LocalityID FROM locality ORDER BY LocalityID ASC");
-        for (Integer id : ids)
-        {
-            Integer newId = locIdMapper.get(id);
-            if (newId != null)
-            {
-                String newNum = String.format("%s", newId);
-                String oSQL = String.format(oldSQL, id);
-                String nSQL = String.format(newSQL, newId);
-                status = compareRecords("Locality", id, newNum, oSQL, nSQL);
-                dumpStatus(status);
-            } else
-            {
-                log.error("Couldn't find new Locality - Loc Old Id["+id+"]");
-            }
-        }
-        return status == StatusType.COMPARE_OK;
-    }
     /**
      * @return
      * @throws SQLException
