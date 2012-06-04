@@ -125,6 +125,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -1724,6 +1725,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
         if (workbenchTemplate != null)
         {
+            workbenchTemplate.setSpecifyUser(workbench.getSpecifyUser());
             workbench.setWorkbenchTemplate(workbenchTemplate);
             workbenchTemplate.getWorkbenches().add(workbench);
             
@@ -2511,13 +2513,42 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
                 try
                 {
+//                	Connection conn = DBConnection.getInstance().createConnection();
+//                	try
+//        			{
+//        				conn.setAutoCommit(false);
+//        				Statement stmt = conn.createStatement();
+//        				try
+//        				{
+//        					stmt.execute("delete from workbenchdataitem where workbenchtemplatemappingitemid in (select workbenchtemplatemappingitemid from workbenchtemplatemappingitem where workbenchtemplateid = " 
+//        							+ workbench.getWorkbenchTemplate().getId() + ")");
+//        					stmt.execute("delete from workbenchtemplatemappingitem where workbenchtemplateid = " + workbench.getWorkbenchTemplate().getId()); //Assuming 1-1 between workbenchtemplate and workbench
+//        					stmt.execute("delete from workbenchrowexportedrelationship where workbenchrowid in (select workbenchrowid from workbenchrow where workbenchid = " + workbench.getId() + ")");
+//        					stmt.execute("delete from workbenchrowimage where workbenchrowid in(select workbenchrowid from workbenchrow where workbenchid = " + workbench.getId() + ")");
+//        					stmt.execute("delete from workbenchrow where workbenchid = " + workbench.getId());
+//        					stmt.execute("delete from workbench where workbenchid = " + workbench.getId());
+//        					stmt.execute("delete from workbenchtemplate where workbenchtemplateid = " + workbench.getWorkbenchTemplate().getId()); //Assuming 1-1 between workbenchtemplate and workbench
+//        					conn.commit();
+//        				} finally
+//        				{
+//        					stmt.close();
+//        					conn.close();
+//        				}
+//        			} catch (Exception ex)
+//        			{
+//        				conn.rollback();
+//        				UsageTracker.incrHandledUsageCount();
+//        				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//        				//UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+//        			}
+
                     session.beginTransaction();
                     session.delete(workbench);
               
                     session.commit();
                     session.flush();
-                    UIRegistry.getStatusBar().incrementValue(workbench.getName());
                     
+                    UIRegistry.getStatusBar().incrementValue(workbench.getName());
                     datasetNavBoxMgr.removeWorkbench(workbench);
                     updateNavBoxUI(null);
                     ((SGRTask)ContextMgr.getTaskByClass(SGRTask.class)).deleteResultsForWorkbench(workbench);

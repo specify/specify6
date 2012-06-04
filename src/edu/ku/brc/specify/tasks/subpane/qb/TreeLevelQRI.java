@@ -145,7 +145,8 @@ public class TreeLevelQRI extends FieldQRI
     protected String getSQLFldName(final TableAbbreviator ta)
     {
         tableAlias = ta.getAbbreviation(table.getTableTree());
-        return tableAlias + ".nodeNumber";
+        //return tableAlias + ".nodeNumber";
+        return tableAlias + ".id";
     }
     
     /**

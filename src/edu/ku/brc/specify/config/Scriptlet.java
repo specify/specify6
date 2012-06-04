@@ -911,6 +911,31 @@ public class Scriptlet extends JRDefaultScriptlet
     	return getAggregated("CollectingEvent", "Collector", "getCollectors", aggregator, colEvId);
     }
     
+    public String getCollectorsByCOIdNumWithAggregator(final Integer coId,  final String aggregator) throws Exception
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        if (session != null)
+        {
+        	try
+        	{
+        		CollectionObject co = session.get(CollectionObject.class, coId);
+        		if (co != null)
+        		{
+        			CollectingEvent ce = co.getCollectingEvent();
+        			if (ce != null) 
+        			{
+        				return getCollectorsWithAggregator(ce.getId(), aggregator);
+        			}
+        		}
+        	} finally 
+        	{
+        		session.close();
+        	}
+        }
+        return "";
+    }
+        		
+
     /**
      * Returns a list of collectors
      * @param colEvId

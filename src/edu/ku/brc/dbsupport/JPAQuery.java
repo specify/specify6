@@ -59,6 +59,7 @@ public class JPAQuery implements CustomQueryIFace
     protected List<?>                   resultsList = null;
     protected boolean                   isUnique    = false;
     protected int						maxResults  = 0;
+    protected int						firstResult = 0;
     protected boolean                   doDebug     = AppPreferences.getLocalPrefs().getBoolean("esdebug", false);
     
     /**
@@ -180,6 +181,10 @@ public class JPAQuery implements CustomQueryIFace
         return !inError;
     }
     
+    public void clearCql() 
+    {
+    	cql = null;
+    }
     /**
      * @return
      */
@@ -211,11 +216,15 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
-                //log.debug(sqlStr);
+                //log.debug(sqlStr); 	
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 if (maxResults > 0)
                 {
                 	qry.setMaxResults(maxResults);
+                }
+                if (firstResult > 0)
+                {
+                	qry.setFirstResult(firstResult);
                 }
                 if (params != null)
                 {
@@ -223,6 +232,12 @@ public class JPAQuery implements CustomQueryIFace
                     {
                         qry.setParameter(param.getFirst(), param.getSecond());
                     }
+                }
+                
+                if (resultsList != null)
+                {
+                	resultsList.clear();
+                	resultsList = null;
                 }
                 
                 if (isUnique)
@@ -482,5 +497,22 @@ public class JPAQuery implements CustomQueryIFace
 		this.maxResults = maxResults;
 	}
 
+	/**
+	 * @return the firstResult
+	 */
+	public int getFirstResult() 
+	{
+		return firstResult;
+	}
+
+	/**
+	 * @param firstResult the firstResult to set
+	 */
+	public void setFirstResult(int firstResult) 
+	{
+		this.firstResult = firstResult;
+	}
+
+	
     
 }

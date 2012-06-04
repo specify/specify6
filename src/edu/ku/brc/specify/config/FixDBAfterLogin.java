@@ -125,6 +125,12 @@ public class FixDBAfterLogin
         AppPreferences.getGlobalPrefs().putBoolean("FixUploaderRecordsets", true);
     }
     
+    public static void fixUnMatchedWBSpecifyUserIDs()
+    {
+    	update("update workbenchtemplate t inner join workbench w on w.workbenchtemplateid = t.workbenchtemplateid set t.SpecifyUserID = w.SpecifyUserID");
+    	AppPreferences.getGlobalPrefs().putBoolean("FixedUnMatchedWBSpecifyUserIDs", true);
+    }
+    
     /**
      * @param pStmt
      * @param locId

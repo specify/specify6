@@ -2495,6 +2495,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
                     }
                     
+                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnMatchedWBSpecifyUserIDs", false))
+                    {
+                    	FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
+                    }
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.checkMultipleLocalities();
                 }

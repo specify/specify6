@@ -1,5 +1,7 @@
 /* Copyright (C) 2009, University of Kansas Center for Research
  * 
+ * Modifications Copyright (C) 2012 President and Fellows of Harvard College
+ * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
  * 
@@ -25,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -38,6 +41,7 @@ import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
+ * @author Lawrence Chan lchan@indigocube.net (Harvard University Herbaria)
  *
  * @code_status Alpha
  *
@@ -259,9 +263,17 @@ public class ERTICaptionInfoTreeLevelGrp
         }
     }
 
+    /**
+     * 
+     * @author lchan
+     * @param value
+     * @return
+     */
     protected String setupQuery(Object value)
     {
-    	return querySQL.replace(":descendantArg", value.toString());
+        String ancestorsIn = getAncestorsIn(treeClass, (Integer) value);
+        
+    	return querySQL.replace(":ancestorsIn", ancestorsIn);
     }
     
     
@@ -379,6 +391,55 @@ public class ERTICaptionInfoTreeLevelGrp
         return result;
     }
     
+    private HashMap<Integer, String> ancestorsCache = new HashMap<Integer, String>();
+    
+    /**
+     * Returns the ids of a node and its ancestors in the form of id1,
+     * id2,...id3. It caches the results of the recursive ancestors because
+     * Specify calls it for each result row/column.
+     * 
+     * @author lchan
+     * @param clazz
+     * @param nodeId
+     * @return
+     */
+    private String getAncestorsIn(Class<?> clazz, Integer nodeId) {
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+
+            String ancestorsIn;
+            QueryIFace query = session.createQuery("select e.parent.id from "
+                    + clazz.getName() + " e where e.id = :nodeId", false);
+            query.setParameter("nodeId", nodeId);
+            Integer parentId = (Integer) query.uniqueResult();
+            if (ancestorsCache.containsKey(parentId)) {
+                ancestorsIn = ancestorsCache.get(parentId);
+            } else {
+                ancestorsIn = getAncestorsInRecursive(clazz, nodeId);
+                ancestorsCache.put(parentId, ancestorsIn);
+            }
+
+            String in = nodeId + ", " + ancestorsIn;
+            in = "in(" + in.substring(0, in.length() - 2)
+                    + ")";
+
+            return in;
+        } finally {
+            session.close();
+        }
+    }
+    
+    private String getAncestorsInRecursive(Class<?> clazz, Integer nodeId) {
+        QueryIFace query = session.createQuery("select e.parent.id from " + clazz.getName() + " e where e.id = :nodeId", false);
+        query.setParameter("nodeId", nodeId);
+        Integer parentId = (Integer) query.uniqueResult();
+        if (parentId == null) {
+            return "";
+        } else {
+            return parentId + ", " + getAncestorsInRecursive(clazz, parentId);
+        }
+    }
+    
     /**
      * Prepares group to process a result set.
      * MUST be called after all members have been added to the group.
@@ -435,20 +496,20 @@ public class ERTICaptionInfoTreeLevelGrp
         		+ geFldsList()
         		+ ", rankId from "
         		+ getNodeTblName()
-        		+ " where "
-        		+ ":descendantArg between nodenumber and highestchildnodenumber and "
+        		+ " where id :ancestorsIn and"
         		+ getNodeTreeFldName() + "=" + this.treeDefId + " and rankId in(" + rankStr + ") order by rankId ";
         	query = session.createQuery(ancestorSQL, true);
 
         }
-        else 
-        {
+        else {
+            // lchan: hardcoded because Specify uses a different ID field for each entity
+        	String idField = treeClass.getSimpleName() + "Id";
+        	
         	querySQL = "select "
         		+ geFldsList()
         		+ ", rankId from "
         		+ getNodeTblName().toLowerCase()
-        		+ " where "
-        		+ ":descendantArg between nodenumber and highestchildnodenumber and "
+        		+ " where " + idField + " :ancestorsIn and "
         		+ getNodeTreeFldName() + "=" + this.treeDefId + " and rankId in(" + rankStr + ") order by rankId ";
         	Connection connection = DBConnection.getInstance().getConnection();
         	statement = connection.createStatement();
