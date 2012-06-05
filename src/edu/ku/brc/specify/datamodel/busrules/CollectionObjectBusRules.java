@@ -952,6 +952,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
+                	boolean napped = false;
                 	for (String currentCat : nums)
                     {
                 		try
@@ -973,6 +974,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             } else
                             {
                             	objectsNotAdded.add(formatter.formatToUI(co.getCatalogNumber()).toString());
+                            }
+                            if (!napped) {
+                                Thread.sleep(300); //this seems
+                                //to prevent sporadic "illegal access to loading collection", 
+                                //"illegal attempt to associate collection with two sessions", 
+                                //"unable to lock unsaved object" hibernate errors.
+                                napped = true; //errors always seem to occur on the second (and subsequent) records in series. So just delaying after the first save.
                             }
                         } catch (Exception ex)
                         {
