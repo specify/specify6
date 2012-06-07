@@ -671,6 +671,16 @@ public class BaseBusRules implements BusinessRulesIFace
 		// do nothing
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#saveFinalization(java.lang.Object)
+	 */
+	@Override
+	public void saveFinalization(Object dataObj) 
+	{
+		// do nothing
+	}
+
 	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */

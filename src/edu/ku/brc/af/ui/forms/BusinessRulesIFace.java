@@ -196,6 +196,12 @@ public interface BusinessRulesIFace
      */
     public abstract void afterSaveFailure(Object dataObj, DataProviderSessionIFace session);
     
+    /**
+     * Called after a successful save has been committed and all other form actions related to the save 
+     * have been performed.
+     * @param dataObj
+     */
+    public abstract void saveFinalization(Object dataObj);
     
     /**
      * Called BEFORE deleting an object from the DB.  This is called before the object is even
@@ -297,6 +303,7 @@ public interface BusinessRulesIFace
      * Called after the objects in the cached HashSet of objects are processed in a loop.
      */
     public abstract void endProcessingBeforeAfterRules();
+    
     
     /**
      * Call right before formShutdown is called, but the entire UI is still intact.

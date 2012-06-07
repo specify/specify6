@@ -739,12 +739,23 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        doSeriesProcessing();
+        //doSeriesProcessing();
 
         return super.afterSaveCommit(dataObj, session);
     }
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#saveFinalization(java.lang.Object)
+	 */
+	@Override
+	public void saveFinalization(Object dataObj) 
+	{
+		super.saveFinalization(dataObj);
+		doSeriesProcessing();
+	}
+
+	/**
      * @param batchBeginIsDup
      * @return
      */
@@ -890,7 +901,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     /**
      * 
      */
-    private void doSeriesProcessing()
+    public void doSeriesProcessing()
     {
 		if (!processingSeries.get())
 		{
@@ -946,18 +957,27 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 
             	int cnt = 0;
                 CollectionObject co = null;
-                CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
-               
-                Thread.sleep(300); //Perhaps this is unnecessary, but it seems
+                //CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
+                CollectionObject carryForwardCo;
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try 
+                {
+                	carryForwardCo = session.get(CollectionObject.class, ((CollectionObject)formViewObj.getDataObj()).getId());
+                } finally
+                {
+                	session.close();
+                }
+                
+                
+                Thread.sleep(666); //Perhaps this is unnecessary, but it seems
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
-                	boolean napped = false;
                 	for (String currentCat : nums)
                     {
                 		try
                         {
-                            co = new CollectionObject();
+                			co = new CollectionObject();
                             co.initialize();
                             
                             //Collection doesn't get set in co.initialize(), or carryForward, but it needs to be set.
@@ -967,6 +987,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             
                             co.setCatalogNumber(currentCat);
                             formViewObj.setNewObject(co);
+                            
                             if (formViewObj.saveObject())
                             {
                             	objectsAdded.add(new Pair<Integer, String>(
@@ -974,13 +995,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             } else
                             {
                             	objectsNotAdded.add(formatter.formatToUI(co.getCatalogNumber()).toString());
-                            }
-                            if (!napped) {
-                                Thread.sleep(300); //this seems
-                                //to prevent sporadic "illegal access to loading collection", 
-                                //"illegal attempt to associate collection with two sessions", 
-                                //"unable to lock unsaved object" hibernate errors.
-                                napped = true; //errors always seem to occur on the second (and subsequent) records in series. So just delaying after the first save.
                             }
                         } catch (Exception ex)
                         {
@@ -1120,6 +1134,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 });
         processingSeries.set(true);
         worker.execute();
+//        try {
+//        	worker.get();
+//        } catch (Exception ex) {
+//        	ex.printStackTrace();
+//        }
     }
 
 

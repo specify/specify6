@@ -152,6 +152,7 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -2982,6 +2983,10 @@ public class FormViewObj implements Viewable,
             //log.debug("After save");
             //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
             //log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
+            if (businessRules != null) 
+            {
+            	businessRules.saveFinalization(dataObj);
+            }
             return true;
         }
         if (businessRules != null)
