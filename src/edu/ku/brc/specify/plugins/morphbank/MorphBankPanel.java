@@ -759,8 +759,8 @@ public class MorphBankPanel extends UIPluginBase
 					PrintWriter out = new PrintWriter(outFile);
 					XmlUtils.printXml(out, request);
 					PostXMLSp poster = new PostXMLSp();
-					PostXMLSp.PostResponse response = null;
-					//PostXMLSp.PostResponse response = poster.post(requestFileName);
+					//PostXMLSp.PostResponse response = null;
+					PostXMLSp.PostResponse response = poster.post(requestFileName);
 					if (response.getStatusCode() == 200)
 					{
 						String morphbankIDStr = getMorphbankIdStr(response);

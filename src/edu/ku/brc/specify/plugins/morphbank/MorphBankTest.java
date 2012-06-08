@@ -154,7 +154,8 @@ public class MorphBankTest
 		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
 		insert.getXmlObjectList().add(xmlSpecimen);
 		XmlBaseObject xmlImage = fieldMapper.getXmlImage(image);
-		xmlImage.getView().add(new XmlId(1000349));			
+		//xmlImage.getView().add(new XmlId(1000349));			
+		xmlImage.getView().add(new XmlId(2088978));			
 		insert.getXmlObjectList().add(xmlImage);
 		return request;
 	}

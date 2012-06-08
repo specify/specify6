@@ -167,13 +167,11 @@ public class CollectionObjectFieldMapper
 		if (dws.isMapped("CatalogNumberNumeric"))
 		{
 			return dws.get("CatalogNumberNumeric");
-		}
-		
+		}		
 		if (dws.isMapped("CatalogNumberText"))
 		{
 			return dws.get("CatalogNumberText");
 		}
-
 		if (dws.isMapped("CatalogNumber"))
 		{
 			return dws.get("CatalogNumber");
@@ -284,6 +282,7 @@ public class CollectionObjectFieldMapper
 				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": unrecognized data type.");
 				continue;
 			}
+			Object val = spec.get(mi.getName());
 			try
 			{
 				if (redactor.isRedacted(spec, mi))
@@ -292,10 +291,9 @@ public class CollectionObjectFieldMapper
 					System.out.println(getSpecId(spec, false));
 					continue; 
 				}
-				Object val = spec.get(mi.getName());
 				//System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName() + ")");
 				String miName = getMiName(mi);
-				if (miName.equals("CatalogNumberNumeric") || miName.equals("DecimalLatitude") || miName.equals("DecimalLongitude"))
+				if (miName.equalsIgnoreCase("CatalogNumberNumeric") || miName.equalsIgnoreCase("DecimalLatitude") || miName.equalsIgnoreCase("DecimalLongitude"))
 				{
 					dataType = Double.class;
 					if (val != null)
@@ -315,7 +313,7 @@ public class CollectionObjectFieldMapper
 //				{
 //					val = ((Number )val).doubleValue();
 //				}
-				Method m = factory.getMethod("create" + miName, dataType);
+				Method m = factory.getMethod("create" + StringUtils.capitalize(miName), dataType);
 				//System.out.println("invoking " + m.getName() + "(" + val + ")");
 				try
 				{
@@ -327,6 +325,7 @@ public class CollectionObjectFieldMapper
 			} catch(NoSuchMethodException ex)
 			{
 				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": no create method in Object Factory");
+				xmlSpec.addUserProperty(mi.getName(), val.toString());
 				continue;
 			}
 		}

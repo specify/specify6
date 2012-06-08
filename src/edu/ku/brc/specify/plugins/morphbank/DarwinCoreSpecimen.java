@@ -23,7 +23,7 @@ public class DarwinCoreSpecimen
 	final protected DwcMapper mapper;
 	protected Integer collectionObjectId;
 	protected CollectionObject collectionObject;
-	protected Map<String, Object> concepts = new HashMap<String, Object>();
+	protected Map<String, Pair<String, Object>> concepts = new HashMap<String, Pair<String, Object>>();
 	
 	public DarwinCoreSpecimen(DwcMapper mapper) throws Exception
 	{
@@ -45,32 +45,32 @@ public class DarwinCoreSpecimen
 	
 	protected void add(String fieldName, String value) throws Exception
 	{
-		if (concepts.containsKey(fieldName))
+		if (concepts.containsKey(fieldName.toLowerCase()))
 		{
 			throw new Exception(fieldName + " concept is already mapped.");
 		}
 		
-		concepts.put(fieldName, value);		
+		concepts.put(fieldName.toLowerCase(), new Pair<String, Object>(fieldName, value));		
 	}
 	
 	protected void set(String fieldName, Object value) throws Exception
 	{
-		if (!concepts.containsKey(fieldName))
+		if (!concepts.containsKey(fieldName.toLowerCase()))
 		{
 			throw new Exception(fieldName + " concept is not mapped.");
 		}
 		
-		concepts.put(fieldName, value);
+		concepts.put(fieldName.toLowerCase(), new Pair<String, Object>(fieldName, value));
 	}
 	
 	public Object get(String fieldName)
 	{
-		return concepts.get(fieldName);
+		return concepts.get(fieldName.toLowerCase()).getSecond();
 	}
 	
 	public boolean isMapped(String conceptName)
 	{
-		return concepts.containsKey(conceptName);
+		return concepts.containsKey(conceptName.toLowerCase());
 	}
 	
 	public int getFieldCount()
@@ -81,9 +81,9 @@ public class DarwinCoreSpecimen
 	public Vector<Pair<String, Object>> getFieldValues()
 	{
 		Vector<Pair<String, Object>> result = new Vector<Pair<String, Object>>();
-		for (Map.Entry<String, Object> me : concepts.entrySet())
+		for (Map.Entry<String, Pair<String, Object>> me : concepts.entrySet())
 		{
-			result.add(new Pair<String, Object>(me.getKey(), me.getValue()));
+			result.add(new Pair<String, Object>(me.getValue().getFirst(), me.getValue().getSecond()));
 		}
 		return result;
 	}
