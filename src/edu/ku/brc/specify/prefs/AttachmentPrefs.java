@@ -75,7 +75,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     
     protected AppPreferences    remotePrefs = AppPreferences.getRemote();
     protected AppPreferences    localPrefs  = AppPreferences.getLocalPrefs();
-    protected AppPreferences    globalPrefs = AppPreferences.getLocalPrefs();
+    protected AppPreferences    globalPrefs = AppPreferences.getGlobalPrefs();
     
     protected ValBrowseBtnPanel pathBrwse;
     protected JLabel            pathLbl;
@@ -116,8 +116,8 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
             return;
         }
         
-        isUsingGlobalAttchPrefs = AppPreferences.getGlobalPrefs().getBoolean(USE_GLOBAL_PREFS, false);
-        canEditGlobalAttchPrefs = AppPreferences.getLocalPrefs().getBoolean(EDT_GLOBAL_PREFS, false);
+        isUsingGlobalAttchPrefs = globalPrefs.getBoolean(USE_GLOBAL_PREFS, false);
+        canEditGlobalAttchPrefs = localPrefs.getBoolean(EDT_GLOBAL_PREFS, false);
         
         UIRegistry.loadAndPushResourceBundle("preferences");
         pathRB = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_PATH"));
@@ -129,8 +129,8 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         group.add(urlRB);
         
         CellConstraints cc = new CellConstraints();
-        pathPanel.add(pathRB, cc.xy(1, 1));
-        urlPanel.add(urlRB,   cc.xy(1, 1));
+        if (pathPanel != null) pathPanel.add(pathRB, cc.xy(1, 1));
+        if (urlPanel != null)  urlPanel.add(urlRB,   cc.xy(1, 1));
         
         JButton saveGGblPrefs  = form.getCompById("SaveGGblPrefs");
         JButton clearGGblPrefs = form.getCompById("ClearGGblPrefs");
@@ -142,9 +142,12 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 @Override
                 public void actionPerformed(ActionEvent arg0)
                 {
-                    AppPreferences.getGlobalPrefs().put(ATTACHMENT_PATH, oldAttachmentPath);
-                    AppPreferences.getGlobalPrefs().put(ATTACHMENT_URL, oldAttachmentURL);
-                    AppPreferences.getGlobalPrefs().putBoolean(ATTACHMENT_USE_PATH, pathRB.isSelected());
+                    globalPrefs.put(ATTACHMENT_PATH, oldAttachmentPath);
+                    globalPrefs.put(ATTACHMENT_URL, oldAttachmentURL);
+                    globalPrefs.putBoolean(ATTACHMENT_USE_PATH, pathRB.isSelected());
+                    
+                    // Make sure local prefs is set for the type we are using.
+                    localPrefs.putBoolean(ATTACHMENT_USE_PATH, pathRB.isSelected()); 
                 }
             });
         }
@@ -157,12 +160,12 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 @Override
                 public void actionPerformed(ActionEvent arg0)
                 {
-                    AppPreferences.getGlobalPrefs().remove(ATTACHMENT_PATH);
-                    AppPreferences.getGlobalPrefs().remove(ATTACHMENT_URL);
-                    AppPreferences.getGlobalPrefs().remove(ATTACHMENT_USE_PATH);
+                    globalPrefs.remove(ATTACHMENT_PATH);
+                    globalPrefs.remove(ATTACHMENT_URL);
+                    globalPrefs.remove(ATTACHMENT_USE_PATH);
                     try
                     {
-                        AppPreferences.getGlobalPrefs().flush();
+                        globalPrefs.flush();
                     } catch (BackingStoreException e)
                     {
                         e.printStackTrace();
@@ -248,7 +251,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
      */
     private boolean setDataIntoUI()
     {
-        AppPreferences prefs = (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs) ? AppPreferences.getLocalPrefs() : AppPreferences.getGlobalPrefs();
+        AppPreferences prefs = (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs) ? localPrefs : globalPrefs;
         return setDataIntoUI(prefs);
     }
     
@@ -345,13 +348,14 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     {
         if (!isInitialized) return;
         
-        if (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs)
+        boolean usingPath = pathRB.isSelected();
+        
+        if (usingPath || !isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs)
         {
             if (form.getValidator() == null || form.getValidator().hasChanged())
             {
                 super.savePrefs(); // Gets data from form
                 
-                boolean usingPath = pathRB.isSelected();
                 if (usingPath)
                 {
                     localPrefs.put(ATTACHMENT_PATH, oldAttachmentPath);

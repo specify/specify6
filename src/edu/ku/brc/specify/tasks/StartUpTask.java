@@ -94,23 +94,35 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     }
     
     /**
-     * @param localPrefs
+     * If using path then we just check the local prefs, if using the server
+     * then first check the global prefs and then the local prefs
      */
     protected void configureAttachmentManager()
     {
-        if (!configureAttachmentManager(AppPreferences.getGlobalPrefs()))
+        AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
+        boolean        isUsingPath = localPrefs.getBoolean(USE_FILE_PATH_PREF, true); 
+        
+        boolean wasOK = false;
+        if (!isUsingPath)
         {
-            if (!configureAttachmentManager(AppPreferences.getLocalPrefs()))
+            wasOK = configureAttachmentManager(AppPreferences.getGlobalPrefs());
+        }
+        
+        if (!wasOK)
+        {
+            wasOK = configureAttachmentManager(localPrefs);
+        }
+         
+        if (!wasOK)
+        {
+            SwingUtilities.invokeLater(new Runnable()
             {
-                SwingUtilities.invokeLater(new Runnable()
+                @Override
+                public void run()
                 {
-                    @Override
-                    public void run()
-                    {
-                        UIRegistry.showLocalizedError("AttachmentUtils.NOT_AVAIL");
-                    }
-                });
-            }
+                    UIRegistry.showLocalizedError("AttachmentUtils.NOT_AVAIL");
+                }
+            });
         }
     }
     
