@@ -184,9 +184,9 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
                 log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 // TODO RELEASE -  Instead of exiting we need to disable Attachments
                 //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
             }
         }
-        errorKey = useFilePath ? "LOC_BAD" : "URL_BAD";
         
         if (attachMgr == null)
         {
