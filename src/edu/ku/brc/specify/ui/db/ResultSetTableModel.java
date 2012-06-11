@@ -389,6 +389,10 @@ public class ResultSetTableModel extends DefaultTableModel implements SQLExecuti
                     
                 } else if (obj instanceof Boolean )
                 {
+                    if (getColumnClass2(column) == Boolean.class)
+                    {
+                        return obj;
+                    }
                     return UIRegistry.getResourceString(obj.toString());
                 }
                 
