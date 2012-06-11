@@ -69,7 +69,15 @@ public class DateWrapper
      */
     public String format(final Date date)
     {
-        return date != null ? simpleDateFormat.format(date) : "";
+        try 
+        {
+            return date != null ? simpleDateFormat.format(date) : "";
+           
+        } catch (java.lang.ArrayIndexOutOfBoundsException ex)
+        {
+            ex.printStackTrace();
+        }
+        return "";
     }
     
     /**
