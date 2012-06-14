@@ -56,6 +56,7 @@ public class JPAQuery implements CustomQueryIFace
     protected QueryExecutor             queryExecutor;
     protected String                    sqlStr;
     protected boolean                   inError     = false;
+    protected boolean					quiet       = false; //don't dispatch errors when quiet - for use by background tasks 
     protected List<?>                   resultsList = null;
     protected boolean                   isUnique    = false;
     protected int						maxResults  = 0;
@@ -191,7 +192,7 @@ public class JPAQuery implements CustomQueryIFace
     private boolean dispatchError()
     {
         long    now       = System.currentTimeMillis(); 
-        boolean showError = now - lastErrorTime > 2000;
+        boolean showError = !quiet && now - lastErrorTime > 2000;
         lastErrorTime = now;
         if (showError)
         {
@@ -202,7 +203,24 @@ public class JPAQuery implements CustomQueryIFace
         return false;
     }
 
+    
     /**
+	 * @return the quiet
+	 */
+	public boolean isQuiet() 
+	{
+		return quiet;
+	}
+
+	/**
+	 * @param quiet the quiet to set
+	 */
+	public void setQuiet(boolean quiet)
+	{
+		this.quiet = quiet;
+	}
+
+	/**
      * @return
      */
     private boolean runQuery()

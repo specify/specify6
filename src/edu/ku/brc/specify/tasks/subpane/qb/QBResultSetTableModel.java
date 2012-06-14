@@ -235,6 +235,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
 									ERTICaptionInfoRel ertiRel = (ERTICaptionInfoRel) erti;
 									JPAQuery jpa = new JPAQuery(queryExecutor,
 											ertiRel.getListHql(colObj), this);
+									jpa.setQuiet(true);
 									Vector<Object> info = new Vector<Object>();
 									info.add(rowNum);
 									info.add(row.size());

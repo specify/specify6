@@ -67,5 +67,25 @@ public class QBResultsSubPane extends ESResultsSubPane
 	{
 		return resultsTable.get();
 	}
-    
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.ESResultsSubPane#aboutToShutdown()
+	 */
+	@Override
+	public boolean aboutToShutdown() 
+	{
+		boolean result = super.aboutToShutdown();
+		if (result)
+		{
+			QBResultSetTableModel tblModel = resultsTable.get().getTableModel();
+			if (tblModel != null)
+			{
+				tblModel.cancelBackgroundLoads();
+			}
+
+		}
+		return result;
+	}
+	
 }
