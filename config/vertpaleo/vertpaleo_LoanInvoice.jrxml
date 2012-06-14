@@ -409,12 +409,12 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<text><![CDATA[INVOICE OF SPECIMENS
 Division of Paleontology
-Biodiversity Research Center
-1345 Jayhawk Boulevard
-University of Kansas
-Lawrence, Kansas, USA 66045-7561
-Voice: 785-864-3369 Fax: 785-864-5335
-e-mail: ABentley@ku.edu]]></text>
+Address Line #1
+Address Line #2
+Address Line #3
+City, State, Country ZipCode
+Voice: xxx-xxx-xxxx Fax: xxx-xxx-xxxx
+e-mail: collmgr@institution.org]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

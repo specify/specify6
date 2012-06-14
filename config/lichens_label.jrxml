@@ -52,8 +52,8 @@
 				<textElement textAlignment="Center">
 					<font fontName="Arial" isBold="true"/>
 				</textElement>
-				<text><![CDATA[The Ronald L. McGregor Herbarium (KANU)
-University of Kansas, Lawrence KS USA]]></text>
+				<text><![CDATA[Division of Plants
+Address Line #3, Lawrence KS USA]]></text>
 			</staticText>
 			<textField>
 				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="30" width="259" height="15"/>
