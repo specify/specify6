@@ -393,7 +393,7 @@ public class ConvertVerifier extends AppBase
                 
                 //if (oldCatNum < 1643) continue;
                 
-                /*if (isCOOn(DO_CO_DETERMINER))
+                if (isCOOn(DO_CO_DETERMINER))
                 {
                     tblWriter = tblWriterHash.get(DO_CO_DETERMINER);
                     if (!verifyDeterminer(oldCatNum, newCatNum))
@@ -490,7 +490,7 @@ public class ConvertVerifier extends AppBase
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
-                } */
+                }
                 
                 if ((i % 100) == 0)
                 {
@@ -2573,8 +2573,8 @@ public class ConvertVerifier extends AppBase
                         break;
                     }
                     
-                    int    newId        = newDBRS.getInt(1);
-                    int    oldId        = oldDBRS.getInt(1);
+                    String    newId = newDBRS.getString(1);
+                    String    oldId = oldDBRS.getString(1);
                     
                     String oldNewIdStr = oldId + " / "+newId + " ("+oldDBRS.getInt(19)+" / "+newDBRS.getInt(19)+")";
                     
@@ -2763,8 +2763,8 @@ public class ConvertVerifier extends AppBase
                         break;
                     }
                     
-                    int    newId        = newDBRS.getInt(1);
-                    int    oldId        = oldDBRS.getInt(1);
+                    String    newId = newDBRS.getString(1);
+                    String    oldId = oldDBRS.getString(1);
                     
                     String oldNewIdStr = oldId + " / "+newId;
                     

@@ -374,6 +374,7 @@ public class IdHashMapper implements IdMapperIFace
         {
             BasicSQLUtils.setSkipTrackExceptions(false);
             BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
+            wasEmpty = true;
             
         } catch (Exception ex)
         {

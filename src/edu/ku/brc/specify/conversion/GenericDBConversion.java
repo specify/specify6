@@ -6917,7 +6917,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         }
 
                         int subNumber = rs.getInt(oldNameIndex.get("SubNumber"));
-                        if (subNumber < 0)
+                        if (subNumber < 0 || rs.wasNull())
                         {
                             skipRecord = true;
                             //msg = "Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]";
