@@ -199,6 +199,7 @@ import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.prefs.SystemPrefs;
+import edu.ku.brc.specify.tasks.WorkbenchRecordSetCleanupTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
@@ -211,6 +212,7 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -218,7 +220,6 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -2142,6 +2143,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 if (AppContextMgr.getInstance().hasContext())
                 {
                     canSendStats = AppPreferences.getRemote().getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
+                }
+                
+                Taskable workbenchRSCleanup = TaskMgr.getTask(WorkbenchRecordSetCleanupTask.WORKBENCHRECORDSETCLEANUP);
+                if (workbenchRSCleanup != null)
+                {
+                	workbenchRSCleanup.shutdown();
                 }
                 
                 if (canSendStats)

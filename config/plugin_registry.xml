@@ -48,6 +48,8 @@
         <plugin name="VisualQueryTask" class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true" prefname="visualquery"/>
         
         <plugin name="iPadExporterTask" class="edu.ku.brc.specify.plugins.ipadexporter.iPadDBExporterPlugin" addui="true"  prefname="ipadexporter"/>
+
+        <plugin name="WorkbenchRecordSetCleanupTask" class="edu.ku.brc.specify.tasks.WorkbenchRecordSetCleanupTask" addui="false"/>
            
 	</core>
 	
