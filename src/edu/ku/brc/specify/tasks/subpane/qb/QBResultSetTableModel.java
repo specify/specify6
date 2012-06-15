@@ -87,7 +87,17 @@ public class QBResultSetTableModel extends ResultSetTableModel
         return bgTaskCount != 0;
     }
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.ui.db.ResultSetTableModel#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
+	 */
+	@Override
+	public void executionError(CustomQueryIFace customQuery) 
+	{
+		//nuthin 	
+	}
+
+	/**
      * Stops background cell loading and clears the queue of cells to be loaded. 
      */
     public void cancelBackgroundLoads()
@@ -332,6 +342,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
             	UsageTracker.incrHandledUsageCount();
             	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
 					QBResultSetTableModel.class, e);
+            	e.printStackTrace();
             }
             //else ignore
 		}
