@@ -273,14 +273,22 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
             if (count != null && count > 0)
             {
                 sb.setLength(0);
-                sb.append("SELECT ");
-                sb.append("Version");
                 if (isColObj)
                 {
-                    sb.append(", CatalogNumber");
+                    sb.append("SELECT c.Version, c.CatalogNumber, cl.Code FROM collectionobject c INNER JOIN collection cl ON c.CollectionID = cl.UserGroupScopeId");
+
+                } else
+                {
+                    sb.append("SELECT ");
+                    sb.append("Version");
+                    if (isColObj)
+                    {
+                        sb.append(", CatalogNumber");
+                    }
+                    sb.append(" FROM ");
+                    sb.append(tableInfo.getName());
+  
                 }
-                sb.append(" FROM ");
-                sb.append(tableInfo.getName());
                 sb.append(" WHERE ");
                 sb.append(primaryColumn);
                 sb.append(" = ");
@@ -304,6 +312,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                             String idStr = data.getId().toString();
                             if (isColObj)
                             {
+                                colCode = rs.getString(3);
                                 idStr = (String)formatter.formatToUI(catNum);
                             }
                             
@@ -361,16 +370,15 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     }
     
     /**
+     * @param connection
      * @param category
      * @param doVersioning
      * @param formatter
-     * @param stmt
-     * @param updStmt
      * @return
      */
-    private int buildLSIDs(final Connection connection,
-                           final CATEGORY_TYPE category, 
-                           final boolean       doVersioning,
+    private int buildLSIDs(final Connection            connection,
+                           final CATEGORY_TYPE         category, 
+                           final boolean               doVersioning,
                            final UIFieldFormatterIFace formatter)
     {
         boolean isColObj = category == CATEGORY_TYPE.Specimen;
@@ -383,21 +391,26 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT COUNT(*) FROM ");
             sb.append(tableInfo.getName());
-            sb.append(" WHERE GUID IS NULL OR GUID = 'null' OR GUID = ''");
+            sb.append(" WHERE (GUID IS NULL OR GUID = 'null' OR GUID = '')");
             
             count = BasicSQLUtils.getCount(sb.toString());
             if (count != null && count > 0)
             {
                 sb.setLength(0);
-                sb.append("SELECT ");
+                
+                sb.append("SELECT c.");
                 sb.append(tableInfo.getIdFieldName());
-                sb.append(", Version");
+                sb.append(", c.Version");
                 if (isColObj)
                 {
-                    sb.append(", CatalogNumber");
-                }
-                sb.append(" FROM ");
-                sb.append(tableInfo.getName());
+                    sb.append(", c.CatalogNumber, cl.Code FROM collectionobject c INNER JOIN collection cl ON c.CollectionID = cl.UserGroupScopeId INNER JOIN discipline d ON cl.CollectionID = cl.UserGroupScopeId");
+
+                } else
+                {
+                    sb.append(" FROM ");
+                    sb.append(tableInfo.getName());
+                }                
+                
                 sb.append(" WHERE GUID IS NULL OR GUID = 'null' OR GUID = ''");
                 
                 //System.err.println(sb.toString());
@@ -406,8 +419,10 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
 
                 try
                 {
+                    String updateStr = "UPDATE " + tableInfo.getName() + " SET GUID=? WHERE " + tableInfo.getIdFieldName() + "=?";
+                    
                     stmt    = connection.createStatement();
-                    updStmt = connection.prepareStatement("UPDATE " + tableInfo.getName() + " SET GUID=? WHERE " + tableInfo.getIdFieldName() + "=?");
+                    updStmt = connection.prepareStatement(updateStr);
 
                     ResultSet rs = stmt.executeQuery(sb.toString());
                     while (rs.next())
@@ -421,6 +436,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                             String idStr = id.toString();
                             if (isColObj)
                             {
+                                colCode = rs.getString(4);
                                 idStr = formatter != null ? (String)formatter.formatToUI(catNum) : catNum;
                             }
                             
