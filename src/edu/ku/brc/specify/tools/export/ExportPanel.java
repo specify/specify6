@@ -424,7 +424,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param map
 	 * @return text description of update status for map.
 	 */
-	protected String getInitialMapStatusText(SpExportSchemaMapping map)
+	protected String getInitialMapStatusTextAndCheckExportBtnEnable(SpExportSchemaMapping map)
 	{
 		if (needsToBeRebuilt(map))
 		{
@@ -432,6 +432,17 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		}
 		else
 		{
+			SwingUtilities.invokeLater(new Runnable() {
+
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				@Override
+				public void run() {
+					exportToDbTblBtn.setEnabled(false);
+				}
+				
+			});
 			return UIRegistry.getResourceString("ExportPanel.CalculatingStatus");
 		}
 	}
@@ -474,7 +485,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			row.add(map.getMappingName());
 			row.add(map.getTimestampExported() != null ? map.getTimestampExported().toString() : 
 				UIRegistry.getResourceString("ExportPanel.Never"));
-			row.add(getInitialMapStatusText(map));
+			row.add(getInitialMapStatusTextAndCheckExportBtnEnable(map));
 			
 			data.add(row);
 		}
@@ -1142,6 +1153,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						try
 						{
 							displayStatusForMap(map, get());
+							exportToDbTblBtn.setEnabled(true);
 						} catch (Exception ex)
 						{
 				            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
