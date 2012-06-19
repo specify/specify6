@@ -3983,7 +3983,11 @@ public final class UIHelper
      */
     public static Double parseDouble(final String value)
     {
-        return doubleValidator.validate(value, Locale.getDefault());
+    	try
+    	{
+    		return doubleValidator.validate(value, Locale.getDefault());
+    	} catch (NullPointerException e) {}
+    	return null;
     }
     
     /**

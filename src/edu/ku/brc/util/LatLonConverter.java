@@ -894,7 +894,7 @@ public class LatLonConverter
      */
     public static BigDecimal convertDDMMMMStrToDDDDBD(final String str)
     {
-        String[] parts = StringUtils.split(str, " d°'\"" + DEGREES_SYMBOL);
+        String[] parts = StringUtils.split(str, " dm°'\"" + DEGREES_SYMBOL);
         
         double p0 =  UIHelper.parseDouble(parts[0]);
         boolean neg = false;
@@ -903,15 +903,18 @@ public class LatLonConverter
             p0 = p0*-1;
             neg = true;
         }
-        double p1 =  UIHelper.parseDouble(parts[1]);
-
-        BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
-
-        if (neg)
+        Double p1 =  UIHelper.parseDouble(parts[1]);
+        if (p1 != null)
         {
-            val = val.multiply(minusOne);
+        	BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
+
+            if (neg)
+            {
+                val = val.multiply(minusOne);
+            }
+            return val;
         }
-        return val;
+        return null;
     }
     
     /**
