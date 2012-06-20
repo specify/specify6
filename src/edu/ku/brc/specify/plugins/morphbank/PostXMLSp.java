@@ -13,7 +13,6 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 
 /**
