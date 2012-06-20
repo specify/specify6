@@ -12,6 +12,9 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+
 
 /**
  * @author timo
@@ -30,7 +33,9 @@ public class PostXMLSp
 	// static String UPLOAD_FILE =
 	// "C:/dev/morphbank/spiderfiles/spiders0004.xml";
 	// static String URL = "http://localhost:8080/mb/restful";
-	static String MorphBankServiceURL = "http://services.morphbank.net/mbd/restful";
+	//http://www.susemorph.nrm.se/Image/imageFileUpload.php
+	static String MorphBankServiceURLSuffix = "/mbd/restful";
+	
 	public static void main(String[] args) throws Exception
 	{
 		PostXMLSp postXML = new PostXMLSp();
@@ -51,6 +56,10 @@ public class PostXMLSp
 			throws Exception
 	{
 		File input = new File(strXMLFilename);
+		AppPreferences prefs = AppPreferences.getRemote();
+		String baseURL = prefs.get("morphbank.baseurl", null);
+		String MorphBankServiceURL = baseURL.replaceFirst("http://.*?\\.", "http://services.") + MorphBankServiceURLSuffix;
+		
 		// Prepare HTTP post
 		PostMethod post = new PostMethod(MorphBankServiceURL);
 		// Request content will be retrieved directly
