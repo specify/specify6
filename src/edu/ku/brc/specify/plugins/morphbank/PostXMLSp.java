@@ -33,7 +33,16 @@ public class PostXMLSp
 	// "C:/dev/morphbank/spiderfiles/spiders0004.xml";
 	// static String URL = "http://localhost:8080/mb/restful";
 	//http://www.susemorph.nrm.se/Image/imageFileUpload.php
-	static String MorphBankServiceURLSuffix = "/mbd/restful";
+	static String morphBankServiceURLSuffix = "/mbd/restful";
+	
+	final String morphBankServiceURL;
+	
+	public PostXMLSp()
+	{
+		AppPreferences prefs = AppPreferences.getRemote();
+		String baseURL = prefs.get("morphbank.baseurl", null);
+		morphBankServiceURL = baseURL.replaceFirst("http://.*?\\.", "http://services.") + morphBankServiceURLSuffix;
+	}
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -55,12 +64,9 @@ public class PostXMLSp
 			throws Exception
 	{
 		File input = new File(strXMLFilename);
-		AppPreferences prefs = AppPreferences.getRemote();
-		String baseURL = prefs.get("morphbank.baseurl", null);
-		String MorphBankServiceURL = baseURL.replaceFirst("http://.*?\\.", "http://services.") + MorphBankServiceURLSuffix;
 		
 		// Prepare HTTP post
-		PostMethod post = new PostMethod(MorphBankServiceURL);
+		PostMethod post = new PostMethod(morphBankServiceURL);
 		// Request content will be retrieved directly
 		// from the input stream Part[] parts = {
 		Part[] parts = { new FilePart("uploadFile", strXMLFilename, input) };
