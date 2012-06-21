@@ -112,7 +112,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
     
-    protected static final long maxExportRowCount = 250000;
+    protected static final long maxExportRowCount = 100000;
     
     protected JTable mapsDisplay;
 	protected DefaultTableModel mapsModel;
@@ -136,6 +136,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected javax.swing.SwingWorker<Object, Object> dumper = null;
 	
 	protected final List<SpExportSchemaMapping> maps;
+	protected final List<Pair<SpExportSchemaMapping, Long>> updateStats;
 	
 	/**
 	 * @param maps
@@ -144,6 +145,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	{
 		super();
 		this.maps = maps;
+		this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
+		for (SpExportSchemaMapping map : maps)
+		{
+			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -1L));	
+		}
 		createUI();
 		startStatusCalcs();
 	}
@@ -470,6 +476,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		}
 		int row = 0;
 		while (maps.get(row) != map) row++;
+		updateStats.get(row).setSecond(stats.getTotalRecsChanged());
 		mapsModel.setValueAt(statsText, row, 2);
 	}
 	
@@ -741,8 +748,16 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			return null;
             		}
 					
-            		cacheRowCount = ucheck.getSecond() - rowsExported;
             		boolean rebuild = rebuildExistingTbl;
+            		if (rebuildExistingTbl)
+            		{
+            			cacheRowCount = ucheck.getSecond() - rowsExported;
+            		} else 
+            		{
+            			int m = 0;
+            			while (maps.get(0) != theMapping) m++;
+            			cacheRowCount = updateStats.get(m).getSecond();
+            		}
             		boolean firstPass = true;
             		Connection loopConn = conn;
             		/* debug aid
@@ -771,23 +786,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			//XXX Assuming specimen-based export - 1 for baseTableId.
             			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild, !rebuildExistingTbl, 1, firstPass);
             			
+            			
             			rebuild = false;
             			firstPass = false;
-            			
-            			
-            		  /* debugging aids...
-            			Object obj = new Object();
-            		     WeakReference<Object> ref = new WeakReference<Object>(obj);
-            		     obj = null;
-            		     while(ref.get() != null) {
-            		       System.gc();
-            		     }
-            		     
-            		     Pair<Long, Double> stat = stats.get(iteration++);
-            		     stat.setFirst(Runtime.getRuntime().freeMemory());
-            		     stat.setSecond(new Double(System.nanoTime() - startTime) / maxExportRowCount);
-            		     
-            			*/
             		}
 					boolean transOpen = false;
 					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
