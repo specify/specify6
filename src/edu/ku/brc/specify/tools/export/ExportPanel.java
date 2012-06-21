@@ -755,7 +755,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             		} else 
             		{
             			int m = 0;
-            			while (maps.get(0) != theMapping) m++;
+            			while (maps.get(m).getId() != theMapping.getId() && m < maps.size()) m++;
             			cacheRowCount = updateStats.get(m).getSecond();
             		}
             		boolean firstPass = true;
