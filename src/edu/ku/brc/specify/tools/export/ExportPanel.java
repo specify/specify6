@@ -148,7 +148,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
 		for (SpExportSchemaMapping map : maps)
 		{
-			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -1L));	
+			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));	
 		}
 		createUI();
 		startStatusCalcs();
@@ -162,10 +162,14 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		int row = 0;
 		for (SpExportSchemaMapping map : maps)
 		{
-			if (!rebuildForRow(row++))
+			if (!rebuildForRow(row))
 			{
 				getMappingStatus(map);
+			} else
+			{
+				updateStats.get(row).setSecond(-1L);
 			}
+			row++;
 		}
 	}
 	
@@ -1154,7 +1158,16 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						try
 						{
 							displayStatusForMap(map, get());
-							exportToDbTblBtn.setEnabled(true);
+							boolean enable = true;
+							for (Pair<SpExportSchemaMapping, Long> ms : updateStats)
+							{
+								if (ms.getSecond() == -2L)
+								{
+									enable = false;
+									break;
+								}
+							}
+							exportToDbTblBtn.setEnabled(enable);
 						} catch (Exception ex)
 						{
 				            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
