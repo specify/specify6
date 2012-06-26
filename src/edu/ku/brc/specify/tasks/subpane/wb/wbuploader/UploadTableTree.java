@@ -833,13 +833,13 @@ public class UploadTableTree extends UploadTable
 	}
 
 	
-    /* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shouldLoadParent(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry)
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shouldLoadParentTbl(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable)
 	 */
 	@Override
-	protected boolean shouldLoadParent(ParentTableEntry pte)
+	protected boolean shouldLoadParentTbl(UploadTable pt)
 	{
-		return super.shouldLoadParent(pte) && pte.getImportTable() != parent;
+		return super.shouldLoadParentTbl(pt) && pt != parent;
 	}
 
 	/* (non-Javadoc)

@@ -1163,12 +1163,12 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
-     * @param pte
+     * @param pt
      * @return
      */
-    protected boolean shouldLoadParent(ParentTableEntry pte)
+    protected boolean shouldLoadParentTbl(UploadTable pt)
     {
-    	return !pte.getImportTable().specialChildren.contains(this) || !pte.getImportTable().needToMatchChild(tblClass);
+    	return !pt.specialChildren.contains(this) || !pt.needToMatchChild(tblClass);
     }
     
     /**
@@ -1177,7 +1177,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean shouldClearParent(ParentTableEntry pte)
     {
-    	return shouldLoadParent(pte);
+    	return shouldLoadParentTbl(pte.getImportTable());
     }
     
     protected void clearCurrentRecords()
@@ -1249,7 +1249,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		for (ParentTableEntry pte : ptes)
     		{
-    			if (shouldLoadParent(pte))
+    			if (shouldLoadParentTbl(pte.getImportTable()))
     			{
     				//System.out.println("loading " + pte.getImportTable());
     				if (rec != null)
@@ -1265,7 +1265,10 @@ public class UploadTable implements Comparable<UploadTable>
     	
 		for (UploadTable c : specialChildren)
 		{
-			c.clearCurrentRecords();
+			if (!shouldLoadParentTbl(c)) //Attribute tables are both parents and (obviously) special children.  
+			{
+				c.clearCurrentRecords();
+			}
 		}
 		
     	if (rec != null)
@@ -1273,23 +1276,25 @@ public class UploadTable implements Comparable<UploadTable>
     		for (UploadTable c : specialChildren)
     		{
     			//System.out.println("loading " + c);
-    			int cSeq = 0;
-    			List<DataModelObjBase> childRecs = getChildRecords(c, rec);
-    			for (DataModelObjBase childRec : childRecs)
+    			if (!shouldLoadParentTbl(c))
     			{
-    				if (cSeq < c.uploadFields.size())
+    				int cSeq = 0;
+    				List<DataModelObjBase> childRecs = getChildRecords(c, rec);
+    				for (DataModelObjBase childRec : childRecs)
     				{
-    					c.loadRecord(childRec, cSeq++);
-    				}
-    				else
-    				{
-    					log.warn("Not loading " + c.getTblTitle() + " child "  + cSeq+1 + " into dataset because only " + c.uploadFields.size() + " children are mapped.");
+    					if (cSeq < c.uploadFields.size())
+    					{
+    						c.loadRecord(childRec, cSeq++);
+    					}
+    					else
+    					{
+    						log.warn("Not loading " + c.getTblTitle() + " child "  + cSeq+1 + " into dataset because only " + c.uploadFields.size() + " children are mapped.");
+    					}
     				}
     			}
     		}
     	}
     }
-    
     /**
      * @param child
      * @return
