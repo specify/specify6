@@ -45,6 +45,10 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
@@ -112,8 +116,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         
         if (scrollable)
         {
-            itemsPanel = new JPanel();
-            itemsPanel.setLayout(new NavBoxLayoutManager(0, 0));
+            itemsPanel = new JPanel();//new BoxLayout(this, BoxLayout.Y_AXIS));
 
             itemsPanel.setBorder(null);
             
@@ -235,6 +238,40 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
 
     /**
+     * 
+     */
+    private void reAddItems()
+    {
+        JPanel panelToLayout;
+        if (scrollable)
+        {
+            panelToLayout = itemsPanel;
+        }
+        else
+        {
+            panelToLayout = this;
+        }
+        
+        panelToLayout.removeAll();
+        
+        String rowDef = "";
+        if (items.size() > 0)
+        {
+            rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px", items.size()) + ",";
+        }
+        rowDef += "f:p:g";
+        
+        int row = 1;
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g",  rowDef), panelToLayout);
+        for (int i=0;i<items.size();i++)
+        {
+            pb.add(items.get(i).getUIComponent(), cc.xy(1, row));
+            row += 2;
+        }
+    }
+    
+    /**
      * Adds a NavBoxItemIFace item to the box and returns the UI component for that item.
      * @param item the NavBoxItemIFace item to be added
      * @param doLayout whether to have it relayout or not (true -> does layout)
@@ -247,7 +284,24 @@ public class NavBox extends JPanel implements NavBoxIFace
                             final boolean doSort,
                             final int position)
     {
-        if (position == -1 || position == items.size())
+        boolean newWay = true;
+        if (newWay)
+        {
+            if (position == -1 || position == items.size())
+            {
+                items.addElement(item);
+            } else
+            {
+                items.insertElementAt(item, position);    
+            }
+            
+            if (doSort)
+            {
+                Collections.sort(items);
+            }
+            
+            reAddItems();
+        } else if (position == -1 || position == items.size())
         {
             if (scrollable)
             {
@@ -283,7 +337,7 @@ public class NavBox extends JPanel implements NavBoxIFace
                     super.add(nb.getUIComponent());
                 }
             }
-        }
+        } 
         
         if (isManaged && item instanceof GhostActionable)
         {

@@ -114,7 +114,7 @@ public class NavBoxLayoutManager implements LayoutManager2
      */
     public synchronized Dimension preferredLayoutSize(final Container target)
     {
-        synchronized (target.getTreeLock()) 
+        //synchronized (target.getTreeLock()) 
         {
             calcPreferredSize();
             return new Dimension(preferredSize);

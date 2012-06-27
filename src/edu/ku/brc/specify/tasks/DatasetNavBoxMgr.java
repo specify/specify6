@@ -160,7 +160,7 @@ public class DatasetNavBoxMgr
             deleteCmd = new CommandAction(WorkbenchTask.WORKBENCH, WorkbenchTask.DELETE_CMD_ACT, rs);
         }
         final RolloverCommand roc = 
-            (RolloverCommand)WorkbenchTask.makeDnDNavBtn(
+            (RolloverCommand)edu.ku.brc.af.tasks.BaseTask.makeDnDNavBtn(
                     navBox, workbench.getName(), "DataSet16", cmd, 
                     deleteCmd, true, true);// true means make it draggable
         //if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())

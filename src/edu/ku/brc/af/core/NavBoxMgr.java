@@ -27,8 +27,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -36,6 +42,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -64,8 +71,8 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
     
     // Data Members
     private List<NavBoxIFace>   list   = Collections.synchronizedList(new ArrayList<NavBoxIFace>());
-    private NavBoxLayoutManager layout = new NavBoxLayoutManager(5, 5);
     private JSplitPane          splitPane;
+    private boolean             pauseLayout = false;
     
     /**
      * Protected Default Constructor for the singleton
@@ -73,7 +80,7 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
      */
     protected NavBoxMgr()
     {
-       setLayout(layout);
+       //setLayout(layout);
        setBackground(getBGColor()); // XXX PREF ??
        
        CommandDispatcher.register(PREFS, this);
@@ -161,17 +168,17 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
         {
             if (instance.getComponentCount() == 0 && list.size() > 0)
             {
-                instance.add(trash);
+                //instance.add(trash);
                 ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)trash); // assumes trash implements GhostActionable (and why not?)
             }
             
+            instance.pauseLayout = true;
             for (NavBoxIFace box : list)
             {
                 instance.addBox(box); // Adds them to ther GhostGlassPane
-                
-                box.getUIComponent().invalidate();
-                box.getUIComponent().doLayout();
             }
+            instance.pauseLayout = false;
+            instance.reAddItems();
         }
         instance.doLayout();
         instance.repaint();
@@ -217,7 +224,8 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
         }
         
         // for now just clear everything
-        instance.layout.removeAll();
+        //instance.layout.removeAll();
+        //instance.layout = new BoxLayout(instance, BoxLayout.Y_AXIS);
         instance.removeAll();
         instance.list.clear();
 
@@ -243,6 +251,34 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
     }
     
     /**
+     * 
+     */
+    private void reAddItems()
+    {
+        removeAll();
+        
+        String rowDef = "";
+        if (list.size() > 0)
+        {
+            rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px", list.size()) + ",f:p:g,10px,p";
+            
+            int row = 1;
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g",  rowDef), this);
+            for (int i=0;i<list.size();i++)
+            {
+                pb.add(list.get(i).getUIComponent(), cc.xy(1, row));
+                row += 2;
+            }
+            PanelBuilder pbTrash = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g",  "p"));
+            pbTrash.add(trash, cc.xy(2, 1));
+            pb.add(pbTrash.getPanel(), cc.xy(1, row+1));
+            pbTrash.setOpaque(false);
+        }
+    }
+
+    
+    /**
      * Adds a box to the manager (all adds are 'appends' at the moment). The ignoreAlreadyThere allows to request
      * something to be added without worrying whether it is already there.
      * @param box the box to be added
@@ -258,9 +294,12 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
         if (!exists(box.getName()))
         {
             list.add(box); 
-            add(box.getUIComponent());
-            invalidate();
-            doLayout();
+            
+            if (!pauseLayout)
+            {
+                reAddItems();
+            }
+            
             adjustSplitter();
             
             box.setIsManaged(true);
@@ -311,10 +350,7 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
             list.remove(box);
             box.setIsManaged(false);
             
-            remove(box.getUIComponent());
-            invalidate();
-            doLayout();
-            repaint();
+            reAddItems();
             
         } else if (notify)
         {

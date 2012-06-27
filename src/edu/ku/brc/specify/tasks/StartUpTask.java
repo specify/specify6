@@ -72,6 +72,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
 {
     private static final Logger  log = Logger.getLogger(StartUpTask.class);
     
+    private static final String USE_GLOBAL_PREFS     = "USE_GLOBAL_PREFS";
     private static final String USE_FILE_PATH_PREF   = "attachment.use_path";
     private static final String ATTACHMENT_URL_PREF  = "attachment.url";
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
@@ -101,6 +102,12 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     {
         AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
         boolean        isUsingPath = localPrefs.getBoolean(USE_FILE_PATH_PREF, true); 
+        
+        boolean isUsingGlobalAttchPrefs = AppPreferences.getGlobalPrefs().getBoolean(USE_GLOBAL_PREFS, false);
+        if (isUsingGlobalAttchPrefs)
+        {
+            isUsingPath = false;
+        }
         
         boolean wasOK = false;
         if (!isUsingPath)

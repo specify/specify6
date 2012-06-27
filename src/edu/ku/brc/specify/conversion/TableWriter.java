@@ -140,6 +140,14 @@ public class TableWriter extends PrintWriter
         flush();
     }
     
+    public void logNoBR(final String msg)
+    {
+        lineCnt++;
+        
+        print(msg);
+        flush();
+    }
+    
     public void logError(final String msg)
     {
         errCount++;

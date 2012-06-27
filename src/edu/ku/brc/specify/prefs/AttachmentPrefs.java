@@ -219,10 +219,27 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     {
         if (!isInitialized) return;
         
-        pathBrwse.setEnabled(isPathSelected);
-        pathLbl.setEnabled(isPathSelected);
-        urlTxt.setEnabled(!isPathSelected);
-        urlLbl.setEnabled(!isPathSelected);
+        
+        if (!isUsingGlobalAttchPrefs || canEditGlobalAttchPrefs)
+        {
+            pathBrwse.setEnabled(isPathSelected);
+            pathLbl.setEnabled(isPathSelected);
+            urlTxt.setEnabled(!isPathSelected);
+            urlLbl.setEnabled(!isPathSelected);
+            
+        } else if (isUsingGlobalAttchPrefs)
+        {
+            pathBrwse.setEnabled(false);
+            pathLbl.setEnabled(false);
+            urlTxt.setEnabled(false);
+            urlLbl.setEnabled(false);
+        } else
+        {
+            pathBrwse.setEnabled(isPathSelected);
+            pathLbl.setEnabled(isPathSelected);
+            urlTxt.setEnabled(!isPathSelected);
+            urlLbl.setEnabled(!isPathSelected);
+        }
         
         if (isPathSelected)
         {
