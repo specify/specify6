@@ -25,15 +25,19 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashSet;
 
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
@@ -216,9 +220,13 @@ public class AttachmentUtils
                 {
                     try
                     {
-                        Desktop.getDesktop().open(original);
+                    	openFile(original);
                         
                     } catch (java.io.IOException ex)
+                    {
+                        errMsg = ex.getMessage();
+                        ex.printStackTrace();
+                    } catch (Exception ex)
                     {
                         errMsg = ex.getMessage();
                         ex.printStackTrace();
@@ -265,6 +273,17 @@ public class AttachmentUtils
      */
     public static void openFile(final File f) throws Exception
     {
+        if (UIHelper.isWindows())
+        {
+        	HashSet<String> hashSet = new HashSet<String>();
+        	Collections.addAll(hashSet, new String[] {"wav", "mp3", "snd", "mid", "aif", "aiff", });
+        	String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
+        	if (hashSet.contains(ext))
+        	{
+        		Runtime.getRuntime().exec("rundll32 SHELL32.DLL,ShellExec_RunDLL " + f.getAbsolutePath());
+        		return;
+        	}
+        }
         Desktop.getDesktop().open(f);
     }
     
