@@ -169,7 +169,6 @@ public class TreeTaskMgr implements CommandListener
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(edtTreeAction);
                     roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeClass().getSimpleName()));
-                    treeNB.add(nb);
                 }
                 
                 if (edtTreeDefAction != null)
@@ -178,26 +177,23 @@ public class TreeTaskMgr implements CommandListener
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(edtTreeDefAction);
                     roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeDefClass().getSimpleName()));
-                    treeDefNB.add(nb);
                 }
                 
                 if (unlockTreeAction != null)
                 {
-                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(unlockNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(unlockTreeAction);
                     roc.setToolTip(getResourceString("TASK.UNLOCK." + treeTask.getTreeClass().getSimpleName()));
-                    unlockNB.add(nb);
                     rocs.add(roc);
                 }
                 
                 if (browseTreeAction != null)
                 {
-                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(browseNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(browseTreeAction);
-                    roc.setToolTip(getResourceString("TASK.UNLOCK." + treeTask.getTreeClass().getSimpleName()));
-                    browseNB.add(nb);
+                    roc.setToolTip(getResourceString("TASK.BROWSE." + treeTask.getTreeClass().getSimpleName()));
                     //rocs.add(roc);
                 }
             }

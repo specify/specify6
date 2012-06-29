@@ -242,16 +242,7 @@ public class NavBox extends JPanel implements NavBoxIFace
      */
     private void reAddItems()
     {
-        JPanel panelToLayout;
-        if (scrollable)
-        {
-            panelToLayout = itemsPanel;
-        }
-        else
-        {
-            panelToLayout = this;
-        }
-        
+        JPanel panelToLayout = scrollable ? itemsPanel : this;
         panelToLayout.removeAll();
         
         String rowDef = "";
