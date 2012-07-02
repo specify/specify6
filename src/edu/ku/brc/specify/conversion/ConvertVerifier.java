@@ -102,29 +102,35 @@ public class ConvertVerifier extends AppBase
     
     
     // These are the configuration Options for a View
-    public static final long NO_OPTIONS             =     0; // Indicates there are no options
-    public static final long DO_CO_PREPARATION      =     1; 
-    public static final long DO_CO_CE               =     2; 
-    public static final long DO_CO_LOCALITY         =     4; 
-    public static final long DO_CO_PREPARER         =     8; 
-    public static final long DO_CO_CATLOGER         =    16; 
-    public static final long DO_CO_DETERMINER       =    32; 
-    public static final long DO_CO_TAXON            =    64; 
-    public static final long DO_CO_GEO              =   128; 
-    public static final long DO_COLLECTORS          =   256; 
-    public static final long DO_COLLEVENTS          =   512; 
-    public static final long DO_TAXON_CIT           =  1024; 
-    public static final long DO_SHIPMENTS           =  2048; 
-    public static final long DO_OTHER_IDENT         =  4096; 
-    public static final long DO_CO_COLLECTORS       =  8192; 
-    public static final long DO_AGENTS              = 16384; 
-    public static final long DO_LOANS               = 32768; 
-    public static final long DO_CO_ALL              = 65535;
+    public static final int NO_OPTIONS             =     0; // Indicates there are no options
+    public static final int DO_CO_PREPARATION      =     1; 
+    public static final int DO_CO_CE               =     2; 
+    public static final int DO_CO_LOCALITY         =     4; 
+    public static final int DO_CO_PREPARER         =     8; 
+    public static final int DO_CO_CATLOGER         =    16; 
+    public static final int DO_CO_DETERMINER       =    32; 
+    public static final int DO_CO_TAXON            =    64; 
+    public static final int DO_CO_GEO              =   128; 
+    public static final int DO_COLLECTORS          =   256; 
+    public static final int DO_COLLEVENTS          =   512; 
+    public static final int DO_TAXON_CIT           =  1024; 
+    public static final int DO_SHIPMENTS           =  2048; 
+    public static final int DO_OTHER_IDENT         =  4096; 
+    public static final int DO_CO_COLLECTORS       =  8192; 
+    public static final int DO_AGENTS              = 16384; 
+    public static final int DO_LOANS               = 32768; 
+    public static final int DO_CO_ALL              = 65535;
     
-    private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
+    int[] errorCnts = new int[DO_AGENTS];
+    
+    private String[] labels = {"None", "CO CPreparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
                                "Collecting Events", "Taxon Citations", "Shipments", "Other Ident", "ColObj Collectors", 
                                "Agents", "Loans", "All"};
+    private int[]    codes  = {NO_OPTIONS, DO_CO_PREPARATION, DO_CO_CE, DO_CO_LOCALITY, DO_CO_PREPARER, 
+                               DO_CO_CATLOGER, DO_CO_DETERMINER, DO_CO_TAXON, DO_CO_GEO, DO_COLLECTORS, 
+                               DO_COLLEVENTS, DO_TAXON_CIT, DO_SHIPMENTS, DO_OTHER_IDENT, DO_CO_COLLECTORS, 
+                               DO_AGENTS, DO_LOANS, DO_CO_ALL};
     
     private ToggleButtonChooserPanel<String> chkPanel;
     
@@ -204,6 +210,10 @@ public class ConvertVerifier extends AppBase
         setAppIcon(null); //$NON-NLS-1$
         
         this.idMapperMgr = IdMapperMgr.getInstance();
+        for (int i=0;i<errorCnts.length;i++)
+        {
+            errorCnts[i] = 0;
+        }
     }
 
     /**
@@ -353,17 +363,15 @@ public class ConvertVerifier extends AppBase
             }
         });
         
-        HashMap<Long, TableWriter> tblWriterHash = new HashMap<Long, TableWriter>();
+        HashMap<Integer, TableWriter> tblWriterHash = new HashMap<Integer, TableWriter>();
         for (int i=1;i<labels.length-1;i++)
         {
-            long id = (long)Math.pow(2, i-1);
-            id = Math.max(id, 1);
             tblWriter = convLogger.getWriter(labels[i] + ".html", labels[i]);
             //printVerifyHeader(labels[i]);
             tblWriter.startTable();
             tblWriter.logHdr("ID", "Desc");
-            tblWriterHash.put(id, tblWriter);
-            System.out.println(id + " - " + labels[i]);
+            tblWriterHash.put(codes[i], tblWriter);
+            System.out.println(codes[i] + " - " + labels[i]);
         }
         
         boolean nullCEOk = false;
@@ -399,6 +407,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyDeterminer(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_DETERMINER]++;
                     }
                 } 
                 
@@ -408,15 +417,17 @@ public class ConvertVerifier extends AppBase
                     if (!verifyCataloger(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_CATLOGER]++;
                     }
                 }
                 
                 if (isCOOn(DO_CO_COLLECTORS))
                 {
-                    tblWriter = tblWriterHash.get(DO_CO_CATLOGER);
+                    tblWriter = tblWriterHash.get(DO_CO_COLLECTORS);
                     if (!verifyCollector(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_COLLECTORS]++;
                     }
                 }
                 
@@ -426,6 +437,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyGeography(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_GEO]++;
                     }
                 }
                 
@@ -435,6 +447,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyCollectingEvent(oldCatNum, newCatNum, nullCEOk))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_CE]++;
                     }
                 }
                 
@@ -444,6 +457,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyTaxon(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_TAXON]++;
                     }
                 }
                 
@@ -453,6 +467,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyCOToLocality(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_LOCALITY]++;
                     }
                 }
                 
@@ -462,6 +477,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyPreparation(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_PREPARATION]++;
                     }
                 }
                 
@@ -471,6 +487,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyPreparer(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_CO_PREPARER]++;
                     }
                 }
                 
@@ -480,6 +497,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyTaxonCitations(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_TAXON_CIT]++;
                     }
                 }
                 
@@ -489,6 +507,7 @@ public class ConvertVerifier extends AppBase
                     if (!verifyOtherIdentifier(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
+                        errorCnts[DO_OTHER_IDENT]++;
                     }
                 }
                 
@@ -511,6 +530,14 @@ public class ConvertVerifier extends AppBase
             
             rs.close();
             stmt.close();
+        }
+        
+        for (int i=0;i<errorCnts.length;i++)
+        {
+            if (errorCnts[i] > 0)
+            {
+                System.out.println(i+" -> "+errorCnts[i]);
+            }
         }
         
         progressFrame.setProcess(numColObjs);
@@ -847,8 +874,8 @@ public class ConvertVerifier extends AppBase
                 return false;
             }
             
-            String newGeoName = newDBRS.getString(2);
-            String[] names = new String[4];
+            String   newGeoName = newDBRS.getString(2);
+            String[] names      = new String[4];
             for (int i=0;i<names.length;i++)
             {
                 names[i] = oldDBRS.getString(i+2);
@@ -881,6 +908,7 @@ public class ConvertVerifier extends AppBase
                 }
                 String oldNewIdStr = oldCatNum + " / "  + newCatNum+" ";
                 log.error(oldNewIdStr + " - " + sb.toString());
+                
                 tblWriter.logErrors(oldNewIdStr, sb.toString());
                 
                 return false;
@@ -1525,7 +1553,7 @@ public class ConvertVerifier extends AppBase
                             {
                                 String msg = "New Value was null and shouldn't have been for Key Value New CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
                                 log.error(desc+ " - "+msg);
-                                tblWriter.logErrors(newCatNum, msg);
+                                if (tblWriter != null && newCatNum != null && msg != null) tblWriter.logErrors(newCatNum, msg);
                                 dbg = true;
                                 return StatusType.NEW_VAL_NULL;
                             }
@@ -2036,6 +2064,36 @@ public class ConvertVerifier extends AppBase
             tblWriter.logErrors(oldNewIdStr, msg);
         }
     }
+    
+    private Integer getIntFromObj(final Object num)
+    {
+        if (num instanceof Integer)
+        {
+            return (Integer)num;
+            
+        } else if (num instanceof Float)
+        {
+            return ((Float)num).intValue();
+            
+        } else if (num instanceof Double)
+        {
+            return ((Double)num).intValue();
+            
+        } else if (num instanceof Long)
+        {
+            return ((Long)num).intValue();
+            
+        } else if (num instanceof Short)
+        {
+            return ((Short)num).intValue();
+            
+        } else if (num instanceof Byte)
+        {
+            return ((Byte)num).intValue();
+            
+        }
+        return null;
+    }
 
     /**
      * @param oldNewIdStr
@@ -2043,8 +2101,8 @@ public class ConvertVerifier extends AppBase
      */
     private void compareNumber(final String oldNewIdStr, final String colName, final int startInxNewArg, final int startInxOldArg) throws SQLException 
     {
-        Integer newInt = (Integer)newDBRS.getObject(startInxNewArg);
-        Integer oldInt = (Integer)oldDBRS.getObject(startInxOldArg);
+        Integer newInt = getIntFromObj(newDBRS.getObject(startInxNewArg));
+        Integer oldInt = getIntFromObj(oldDBRS.getObject(startInxOldArg));
         
         if (oldInt == null && newInt == null) return;
         
@@ -2060,7 +2118,7 @@ public class ConvertVerifier extends AppBase
             log.error(oldNewIdStr + " " + msg);
             tblWriter.logErrors(oldNewIdStr, msg);
             
-        } else if (!oldInt.equals(newInt))
+        } else if (oldInt != null && !oldInt.equals(newInt))
         {
             String msg = "Old "+colName+"["+oldInt+"] is not equal New "+colName+"["+newInt+"]";
             log.error(oldNewIdStr + " " + msg);
@@ -2462,8 +2520,8 @@ public class ConvertVerifier extends AppBase
         log.info(newSQL);
         log.info(oldSQL);
         
-        int prevOldId = Integer.MAX_VALUE;
-        int prevNewId = Integer.MAX_VALUE;
+        //int prevOldId = Integer.MAX_VALUE;
+        //int prevNewId = Integer.MAX_VALUE;
     
         try
         {
@@ -2477,18 +2535,22 @@ public class ConvertVerifier extends AppBase
                 boolean hasOldRec = oldDBRS.next();
                 boolean hasNewRec = newDBRS.next();
                 
-                if (!hasOldRec && !hasNewRec)
+                if (!hasOldRec || !hasNewRec)
                 {
                     break;
                 }
                 
-                int    newId        = newDBRS.getInt(1);
-                System.out.println(newId);
-                int    oldId        = oldDBRS.getInt(1);
+                Integer    newId        = newDBRS.getInt(1);
+                Integer    oldId        = oldDBRS.getInt(1);
+                
+                if (newId == null || oldId == null)
+                {
+                    System.err.println("Id is NULL! newId "+newId+"  oldId "+oldId);
+                }
                 
                 String oldNewIdStr = oldId + " / "+newId;
                 
-                if (newId == Integer.MAX_VALUE)
+                /*if (newId == Integer.MAX_VALUE)
                 {
                     prevNewId = newId;
                 }
@@ -2496,7 +2558,7 @@ public class ConvertVerifier extends AppBase
                 if (oldId == Integer.MAX_VALUE)
                 {
                     prevOldId = oldId;
-                }
+                }*/
                 
                 compareStrings(oldNewIdStr, rmd.getColumnName(1), 1, 1);
                 compareStrings(oldNewIdStr, rmd.getColumnName(2), 2, 2);
