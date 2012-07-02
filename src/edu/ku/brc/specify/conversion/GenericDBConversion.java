@@ -5598,7 +5598,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 if (collectionIdList == null)
                 {
                     //Integer colObjId = rs.getInt(idIndex);
-                    throw new RuntimeException("There are no Collections mapped to CatSeriesId["+catSeriesId+"]");
+                    throw new RuntimeException("There are no Collections mapped to CatSeriesId["+catSeriesId+"] (converting Preps)");
                 }
                 
                 if (collectionIdList.size() == 0)
@@ -6221,7 +6221,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 if (collectionIdList == null)
                 {
                     //Integer colObjId = rs.getInt(idIndex);
-                    throw new RuntimeException("There are no Collections mapped to CatSeriesId["+catSeriesId+"]");
+                    throw new RuntimeException("There are no Collections mapped to CatSeriesId["+catSeriesId+"] (converting Determinations)");
                 }
                 
                 if (collectionIdList.size() > 1)
