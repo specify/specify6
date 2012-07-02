@@ -110,8 +110,8 @@ public class BuildFromGeonames
         this.frame          = frame;
         
         insertSQL = "INSERT INTO geography (Name, RankID, ParentID, IsAccepted, IsCurrent, GeographyTreeDefID, GeographyTreeDefItemID, " +
-                    "CreatedByAgentID, CentroidLat, CentroidLon, Abbrev, " +
-                    "TimestampCreated, TimestampModified, Version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    "CreatedByAgentID, CentroidLat, CentroidLon, Abbrev, GeographyCode, " +
+                    "TimestampCreated, TimestampModified, Version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     }
     
     /**
@@ -212,7 +212,7 @@ public class BuildFromGeonames
             //////////////////////
             // Continent
             //////////////////////
-            String sqlStr = "SELECT continentCodes.name, geoname.latitude, geoname.longitude, continentCodes.code FROM geoname Inner Join continentCodes ON geoname.name = continentCodes.name";
+            String sqlStr = "SELECT cc.name, g.latitude, g.longitude, cc.code FROM geoname g Inner Join continentCodes cc ON g.name = cc.name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -395,7 +395,7 @@ public class BuildFromGeonames
             //////////////////////
             // County
             //////////////////////
-            sqlStr = "SELECT asciiname, latitude, longitude, country, admin1 as StateCode FROM geoname WHERE fcode = 'ADM2' ORDER BY name";
+            sqlStr = "SELECT asciiname, latitude, longitude, country, admin1 as StateCode, admin2 FROM geoname WHERE fcode = 'ADM2' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -502,6 +502,7 @@ public class BuildFromGeonames
         
         Integer parentId = null;
         String  abbrev   = null;
+        String  isoCode  = null;
         
         if (rankId == 100) // Earth
         {
@@ -513,7 +514,8 @@ public class BuildFromGeonames
             String countryCode   = row.get(3).toString();
             String continentCode = countryToContHash.get(countryCode);
             
-            abbrev = countryCode;
+            abbrev  = countryCode;
+            isoCode = countryCode;
             
             if (continentCode != null)
             {
@@ -536,6 +538,7 @@ public class BuildFromGeonames
         {
             String countryCode = row.get(3).toString();
             abbrev             = row.get(4).toString();
+            isoCode            = abbrev;
             
             parentId = countryCodeToIdHash.get(countryCode);
             if (parentId == null)
@@ -548,7 +551,8 @@ public class BuildFromGeonames
             String stateCode   = row.get(4).toString();
             String countryCode = row.get(3).toString();
             
-            abbrev = row.get(3).toString();
+            abbrev  = row.get(3).toString();
+            isoCode = row.get(5).toString();
             
             Hashtable<String, Integer> stateToIdHash = countryStateCodeToIdHash.get(countryCode);
             if (stateToIdHash != null)
@@ -587,9 +591,21 @@ public class BuildFromGeonames
             pStmt.setBigDecimal(10, lon > -181 ? new BigDecimal(lon) : null); // Lon
             
             pStmt.setString(11, StringUtils.isNotEmpty(abbrev) ? abbrev : null); // Abbrev
-            pStmt.setTimestamp(12, now);
+            
+            if (StringUtils.isNotEmpty(isoCode))
+            {
+                if (isoCode.length() > 8)
+                {
+                    isoCode = isoCode.substring(0, 8);
+                }
+                pStmt.setString(12, isoCode);
+            } else
+            {
+                pStmt.setObject(12, null);
+            }
             pStmt.setTimestamp(13, now);
-            pStmt.setInt(14, 0);
+            pStmt.setTimestamp(14, now);
+            pStmt.setInt(15, 0);
             return true;
         }
         return false;
@@ -629,9 +645,10 @@ public class BuildFromGeonames
             pStmt.setBigDecimal(10, null); // Lon
             
             pStmt.setString(11, countryCode); // Abbrev
-            pStmt.setTimestamp(12, now);
+            pStmt.setString(12, countryCode); // Abbrev
             pStmt.setTimestamp(13, now);
-            pStmt.setInt(14, 0);
+            pStmt.setTimestamp(14, now);
+            pStmt.setInt(15, 0);
             
         } else
         {
