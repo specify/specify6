@@ -183,7 +183,7 @@ public class IdHashMapper implements IdMapperIFace
         int mappingCount = oldConn != null ? getMapCount(mapTableName) : 0;
         
         wasEmpty = mappingCount == 0;
-        log.info(numRecs+" Records in "+tableName);
+        log.info(numRecs+" Records in "+tableName+"  wasEmpty: "+wasEmpty);
         
         try
         {
