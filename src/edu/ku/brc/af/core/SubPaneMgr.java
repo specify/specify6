@@ -25,6 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.registerAction;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -1141,6 +1142,17 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         int index = getSelectedIndex();
         if (index > -1)
         {
+            if (UIHelper.isMacOS_10_7_X())
+            {
+                for (int i=0;i<getTabCount();i++)
+                {
+                    Component comp = getTabComponentAt(i);
+                    if (comp instanceof ExtendedTabPanel)
+                    {
+                        ((ExtendedTabPanel)comp).getTextLabel().setForeground(i == index ? Color.white : Color.BLACK);
+                    }
+                }
+            }
             SubPaneIFace subPane = getSubPaneAt(index);
             // might be null when it is the very first one
             if (subPane != null)

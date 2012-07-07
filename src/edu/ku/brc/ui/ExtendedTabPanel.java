@@ -20,7 +20,10 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -61,13 +64,34 @@ public class ExtendedTabPanel extends JPanel
         closeBtn.setOpaque(false);
         closeBtn.addMouseListener(new TabMouseAdapter(comp, closeBtn));
         
-        if (UIHelper.isMacOS())
-        {
-            setOpaque(false);
-        }
         add(textLabel = new JLabel(title, icon, SwingConstants.RIGHT), BorderLayout.WEST);
         add(new JLabel(" "), BorderLayout.CENTER);
         add(closeBtn, BorderLayout.EAST);
+        
+        if (UIHelper.isMacOS())
+        {
+            setOpaque(false);
+            
+            if (UIHelper.isMacOS_10_7_X())
+            {
+                textLabel.setForeground(Color.WHITE);
+            }
+        }
+        
+        addFocusListener(new FocusListener()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                textLabel.setForeground(Color.BLACK);
+            }
+            
+            @Override
+            public void focusGained(FocusEvent arg0)
+            {
+                textLabel.setForeground(Color.WHITE);
+            }
+        });
     }
     
     public JLabel getTextLabel()

@@ -202,6 +202,7 @@ public final class UIHelper
     protected static Calendar       calendar;
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
+    protected static boolean        isMacOS_10_7_X   = false;
     protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     
     protected static DoubleValidator     doubleValidator = new DoubleValidator();
@@ -256,6 +257,11 @@ public final class UIHelper
             {
                 isMacOS_10_5_X = true;
             }*/
+            String osVersion = System.getProperty("os.version");
+            if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.7.0") >= 0)
+            {
+                isMacOS_10_7_X = true;
+            }
 
         } else if (osStr.indexOf("Windows") != -1)
         {
@@ -309,6 +315,14 @@ public final class UIHelper
     public static boolean isMacOS_10_5_X()
     {
         return isMacOS_10_5_X;
+    }
+
+    /**
+     * @return the isMacOS_10_7_X
+     */
+    public static boolean isMacOS_10_7_X()
+    {
+        return isMacOS_10_7_X;
     }
 
     /**
