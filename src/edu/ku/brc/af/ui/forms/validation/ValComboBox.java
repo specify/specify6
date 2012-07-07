@@ -925,7 +925,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
         }
         
         int inx = comboBox.getSelectedIndex();
-        if (nullIndex != null && inx > -1 && inx == nullIndex)
+        if (inx == -1 || (nullIndex != null && inx > -1 && inx == nullIndex))
         {
             return null;
         }
