@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setFieldsToIgnoreWhenMappingNames;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer;
@@ -41,7 +39,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -52,7 +49,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -86,6 +82,8 @@ public class ConvertTaxonHelper
     protected HashMap<Integer, TaxonTreeDef> taxonTreeDefHash = new HashMap<Integer, TaxonTreeDef>(); // Key is old TaxonTreeTypeID
     protected HashMap<Integer, Taxon>        taxonTreeHash    = new HashMap<Integer, Taxon>();        // Key is old TaxonTreeTypeID
     
+    protected ArrayList<Pair<Integer, String>> missingParentList = new ArrayList<Pair<Integer, String>>();
+    protected HashSet<Integer>                 strandedFixedHash = new HashSet<Integer>();   
     ///////////////////////////////////////////////////////////////////
     // for TaxonName Row Processing
     ///////////////////////////////////////////////////////////////////
@@ -117,7 +115,6 @@ public class ConvertTaxonHelper
     protected PreparedStatement pStmtTx = null;
     protected Statement         stmtTx  = null;
     
-    protected int missingParentTaxonCount = 0;
     protected int lastEditedByInx;
     protected int modifiedByAgentInx;
     protected int rankIdOldDBInx;
@@ -508,6 +505,8 @@ public class ConvertTaxonHelper
         txUnitTypMapper = IdMapperMgr.getInstance().get("TaxonomicUnitType", "TaxonomicUnitTypeID");
         mappers         = new IdMapperIFace[] {txMapper, txMapper, txTypMapper, txMapper, txUnitTypMapper};
         
+        IdHashMapper.setTblWriter(tblWriter);
+        
         newToOldColMap.put("TaxonID",            "TaxonNameID");
         newToOldColMap.put("ParentID",           "ParentTaxonNameID");
         newToOldColMap.put("TaxonTreeDefID",     "TaxonomyTypeID");
@@ -591,11 +590,15 @@ public class ConvertTaxonHelper
             rs1.close();
             stmtTx.close();
             
-            missingParentTaxonCount = 0;
+            missingParentList.clear();
+            strandedFixedHash.clear();
+            
             lastEditedByInx         = oldFieldToColHash.get("LastEditedBy");
             modifiedByAgentInx      = fieldToColHash.get("ModifiedByAgentID");
             stmtTx                  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             pStmtTx                 = newDBConn.prepareStatement(pStr);
+            
+            mappers[1].setShowLogErrors(false);
             
             int               cnt  = 0;
             ResultSet         rs   = stmtTx.executeQuery(sql);
@@ -621,13 +624,33 @@ public class ConvertTaxonHelper
                 frame.setProcess(txCnt, txCnt);
             }
             
-            String msg = String.format("Stranded Taxon (no parent): %d", missingParentTaxonCount);
-            tblWriter.log(msg);
-            log.debug(msg);
-            
-            if (missingParentTaxonCount > 0)
+            if (missingParentList.size() > 0)
             {
                 fixStrandedTaxon(oldSB);
+                
+                tblWriter.setHasLines();
+                
+                tblWriter.startTable("Stranded Taxon (no parent): "+missingParentList.size());
+                tblWriter.logHdr("Full Name", "RankID", "Sp5 RecordID", "Was Re-parented", "Description");
+                for (Pair<Integer, String> p : missingParentList)
+                {
+                    tblWriter.append("<TR>");
+                    Object[] row = BasicSQLUtils.queryForRow(oldDBConn, "SELECT FullTaxonName, RankID, TaxonNameID FROM taxonname WHERE TaxonNameID = "+p.first);
+                    for (Object obj : row)
+                    {
+                        tblWriter.append("<TD>");
+                        tblWriter.append(obj != null ? obj.toString() : "null");
+                        tblWriter.append("</TD>");
+                    }
+                    tblWriter.append("<TD>");
+                    tblWriter.append(strandedFixedHash.contains(p.first) ? "Yes" : "No");
+                    tblWriter.append("</TD><TD>");
+                    tblWriter.append(p.second);
+                    tblWriter.append("</TD></TR>");
+                }
+                tblWriter.endTable();
+                tblWriter.append("<BR>");
+
                 
                 frame.setDesc("Renumbering the tree nodes, this may take a while...");
                 
@@ -669,7 +692,8 @@ public class ConvertTaxonHelper
                 }
                 frame.setDesc("Renumbering done.");
             }
-            missingParentTaxonCount = 0;
+            missingParentList.clear();
+            strandedFixedHash.clear();
             
         } catch (SQLException ex)
         {
@@ -683,6 +707,8 @@ public class ConvertTaxonHelper
                 pStmtTx.close();
             } catch (Exception ex) {}
         }
+        
+        IdHashMapper.setTblWriter(null);
     }
 
     /**
@@ -755,35 +781,44 @@ public class ConvertTaxonHelper
                 Integer oldID  = rs.getInt(colInx);
                 if (!rs.wasNull() || (isRoot && colInx == 2))
                 {
+                    //     1                  2                 3               4                   5                     6                   7          
+                    //"TaxonNameID", "ParentTaxonNameID", "TaxonomyTypeID", "AcceptedID", "TaxonomicUnitTypeID", "TaxonomicSerialNumber", "TaxonName"
                     boolean skipError = false; 
                     Integer newID = mappers[colInx-1].get(oldID);
                     if (newID == null)
                     {
-                        if (colInx == 3 || colInx == 5)
+                        if (colInx == 3 || colInx == 5)  // TaxonomyTypeID or TaxonomicUnitTypeID
                         {
                             if (!isRoot)
                             {
                                 skip = true;
                             }
                             
-                        } else if (colInx == 2 && (parentNodeId != null || isRoot))
+                        } else if (colInx == 2 && (parentNodeId != null || isRoot)) // ParentTaxonNameID and is root
                         {
                             // Note for RankID == 0 the parent would be null because it is the root
                             newID = parentNodeId;
                             
-                        } else
+                        } else // OK Parent is NULL
                         {
                             boolean wasInOldTaxonTable = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + oldID) > 0;
                             boolean isDetPointToTaxon  = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM determination WHERE TaxonNameID = " + oldID)  > 0;
+                            String msg = "&nbsp;";
                             if (isDetPointToTaxon)
                             {
-                                String msg = String.format("***** Couldn't get %s NewID [%d] from mapper for colInx[%d] In Old taxonname table: %s  WasParentID: %s  Det Using: %s", 
+                                msg = String.format("***** Couldn't get %s NewID [%d] from mapper for colInx[%d] In Old taxonname table: %s  WasParentID: %s  Det Using: %s", 
                                         (colInx == 2 ? "Parent" : ""), oldID, colInx, (wasInOldTaxonTable ? "YES" : "no"), (colInx == 2 ? "YES" : "no"), (isDetPointToTaxon ? "YES" : "no"));
                                 log.error(msg);
                                 tblWriter.logError(msg);
                             }
+                            
                             skipError = true;
-                            missingParentTaxonCount++;
+                            if (colInx == 2)
+                            {
+                                Integer oldRecId = rs.getInt(1);
+                                msg = String.format("Parent was NULL for OldID %d for Taxa %s", oldRecId, rs.getString(7));
+                                missingParentList.add(new Pair<Integer, String>(oldRecId, msg));
+                            }
                         }
                     }
                     
@@ -922,7 +957,6 @@ public class ConvertTaxonHelper
             log.debug(sqlStr);
             
             int rankIdInx       = oldFieldToColHash.get("RankID");
-            //int parentIdInx     = oldFieldToColHash.get("ParentTaxonNameID");
             int taxonomyTypeInx = oldFieldToColHash.get("TaxonomyTypeID");
             
             try
@@ -947,6 +981,10 @@ public class ConvertTaxonHelper
                                 Taxon taxonParent = colInfo.getPlaceHolderTreeHash().get(parentRankId);
                                 if (taxonParent != null)
                                 {
+                                    //     1                  2                 3               4                   5                     6                   7          
+                                    //"TaxonNameID", "ParentTaxonNameID", "TaxonomyTypeID", "AcceptedID", "TaxonomicUnitTypeID", "TaxonomicSerialNumber", "TaxonName"
+
+                                    strandedFixedHash.add(rs.getInt(1));
                                     processRow(rs, rsmd, taxonParent.getId());
 
                                 } else
@@ -1078,30 +1116,40 @@ public class ConvertTaxonHelper
             }
         }
         
-        tblWriter.append("<H3>Taxon with null RankIDs</H3>");
-        tblWriter.startTable();
-        String missingRankSQL = "SELECT * FROM taxonname WHERE RankID IS NULL";
-        Vector<Object[]> rows = query(oldDBConn, missingRankSQL);
-        for (Object[] row : rows)
+        if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE RankID IS NULL") > 0)
         {
-            tblWriter.append("<TR>");
-            for (Object obj : row)
+            tblWriter.append("<span style=\"font-size:16pt;font-weight:BOLD\">Taxon with null RankIDs</span><br>");
+            tblWriter.startTable();
+            String missingRankSQL = "SELECT * FROM taxonname WHERE RankID IS NULL";
+            Vector<Object[]> rows = query(oldDBConn, missingRankSQL);
+            for (Object[] row : rows)
             {
-                tblWriter.append("<TD>");
-                tblWriter.append(obj != null ? obj.toString() : "null");
-                tblWriter.append("</TD>");
+                tblWriter.append("<TR>");
+                for (Object obj : row)
+                {
+                    tblWriter.append("<TD>");
+                    tblWriter.append(obj != null ? obj.toString() : "null");
+                    tblWriter.append("</TD>");
+                }
+                tblWriter.append("</TR>");
             }
-            tblWriter.append("</TR>");
+            tblWriter.endTable();
+            tblWriter.append("<BR>");
         }
-        tblWriter.endTable();
-        tblWriter.append("<BR>");
         
-        if (txMapper instanceof IdHashMapper)
+        String pre = "SELECT tn.TaxonNameID, tn.TaxonName, tn.RankID";
+        String sql = " FROM taxonname AS tn Left Join taxonname_TaxonNameID AS tt ON tn.TaxonNameID = tt.OldID WHERE tt.NewID IS NULL AND tn.TaxonName IS NOT NULL AND tn.RankID > 0";
+        if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*)"+sql) > 0)
         {
-            for (Integer oldId : ((IdHashMapper)txMapper).getOldIdNullList())
+            tblWriter.append("<span style=\"font-size:16pt;font-weight:BOLD\">Taxon that didn't get converted</span><br>");
+            tblWriter.startTable();
+            tblWriter.logHdr("Sp5 Taxon Record ID", "Taxon Name", "RankID");
+            for (Object[] row : BasicSQLUtils.query(oldDBConn, pre + sql))
             {
-                tblWriter.println(ConvertVerifier.dumpSQL(oldDBConn, "SELECT * FROM taxonname WHERE ParentTaxonNameID = "+oldId));
+                tblWriter.logObjRow(row);
             }
+            tblWriter.endTable();
+            tblWriter.append("<BR>");
         }
 
         setFieldsToIgnoreWhenMappingNames(null);

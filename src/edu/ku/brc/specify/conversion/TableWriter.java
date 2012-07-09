@@ -197,6 +197,12 @@ public class TableWriter extends PrintWriter
         flush();
     }
     
+    public void startTable(final String caption)
+    {
+        println("<TABLE class=\"o\" cellspacing=\"0\"><caption>"+caption+"</caption>");
+        flush();
+    }
+    
     public void startTable()
     {
         println("<TABLE class=\"o\" cellspacing=\"0\">");
