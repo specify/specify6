@@ -1197,7 +1197,7 @@ public class ViewLoader
                 
                 try
                 {
-                    log.debug(className);
+                    //log.debug(className);
                     Class<?> classObj = Class.forName(className);
                     if (FormDataObjIFace.class.isAssignableFrom(classObj))
                     {
