@@ -68,6 +68,8 @@ public class BuildTags
     private final Logger log = Logger.getLogger(BuildTags.class);
     protected Session                      session = null;
     protected HibernateDataProviderSession hibSession = null;
+    
+    public static String databaseName = "monarchs_6";
 
     private Connection dbConn     = null;
     private Connection dbConn2    = null;
@@ -335,7 +337,7 @@ public class BuildTags
         int dupLocality = 0;
         int unknown     = 0;
         
-        boolean doAll = true;
+        boolean doAll = false;
 
         BasicSQLUtils.setDBConnection(dbConn);
         
@@ -367,12 +369,14 @@ public class BuildTags
         
         BasicSQLUtils.update(srcDBConn, "UPDATE tag SET `Date` = null WHERE Date = '0000-00-00'");
 
+        IdMapperMgr.setSkippingOldTableCheck(true);
+        
         boolean doAgents = false;
         if (doAgents || doAll)
         {
-            agentMapper = idMapperMgr.addHashMapper("agent_AgentID", null, false);
+            agentMapper = new IdTableMapper("agent", "AgentID", false, false);
             
-            String    sql  = "SELECT first, last, company, address1, address2, city, state, country, zip, phone, fax, enail, tnum FROM tagger";
+            String    sql  = "SELECT first, last, company, address1, address2, city, state, country, zip, phone, fax, enail, tnum FROM tagger ORDER BY tnum";
             Statement stmt = srcDBConn.createStatement();
             stmt.setFetchSize(Integer.MIN_VALUE);
             
@@ -477,7 +481,8 @@ public class BuildTags
         } else
         {
             //agentMapper = idMapperMgr.addTableMapper("agent", "AgentID", false);
-            agentMapper = new IdTableMapper("agent", "agentid", null, false, false);
+            IdHashMapper.setEnableDelete(false);
+            agentMapper = new IdTableMapper("agent", "AgentID", null, false, false);
         }
         
         System.out.println("Duplicated Agent: "+dupAgents);
@@ -752,7 +757,7 @@ public class BuildTags
         setUpSystemProperties();
         
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
-        setupDatabase(driverInfo, "localhost", "monarchs", "root", "root");
+        setupDatabase(driverInfo, "localhost", databaseName, "root", "root");
     }
     
     /**
@@ -810,7 +815,7 @@ public class BuildTags
         {
             BuildTags awg = new BuildTags();
             awg.setUp();
-            awg.createDBConnection("localhost", "3306", "monarchs", "root", "root");
+            awg.createDBConnection("localhost", "3306", BuildTags.databaseName, "root", "root");
             awg.createSrcDBConnection("localhost", "3306", "tags", "root", "root");
             awg.process();
             awg.cleanup();
