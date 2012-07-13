@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -68,6 +69,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -1229,6 +1231,35 @@ public class MySQLBackupService extends BackupServiceFactory
     }
     
     /**
+     * @param key
+     * @param diff
+     */
+    private void showEZDBBackupMessage(final String key, final int diff)
+    {
+        File   ezdbFile   = DBConnection.getEmbeddedDataDir();
+        String emdDirPath = ezdbFile != null ? ezdbFile.getAbsolutePath() : "N/A";
+        String line1      = key != null ? getLocalizedMessage(key, diff) : "";
+        String msg        = String.format(getResourceString("MySQLBackupService.EZDB_BACKUP"), line1, emdDirPath);
+        
+        int rv = UIRegistry.askYesNoLocalized("MySQLBackupService.DIRBTN", "CLOSE", msg, 
+                                                getResourceString("MySQLBackupService.BK_NOW_TITLE"));
+        if (rv == JOptionPane.OK_OPTION)
+        {
+            try
+            {
+                String urlString = UIRegistry.getResourceString("MySQLBackupService.EZDB_BACKUP_LINK");
+                AttachmentUtils.openURI(new URL(urlString).toURI());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                
+            } 
+        }
+
+    }
+    
+    /**
      * Checks to see if it is time to do a weekly or monthly backup. Weeks are rolling 7 days and months
      * are rolling 30 days.
      * @param doSendExit requests to send an application exit command
@@ -1240,20 +1271,8 @@ public class MySQLBackupService extends BackupServiceFactory
     {
         final long oneDayMilliSecs = 86400000;
         
-        // Commented lines are for testing
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
-        Calendar calNow = Calendar.getInstance();
-        
-        //Calendar testNow = Calendar.getInstance();
-        //testNow.add(Calendar.DAY_OF_MONTH, 40);
-        
-        Date dateNow = calNow.getTime();
-        //System.out.println(sdf.format(dateNow));
-        
-        //System.out.println(sdf.format(testNow.getTime().getTime()));
-        //calNow  = testNow;
-        //dateNow = calNow.getTime();
+        Calendar calNow  = Calendar.getInstance();
+        Date     dateNow = calNow.getTime();
         
         Long timeDays = AppPreferences.getLocalPrefs().getLong(WEEKLY_PREF, null);//$NON-NLS-1$
         if (timeDays == null)
@@ -1274,7 +1293,6 @@ public class MySQLBackupService extends BackupServiceFactory
         
         int diffMons = (int)((dateNow.getTime() - lastBackUpMons.getTime()) / oneDayMilliSecs);
         int diffDays = (int)((dateNow.getTime() - lastBackUpDays.getTime()) / oneDayMilliSecs);
-        //System.out.println("diffMons "+diffMons+"  diffDays "+diffDays);
                 
         int      diff     = 0;
         String   key      = null;
@@ -1294,16 +1312,24 @@ public class MySQLBackupService extends BackupServiceFactory
         
         int userChoice = JOptionPane.CANCEL_OPTION;
         
-        if (key != null && !doSkipAsk)
+        key = "MySQLBackupService.MONTHLY";
+        
+        if (key != null && (UIRegistry.isEmbedded() ||!doSkipAsk))
         {
+            if (key != null || UIRegistry.isEmbedded())
+            {
+                showEZDBBackupMessage(key, diff);
+                return false;
+            }
+            
             Object[] options = { getResourceString("MySQLBackupService.BACKUP_NOW"),  //$NON-NLS-1$
                                  getResourceString("MySQLBackupService.BK_SKIP")  //$NON-NLS-1$
-                  };
+                               };
             userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                         getLocalizedMessage(key, diff),  //$NON-NLS-1$
-                                                         getResourceString("MySQLBackupService.BK_NOW_TITLE"),  //$NON-NLS-1$
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                                            getLocalizedMessage(key, diff),  //$NON-NLS-1$
+                                            getResourceString("MySQLBackupService.BK_NOW_TITLE"),  //$NON-NLS-1$
+                                            JOptionPane.YES_NO_OPTION,
+                                            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         
         if (isMonthly)

@@ -314,6 +314,7 @@
 		<copy file="./demo_files/topbrc4.jpg" todir="${installer.dir}/demo_files" />
         <copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
         <copy file="./demo_files/chronostrat_tree.xls" todir="${installer.dir}/demo_files" />
+        <copy file="./demo_files/my.cnf" todir="${installer.dir}/demo_files" />
 		
 		<!-- Copy of Wizard Taxon Information
 		<copy todir="${installer.dir}/demo_files/taxonomy">
