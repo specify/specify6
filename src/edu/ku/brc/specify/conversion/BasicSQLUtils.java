@@ -384,13 +384,14 @@ public class BasicSQLUtils
      */
     public static Integer getInsertedId(final Statement stmt)
     {
+        Integer   count     = null;
         ResultSet resultSet = null;
         try
         {
             resultSet = stmt.getGeneratedKeys(); 
             if ( resultSet != null && resultSet.next() ) 
             { 
-                return resultSet.getInt(1); 
+                count = resultSet.getInt(1); 
             }
             
         } catch (SQLException ex)
@@ -404,7 +405,7 @@ public class BasicSQLUtils
             } catch (SQLException ex) {}
         }
         
-        return null;
+        return count;
     }
     
     /**
