@@ -33,7 +33,6 @@ import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.aspectj.ajdt.internal.compiler.ast.KnownFieldReference;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
