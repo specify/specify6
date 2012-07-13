@@ -369,7 +369,7 @@ public class BuildTags
         
         BasicSQLUtils.update(srcDBConn, "UPDATE tag SET `Date` = null WHERE Date = '0000-00-00'");
 
-        IdMapperMgr.setSkippingOldTableCheck(true);
+        //IdMapperMgr.setSkippingOldTableCheck(true);
         
         boolean doAgents = false;
         if (doAgents || doAll)
