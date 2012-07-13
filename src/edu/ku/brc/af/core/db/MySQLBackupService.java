@@ -1312,8 +1312,6 @@ public class MySQLBackupService extends BackupServiceFactory
         
         int userChoice = JOptionPane.CANCEL_OPTION;
         
-        key = "MySQLBackupService.MONTHLY";
-        
         if (key != null && (UIRegistry.isEmbedded() ||!doSkipAsk))
         {
             if (key != null || UIRegistry.isEmbedded())
