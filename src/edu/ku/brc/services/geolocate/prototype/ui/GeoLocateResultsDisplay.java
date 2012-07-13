@@ -897,7 +897,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 	                	Georef_Result res = tableModel.getResult(resultsTable.getSelectedRow());
 	                	double lat = res.getWGS84Coordinate().getLatitude();
 	                	double lon = res.getWGS84Coordinate().getLongitude();
-	                	geoMapper.snapMostAccuratePointTo(new GeoPosition(lat, lon));
+	                	geoMapper.snapMostAccuratePointTo(res.getReferenceLocation());
 	                	latText.setText(Double.toString(geoMapper.decimalRound(lat, 6)));
 						lonText.setText(Double.toString(geoMapper.decimalRound(lon, 6)));
 						geoMapper.hideEditUncertaintyHandle();
@@ -1112,7 +1112,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             //mapLabel.setText(getResourceString(L10N + "LOADING_MAP")); //$NON-NLS-1$
         	//Build locality way points to plot.
         	LocalityWaypoint[] lWps = new LocalityWaypoint[ georefResults.getNumResults()];
-        	int index = 0;
+        	Integer index = 0;
         	for (Georef_Result grr : georefResults.getResultSet())
             {
         		Locality loc = new Locality();
@@ -1126,7 +1126,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         		loc.setLongitude(grr.getWGS84Coordinate().getLongitude());
         		loc.setErrorPolygon(grr.getUncertaintyPolygon());
         		loc.setUncertaintyMeters(grr.getUncertaintyRadiusMeters());
+        		loc.setLocalityId(index.toString());
         		lWps[index] = new LocalityWaypoint(loc);
+        		grr.setReferenceLocation(index.toString());
         		index++;
             }
         	geoMapper.plotResultSet(lWps, 0);

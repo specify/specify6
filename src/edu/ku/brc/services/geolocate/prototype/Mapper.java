@@ -770,9 +770,97 @@ public class Mapper extends JXMapKit {
         });
 	}
 	
+	public void snapMostAccuratePointTo(String localityID)
+	{
+		GeoPosition newPos = null;
+		
+		//Find which result point was clicked and assign that as the new most accurate point.
+		Iterator<LocalityWaypoint> it = resultPoints.iterator();
+    	LocalityWaypoint lWp = null;
+        while (it.hasNext()) 
+        {
+        	lWp = it.next();
+        	if (lWp.getLocality().getLocalityId().equals(localityID))
+        	{
+        		newPos = lWp.getPosition();
+        		break;
+        	}
+        	else
+        		lWp = null;
+        } 
+        
+        if (lWp != null)
+        {
+    		clearUncertaintyOverlay();
+        	setCenterPosition(newPos);
+        	mostAccurateResultPt = (LocalityWaypoint) lWp.clone();
+        	
+        	//Draw error polygon at new location.
+            clearPolygonOverlay();
+            if (!mostAccurateResultPt.getLocality().getErrorPolygon().toLowerCase().equals("unavailable"))
+            {
+            	double lat = Double.NaN; 
+            	double lon = Double.NaN;
+            	String[] latLons =  mostAccurateResultPt.getLocality().getErrorPolygon().split(",");
+            	for (int i=0; i<latLons.length; i++)
+            	{
+            		if ((i%2) == 0) //Latitude.
+            			lat = Double.parseDouble(latLons[i]);
+            		else //Longitude.
+            		{
+            			lon = Double.parseDouble(latLons[i]);
+            			GeoPosition pos = new GeoPosition(lat, lon);
+            			if (errorRegion == null)
+            				errorRegion = new ArrayList<GeoPosition>();
+            			errorRegion.add(pos);
+            		}
+            	}
+            	drawPolygonOverlay(errorRegion);
+            }
+            
+            drawMostAccuratePt(new Waypoint(mostAccurateResultPt.getPosition()));
+    		
+    		//Draw uncertainty at new location.
+    		String uncertaintyStr = mostAccurateResultPt.getLocality().getUncertaintyMeters();
+    		uncertaintyRadius = (uncertaintyStr.toLowerCase().equals("unavailable"))? 0 : 
+    			Long.parseLong(uncertaintyStr);
+    		uncertaintyRegion = getUncertaintyRegion(mostAccurateResultPt.getPosition(), uncertaintyRadius);
+            drawUncertaintyOverlay(uncertaintyRegion);
+        }
+        
+        /*else
+        {
+        	mostAccurateResultPt.setPosition(newPos);
+        	mostAccurateResultPt.getLocality().setPrecision("");
+        	mostAccurateResultPt.getLocality().setScore(-1);
+        	mostAccurateResultPt.getLocality().setMultipleResults("");
+        	
+        	//Draw old error polygon for compatibility.
+            if (!mostAccurateResultPt.getLocality().getErrorPolygon().toLowerCase().equals("unavailable"))
+            {
+            	double lat = Double.NaN; 
+            	double lon = Double.NaN;
+            	String[] latLons =  mostAccurateResultPt.getLocality().getErrorPolygon().split(",");
+            	for (int i=0; i<latLons.length; i++)
+            	{
+            		if ((i%2) == 0) //Latitude.
+            			lat = Double.parseDouble(latLons[i]);
+            		else //Longitude.
+            		{
+            			lon = Double.parseDouble(latLons[i]);
+            			GeoPosition pos = new GeoPosition(lat, lon);
+            			if (errorRegion == null)
+            				errorRegion = new ArrayList<GeoPosition>();
+            			errorRegion.add(pos);
+            		}
+            	}
+            	drawPolygonOverlay(errorRegion);
+            }
+        }*/
+	}
+	
 	public void snapMostAccuratePointTo(GeoPosition newPos)
 	{
-		
 		clearUncertaintyOverlay();
 		clearPolygonOverlay();
 		setCenterPosition(newPos);
