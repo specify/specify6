@@ -830,6 +830,50 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
+     * @param resourceName
+     * @param includeUserType
+     * @return
+     */
+    public AppResourceIFace getDiskDisciplineResourceByName(final String resourceName, 
+                                                            final boolean includeUserType)
+    {
+        String userType = user.getUserType();
+        
+        AppResourceIFace diskResource = null;
+        
+        Discipline     discipline     = getClassObject(Discipline.class);
+        DisciplineType disciplineType = DisciplineType.getDiscipline(discipline.getType());
+        String         folderName     = disciplineType.getFolder();
+        File           dir            = XMLHelper.getConfigDir(folderName);
+        if (dir.exists())
+        {
+            if (includeUserType)
+            {
+                dir = XMLHelper.getConfigDir(dir.getAbsolutePath() + File.separator + userType);
+                if (!dir.exists())
+                {
+                    return null;
+                }
+            }
+            
+            AppResourceMgr appResMgr = new AppResourceMgr(dir);
+            
+            for (SpAppResource appRes : appResMgr.getSpAppResources())
+            {
+                String fileAppResName = appRes.getName();
+                if (fileAppResName.equals(resourceName))
+                {
+                    diskResource = appRes;
+                    break;
+                }
+            }
+        }
+        
+        return diskResource;
+    }
+    
+    
+    /**
      * @param resDirName
      * @param resourceName
      */

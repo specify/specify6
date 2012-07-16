@@ -31,6 +31,7 @@ import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -851,6 +852,54 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
+     * @param fromList
+     * @param intoList
+     */
+    private void merge(final Vector<DataEntryView> fromList, 
+                       final Vector<DataEntryView> intoList)
+    {
+        HashMap<String, DataEntryView> intoHash = new HashMap<String, DataEntryView>();
+        for (DataEntryView dev : intoList)
+        {
+            intoHash.put(dev.getView(), dev);
+        }
+        
+        for (DataEntryView dev : fromList)
+        {
+            if (intoHash.get(dev.getView()) == null)
+            {
+                intoList.add(dev);
+            }
+        }
+    }
+    
+    private void mergeNewEntries(final DataEntryXML existingEntries)
+    {
+        SpecifyAppContextMgr spAppMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        AppResourceIFace appRes = spAppMgr.getDiskDisciplineResourceByName("DataEntryTaskInit", false);
+        if (appRes != null)
+        {
+            try
+            {
+                XStream xstream = new XStream();
+                
+                config(xstream);
+                DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(appRes.getDataAsString());
+                merge(dataEntryXML.getStd(), existingEntries.getStd());
+                merge(dataEntryXML.getMisc(), existingEntries.getMisc());
+                
+            } catch (Exception ex)
+            {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
+                log.error(ex);
+                ex.printStackTrace();
+            }
+        }
+        
+    }
+    
+    /**
      * Use XStream to read in the DataEntryViews and add them to the UI.
      */
     protected void initializeViewsNavBoxFromXML()
@@ -888,6 +937,7 @@ public class DataEntryTask extends BaseTask
                 }
                 //log.debug(xmlStr);
                 DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(xmlStr); // Describes the definitions of the full text search);
+                mergeNewEntries(dataEntryXML);
                 
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
@@ -1458,6 +1508,7 @@ public class DataEntryTask extends BaseTask
      * Processes all Commands of type DATA_ENTRY.
      * @param cmdAction the command to be processed
      */
+    @SuppressWarnings("unchecked")
     protected void processDataEntryCommands(final CommandAction cmdAction)
     {
     
