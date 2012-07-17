@@ -730,7 +730,7 @@ public class ConvertVerifier extends AppBase
         oldSQL = "SELECT cc.CollectionObjectCatalogID, cc.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
                  "FROM determination LEFT JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
                  "LEFT JOIN collectionobjectcatalog cc ON cc.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
-                 "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                 "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         if (debug)
         {
 	         log.debug("New SQL: "+newSQL);
@@ -758,7 +758,7 @@ public class ConvertVerifier extends AppBase
         oldSQL = "SELECT cc.CatalogNumber, i.Identifier FROM collectionobject AS c " +
                     "Inner Join collectionobjectcatalog AS cc ON c.CollectionObjectID = cc.CollectionObjectCatalogID " +
                     "Inner Join otheridentifier AS i ON cc.CollectionObjectCatalogID = i.CollectionObjectID " +    
-                    "WHERE c.CollectionObjectTypeID <  21 AND cc.SubNumber > -1 AND cc.CatalogNumber = " + oldCatNum + " " + 
+                    "WHERE c.CollectionObjectTypeID < 21 AND cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND cc.CatalogNumber = " + oldCatNum + " " + 
                     "ORDER BY " +    " cc.CatalogNumber ASC, i.Identifier ASC";
         if (debug)
         {
@@ -843,7 +843,7 @@ public class ConvertVerifier extends AppBase
                     "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
                     "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
                     "INNER JOIN geography g ON l.GeographyID = g.GeographyID " +
-                    "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                    "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
         if (debug)
         {
@@ -974,7 +974,7 @@ public class ConvertVerifier extends AppBase
                         "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
                         "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
                         "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
-                        "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                        "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
 	         log.debug("New SQL: "+newSQL);
@@ -1004,7 +1004,8 @@ public class ConvertVerifier extends AppBase
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name  " +
-                  "FROM collectionobjectcatalog cc INNER JOIN agent a ON cc.CatalogerID = a.AgentID WHERE cc.SubNumber = 0 AND CatalogNumber = " + oldCatNum;
+                  "FROM collectionobjectcatalog cc INNER JOIN agent a ON cc.CatalogerID = a.AgentID " +
+                  "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber = 0 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
 	         log.debug("New SQL: "+newSQL);
@@ -1095,7 +1096,7 @@ public class ConvertVerifier extends AppBase
                   "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.DerivedFromID " +
                   "INNER JOIN preparation p ON co.CollectionObjectID = p.PhysicalObjectTypeID " +
                   "INNER JOIN agent a ON p.PreparedByID = a.AgentID " +
-                  "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                  "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          if (debug)
          {
@@ -1125,7 +1126,7 @@ public class ConvertVerifier extends AppBase
                     "INNER JOIN taxonname t ON d.TaxonNameID = t.TaxonNameID " +
                     "INNER JOIN taxoncitation tc ON t.TaxonNameID = tc.TaxonNameID " +
                     "INNER JOIN referencework rw ON tc.ReferenceWorkID = rw.ReferenceWorkID " +
-                    "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                    "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
 
         if (debug)
         {
@@ -1233,7 +1234,7 @@ public class ConvertVerifier extends AppBase
          oldSQL = "SELECT ce.CollectingEventID, ce.StartDate, ce.StationFieldNumber  " +
                         "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
                         "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
-                        "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+                        "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          StatusType status = compareRecords("CE To  Locality", oldCatNum, newCatNum, oldSQL, newSQL);
          dumpStatus(status);
@@ -1256,7 +1257,7 @@ public class ConvertVerifier extends AppBase
          
          oldSQL = "SELECT cc.CollectionObjectCatalogID, co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
                   "INNER JOIN collectionobjectcatalog cc ON co.DerivedFromID = cc.CollectionObjectCatalogID " + 
-                  "WHERE cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.TimestampCreated";
+                  "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.TimestampCreated";
          
          
          /*oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co WHERE CollectionObjectID IN " +

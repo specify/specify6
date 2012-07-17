@@ -6645,6 +6645,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         deleteAllRecordsFromTable(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
         
+        TreeSet<String> badSubNumberCatNumsSet = new TreeSet<String>();
+        
         TimeLogger timeLogger = new TimeLogger();
         
         try
@@ -6919,6 +6921,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         int subNumber = rs.getInt(oldNameIndex.get("SubNumber"));
                         if (subNumber < 0 || rs.wasNull())
                         {
+                            badSubNumberCatNumsSet.add(catalogNumber);
+                            
                             skipRecord = true;
                             //msg = "Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]";
                             //log.error(msg);
@@ -7167,6 +7171,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             rsLooping.close();
             newStmt.close();
             stmt.close();
+            
+            tblWriter.append("<br><br><b>Catalog Numbers rejected because the SubNumber was NULL or less than Zero</b><br>");
+            tblWriter.startTable();
+            tblWriter.logHdr("Catalog Number");
+            for (String catNum : badSubNumberCatNumsSet)
+            {
+                tblWriter.logNoBR(catNum);
+            }
+            tblWriter.endTable();
             
         } catch (SQLException e)
         {
