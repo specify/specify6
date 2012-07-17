@@ -693,7 +693,6 @@ public class MySQLBackupService extends BackupServiceFactory
                     }
                     
                     in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                    line = null;
                     StringBuilder sb = new StringBuilder();
                     while ((line = in.readLine()) != null)
                     {
@@ -859,7 +858,6 @@ public class MySQLBackupService extends BackupServiceFactory
             }
             
             in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            line = null;
             StringBuilder sb = new StringBuilder();
             while ((line = in.readLine()) != null)
             {
@@ -1256,7 +1254,38 @@ public class MySQLBackupService extends BackupServiceFactory
                 
             } 
         }
-
+    }
+    
+    /**
+     * @param prefName
+     * @return
+     */
+    private Long getLastBackupTime(final String prefName)
+    {
+        String dbName = DBConnection.getInstance().getDatabaseName();
+        String key    = dbName + "." + prefName;
+        
+        // Check New Location (database specific)
+        Long timeDaysOrMons = AppPreferences.getLocalPrefs().getLong(key, null);
+        if (timeDaysOrMons != null)
+        {
+            return timeDaysOrMons;
+        }
+        
+        // Check Old Location
+        return AppPreferences.getLocalPrefs().getLong(prefName, null);
+    }
+    
+    /**
+     * @param prefName
+     * @param bkTime
+     */
+    private void saveLastBackupTime(final String prefName, final long bkTime)
+    {
+        String dbName = DBConnection.getInstance().getDatabaseName();
+        String key    = dbName + "." + prefName;
+        
+        AppPreferences.getLocalPrefs().putLong(key, bkTime);
     }
     
     /**
@@ -1274,18 +1303,18 @@ public class MySQLBackupService extends BackupServiceFactory
         Calendar calNow  = Calendar.getInstance();
         Date     dateNow = calNow.getTime();
         
-        Long timeDays = AppPreferences.getLocalPrefs().getLong(WEEKLY_PREF, null);//$NON-NLS-1$
+        Long timeDays = getLastBackupTime(WEEKLY_PREF);
         if (timeDays == null)
         {
             timeDays = dateNow.getTime();
-            AppPreferences.getLocalPrefs().putLong(WEEKLY_PREF, dateNow.getTime());
+            saveLastBackupTime(WEEKLY_PREF, dateNow.getTime());
         }
         
-        Long timeMons = AppPreferences.getLocalPrefs().getLong(MONTHLY_PREF, null);//$NON-NLS-1$
+        Long timeMons = getLastBackupTime(MONTHLY_PREF);
         if (timeMons == null)
         {
             timeMons = dateNow.getTime();
-            AppPreferences.getLocalPrefs().putLong(MONTHLY_PREF, dateNow.getTime());
+            saveLastBackupTime(MONTHLY_PREF, dateNow.getTime());
         }
         
         Date lastBackUpDays = new Date(timeDays);
@@ -1314,35 +1343,36 @@ public class MySQLBackupService extends BackupServiceFactory
         
         if (key != null && (UIRegistry.isEmbedded() ||!doSkipAsk))
         {
-            if (key != null || UIRegistry.isEmbedded())
+            if (UIRegistry.isEmbedded())
             {
                 showEZDBBackupMessage(key, diff);
-                return false;
+                
+            } else
+            {
+                Object[] options = { getResourceString("MySQLBackupService.BACKUP_NOW"),  //$NON-NLS-1$
+                                     getResourceString("MySQLBackupService.BK_SKIP")  //$NON-NLS-1$
+                                   };
+                userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                getLocalizedMessage(key, diff),  //$NON-NLS-1$
+                                                getResourceString("MySQLBackupService.BK_NOW_TITLE"),  //$NON-NLS-1$
+                                                JOptionPane.YES_NO_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
             }
-            
-            Object[] options = { getResourceString("MySQLBackupService.BACKUP_NOW"),  //$NON-NLS-1$
-                                 getResourceString("MySQLBackupService.BK_SKIP")  //$NON-NLS-1$
-                               };
-            userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                            getLocalizedMessage(key, diff),  //$NON-NLS-1$
-                                            getResourceString("MySQLBackupService.BK_NOW_TITLE"),  //$NON-NLS-1$
-                                            JOptionPane.YES_NO_OPTION,
-                                            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         
         if (isMonthly)
         {
-            AppPreferences.getLocalPrefs().putLong(MONTHLY_PREF, dateNow.getTime());
+            saveLastBackupTime(MONTHLY_PREF, dateNow.getTime());
             if (diffDays > 7)
             {
-                AppPreferences.getLocalPrefs().putLong(WEEKLY_PREF, dateNow.getTime());
+                saveLastBackupTime(WEEKLY_PREF, dateNow.getTime());
             }
         } else
         {
-            AppPreferences.getLocalPrefs().putLong(WEEKLY_PREF, dateNow.getTime());
+            saveLastBackupTime(WEEKLY_PREF, dateNow.getTime());
         }
         
-        if (userChoice == JOptionPane.YES_OPTION || doSkipAsk)
+        if (!UIRegistry.isEmbedded() && (userChoice == JOptionPane.YES_OPTION || doSkipAsk))
         {
             return doBackUp(isMonthly, doSendExit, null);
         }
