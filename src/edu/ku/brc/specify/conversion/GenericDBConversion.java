@@ -3555,8 +3555,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param specifyUserId
      * @return true on success, false on failure
      */
-    public boolean convertCollectionObjectTypes(final int   specifyUserId,
-                                                final Agent userAgent)
+    public boolean convertCollectionObjectTypes(final int specifyUserId)
     {
         try
         {
@@ -3646,15 +3645,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName(), info.getColObjTypeName(), info.getCatSeriesName());
                 }
-                STD_DISCIPLINES dspType      = disciplineTypeObj.getDisciplineType();
-                boolean         isEmbeddedCE = dspType != STD_DISCIPLINES.fish;
-                
-                if (isEmbeddedCE && isSharingCollectingEvents)
-                {
-                    msg = "Will this Collection ("+info.getCatSeriesName()+") be using Embedded Collecting Events (sub-form)?\n(You are being asked because it is sharing\nCollecting Events which means it should use a QueryCombobox)";
-                    isEmbeddedCE  = UIHelper.promptForAction("Embed", "Shared", "Embedded Collecting Events", msg);
-                }
-
                 taxonomyTypeName = disciplineTypeObj.getName();
 
                 // Figure out what type of standard data type this is from the
@@ -3791,7 +3781,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     strBuf.append(getStrValue(prefix) + ",");
                     strBuf.append(getStrValue(remarks) + ",");
                     strBuf.append("'CatalogNumberNumeric',");
-                    strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
+                    strBuf.append((isSharingCollectingEvents ? 1 : 0)  + ",");
                     strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
                     strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
                     strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
@@ -5013,8 +5003,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 partialDateConv.nullAll();
                 
-                String lastEditedBy = rs.getString(lastEditedByInx);
-
                 str.setLength(0);
                 StringBuffer fieldList = new StringBuffer();
                 fieldList.append("( ");

@@ -1171,7 +1171,7 @@ public class SpecifyDBConverter extends AppBase
                 boolean convertDiscipline = doAll;
                 if (convertDiscipline)
                 {
-                    if (!conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent))
+                    if (!conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId()))
                     {
                         return;
                     }
