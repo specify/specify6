@@ -3781,7 +3781,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     strBuf.append(getStrValue(prefix) + ",");
                     strBuf.append(getStrValue(remarks) + ",");
                     strBuf.append("'CatalogNumberNumeric',");
-                    strBuf.append((isSharingCollectingEvents ? 1 : 0)  + ",");
+                    strBuf.append((isSharingCollectingEvents ? 0 : 1)  + ",");
                     strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
                     strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
                     strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
