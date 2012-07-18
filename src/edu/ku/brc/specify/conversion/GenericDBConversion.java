@@ -7165,7 +7165,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             tblWriter.logHdr("Catalog Number");
             for (String catNum : badSubNumberCatNumsSet)
             {
-                tblWriter.logNoBR(catNum);
+                tblWriter.log(catNum);
             }
             tblWriter.endTable();
             
