@@ -1510,7 +1510,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             PreparedStatement pStmt2 = conn.prepareStatement("UPDATE collector SET OrderNumber = ? WHERE CollectorID = ?");
             Statement         stmt   = conn.createStatement();
             ResultSet         rs     = stmt.executeQuery(sql);
-            int               cnt    = 0;
+            //int               cnt    = 0;
             while (rs.next())
             {
                 int order = 1;
@@ -1526,8 +1526,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                 }
                 rs2.close();
-                cnt++;
-                if (cnt % 10 == 0) log.debug("Fixing Collector Ordering: " + cnt);
+                //cnt++;
+                //if (cnt % 10 == 0) log.debug("Fixing Collector Ordering: " + cnt);
             }
             rs.close();
             stmt.close();
