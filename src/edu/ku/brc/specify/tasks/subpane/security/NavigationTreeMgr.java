@@ -24,6 +24,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.Frame;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +50,7 @@ import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.Encryption;
@@ -822,17 +826,40 @@ public class NavigationTreeMgr
         acMgr.setClassObject(Discipline.class, parentDiscipline);
         acMgr.setClassObject(Division.class, parentDiscipline.getDivision());
         
+        Collection collection = getParentOfClass(grpNode, Collection.class);
+        
+        // This section cleans up any problems from removing a using.
+        String sql = String.format("SELECT p.SpPrincipalID FROM collection c INNER JOIN spprincipal p ON c.UserGroupScopeId = p.userGroupScopeID " +
+                "INNER JOIN specifyuser_spprincipal ss ON p.SpPrincipalID = ss.SpPrincipalID " +
+                "INNER JOIN specifyuser su ON ss.SpecifyUserID = su.SpecifyUserID WHERE su.SpecifyUserID = %d AND c.CollectionID = %d", specifyUser.getId(), collection.getId());
+        Integer prinId = BasicSQLUtils.getCount(sql);
+        if (prinId != null)
+        {
+            sql = String.format("DELETE FROM specifyuser_spprincipal WHERE SpPrincipalID=%d AND SpecifyUserID=%d", prinId, specifyUser.getId());
+            int rv = BasicSQLUtils.update(sql);
+            log.debug("rv="+rv);
+            
+            sql = String.format("SELECT pp.SpPermissionID FROM spprincipal p INNER JOIN spprincipal_sppermission pp ON p.SpPrincipalID = pp.SpPrincipalID WHERE p.SpPrincipalID = %d", prinId);
+            for (Integer id : BasicSQLUtils.queryForInts(sql))
+            {
+                sql = String.format("DELETE FROM sppermission WHERE SpPermissionID=%d", id);
+                rv = BasicSQLUtils.update(sql);
+                log.debug("rv="+rv);
+            }
+            sql = String.format("DELETE FROM spprincipal WHERE SpPrincipalID=%d", prinId);
+        } // done with clean up
+        
         DataProviderSessionIFace session = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            
+         
             prinGroup = session.merge(prinGroup);
             
             wrp.setDataObj(prinGroup);
 
             // Add users to Group
-            specifyUser = (SpecifyUser)session.getData("FROM SpecifyUser WHERE id = "+specifyUser.getId());
+            specifyUser = session.get(SpecifyUser.class, specifyUser.getId());
                 
             prinGroup.getSpecifyUsers().add(specifyUser);
             specifyUser.getSpPrincipals().add(prinGroup);
@@ -853,8 +880,6 @@ public class NavigationTreeMgr
                 session.saveOrUpdate(userAgent);
             }
             
-            Collection collection = getParentOfClass(grpNode, Collection.class);
-
             // create a JAAS principal and associate it with the user
             SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser, collection);
             session.save(userPrincipal);
@@ -972,22 +997,45 @@ public class NavigationTreeMgr
         
         if (!doAddNewUser)
         {
-            String sql = String.format("SELECT DISTINCT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = '%s' AND FirstName = '%s' AND DivisionID = %d", lastName, firstName, parentDivision.getId());
-            Vector<Object[]> agentRow = BasicSQLUtils.query(sql);
-            if (agentRow != null && agentRow.size() > 0)
+            Scriptlet scriptlet = new Scriptlet();
+            ArrayList<AgentInfo> list = new ArrayList<AgentInfo>();
+
+            boolean isFirstNull = firstName == null;
+            String firstWhere = isFirstNull ? "FirstName IS NULL" : "FirstName = ?";
+            String sql = String.format("SELECT DISTINCT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = ? AND %s AND DivisionID = ?", firstWhere);
+            log.debug(sql);
+            PreparedStatement pStmt = null;
+            try
             {
-                Scriptlet scriptlet = new Scriptlet();
-                ArrayList<AgentInfo> list = new ArrayList<AgentInfo>();
-                for (Object[] agtRow : agentRow)
+                pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
+                int i = 1;
+                pStmt.setString(i++, lastName);
+                if (!isFirstNull)
                 {
-                    Integer  aId    = (Integer)agtRow[0];
-                    String   lName  = (String)agtRow[1];
-                    String   fName  = (String)agtRow[2]; 
-                    String   mid    = (String)agtRow[3];
+                    pStmt.setString(i++, firstName);
+                }
+                pStmt.setInt(i++, parentDivision.getId());
+                ResultSet rs = pStmt.executeQuery();
+                while (rs.next())
+                {
+                    Integer  aId    = rs.getInt(1);
+                    String   lName  = rs.getString(2);
+                    String   fName  = rs.getString(3);
+                    String   mid    = rs.getString(4);
                     AgentInfo pair = new AgentInfo(aId, scriptlet.buildNameString(fName, lName, mid));
                     list.add(pair);
                 }
-                
+                rs.close();
+                pStmt.close();
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, ex);
+            }
+            
+            if (!list.isEmpty());
+            {
                 ChooseFromListDlg<AgentInfo> agtDlg = new ChooseFromListDlg<AgentInfo>(
                         (Frame)UIRegistry.getMostRecentWindow(), getResourceString("NVTM.CHSE_AGT"), list);
                 UIHelper.centerAndShow(agtDlg);
