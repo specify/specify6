@@ -1088,7 +1088,7 @@ public class BuildFromGeonames
             nameStr = nameStr.substring(0, 64);
         }
         
-        if (StringUtils.isNotEmpty(isoCode) && isoCode.length() > 24)
+        if (StringUtils.isNotEmpty(isoCode) && isoCode.length() > 24) // Schema 1.8
         {
             isoCode = isoCode.substring(0, 24);
         }
@@ -1114,6 +1114,10 @@ public class BuildFromGeonames
             
             if (StringUtils.isNotEmpty(isoCode))
             {
+                if (isoCode.length() > 8) // For schema 1.7
+                {
+                    isoCode = isoCode.substring(0, 8);
+                }
                 pStmt.setString(12, isoCode);
             } else
             {
