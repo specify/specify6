@@ -133,7 +133,7 @@ public class LocalizerSearchHelper
             e.printStackTrace();
         }
         searcher = new IndexSearcher(reader);
-        analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        analyzer = new StandardAnalyzer(Version.LUCENE_36);
     }
     
     /**
@@ -206,7 +206,7 @@ public class LocalizerSearchHelper
                 }
                 
                 String field = "contents";
-                QueryParser parser = new QueryParser(Version.LUCENE_30, field, analyzer);
+                QueryParser parser = new QueryParser(Version.LUCENE_36, field, analyzer);
                    
                 for (String term : terms)
                 {
@@ -347,7 +347,7 @@ public class LocalizerSearchHelper
         Date start = new Date();
         try
         {
-            IndexWriter writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.LIMITED);
+            IndexWriter writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), new StandardAnalyzer(Version.LUCENE_36), true, IndexWriter.MaxFieldLength.LIMITED);
             log.debug("Indexing to directory '" + FILE_INDEX_DIR + "'...");
             indexDocs(writer, srcCodeFilesDir);
             log.debug("Optimizing...");
@@ -371,7 +371,7 @@ public class LocalizerSearchHelper
     {
         if (analyzer == null)
         {
-            analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            analyzer = new StandardAnalyzer(Version.LUCENE_36);
         }
         
         memIndexer = new RAMDirectory();
@@ -413,7 +413,7 @@ public class LocalizerSearchHelper
     {
         try
         {
-            QueryParser parser = new QueryParser(Version.LUCENE_30, fieldName, analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_36, fieldName, analyzer);
             Query       query  = parser.parse(searchText.toLowerCase());
             //System.out.println("Searching for: " + query.toString(fieldName));
             
@@ -452,7 +452,7 @@ public class LocalizerSearchHelper
             //boolean paging      = true;
             //int     hitsPerPage = 10;
 
-            QueryParser parser = new QueryParser(Version.LUCENE_30, field, analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_36, field, analyzer);
             if (StringUtils.isEmpty(searchText))
                 return;
 

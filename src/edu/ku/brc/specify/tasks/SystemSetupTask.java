@@ -1504,7 +1504,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     private void doGeographyISOCodes()
     {
-        /*final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();;
+        final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();;
         try
         {
             Timestamp now = new Timestamp(System .currentTimeMillis());
@@ -1532,7 +1532,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         } catch (Exception ex)
         {
             log.error(ex);
-        }*/
+        }
     }
     
     

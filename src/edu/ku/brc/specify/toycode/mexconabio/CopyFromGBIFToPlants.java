@@ -628,7 +628,7 @@ public class CopyFromGBIFToPlants
         IndexWriter writer = null;
         try
         {
-            analyzer = new StandardAnalyzer(Version.LUCENE_20);
+            analyzer = new StandardAnalyzer(Version.LUCENE_36);
             
             FileUtils.deleteDirectory(INDEX_DIR);
             
@@ -779,12 +779,12 @@ public class CopyFromGBIFToPlants
             
             if (analyzer == null)
             {
-                analyzer = new StandardAnalyzer(Version.LUCENE_30);
+                analyzer = new StandardAnalyzer(Version.LUCENE_36);
             }
             reader = IndexReader.open(FSDirectory.open(INDEX_DIR), true);
             
             long startTime = System.currentTimeMillis();
-            Query q = new QueryParser(Version.LUCENE_30, term, analyzer).parse(querystr);
+            Query q = new QueryParser(Version.LUCENE_36, term, analyzer).parse(querystr);
             int hitsPerPage = 10;
             searcher = new IndexSearcher(reader);
             TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);

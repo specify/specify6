@@ -147,6 +147,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>giftattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="giftattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="giftattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="giftattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="giftattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>sppermission</string>
     <hashtable>
       <entry>
@@ -1113,6 +1134,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>referenceworkattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="referenceworkattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="referenceworkattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="referenceworkattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="referenceworkattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>agent</string>
     <hashtable>
       <entry>
@@ -1617,6 +1659,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>borrowattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="borrowattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="borrowattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="borrowattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="borrowattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>referencework</string>
     <hashtable>
       <entry>
@@ -2012,6 +2075,27 @@
       <entry>
         <string>FullAccess</string>
         <tp name="deaccession" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>dnasequenceattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="dnasequenceattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="dnasequenceattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="dnasequenceattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="dnasequenceattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>

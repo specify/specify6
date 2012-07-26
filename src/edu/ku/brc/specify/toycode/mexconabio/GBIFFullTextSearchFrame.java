@@ -118,7 +118,7 @@ public class GBIFFullTextSearchFrame extends CustomDialog
     {
         super((Frame)null, "GBIF Search", true, CustomDialog.CANCEL_BTN, null);
         
-        analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        analyzer = new StandardAnalyzer(Version.LUCENE_36);
         try
         {
             reader   = IndexReader.open(FSDirectory.open(INDEX_DIR), true);
@@ -228,7 +228,7 @@ public class GBIFFullTextSearchFrame extends CustomDialog
         Query q;
         try
         {
-            q = new QueryParser(Version.LUCENE_30, "contents", analyzer).parse(serachStr);
+            q = new QueryParser(Version.LUCENE_36, "contents", analyzer).parse(serachStr);
             int hitsPerPage = 1000;
             
             TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);

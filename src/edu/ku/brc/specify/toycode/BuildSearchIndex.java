@@ -251,7 +251,7 @@ public class BuildSearchIndex
             for (int i=0;i<analyzers.length;i++)
             {
                 files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
+                analyzers[i] = new StandardAnalyzer(Version.LUCENE_36);
                 FileUtils.deleteDirectory(files[i]);
             }
 
@@ -857,7 +857,7 @@ public class BuildSearchIndex
             for (int i=0;i<analyzers.length;i++)
             {
                 files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
+                analyzers[i] = new StandardAnalyzer(Version.LUCENE_36);
                 readers[i]   = IndexReader.open(FSDirectory.open(files[i]), true);
             }
             
@@ -866,7 +866,7 @@ public class BuildSearchIndex
             for (int inx=0;inx<analyzers.length;inx++)
             {
                 long  startTime   = System.currentTimeMillis();
-                Query query       = new QueryParser(Version.LUCENE_30, term, analyzers[inx]).parse(querystr);
+                Query query       = new QueryParser(Version.LUCENE_36, term, analyzers[inx]).parse(querystr);
                 int   hitsPerPage = 10;
                 searcher = new IndexSearcher(readers[inx]);
                 
@@ -996,7 +996,7 @@ public class BuildSearchIndex
             for (int i=0;i<analyzers.length;i++)
             {
                 files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
+                analyzers[i] = new StandardAnalyzer(Version.LUCENE_36);
                 readers[i]   = IndexReader.open(FSDirectory.open(files[i]), true);
             }
             
@@ -1005,7 +1005,7 @@ public class BuildSearchIndex
             for (int inx=0;inx<analyzers.length;inx++)
             {
                 long  startTime   = System.currentTimeMillis();
-                QueryParser queryParser = new QueryParser(Version.LUCENE_30, term, analyzers[inx]);
+                QueryParser queryParser = new QueryParser(Version.LUCENE_36, term, analyzers[inx]);
                 Query query = queryParser.parse(querystr);
                 
                 int   hitsPerPage = 10;
