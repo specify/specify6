@@ -126,6 +126,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
+import edu.ku.brc.specify.dbsupport.GeographyMerging;
 import edu.ku.brc.specify.tasks.services.PickListUtils;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
@@ -321,13 +322,21 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             if (AppPreferences.getLocalPrefs().getBoolean("GEO_CLEANUP", false))
             {
                 NavBox cleanUpToolsNavBox = new NavBox(getResourceString("SYSSTP_DATA_CLEANUP_TOOLS"));
-                cleanUpToolsNavBox.add(NavBox.createBtnWithTT("SYSSTP_GEO_CLEANUP_TOOLS", SYSTEMSETUPTASK, "SYSSTP_GEO_CLEANUP_TOOLS_TT", IconManager.STD_ICON_SIZE, new ActionListener() {
+                navBoxes.add(cleanUpToolsNavBox);
+                
+                cleanUpToolsNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_GEO_CLEANUP_TOOLS"), SYSTEMSETUPTASK, getResourceString("SYSSTP_GEO_CLEANUP_TOOLS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
                         doGeographyISOCodes();
                     }
                 })); 
-                navBoxes.add(cleanUpToolsNavBox);
+                
+                cleanUpToolsNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_GEO_MERGE_TOOLS"), SYSTEMSETUPTASK, getResourceString("SYSSTP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doGeographyMerge();
+                    }
+                })); 
             }
 
         }
@@ -1535,6 +1544,14 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         }
     }
     
+    /**
+     * 
+     */
+    private void doGeographyMerge()
+    {
+        GeographyMerging geoMerging = new GeographyMerging();
+        geoMerging.start();
+    }
     
     /**
      * @param cls
