@@ -182,7 +182,7 @@ public class GeoRefConverter implements StringConverter
         // if we weren't able to find a matching format, throw an exception
         if (degreesPlusMinus == null)
         {
-            throw new Exception("Cannot find matching input format");
+            throw new Exception("Cannot find matching format for input: " + original);
         }
         
         if (destFormat.equals(GeoRefFormat.DMS_PLUS_MINUS.name()) || destFormat.equals(GeoRefFormat.DMS_NSEW.name()))
