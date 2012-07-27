@@ -19,27 +19,42 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import static edu.ku.brc.ui.UIRegistry.displayErrorDlg;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
+import edu.ku.brc.specify.treeutils.TreeMergeException;
+import edu.ku.brc.specify.treeutils.TreeMerger;
+import edu.ku.brc.specify.treeutils.TreeMergerUIIFace;
+import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -55,14 +70,23 @@ import edu.ku.brc.util.Pair;
  */
 public class GeographyMerging
 {
+    protected static final Logger log = Logger.getLogger(GeographyMerging.class);
+    
     private Vector<Pair<String, Integer>> items = new Vector<Pair<String, Integer>>();
-    private int               currIndex = 0;
+    private int               currRankId = 200;
+    private int               currIndex  = 0;
     private CustomDialog      dlg;
     private GeoItemsModel     model;
     private JTable            table;
     private PreparedStatement pStmt;
-    private Vector<Object[]>  modelList = new Vector<Object[]>();
-    private String[]          levelNames = new String[3];
+    private Vector<ModelItem>  modelList = new Vector<ModelItem>();
+    private String[]          levelNames = new String[4];
+    private String[]          headers    = new String[5];
+    private GeographyTreeDef  geoTreeDef;
+    
+    private Integer           primaryId  = null;
+    private int               mergeIndex = 0;
+
     
     /**
      * 
@@ -76,13 +100,32 @@ public class GeographyMerging
     /**
      * 
      */
-    public void start()
+    public boolean start()
     {
-        for (int i=1;i<4;i++)
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session    = DataProviderFactory.getInstance().createSession();
+            GeographyTreeDef gtd = AppContextMgr.getInstance().getClassObject(Discipline.class).getGeographyTreeDef();
+            geoTreeDef = session.get(GeographyTreeDef.class, gtd.getId());
+            geoTreeDef.forceLoad();
+            
+        } catch (Exception ex)
+        {
+            return false;
+            
+        } finally
+        {
+            if (session != null) session.close();
+        }
+        
+        headers[0] = "Primary";
+        headers[1] = "Include";
+        for (int i=0;i<4;i++)
         {
             String sql = "SELECT Name FROM geographytreedefitem WHERE GeographyTreeDefID = GEOTREEDEFID AND RankID = "+(i*100);
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            levelNames[i-1] = BasicSQLUtils.querySingleObj(sql);
+            levelNames[3-i] = BasicSQLUtils.querySingleObj(sql);
         }
         
         String sql = "SELECT g1.Name, g2.Name, g3.Name, g1.GeographyID FROM geography g1 LEFT OUTER JOIN geography g2 ON g1.ParentID = g2.GeographyID " +
@@ -96,112 +139,310 @@ public class GeographyMerging
             e.printStackTrace();
         }
         
-        findDuplicates();
+        if (!findDuplicates())
+        {
+            return false;
+        }
         
         model = new GeoItemsModel();
         table = new JTable(model);
+        UIHelper.makeTableHeadersCentered(table, true);
+        
         JScrollPane sp = UIHelper.createScrollPane(table, true);
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
         pb.add(sp, cc.xy(1,1));
+        pb.setDefaultDialogBorder();
         dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("GEO_MERGING"), true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel())
         {
             @Override
             protected void cancelButtonPressed() // Skip Button
             {
-                next();
+                doNextGeographyInList();
             }
 
             @Override
             protected void applyButtonPressed() // Accept Button
             {
                 doAccept();
-                next();
             }
         };
         dlg.setCancelLabel(getResourceString("GeoLocateResultsChooser.SKIP")); //$NON-NLS-1$
         dlg.setApplyLabel(getResourceString("GeoLocateResultsChooser.ACCEPT")); //$NON-NLS-1$
         dlg.setOkLabel(getResourceString("GeoLocateResultsChooser.QUIT")); //$NON-NLS-1$
+        
+        dlg.createUI();
+        
+        // Start the process.
+        currIndex = -1;
+        doNextGeographyInList();
 
         UIHelper.centerAndShow(dlg);
+        
+        return true;
     }
     
-    /**
-     * 
-     */
-    private void next()
-    {
-        currIndex++;
-        fillModel();
-    }
-
     /**
      * 
      */
     private void doAccept()
     {
+        primaryId = null;
+        for (ModelItem mi: modelList)
+        {
+            if (mi.isPrimary)
+            {
+                primaryId = mi.geoId;
+            }
+        }
         
+        if (primaryId != null)
+        {
+            mergeIndex = 0;
+            mergeNext();
+        }
+    }
+
+    /**
+     * 
+     */
+    private void mergeNext()
+    {
+        final Integer fromId = modelList.get(mergeIndex).geoId;
+        log.debug(String.format("Merging From %d to %d  Index: %d  Size: %d", fromId, primaryId, mergeIndex, modelList.size()));
+        mergeIndex++;
+        
+        if (fromId.equals(primaryId))
+        {
+            if (mergeIndex < modelList.size())
+            {
+                mergeNext();
+                return;
+                
+            } else if (currIndex < items.size())
+            {
+                doNextGeographyInList();
+                return;
+            }
+        }
+        
+        final TreeMerger<Geography,GeographyTreeDef,GeographyTreeDefItem> merger = new TreeMerger<Geography,GeographyTreeDef,GeographyTreeDefItem>(geoTreeDef);
+        new javax.swing.SwingWorker<Object, Object>() 
+        {
+            Boolean   result = false;
+            Exception killer = null;
+
+            @Override
+            protected Object doInBackground() throws Exception
+            {
+                try
+                {
+                    Integer parentId = BasicSQLUtils.getCount("SELECT ParentID FROM geography WHERE GeographyID = "+primaryId);
+                    merger.mergeTrees(fromId, parentId);
+                    result = true;
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    result = false;
+                    killer = ex;
+                }
+                return result;
+            }
+
+            @Override
+            protected void done() 
+            {
+                if (result)
+                {
+                    try
+                    {
+                        geoTreeDef.updateAllNodes(null, true, true);
+                    } catch (Exception ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
+                    }
+                }
+                
+                if (!result && killer != null)
+                {
+                    if (killer instanceof TreeMergeException)
+                    {
+                        displayErrorDlg(killer.getMessage());
+                    }
+                    else 
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture( TreeTableViewer.class, killer);
+                    }
+                } else
+                {
+                    if (mergeIndex < modelList.size())
+                    {
+                        SwingUtilities.invokeLater(new Runnable() 
+                        {
+                            @Override
+                            public void run()
+                            {
+                                mergeNext();
+                            }
+                        });
+                    } else
+                    {
+                        doNextGeographyInList();
+                    }
+                }
+            }
+            
+        }.execute();
     }
     
     /**
      * 
      */
-    private void findDuplicates()
+    private void doStates()
     {
-        String sql = "SELECT NM, CNT FROM (select NM, COUNT(NM) CNT from (SELECT CONCAT(Name, '|', RankID) NM FROM geography " +
-        		     "WHERE RankID < 400) T0 GROUP BY NM) T1 WHERE CNT > 1 ORDER BY CNT DESC";
+        if (currRankId == 200)
+        {
+            currRankId = 300;
+
+            new javax.swing.SwingWorker<Boolean, Boolean>() 
+            {
+                boolean hasDups = false;
+    
+                @Override
+                protected Boolean doInBackground() throws Exception
+                {
+                    return findDuplicates();
+                }
+                
+                @Override
+                protected void done()
+                {
+                    if (hasDups)
+                    {
+                        currIndex = -1;
+                        doNextGeographyInList();
+                    }
+                }
+            }.execute();
+        } else
+        {
+            dlg.setVisible(false);
+        }
+    }
+    
+    /**
+     * 
+     */
+    private boolean findDuplicates()
+    {
+        String sql = String.format("SELECT NM, CNT FROM (select NM, COUNT(NM) CNT from (SELECT CONCAT(Name, '|', RankID) NM FROM geography " +
+        		                   "WHERE RankID = %d) T0 GROUP BY NM) T1 WHERE CNT > 1 ORDER BY CNT DESC", currRankId);
         for (Object[] row : BasicSQLUtils.query(sql))
         {
             String[] parts = StringUtils.split((String)row[0], "|");
             Pair<String, Integer> item = new Pair<String, Integer>(parts[0], Integer.parseInt(parts[1]));
             items.add(item);
         }
+        
+        if (items.size() == 0)
+        {
+           // Display Message here
+           return false; 
+        }
+        return true;
     }
     
     /**
      * 
      */
-    private void fillModel()
+    private void doNextGeographyInList()
     {
-        modelList.clear();
-        
-        try
+        dlg.getApplyBtn().setEnabled(false);
+        currIndex++;
+        if (currIndex < items.size())
         {
-            Pair<String, Integer> item = items.get(currIndex);
-            pStmt.setString(1,item.first);
-            pStmt.setInt(2, item.second);
-            ResultSet rs = pStmt.executeQuery();
-            while (rs.next())
-            {
-                Object[] row = new Object[5];
-                row[0] = Boolean.FALSE;
-                for (int i=1;i<5;i++)
-                {
-                    row[i] = i < 4 ? rs.getString(i) : rs.getInt(i);
-                }
-                modelList.add(row);
-            }
-            rs.close();
+            modelList.clear();
             
-        } catch (SQLException ex)
+            try
+            {
+                Pair<String, Integer> item = items.get(currIndex);
+                int rankId = item.second;
+                int inx = rankId == 200 ? 1 : 0;
+                for (int i=2;i<5;i++)
+                {
+                    headers[i] = levelNames[inx++];
+                }
+                pStmt.setString(1,item.first);
+                pStmt.setInt(2, rankId);
+                ResultSet rs = pStmt.executeQuery();
+                while (rs.next())
+                {
+                    ModelItem modelItem = new ModelItem(false, true, rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4));
+                    modelList.add(modelItem);
+                }
+                rs.close();
+                
+                model.fireTableStructureChanged();
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }            
+        } else
         {
-            ex.printStackTrace();
+            doStates();
         }
     }
     
+    //---------------------------------------------------------------------
+    class ModelItem
+    {
+        boolean isPrimary;
+        boolean isIncluded;
+        String geoName1;
+        String geoName2;
+        String geoName3;
+        int    geoId;
+        
+        /**
+         * @param isPrimary
+         * @param isIncluded
+         * @param geoName1
+         * @param geoName2
+         * @param geoName3
+         * @param geoId
+         */
+        public ModelItem(boolean isPrimary, boolean isIncluded, String geoName1, String geoName2,
+                String geoName3, int geoId)
+        {
+            super();
+            this.isPrimary = isPrimary;
+            this.isIncluded = isIncluded;
+            this.geoName1 = geoName1;
+            this.geoName2 = geoName2;
+            this.geoName3 = geoName3;
+            this.geoId = geoId;
+        }
+    }
+
+  
+    //---------------------------------------------------------------------
     class GeoItemsModel extends DefaultTableModel
     {
         @Override
         public int getColumnCount()
         {
-            return levelNames.length;
+            return headers.length;
         }
 
         @Override
         public String getColumnName(int inx)
         {
-            return levelNames[inx];
+            return headers[inx];
         }
 
         @Override
@@ -213,36 +454,85 @@ public class GeographyMerging
         @Override
         public Object getValueAt(int row, int col)
         {
-            Object[] rowData = modelList.get(row);
-            return rowData[col];
+            ModelItem item = modelList.get(row);
+            switch (col)
+            {
+                case 0: return item.isPrimary;
+                case 1: return item.isIncluded;
+                case 2: return item.geoName1;
+                case 3: return item.geoName2;
+                case 4: return item.geoName3;
+                case 5: return item.geoId;
+            }
+            return null;
         }
 
         @Override
         public boolean isCellEditable(int row, int column)
         {
-            return column == 0;
+            return column < 2;
         }
 
         @Override
         public Class<?> getColumnClass(int col)
         {
-            return col == 0 ? Boolean.class : String.class;
+            return col < 2 ? Boolean.class : String.class;
         }
 
         @Override
         public void setValueAt(Object value, int row, int column)
         {
-            boolean hasValue = false;
-            if (value != null && (Boolean)value)
+            int primaryIndex = -1;
+            if (column == 0)
+            {
+                if (value != null && (Boolean)value)
+                {
+                    for (int i=0;i<modelList.size();i++)
+                    {
+                        modelList.get(i).isPrimary = false;
+                    }
+                    modelList.get(row).isPrimary = true;
+                    primaryIndex = row;
+                    
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            fireTableDataChanged();
+                        }
+                    });
+                }
+            } else
             {
                 for (int i=0;i<modelList.size();i++)
                 {
-                    modelList.get(i)[0] = Boolean.FALSE;
+                    if (modelList.get(i).isPrimary)
+                    {
+                        primaryIndex = i;
+                        break;
+                    }
                 }
-                modelList.get(row)[0] = Boolean.TRUE;
-                hasValue = true;
             }
-            dlg.getApplyBtn().setEnabled(hasValue);
+            
+            if (column == 1)
+            {
+                modelList.get(row).isIncluded = (Boolean)value;
+            }
+            
+            boolean hasInclude = false;
+            for (int i=0;i<modelList.size();i++)
+            {
+                if (i == primaryIndex)
+                {
+                    modelList.get(i).isIncluded = true;
+                } else if (modelList.get(i).isIncluded)
+                {
+                    hasInclude = true;
+                }
+            }
+            dlg.getApplyBtn().setEnabled(hasInclude && primaryIndex > -1);
         }
     }
+    
 }

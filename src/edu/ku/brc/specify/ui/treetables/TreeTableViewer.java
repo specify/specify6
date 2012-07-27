@@ -20,7 +20,17 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.FRAME;
+import static edu.ku.brc.ui.UIRegistry.clearGlassPaneMsg;
+import static edu.ku.brc.ui.UIRegistry.displayErrorDlg;
+import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
+import static edu.ku.brc.ui.UIRegistry.displayStatusBarText;
+import static edu.ku.brc.ui.UIRegistry.forceTopFrameRepaint;
+import static edu.ku.brc.ui.UIRegistry.get;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.writeGlassPaneMsg;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -253,7 +263,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		this.treeDef = treeDef;
 		sortedTreeDefItems = buildSortedTreeDefItems();
 		allButtons = new Vector<AbstractButton>();
-		statusBar = UIRegistry.getStatusBar();
+		statusBar = getStatusBar();
 		popupMenu = new TreeNodePopupMenu(this, isEditMode, canAdd, canDelete);
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
@@ -287,7 +297,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				{
 					isInitialized = true;
 					
-					UIRegistry.writeGlassPaneMsg(getResourceString(isEditMode ? "TTV_OpeningTreeEditor" : "TTV_OpeningTreeViewer"), 24);
+					writeGlassPaneMsg(getResourceString(isEditMode ? "TTV_OpeningTreeEditor" : "TTV_OpeningTreeViewer"), 24);
 		            SwingWorker bgThread = new SwingWorker()
 		            {
 		                @SuppressWarnings("synthetic-access")
@@ -302,7 +312,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		                @Override
 		                public void finished()
 		                {
-		                    UIRegistry.clearGlassPaneMsg();
+		                    clearGlassPaneMsg();
 		                }
 		            };
 		            
@@ -372,7 +382,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
         	//No root for the tree. This should never happen for properly initialized trees - i.e. trees created
         	//by Specify code.
-        	UIRegistry.displayErrorDlg(UIRegistry.getResourceString("TreeTableViewer.NoRootNodeForTree"));
+        	displayErrorDlg(getResourceString("TreeTableViewer.NoRootNodeForTree"));
         }
     }
     
@@ -599,7 +609,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             deleteNode0 = new JButton(icon_delNode);
             deleteNode0.setSize(20,20);
-            deleteNode0.setToolTipText(UIRegistry.getResourceString("TTV_DELETE_TOOLTIP")); 
+            deleteNode0.setToolTipText(getResourceString("TTV_DELETE_TOOLTIP")); 
             deleteNode0.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -913,7 +923,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         }
         
-        UIRegistry.forceTopFrameRepaint();
+        forceTopFrameRepaint();
         
         MouseMotionAdapter tooltipRendererListener = new MouseMotionAdapter()
         {
@@ -993,7 +1003,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         syncViews1.setEnabled(mode == DUAL_VIEW_MODE);
 		
         updateAllUI();
-    	UIRegistry.forceTopFrameRepaint();
+    	forceTopFrameRepaint();
 	}
     
 	/**
@@ -1063,7 +1073,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			log.info("Cannot add child node below this rank");
             String msg = getResourceString("TTV_NO_KIDS_ADD_BELOW");
             statusBar.setErrorMessage(msg);
-            UIRegistry.displayErrorDlg(msg);
+            displayErrorDlg(msg);
 			return;
 		}
 
@@ -1131,7 +1141,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         	showChildren(acceptedNodeParent);
         }
         
-        UIRegistry.displayStatusBarText(statusMsg);
+        displayStatusBarText(statusMsg);
         updateAllUI();
         
 	}
@@ -1169,7 +1179,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         if (userChoice == JOptionPane.OK_OPTION)
         {
-            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
+            writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
             
             
             TreeNode parent = listModel.getNodeById(node.getParentId());
@@ -1194,7 +1204,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             showChildren(parent);
             
             // remove the glasspane overlay text
-            UIRegistry.clearGlassPaneMsg();
+            clearGlassPaneMsg();
         }
 	}
     
@@ -1437,7 +1447,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
     
-	protected void scrollToShowNode(final TreeNode node, final int listIndex)
+	protected void scrollToShowNode(@SuppressWarnings("unused") final TreeNode node, @SuppressWarnings("unused") final int listIndex)
 	{
 //	    int nodeIndex = listModel.indexOf(node);
 //	    if (nodeIndex != -1)
@@ -1813,7 +1823,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    // TODO: double check these choices
 	    // gather all the info needed to create a form in a dialog
 	    String      viewName      = TreeFactory.getAppropriateViewName(node);
-		Frame       parentFrame   = (Frame)UIRegistry.get(UIRegistry.FRAME);
+		Frame       parentFrame   = (Frame)get(FRAME);
 		String      displayName   = "NODE_EDIT_DISPLAY_NAME";
         boolean     isEdit        = isEditMode;
         String      title         = isNewObject ? getResourceString("TTV_NEW_NODE_TITLE") :
@@ -1908,7 +1918,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		    {
 		        fvo.traverseToGetDataFromForms();
 		    }
-            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
+            writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
             
             SwingWorker bgThread = new SwingWorker()
             {
@@ -2008,18 +2018,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         if (!afterSaveSuccess)
                         {
                             String msg = getResourceString("TTV_METADATA_PROBLEM");
-                            UIRegistry.displayErrorDlg(msg);
+                            displayErrorDlg(msg);
                             statusBar.setErrorMessage(msg);
                         }
                     }
                     else
                     {
                         String msg = getResourceString("TTV_TRANS_PROBLEM");
-                        UIRegistry.displayErrorDlg(msg);
+                        displayErrorDlg(msg);
                         statusBar.setErrorMessage(msg);
                     }
                     
-                    UIRegistry.clearGlassPaneMsg();
+                    clearGlassPaneMsg();
                  
                     updateAllUI();
                 }
@@ -2287,8 +2297,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //            
 //            options[numOptions++] = getResourceString("CANCEL");
 //            
-//            String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
-//            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+//            String msg = getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
+//            int userChoice = JOptionPane.showOptionDialog(getTopWindow(), 
 //                                                         msg, 
 //                                                         getResourceString("TreeTableView.NODE_ACTION_TITLE"), 
 //                                                         dlgOption,
@@ -2348,7 +2358,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //            	pb.add(tac, cc.xy(3, 3));
 //            }
 //            pb.setDefaultDialogBorder();
-//            DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
+//            DropDialog dlg = new DropDialog((Frame)getTopWindow(), 
 //                                                getResourceString("TreeTableView.NODE_ACTION_TITLE"),
 //                                                isMoveOK, isSynonymizeOK, isMergeOK,
 //                                                pb.getPanel());
@@ -2380,7 +2390,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      * @return
      */
     private NODE_DROPTYPE askForDropAction(final T        draggedRecord,
-                                           final T        droppedOnRecord,
+                                           @SuppressWarnings("unused") final T droppedOnRecord,
                                            final TreeNode droppedOnNode, 
                                            final TreeNode draggedNode)
     {
@@ -2430,7 +2440,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //            	pb.add(tac, cc.xy(3, 3));
 //            }
 //            pb.setDefaultDialogBorder();
-            DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
+            DropDialog dlg = new DropDialog((Frame)getTopWindow(), 
                                                 isMoveOK, isSynonymizeOK, isMergeOK, draggedRecord.getName(),
                                                 droppedOnNode.getName(), getMoveTextKey(), getSynonymizeTextKey(), getMergeTextKey());
             dlg.createUI();
@@ -2523,7 +2533,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 							public void run()
 							{
 								//un-lock specify
-								UIRegistry.clearGlassPaneMsg();
+								clearGlassPaneMsg();
 								//probably should display message to user and close treeviewer as in done()
 								//but no idea when or if this will happen so ... later if necessary.
 							}
@@ -2550,26 +2560,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 							public void run()
 							{
 				            	UIRegistry
-								.writeGlassPaneMsg(
-										String
-												.format(
-														UIRegistry
-																.getResourceString("TreeTableViewer.Synonymizing"),
-														draggedRecord.getName()),
-										24);
+								.writeGlassPaneMsg(String.format(
+														getResourceString("TreeTableViewer.Synonymizing"),
+														draggedRecord.getName()),24);
 							}
-							
 						});
-						final TreeNode draggedNodeParent = listModel
-								.getNodeById(draggedNode.getParentId());
-						final TreeNode droppedNodeParent = listModel
-								.getNodeById(droppedOnNode.getParentId());
+						
+						final TreeNode draggedNodeParent = listModel.getNodeById(draggedNode.getParentId());
+						final TreeNode droppedNodeParent = listModel.getNodeById(droppedOnNode.getParentId());
 						
 						SwingUtilities.invokeLater(new Runnable() {
-
-							/* (non-Javadoc)
-							 * @see java.lang.Runnable#run()
-							 */
 							@Override
 							public void run()
 							{
@@ -2579,15 +2579,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 									hideChildren(droppedNodeParent);
 								}
 							}
-							
 						});
 
 						String statusMsg = dataService.synonymize(
 								draggedRecord, droppedRecord);
 						if (statusMsg == null)
 						{
-							draggedNode.setAcceptedParentId(droppedOnNode
-									.getId());
+							draggedNode.setAcceptedParentId(droppedOnNode.getId());
 
 							// fix all synonyms of the new synonym to point at
 							// the
@@ -2602,20 +2600,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 											.getNodeById(synNodeID);
 									if (synNode != null)
 									{
-										synNode
-												.setAcceptedParentId(droppedOnNode
-														.getId());
-										synNode
-												.setAcceptedParentFullName(droppedOnNode
-														.getFullName());
-										droppedOnNode
-												.getSynonymIdsAndNames()
-												.add(
-														new Pair<Integer, String>(
-																synNode.getId(),
-																synNode
-																		.getFullName()));
-
+										synNode.setAcceptedParentId(droppedOnNode.getId());
+										synNode.setAcceptedParentFullName(droppedOnNode.getFullName());
+										droppedOnNode.getSynonymIdsAndNames().add(
+														new Pair<Integer, String>(synNode.getId(),synNode.getFullName()));
 									} else
 									{
 										// I don't think this is actually an
@@ -2624,33 +2612,26 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 										// String msg =
 										// "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
 										// log.error(msg);
-										// UIRegistry.displayErrorDlg(msg);
+										// displayErrorDlg(msg);
 									}
 								} else
 								{
 									String msg = "** - JDS - ** idAndName.first was null and shouldn't have been.";
 									log.error(msg);
-									UIRegistry.displayErrorDlg(msg);
+									displayErrorDlg(msg);
 								}
 							}
 
-							SwingUtilities.invokeLater(new Runnable(){
-
-								/* (non-Javadoc)
-								 * @see java.lang.Runnable#run()
-								 */
+							SwingUtilities.invokeLater(new Runnable()
+							{
 								@Override
 								public void run()
 								{
 									draggedNode.getSynonymIdsAndNames().clear();
 
-									draggedNode.setAcceptedParentFullName(droppedOnNode
-											.getFullName());
-									droppedOnNode.getSynonymIdsAndNames()
-											.add(
-													new Pair<Integer, String>(
-															draggedNode.getId(),
-															draggedNode.getFullName()));
+									draggedNode.setAcceptedParentFullName(droppedOnNode.getFullName());
+									droppedOnNode.getSynonymIdsAndNames().add(
+													new Pair<Integer, String>(draggedNode.getId(), draggedNode.getFullName()));
 
 									Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
 									bogusity.add(draggedNodeParent);
@@ -2672,17 +2653,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 								}
 							});
 						}
-						SwingUtilities.invokeLater(new Runnable(){
-
-							/* (non-Javadoc)
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable()
+						{
 							@Override
 							public void run()
 							{
 								updateAllUI();
 							}
-							
 						});
 						if (statusMsg != null)
 						{
@@ -2690,6 +2667,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 						}
 						result = statusMsg == null;
 						return result;
+						
 					} catch (Exception ex)
 					{
 						log.error(ex);
@@ -2702,54 +2680,40 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 					// not actually changed.
 				}
 
-				/* (non-Javadoc)
-				 * @see javax.swing.SwingWorker#done()
-				 */
 				@Override
 				protected void done()
 				{
 					super.done();
 					log.info("Synonymization finished. Clearing glasspane.");
-					SwingUtilities.invokeLater(new Runnable() {
-
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
+					SwingUtilities.invokeLater(new Runnable() 
+					{
 						@Override
 						public void run()
 						{
-							UIRegistry.clearGlassPaneMsg();
+							clearGlassPaneMsg();
 						}
-						
 					});
 					if (!result)
 					{
-						SwingUtilities.invokeLater(new Runnable() {
-
-							/* (non-Javadoc)
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable() 
+						{
 							@Override
 							public void run()
 							{
-								UIRegistry.displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", 
-										UIRegistry.getResourceString("TreeTableViewer.SynOp"));
+								displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", 
+										getResourceString("TreeTableViewer.SynOp"));
 								SubPaneMgr.getInstance().removePane(TreeTableViewer.this, false);
 							}
-							
 						});
 					}
 				}
-				
-				
-            	
             }.execute();
 			return true;
 		}
 		else if (nodeDropAction == NODE_DROPTYPE.MOVE_NODE)
 		{
-			final T child = draggedRecord;
-			final T newParent = droppedRecord;
+			final T        child         = draggedRecord;
+			final T        newParent     = droppedRecord;
             final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
             final TreeNode newParentNode = droppedOnNode;
 
@@ -2762,14 +2726,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				return false;
 			}
 			
-
-			new javax.swing.SwingWorker<Boolean, Object>() {
-
+			new javax.swing.SwingWorker<Boolean, Object>() 
+			{
 				Boolean result = false;
 				
-				/* (non-Javadoc)
-				 * @see java.lang.Object#finalize()
-				 */
 				@Override
 				protected void finalize() throws Throwable
 				{
@@ -2777,51 +2737,31 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 					if (!isDone())
 					{
 						log.error("A background thread for a tree move action did not terminate correctly.");
-						SwingUtilities.invokeLater(new Runnable() {
-
-							/*
-							 * (non-Javadoc)
-							 * 
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable() 
+						{
 							@Override
 							public void run()
 							{
 								//un-lock specify
-								UIRegistry.clearGlassPaneMsg();
+								clearGlassPaneMsg();
 								//probably should display message to user and close treeviewer as in done()
 								//but no idea when or if this will happen so ... later if necessary.
 							}
-
 						});
 					}
 				}
-				/* (non-Javadoc)
-				 * @see javax.swing.SwingWorker#doInBackground()
-				 */
+				
 				@Override
 				public Boolean doInBackground()
 				{
 		            try
 					{
-						SwingUtilities.invokeLater(new Runnable() {
-
-							/*
-							 * (non-Javadoc)
-							 * 
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable() 
+						{
 							@Override
 							public void run()
 							{
-								UIRegistry
-										.writeGlassPaneMsg(
-												String
-														.format(
-																UIRegistry
-																		.getResourceString("TreeTableViewer.Moving"),
-																child.getName()),
-												24);
+								writeGlassPaneMsg(String.format(getResourceString("TreeTableViewer.Moving"),child.getName()), 24);
 								hideChildren(oldParentNode);
 								hideChildren(droppedOnNode);
 							}
@@ -2835,29 +2775,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 						// no longer be in the model at all.
 
 						// do the DB work to reparent the nodes
-						int moveResult = dataService.moveTreeNode(child,
-								newParent);
+						int moveResult = dataService.moveTreeNode(child, newParent);
 						if (moveResult == ERROR)
 						{
 							String msg = getResourceString("TTV_UNKOWN_MOVE_ERROR");
 							statusBar.setErrorMessage(msg);
-							UIRegistry.displayErrorDlg(msg);
+							displayErrorDlg(msg);
 						}
 
 						// reshow the nodes' children, if the nodes are still in
 						// the tree (see comment above in this method)
-						final TreeNode oldParentNodeReshow = listModel
-								.getNodeById(oldParentNode.getId());
-						final TreeNode newParentNodeReshow = listModel
-								.getNodeById(newParentNode.getId());
+						final TreeNode oldParentNodeReshow = listModel.getNodeById(oldParentNode.getId());
+						final TreeNode newParentNodeReshow = listModel.getNodeById(newParentNode.getId());
 
-						SwingUtilities.invokeLater(new Runnable() {
-
-							/*
-							 * (non-Javadoc)
-							 * 
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable() 
+						{
 							@Override
 							public void run()
 							{
@@ -2874,223 +2806,208 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 						});
 						result = moveResult != ERROR;
 						return result;
+						
 					} catch (Exception ex)
 					{
 						log.error(ex);
 						return false;
 					}
 				}
-				/* (non-Javadoc)
-				 * @see javax.swing.SwingWorker#done()
-				 */
+				
 				@Override
 				protected void done()
 				{
 					super.done();
 					log.info("Moved Node. Clearing glasspane.");
 					SwingUtilities.invokeLater(new Runnable() {
-
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
 						@Override
 						public void run()
 						{
-							UIRegistry.clearGlassPaneMsg();
+							clearGlassPaneMsg();
 						}
-						
 					});
+					 
 					if (!result)
 					{
-						SwingUtilities.invokeLater(new Runnable() {
-
-							/*
-							 * (non-Javadoc)
-							 * 
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable() 
+						{
 							@Override
 							public void run()
 							{
-								UIRegistry
-										.displayErrorDlgLocalized(
-												"TreeTableViewer.TreeOperationFailed",
-												UIRegistry
-														.getResourceString("TreeTableViewer.MoveOp"));
-								SubPaneMgr.getInstance().removePane(
-										TreeTableViewer.this, false);
+								displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", getResourceString("TreeTableViewer.MoveOp"));
+								SubPaneMgr.getInstance().removePane(TreeTableViewer.this, false);
 							}
-
 						});
 					}
 				}
 				
 			}.execute();
+			
 			return true;
 			
 		}
 		else if (nodeDropAction == NODE_DROPTYPE.MERGE_NODE)
 		{
-            UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
-			final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
+	        UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
+	        final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
 	        final TreeNode newParentNode = droppedOnNode;
 	        log.info("merging " + oldParentNode.fullName + "(" + oldParentNode.id + ") into "
-	        		+ newParentNode.fullName + "(" + newParentNode.id + ")");
-            UsageTracker.incrUsageCount("TreeTableViewer.MergeNodes");
+	                + newParentNode.fullName + "(" + newParentNode.id + ")");
+	        UsageTracker.incrUsageCount("TreeTableViewer.MergeNodes");
 	        
-	        SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					hideChildren(oldParentNode);
-					hideChildren(newParentNode);
-				}
-	        	
+	        SwingUtilities.invokeLater(new Runnable() 
+	        {
+	            @Override
+	            public void run() {
+	                hideChildren(oldParentNode);
+	                hideChildren(newParentNode);
+	            }
 	        });
-			final TreeMergerUIIFace<T,D,I> face = new TreeMergerUIIFace<T,D,I>() {
-				/* (non-Javadoc)
-				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#choose(java.util.List, boolean)
-				 */
-				@Override
-				public Integer choose(List<Integer> choices, boolean mustChoose)
-				{
-					System.out.print((mustChoose ? "You MUST choose: " : "Choose: "));
-					for (Integer id : choices)
-					{
-						System.out.print(id + "  ");
-					}
-					System.out.println();
-					return null;
-				}
 
-				/* (non-Javadoc)
-				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#merged(java.lang.Integer, java.lang.Integer)
-				 */
-				@Override
-				public void merged(Integer toMergeId, Integer mergeIntoId)
-				{
-					System.out.println("merged " + toMergeId + " into " + mergeIntoId);
-					
-				}
-
-				/* (non-Javadoc)
-				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#merging(java.lang.Integer, java.lang.Integer)
-				 */
-				@Override
-				public void merging(Integer toMergeId, Integer mergeIntoId)
-				{
-					System.out.println("merging " + toMergeId + " into " + mergeIntoId);
-				}
-
-				/* (non-Javadoc)
-				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#moved(java.lang.Integer, java.lang.Integer, java.lang.Integer)
-				 */
-				@Override
-				public void moved(Integer movedId, Integer oldParentId,
-						Integer newParentId)
-				{
-					System.out.println("moved " + movedId + " from " + oldParentId + " to " + newParentId);
-				}
-				
-			};
-	        final TreeMerger<T, D, I> merger = new TreeMerger<T, D, I>(treeDef);
-	        merger.addListener(face);
-	        new javax.swing.SwingWorker<Object, Object>() {
-	        	Boolean result = false;
-				Exception killer = null;
-
-				/* (non-Javadoc)
-				 * @see javax.swing.SwingWorker#doInBackground()
-				 */
-				@Override
-				protected Object doInBackground() throws Exception
-				{
-					SwingUtilities.invokeLater(new Runnable() {
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see java.lang.Runnable#run()
-						 */
-						@Override
-						public void run()
-						{
-							UIRegistry
-									.writeGlassPaneMsg(
-											UIRegistry.getResourceString("TreeTableViewer.Merging"),
-											24);
-							hideChildren(oldParentNode);
-							hideChildren(droppedOnNode);
-						}
-
-					});
-			        try
-			        {
-			        	merger.mergeTrees(draggedNode.getId(), droppedOnNode.getId());
-			        	result = true;
-			        } catch (Exception ex)
-			        {
-			        	log.error(ex);
-			        	result = false;
-			        	killer = ex;
-			        }
-					return result;
-				}
-
-				@Override
-				protected void done() {
-					SwingUtilities.invokeLater(new Runnable() {
-
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
-						@Override
-						public void run()
-						{
-							UIRegistry.clearGlassPaneMsg();
-						}
-						
-					});
-					if (result)
-					{
-						try
-						{
-							treeDef.updateAllNodes(null, true, true);
-						} catch (Exception ex)
-						{
-							edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
-								TreeTableViewer.class, ex);
-						}
-					}
-			        SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							showChildren(oldParentNode);
-							showChildren(newParentNode);
-						}
-			        	
-			        });
-					if (!result && killer != null)
-					{
-						if (killer instanceof TreeMergeException)
-						{
-							UIRegistry.displayErrorDlg(killer.getMessage());
-						}
-						else 
-						{
-							edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
-									TreeTableViewer.class, killer);
-						}
-					}
-				}
-	        	
-	        }.execute();
-			
+		    mergeTreeNodes(draggedNode, droppedOnNode, oldParentNode, newParentNode);
 		}
 		return false;
+	}
+	
+	/**
+	 * @param draggedNode
+	 * @param droppedOnNode
+	 * @param oldParentNode
+	 * @param newParentNode
+	 */
+	public void mergeTreeNodes(final TreeNode draggedNode,
+                               final TreeNode droppedOnNode, 
+	                           final TreeNode oldParentNode, 
+                               final TreeNode newParentNode)
+	{
+        final TreeMergerUIIFace<T,D,I> face = new TreeMergerUIIFace<T,D,I>() {
+            @Override
+            public Integer choose(List<Integer> choices, boolean mustChoose)
+            {
+                System.out.print((mustChoose ? "You MUST choose: " : "Choose: "));
+                for (Integer id : choices)
+                {
+                    System.out.print(id + "  ");
+                }
+                System.out.println();
+                return null;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#merged(java.lang.Integer, java.lang.Integer)
+             */
+            @Override
+            public void merged(Integer toMergeId, Integer mergeIntoId)
+            {
+                System.out.println("merged " + toMergeId + " into " + mergeIntoId);
+                
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#merging(java.lang.Integer, java.lang.Integer)
+             */
+            @Override
+            public void merging(Integer toMergeId, Integer mergeIntoId)
+            {
+                System.out.println("merging " + toMergeId + " into " + mergeIntoId);
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#moved(java.lang.Integer, java.lang.Integer, java.lang.Integer)
+             */
+            @Override
+            public void moved(Integer movedId, Integer oldParentId,
+                    Integer newParentId)
+            {
+                System.out.println("moved " + movedId + " from " + oldParentId + " to " + newParentId);
+            }
+            
+        };
+        
+        final TreeMerger<T, D, I> merger = new TreeMerger<T, D, I>(treeDef);
+        merger.addListener(face);
+        new javax.swing.SwingWorker<Object, Object>() 
+        {
+            Boolean   result = false;
+            Exception killer = null;
+
+            @Override
+            protected Object doInBackground() throws Exception
+            {
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    @Override
+                    public void run()
+                    {
+                        writeGlassPaneMsg(getResourceString("TreeTableViewer.Merging"), 24);
+                        hideChildren(oldParentNode);
+                        hideChildren(droppedOnNode);
+                    }
+                });
+                
+                try
+                {
+                    merger.mergeTrees(draggedNode.getId(), droppedOnNode.getId());
+                    result = true;
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    result = false;
+                    killer = ex;
+                }
+                return result;
+            }
+
+            @Override
+            protected void done() 
+            {
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    @Override
+                    public void run()
+                    {
+                        clearGlassPaneMsg();
+                    }
+                });
+                
+                if (result)
+                {
+                    try
+                    {
+                        treeDef.updateAllNodes(null, true, true);
+                    } catch (Exception ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
+                    }
+                }
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        showChildren(oldParentNode);
+                        showChildren(newParentNode);
+                    }
+                });
+                
+                if (!result && killer != null)
+                {
+                    if (killer instanceof TreeMergeException)
+                    {
+                        displayErrorDlg(killer.getMessage());
+                    }
+                    else 
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+                                TreeTableViewer.class, killer);
+                    }
+                }
+            }
+            
+        }.execute();
+        
 	}
 	
 	/**
@@ -3371,7 +3288,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		if (isNodeDiff)
 		{
-		    UIRegistry.getStatusBar().setText(isOK ? msg : "");
+		    getStatusBar().setText(isOK ? msg : "");
 		}
 		
 		return isOK;

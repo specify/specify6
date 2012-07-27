@@ -331,7 +331,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     }
                 })); 
                 
-                cleanUpToolsNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_GEO_MERGE_TOOLS"), SYSTEMSETUPTASK, getResourceString("SYSSTP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                cleanUpToolsNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_GEO_CLEANUP_MERGE"), SYSTEMSETUPTASK, getResourceString("SYSSTP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
                         doGeographyMerge();
