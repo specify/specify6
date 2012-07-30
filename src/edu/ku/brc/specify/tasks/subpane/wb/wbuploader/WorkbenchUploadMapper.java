@@ -20,8 +20,6 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,16 +29,16 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DatamodelHelper;
 
 
@@ -343,21 +341,16 @@ public class WorkbenchUploadMapper
     {
         try
         {
-            File inputFile = new File(DatamodelHelper.getWorkbenchUploadDefFilePath());
-            FileInputStream fileInputStream = new FileInputStream(inputFile);
-            SAXReader reader = new SAXReader();
-            reader.setValidation(false);
-            Document doc = reader.read(fileInputStream);
-            return doc.getRootElement();
+            if (WorkbenchTask.isCustomizedSchema()) 
+            {
+            	return XMLHelper.readFileToDOM4J(new File(UIRegistry.getAppDataDir() + File.separator + "specify_workbench_upload_def.xml"));
+            } else
+            {
+            	return XMLHelper.readDOMFromConfigDir("specify_workbench_upload_def.xml");
+            }
+            
         }
-        catch (FileNotFoundException ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchUploadMapper.class, ex);
-            log.error(ex);
-            return null;
-        }
-        catch (DocumentException ex)
+        catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchUploadMapper.class, ex);
