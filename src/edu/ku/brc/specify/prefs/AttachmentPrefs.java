@@ -124,6 +124,9 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         urlRB  = UIHelper.createRadioButton(UIRegistry.getResourceString("USE_ATTACH_URL"));
         UIRegistry.popResourceBundle();
         
+        pathRB.setOpaque(false);
+        urlRB.setOpaque(false);
+        
         ButtonGroup group = new ButtonGroup();
         group.add(pathRB);
         group.add(urlRB);
@@ -286,7 +289,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         cachedAttachmentPath = prefs.get(ATTACHMENT_PATH, "");
         cachedAttachmentURL  = prefs.get(ATTACHMENT_URL, "");
         
-        if (isEmpty(oldAttachmentPath) && isNotEmpty(oldAttachmentURL))
+        if ((isEmpty(oldAttachmentPath) && isNotEmpty(oldAttachmentURL)) || isUsingGlobalAttchPrefs)
         {
             isUsingPath = false;
         }
