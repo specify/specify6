@@ -61,4 +61,9 @@ public interface QBDataSourceListenerIFace
 	 */
 	public void filling();
 	
+	
+	/**
+	 * @return true if listener wants to hear about currentRow changes and the done() event.
+	 */
+	public boolean isListeningClosely();
 }

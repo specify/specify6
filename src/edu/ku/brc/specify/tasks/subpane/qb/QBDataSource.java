@@ -132,12 +132,17 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             log.debug("... " + this + " got rows");
         }
         int fldIdx = getFldIdx(arg0.getName());
-        return getFieldValue(fldIdx, arg0.getName(), arg0.getClass());
+        return getFieldValue(fldIdx, arg0.getName(), arg0.getClass(), null);
+    }
+    
+    public Object getFieldValueForRow(int colIdx, Object forRowVals)
+    {
+    	return getFieldValue(colIdx, null, null, forRowVals);
     }
     
     public Object getFieldValue(int colIdx)
     {
-    	return getFieldValue(colIdx, null, null);
+    	return getFieldValue(colIdx, null, null, null);
     }
     
     public int getFieldCount()
@@ -146,9 +151,10 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     }
     
     @SuppressWarnings("unchecked")
-    protected Object getFieldValue(final int fldIdx, final String fldName, final Class<?> fldClass)
+    protected Object getFieldValue(final int fldIdx, final String fldName, final Class<?> fldClass, final Object forRowVals)
     {
-        if (fldIdx < 0)
+        Object theRow = forRowVals == null ? rowVals : forRowVals;
+    	if (fldIdx < 0)
            return null;
         
         boolean isRawCol = fldName == null; //isRawCol assumes no additional column info - partial date or other stuff.
@@ -183,25 +189,25 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             	//Then assume the values for the fields in the colInfo list are
             	//stored consecutively in the resultset.
             	value = new Object[col.getColInfoList().size()];
-            	((Object[] )value)[0] = ((Object[] )rowVals)[fldIdx];
+            	((Object[] )value)[0] = ((Object[] )theRow)[fldIdx];
             	for (int i = 1; i < col.getColInfoList().size(); i++)
             	{
-            		((Object[] )value)[i] = ((Object[] )rowVals)[fldIdx+i];
+            		((Object[] )value)[i] = ((Object[] )theRow)[fldIdx+i];
             	}
             }
             else
             {
-            	value = ((Object[] )rowVals)[fldIdx];
+            	value = ((Object[] )theRow)[fldIdx];
             }
             return processValue(processIdx, col.processValue(value));
         }
         if (!processed)
         {
-        	return ((Object[] )rowVals)[fldIdx];
+        	return ((Object[] )theRow)[fldIdx];
         }
         //else processing already done
         //int colIdx = this.recordIdsIncluded ? fldIdx - 1 : fldIdx;       
-        return ((Vector<Object> )rowVals).get(fldIdx);
+        return ((Vector<Object> )theRow).get(fldIdx);
     }
     
     /* (non-Javadoc)
@@ -227,12 +233,16 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         }
         
 
+        currentRow++;
         boolean result = doGetNext(false);
         if (result)
         {
             for (QBDataSourceListenerIFace listener : listeners)
             {
-            	listener.currentRow(++currentRow);
+            	if (listener.isListeningClosely())
+            	{
+            		listener.currentRow(currentRow);
+            	}
             }
         }
         else
@@ -244,13 +254,16 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             }
         	for (QBDataSourceListenerIFace listener : listeners)
             {
-            	listener.done(currentRow);
+            	if (listener.isListeningClosely())
+            	{
+            		listener.done(currentRow);
+            	}
             }
         }
         return result;
     }
 
-    protected boolean doGetNext(final boolean sorting)
+    protected synchronized boolean doGetNext(final boolean sorting)
     {
 //        if (loadCancelled.get())
 //        {
@@ -313,6 +326,11 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         return false;
     }
     
+    public synchronized Object getCurrentRow()
+    {
+    	return rowVals;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getRepeaterRowVals()
      */
@@ -365,7 +383,10 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             {
                 for (QBDataSourceListenerIFace listener : listeners)
                 {
-                	listener.currentRow(++currentRow);
+                	if (listener.isListeningClosely())
+                	{
+                		listener.currentRow(++currentRow);
+                	}
                 }
                 Vector<Object> row = new Vector<Object>(((Object[] )rowVals).length);
                 for (int fldIdx = 0, colIdx = 0; fldIdx < ((Object[] )rowVals).length; fldIdx++, colIdx++)

@@ -29,9 +29,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -54,6 +57,8 @@ import edu.ku.brc.util.Pair;
  */
 public class ERTICaptionInfoTreeLevelGrp
 {
+    private static final Logger      log               = Logger.getLogger(ERTICaptionInfoTreeLevelGrp.class);
+    
     protected final Vector<ERTICaptionInfoTreeLevel> members;
     protected final Class<?>                         treeClass;
     protected final int                              treeDefId;
@@ -68,9 +73,10 @@ public class ERTICaptionInfoTreeLevelGrp
     protected Statement                              statement = null;
     protected String                                 querySQL = null;
     
-    protected Object[]                               currentRanks = null;
-    protected Object                                 currentVal   = null;
-
+    //protected Object[]                               currentRanks = null;
+    //protected AtomicReferenceArray<Object[]>         currentRanks = null;
+    //protected Object                                 currentVal   = null;
+    //protected final AtomicReference<Object>		     currentVal = new AtomicReference<Object>();
     protected DataProviderSessionIFace               session = null;
 
     protected boolean                                isSetup      = false;
@@ -93,7 +99,8 @@ public class ERTICaptionInfoTreeLevelGrp
     	this.fieldsToRetrieve = new Vector<String>();
     	this.members = new Vector<ERTICaptionInfoTreeLevel>();    	
     	this.useCache = useCache;
-    	if (useCache)
+    	//this.useCache = false; //!!!!!!!!!!!!!!!!!!!!!!But already have the ancestorsCache so why bother???
+    	if (this.useCache)
     	{
     		lookupCache = cacheSize == null ? new LookupsCache() : new LookupsCache(cacheSize);
     	}
@@ -119,19 +126,68 @@ public class ERTICaptionInfoTreeLevelGrp
         {
             return null;
         }
-        //XXX make sure equals() works...
-        if (!value.equals(currentVal))
-        {
-            newValue(value);
-            currentVal = value;
-        }
         
-        Object[] currentRank = (Object[] )currentRanks[rankIdx];
-        if (currentRank == null)
+//        Object val = currentVal.get();
+//        if (!value.equals(val))
+//        {
+//            Object current = newValue(value);
+//            if (useCache)
+//            {
+//            	lookupCache.addKey((Integer )value, current);
+//            }
+//            Object[] currentRank = (Object[])((Object[] )current)[rankIdx];
+//            if (currentRank != null)
+//            {
+//            	return currentRank[fldIdx];
+//            }
+//            currentVal.set(value);
+//            return null;
+//        }
+        
+        //Object[] currentRank = (Object[] )currentRanks[rankIdx];
+//        Object lookedUp = lookupCache.lookupKey((Integer )value);
+//        if (lookedUp != null)
+//        {
+//        	Object[] currentRank =  (Object[])((Object[] )lookedUp)[rankIdx];
+//        	//Object[] currentRank =  currentRanks.get(rankIdx);
+//        	if (currentRank == null)
+//        	{
+//        		return null;
+//        	}
+//        	return currentRank[fldIdx];
+//        } else
+//        {
+//            Object current = newValue(value);
+//            if (useCache)
+//            {
+//            	lookupCache.addKey((Integer )value, current);
+//            }
+//            //currentVal.set(value);
+//            Object[] currentRank = (Object[])((Object[] )current)[rankIdx];
+//            if (currentRank != null)
+//            {
+//            	return currentRank[fldIdx];
+//            }
+//            //currentVal.set(value);
+//            return null;
+//        }
+        
+        Object current = useCache ? lookupCache.lookupKey((Integer )value) : null;
+        if (current == null)
         {
-        	return null;
+            current = newValue(value);
+            if (useCache)
+            {
+            	lookupCache.addKey((Integer )value, current);
+            }
         }
-        return currentRank[fldIdx];
+        Object[] currentRank = (Object[])((Object[] )current)[rankIdx];
+        if (currentRank != null)
+        {
+         	return currentRank[fldIdx];
+        }
+        return null;        
+        
     }
 
     /**
@@ -160,29 +216,36 @@ public class ERTICaptionInfoTreeLevelGrp
      * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    protected void newValue(final Object value) throws SQLException
+    protected Object[] newValue(final Object value) throws SQLException
     {
-        if (useCache)
-        {
-            Object[] lookedUp = (Object[] )lookupCache.lookupKey((Integer )value);
-            if (lookedUp != null)
-            {
-                currentRanks = lookedUp;
-                return;
-            }
-        }
-
-        if (useCache)
-        {
-            currentRanks = new Object[members.size()];
-            for (int r = 0; r < currentRanks.length; r++)
-            {
-                currentRanks[r] = null;
-            }
-        }
+    	Object[] currentRanks = null;
+        //synchronized(currentRanks) 
+        //{
+        	if (useCache)
+        	{
+        		Object[] lookedUp = (Object[] )lookupCache.lookupKey((Integer )value);
+        		//AtomicReferenceArray<Object[]> lookedUp = (AtomicReferenceArray<Object[]>)lookupCache.lookupKey((Integer )value);
+        		if (lookedUp != null)
+        		{
+        			currentRanks = lookedUp;
+        			return currentRanks;
+        		}
+        	} 
+        	if (currentRanks == null)
+        	{
+        		currentRanks = new Object[members.size()];
+        		//currentRanks = new AtomicReferenceArray<Object[]>(members.size());
+        		for (int r = 0; r < members.size(); r++)
+        		{
+        			currentRanks[r] = null;
+        			//currentRanks.set(r, null);
+        		}
+        	}
+        //}
         ResultSet ancestorRows = null;
         Iterator<Object> ancestors = null;
         Pair<Integer, String[]> ancestor = null;
+        Statement statement = null;
         if (useHibernate)
         {
             query.setParameter("descendantArg", value);
@@ -190,6 +253,7 @@ public class ERTICaptionInfoTreeLevelGrp
         } else 
         {
         	String sql = setupQuery(value);
+        	statement = DBConnection.getInstance().getConnection().createStatement();
         	final ResultSet rows = statement.executeQuery(sql);
         	ancestorRows = rows;
         	ancestors = new Iterator<Object>() {
@@ -239,13 +303,15 @@ public class ERTICaptionInfoTreeLevelGrp
         //members are ordered by rank
         for (ERTICaptionInfoTreeLevel member : members)
         {
-            while (ancestor != null && ancestor.getFirst() < member.getRank())
+            //if (ancestor != null) System.out.println(ancestor.getFirst() + " " + member.getRank());
+        	while (ancestor != null && ancestor.getFirst() < member.getRank())
             {
                 ancestor = ancestors.hasNext() ? getAncestorInfo(ancestors.next()) : null;
             }
             if (ancestor != null && ancestor.getFirst() == member.getRank())
             {
                 currentRanks[member.getRankIdx()] = ancestor.getSecond();
+            	//currentRanks.
             }
             else
             {
@@ -256,11 +322,16 @@ public class ERTICaptionInfoTreeLevelGrp
         {
         	ancestorRows.close();
         }
-        
-        if (useCache)
+        if (statement != null)
         {
-            lookupCache.addKey((Integer )value, currentRanks);
+        	statement.close();
         }
+        
+//        if (useCache)
+//        {
+//            lookupCache.addKey((Integer )value, currentRanks);
+//        }
+        return currentRanks;
     }
 
     /**
@@ -391,7 +462,7 @@ public class ERTICaptionInfoTreeLevelGrp
         return result;
     }
     
-    private HashMap<Integer, String> ancestorsCache = new HashMap<Integer, String>();
+    private final HashMap<Integer, String> ancestorsCache = new HashMap<Integer, String>();
     
     /**
      * Returns the ids of a node and its ancestors in the form of id1,
@@ -404,19 +475,20 @@ public class ERTICaptionInfoTreeLevelGrp
      * @return
      */
     private String getAncestorsIn(Class<?> clazz, Integer nodeId) {
+        DataProviderSessionIFace mySession = DataProviderFactory.getInstance().createSession();
         try {
-            session = DataProviderFactory.getInstance().createSession();
 
             String ancestorsIn;
-            QueryIFace query = session.createQuery("select e.parent.id from "
+            QueryIFace query = mySession.createQuery("select e.parent.id from "
                     + clazz.getName() + " e where e.id = :nodeId", false);
             query.setParameter("nodeId", nodeId);
             Integer parentId = (Integer) query.uniqueResult();
-            if (ancestorsCache.containsKey(parentId)) {
-                ancestorsIn = ancestorsCache.get(parentId);
+            Map<Integer, String> ancestorsCacheSync = Collections.synchronizedMap(ancestorsCache);
+            if (ancestorsCacheSync.containsKey(parentId)) {
+                ancestorsIn = ancestorsCacheSync.get(parentId);
             } else {
-                ancestorsIn = getAncestorsInRecursive(clazz, nodeId);
-                ancestorsCache.put(parentId, ancestorsIn);
+                ancestorsIn = getAncestorsInRecursive(clazz, nodeId, mySession);
+                ancestorsCacheSync.put(parentId, ancestorsIn);
             }
 
             String in = nodeId + ", " + ancestorsIn;
@@ -425,18 +497,18 @@ public class ERTICaptionInfoTreeLevelGrp
 
             return in;
         } finally {
-            session.close();
+            mySession.close();
         }
     }
     
-    private String getAncestorsInRecursive(Class<?> clazz, Integer nodeId) {
-        QueryIFace query = session.createQuery("select e.parent.id from " + clazz.getName() + " e where e.id = :nodeId", false);
+    private String getAncestorsInRecursive(Class<?> clazz, Integer nodeId, DataProviderSessionIFace mySession) {
+        QueryIFace query = mySession.createQuery("select e.parent.id from " + clazz.getName() + " e where e.id = :nodeId", false);
         query.setParameter("nodeId", nodeId);
         Integer parentId = (Integer) query.uniqueResult();
         if (parentId == null) {
             return "";
         } else {
-            return parentId + ", " + getAncestorsInRecursive(clazz, parentId);
+            return parentId + ", " + getAncestorsInRecursive(clazz, parentId, mySession);
         }
     }
     
@@ -472,7 +544,7 @@ public class ERTICaptionInfoTreeLevelGrp
             
         });
         
-        currentRanks = new String[members.size()];
+        String[] currentRanks = new String[members.size()];
         
         int m = 0;
         String rankStr = "";
@@ -502,7 +574,11 @@ public class ERTICaptionInfoTreeLevelGrp
 
         }
         else {
-            // lchan: hardcoded because Specify uses a different ID field for each entity
+        	//leave session open all the time for better performance
+        	//session = DataProviderFactory.getInstance().createSession();
+
+        	
+        	// lchan: hardcoded because Specify uses a different ID field for each entity
         	String idField = treeClass.getSimpleName() + "Id";
         	
         	querySQL = "select "

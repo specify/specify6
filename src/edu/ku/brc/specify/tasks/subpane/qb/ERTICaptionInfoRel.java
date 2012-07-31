@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -46,7 +47,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
  */
 public class ERTICaptionInfoRel extends ERTICaptionInfoQB
 {
-    
+    private static final Logger log = Logger.getLogger(ERTICaptionInfoRel.class);
+   
     protected final DBRelationshipInfo relationship;
     /**
      * hql to retrieve list of related objects for one-to-many relationships.
@@ -55,6 +57,8 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
     
     protected final boolean useCache;
     protected final LookupsCache lookupCache;
+    protected DataProviderSessionIFace session = null;
+    protected final String processor; //the name of the formatter or aggregator for the column
     
     public ERTICaptionInfoRel(String  colName, 
                            String  colLabel, 
@@ -67,9 +71,14 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
                            Integer cacheSize)
     {
         super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId, null, null);
+        //Don't like having a 'permanent' (until finalize()) session
+        //maybe a done() method could be added that the owner of the cols could call... 
+        //session = DataProviderFactory.getInstance().createSession();
         this.relationship = relationship;
+        
         this.useCache = useCache;
-        if (useCache)
+        //this.useCache = false; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (this.useCache)
         {
             lookupCache = cacheSize == null ? new LookupsCache() : new LookupsCache(cacheSize);
         }
@@ -78,29 +87,49 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             lookupCache = null;
         }
         
+        DBTableInfo otherSideTbl = DBTableIdMgr.getInstance().getByClassName(relationship.getClassName());
         if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
         {
-            DBTableInfo otherSideTbl = DBTableIdMgr.getInstance().getByClassName(relationship.getClassName());
+        	//processor = otherSideTbl.getAggregatorName();
+            
             DBRelationshipInfo otherSideRel = otherSideTbl.getRelationshipByName(relationship.getOtherSide());
             String otherSideCol = otherSideRel.getColName();
             otherSideCol = otherSideCol.substring(0, 1).toLowerCase().concat(otherSideCol.substring(1));
             otherSideCol = otherSideCol.substring(0, otherSideCol.length()-2) + "Id";
             List<DataObjAggregator> aggs = DataObjFieldFormatMgr.getInstance().getAggregatorList(relationship.getDataClass());
             String orderByFld = null;
+            String aggregator = null;
             for (DataObjAggregator agg : aggs)
             {
             	if (agg.isDefault())
             	{
             		orderByFld = agg.getOrderFieldName();
+            		aggregator = agg.getName();
             		break;
             	}
             }
+            processor = aggregator;
             listHql = "from " + relationship.getDataClass().getName() + " where " + otherSideCol + " = &id"
              + (StringUtils.isNotEmpty(orderByFld) ? " order by " + orderByFld : "");
         }
         else
         {
-            listHql = null;
+        	List<DataObjSwitchFormatter> forms = DataObjFieldFormatMgr.getInstance().getFormatterList(relationship.getDataClass());
+            String formatter = null; 
+        	for (DataObjSwitchFormatter form : forms)
+        	{
+        		if (form.isDefault()) 
+        		{
+        			formatter = form.getName();
+        			break;
+        		}
+        	}
+            processor = formatter;
+        	listHql = null;
+        }
+        if (processor == null) 
+        {
+        	log.error("couldn't find formatter or aggregator for " + otherSideTbl.getName());
         }
     }
     
@@ -187,23 +216,31 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
     @Override
     public Object processValue(Object key)
     {
-        Object value = useCache ? lookupCache.lookupKey((Integer )key) : null;
-        if (value == null)
+        if (processor != null)
         {
-            if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
-            {
-                value = DataObjFieldFormatMgr.getInstance().aggregate(getList(key), relationship.getDataClass());
-            }
-            else
-            {
-                value = DataObjFieldFormatMgr.getInstance().format(getObject(key), relationship.getDataClass());
-            }
-            if (useCache && key != null)
-            {
-                lookupCache.addKey((Integer )key, value);
-            }
+        	Object value = useCache ? lookupCache.lookupKey((Integer )key) : null;
+        	if (value == null)
+        	{
+        		if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
+        		{
+        			//value = DataObjFieldFormatMgr.getInstance().aggregate(getList(key), relationship.getDataClass());
+        			value = DataObjFieldFormatMgr.getInstance().aggregate(getList(key), processor);
+        		}
+        		else
+        		{
+        			//value = DataObjFieldFormatMgr.getInstance().format(getObject(key), relationship.getDataClass());
+        			value = DataObjFieldFormatMgr.getInstance().format(getObject(key), processor);
+        		}
+        		if (useCache && key != null)
+        		{
+        			lookupCache.addKey((Integer )key, value);
+        		}
+        	}
+        	return value;
+        } else
+        {
+        	return null;
         }
-        return value;
     }
         
     /**
@@ -236,13 +273,27 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             }
             finally
             {
-                session.close();
+            	session.close();
             }
         }
         return null;
     }
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#finalize()
+	 */
+	@Override
+	protected void finalize() throws Throwable 
+	{
+		super.finalize();
+		if (session != null)
+		{
+			session.close();
+		}
+	}
+
+	/**
      * @return
      */
     public String getListHql(final Object key)

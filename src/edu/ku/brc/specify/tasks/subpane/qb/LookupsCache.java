@@ -19,7 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -36,7 +39,7 @@ public class LookupsCache
 {
 //    private static final Logger      log               = Logger.getLogger(LookupsCache.class);
     
-    protected static final int         defaultLookupSize = 128;
+    protected static final int         defaultLookupSize = 2048;
 
     protected LinkedList<Integer>      lookupList        = null;
     protected TreeMap<Integer, Object> lookupTbl         = null;
@@ -69,11 +72,12 @@ public class LookupsCache
      * @param key
      * @return format for the key or null if key is not mapped.
      */
-    public Object lookupKey(final Integer key)
+    public synchronized Object lookupKey(final Integer key)
     {
         if (key != null)
         {
-            return lookupTbl.get(key);            
+            return lookupTbl.get(key);
+        	//return Collections.synchronizedSortedMap(lookupTbl).get(key);            
         }
         return null;
     }
@@ -82,16 +86,21 @@ public class LookupsCache
      * @param key
      * @param value
      */
-    protected void addKey(final Integer key, final Object value)
+    protected synchronized void addKey(final Integer key, final Object value)
     {
-        if (lookupList.size() == lookupSize)
+        //List<Integer> sList = Collections.synchronizedList(lookupList);
+        //SortedMap<Integer, Object> sMap = Collections.synchronizedSortedMap(lookupTbl);
+    	if (lookupList.size() == lookupSize)
         {
             //remove the 'oldest' lookup.
             lookupTbl.remove(lookupList.remove());
+    		//sMap.remove(sList.remove(0));
         }
 //        logDaBug(++adds + ": added: " + key);
         lookupList.add(key);
         lookupTbl.put(key, value);
+    	//sList.add(key);
+        //sMap.put(key, value);
     }
     
 //    private void logDaBug(Object bug)
