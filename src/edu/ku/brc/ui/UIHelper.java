@@ -202,7 +202,6 @@ public final class UIHelper
     protected static Calendar       calendar;
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
-    protected static boolean        isMacOS_10_7_X   = false;
     protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     
     protected static DoubleValidator     doubleValidator = new DoubleValidator();
@@ -257,11 +256,6 @@ public final class UIHelper
             {
                 isMacOS_10_5_X = true;
             }*/
-            String osVersion = System.getProperty("os.version");
-            if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.7.0") >= 0)
-            {
-                isMacOS_10_7_X = true;
-            }
 
         } else if (osStr.indexOf("Windows") != -1)
         {
@@ -315,14 +309,6 @@ public final class UIHelper
     public static boolean isMacOS_10_5_X()
     {
         return isMacOS_10_5_X;
-    }
-
-    /**
-     * @return the isMacOS_10_7_X
-     */
-    public static boolean isMacOS_10_7_X()
-    {
-        return isMacOS_10_7_X;
     }
 
     /**
@@ -1457,21 +1443,8 @@ public final class UIHelper
             scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
         }
 
-        Object[] values = null;
+        Object[] values = new Object[fieldNames.length];
         
-        if (fieldNames.length > 5)
-        {
-            values = new Object[fieldNames.length];
-        } else
-        {
-            values = valuesArray[fieldNames.length-1];
-            
-            for (int i=fieldNames.length;i<values.length;i++)
-            {
-                values[i] = null;
-            }
-        }
-
         boolean  allFieldsNull = true;
 
         int cnt = 0;
@@ -3997,11 +3970,7 @@ public final class UIHelper
      */
     public static Double parseDouble(final String value)
     {
-    	try
-    	{
-    		return doubleValidator.validate(value, Locale.getDefault());
-    	} catch (NullPointerException e) {}
-    	return null;
+        return doubleValidator.validate(value, Locale.getDefault());
     }
     
     /**
