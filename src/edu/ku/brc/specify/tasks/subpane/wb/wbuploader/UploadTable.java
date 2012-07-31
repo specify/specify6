@@ -4342,7 +4342,7 @@ public class UploadTable implements Comparable<UploadTable>
 									String points = fld.getValue().substring(c+1);
 									for (d = 0; d < points.length(); d++)
 									{
-										System.out.println(points.substring(d, d+1));
+										//System.out.println(points.substring(d, d+1));
 										if (!"0123456789".contains(points.substring(d, d+1))) break;
 									}
 									if (d > LatLonConverter.DECIMAL_SIZES[fmt.ordinal()])
@@ -4848,7 +4848,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         //int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         reusingExportedRec = false;
         //for (Vector<UploadField> seq : uploadFields)

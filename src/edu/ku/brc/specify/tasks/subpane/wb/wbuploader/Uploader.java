@@ -4814,7 +4814,7 @@ public class Uploader implements ActionListener, KeyListener
         for (UploadField field : uploadFields)
         {
             logDebug("   uploading field: " + field.getWbFldName());
-            System.out.println("   uploading field: " + field.getWbFldName());
+            //System.out.println("   uploading field: " + field.getWbFldName());
         	if (field.getField().getTable().equals(t.getTable()))
             {
                 if (field.getIndex() != -1)
