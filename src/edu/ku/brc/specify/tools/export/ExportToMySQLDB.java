@@ -11,9 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Future;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -33,8 +36,21 @@ import edu.ku.brc.ui.UIRegistry;
  * @author timbo
  *
  */
+/**
+ * @author timo
+ *
+ */
 public class ExportToMySQLDB
 {
+	
+	private final static int bulkBlockSize = 1000;
+	private final static int bulkQueueSize = 8000;
+	
+	public final static int defaultFldLenForFormattedFld = 1250; 
+	//public final static int maxWidthForTextFld = 1250; //assumes MySql 5.0.3 or greater.
+													//since this class generates data 
+													// intended for web searches
+													//it seems acceptable to impose a limit
 	
 	/**
 	 * @param fld
@@ -47,17 +63,24 @@ public class ExportToMySQLDB
 		if (dataType == null && fld == null)
 		{
 			//assume it's format or aggregatated or otherwise special
-			return "varchar(256)";
+			return "varchar(" + defaultFldLenForFormattedFld + ")";
 		}
 		
 		if (dataType.equals(String.class))
 		{
-			String length = "256";
-			if (fld != null && fld.getLength() != -1 && fld.getLength() <= 256)
+			if (fld != null && "text".equalsIgnoreCase(fld.getType()))
 			{
-				length = String.valueOf(fld.getLength());
+				return "text";
+				
+			} else
+			{
+				String length = String.valueOf(defaultFldLenForFormattedFld);
+				if (fld != null && fld.getLength() != -1/* && fld.getLength() <= maxWidthForTextFld*/)
+				{
+					length = String.valueOf(fld.getLength());
+				}
+				return "varchar(" + length + ")";
 			}
-			return "varchar(" + length + ")";
 		}
 		if (dataType.equals(Integer.class) || dataType.equals(Byte.class) || dataType.equals(Short.class) || dataType.equals(Long.class))
 		{
@@ -226,11 +249,15 @@ public class ExportToMySQLDB
 	 * @param toConnection
 	 * @param columns
 	 * @param rows
-	 * @param tblName
+	 * @param originalTblName
 	 * @param listeners
 	 * @param idColumnPresent
-	 * @param overwrite - create a new table for the data.
-	 * @param update - rows represent only updates since last export
+	 * @param overwrite
+	 * @param update
+	 * @param baseTableId
+	 * @param firstPass
+	 * @param bulkFilePath
+	 * @return
 	 * @throws Exception
 	 * 
 	 * Exports rows to a table named tblName in toConnection's db.
@@ -238,84 +265,65 @@ public class ExportToMySQLDB
 	 */
 	public static long exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass,
+			String bulkFilePath) throws Exception
 	{
-	    boolean newTable = false;
-	    String tblName = fixTblNameForMySQL(originalTblName);
-	    if (firstPass && (overwrite || !tableExists(toConnection, tblName)))
-	    {
-	    	if (tableExists(toConnection, tblName))
-	    	{
-	    		dropTable(toConnection, tblName);
-	    	}
-	    	createTable(toConnection, columns, tblName, idColumnPresent);
-	    	newTable = true;
-	    }
 	    
-	    if (firstPass && update)
-	    {
-	    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(baseTableId);
+		try 
+		{
+			boolean newTable = false;
+			String tblName = fixTblNameForMySQL(originalTblName);
+			if (firstPass && (overwrite || !tableExists(toConnection, tblName)))
+			{
+				if (tableExists(toConnection, tblName))
+				{
+					dropTable(toConnection, tblName);
+				}
+				createTable(toConnection, columns, tblName, idColumnPresent);
+				newTable = true;
+			}
+	    
+			if (firstPass && update)
+			{
+				DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(baseTableId);
 	    	
-	    	deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
-	    }
-	    
-	    //System.out.println("deleted deleted recs");
-	    
-		if (rows.hasResultSize())
-		{
-			for (QBDataSourceListenerIFace listener : listeners)
-			{
-				listener.loaded();
-				listener.rowCount(rows.size());
+				deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
 			}
-			//System.out.println("listeners notified: loaded()");
-		}
-		
-		Statement stmt = toConnection.createStatement();
-	    try
-		{
-			for (QBDataSourceListenerIFace listener : listeners)
+	    
+			//System.out.println("deleted deleted recs");
+	    
+			if (rows.hasResultSize())
 			{
-				listener.filling();
-			}
-			int rowNum = 0;
-			while (rows.getNext())
-			{
-				//System.out.println("exporting " + rowNum);
 				for (QBDataSourceListenerIFace listener : listeners)
 				{
-					listener.currentRow(rowNum++);
+					listener.loaded();
+					listener.rowCount(rows.size());
 				}
-
-				if (update && !newTable)
-				{
-					// XXX Not totally sure this is safe.
-					// If duplicate ids are allowed/possible, can export query
-					// return one of several objects with same id?
-					// If co 123 was repeated three times due to preps or
-					// something in original export, can a lastExport -sensitive
-					// re-export return only 1 of the preps (which would result in
-					// the loss of the other two after the delete below)
-					// or will the query always get all of the dups???
-					// Maybe safer to prevent duplicates.
-
-					// XXX and WHAT ABOUT DELETES anyway? Need lots of extra
-					// work to detect when records have been deleted and
-					// remove them from the exported cache...
-					stmt.execute("delete from " + tblName + " where "
-							+ getIdFieldName(tblName) + " = "
-							+ rows.getFieldValue(0));
-				}
-				stmt.execute(getInsertSql(rows, tblName));
+				//System.out.println("listeners notified: loaded()");
 			}
-			//System.out.println("returning " + rowNum);
-		    return rowNum;
+		
+			Statement stmt = toConnection.createStatement();
+			int rowNum = 0;
+			//long startTime = System.nanoTime();
+			try
+			{
+				for (QBDataSourceListenerIFace listener : listeners)
+				{
+					listener.filling();
+				}
+			
+				rowNum = processRows(listeners, rows, rowNum, update, newTable, firstPass, stmt, tblName, bulkFilePath);
+				//System.out.println("returning " + rowNum + ". Time elapsed: " + (System.nanoTime() - startTime)/1000000000L + " seconds.");
+				return rowNum;
+			}
+			finally
+			{
+				stmt.close();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
 		}
-	    finally
-	    {
-	    	stmt.close();
-	    	//toConnection.close(); 
-	    }
 	}
 	
 	/**
@@ -326,15 +334,19 @@ public class ExportToMySQLDB
 	 * @param idColumnPresent
 	 * @param overwrite
 	 * @param update
+	 * @param baseTableId
+	 * @param firstPass
+	 * @param bulkFilePath
+	 * @return
 	 * @throws Exception
 	 * 
 	 * Exports rows to a table named tblName in the default database.
 	 */
 	public static long exportToTable(List<ERTICaptionInfoQB> columns, QBDataSource rows, 
 			String tblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass, String bulkFilePath) throws Exception
 	{
-		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId, firstPass);
+		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId, firstPass, bulkFilePath);
 	}
 	
 	/**
@@ -375,20 +387,20 @@ public class ExportToMySQLDB
 			{
 				result.append(", ");
 			}
-			Object valObj = row.getFieldValue(r);
+			Object fldVal = row.getFieldValue(r);
 			String val;
-			if (valObj == null)
+			if (fldVal == null)
 			{
 				val = "null";
 			}
 			else 
 			{
-				Object fldVal = row.getFieldValue(r);
-				if (fldVal instanceof String)
-				{
-					String fldStr = (String )fldVal;
-					fldVal = fldStr.substring(0, Math.min(fldStr.length(), 256));
-				}
+				//Not necessary to trim lengths unless sql_mode has been customized...
+//				if (fldVal instanceof String)
+//				{
+//					String fldStr = (String )fldVal;
+//					fldVal = fldStr.substring(0, Math.min(fldStr.length(), maxWidthForTextFld));
+//				}
 				val = BasicSQLUtils.getStrValue(fldVal);
 				if (StringUtils.isBlank(val))
 				{
@@ -399,6 +411,216 @@ public class ExportToMySQLDB
 		}
 		result.append(")");
 		//System.out.println(result.toString());
+		return result.toString();
+	}
+	
+	
+	/**
+	 * @param row
+	 * @param tblName
+	 * @return
+	 */
+	protected static String getInsertSql(List<Future<?>> row, String tblName) throws Exception
+	{
+		StringBuilder result = new StringBuilder();
+		result.append("insert into " + tblName + " values(");
+		for (int r=0; r < row.size(); r++)
+		{
+			//System.out.println("geting insert value for: " + row.getFieldValue(r));
+			if (r > 0)
+			{
+				result.append(", ");
+			}
+			Object fldVal = row.get(r).get();
+			String val;
+			if (fldVal == null)
+			{
+				val = "null";
+			}
+			else 
+			{
+// 			Not necessary to trim lengths unless sql_mode has been customized...
+//				if (fldVal instanceof String)
+//				{
+//					String fldStr = (String )fldVal;
+//					fldVal = fldStr.substring(0, Math.min(fldStr.length(), 256));
+//				}
+				val = BasicSQLUtils.getStrValue(fldVal);
+				if (StringUtils.isBlank(val))
+				{
+					val = "null";
+				}
+			}
+			result.append(val);			
+		}
+		result.append(")");
+		//System.out.println(result.toString());
+		return result.toString();
+	}
+
+	/**
+	 * @param row
+	 * @return
+	 * @throws Exception
+	 */
+	protected static String getBulkLine(List<Future<?>> row) throws Exception
+	{
+		//Thread.sleep(500); //to wait for formatters to see if get() is waiting...
+		StringBuilder result = new StringBuilder();
+		for (int r=0; r < row.size(); r++)
+		{
+			//System.out.println("geting insert value for: " + row.getFieldValue(r));
+			if (r > 0)
+			{
+				result.append("\t");
+			}
+			Object fldVal = row.get(r).get();
+			String val;
+			if (fldVal == null)
+			{
+				val = "NULL";
+			}
+			else 
+			{
+//Not necessary to trim lengths unless sql_mode has been customized...
+//				if (fldVal instanceof String)
+//				{
+//					String fldStr = (String )fldVal;
+//					fldVal = fldStr.substring(0, Math.min(fldStr.length(), 256));
+//				}
+				val = BasicSQLUtils.getStrValue(fldVal);
+				if (StringUtils.isBlank(val))
+				{
+					val = "NULL";
+				}
+			}
+			result.append(val);			
+		}
+		//result.append(")");
+		//System.out.println(result.toString());
+		return result.toString();
+		
+	}
+	
+	
+	/**
+	 * @param listeners
+	 * @param rows
+	 * @param rowNum
+	 * @param update
+	 * @param newTable
+	 * @param firstPass
+	 * @param stmt
+	 * @param tblName
+	 * @param fullFilePathName
+	 * @return
+	 * @throws Exception
+	 */
+	protected static int processRows(List<QBDataSourceListenerIFace> listeners,
+			QBDataSource rows, int rowNum, boolean update, boolean newTable,
+			boolean firstPass, Statement stmt, String tblName, String fullFilePathName) throws Exception 
+	{
+		boolean doBulk = fullFilePathName != null;
+		List<String> bulk = doBulk ? new ArrayList<String>(bulkBlockSize) : null;
+		int currentRow = rowNum;
+		BlockingRowQueue q = new BlockingRowQueue(bulkQueueSize);
+		RowFiller f = new RowFiller(q, rows);
+		Thread fThread = new Thread(f);
+		try 
+		{
+			fThread.setPriority(fThread.getPriority() - 3);
+			fThread.start();
+			while (!q.isFinished() || !q.isEmpty() || currentRow < rows.size()) 
+			{
+				List<Future<?>> row = q.take();
+				// System.out.println("exporting " + currentRow);
+				for (QBDataSourceListenerIFace listener : listeners) 
+				{
+					listener.currentRow(currentRow);
+				}
+				currentRow++;
+				if (update && !newTable) 
+				{
+					stmt.execute("delete from " + tblName + " where "
+							+ getIdFieldName(tblName) + " = " + row.get(0).get());
+				}
+				if (doBulk)
+				{
+					bulk.add(getBulkLine(row));
+					if (bulk.size() == bulkBlockSize) 
+					{
+						FileUtils.writeLines(new File(fullFilePathName),bulk, currentRow / bulkBlockSize > 0 || !firstPass);
+						bulk.clear();
+					}
+				} else
+				{
+					stmt.execute(getInsertSql(row, tblName));
+				}
+			}
+			//System.out.println("returning " + currentRow);
+        	for (QBDataSourceListenerIFace listener : listeners)
+            {
+            	listener.done(currentRow);
+            }
+			if (doBulk && bulk.size() > 0) 
+			{
+				FileUtils.writeLines(new File(fullFilePathName),bulk, currentRow / bulkBlockSize > 0 || !firstPass);
+				bulk.clear();
+			}
+			return currentRow;
+		} finally 
+		{
+			//in case of exception, does the RowFiller need to be explicitly shut-down???
+			
+			stmt.close();
+			
+			if (doBulk && bulk.size() > 0) 
+			{
+				FileUtils.writeLines(new File(fullFilePathName),bulk, currentRow / bulkBlockSize > 0 || !firstPass);
+				bulk.clear();
+			}
+		}
+
+	}
+	
+	/**
+	 * @param row
+	 * @return
+	 */
+	protected static String getBulkLine(QBDataSource row) 
+	{
+		StringBuilder result = new StringBuilder();
+		for (int r=0; r < row.getFieldCount(); r++)
+		{
+			//System.out.println("geting insert value for: " + row.getFieldValue(r));
+			if (r > 0)
+			{
+				result.append("\t");
+			}
+			Object fldVal = row.getFieldValue(r);
+			String val;
+			if (fldVal == null)
+			{
+				val = "NULL";
+			}
+			else 
+			{
+				//Not necessary to trim lengths unless sql_mode has been customized...
+//				if (fldVal instanceof String)
+//				{
+//					String fldStr = (String )fldVal;
+//					fldVal = fldStr.substring(0, Math.min(fldStr.length(), 256));
+//				}
+				val = BasicSQLUtils.getStrValue(fldVal);
+				if (StringUtils.isBlank(val))
+				{
+					val = "NULL";
+				}
+			}
+			result.append(val);			
+		}
+		//result.append(")");
+		//.out.println(result.toString());
 		return result.toString();
 	}
 	

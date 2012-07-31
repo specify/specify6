@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.util.FileUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -92,6 +94,7 @@ import edu.ku.brc.specify.tasks.subpane.qb.QueryParameterPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.TableQRI;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
+import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
@@ -111,13 +114,16 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     protected static final Logger                            log            = Logger.getLogger(ExportPanel.class);
 
     protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
-    
+    protected static final String EXPORT_WEBPORTAL_PATH = "ExportPanelExportWebPortalPath";
     protected static final long maxExportRowCount = 100000;
+    
+    protected boolean exportIsThreaded = true;
     
     protected JTable mapsDisplay;
 	protected DefaultTableModel mapsModel;
 	protected JButton exportToDbTblBtn;
 	protected JButton exportToTabDelimBtn;
+	protected JButton setupWebPortalBtn;
 	protected JButton showIPTSQLBtn;
 	protected JButton helpBtn;
 	protected JLabel status;
@@ -135,8 +141,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected javax.swing.SwingWorker<Object, Object> updater = null;
 	protected javax.swing.SwingWorker<Object, Object> dumper = null;
 	
+	
 	protected final List<SpExportSchemaMapping> maps;
 	protected final List<Pair<SpExportSchemaMapping, Long>> updateStats;
+	
+	protected final Boolean useBulkLoad = AppPreferences.getGlobalPrefs().getBoolean("ExportPanel.UseBulkLoad", false);
+	protected final String bulkFileDir = AppPreferences.getGlobalPrefs().get("ExportPanel.BulkFileDir", AppPreferences.getLocalPrefs().getDirPath());
+	
 	
 	/**
 	 * @param maps
@@ -148,7 +159,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		this.updateStats = new ArrayList<Pair<SpExportSchemaMapping, Long>>();
 		for (SpExportSchemaMapping map : maps)
 		{
-			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));	
+			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));
 		}
 		createUI();
 		startStatusCalcs();
@@ -165,7 +176,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			if (!rebuildForRow(row))
 			{
 				getMappingStatus(map);
-			} else
+			} else 
 			{
 				updateStats.get(row).setSecond(-1L);
 			}
@@ -261,7 +272,93 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				}
 			}
     	});
-    	
+
+    	setupWebPortalBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnTitle"));
+		setupWebPortalBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.SetupWebPortalBtnHint"));
+    	setupWebPortalBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int row = mapsDisplay.getSelectedRow();
+				if (row != -1) {
+					mapUpdating = row;
+					stupid = 1;
+					SpExportSchemaMapping map = maps.get(row);
+					if (rebuildForRow(row)) {
+						// The button probably won't be enabled in this case but...
+						UIRegistry
+								.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNeedsRebuild"));
+					} else if (!isUpToDateForRow(row)) {
+						// The button probably won't be enabled in this case but...
+						UIRegistry
+								.displayInfoMsgDlg(getResourceString("ExportPanel.NoWebSetupForCacheNotUpToDate"));
+					} else if (checkLock(map)) {
+						AppPreferences localPrefs =  AppPreferences.getLocalPrefs();
+						String defPath = localPrefs.get(EXPORT_WEBPORTAL_PATH, null);
+						JFileChooser save = defPath == null ? new JFileChooser() :
+							new JFileChooser(new File(defPath));
+						save.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						int result = save.showSaveDialog(null);
+	    				if (result != JFileChooser.APPROVE_OPTION)
+						{	
+							return;
+						}
+	    				//localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getCurrentDirectory().getPath());
+	    				localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getSelectedFile().getPath());
+						
+			        	final BuildSearchIndex2 bsi = new BuildSearchIndex2(maps.get(row), save.getSelectedFile().getPath());
+			        	try {
+			        		bsi.connect();
+			        	} catch (SQLException sqex) {
+			                UsageTracker.incrHandledUsageCount();
+			                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, sqex);	
+			                return;
+			        	}
+			        	new javax.swing.SwingWorker<Boolean, Object>() {
+
+			        		Boolean success = false;
+							/* (non-Javadoc)
+							 * @see javax.swing.SwingWorker#doInBackground()
+							 */
+							@Override
+							protected Boolean doInBackground() throws Exception {
+								success = bsi.index(ExportPanel.this);
+								return success;
+							}
+
+							/* (non-Javadoc)
+							 * @see javax.swing.SwingWorker#done()
+							 */
+							@Override
+							protected void done() {
+								if (!success)
+								{
+									String msg = getResourceString("ExportPanel.SetupWebFailMsg");
+									UIRegistry.displayErrorDlg(msg);
+									ExportPanel.this.done(-1);
+								} else
+								{
+									ExportPanel.this.done(1);
+								}
+							}
+			        		
+			        	}.execute();
+			        	
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								((CardLayout) progPane.getLayout())
+										.last(progPane);
+							}
+
+						});
+					}
+				} else {
+					UIRegistry
+							.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+				}
+			}
+		});
+
     	this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
     	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
     	this.exportToTabDelimBtn.addActionListener(new ActionListener() {
@@ -360,7 +457,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         helpBtn = createButton(getResourceString("HELP"));
         HelpMgr.registerComponent(helpBtn, "schema_tool");
     	
-        PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu", "p, p, 7dlu"));
+        PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu", "p, p, 7dlu"));
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
     	status.setFont(status.getFont().deriveFont(Font.ITALIC));
     	Dimension pref = status.getPreferredSize();
@@ -368,8 +465,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	status.setPreferredSize(pref);
     	pbb.add(status, cc.xy(2, 1));
     	pbb.add(this.showIPTSQLBtn, cc.xy(3, 1));
-    	pbb.add(exportToTabDelimBtn, cc.xy(7, 1));
+    	pbb.add(exportToTabDelimBtn, cc.xy(9, 1));
     	pbb.add(exportToDbTblBtn, cc.xy(5, 1));
+    	pbb.add(setupWebPortalBtn, cc.xy(7, 1));
     	pbb.add(helpBtn, cc.xy(9, 1));
     	
     	progPane = new JPanel(new CardLayout());
@@ -434,7 +532,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param map
 	 * @return text description of update status for map.
 	 */
-	protected String getInitialMapStatusTextAndCheckExportBtnEnable(SpExportSchemaMapping map)
+	protected String getInitialMapStatusText(SpExportSchemaMapping map)
 	{
 		if (needsToBeRebuilt(map))
 		{
@@ -496,7 +594,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			row.add(map.getMappingName());
 			row.add(map.getTimestampExported() != null ? map.getTimestampExported().toString() : 
 				UIRegistry.getResourceString("ExportPanel.Never"));
-			row.add(getInitialMapStatusTextAndCheckExportBtnEnable(map));
+			row.add(getInitialMapStatusText(map));
 			
 			data.add(row);
 		}
@@ -708,6 +806,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				}
 		}
         
+		rowsExported = 0;
 		final boolean includeRecordIds = true;
         List<Specs> specs = getSpecs(theMapping, includeRecordIds, true, rebuildExistingTbl);
         if (specs == null)
@@ -752,17 +851,22 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			return null;
             		}
 					
-            		boolean rebuild = rebuildExistingTbl;
             		if (rebuildExistingTbl)
             		{
             			cacheRowCount = ucheck.getSecond() - rowsExported;
-            		} else 
+            		} else
             		{
             			int m = 0;
-            			while (maps.get(m).getId() != theMapping.getId() && m < maps.size()) m++;
+            			while (maps.get(m) != theMapping) m++;
             			cacheRowCount = updateStats.get(m).getSecond();
             		}
+					
+            		BasicSQLUtils.update("update spexportschemamapping set TimestampExported = null where SpExportSchemaMappingID = " + theMapping.getId());
+            		
+            		boolean rebuild = rebuildExistingTbl;
             		boolean firstPass = true;
+        			String actualTblName = ExportToMySQLDB.fixTblNameForMySQL(exportQuery.getName());
+            		String bulkFilePath = useBulkLoad ? bulkFileDir + File.separator + actualTblName : null;
             		Connection loopConn = conn;
             		/* debug aid
             		ArrayList<Pair<Long, Double>> stats = new ArrayList<Pair<Long,Double>>(1000);
@@ -788,12 +892,30 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			loading();
             			
             			//XXX Assuming specimen-based export - 1 for baseTableId.
-            			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild, !rebuildExistingTbl, 1, firstPass);
-            			
+            			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild, 
+            					!rebuildExistingTbl, 1, firstPass, bulkFilePath);
             			
             			rebuild = false;
             			firstPass = false;
             		}
+            		if (useBulkLoad)
+            		{
+            			Statement bulkLoadStmt = loopConn.createStatement(); //May need work to ensure the loopConn has permission to execute "load data" 
+            			try
+        				{
+        					//XXX if this fails, there's no need to roll back right?
+        					bulkLoadStmt.executeUpdate("load data local infile '" + bulkFilePath + 
+        							"'into table " + actualTblName + " fields terminated by '\\t' optionally enclosed by '\\''");
+        					FileUtils.delete(new File(bulkFilePath));
+        					//fileLoaded = true;
+        				} finally
+        				{
+        					//leave the file on disk in case of bulkLoad failure.
+        					
+        					bulkLoadStmt.close();
+        				}
+            		}
+        			
 					boolean transOpen = false;
 					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
 			        try
@@ -904,6 +1026,16 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		});
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#isListeningClosely()
+	 */
+	@Override
+	public boolean isListeningClosely() 
+	{
+		return !exportIsThreaded;
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 	 */
@@ -1008,7 +1140,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					prog.setIndeterminate(false);
 					prog.setValue(0);
 				}
-				if (rowCount < cacheRowCount) 
+				if (rowCount >= 0 && rowCount < cacheRowCount) 
 				{
 					status.setText(String.format(UIRegistry.getResourceString("ExportPanel.UpdatingCacheChunk"), rowsExported+1, rowsExported + rowCount, cacheRowCount));
 				} else
@@ -1122,6 +1254,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			                    }
 			                }
 			                otherRecs = query.list().size();
+			                List<?> recs = query.list();
+			                for (Object rec : recs) {
+			                	System.out.println(rec);
+			                }
 				        } finally
 				        {
 				        	theSession.close();
@@ -1159,9 +1295,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						{
 							displayStatusForMap(map, get());
 							boolean enable = true;
-							for (Pair<SpExportSchemaMapping, Long> ms : updateStats)
+							for (Pair<SpExportSchemaMapping, Long> sm : updateStats)
 							{
-								if (ms.getSecond() == -2L)
+								if (sm.getSecond() == -2L) 
 								{
 									enable = false;
 									break;
