@@ -264,7 +264,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
      */
     public static int getClassTableId()
     {
-        return 54;
+        return 132;
     }
     
     //----------------------------------------------------------------------
