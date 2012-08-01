@@ -207,7 +207,7 @@ public class GiftAgent extends DisciplineMember implements java.io.Serializable 
      */
     public static int getClassTableId()
     {
-        return 132;
+        return 133;
     }
 
 }
