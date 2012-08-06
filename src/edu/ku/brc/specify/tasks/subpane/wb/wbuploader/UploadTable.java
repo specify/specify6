@@ -1237,6 +1237,26 @@ public class UploadTable implements Comparable<UploadTable>
     		loadRecord(rec, 0);
     	}
     }
+    
+    /**
+     * @param c
+     * @return
+     */
+    protected boolean isParentTable(UploadTable c)
+    {
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			if (pte.getImportTable() == c)
+    			{
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
     /**
      * @param rec
      * @throws Exception
@@ -1263,35 +1283,34 @@ public class UploadTable implements Comparable<UploadTable>
     		}
     	}
     	
+    	List<UploadTable> childrenToLoad = new ArrayList<UploadTable>();
 		for (UploadTable c : specialChildren)
 		{
-			if (!shouldLoadParentTbl(c)) //Attribute tables are both parents and (obviously) special children.  
+			if (!isParentTable(c) || !shouldLoadParentTbl(c)) //Attribute tables are both parents and (obviously) special children.  
 			{
 				c.clearCurrentRecords();
+				childrenToLoad.add(c);
 			}
 		}
 		
     	if (rec != null)
     	{
-    		for (UploadTable c : specialChildren)
+    		for (UploadTable c : childrenToLoad)
     		{
     			//System.out.println("loading " + c);
-    			if (!shouldLoadParentTbl(c))
+    			int cSeq = 0;
+    			List<DataModelObjBase> childRecs = getChildRecords(c, rec);
+    			for (DataModelObjBase childRec : childRecs)
     			{
-    				int cSeq = 0;
-    				List<DataModelObjBase> childRecs = getChildRecords(c, rec);
-    				for (DataModelObjBase childRec : childRecs)
+    				if (cSeq < c.uploadFields.size())
     				{
-    					if (cSeq < c.uploadFields.size())
-    					{
-    						c.loadRecord(childRec, cSeq++);
-    					}
-    					else
-    					{
-    						log.warn("Not loading " + c.getTblTitle() + " child "  + cSeq+1 + " into dataset because only " + c.uploadFields.size() + " children are mapped.");
-    					}
+    					c.loadRecord(childRec, cSeq++);
     				}
-    			}
+    				else
+    				{
+    					log.warn("Not loading " + c.getTblTitle() + " child "  + cSeq+1 + " into dataset because only " + c.uploadFields.size() + " children are mapped.");
+    				}
+    			}    			
     		}
     	}
     }
