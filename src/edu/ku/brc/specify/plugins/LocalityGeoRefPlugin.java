@@ -22,6 +22,7 @@ package edu.ku.brc.specify.plugins;
 import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
@@ -390,6 +391,13 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                String latStr = LatLonConverter.ensureFormattedString(lat1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Latitude);
                String lonStr = LatLonConverter.ensureFormattedString(lon1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Longitude);
                latLonUI.setLatLon(latStr, lonStr, null, null);
+               
+               // Now automatically 
+               Component comp = parent.getControlByName("latLongMethod");
+               if (comp instanceof GetSetValueIFace)
+               {
+                   ((GetSetValueIFace)comp).setValue("GEOLocate", null);
+               }
                latLonUI.setErrorInfo(gcData.getErrorPolygon(), gcData.getErrorEstimate());
            }
        }

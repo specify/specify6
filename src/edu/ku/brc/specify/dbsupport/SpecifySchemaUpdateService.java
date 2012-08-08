@@ -1468,6 +1468,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     frame.incOverall(); // #34
                     
+                    
+                    //-----------------------------------------------------------------------------
+                    // Fixes LatLonMethod to use a standard value 'GEOLocate'
+                    //-----------------------------------------------------------------------------
+                    update(conn, "UPDATE locality SET LatLongMethod='GEOLocate' WHERE LOWER(LatLongMethod) = 'geolocate'");
+                    update(conn, "UPDATE picklistitem SET Value ='GEOLocate' WHERE LOWER(Title) = 'geolocate' OR LOWER(Value) = 'geolocate'");
+
                     return true;
                     
                 } catch (Exception ex)
