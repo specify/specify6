@@ -387,6 +387,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         
                         fixDuplicatedPaleoContexts(dbConn.getConnection());
                         
+                        fixLatLonMethodGEOLocate(dbConn.getConnection());
+                        
                         if (doSchemaUpdate || doInsert)
                         {
                             //SpecifySchemaUpdateService.attachUnhandledException();
@@ -1467,13 +1469,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     fixCollectorOrder(conn); // fixes the Ordinal number of Collectors
                     
                     frame.incOverall(); // #34
-                    
-                    
-                    //-----------------------------------------------------------------------------
-                    // Fixes LatLonMethod to use a standard value 'GEOLocate'
-                    //-----------------------------------------------------------------------------
-                    update(conn, "UPDATE locality SET LatLongMethod='GEOLocate' WHERE LOWER(LatLongMethod) = 'geolocate'");
-                    update(conn, "UPDATE picklistitem SET Value ='GEOLocate' WHERE LOWER(Title) = 'geolocate' OR LOWER(Value) = 'geolocate'");
 
                     return true;
                     
@@ -1865,6 +1860,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private int getCount(final String tableName)
     {
         return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM %s", tableName));
+    }
+    
+    /**
+     * @param conn
+     */
+    public void fixLatLonMethodGEOLocate(final Connection conn)
+    {
+        //-----------------------------------------------------------------------------
+        // Fixes LatLonMethod to use a standard value 'GEOLocate'
+        //-----------------------------------------------------------------------------
+        
+        // check first before issuing update
+        if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM locality WHERE LOWER(LatLongMethod) = 'geolocate'") > 0)
+        {
+            update(conn, "UPDATE locality SET LatLongMethod='GEOLocate' WHERE LOWER(LatLongMethod) = 'geolocate'");
+        }
+        
+        // This update should be very fast
+        update(conn, "UPDATE picklistitem SET Title='GEOLocate', Value ='GEOLocate' WHERE LOWER(Title) = 'geolocate' OR LOWER(Value) = 'geolocate'");
     }
     
     /**
