@@ -358,6 +358,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				}
 			}
 		});
+    	//disabling for jar release for WB RecordSet-to-Dataset fix.
+    	setupWebPortalBtn.setVisible(false);
 
     	this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
     	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
