@@ -67,7 +67,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     {
     	this.wbSS = wbSS;
     	//autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
-    	autoValidateChk = UIHelper.createI18NCheckBox(null);
+    	autoValidateChk = UIHelper.createI18NCheckBox("");
         autoValidateChk.setSelected(wbSS.isDoIncrementalValidation());
 //        autoValidateChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.errorBackground);
 //        autoValidateChk.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.errorBorder));
@@ -130,7 +130,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         invalidCellCountLbl.setVisible(wbSS.isDoIncrementalValidation());
 
     	//autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
-    	autoMatchChk = UIHelper.createI18NCheckBox(null);
+    	autoMatchChk = UIHelper.createI18NCheckBox("");
     	autoMatchChk.setSelected(wbSS.isDoIncrementalMatching());
     	//autoMatchChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
     	//autoMatchChk.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
