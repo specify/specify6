@@ -175,6 +175,7 @@
     <field column="Name" name="name" type="java.lang.String" length="64"/>
     <field column="Description" name="description" type="java.lang.String" length="255"/>
     <field column="Count" name="countAmt" type="java.lang.Integer" length="10"/>
+    <field column="OCR" name="OCR" type="text" length="4096"/>
     <field column="Remarks (CollectionObject)" name="collectionObjectRemarks" type="text" length="4096"/>
     <field column="Modifier" name="modifier" type="java.lang.String" length="50"/>
     <field column="GUID" name="guid" type="java.lang.String" length="128"/>
