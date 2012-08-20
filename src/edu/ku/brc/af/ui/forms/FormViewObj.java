@@ -152,7 +152,6 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -2045,6 +2044,13 @@ public class FormViewObj implements Viewable,
                 obj = FormHelper.createAndNewDataObj(view.getClassName(), null, businessRules);//!shouldDoCarryForward);
             }
             
+            // Fix for Bug 8898 - rods 08/20/2012
+            // the MultiView isn't getting the new Obj set into it when a new data object is created in the form viewable
+            // here we just set it directly so nothing else gets called.
+            if (mvParent != null && mvParent.data != null && mvParent.data.getClass() == obj.getClass())
+            {
+                mvParent.data = obj;
+            }
             setNewObject(obj);
         }
     }

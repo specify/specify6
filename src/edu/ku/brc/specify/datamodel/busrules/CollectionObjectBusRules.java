@@ -445,7 +445,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         if (status == STATUS.OK)
         {
             // check that a current determination exists
-            if (((CollectionObject) dataObj).getDeterminations().size() > 0)
+            int cnt = ((CollectionObject) dataObj).getDeterminations().size();
+            if (cnt > 0)
             {
                 int currents = 0;
                 for (Determination det : ((CollectionObject) dataObj).getDeterminations())
@@ -455,6 +456,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         currents++;
                     }
                 }
+
                 if (currents != 1)
                 {
                     status = STATUS.Error;
@@ -463,7 +465,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 {
                     reasonList.add(getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
                 }
-                else
+                else if (cnt > 1)
                 {
                     reasonList.add(getResourceString("CollectionObjectBusRules.ONLY_ONE_CURRENT_DET"));
                 }
