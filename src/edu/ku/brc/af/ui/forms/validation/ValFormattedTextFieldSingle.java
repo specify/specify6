@@ -932,7 +932,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
     {
         this.defaultValue = defaultValue;
 
-        document.setAllowText(true);
+        if (document != null) document.setAllowText(true);
         
         String data;
 
@@ -999,7 +999,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
             undoManager.discardAllEdits();
         }
         
-        document.setAllowText(false);
+        if (document != null) document.setAllowText(false);
 
         validateState();
 
