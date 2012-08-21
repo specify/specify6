@@ -60,6 +60,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -1653,12 +1654,115 @@ public class UploadTable implements Comparable<UploadTable>
             if (formatter != null)
             {
             	result = formatter.formatToUI(value).toString();
-            } else
+            } else if (isSpSystemTypeFld(ufld)) 
+            {
+            	result = getSystemTypeCodeText(value);
+            } else if (isLatLongFld(ufld))
+            {
+            	result = getLatLongText(ufld, value);
+            }	else 
             {
             	result = value.toString();
             }
         }    
         return result;
+    }
+    
+    protected String getLatLongText(UploadField ufld, Object value)
+    {
+    	if (value != null)
+    	{
+    		String result = getLatLongTextFldVal(ufld.getField().getName()).replace(':', ' ');
+    		//there may be issues with decimal places. WB enforces limits in
+    		//LatLonConverter.DECIMAL_SIZES[], but the forms don't seem to
+    		return result;
+    	}
+    	return null;
+    }
+    
+    /**
+     * @param fldName
+     * @return
+     */
+    protected String getLatLongTextFldVal(String fldName)
+    {
+    	if ("latitude1".equalsIgnoreCase(fldName))
+    	{
+    		return ((Locality )getCurrentRecord(0)).getLat1text();
+    	}
+    	if ("latitude2".equalsIgnoreCase(fldName))
+    	{
+    		return ((Locality )getCurrentRecord(0)).getLat2text();
+    	}
+    	if ("longitude1".equalsIgnoreCase(fldName))
+    	{
+    		return ((Locality )getCurrentRecord(0)).getLong1text();
+    	}
+    	if ("longitude2".equalsIgnoreCase(fldName))
+    	{
+    		return ((Locality )getCurrentRecord(0)).getLong2text();
+    	}
+    	return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected String getSystemTypeCodeText(Object value) 
+    {
+    	//Assuming this is never called unless isSpSystemTypeFld(ufld) returns true.
+    	try
+    	{
+    		Method textGetter = this.tblClass.getMethod("getSpSystemTypeCodes");
+    		try 
+    		{
+    			List<PickListDBAdapterIFace> lsts = (List<PickListDBAdapterIFace>) textGetter.invoke(null);
+    			//Assuming there is only one
+    			return lsts.get(0).getItem(((Number)value).intValue()).getTitle();
+    		} catch (Exception e) 
+    		{
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, e);
+                log.error(e);    	
+                return null;
+    		}
+    	} catch (NoSuchMethodException mex)
+    	{
+    		return null;
+    	}
+    	
+    	
+    }
+    /**
+     * @param ufld
+     * @return
+     */
+    protected boolean isSpSystemTypeFld(UploadField ufld)
+    {
+    	try
+    	{
+    		Method typeFldGetter = this.tblClass.getMethod("getSpSystemTypeCodeFlds");
+    		try 
+    		{
+    			String[] typeFlds = (String[]) typeFldGetter.invoke(null);
+    			for (String f : typeFlds)
+    			{
+    				if (f.equalsIgnoreCase(ufld.getField().getName()))
+    				{
+    					return true;
+    				}
+    			}
+    			return false;
+    		} catch (Exception e) 
+    		{
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, e);
+                log.error(e);    	
+                return false;
+    		}
+    	} catch (NoSuchMethodException mex)
+    	{
+    		return false;
+    	}
+    	
     }
     /**
      * @param fld
