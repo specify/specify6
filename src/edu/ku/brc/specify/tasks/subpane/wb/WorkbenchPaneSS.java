@@ -381,13 +381,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
         GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
-        Integer[] errs = {WorkbenchDataItem.VAL_ERROR, WorkbenchDataItem.VAL_ERROR_EDIT};
+        Short[] errs = {WorkbenchDataItem.VAL_ERROR, WorkbenchDataItem.VAL_ERROR_EDIT};
         ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs), 
         		cellRenderAtts.errorBackground, null);
-        Integer[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
+        Short[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
         ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata), 
         		cellRenderAtts.newDataBackground, null);
-        Integer[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
+        Short[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
         ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch), 
         		cellRenderAtts.multipleMatchBackground, null);
 
@@ -6001,9 +6001,9 @@ public class WorkbenchPaneSS extends BaseSubPane
 		final static public int MatchingPredicate = 1;
 		final static public int AnyPredicate = 2;
 		protected final int activation;
-		protected final Integer[] conditions;
+		protected final Short[] conditions;
 		
-		public GridCellPredicate(int activation, Integer[] conditions)
+		public GridCellPredicate(int activation, Short[] conditions)
 		{
 			this.activation = activation;
 			this.conditions = conditions;
@@ -6043,7 +6043,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					|| status == WorkbenchDataItem.VAL_NOT_MATCHED;
 			}
 			else {
-				for (Integer condition : conditions)
+				for (Short condition : conditions)
 				{
 					if (condition == status)
 					{
