@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -81,17 +82,19 @@ public class DatabasePanel extends BaseSetupPanel
 {
     private enum VerifyStatus {OK, CANCELLED, ERROR}
     
-    protected final String            PROPNAME    = "PROPNAME";
-    protected final String            DBNAME      = "dbName";
-    protected final String            HOSTNAME    = "hostName";
-    protected final String            DBPWD       = "dbPassword";
-    protected final String            DBUSERNAME  = "dbUserName";
+    protected final String            PROPNAME       = "PROPNAME";
+    protected final String            DBNAME         = "dbName";
+    protected final String            HOSTNAME       = "hostName";
+    protected final String            DBPWD          = "dbPassword";
+    protected final String            DBUSERNAME     = "dbUserName";
+    public static final String        DB_STRUCT_ONLY = "DB_STRUCT_ONLY";
 
     protected JTextField              usernameTxt;
     protected JTextField              passwordTxt;
     protected JTextField              dbNameTxt;
     protected JTextField              hostNameTxt;
     protected JComboBox               drivers;
+    protected JCheckBox               isConvUploadChkBx;
     
     protected Vector<DatabaseDriverInfo> driverList;
     protected boolean                    doSetDefaultValues;
@@ -124,7 +127,7 @@ public class DatabasePanel extends BaseSetupPanel
 
         CellConstraints cc = new CellConstraints();
         
-        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5) + ",10px,p,10px,p,4px,p,4px,p";
+        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 7) + ",10px,p,10px,p,4px,p,4px,p";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
@@ -145,6 +148,13 @@ public class DatabasePanel extends BaseSetupPanel
         lbl.setFont(bold);
         builder.add(lbl,     cc.xy(1, row));
         builder.add(drivers, cc.xy(3, row));
+        row += 2;
+        
+        builder.add(createLabel(" "),     cc.xy(1, row)); // spacer
+        row += 2;
+        
+        isConvUploadChkBx = createCheckBox(builder, "CONVUPLD_CHKBX", row);
+        isConvUploadChkBx.setToolTipText(getResourceString("CONVUPLD_CHKBX_TT"));
         row += 2;
         
         label       = UIHelper.createLabel("", SwingConstants.CENTER);
@@ -216,6 +226,8 @@ public class DatabasePanel extends BaseSetupPanel
         props.put(HOSTNAME,     hostNameTxt.getText());
         props.put("driver",     drivers.getSelectedItem().toString());
         props.put("driverObj",  drivers.getSelectedItem());
+        props.put(DB_STRUCT_ONLY, isConvUploadChkBx.isSelected() ? "true" : "false");
+        
     }
     
     /* (non-Javadoc)
@@ -246,6 +258,7 @@ public class DatabasePanel extends BaseSetupPanel
         drivers.setEnabled(enable);
         createDBBtn.setEnabled(enable);
         skipStepBtn.setEnabled(enable);
+        isConvUploadChkBx.setEnabled(enable);
     }
 
     /* (non-Javadoc)
@@ -260,6 +273,9 @@ public class DatabasePanel extends BaseSetupPanel
         passwordTxt.setText(values.getProperty(DBPWD));
         dbNameTxt.setText(values.getProperty(DBNAME));
         hostNameTxt.setText(values.getProperty(HOSTNAME));
+        
+        String isCvnVal = values.getProperty(DB_STRUCT_ONLY);
+        isConvUploadChkBx.setSelected(StringUtils.isNotEmpty(isCvnVal) ? isCvnVal.equals("true") : false);
         
         if (doSetDefaultValues)
         {
@@ -279,6 +295,8 @@ public class DatabasePanel extends BaseSetupPanel
         String dbPwd        = passwordTxt.getText();
         String hostName     = hostNameTxt.getText();
         String databaseName = dbNameTxt.getText();
+        
+        properties.put(DB_STRUCT_ONLY, "false"); // don't want this to be true is doing advaned
         
         // Set up the DBConnection for later
         DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();

@@ -298,17 +298,17 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     /**
      * Helper function for creating the UI.
      * @param builder builder
-     * @param label the string label
+     * @param labelKey the string label
      * @param row the row to place it on
      * @return the create JCheckBox
      */
     protected JCheckBox createCheckBox(final PanelBuilder builder, 
-                                       final String       label, 
+                                       final String       labelKey, 
                                        final int          row)
     {
         CellConstraints cc = new CellConstraints();
         
-        JCheckBox checkbox = UIHelper.createCheckBox(UIRegistry.getResourceString(label));
+        JCheckBox checkbox = UIHelper.createCheckBox(UIRegistry.getResourceString(labelKey));
         
         JLabel lbl = UIHelper.createI18NLabel(" ", SwingConstants.RIGHT);
         builder.add(lbl, cc.xy(1, row));

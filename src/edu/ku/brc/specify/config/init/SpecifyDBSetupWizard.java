@@ -45,6 +45,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
@@ -525,9 +526,23 @@ public class SpecifyDBSetupWizard extends JPanel
                     {
                         disciplineType = disciplinePanel.getDisciplineType();
                     }
-                    
+
                     panels.get(step).getValues(props);
                     panels.get(step).aboutToLeave();
+                    
+                    if (step == 1)
+                    {
+                        String isCnvUploadVal = props.getProperty(DatabasePanel.DB_STRUCT_ONLY);
+                        boolean isCnvUpload   = StringUtils.isNotEmpty(isCnvUploadVal) ? isCnvUploadVal.equals("true") : false;
+                        if (isCnvUpload)
+                        {
+                            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                                    getResourceString("CONVUPLD_DONE"),
+                                    getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);
+                            SpecifyDBSetupWizard.this.listener.finished();
+                            return;
+                        }
+                    }
                     
                     if (disciplineType != null && disciplineType.isPaleo() && 
                         panels.get(step) instanceof TreeDefSetupPanel &&
