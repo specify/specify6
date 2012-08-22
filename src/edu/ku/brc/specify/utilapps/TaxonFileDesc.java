@@ -42,6 +42,14 @@ public class TaxonFileDesc
     protected Integer size;
     
     /**
+     * 
+     */
+    public TaxonFileDesc()
+    {
+        
+    }
+    
+    /**
      * @return the discipline
      */
     public String getDiscipline()

@@ -57,6 +57,14 @@ public class FormFieldInfo
     
     
     /**
+     * 
+     */
+    public FormFieldInfo()
+    {
+        
+    }
+    
+    /**
      * @param sp5FieldName
      * @param sp6FieldName
      * @param caption

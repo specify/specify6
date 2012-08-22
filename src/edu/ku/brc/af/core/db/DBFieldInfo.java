@@ -86,19 +86,6 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
      * @param isPartialDate
      * @param datePrecisionName
      */
-    /**
-     * @param tableInfo
-     * @param column
-     * @param name
-     * @param type
-     * @param length
-     * @param isRequired
-     * @param isUpdatable
-     * @param isUnique
-     * @param isIndexed
-     * @param isPartialDate
-     * @param datePrecisionName
-     */
     public DBFieldInfo(final DBTableInfo tableInfo, 
                        final String column, 
                        final String name, 

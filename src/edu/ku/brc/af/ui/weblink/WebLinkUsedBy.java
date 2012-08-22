@@ -49,6 +49,11 @@ public class WebLinkUsedBy
         this.tableName = tableName;
         this.fieldName = null;
     }
+    
+    public WebLinkUsedBy() // needed for XML Marshaling
+    {
+    }
+    
     /**
      * @return the tableName
      */

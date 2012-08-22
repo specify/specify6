@@ -97,6 +97,14 @@ public class TableWriter extends PrintWriter
     }
     
     /**
+     * @return
+     */
+    public String getFullFilePath()
+    {
+        return this.fName;
+    }
+    
+    /**
      * @param pwOut
      */
     private void writeStyle(final PrintWriter pwOut)
@@ -279,6 +287,21 @@ public class TableWriter extends PrintWriter
         for (Object o : row)
         {
             print(TD);
+            print(o != null ? o.toString() : "&nbsp;");
+            print(TD_);
+        }
+        println(TR_);
+        flush();
+    }
+    
+    public void logObjRowVAlign(final Object[] row, final String valign)
+    {
+        lineCnt++;
+        
+        print(TR);
+        for (Object o : row)
+        {
+            print(String.format("<TD valign=\"%s\">", valign));
             print(o != null ? o.toString() : "&nbsp;");
             print(TD_);
         }

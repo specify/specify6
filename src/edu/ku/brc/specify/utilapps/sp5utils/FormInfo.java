@@ -46,6 +46,13 @@ public class FormInfo
     ArrayList<FormFieldInfo> fields = new ArrayList<FormFieldInfo>();
 
     /**
+     * 
+     */
+    public FormInfo()
+    {
+        
+    }
+    /**
      * @param tableName
      * @param formVersion
      * @param formType
