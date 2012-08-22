@@ -227,6 +227,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
                 {
                     if (isOKToSave())
                     {
+                        savePrefs();
                         BackupServiceFactory.getInstance().doBackUp();
                     }
                 }
