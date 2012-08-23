@@ -1477,10 +1477,15 @@ public class Uploader implements ActionListener, KeyListener
     	}
     	else if (t.getName().equalsIgnoreCase("paleocontext"))
     	{
-    		if (r.getRelatedField().getName().equalsIgnoreCase("ChrnosStratID"))
+    		if (r.getRelatedField().getName().equalsIgnoreCase("ChronosStratEndID"))
     		{
     			result = false;
     		}
+    		else if (r.getRelatedField().getName().equalsIgnoreCase("BioStratID"))
+    		{
+    			result = false;
+    		}
+    		
     	} else if (t.getName().equalsIgnoreCase("determination"))
     	{
     		if (r.getRelatedField().getName().equalsIgnoreCase("PreferredTaxonID"))
@@ -1686,10 +1691,10 @@ public class Uploader implements ActionListener, KeyListener
     	}
     	if (result.size() > 0)
     	{
-    		for (UploadField fld : result)
-    		{
+    		//for (UploadField fld : result)
+    		//{
     			//System.out.println(fld.getWbFldName());
-    		}
+    		//}
     	}
     	return result;
     }
