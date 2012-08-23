@@ -35,7 +35,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -219,7 +218,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         String urlString;
         try
         {
-            urlString = buildURL(false);
+            urlString = buildURL(false, false);
         }
         catch (Exception e1)
         {
@@ -282,7 +281,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             {
                 textFieldHash.clear();
                 
-                promptCnt += backupHash.size();
+                promptCnt += backupHash != null ? backupHash.size() : 0;
                 
                 String          rowDef = createDuplicateJGoodiesDef("p", "4px", promptCnt); //$NON-NLS-1$ //$NON-NLS-2$
                 PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef)); //$NON-NLS-1$
@@ -311,7 +310,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 int y = 1;
                 for (WebLinkDefArg arg : webLinkDef.getArgs())
                 {
-                    if (arg.isPrompt())
+                    if (arg.isPrompt() && valueHash.get(arg.getName()) == null)
                     {
                         JTextField txtField = createTextField(15);
                         txtField.getDocument().addDocumentListener(dla);
@@ -327,14 +326,17 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                     }
                 }
                 
-                for (String name : backupHash.keySet())
+                if (backupHash != null)
                 {
-                    JTextField txtField = createTextField(15);
-                    txtField.getDocument().addDocumentListener(dla);
-                    textFieldHash.put(name, txtField);
-                    pb.add(createLabel(backupHash.get(name), SwingConstants.RIGHT), cc.xy(1, y));
-                    pb.add(txtField, cc.xy(3, y));
-                    y += 2;
+                    for (String name : backupHash.keySet())
+                    {
+                        JTextField txtField = createTextField(15);
+                        txtField.getDocument().addDocumentListener(dla);
+                        textFieldHash.put(name, txtField);
+                        pb.add(createLabel(backupHash.get(name), SwingConstants.RIGHT), cc.xy(1, y));
+                        pb.add(txtField, cc.xy(3, y));
+                        y += 2;
+                    }
                 }
                 
                 pb.setDefaultDialogBorder();
@@ -350,102 +352,86 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
     }
 
     /**
+     * @param forToolTip creating it to just set into tooltip
+     * @param skipPrompt if true do not show the prompt
      * @return
-     * @throws Exception
      */
-    protected String buildURL(final boolean forToolTip)
+    @SuppressWarnings("null")
+    protected String buildURL(final boolean forToolTip, final boolean skipPrompt)
     {
         if (webLinkDef != null)
         {
             // Start by getting the data needed to build the URL
             // so first see if we need to prompt for data.
             valueHash.clear();
-
-            int possibleValues = 0;
-            int numValues      = 0;
             
-            Vector<String> missingList = null; // List of missing args
+            int promptCnt = 0;
             
-            Hashtable<String, String> backupPrompt = new Hashtable<String, String>();
+            Vector<String>            missingList  = null; // List of missing args
+            Hashtable<String, String> backupPrompt = null;
+            
             for (WebLinkDefArg arg : webLinkDef.getArgs())
             {
-                if (!arg.isPrompt())
+                String name  = arg.getName();
+                String value = ""; //$NON-NLS-1$
+                if (provider != null)
                 {
-                    possibleValues++;
+                    value = provider.getWebLinkData(name);
                     
-                    String name  = arg.getName();
-                    String value = ""; //$NON-NLS-1$
-                    if (provider != null)
+                } else if (dataObj instanceof FormDataObjIFace)
+                {
+                    Object dataVal = FormHelper.getValue((FormDataObjIFace)dataObj, name);
+                    if (dataVal != null)
                     {
-                        value = provider.getWebLinkData(name);
-                        
-                    } else if (dataObj instanceof FormDataObjIFace)
-                    {
-                        Object dataVal = FormHelper.getValue((FormDataObjIFace)dataObj, name);
-                        if (dataVal != null)
-                        {
-                            value = dataVal.toString();
-                        } else
-                        {
-                            backupPrompt.put(name, arg.getTitle() == null ? arg.getName() : arg.getTitle());
-                        }
-                    } else if (dataObj instanceof String && textField != null)
-                    {
-                        value = (String)dataObj;
-                    }
-                    
-                    String textFieldValue = null;
-                    if (textField != null)
-                    {
-                        textFieldValue = textField.getText();
-                    }
-                    
-                    if (value != null)
-                    {
-                        if (StringUtils.isNotEmpty(textFieldValue) && !textFieldValue.equals(value))
-                        {
-                            value = textFieldValue;
-                        }
-                        valueHash.put(name, value);
-                        numValues++;
-                        
-                    } else if (StringUtils.isNotEmpty(textFieldValue))
-                    {
-                        valueHash.put(name, textFieldValue);
-                        numValues++;
+                        value = dataVal.toString();
                     } else
                     {
-                        if (missingList == null)
-                        {
-                            missingList = new Vector<String>();
-                        }
-                        missingList.add(name);
+                        if (backupPrompt == null) backupPrompt = new Hashtable<String, String>();
+                        backupPrompt.put(name, arg.getTitle() == null ? arg.getName() : arg.getTitle());
+                        promptCnt++;
                     }
+                } else if (dataObj instanceof String && textField != null && arg.getName().equals("this"))
+                {
+                    value = (String)dataObj;
                 } else
                 {
-                    valueHash.put(arg.getName(), "??");
+                    promptCnt++;
+                    continue;
+                }
+                
+                String textFieldValue = null;
+                if (textField != null)
+                {
+                    textFieldValue = textField.getText();
+                }
+                
+                if (StringUtils.isNotEmpty(value))
+                {
+                    if (StringUtils.isNotEmpty(textFieldValue) && !textFieldValue.equals(value))
+                    {
+                        value = textFieldValue;
+                    }
+                    valueHash.put(name, value);
+                    
+                } else if (StringUtils.isNotEmpty(textFieldValue))
+                {
+                    valueHash.put(name, textFieldValue);
+                    
+                } else if (!arg.isPrompt())
+                {
+                    if (missingList == null) missingList = new Vector<String>();
+                    missingList.add(name);
+                    
+                } else
+                {
+                    promptCnt++;
+                    //valueHash.put(arg.getName(), "??");
                 }
             }
             
-            if (possibleValues != numValues)
+            if (!forToolTip && !skipPrompt && promptCnt > 0)
             {
-                /*if (!forToolTip)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    for (String name : missingList)
-                    {
-                        sb.append(name);
-                        sb.append("\n");
-                    }
-                    UIRegistry.showLocalizedError("WEBLNK_MIS_FLD", "\n"+sb.toString());
-                }*/
-                return null;
-            }
-            
-            if (!forToolTip)
-            {
-                int promptCnt = webLinkDef.getPromptCount();
-                if (promptCnt > 0 || backupPrompt.size() > 0)
+                if (promptCnt > 0 || (backupPrompt != null && backupPrompt.size() > 0))
                 {
                     promptDialog = createPromptDlg(backupPrompt);
                     promptDialog.setVisible(true);
@@ -460,6 +446,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                     {
                         return null;
                     }
+                    promptDialog.dispose();
                     promptDialog = null;
                 }
             }
@@ -518,8 +505,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             
-            
-            
             url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
             return url;
         }
@@ -541,14 +526,12 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         super.setEnabled(enabled);
         
         boolean isTextFieldOK = true;
-        if (enabled && 
-            StringUtils.isNotEmpty(watchId) &&
-            textField != null)
+        if (enabled && StringUtils.isNotEmpty(watchId) && textField != null)
         {
             isTextFieldOK = StringUtils.isNotEmpty(textField.getText());
         }
         
-        String urlToLaunch = buildURL(false);
+        String urlToLaunch = buildURL(false, true);
         boolean enbl = (webLinkDef != null || StringUtils.isNotEmpty(urlToLaunch)) && enabled && isTextFieldOK;
 
         launchBtn.setEnabled(enbl);
@@ -625,12 +608,10 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 this.setEnabled(true);
             }
             
-            String url = buildURL(true);
-            if (StringUtils.isNotEmpty(url))
-            {
-                setToolTips();
-            }
-            setEnabled(isEnabled());
+            setToolTips();
+            
+            boolean isEnabled = isEnabled();
+            setEnabled(isEnabled);
         }
     }
 
@@ -787,7 +768,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         if (((dataObj instanceof String && StringUtils.isEmpty((String)dataObj)) || dataObj == null) && text != null)
         {
             launchBtn.setEnabled(true);
-            dataObj = text;
             
         } else if (dataObj != null && text != null)
         {
@@ -802,15 +782,11 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                     launchBtn.setEnabled(true);
                 }
             }
-        } else
-        {
-            dataObj = text;
         }
         
-        if (dataObj != null)
-        {
-            setToolTips();
-        }
+        dataObj = text;
+        
+        setToolTips();
     }
     
     /**
@@ -818,12 +794,15 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
      */
     protected void setToolTips()
     {
-        String url = buildURL(true);
-        launchBtn.setToolTipText(url);
-        if (textField != null)
+        String url = buildURL(true, true);
+        if (url != null)
         {
-            textField.setToolTipText(url);
-        }  
+            launchBtn.setToolTipText(url);
+            if (textField != null)
+            {
+                textField.setToolTipText(url);
+            } 
+        }
     }
     
 }
