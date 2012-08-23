@@ -137,6 +137,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private String           defValForPrepType    = null;
     
     protected boolean        checkFieldNumberDupl = false;
+    protected boolean        checkFieldNumberEmpty = false;
     
     /**
      * Constructor.
@@ -156,7 +157,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null && formViewObj.isEditing())
         {
-            checkFieldNumberDupl = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
+            checkFieldNumberDupl  = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
+            checkFieldNumberEmpty = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_NOEMPTY", false);
             
             Component comp = formViewObj.getControlByName("generateLabelBtn");
             if (comp instanceof JButton)
@@ -396,17 +398,25 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
                 if (currents == 0)
                 {
-                    reasonList.add(getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
+                    reasonList.add(getI10N("CURRENT_DET_REQUIRED"));
                 }
                 else
                 {
-                    reasonList.add(getResourceString("CollectionObjectBusRules.ONLY_ONE_CURRENT_DET"));
+                    reasonList.add(getI10N("ONLY_ONE_CURRENT_DET"));
                 }
             }
         }
-
      
      */
+    
+    /**
+     * @param key
+     * @return
+     */
+    private String getI10N(final String key)
+    {
+        return getResourceString("CollectionObjectBusRules."+key);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
@@ -423,10 +433,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         {
    			if (colObj != null && colObj.getId() != null)
    			{
-   				reasonList.add(getResourceString("CollectionObjectBusRules.AttemptedEditOfBatch"));
+   				reasonList.add(getI10N("AttemptedEditOfBatch"));
    				status = STATUS.Error;
    			}
         }
+        
         if (status == STATUS.OK && colObj.getId() == null)
         {
             DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoById(1); // don't need to check for null
@@ -439,11 +450,18 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             } else if (checkFieldNumberDupl)
             {
                 status = checkForFieldNumDup(dataObj);
-            }
+            }  
         }
         
         if (status == STATUS.OK)
         {
+            if (status == STATUS.OK && checkFieldNumberEmpty && 
+                StringUtils.isEmpty(colObj.getCatalogNumber()))
+            {
+                reasonList.add(getI10N("NO_EMPTY_CAT_NUMS"));
+                status = STATUS.Error;
+            }
+
             // check that a current determination exists
             int cnt = ((CollectionObject) dataObj).getDeterminations().size();
             if (cnt > 0)
@@ -463,11 +481,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
                 if (currents == 0)
                 {
-                    reasonList.add(getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
+                    reasonList.add(getI10N("CURRENT_DET_REQUIRED"));
                 }
                 else if (cnt > 1)
                 {
-                    reasonList.add(getResourceString("CollectionObjectBusRules.ONLY_ONE_CURRENT_DET"));
+                    reasonList.add(getI10N("ONLY_ONE_CURRENT_DET"));
                 }
             }
         }
@@ -786,7 +804,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 	/**
 	 * Show objects that were not added to the batch
 	 */
-	protected void showBatchErrorObjects(final Vector<String> badObjects, final String TitleKey, final String MsgKey)
+	@SuppressWarnings("rawtypes")
+    protected void showBatchErrorObjects(final Vector<String> badObjects, final String TitleKey, final String MsgKey)
 	{
     	JPanel pane = new JPanel(new BorderLayout());
         JLabel lbl = createLabel(getResourceString(MsgKey));
@@ -1058,8 +1077,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     					if (!busRule.beforeSaveCommit(batchRS, session))
     					{
     						session.rollback();
-    						throw new Exception(
-									"Business rules processing failed");
+    						throw new Exception("Business rules processing failed");
     					}
     				}
     				session.commit();
@@ -1086,17 +1104,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         	protected void addBatchRSToUI()
         	{
         		SwingUtilities.invokeLater(new Runnable() {
-
-					/* (non-Javadoc)
-					 * @see java.lang.Runnable#run()
-					 */
 					@Override
 					public void run() {
 						CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
 						cmd.setData(batchRS);
 						CommandDispatcher.dispatch(cmd);
 					}
-        			
         		});
         	}
         	        	
@@ -1120,7 +1133,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
         };
         
-        final SimpleGlassPane gp = UIRegistry.writeSimpleGlassPaneMsg(UIRegistry.getResourceString("CollectionObjectBusRules.SAVING_BATCH"), 24);
+        final SimpleGlassPane gp = UIRegistry.writeSimpleGlassPaneMsg(getI10N("SAVING_BATCH"), 24);
         gp.setProgress(0);
         worker.addPropertyChangeListener(
                 new PropertyChangeListener() {
