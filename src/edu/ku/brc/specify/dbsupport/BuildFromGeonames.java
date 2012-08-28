@@ -74,7 +74,6 @@ import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -163,9 +162,9 @@ public class BuildFromGeonames
     //private File         baseDir;
     private File         FILE_INDEX_DIR;
     
-    private IndexReader  reader;
-    private Searcher     searcher;
-    private Analyzer     analyzer;
+    private IndexReader   reader;
+    private IndexSearcher searcher;
+    private Analyzer      analyzer;
     
     private IndexWriter  writer;
     
@@ -795,7 +794,7 @@ public class BuildFromGeonames
                     Connection conn = dbMgr.getConnection();
                     Statement  stmt = null;
                     ResultSet  rs   = null;
-                    PreparedStatement pStmt = null;
+                    PreparedStatement pStmtTmp = null;
                     try
                     {
                         conn.setCatalog(dbName);
@@ -813,7 +812,7 @@ public class BuildFromGeonames
                         {
                             String sql = "SELECT g.geonameId, g.fcode, g.country, g.admin1, g.admin2 FROM geoname g " +
                                          "ORDER BY g.country ASC, g.fcode DESC, g.admin1 ASC, g.admin2 ASC";
-                            pStmt = conn.prepareStatement("UPDATE geoname SET ISOCode=? WHERE geonameId = ?");
+                            pStmtTmp = conn.prepareStatement("UPDATE geoname SET ISOCode=? WHERE geonameId = ?");
                             stmt  = conn.createStatement();
                             rs    = stmt.executeQuery(sql);
                             
@@ -851,9 +850,9 @@ public class BuildFromGeonames
                                                 sb.append(county);
                                             }
                                         }
-                                        pStmt.setString(1, sb.length() > 24 ? sb.substring(0, 24) : sb.toString());
-                                        pStmt.setInt(2, rs.getInt(1));
-                                        isOK = pStmt.executeUpdate() == 1;
+                                        pStmtTmp.setString(1, sb.length() > 24 ? sb.substring(0, 24) : sb.toString());
+                                        pStmtTmp.setInt(2, rs.getInt(1));
+                                        isOK = pStmtTmp.executeUpdate() == 1;
                                     }
                                }
                             }
@@ -870,7 +869,7 @@ public class BuildFromGeonames
                         {
                             if (rs != null) rs.close();
                             if (stmt != null) stmt.close();
-                            if (pStmt != null) pStmt.close();
+                            if (pStmtTmp != null) pStmtTmp.close();
 
                         } catch (Exception ex) {}
                     }
@@ -1243,11 +1242,13 @@ public class BuildFromGeonames
      */
     public boolean loadGeoNamesDB()
     {
+        System.err.println("aHERE!");
         try
         {
             DBConnection currDBConn = DBConnection.getInstance();
             String       dbName     = currDBConn.getDatabaseName();
             DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword);
+            System.err.println("bHERE!");
             
             if (status == DBMSUserMgr.DBSTATUS.missingDB)
             {
@@ -1278,20 +1279,24 @@ public class BuildFromGeonames
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
         }
-        
+        System.err.println("1HERE!");
         File file = new File(XMLHelper.getConfigDirPath("geonames.sql.zip"));
         if (file.exists())
         {
             BackupServiceFactory bsf = BackupServiceFactory.getInstance();
             bsf.setUsernamePassword(itUsername, itPassword);
             
+            System.err.println("2HERE!");
             String dbName = DBConnection.getInstance().getDatabaseName();
             boolean status = bsf.doRestoreBulkDataInBackground(dbName, null, file.getAbsolutePath(), null, null, null, true, false); // true - does it asynchronously, 
+            System.err.println("3HERE!");
             
             buildISOCodes();
+            System.err.println("4HERE!");
             
             // Clear IT Username and Password
             bsf.setUsernamePassword(null, null);
+            System.err.println("5HERE!");
             
             return status;
         }
