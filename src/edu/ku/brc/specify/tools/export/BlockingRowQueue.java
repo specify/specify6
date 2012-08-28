@@ -42,6 +42,9 @@ class BlockingRowQueue extends ArrayBlockingQueue<List<Future<?>>>
 	 */
 	public boolean isFinished()
 	{
-		return done;
+		synchronized(this)
+		{
+			return done;
+		}
 	}
 }

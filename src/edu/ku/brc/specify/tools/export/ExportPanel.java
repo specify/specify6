@@ -145,8 +145,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected final List<SpExportSchemaMapping> maps;
 	protected final List<Pair<SpExportSchemaMapping, Long>> updateStats;
 	
-	protected final Boolean useBulkLoad = AppPreferences.getGlobalPrefs().getBoolean("ExportPanel.UseBulkLoad", false);
-	protected final String bulkFileDir = AppPreferences.getGlobalPrefs().get("ExportPanel.BulkFileDir", AppPreferences.getLocalPrefs().getDirPath());
+	protected final Boolean useBulkLoad = AppPreferences.getLocalPrefs().getBoolean("ExportPanel.UseBulkLoad", false);
+	protected final String bulkFileDir = AppPreferences.getLocalPrefs().get("ExportPanel.BulkFileDir", AppPreferences.getLocalPrefs().getDirPath());
 	
 	
 	/**
@@ -960,6 +960,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			{
 				if (success)
 				{
+					stupid = 0;
 					for (QBDataSourceListenerIFace listener : dataSrcListeners)
 					{
 						listener.done(rowsExported);

@@ -46,7 +46,7 @@ public class ExportToMySQLDB
 	private final static int bulkBlockSize = 1000;
 	private final static int bulkQueueSize = 8000;
 	
-	public final static int defaultFldLenForFormattedFld = 1250; 
+	public final static int defaultFldLenForFormattedFld = 500; 
 	//public final static int maxWidthForTextFld = 1250; //assumes MySql 5.0.3 or greater.
 													//since this class generates data 
 													// intended for web searches
@@ -68,14 +68,14 @@ public class ExportToMySQLDB
 		
 		if (dataType.equals(String.class))
 		{
-			if (fld != null && "text".equalsIgnoreCase(fld.getType()))
+			if (fld != null && ("text".equalsIgnoreCase(fld.getType()) || fld.getLength() > defaultFldLenForFormattedFld))
 			{
 				return "text";
 				
 			} else
 			{
 				String length = String.valueOf(defaultFldLenForFormattedFld);
-				if (fld != null && fld.getLength() != -1/* && fld.getLength() <= maxWidthForTextFld*/)
+				if (fld != null && fld.getLength() != -1 && fld.getLength() <= defaultFldLenForFormattedFld)
 				{
 					length = String.valueOf(fld.getLength());
 				}
@@ -283,16 +283,17 @@ public class ExportToMySQLDB
 				newTable = true;
 			}
 	    
+			long deletedRows = 0;
 			if (firstPass && update)
 			{
 				DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(baseTableId);
 	    	
-				deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
+				deletedRows = deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
 			}
 	    
 			//System.out.println("deleted deleted recs");
 	    
-			if (rows.hasResultSize())
+			if (rows.hasResultSize() && rows.size() > 0)
 			{
 				for (QBDataSourceListenerIFace listener : listeners)
 				{
@@ -301,9 +302,9 @@ public class ExportToMySQLDB
 				}
 				//System.out.println("listeners notified: loaded()");
 			}
-		
+
 			Statement stmt = toConnection.createStatement();
-			int rowNum = 0;
+			long rowNum = 0;
 			//long startTime = System.nanoTime();
 			try
 			{
@@ -312,7 +313,11 @@ public class ExportToMySQLDB
 					listener.filling();
 				}
 			
-				rowNum = processRows(listeners, rows, rowNum, update, newTable, firstPass, stmt, tblName, bulkFilePath);
+				rowNum = deletedRows + processRows(listeners, rows, rowNum, update, newTable, firstPass, stmt, tblName, bulkFilePath);
+				if (deletedRows != 0)
+				{
+					deletedRows = 0;
+				}
 				//System.out.println("returning " + rowNum + ". Time elapsed: " + (System.nanoTime() - startTime)/1000000000L + " seconds.");
 				return rowNum;
 			}
@@ -358,7 +363,7 @@ public class ExportToMySQLDB
 	 * @param collMemId
 	 * @throws Exception
 	 */
-	protected static void deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId) throws Exception
+	protected static long deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId) throws Exception
 	{
 		String sql = "delete from " + tblName + " where " + keyFld + " not in(select " + spKeyFld + " from " + spTblName;
 		if (collMemId != -1)
@@ -368,7 +373,9 @@ public class ExportToMySQLDB
 		sql += ")";
 		Statement statement = connection.createStatement();
 		statement.execute(sql);
+		long result = statement.getUpdateCount();
 		statement.close();
+		return result;
 	}
 	
 	/**
@@ -516,13 +523,13 @@ public class ExportToMySQLDB
 	 * @return
 	 * @throws Exception
 	 */
-	protected static int processRows(List<QBDataSourceListenerIFace> listeners,
-			QBDataSource rows, int rowNum, boolean update, boolean newTable,
+	protected static long processRows(List<QBDataSourceListenerIFace> listeners,
+			QBDataSource rows, long rowNum, boolean update, boolean newTable,
 			boolean firstPass, Statement stmt, String tblName, String fullFilePathName) throws Exception 
 	{
 		boolean doBulk = fullFilePathName != null;
 		List<String> bulk = doBulk ? new ArrayList<String>(bulkBlockSize) : null;
-		int currentRow = rowNum;
+		long currentRow = rowNum;
 		BlockingRowQueue q = new BlockingRowQueue(bulkQueueSize);
 		RowFiller f = new RowFiller(q, rows);
 		Thread fThread = new Thread(f);
@@ -530,9 +537,12 @@ public class ExportToMySQLDB
 		{
 			fThread.setPriority(fThread.getPriority() - 3);
 			fThread.start();
-			while (!q.isFinished() || !q.isEmpty() || currentRow < rows.size()) 
+			while (!rows.hasResultSize()); //need to wait here else the q.take() call in the loop will wait forever for empty data sources.
+			while ((!q.isFinished() || !q.isEmpty() || currentRow < rows.size()) && !(rows.hasResultSize() && rows.size() == 0)) 
 			{
+				//System.out.print("  taking ... ...");
 				List<Future<?>> row = q.take();
+				//System.out.println(" took");
 				// System.out.println("exporting " + currentRow);
 				for (QBDataSourceListenerIFace listener : listeners) 
 				{
