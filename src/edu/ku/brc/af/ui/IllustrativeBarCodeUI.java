@@ -63,9 +63,16 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
     {
         switch (code)
         {
+            case 'a' :
             case 'A' : return 0;
+            
+            case 'g' :
             case 'G' : return 1;
+            
+            case 'c' :
             case 'C' : return 2;
+            
+            case 't' :
             case 'T' : return 3;
         }
         return 4;
@@ -79,9 +86,16 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
     {
         switch (code)
         {
+            case 'a' :
             case 'A' : return Color.GREEN;
+            
+            case 'g' :
             case 'G' : return Color.BLACK;
+            
+            case 'c' :
             case 'C' : return Color.BLUE;
+            
+            case 't' :
             case 'T' : return Color.RED;
         }
         return Color.WHITE;
