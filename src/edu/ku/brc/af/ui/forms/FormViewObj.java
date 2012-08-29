@@ -3347,6 +3347,11 @@ public class FormViewObj implements Viewable,
                         {
                             businessRules.afterDeleteCommit(dbDataObj);
                         }
+                        
+                        if (mvParent.isTopLevel() && mvParent.getCurrentValidator() != null)
+                        {
+                            mvParent.getCurrentValidator().setUIValidatorsToNotChanged();
+                        }
                     } else
                     {
                         doClearObj = true;
@@ -4644,7 +4649,7 @@ public class FormViewObj implements Viewable,
             }
             
             // I am punting here and just removing the last one
-            if (recordSetItemList != null)
+            if (recordSetItemList != null && recordSetItemList.size() > 0)
             {
                 recordSetItemList.remove(recordSetItemList.size()-1);
             }
