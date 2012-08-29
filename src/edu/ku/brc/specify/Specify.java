@@ -3025,6 +3025,29 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       }
   }
   
+/**
+ * 
+ */
+    public static void removeUnneededJars()
+    {
+        // Remove unwanted jar files
+        for (String fName : new String[] { "apache-solr-core-4.0-SNAPSHOT.jar",
+                                           "apache-solr-solrj-4.0-SNAPSHOT.jar" })
+        {
+            File file = XMLHelper.getConfigDir(".." + File.separator + "libs" + File.separator
+                    + fName);
+            if (file.exists())
+            {
+                try
+                {
+                    file.delete();
+                } catch (SecurityException ex)
+                {
+                }
+            }
+        }
+    }
+  
   /**
    *
    */
@@ -3039,18 +3062,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       AppBase.processArgs(args);
       AppBase.setupTeeForStdErrStdOut(true, false);
       
-      // Remove unwanted jar files
-      for (String fName : new String[] {"apache-solr-core-4.0-SNAPSHOT.jar", "apache-solr-solrj-4.0-SNAPSHOT.jar"})
-      {
-          File file = XMLHelper.getConfigDir(".." + File.separator + "libs" + File.separator + fName);
-          if (file.exists())
-          {
-              try
-              {
-                  file.delete();
-              } catch (SecurityException ex) {}
-          }
-      }
+      removeUnneededJars();
       
       //UIHelper.attachUnhandledException();
       
