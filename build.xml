@@ -233,7 +233,6 @@
 			<fileset dir="libs">
                 <exclude name="**/*.svn" />
                 <exclude name="**/derby.jar" />
-				<exclude name="**/lucene-core.jar" />
 			</fileset>
 		</copy>
         <copy todir="${installer.dir}/wwlib">
