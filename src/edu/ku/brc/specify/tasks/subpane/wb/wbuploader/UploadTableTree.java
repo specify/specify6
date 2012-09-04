@@ -66,8 +66,8 @@ public class UploadTableTree extends UploadTable
     protected UploadTableTree child;
     protected final Integer rank;
     protected final String wbLevelName;
-    protected Treeable treeRoot;    
-    protected SortedSet<Treeable> defaultParents;
+    protected Treeable<?,?,?> treeRoot;    
+    protected SortedSet<Treeable<?,?,?>> defaultParents;
     protected TreeDefIface<?, ?, ?> treeDef;
     protected boolean incrementalNodeNumberUpdates = false;
     protected boolean allowUnacceptedMatches = true;
@@ -94,7 +94,7 @@ public class UploadTableTree extends UploadTable
 		this.required = required;
         this.rank = rank;
         this.wbLevelName = wbLevelName;
-        defaultParents = new TreeSet<Treeable>(new RankComparator());
+        defaultParents = new TreeSet<Treeable<?,?,?>>(new RankComparator());
 	}
 
     /* (non-Javadoc)
@@ -134,7 +134,7 @@ public class UploadTableTree extends UploadTable
      * @return The TreeDef for the tblClass.
      * @throws UploaderException
      */
-    protected TreeDefIface getTreeDef() throws UploaderException 
+    protected TreeDefIface<?,?,?> getTreeDef() throws UploaderException 
     {
         if (treeDef == null)
         {
@@ -151,42 +151,51 @@ public class UploadTableTree extends UploadTable
      * @return TreeDefItem corresponding to tblClass and rank.
      * @throws UploaderException
      */
-    protected TreeDefItemIface getTreeDefItem() throws UploaderException
+    public TreeDefItemIface<?,?,?> getTreeDefItem() throws UploaderException
     {
         return getTreeDef().getDefItemByRank(rank);
     }
             
+    
     /**
+     * @return the level name from the wb template
+     */
+    public String getWbLevelName() 
+    {
+		return wbLevelName;
+	}
+
+	/**
      * @param parent
      * @param currentRec
      * @param recNum
      * @return parent or its 'AcceptedParent'.
      */
-    protected DataModelObjBase getAcceptedParent(DataModelObjBase parent, Treeable currentRec, int recNum, boolean notify)
+    protected DataModelObjBase getAcceptedParent(DataModelObjBase parent, Treeable<?,?,?> currentRec, int recNum, boolean notify)
     {
-        if (parent == null || ((Treeable )parent).getIsAccepted())
+        if (parent == null || ((Treeable<?,?,?> )parent).getIsAccepted())
         {
         	return parent;
         }
-        DataModelObjBase newResult = (DataModelObjBase )((Treeable )parent).getAcceptedParent();
+        DataModelObjBase newResult = (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
         if (notify)
 		{
 			String name = currentRec == null ? null : currentRec.getName();
 			if (name == null)
 			{
-				Treeable tRec = (Treeable) getCurrentRecord(recNum);
+				Treeable<?,?,?> tRec = (Treeable<?,?,?>) getCurrentRecord(recNum);
 				name = tRec == null ? getResourceString("UploadTableTree.CurrentNode")
 						: tRec.getName();
 			}
-			String parentName = ((Treeable) parent).getName();
-			String newParentName = ((Treeable) newResult).getName();
+			String parentName = ((Treeable<?,?,?>) parent).getName();
+			String newParentName = ((Treeable<?,?,?>) newResult).getName();
 			String msg = String
 					.format(
 							getResourceString("UploadTableTree.UnacceptedParentSwitch"),
 							wbCurrentRow, name, parentName, newParentName);
 			uploader.addMsg(new AcceptedParentSwitchMessage(msg, wbCurrentRow));
 		}
-        return (DataModelObjBase )((Treeable )parent).getAcceptedParent();
+        return (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
     }
     
     /**
@@ -197,7 +206,7 @@ public class UploadTableTree extends UploadTable
      * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
      * as the parent. (Validation would have already detected if Family was required and missing).
      */
-    protected DataModelObjBase getParentRec(Treeable currentRec, int recNum)
+    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum)
     {
         if (parent == null)
         {
@@ -232,7 +241,7 @@ public class UploadTableTree extends UploadTable
         else
         {
             //this probably will already have been done in UploadTable.setParents, unless immediate parent id is null.
-            tRec.setParent((Treeable)parentRec);
+            tRec.setParent((Treeable<?,?,?>)parentRec);
         }
     }
 
@@ -261,7 +270,7 @@ public class UploadTableTree extends UploadTable
     /**
      * @return the root of the tree for this.tblClass.
      */
-    protected Treeable getTreeRoot()  throws UploaderException
+    protected Treeable<?,?,?> getTreeRoot()  throws UploaderException
     {
         if (treeRoot == null)
         {
@@ -279,9 +288,9 @@ public class UploadTableTree extends UploadTable
      * 
      * @throws UploaderException
      */
-    protected Treeable getDefaultParent2(TreeDefItemIface defItem) throws UploaderException
+    protected Treeable<?,?,?> getDefaultParent2(TreeDefItemIface<?,?,?> defItem) throws UploaderException
     {
-        TreeDefItemIface parentDefItem = defItem.getParent();
+        TreeDefItemIface<?,?,?> parentDefItem = defItem.getParent();
         while (parentDefItem != null && parentDefItem.getRankId() > 0)
         {
             if (parentDefItem.getIsEnforced() != null && parentDefItem.getIsEnforced())
@@ -311,9 +320,9 @@ public class UploadTableTree extends UploadTable
      *
      * @throws UploaderException
      */
-    protected Treeable getDefaultParent(TreeDefItemIface parentDefItem) throws UploaderException
+    protected Treeable<?,?,?> getDefaultParent(TreeDefItemIface<?,?,?> parentDefItem) throws UploaderException
     {
-        for (Treeable p : defaultParents)
+        for (Treeable<?,?,?> p : defaultParents)
         {
             if (p.getDefinitionItem().getTreeDefItemId().equals(parentDefItem.getTreeDefItemId()))
             {
@@ -326,7 +335,7 @@ public class UploadTableTree extends UploadTable
                 + " and name='" + getDefaultParentName().replace("'", "''") + "'", false);
         try
         {
-            Treeable result = (Treeable)q.uniqueResult();
+            Treeable<?,?,?> result = (Treeable<?,?,?>)q.uniqueResult();
             if (result != null)
             {
                 return result;
@@ -358,7 +367,7 @@ public class UploadTableTree extends UploadTable
      *   
      * @throws UploaderException
      */
-    protected Treeable createDefaultParent(TreeDefItemIface defItem) throws UploaderException
+    protected Treeable<?,?,?> createDefaultParent(TreeDefItemIface<?,?,?> defItem) throws UploaderException
     {
         try
         {
@@ -403,7 +412,7 @@ public class UploadTableTree extends UploadTable
         try
         {
             QueryIFace q = session.createQuery(hql, false);
-            treeRoot = (Treeable)q.list().get(0);
+            treeRoot = (Treeable<?,?,?>)q.list().get(0);
         }
         finally
         {
@@ -443,7 +452,7 @@ public class UploadTableTree extends UploadTable
     {
         super.undoUpload(showProgress);
         List<UploadedRecordInfo> keys = new LinkedList<UploadedRecordInfo>();
-        for (Treeable defParent : defaultParents)
+        for (Treeable<?,?,?> defParent : defaultParents)
         {
             keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1, 0, null));
         }
@@ -473,9 +482,9 @@ public class UploadTableTree extends UploadTable
      * 
      *  sorts in reverse order by rankId
      */
-    protected class RankComparator implements Comparator<Treeable>
+    protected class RankComparator implements Comparator<Treeable<?,?,?>>
     {
-        public int compare(Treeable t1, Treeable t2)
+        public int compare(Treeable<?,?,?> t1, Treeable<?,?,?> t2)
         {
             if (t1.getRankId() < t2.getRankId())
             {
@@ -534,7 +543,7 @@ public class UploadTableTree extends UploadTable
     {
         try
         {
-            TreeDefItemIface td = getTreeDefItem();
+            TreeDefItemIface<?,?,?> td = getTreeDefItem();
             if (td != null) return td.getDisplayText();
             return tblClass.getSimpleName();
         }
@@ -854,7 +863,11 @@ public class UploadTableTree extends UploadTable
 			super.loadMyRecord(rec, seq);
 			parentRec = (DataModelObjBase )((Treeable<?,?,?> )rec).getParent();
 		}
-		else 
+		else if (rec != null && ((Treeable<?,?,?> )rec).getRankId() > getRank())
+		{
+			loadMyRecord((DataModelObjBase )((Treeable<?,?,?> )rec).getParent(), seq);
+			return;
+		} else
 		{
 			super.loadMyRecord(null, seq);
 		}
