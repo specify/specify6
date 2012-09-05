@@ -137,7 +137,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private String           defValForPrepType    = null;
     
     protected boolean        checkFieldNumberDupl = false;
-    protected boolean        checkFieldNumberEmpty = false;
+    protected boolean        checkCatNumberEmpty  = false;
     
     /**
      * Constructor.
@@ -157,8 +157,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null && formViewObj.isEditing())
         {
-            checkFieldNumberDupl  = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
-            checkFieldNumberEmpty = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_NOEMPTY", false);
+            checkFieldNumberDupl = AppPreferences.getRemote().getBoolean("CO_CHK_FIELDNUM_DUPS", false);
+            checkCatNumberEmpty  = AppPreferences.getRemote().getBoolean("CO_CHK_CATNUM_NOEMPTY", false);
             
             Component comp = formViewObj.getControlByName("generateLabelBtn");
             if (comp instanceof JButton)
@@ -455,7 +455,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         if (status == STATUS.OK)
         {
-            if (status == STATUS.OK && checkFieldNumberEmpty && 
+            if (status == STATUS.OK && checkCatNumberEmpty && 
                 StringUtils.isEmpty(colObj.getCatalogNumber()))
             {
                 reasonList.add(getI10N("NO_EMPTY_CAT_NUMS"));
