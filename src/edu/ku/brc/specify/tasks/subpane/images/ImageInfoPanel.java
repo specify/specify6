@@ -154,47 +154,6 @@ public class ImageInfoPanel extends JPanel
                                              File localFile)
                     {
                         imgDisplay.setImage(imgIcon);
-                        
-                        try
-                        {
-                            Metadata metadata = ImageMetadataReader.readMetadata(imgDataItem.getLocalFile());
-                            
-                            for (Directory directory : metadata.getDirectories()) {
-                                for (Tag tag : directory.getTags()) {
-                                    System.out.println(tag);
-                                }
-                            }
-                            
-                         // obtain a specific directory
-                            Directory directory = metadata.getDirectory(ExifSubIFDDirectory.class);
-                            if (directory != null)
-                            {
-                             // obtain the Exif directory
-                                ExifSubIFDDirectory exifDirectory = metadata.getDirectory(ExifSubIFDDirectory.class);
-                                if (exifDirectory != null)
-                                {
-                                    // query the tag's value
-                                    Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_DIGITIZED);
-                                    System.out.println(date.toString());
-                                    
-                                    // create a descriptor
-                                    ExifSubIFDDescriptor descriptor = new ExifSubIFDDescriptor(exifDirectory);
-                                    if (descriptor != null)
-                                    {
-                                        // get tag description
-                                        String program = descriptor.getExposureProgramDescription();
-                                        System.out.println(program);
-                                    }
-                                }
-                            }
-                            
-                        } catch (ImageProcessingException e)
-                        {
-                            e.printStackTrace();
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
                     }
                 });
             } else
