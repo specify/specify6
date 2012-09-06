@@ -22,6 +22,8 @@ package edu.ku.brc.specify.prefs;
 import java.awt.Component;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
@@ -50,9 +52,24 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         setCheckbox("1", "Interactions.Using.Interactions", true);
         setCheckbox("2", "ExportTask.OnTaskbar", false);
         setCheckbox("3", "StartupTask.OnTaskbar", true);
-
+        setCheckbox("4", "ImagesTask.OnTaskbar", false, "IMAGES");
+        setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
     }
     
+    /**
+     * @param id
+     * @param prefName
+     * @param defVal
+     */
+    protected void setCheckbox(final String id, 
+                               final String prefName, 
+                               final boolean defVal,
+                               final String taskName)
+    {
+        Taskable task = TaskMgr.getInstance().getTask(taskName);
+        boolean enable = !AppContextMgr.isSecurityOn() || (task != null && task.getPermissions().canView());
+        setCheckbox(id, prefName, defVal, enable);
+    }
     
     /**
      * @param id
@@ -63,6 +80,20 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
                                final String prefName, 
                                final boolean defVal)
     {
+        setCheckbox(id, prefName, defVal, true);
+    }
+    
+    
+    /**
+     * @param id
+     * @param prefName
+     * @param defVal
+     */
+    protected void setCheckbox(final String id, 
+                               final String prefName, 
+                               final boolean defVal,
+                               final boolean enable)
+    {
         Component comp = form.getCompById(id);
         if (comp instanceof ValCheckBox)
         {
@@ -70,6 +101,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             AppPreferences remotePrefs = AppPreferences.getRemote();
             boolean value = remotePrefs.getBoolean(prefName+"."+ds, defVal);
             ((ValCheckBox)comp).setSelected(value);
+            comp.setEnabled(enable);
         }
     }
     
@@ -131,6 +163,8 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             getCheckbox("1", "Interactions.Using.Interactions");
             getCheckbox("2", "ExportTask.OnTaskbar");
             getCheckbox("3", "StartupTask.OnTaskbar");
+            getCheckbox("4", "ImagesTask.OnTaskbar");
+            getCheckbox("5", "CleanupToolsTask.OnTaskbar");
 
         }
     }

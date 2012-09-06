@@ -19,9 +19,10 @@
 */
 package edu.ku.brc.specify.dbsupport.cleanuptools;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.HashSet;
 
-import edu.ku.brc.specify.dbsupport.cleanuptools.BaseFindCleanupItems.ItemStatusType;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author rods
@@ -33,10 +34,10 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.BaseFindCleanupItems.ItemStatus
  */
 public class FindItemInfo
 {
-    private ItemStatusType status;
-    private int            id;
-    private Object         value;
-    private String         title;
+    protected int            id;
+    protected Object         value;
+    protected String         title;
+    protected HashSet<Integer> duplicateIds = new HashSet<Integer>();
     
     /**
      * @param id
@@ -46,8 +47,7 @@ public class FindItemInfo
     {
         super();
         this.id    = id;
-        this.value  = value;
-        this.status = ItemStatusType.eOK;
+        this.value = value;
     }
 
     /**
@@ -59,13 +59,10 @@ public class FindItemInfo
         this(id, value);
         this.title = title;
     }
-
-    /**
-     * @return the status
-     */
-    public ItemStatusType getStatus()
+    
+    public int getCount()
     {
-        return status;
+        return duplicateIds.size();
     }
 
     /**
@@ -82,6 +79,75 @@ public class FindItemInfo
     public Object getValue()
     {
         return value;
+    }
+
+    public void addDuplicate(final int id)
+    {
+        duplicateIds.add(id);
+    }
+    
+    /**
+     * @param includePrimaryId
+     * @return
+     */
+    /*public String getInClause(final boolean includePrimaryId)
+    {
+        return getInClause(includePrimaryId, null);
+    }*/
+    
+    /**
+     * @param includePrimaryId
+     * @param usedIds
+     * @return
+     */
+    public String getInClause(final boolean includePrimaryId)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Integer id : duplicateIds)
+        {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(id);
+        }
+        
+        if (includePrimaryId)
+        {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(id);
+        }
+        return "(" + sb.toString() +")";
+    }
+    
+    /**
+     * @param value the value to set
+     */
+    public void setValue(Object value)
+    {
+        this.value = value;
+    }
+
+    /**
+     * @return the duplicateIds
+     */
+    public int cleanDuplicateIds(final HashSet<Integer> usedIds)
+    {
+        ArrayList<Integer> ids = new ArrayList<Integer>(duplicateIds);
+        duplicateIds.clear();
+        for (Integer dupId : ids)
+        {
+            if (usedIds == null || !usedIds.contains(dupId))
+            {
+                duplicateIds.add(dupId);
+            }
+        }
+        return duplicateIds.size();
+    }
+    
+    /**
+     * @return the duplicateIds
+     */
+    public HashSet<Integer> getDuplicateIds()
+    {
+        return duplicateIds;
     }
 
     /* (non-Javadoc)

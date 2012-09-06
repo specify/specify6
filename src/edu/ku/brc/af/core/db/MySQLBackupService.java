@@ -250,7 +250,7 @@ public class MySQLBackupService extends BackupServiceFactory
             UIRegistry.showLocalizedError("MySQLBackupService.MYSQL_NO_DUMP", mysqldumpLoc);
             if (propChgListener != null)
             {
-                propChgListener.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
+                propChgListener.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, ERROR, 0, 1));
             }
             return false;
         }
@@ -263,7 +263,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 UIRegistry.showLocalizedError("MySQLBackupService.MYSQL_NO_BK_DIR", backupDir.getAbsoluteFile());
                 if (propChgListener != null)
                 {
-                    propChgListener.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
+                    propChgListener.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, ERROR, 0, 1));
                 }
                 return false;  
             }
@@ -421,7 +421,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 
                 if (propChgListener != null)
                 {
-                    propChgListener.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Done", null, fullPath));
+                    propChgListener.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, DONE, null, fullPath));
                 }
             }
         };
@@ -676,7 +676,7 @@ public class MySQLBackupService extends BackupServiceFactory
                         ex.printStackTrace();
                         if (pcl != null)
                         {
-                            pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
+                            pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, ERROR, 0, 1));
                         }
                     }
                     
@@ -710,7 +710,7 @@ public class MySQLBackupService extends BackupServiceFactory
                     errorMsg = ex.toString();
                     if (pcl != null)
                     {
-                        pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
+                        pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, ERROR, 0, 1));
                     }
                 }
                 
@@ -745,7 +745,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 
                 if (pcl != null)
                 {
-                    pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Done", 0, 1));
+                    pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, DONE, 0, 1));
                 }
             }
         };
@@ -812,12 +812,12 @@ public class MySQLBackupService extends BackupServiceFactory
                 input = new FileInputStream(inFile);
                 try 
                 {
-                    long totalBytes = 0;
+                    //long totalBytes = 0;
                     byte[] bytes = new byte[8192*4]; // 32K
                     do
                     {
                         int numBytes = input.read(bytes, 0, bytes.length);
-                        totalBytes += numBytes;
+                        //totalBytes += numBytes;
                         //System.out.println(numBytes+" / "+totalBytes);
                         if (numBytes > 0)
                         {
@@ -1014,7 +1014,7 @@ public class MySQLBackupService extends BackupServiceFactory
             ex.printStackTrace();
             /*if (pcl != null)
             {
-                pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
+                pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, ERROR, 0, 1));
             }*/
         } finally 
         {
@@ -1141,7 +1141,7 @@ public class MySQLBackupService extends BackupServiceFactory
                     errorMsg = ex.toString();
                     if (pcl != null)
                     {
-                        pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
+                        pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, ERROR, 0, 1));
                     }
                     
                 } finally
@@ -1180,7 +1180,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 
                 if (pcl != null)
                 {
-                    pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Done", 0, 1));
+                    pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, DONE, 0, 1));
                 }
             }
         };
@@ -1535,7 +1535,7 @@ public class MySQLBackupService extends BackupServiceFactory
         //DBConnection dbConn = DBConnection.getInstance().(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), null, connStr, usr, pwd);
         MySQLBackupService bks = new MySQLBackupService();
         bks.setUsernamePassword(usr, pwd);
-        bks.doRestoreBulkDataInBackground(null, "geonames2", null, "/home/rods/geonames.zip", null, "DONE", null, true);
+        bks.doRestoreBulkDataInBackground(null, "geonames2", null, "/home/rods/geonames.zip", null, DONE, null, true);
         
         //dbConn.close();
     }*/

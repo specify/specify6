@@ -43,7 +43,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -62,8 +61,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -114,7 +111,6 @@ import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -125,8 +121,6 @@ import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
-import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
-import edu.ku.brc.specify.dbsupport.GeographyMerging;
 import edu.ku.brc.specify.tasks.services.PickListUtils;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
@@ -137,7 +131,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -318,27 +311,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
             })); 
             navBoxes.add(collNavBox);
-            
-            if (AppPreferences.getLocalPrefs().getBoolean("GEO_CLEANUP", false))
-            {
-                NavBox cleanUpToolsNavBox = new NavBox(getResourceString("SYSSTP_DATA_CLEANUP_TOOLS"));
-                navBoxes.add(cleanUpToolsNavBox);
-                
-                cleanUpToolsNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_GEO_CLEANUP_TOOLS"), SYSTEMSETUPTASK, getResourceString("SYSSTP_GEO_CLEANUP_TOOLS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        doGeographyISOCodes();
-                    }
-                })); 
-                
-                cleanUpToolsNavBox.add(NavBox.createBtnWithTT(getResourceString("SYSSTP_GEO_CLEANUP_MERGE"), SYSTEMSETUPTASK, getResourceString("SYSSTP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        doGeographyMerge();
-                    }
-                })); 
-            }
-
         }
         isShowDefault = true;
     }
@@ -1506,51 +1478,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, discipline.getId(), tableMgr, SchemaI18NService.getCurrentLocale());
             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, tableMgr);
         }
-    }
-    
-    /**
-     * 
-     */
-    private void doGeographyISOCodes()
-    {
-        final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();;
-        try
-        {
-            Timestamp now = new Timestamp(System .currentTimeMillis());
-            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
-
-            ProgressFrame frame = new ProgressFrame("Building Geography Authority...");
-            frame.getCloseBtn().setVisible(false);
-            frame.pack();
-            frame.setSize(450, frame.getBounds().height+10);
-            
-            discipline = session.get(Discipline.class, discipline.getId());
-            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, "root", "root", true, frame);
-            
-            int earthId = BasicSQLUtils.getCountAsInt("SELECT GeographyID FROM geography WHERE RankID = 0 AND GeographyTreeDefID = "+discipline.getGeographyTreeDef().getId());
-            bldGeoNames.buildAsync(earthId, new ChangeListener()
-            {
-                @Override
-                public void stateChanged(ChangeEvent e)
-                {
-                    if (session != null) session.close();
-                }
-            });
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-        }
-    }
-    
-    /**
-     * 
-     */
-    private void doGeographyMerge()
-    {
-        GeographyMerging geoMerging = new GeographyMerging();
-        geoMerging.start();
     }
     
     /**

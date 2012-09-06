@@ -3,9 +3,17 @@
  */
 package edu.ku.brc.specify.utilapps.morphbank;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -14,9 +22,11 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -30,13 +40,16 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -63,6 +76,7 @@ import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
@@ -73,17 +87,23 @@ import edu.ku.brc.util.Pair;
  */
 public class BatchAttachFiles
 {
+    protected static final String PROGRESS = "PROGRESS";
+    
     protected static final Logger log = Logger.getLogger(BatchAttachFiles.class);
     
-	protected static String[] exts = {"TIF", "JPG", "PNG", "jpg"};
+	protected static String[] exts = {"TIF", "JPG", "PNG", "jpg", "png", "tif", "TIFF", "tiff"};
 	protected final Class<?> tblClass;
 	protected final Class<?> attachmentClass;
 	protected final FileNameParserIFace fnParser;
-	protected final File directory;
-	protected List<File> files;
+	protected final File     directory;
+	protected List<File>     files;
+	protected String         keyName;
 	protected List<Pair<String, String>> errors = new Vector<Pair<String, String>>();
 	protected DataProviderSessionIFace session;
 	protected String errLogName = "errors";
+	
+	protected HashMap<String, String> mapFileNameToCatNum = null;
+	
 	//protected List<Integer> attachments = new Vector<Integer>();
 	
 	/**
@@ -91,8 +111,7 @@ public class BatchAttachFiles
 	 * @param fnParser
 	 * @param directoryName
 	 */
-	public BatchAttachFiles(Class<?> tblClass, FileNameParserIFace fnParser,
-			File directory) throws Exception
+	public BatchAttachFiles(Class<?> tblClass, FileNameParserIFace fnParser, File directory) throws Exception
 	{
 		super();
 		this.tblClass = tblClass;
@@ -107,6 +126,234 @@ public class BatchAttachFiles
 			bldFilesFromList();
 		}
 	}
+	
+    public BatchAttachFiles(final Class<?> tblClass,
+                            final String keyName,
+                            final File directory) throws Exception
+    {
+        super();
+        this.tblClass   = tblClass;
+        this.keyName    = keyName;
+        this.fnParser   = null;
+        this.directory  = directory;
+        attachmentClass = determineAttachmentClass();
+        if (directory.isDirectory())
+        {
+            files = bldFilesFromDir(directory, exts);
+        }
+    }
+    
+    /**
+     * @param indexFile
+     * @return
+     */
+    public boolean attachFileFromIndexFile(final File indexFile)
+    {
+        mapFileNameToCatNum = new HashMap<String, String>();
+        try
+        {
+            List<?>      records     = (List<?>)FileUtils.readLines(indexFile);
+            for (Object lineObj : records)
+            {
+                String[] cols = StringUtils.split(lineObj.toString(), '\t');
+                if (cols.length == 2)
+                {
+                    String fileName = cols[1];
+                    mapFileNameToCatNum.put(fileName, cols[0]);
+                    System.out.println(String.format("%s %s", cols[0], fileName));
+                }
+            }
+            attachFilesByFieldName();
+            return true;
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    
+    /**
+     * Does the backup on a SwingWorker Thread.
+     * @param isMonthly whether it is a monthly backup
+     * @param doSendAppExit requests sending an application exit command when done
+     * @return true if the prefs are set up and there were no errors before the SwingWorker thread was started
+     */
+    public boolean attachFilesByFieldName()//final boolean doCreateRecords)
+    {
+        if (files == null)
+        {
+            return false;
+        }
+        SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
+        {
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                for (File file : files)
+                {
+                    String catNum = mapFileNameToCatNum.get(file.getName());
+                    if (catNum != null) System.out.println("catNum["+catNum+"]  ["+file.getName()+"]");
+                }
+                
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
+                if (tblInfo != null)
+                {
+                    UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(tblClass, keyName);
+                    PreparedStatement pStmt = null;
+                    try
+                    {
+                        int    numFiles  = files.size();
+                        int    total     = 0;
+                        int    one20th   = (int)((double)numFiles / 20.0);
+                        int    prevTenth = 0;
+                        
+                        String sql = String.format("SELECT %s FROM %s WHERE %s = ?", tblInfo.getPrimaryKeyName(), tblInfo.getName(), keyName);
+                        //System.out.println(sql);
+                        pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
+                        for (File file : files)
+                        {
+                            String primaryName = null;
+                            if (mapFileNameToCatNum != null)
+                            {
+                                //System.out.println("file.getName()["+file.getName()+"]");
+                                String catNum = mapFileNameToCatNum.get(file.getName());
+                                if (catNum != null)
+                                {
+                                    primaryName = catNum;
+                                }
+                            } else
+                            {
+                                primaryName = FilenameUtils.getBaseName(file.getName()); 
+                            }
+                            if (primaryName != null) System.out.println("["+primaryName+"]");
+                            
+                            Object value = fmt != null ? fmt.formatFromUI(primaryName) : primaryName;  
+                            
+                            if (value instanceof String)
+                            {
+                                pStmt.setString(1, value.toString());
+                                ResultSet rs = pStmt.executeQuery();
+                                if (rs.next())
+                                {
+                                    int id = rs.getInt(1);
+                                    System.out.println(String.format("%s -> id: %d", value.toString(), id));
+                                    attachFileTo(file, id);
+                                }
+                                rs.close();
+                            }
+                            
+                            total++;
+                            if (numFiles < 21)
+                            {
+                                firePropertyChange(PROGRESS, numFiles, total); 
+                            } else if (numFiles % one20th == 0)
+                            {
+                                int percent = (int)(((double)total / numFiles) * 100.0);
+                                if (percent != prevTenth)
+                                {
+                                    prevTenth = percent;
+                                    firePropertyChange(PROGRESS, 100, percent);
+                                }
+                            }
+                            //Thread.currentThread().sleep(2000);
+                            //if (cnt == 2) break;
+                        }
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        
+                    } finally
+                    {
+                        if (pStmt != null)
+                        {
+                            try
+                            {
+                                pStmt.close();
+                            } catch (SQLException ex) {}
+                        }
+                    }
+                }
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
+        };
+        
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.BACKINGUP", ""), 24);
+        glassPane.setProgress(0);
+        
+        backupWorker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        if (PROGRESS.equals(evt.getPropertyName())) 
+                        {
+                            System.out.println("Progress: "+evt.getNewValue());
+                            glassPane.setProgress((Integer)evt.getNewValue());
+                        }
+                    }
+                });
+        backupWorker.execute();
+        
+        return true;
+    }
+    
+    /**
+     * 
+     */
+    public void attachFilesByFieldNameOld()
+    {
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
+        if (tblInfo != null)
+        {
+            UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(tblClass, keyName);
+            PreparedStatement pStmt = null;
+            try
+            {
+                String sql = String.format("SELECT %s FROM %s WHERE %s = ?", tblInfo.getIdFieldName(), tblInfo.getName(), keyName);
+                pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
+                for (File file : files)
+                {
+                    Object value = FilenameUtils.getBaseName(file.getName());
+                    if (fmt != null)
+                    {
+                        value = fmt.formatFromUI(value);
+                    }
+                    if (value instanceof String)
+                    {
+                        pStmt.setString(1, value.toString());
+                        ResultSet rs = pStmt.executeQuery();
+                        if (rs.next())
+                        {
+                            int id = rs.getInt(1);
+                            attachFileTo(file, id);
+                        }
+                        rs.close();
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (pStmt != null)
+                {
+                    try
+                    {
+                        pStmt.close();
+                    } catch (SQLException ex) {}
+                }
+            }
+        }
+    }
 	
 	/**
 	 * @return attachment class for the table class
@@ -287,47 +534,57 @@ public class BatchAttachFiles
 			((DataModelObjBase )result).initialize();
 		}
 		return result;
-	}
+    }
 
-	/**
-	 * @param f
-	 * @param attachTo
-	 * 
-	 * Attaches f to the object with key attachTo
-	 */
-	@SuppressWarnings("unchecked")
-	protected void attachFileTo(final File f, final Integer attachTo)
-	{
+    /**
+     * @param f
+     * @param attachTo
+     * 
+     * Attaches f to the object with key attachTo
+     */
+    @SuppressWarnings("unchecked")
+    protected void attachFileTo(final File f, final Integer attachTo)
+    {
+        attachFileTo(f, attachTo, null);
+    }
+
+    /**
+     * @param fileToSave
+     * @param attachToId
+     * 
+     * Attaches f to the object with key attachTo
+     */
+    @SuppressWarnings("unchecked")
+    protected void attachFileTo(final File fileToSave, final Integer attachToId, final DataProviderSessionIFace session)
+    {
 		//System.out.println("Attaching " + f.getName() + " to " + attachTo);
 		//System.out.println("attachFileTo Entry: " + Runtime.getRuntime().freeMemory());
-		DataProviderSessionIFace localSession = DataProviderFactory.getInstance().createSession();
+		DataProviderSessionIFace localSession = session == null ? DataProviderFactory.getInstance().createSession() : session;
 		boolean tblTransactionOpen = false;
 		if (localSession != null)
 		{
 			try
 			{
-				AttachmentOwnerIFace<?> rec = getAttachmentOwner(localSession,
-						attachTo);
+				AttachmentOwnerIFace<?> rec = getAttachmentOwner(localSession, attachToId);
 				//session.attach(rec);
 				localSession.beginTransaction();
 				tblTransactionOpen = true;
 				
-				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
-						.getAttachmentReferences();
-				int ordinal = 0;
+				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec.getAttachmentReferences();
+				int        ordinal    = 0;
 				Attachment attachment = new Attachment();
 				attachment.initialize();
-				if (f.exists())
+				if (fileToSave.exists())
 				{
-					attachment.setOrigFilename(f.getPath());
+					attachment.setOrigFilename(fileToSave.getPath());
 				} else
 				{
-					attachment.setOrigFilename(f.getName());
+					attachment.setOrigFilename(fileToSave.getName());
 				}
 				
-				attachment.setTitle(f.getName());
-				ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
-						.getClass());
+				attachment.setTitle(fileToSave.getName());
+				ObjectAttachmentIFace<DataModelObjBase> oaif = 
+				    (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec.getClass());
 				//CollectionObjectAttachment oaif = new CollectionObjectAttachment();
 				//oaif.initialize();
 				oaif.setAttachment(attachment);
@@ -354,7 +611,7 @@ public class BatchAttachFiles
 						throw new Exception("Business rules processing failed");
 					}
 				}
-				if (f.exists())
+				if (fileToSave.exists())
 				{
 					AttachmentUtils.getAttachmentManager()
 						.setStorageLocationIntoAttachment(oaif.getAttachment(), false);
@@ -385,7 +642,7 @@ public class BatchAttachFiles
 				{
 					localSession.rollback();
 				}
-				errors.add(new Pair<String, String>(f.getName(), he.getLocalizedMessage()));
+				errors.add(new Pair<String, String>(fileToSave.getName(), he.getLocalizedMessage()));
 				
 			} catch (Exception ex)
 			{
@@ -393,16 +650,19 @@ public class BatchAttachFiles
 				{
 					localSession.rollback();
 				}
-				errors.add(new Pair<String, String>(f.getName(), ex
+				errors.add(new Pair<String, String>(fileToSave.getName(), ex
 						.getLocalizedMessage()));
 			} finally
 			{
-				localSession.close();
+			    if (session == null)
+			    {
+			        localSession.close();
+			    }
 				//session.clear();
 			}
 		} else
 		{
-			errors.add(new Pair<String, String>(f.getName(), UIRegistry
+			errors.add(new Pair<String, String>(fileToSave.getName(), UIRegistry
 					.getResourceString("BatchAttachFiles.UnableToAttach")));
 		}
 		System.out.println("attachFileTo Exit: " + Runtime.getRuntime().freeMemory());

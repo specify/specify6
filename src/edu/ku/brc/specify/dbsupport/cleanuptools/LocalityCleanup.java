@@ -22,32 +22,21 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-
 import org.apache.log4j.Logger;
-
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -451,7 +440,7 @@ public class LocalityCleanup
         }
     }
     
-    public static void testI18N()
+    /*public static void testI18N()
     {
         String connectStr = "jdbc:mysql://localhost/";
         
@@ -485,9 +474,9 @@ public class LocalityCleanup
 
 
 
-            byte[] line = new byte[100];
-            Charset utf8charset     = Charset.forName("UTF-8");
-            Charset iso88591charset = Charset.forName("ISO-8859-1");
+            //byte[] line = new byte[100];
+            //Charset utf8charset     = Charset.forName("UTF-8");
+            //Charset iso88591charset = Charset.forName("ISO-8859-1");
 
             //String sql = "SELECT name from geoname WHERE geonameId = 45060";//66575";
             
@@ -501,38 +490,38 @@ public class LocalityCleanup
                 System.out.println("String: "+name);
                 
                 //InputStream is = rs.getAsciiStream(1);
-                /*Reader reader = rs.getCharacterStream(1);
-                try
-                {
-                    //int len = is.read(line);
-                    char[] cbuf = new char[100];
-                    int len = reader.read(cbuf);
-                    System.out.println("String IO: "+(new String(cbuf, 0, len)));
-                    
-                } catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }*/
+//                Reader reader = rs.getCharacterStream(1);
+//                try
+//                {
+//                    //int len = is.read(line);
+//                    char[] cbuf = new char[100];
+//                    int len = reader.read(cbuf);
+//                    System.out.println("String IO: "+(new String(cbuf, 0, len)));
+//                    
+//                } catch (IOException e1)
+//                {
+//                    e1.printStackTrace();
+//                }
 
                 byte[] nameBytes = rs.getBytes(1);
                 System.out.println("String Bytes: "+(new String(nameBytes)));
                 
                 
-                /*ByteBuffer inputBuffer = ByteBuffer.wrap(nameBytes);
-                CharBuffer data = iso88591charset.decode(inputBuffer);
-                
-                char[] chars = data.array();
-                byte[] word = new byte[chars.length];
-                for (int i=0;i<chars.length;i++)
-                {
-                    word[i] = (byte)chars[i];
-                }
-                
-                System.out.println(data.toString()+" / "+(new String(word)));
-                
-                ByteBuffer outputBuffer = utf8charset.encode(data);
-                byte[] outputData = outputBuffer.array();
-                System.out.println(new String(outputData));*/
+//                ByteBuffer inputBuffer = ByteBuffer.wrap(nameBytes);
+//                CharBuffer data = iso88591charset.decode(inputBuffer);
+//                
+//                char[] chars = data.array();
+//                byte[] word = new byte[chars.length];
+//                for (int i=0;i<chars.length;i++)
+//                {
+//                    word[i] = (byte)chars[i];
+//                }
+//                
+//                System.out.println(data.toString()+" / "+(new String(word)));
+//                
+//                ByteBuffer outputBuffer = utf8charset.encode(data);
+//                byte[] outputData = outputBuffer.array();
+//                System.out.println(new String(outputData));
                 
                 
                 for (int i=0;i<types.length;i++)
@@ -557,7 +546,7 @@ public class LocalityCleanup
         {
            ex.printStackTrace();
         }
-    }
+    }*/
     
     /**
      * 
@@ -915,9 +904,6 @@ public class LocalityCleanup
     }
 
     
-    /**
-     * @param args
-     */
     /**
      * @param args
      */

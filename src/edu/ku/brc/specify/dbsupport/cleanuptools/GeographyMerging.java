@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.specify.dbsupport.cleanuptools;
 
 import static edu.ku.brc.ui.UIRegistry.displayErrorDlg;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -26,7 +26,6 @@ import java.awt.Frame;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JScrollPane;
@@ -53,7 +52,6 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeMergeException;
 import edu.ku.brc.specify.treeutils.TreeMerger;
-import edu.ku.brc.specify.treeutils.TreeMergerUIIFace;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -84,8 +82,9 @@ public class GeographyMerging
     private String[]          headers    = new String[5];
     private GeographyTreeDef  geoTreeDef;
     
-    private Integer           primaryId  = null;
-    private int               mergeIndex = 0;
+    private Integer           primaryId      = null;
+    private int               mergeIndex     = 0;
+    private String            rankTitleKey   = "CLNUP_GEO_COUNTRIES"; 
 
     
     /**
@@ -119,8 +118,8 @@ public class GeographyMerging
             if (session != null) session.close();
         }
         
-        headers[0] = "Primary";
-        headers[1] = "Include";
+        headers[0] = getResourceString("CLNUP_PRIMARY");
+        headers[1] = getResourceString("CLNUP_INCLUDE");
         for (int i=0;i<4;i++)
         {
             String sql = "SELECT Name FROM geographytreedefitem WHERE GeographyTreeDefID = GEOTREEDEFID AND RankID = "+(i*100);
@@ -154,7 +153,7 @@ public class GeographyMerging
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
         pb.add(sp, cc.xy(1,1));
         pb.setDefaultDialogBorder();
-        dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("GEO_MERGING"), true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel())
+        dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), " ", true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel()) // Title is set later
         {
             @Override
             protected void cancelButtonPressed() // Skip Button
@@ -178,7 +177,8 @@ public class GeographyMerging
         currIndex = -1;
         doNextGeographyInList();
 
-        UIHelper.centerAndShow(dlg);
+        dlg.pack();
+        UIHelper.centerAndShow(dlg, 800, dlg.getSize().height);
         
         return true;
     }
@@ -306,7 +306,8 @@ public class GeographyMerging
     {
         if (currRankId == 200)
         {
-            currRankId = 300;
+            rankTitleKey = "CLNUP_GEO_STATES"; 
+            currRankId   = 300;
 
             new javax.swing.SwingWorker<Boolean, Boolean>() 
             {
@@ -315,7 +316,7 @@ public class GeographyMerging
                 @Override
                 protected Boolean doInBackground() throws Exception
                 {
-                    return findDuplicates();
+                    return hasDups = findDuplicates();
                 }
                 
                 @Override
@@ -339,12 +340,14 @@ public class GeographyMerging
      */
     private boolean findDuplicates()
     {
+        items.clear();
         String sql = String.format("SELECT NM, CNT FROM (select NM, COUNT(NM) CNT from (SELECT CONCAT(Name, '|', RankID) NM FROM geography " +
         		                   "WHERE RankID = %d) T0 GROUP BY NM) T1 WHERE CNT > 1 ORDER BY CNT DESC", currRankId);
         for (Object[] row : BasicSQLUtils.query(sql))
         {
             String[] parts = StringUtils.split((String)row[0], "|");
             Pair<String, Integer> item = new Pair<String, Integer>(parts[0], Integer.parseInt(parts[1]));
+            System.out.println(String.format("Added [%s] %d", item.first, item.second));
             items.add(item);
         }
         
@@ -371,7 +374,7 @@ public class GeographyMerging
             {
                 Pair<String, Integer> item = items.get(currIndex);
                 int rankId = item.second;
-                int inx = rankId == 200 ? 1 : 0;
+                int inx    = rankId == 200 ? 1 : 0;
                 for (int i=2;i<5;i++)
                 {
                     headers[i] = levelNames[inx++];
@@ -386,6 +389,7 @@ public class GeographyMerging
                 }
                 rs.close();
                 
+                dlg.setTitle(UIRegistry.getFormattedResStr("CLNUP_GEO_MERGING", getResourceString(rankTitleKey), (currIndex+1), items.size()));
                 model.fireTableStructureChanged();
                 
             } catch (SQLException ex)

@@ -15,8 +15,9 @@
 /**
  * 
  */
-package edu.ku.brc.specify.dbsupport.cleanuptools;
+package edu.ku.brc.specify.toycode.mexconabio;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -402,7 +403,7 @@ public class DataObjTableModel extends DefaultTableModel
     {
         if (isFirstColBool && column == 0) 
         {
-            return !isEditable ? "Is Included" : ""; // I18N
+            return !isEditable ? getResourceString("CLNUP_MERGE_ISINCL") : ""; // I18N
         }
         
         return mapInx != null ? items.get(mapInx[column]).getTitle() : "";

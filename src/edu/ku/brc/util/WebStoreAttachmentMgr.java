@@ -48,7 +48,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -291,12 +290,42 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Override
+    public File getOriginal(String attachLoc, String originalLoc, String mimeType)
+    {
+        return getFile(attachLoc, originalLoc, mimeType, attachNameOrigMap, false, null);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getOriginalScaled(java.lang.String, java.lang.String, java.lang.String, int)
+     */
+    @Override
+    public File getOriginalScaled(String attachLoc,
+                                  String originalLoc,
+                                  String mimeType,
+                                  int maxSideInPixels)
+    {
+        return getFile(attachLoc, originalLoc, mimeType, attachNameOrigMap, false, maxSideInPixels);
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
      */
     @Override
     public synchronized File getThumbnail(final Attachment attachment)
     {
         return getFile(attachment, attachNameThumbMap, true);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
+     */
+    @Override
+    public synchronized File getThumbnail(final String attachLoc, final String mimeType)
+    {
+        return getFile(attachLoc, null, mimeType, attachNameThumbMap, true, null);
     }
     
     /**
@@ -322,18 +351,41 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @param isThumb
      * @return
      */
-    private synchronized File getFile(final Attachment attachment, 
+    private synchronized File getFile(final Attachment a, 
                                       final HashMap<String, String> nameHash, 
                                       final boolean isThumb)
     {
+        return getFile(a.getAttachmentLocation(), a.getOrigFilename(), a.getMimeType(), nameHash, isThumb, null);
+    }
+
+    /**
+     * @param attachment
+     * @param nameHash
+     * @param isThumb
+     * @return
+     */
+    private synchronized File getFile(final String attachLocation,
+                                      final String originalLoc,
+                                      final String mimeType,
+                                      final HashMap<String, String> nameHash, 
+                                      final boolean isThumb,
+                                      final Integer scale)
+    {
         String nmExt = isThumb ? ".THB" : "";
         
-        boolean isSaved = StringUtils.isNotEmpty(attachment.getAttachmentLocation());
+        String attachLoc = attachLocation;
+        if (StringUtils.isNotEmpty(attachLoc) && scale != null)
+        {
+            attachLoc = getScaledFileName(attachLocation, scale);
+        }
+        
+        boolean isSaved = StringUtils.isNotEmpty(attachLoc);
+        boolean hasOrig = StringUtils.isNotEmpty(originalLoc);
         
         // Check to see if it is cached by original name
-        if (!isSaved)
+        if (!isSaved && hasOrig)
         {
-            String localThumbName = nameHash.get(attachment.getOrigFilename()+nmExt);
+            String localThumbName = nameHash.get(originalLoc+nmExt);
             if (StringUtils.isNotEmpty(localThumbName))
             {
                 File cachedFile = shortTermCache.getCacheFile(localThumbName);
@@ -345,7 +397,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         
         // Now check to see if it is cached by the saved name.
-        String origFilePath = attachment.getAttachmentLocation();
+        String origFilePath = attachLoc;
         if (isSaved)
         {
             String fileName = nameHash.get(origFilePath+nmExt);
@@ -365,7 +417,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             }
             
             // Not in the cache by either name, so go get the file form the server
-            File thmbFile = getFileFromWeb(attachment.getAttachmentLocation(), attachment.getMimeType(), isThumb);
+            File thmbFile = getFileFromWeb(attachLocation, mimeType, isThumb, scale);
             if (thmbFile != null && thmbFile.exists())
             {
                 try
@@ -373,7 +425,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     // cache it
                     String nm = thmbFile.getName();
                     shortTermCache.cacheFile(thmbFile);
-                    nameHash.put(attachment.getAttachmentLocation()+nmExt, nm);
+                    nameHash.put(attachLoc+nmExt, nm);
                     thmbFile.delete();
                     
                     thmbFile = shortTermCache.getCacheFile(nm);
@@ -388,11 +440,12 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         } 
         
         // ok, it isn't saved yet, make sure original isn't null
-        origFilePath = attachment.getOrigFilename();
-        if (StringUtils.isEmpty(origFilePath))
+        
+        if (!hasOrig)
         {
             return null;
         }
+        origFilePath = originalLoc;
         
         // Now make a thumb from the original
         File origFile  = new File(origFilePath);
@@ -466,7 +519,8 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             
         } catch (IOException ex)
         {
-            ex.printStackTrace();
+            log.error(ex.getMessage());
+            //ex.printStackTrace();
         }
         
         return false;
@@ -478,7 +532,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @param isThumb
      * @return
      */
-    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final boolean isThumb)
+    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final boolean isThumb, final Integer scale)
     {
         try
         {
@@ -488,7 +542,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             //                  isThumb ? "thumbs" : "originals", fileName, StringUtils.isNotEmpty(mimeType) ? mimeType : "",
             //                  discipline.getName());
             
-            String urlStr = subAllExtraData(readURLStr, fileName, isThumb);
+            String urlStr = subAllExtraData(readURLStr, fileName, isThumb, scale);
             
             log.debug("["+urlStr+"]");
             return fillFileFromWeb(urlStr, tmpFile) ? tmpFile : null;
@@ -545,7 +599,10 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     /**
      * @param urlStr
      */
-    private String subAllExtraData(final String urlStr, final String fileName, final boolean isThumb)
+    private String subAllExtraData(final String urlStr, 
+                                   final String fileName, 
+                                   final boolean isThumb,
+                                   final Integer scale)
     {
         fillValuesArray(); // with current values
         
@@ -558,6 +615,14 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         newURLStr = doSub(newURLStr, "<type>", isThumb ? "T" : "O");
         newURLStr = doSub(newURLStr, "<fname>", fileName);
         
+        if (scale != null)
+        {
+            if (!newURLStr.endsWith("&"))
+            {
+                newURLStr += "&";
+            }
+            newURLStr += "scale=" + scale.toString();
+        }
         return newURLStr;
     }
     
@@ -646,6 +711,18 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     /**
      * @param fileName
+     * @param scale
+     * @return
+     */
+    private String getScaledFileName(final String fileName, final Integer scale)
+    {
+        String newPath = FilenameUtils.removeExtension(fileName);
+        String ext     = FilenameUtils.getExtension(fileName);
+        return String.format("%s_%d%s%s", newPath, scale, FilenameUtils.EXTENSION_SEPARATOR_STR, ext);
+    }
+    
+    /**
+     * @param fileName
      * @param isThumb
      * @return
      */
@@ -654,7 +731,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             //String     targetURL  = String.format("http://localhost/cgi-bin/filedelete.php?filename=%s;disp=%s", targetName, discipline.getName());
-            String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb);
+            String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null);
             GetMethod  getMethod  = new GetMethod(targetURL);
 
             System.out.println("Deleting " + fileName + " from " + targetURL );
@@ -756,6 +833,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             // get the hash value as byte array
             byte[] hash = sha1.digest();
 
+            dis.close();
             return byteArray2Hex(hash);
         }
         return null;
@@ -772,7 +850,9 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             formatter.format("%02x", b);
         }
-        return formatter.toString();
+        String s = formatter.toString();
+        formatter.close();
+        return s;
     }
 
 

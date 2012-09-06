@@ -365,6 +365,12 @@
                 <row>
                     <cell type="field" id="3" name="StartupTask.OnTaskbar" uitype="checkbox" label="ADD_WELCOME" colspan="4"/>
                 </row>
+                <row>
+                    <cell type="field" id="4" name="ImagesTask.OnTaskbar" uitype="checkbox" label="ADD_IMAGES" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="5" name="CleanupToolsTask.OnTaskbar" uitype="checkbox" label="ADD_CLEANUP" colspan="4"/>
+                </row>
             </rows>
             
         </viewdef>

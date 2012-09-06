@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.specify.tasks.subpane.lm;
 
 import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
@@ -99,7 +99,6 @@ import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
-import edu.ku.brc.util.Pair;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
@@ -113,14 +112,15 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  * Oct 12, 2011
  *
  */
+@SuppressWarnings("rawtypes")
 public class LifeMapperPane extends BaseSubPane implements ChangeListener
 {
     protected static final int GLASS_FONT_SIZE = 14;
     protected static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
-    private static final String URL_FMT  = "http://lifemapper.org/ogc?%s&request=GetMap&service=WMS&version=1.1.0&bbox=%s&srs=epsg:4326&format=image/png&width=%d&height=%d&styles=&color=ff0000";
-    private static final String BG_URL   = "http://lifemapper.org/ogc?LAYERS=bmnglowres&MAP=anc_nasalocal.map&SERVICE=WMS&VERSION=1.0.0&FORMAT=image%2Fgif&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-180,-90,180,90&";
-    private static final String BBOX_STR = "-180.0,-90.0,180.0,90.0";
+    public String URL_FMT;
+    public String BG_URL;
+    public String BBOX_STR;
     
     protected static final int MAP_WIDTH  = 600;
     protected static final int MAP_HEIGHT = 450;
@@ -130,8 +130,8 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     protected BufferedImage              blueMarble      = null;
     protected int                        blueMarbleTries = 0;
     protected String                     blueMarbleURL;
-    protected ImageListener              blueMarbleListener;
-    protected ImageListener              pointsMapImageListener;
+    protected BufferedImageFetcherIFace  blueMarbleListener;
+    protected BufferedImageFetcherIFace  pointsMapImageListener;
     protected BufferedImage              renderImage     = null;
     
     protected WorldWindPanel             wwPanel;
@@ -173,6 +173,10 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     public LifeMapperPane(String name, Taskable task)
     {
         super(name, task);
+        
+        URL_FMT  = getResourceString("LM_URL_FMT");
+        BG_URL   = getResourceString("LM_BG_URL");
+        BBOX_STR = getResourceString("LM_BBOX_STR");
         
         markerImg = IconManager.getIcon("RedDot6x6");
         createUI();
@@ -216,6 +220,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     /**
      * Creates the UI.
      */
+    @SuppressWarnings("unchecked")
     protected void createUI()
     {
         currentSize = getCurrentSizeSquare();
@@ -359,7 +364,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             }
         });
         
-        blueMarbleListener = new ImageListener()
+        blueMarbleListener = new BufferedImageFetcherIFace()
         {
             @Override
             public void imageFetched(BufferedImage image)
@@ -381,7 +386,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         
         blueMarbleURL = BG_URL + String.format("WIDTH=%d&HEIGHT=%d", IMG_WIDTH, IMG_HEIGHT);
         
-        pointsMapImageListener = new ImageListener()
+        pointsMapImageListener = new BufferedImageFetcherIFace()
         {
             @Override
             public void imageFetched(final BufferedImage image)
@@ -428,8 +433,8 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
      * @param urlStr
      * @param listener
      */
-    private void getImageFromWeb(final String        urlStr, 
-                                 final ImageListener listener)
+    public static void getImageFromWeb(final String                    urlStr, 
+                                       final BufferedImageFetcherIFace listener)
     {
         //System.out.println(urlStr);
         
@@ -518,6 +523,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 /* (non-Javadoc)
                  * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.LMSearchCallbackListener#itemsFound(java.util.List)
                  */
+                @SuppressWarnings("unchecked")
                 @Override
                 public void itemsFound(final List<OccurrenceSetIFace> items)
                 {
@@ -553,7 +559,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         ResultSet rs = pStmt.executeQuery();
         if  (rs.next())
         {
-            LatLonPlacemark llp = new LatLonPlacemark(rs.getDouble(1), rs.getDouble(2));
+            LatLonPlacemark llp = new LatLonPlacemark(markerImg, rs.getDouble(1), rs.getDouble(2));
             pmList.add(llp);
         }
         rs.close();
@@ -657,7 +663,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
             {
-                LatLonPlacemark llp = new LatLonPlacemark(rs.getDouble(2), rs.getDouble(3));
+                LatLonPlacemark llp = new LatLonPlacemark(markerImg, rs.getDouble(2), rs.getDouble(3));
                 coPoints.add(llp);
             }
             
@@ -858,7 +864,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                                 {
                                                     if (items == null)
                                                     {
-                                                        items = new ArrayList<LifeMapperPane.OccurrenceSetIFace>();
+                                                        items = new ArrayList<OccurrenceSetIFace>();
                                                     }
                                                     items.add(new GenusSpeciesDataItem(String.format("%s (%s)", gnSpName, numPoints), occurrenceSet, gnSpName));
                                                 }
@@ -920,7 +926,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     }
     
     /**
-     * ImageListener
+     * 
      */
     @SuppressWarnings("unchecked")
     private void doSearchOccur()
@@ -1055,7 +1061,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                                     //System.out.println(lat+"  "+lon);
                                                     if (lat != null && lon != null)
                                                     {
-                                                        LatLonPlacemark plcMark = new LatLonPlacemark(Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
+                                                        LatLonPlacemark plcMark = new LatLonPlacemark(markerImg, Double.parseDouble(lat.trim()), Double.parseDouble(lon.trim()));
                                                         points.add(plcMark);
                                                     }
                                                 }
@@ -1165,168 +1171,4 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         searchMyDataBtn.setEnabled(enable);
         mySepComp.setEnabled(enable);
     }
-    
-    //----------------------------------------------------------------------------------
-    //--
-    //----------------------------------------------------------------------------------
-    interface ImageListener
-    {
-        public abstract void imageFetched(BufferedImage image);
-        
-        public abstract void error();
-    }
-    
-    //----------------------------------------------------------------------------------
-    //--
-    //----------------------------------------------------------------------------------
-    class LatLonPlacemark implements LatLonPlacemarkIFace
-    {
-        private Pair<Double, Double> pnt;
-        /**
-         * 
-         */
-        public LatLonPlacemark(final double lat, final double lon)
-        {
-            super();
-            pnt = new Pair<Double, Double>(lat, lon);
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getTitle()
-         */
-        @Override
-        public String getTitle()
-        {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getHtmlContent(java.lang.String)
-         */
-        @Override
-        public String getHtmlContent(String textColor)
-        {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getLatLon()
-         */
-        @Override
-        public Pair<Double, Double> getLatLon()
-        {
-            return pnt;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getAltitude()
-         */
-        @Override
-        public Double getAltitude()
-        {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getImageIcon()
-         */
-        @Override
-        public ImageIcon getImageIcon()
-        {
-            return markerImg;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#cleanup()
-         */
-        @Override
-        public void cleanup()
-        {
-        }
-    }
-    
-    //----------------------------------------------------------
-    class GenusSpeciesDataItem implements OccurrenceSetIFace
-    {
-        private String title;
-        private String occurrenceId;
-        private String taxa;
-        
-        /**
-         * @param title
-         * @param genusSpecies
-         */
-        public GenusSpeciesDataItem(String title, String occurrenceId, String taxa)
-        {
-            super();
-            this.title = title;
-            this.occurrenceId = occurrenceId;
-            this.taxa = taxa;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.GenusSpeciesItem#getTitle()
-         */
-        @Override
-        public String getTitle()
-        {
-            return title;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.GenusSpeciesItem#getGenusSpecies()
-         */
-        @Override
-        public String getOccurrenceId()
-        {
-            return occurrenceId;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.specify.tasks.subpane.LifeMapperPane.OccurrenceSetIFace#getTaxa()
-         */
-        @Override
-        public String getTaxa()
-        {
-            return taxa;
-        }
-    }
-    
-    //----------------------------------------------------------------------------------
-    //--
-    //----------------------------------------------------------------------------------
-    public interface LMSearchCallbackListener
-    {
-        /**
-         * 
-         */
-        public abstract void itemsFound(List<OccurrenceSetIFace> items);
-        
-        
-        /**
-         * 
-         */
-        public abstract void noItems();
-    }
-    
-    //--------------------------------
-    public interface OccurrenceSetIFace
-    {
-        /**
-         * @return
-         */
-        public abstract String getTitle();
-        
-        /**
-         * @return
-         */
-        public abstract String getOccurrenceId();
-        
-        
-        /**
-         * @return
-         */
-        public abstract String getTaxa();
-    }
-
 }

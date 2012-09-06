@@ -321,7 +321,16 @@
                 <altview name="PaleoContextSearch" viewdef="PaleoContextSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-        
+        <view 
+            name="COImageSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <altviews>
+                <altview name="COImageSearch" viewdef="COImageSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
         <view 
             name="ExsiccataSearch"
             class="edu.ku.brc.specify.datamodel.Exsiccata"
@@ -1051,6 +1060,30 @@ Good: <cell type="field" name="FieldNum" ...>
         </viewdef>
         
         <viewdef type="form"
+            name="COImageSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collection Object" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" />
+                    <cell type="field" id="1" name="CatalogNumber" uitype="formattedtext" formatter="CatalogNumber" initialize="ispartial=true"/>
+                    <cell type="label" labelfor="2" />
+                    <cell type="field" uitype="button" ignore="true" id="2" name="doSearch" initialize="title=Search"/>
+                </row>
+            </rows>
+        </viewdef>  
+        <viewdef type="form"
             name="ExsiccataSearch"
             class="edu.ku.brc.specify.datamodel.Exsiccata"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
@@ -1069,6 +1102,5 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
             </rows>
         </viewdef>
-        
     </viewdefs>
 </viewset>

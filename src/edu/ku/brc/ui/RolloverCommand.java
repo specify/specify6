@@ -197,19 +197,22 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 repaint();
                 
                 Point pnt = e.getPoint();
-                boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
-                Rectangle r = RolloverCommand.this.getBounds();
-                r.x = 0;
-                r.y = 0;
-                if (!wasPopUp && clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
+                if (pnt != null && downME != null)
                 {
-                    if (!e.isPopupTrigger())
+                    boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
+                    Rectangle r = RolloverCommand.this.getBounds();
+                    r.x = 0;
+                    r.y = 0;
+                    if (!wasPopUp && clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
                     {
-                        doAction(RolloverCommand.this);
-                        
-                    } else if (popupMenu != null)
-                    {
-                        popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                        if (!e.isPopupTrigger())
+                        {
+                            doAction(RolloverCommand.this);
+                            
+                        } else if (popupMenu != null)
+                        {
+                            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                        }
                     }
                 }
             }

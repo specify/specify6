@@ -63,6 +63,7 @@ public class ProgressFrame extends JFrame
     protected JFrame       instance;
     
     protected boolean      isProcessPercent = false;
+    protected boolean      isDoingPercent   = false;  
     protected int          origMax          = 0;
     
     /**
@@ -232,6 +233,7 @@ public class ProgressFrame extends JFrame
      */
     public synchronized void setProcess(final int min, final int max)
     {
+        isProcessPercent = isDoingPercent || max == 100;
         processProgress.setMinimum(isProcessPercent ? 0 : min);
         processProgress.setMaximum(isProcessPercent ? 100 : max);
         processProgress.setValue(min);
@@ -304,19 +306,11 @@ public class ProgressFrame extends JFrame
     }
 
     /**
-     * @return the isProcessPercent
+     * @param isDoingPercent the isDoingPercent to set
      */
-    public boolean isProcessPercent()
+    public void setProcessPercent(boolean isDoingPercent)
     {
-        return isProcessPercent;
-    }
-
-    /**
-     * @param isProcessPercent the isProcessPercent to set
-     */
-    public void setProcessPercent(boolean isProcessPercent)
-    {
-        this.isProcessPercent = isProcessPercent;
+        this.isDoingPercent = isDoingPercent;
     }
     
     /**

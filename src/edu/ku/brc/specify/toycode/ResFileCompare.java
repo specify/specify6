@@ -55,7 +55,6 @@ public class ResFileCompare
     @SuppressWarnings("unchecked")
     public void fixPropertiesFiles(final String baseFileName, final String lang, final boolean doBranch)
     {
-        boolean doWrite = false;
         System.out.println("-------------------- " + baseFileName + " --------------------");
         File engFile;
         File lngFile;

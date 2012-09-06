@@ -19,16 +19,25 @@
 */
 package edu.ku.brc.util;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
@@ -195,17 +204,110 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public File getOriginal(final Attachment attachment)
     {
-        String fileLoc = attachment.getAttachmentLocation();
-        if (StringUtils.isNotEmpty(fileLoc))
+        String attachLoc = attachment.getAttachmentLocation();
+        String origLoc   = attachment.getOrigFilename();
+        return getFile(attachLoc, origLoc, false, null);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Override
+    public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType)
+    {
+        return getFile(attachLoc, originalLoc, false, null);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getOriginalScaled(java.lang.String, java.lang.String, java.lang.String, int)
+     */
+    @Override
+    public File getOriginalScaled(String attachLoc,
+                                  String originalLoc,
+                                  String mimeType,
+                                  int maxSideInPixels)
+    {
+        return getFile(attachLoc, originalLoc, false, maxSideInPixels);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
+     */
+    private File getFile(String attachLoc, String originalLoc, final boolean isThumb, final Integer scale)
+    {
+        boolean skip = true;
+        
+        if (StringUtils.isNotEmpty(attachLoc))
         {
-            File storedFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + fileLoc);
+            String base = baseDirectory + File.separator + (isThumb ? THUMBNAILS : ORIGINAL);
+            File storedFile = new File(base + File.separator + attachLoc);
             if (storedFile.exists())
             {
+                if (scale != null)
+                {
+                    String pth     = storedFile.getAbsolutePath();
+                    String newPath = FilenameUtils.removeExtension(pth);
+                    String ext     = FilenameUtils.getExtension(pth);
+                    newPath = String.format("%s_%d%s%s", newPath, scale, FilenameUtils.EXTENSION_SEPARATOR_STR, ext);
+                    File scaledFile = new File(newPath);
+                    if (!skip && scaledFile.exists())
+                    {
+                        return scaledFile;
+                    }
+                    
+                    try
+                    {
+                        Image scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(storedFile.getAbsolutePath()), scale, scale, true);
+                        BufferedImage bi = new BufferedImage (scaledImg.getWidth(null), scaledImg.getHeight(null),BufferedImage.TYPE_INT_RGB);
+                        Graphics bg = bi.getGraphics();
+                        bg.drawImage(scaledImg, 0, 0, null);
+                        bg.dispose();
+                        ImageIO.write(bi, ext.toUpperCase(), new FileOutputStream(scaledFile));
+                        return scaledFile;
+                        
+                    } catch (FileNotFoundException e)
+                    {
+                        e.printStackTrace();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
                 return storedFile;
             }
         } else
         {
-            log.error("AttachmentLocation is null for id["+attachment.getId()+"]");
+            log.error("AttachmentLocation is null for originalLoc["+originalLoc+"]");
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
+     */
+    @Override
+    public File getThumbnail(final String attachmentLoc, final String mimeType)
+    {
+        if (StringUtils.isNotEmpty(attachmentLoc))
+        {
+            File storedFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachmentLoc);
+            if (storedFile.exists())
+            {
+                return storedFile;
+            }
+            
+            try
+            {
+                return regenerateThumbnail(attachmentLoc);
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            
+        } else
+        {
+            log.error("AttachmentLocation is null for attachmentLoc["+attachmentLoc+"]");
         }
         return null;
     }
@@ -215,29 +317,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public File getThumbnail(final Attachment attachment)
     {
-        String fileLoc = attachment.getAttachmentLocation();
-        if (StringUtils.isNotEmpty(fileLoc))
-        {
-            File storedFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + fileLoc);
-            if (storedFile.exists())
-            {
-                return storedFile;
-            }
-            
-            try
-            {
-                return regenerateThumbnail(attachment);
-                
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            
-        } else
-        {
-            log.error("AttachmentLocation is null for id["+attachment.getId()+"]");
-        }
-        return null;
+        return getThumbnail(attachment.getAttachmentLocation(), attachment.getMimeType());
     }
 
 
@@ -263,6 +343,49 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         // since we have now made use of the temp file we created earlier, we don't
         // need to keep track of it as an 'unfilled' file to be cleaned up later
         unfilledFiles.remove(attachment.getAttachmentLocation());
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
+     */
+    public File regenerateThumbnail(final String attachLoc, final String origFileName) throws IOException
+    {
+        File repositoryFile = null;
+        File thumbFile      = null;
+        
+        if (StringUtils.isNotEmpty(attachLoc))
+        {
+            repositoryFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+            thumbFile      = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
+            
+        } else if (StringUtils.isNotEmpty(origFileName))
+        {
+            repositoryFile = new File(origFileName);
+            thumbFile      = File.createTempFile("sp6-", ".tmp");
+            thumbFile.deleteOnExit();
+            
+        } else
+        {
+            return null;
+        }
+
+        Thumbnailer thumbnailGen   = AttachmentUtils.getThumbnailer();
+        thumbnailGen.generateThumbnail(repositoryFile.getAbsolutePath(), 
+                                       thumbFile.getAbsolutePath(),
+                                       false);
+        return thumbFile;
+
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
+     */
+    public File regenerateThumbnail(final String attachLoc) throws IOException
+    {
+        return regenerateThumbnail(attachLoc, null);
+
     }
 
 

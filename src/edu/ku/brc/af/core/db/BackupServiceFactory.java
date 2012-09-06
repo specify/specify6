@@ -48,6 +48,8 @@ public abstract class BackupServiceFactory
 {
     public static final String factoryName = "edu.ku.brc.af.core.db.BackupServiceFactory"; //$NON-NLS-1$
     
+    public static final String ERROR = "Error";
+    public static final String DONE  = "Done";
     
     //private static final Logger log = Logger.getLogger(SecurityMgr.class);
     

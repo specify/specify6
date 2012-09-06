@@ -1295,7 +1295,6 @@ public class BuildSampleDatabase
             
             Vector<TreeDefRow>   treeDefList = (Vector<TreeDefRow>)xstream.fromXML(geoXML);
             GeographyTreeDefItem parent      = null;
-            int                  cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
                 GeographyTreeDefItem gtdi = new GeographyTreeDefItem();
@@ -1317,7 +1316,6 @@ public class BuildSampleDatabase
                     parent.getChildren().add(gtdi);
                 }
                 parent = gtdi;
-                cnt++;
             }
         }
     }
@@ -3785,7 +3783,7 @@ public class BuildSampleDatabase
         Geography earth = null;
         try
         {
-            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, itUsername, itPassword, false, frame);
+            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, itUsername, itPassword, frame);
             
             try
             {
@@ -3795,7 +3793,6 @@ public class BuildSampleDatabase
                 
             } catch (Exception ex)
             {
-                ex.printStackTrace();
                 rollbackTx();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
@@ -3804,16 +3801,26 @@ public class BuildSampleDatabase
             }
             
             //System.err.println(DBConnection.getInstance().getDatabaseName());
-            for (String nm : BasicSQLUtils.getTableNames(DBConnection.getInstance().getConnection()))
+            /*for (String nm : BasicSQLUtils.getTableNames(DBConnection.getInstance().getConnection()))
             {
                 System.err.println(nm);
-            }
+            }*/
             
-            if (bldGeoNames.loadGeoNamesDB())
+            try
             {
-                bldGeoNames.build(earth.getId());
+                if (bldGeoNames.loadGeoNamesDB()) // done synchronously
+                {
+                    bldGeoNames.build(earth.getId());
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
+                return null;
             }
-            
+
             session.refresh(earth);
             
             GeographyTreeDef geoTreeDef = discipline.getGeographyTreeDef();
@@ -3983,11 +3990,11 @@ public class BuildSampleDatabase
      * @param root
      */
     @SuppressWarnings("unchecked")
-    public void saveTree( Treeable root )
+    public void saveTree( Treeable<?,?,?> root )
     {
         persist(root);
         
-        for( Treeable child: (Set<Treeable>)root.getChildren() )
+        for( Treeable<?,?,?> child: (Set<Treeable<?,?,?>>)root.getChildren() )
         {
             saveTree(child);
         }
@@ -3998,11 +4005,11 @@ public class BuildSampleDatabase
      * @param level
      */
     @SuppressWarnings("unchecked")
-    public void printTree( Treeable root, int level)
+    public void printTree(final Treeable<?,?,?> root, int level)
     {
         for (int i=0;i<level;i++) System.out.print(" ");
         System.out.println(root.getName()+"  "+root.getNodeNumber()+"  "+root.getHighestChildNodeNumber());
-        for( Treeable child: (Set<Treeable>)root.getChildren() )
+        for( Treeable<?,?,?> child: (Set<Treeable<?,?,?>>)root.getChildren() )
         {
             printTree(child, level+2);
         }
@@ -7234,10 +7241,10 @@ public class BuildSampleDatabase
     }
 
     @SuppressWarnings("unchecked")
-    public static int fixNodeNumbersFromRoot( Treeable root )
+    public static int fixNodeNumbersFromRoot( Treeable<?,?,?> root )
     {
         int nextNodeNumber = root.getNodeNumber();
-        for( Treeable child: (Set<Treeable>)root.getChildren() )
+        for( Treeable<?,?,?> child: (Set<Treeable<?,?,?>>)root.getChildren() )
         {
             child.setNodeNumber(++nextNodeNumber);
             nextNodeNumber = fixNodeNumbersFromRoot(child);
@@ -9164,13 +9171,9 @@ public class BuildSampleDatabase
             //conn.setAutoCommit(false);
             stmt = conn.createStatement();
             
-            int rowCnt = 0;
             rows = sheet.rowIterator();
             while (rows.hasNext())
             {
-                //System.out.println(rowCnt);
-                rowCnt++;
-                
                 for (int i=0;i<cells.length;i++)
                 {
                     cells[i] = null;

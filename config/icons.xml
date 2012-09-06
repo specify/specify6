@@ -80,6 +80,8 @@
     <icon name="Reload"        file="view-refresh16.png" sizes="16"/>
     <icon name="ViewForm16"    file="Form16x16.png" sizes="16"/>
     <icon name="ViewForm"      file="Form32x32.png" sizes="32"/>
+    <icon name="CleanUp"       file="cleanup.png" sizes="all"/>
+    <icon name="Loading"       file="loading.png" sizes="all"/>
     
     <icon name="Data_Entry"    file="Data_Entry.png" sizes="all"/>
     <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>

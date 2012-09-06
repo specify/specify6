@@ -37,7 +37,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.tasks.subpane.LifeMapperPane;
+import edu.ku.brc.specify.tasks.subpane.lm.LifeMapperPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.ToolBarDropDownBtn;

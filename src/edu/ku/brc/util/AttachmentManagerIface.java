@@ -59,6 +59,28 @@ public interface AttachmentManagerIface
      * @return a java.io.File handle to the attachment document
      */
     public abstract File getOriginal(Attachment attachment);
+    
+    /**
+     * @param attachLoc
+     * @param originalLoc
+     * @param mimeType
+     * @return
+     */
+    public abstract File getOriginal(String attachLoc,
+                                     String originalLoc,
+                                     String mimeType);
+
+    /**
+     * @param attachLoc
+     * @param originalLoc
+     * @param mimeType
+     * @param maxSideInPixels
+     * @return
+     */
+    public abstract File getOriginalScaled(String attachLoc,
+                                           String originalLoc,
+                                           String mimeType,
+                                           int maxSideInPixels);
 
     /**
      * Get a file handle to the attachment thumbnail.
@@ -67,6 +89,16 @@ public interface AttachmentManagerIface
      * @return a java.io.File handle to the attachment thumbnail
      */
     public abstract File getThumbnail(Attachment attachment);
+    
+    
+    /**
+     * Get a file handle to the attachment thumbnail.
+     * 
+     * @param attachmentLoc contents of the 'AttachmentLocation' column in the database.
+     * @param mimeType the mimeType of the file.
+     * @return File handle if there is one
+     */
+    public abstract File getThumbnail(String attachmentLoc, String mimeType);
     
     /**
      * Store a new attachment file (and thumbnail) in the manager's storage area.  A call

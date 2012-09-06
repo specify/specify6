@@ -142,7 +142,14 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         String  attchURL    = prefs.get(ATTACHMENT_URL_PREF, null);
         String  filePath    = prefs.get(ATTACHMENT_PATH_PREF, null);
         
-        useFilePath = useFilePath == null ? true : useFilePath;
+        if (useFilePath == null)
+        {
+            if (prefs == AppPreferences.getGlobalPrefs())
+            {
+                return false;
+            }
+            useFilePath = useFilePath == null ? true : useFilePath;
+        }
         
         AttachmentManagerIface attachMgr = null;
         String msgPath  = "";

@@ -47,11 +47,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
-import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SearchBorder;
@@ -70,7 +70,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
 {
     protected static ImageIcon   searchIcon   = getSearchIcon();
     
-    protected JAutoCompTextField searchText;
+    protected JTextField         searchText;
     protected ImageIcon          triangleIcon = null;
     protected ImageIcon          icon         = null;
     protected List<JComponent>   menus        = new ArrayList<JComponent>();
@@ -89,7 +89,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
      * @param textField
      * @param menuCreator
      */
-    public SearchBox(final JAutoCompTextField textField, 
+    public SearchBox(final JTextField textField, 
                      final MenuCreator menuCreator) 
     {
         this(textField, menuCreator, false);
@@ -98,8 +98,9 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     /**
      * @param textField
      * @param menuCreator
+     * @param includeClearIcon
      */
-    public SearchBox(final JAutoCompTextField textField, 
+    public SearchBox(final JTextField textField, 
                      final MenuCreator menuCreator,
                      final boolean includeClearIcon) 
     {
@@ -229,7 +230,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     /**
      * @return the searchText
      */
-    public JAutoCompTextField getSearchText()
+    public JTextField getSearchText()
     {
         return searchText;
     }

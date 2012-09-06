@@ -77,8 +77,6 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
-import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel;
-import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModelRowInfo;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.CustomDialog;

@@ -77,26 +77,47 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
+import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.BorrowAttachment;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.PaleoContext;
+import edu.ku.brc.specify.datamodel.PermitAttachment;
+import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
+import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
+import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
@@ -105,6 +126,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
@@ -131,7 +153,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 34;
+    private final int OVERALL_TOTAL = 35;
     
     private static final String TINYINT4 = "TINYINT(4)";
     
@@ -1470,6 +1492,32 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     frame.incOverall(); // #34
 
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //                                                                                                              //
+                    // Schema Changes 1.8                                                                                           //
+                    //                                                                                                              //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    String geoCode = "GeographyCode";
+                    tblName = getTableTitleForFrame(Geography.getClassTableId());
+                    len = getFieldLength(conn, databaseName, tblName, geoCode);
+                    if (len != null && len == 8)
+                    {
+                        alterFieldLength(conn, databaseName, tblName, geoCode, 8, 24);
+                    }
+                    
+                    String tableID = "TableID";
+                    tblName = getTableTitleForFrame(Attachment.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, tableID))
+                    {
+                        if (!addColumn(conn, databaseName, tblName, tableID,  "TINYINT", "Title"))
+                        {
+                            return false;
+                        }
+                    } 
+                    addTableIDToAttchmentTable(conn);
+                    frame.incOverall(); // #35
+                    
                     return true;
                     
                 } catch (Exception ex)
@@ -1495,23 +1543,99 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         return false;
     }
+                                  
+                                  
+                                  
+    /**
+     * @param conn
+     */
+    public void addTableIDToAttchmentTable(final Connection conn)
+    {
+        frame.setDesc("Updating Attachments...");
+
+        try
+        {
+            Class<?>[] attachmentClasses = {
+                    AccessionAttachment.class,
+                    AgentAttachment.class,
+                    BorrowAttachment.class,
+                    CollectingEventAttachment.class,
+                    CollectionObjectAttachment.class,
+                    ConservDescriptionAttachment.class,
+                    ConservEventAttachment.class,
+                    DNASequenceAttachment.class,
+                    DNASequencingRunAttachment.class,
+                    FieldNotebookAttachment.class,
+                    FieldNotebookPageAttachment.class,
+                    FieldNotebookPageSetAttachment.class,
+                    GiftAttachment.class,
+                    LoanAttachment.class,
+                    LocalityAttachment.class,
+                    PermitAttachment.class,
+                    PreparationAttachment.class,
+                    ReferenceWorkAttachment.class,
+                    RepositoryAgreementAttachment.class,
+                    TaxonAttachment.class,
+                };
+            
+            frame.setProcess(0, attachmentClasses.length);
+            PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET TableID = ? WHERE AttachmentID = ?");
+            Statement         stmt   = conn.createStatement();
+
+            int i = 1;
+            for (Class<?> cls : attachmentClasses)
+            {
+                int cnt = 0;
+                frame.setProcess(i);
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+                String    sql = String.format("SELECT a.AttachmentID FROM attachment a INNER JOIN %s aa ON a.AttachmentID = aa.AttachmentID", ti.getName());
+                log.debug(sql);
+                ResultSet rs  = stmt.executeQuery(sql);
+                while (rs.next())
+                {
+                    pStmt.setInt(1, ti.getTableId());
+                    pStmt.setInt(2, rs.getInt(1));
+                    if (pStmt.executeUpdate() != 1)
+                    {
+                        log.error("Error updating AttachmentID "+rs.getInt(1));
+                    }
+                    cnt++;
+                }
+                rs.close();
+                log.debug(String.format("Updated %d for %s", cnt, ti.getName()));
+                i++;
+            }
+            pStmt.close();
+            stmt.close();
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
     
     /**
      * @param conn
      */
-    public static void fixCollectorOrder(final Connection conn)
+    public void fixCollectorOrder(final Connection conn)
     {
+        frame.setDesc("Fixing Collector Ordering...");
+
         try
         {
-            String sql = "SELECT ID FROM (SELECT ce.CollectingEventID ID, COUNT(c.OrderNumber) CNT, MAX(c.OrderNumber) MX, MIN(c.OrderNumber) MN " +
-                         "FROM collectingevent ce " +
-                         "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID " +
-                         "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 1 OR MX <> CNT ";
+            String post = " FROM (SELECT ce.CollectingEventID ID, COUNT(c.OrderNumber) CNT, MAX(c.OrderNumber) MX, MIN(c.OrderNumber) MN " +
+                            "FROM collectingevent ce " +
+                            "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID " +
+                            "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 1 OR MX <> CNT ";
+       
+            int totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*)"+post);
+            int percent = totalCnt / 5;
+            frame.setProcess(totalCnt / 100, totalCnt);
             
             PreparedStatement pStmt  = conn.prepareStatement("SELECT CollectorID FROM collector WHERE CollectingEventID = ? ORDER BY OrderNumber");
             PreparedStatement pStmt2 = conn.prepareStatement("UPDATE collector SET OrderNumber = ? WHERE CollectorID = ?");
             Statement         stmt   = conn.createStatement();
-            ResultSet         rs     = stmt.executeQuery(sql);
+            ResultSet         rs     = stmt.executeQuery("SELECT ID"+post);
             //int               cnt    = 0;
             while (rs.next())
             {
@@ -1531,6 +1655,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //cnt++;
                 //if (cnt % 10 == 0) log.debug("Fixing Collector Ordering: " + cnt);
             }
+            frame.setProcess(totalCnt);
             rs.close();
             stmt.close();
             pStmt.close();
@@ -1768,7 +1893,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
         int total = BasicSQLUtils.getCountAsInt(conn, cntSQL);
         int cnt = 0;
-        int updated = 0;
+        //int updated = 0;
         
         frame.setProcess(0, total);
         PreparedStatement pStmt1 = null;
@@ -1803,7 +1928,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pStmt1.setInt(1, fmtUnit);
                     pStmt1.setInt(2, locID);
                     pStmt1.executeUpdate();
-                    updated++;
+                    //updated++;
                 }
                 
                 cnt++;

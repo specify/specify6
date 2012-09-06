@@ -45,8 +45,10 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -63,7 +65,7 @@ import com.jgoodies.forms.layout.FormLayout;
  *
  */
 @SuppressWarnings("serial")
-public class ImageDisplay extends JPanel implements GetSetValueIFace
+public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoaderIFace
 {
     // Error Code
     public static final int kImageOK       = 0;
@@ -79,7 +81,6 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	protected String       url;
 	protected boolean      isEditMode      = true;
 	protected JButton      editBtn;
-	protected ImageGetter  getter          = null;
 	protected String       noImageStr      = getResourceString("noimage");
 	protected String       loadingImageStr = getResourceString("loadingimage");
 	protected boolean      isNoImage       = true;
@@ -87,6 +88,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     protected boolean      doShowText      = true;
     
     protected ChangeListener changeListener = null;
+    protected JComponent     paintComponent = null;
     private   int            status         = kImageOK;
     private   ArrayList<File> fileCache = new ArrayList<File>();
 
@@ -106,7 +108,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 		setPreferredSize(new Dimension(imgWidth, imgHeight));
 
-		this.isEditMode = isEditMode;
+		this.isEditMode     = isEditMode;
+		this.paintComponent = this;
 		createUI();
 		
 		setDoubleBuffered(true);
@@ -185,6 +188,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         this.changeListener = changeListener;
     }
 
+    /**
+     * 
+     */
     protected void selectNewImage()
 	{
         String oldURL = this.url;
@@ -218,7 +224,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	/**
 	 * @param newImage
 	 */
-    public synchronized void setImage(final Image newImage)
+    public void setImage(final Image newImage)
     {
         if (newImage != null && 
             newImage.getWidth(null) > 0 &&
@@ -226,20 +232,22 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         {
             image = newImage;
             setNoImage(false);
+            status = kImageOK;
         } else
         {
             image = null;
             setNoImage(true);
         }
+        notifyOnUIThread(true, true);
         repaint();
-
-        doLayout();
+        //invalidate();
+        //doLayout();
     }
     
     /**
      * @param newImageIcon
      */
-    public synchronized void setImage(final ImageIcon newImageIcon)
+    public void setImage(final ImageIcon newImageIcon)
     { 
         if (newImageIcon != null)
         {
@@ -248,6 +256,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         {
             setImage((Image)null);
         }
+        notifyOnUIThread(true, true);
+        //invalidate();
+        //doLayout();
     }
     
     /**
@@ -261,33 +272,81 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         }
     }
 
-	/**
-	 *
+    /**
+     * 
+     */
+    private void doLoadFromURL()
+    {
+        try
+        {
+            File localFile = getFileFromWeb(url);
+            if (localFile != null)
+            {
+                localFile.deleteOnExit();
+                
+                setImage(ImageIO.read(localFile));
+                status = kImageOK;
+                
+                if (fileCache.size() > 2)
+                {
+                    File f = fileCache.get(0);
+                    fileCache.remove(0);
+                    f.delete();
+                }
+                fileCache.add(localFile);
+                
+            } else
+            {
+                status = kIOError;
+            }
+    
+        } catch (MalformedURLException e)
+        {
+            status = kURLError;
+            e.printStackTrace();
+            
+        } catch (Exception e)
+        {
+            status = kError;
+            e.printStackTrace();
+        }
+        done();
+    }
+    
+	/* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#done()
+     */
+    @Override
+    public void done()
+    {
+        if (paintComponent != null)
+        {
+            notifyOnUIThread(true, true);
+        }
+    }
+
+    /**
+	 * Checks to see if it is a File URL first.
 	 */
-	public void loadImage()
+	private void startImageLoad()
 	{
 	    status = kImageOK;
 		if (isNotEmpty(url))
 		{
 			setNoImage(false); // means it is loading it
-			repaint();
-
-			if (getter != null)
-			{
-			    getter.setManualStop(true);
-				getter.stop();
-				//getter.setManualStop(false);
-			}
-
+			
 			if (url.startsWith("file"))
 			{
 				try
 				{
 					File f = new File(new URI(url));
-					Image img = ImageIO.read(f);
-					setImage(img);
-					repaint();
-					notifyChangeListener();
+					if (f.exists())
+					{
+					    Image img = ImageIO.read(f);
+					    setImage(img);
+					}
+					status = kError;
+                    done();
 					return;
 					
 				} catch (Exception e)
@@ -296,22 +355,41 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 				    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 				    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 					e.printStackTrace();
+					done();
 				}
+			} else
+			{
+			    doLoadFromURL();
 			}
-			getter = new ImageGetter(url);
-			getter.start();
 
 		} else
 		{
 		    status = kURLError;
 			setNoImage(true);
 			setImage((Image)null);
-			notifyChangeListener();
+            done();
 		}
-		repaint();
 	}
 
 	/* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#getStatus()
+     */
+    @Override
+    public int getStatus()
+    {
+        return status;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#load()
+     */
+    @Override
+    public void load()
+    {
+        startImageLoad();
+    }
+
+    /* (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
 	@Override
@@ -369,11 +447,31 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 			g.drawString(label, (w - fm.stringWidth(label)) / 2, (h - fm.getAscent()) / 2);
 		}
 	}
+	
+	/**
+	 * @param doRepaint
+	 * @param notifyChangeListeners
+	 */
+	private void notifyOnUIThread(final boolean doRepaint, final boolean notifyChangeListeners)
+	{
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (doRepaint) ImageDisplay.this.repaint();
+                if (notifyChangeListeners) notifyChangeListener();
+            }
+        });
+	}
 
+	/**
+	 * @param isNoImage
+	 */
 	public void setNoImage(boolean isNoImage)
 	{
 		this.isNoImage = isNoImage;
-		repaint();
+
 	}
 
 	//--------------------------------------------------------------
@@ -388,7 +486,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		if (value instanceof String)
 		{
 			url = (String) value;
-			loadImage();
+			ImageLoaderExector.getInstance().loadImage(this);
 		}
 	}
 
@@ -416,125 +514,6 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         this.doShowText = doShowText;
     }
 
-    //--------------------------------------------------------------
-	//-- Inner Class JPanel for displaying an image
-	//--------------------------------------------------------------
-	public class ImageGetter implements Runnable
-	{
-
-		private Thread thread = null;
-		private String urlStr;
-		private boolean isManualStop = false;
-		
-		/**
-		 * @param urlStr
-		 */
-		public ImageGetter(String urlStr)
-		{
-			this.urlStr = urlStr;
-		}
-
-		/**
-         * @return the status
-         */
-        public int getStatus()
-        {
-            return status;
-        }
-
-        //----------------------------------------------------------------
-		//-- Runnable Interface
-		//----------------------------------------------------------------
-		public void start()
-		{
-		    //System.out.println("Calling Start");
-			if (thread == null)
-			{
-				thread = new Thread(this);
-				thread.start();
-			}
-		}
-
-		/**
-         * @param isManualStop the isManualStop to set
-         */
-        public void setManualStop(boolean isManualStop)
-        {
-            this.isManualStop = isManualStop;
-        }
-
-        /**
-		 *
-		 *
-		 */
-		public synchronized void stop()
-		{
-		    //System.out.println("Calling Stop: "+isManualStop);
-			if (thread != null)
-			{
-				thread.interrupt();
-			}
-			
-			if (!isManualStop)
-			{
-			    status = kInterruptedError;
-			    notifyChangeListener();
-			}
-			
-			thread = null;
-			notifyAll();
-		}
-
-		/**
-		 *
-		 */
-		public void run()
-		{
-			try
-			{
-				setNoImage(false); // means it is loading it
-
-			    File localFile = getFileFromWeb(urlStr);
-				if (localFile != null)
-				{
-				    localFile.deleteOnExit();
-				    
-				    setImage(ImageIO.read(localFile));
-				    status = kImageOK;
-				    //System.out.println("Got Image");
-				    
-				    if (fileCache.size() > 2)
-				    {
-				        File f = fileCache.get(0);
-				        fileCache.remove(0);
-				        f.delete();
-				    }
-				    fileCache.add(localFile);
-				    
-				} else
-				{
-				    status = kIOError;
-				    //System.out.println("Image Error1");
-				}
-
-				getter = null;
-
-            } catch (MalformedURLException e)
-            {
-                status = kURLError;
-                e.printStackTrace();
-                //System.out.println("Image Error2");
-                
-            } catch (Exception e)
-            {
-                status = kError;
-			    e.printStackTrace();
-			    //System.out.println("Image Error3");
-			}
-            notifyChangeListener();
-		}
-	}
-	
     /**
      * @param urlStr
      * @param tmpFile

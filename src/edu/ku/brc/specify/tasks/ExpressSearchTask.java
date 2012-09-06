@@ -19,19 +19,13 @@
 */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
@@ -46,7 +40,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -120,6 +113,7 @@ import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.SearchBoxComponent;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 /**
@@ -150,10 +144,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected static final String           LAST_SEARCH = "lastsearch"; 
     
     // Data Members
-    protected SearchBox                     searchBox;
-    protected JAutoCompTextField            searchText;
-    protected JButton                       searchBtn;
     protected JCheckBoxMenuItem             globalSearchCheckBoxMI;
+    protected SearchBoxComponent            searchBoxComp;
+    protected SearchBox                     searchBox;
+    protected JTextField                    searchText;
+    protected JButton                       searchBtn;
     protected Color                         textBGColor      = null;
     protected Color                         badSearchColor   = new Color(255,235,235);
     
@@ -236,7 +231,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         if (searchText != null)
         {
-            searchText.setPickListAdapter(PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
+            if (searchText instanceof JAutoCompTextField)
+            {
+                ((JAutoCompTextField)searchText).setPickListAdapter(PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
+            }
             
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
             searchText.setText(localPrefs.get(getLastSearchKey(), ""));
@@ -838,50 +836,30 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
 
-        // Create Search Panel
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-
-        JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = createLabel("  ");
-
-        searchBtn = createButton(getResourceString("SEARCH"));
-        searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
-        HelpMgr.setHelpID(searchBtn, "Express_Search");
-        
-        searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
-        searchText.setAskBeforeSave(false);
-        HelpMgr.registerComponent(searchText, "Express_Search");
-        searchBox = new SearchBox(searchText, new SearchBoxMenuCreator());
-        
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        searchText.setText(localPrefs.get(getLastSearchKey(), ""));
-        textBGColor = searchText.getBackground();
-
-        //searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
-
         ActionListener doQuery = new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 doQuery();
             }
         };
-
-        searchBtn.addActionListener(doQuery);
-        searchText.addActionListener(doQuery);
-        searchText.addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (searchText.getBackground() != textBGColor)
-                {
-                    searchText.setBackground(textBGColor);
-                    searchText.setForeground(UIManager.getColor("TextField.foreground"));
-                }
-            }
-        });
         
+        searchBoxComp  = new SearchBoxComponent(new SearchBoxMenuCreator(), doQuery, false,
+                                                PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
+        searchBoxComp.createUI();
+        searchBox      = searchBoxComp.getSearchBox();
+        searchText     = searchBoxComp.getSearchText();
+        searchBtn      = searchBoxComp.getSearchBtn();
+        textBGColor    = searchBoxComp.getTextBGColor();
+        badSearchColor = searchBoxComp.getBadSearchColor();
+        
+        searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
+        HelpMgr.setHelpID(searchBtn, "Express_Search");
+        HelpMgr.registerComponent(searchText, "Express_Search");
+        
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        searchText.setText(localPrefs.get(getLastSearchKey(), ""));
+        textBGColor = searchText.getBackground();
+
         searchText.addMouseListener(new MouseAdapter() 
         {
             @Override
@@ -898,24 +876,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             }
         });
 
-        c.weightx = 1.0;
-        gridbag.setConstraints(spacer, c);
-        searchPanel.add(spacer);
-
-        c.weightx = 0.0;
-        gridbag.setConstraints(searchBox, c);
-        searchPanel.add(searchBox);
-
-        searchPanel.add(spacer);
-        searchPanel.setOpaque(false);
-        
-        if (!UIHelper.isMacOS())
-        {
-            gridbag.setConstraints(searchBtn, c);
-            searchPanel.add(searchBtn);
-        }
-
-        toolbarItems.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
+        toolbarItems.add(new ToolBarItemDesc(searchBoxComp, ToolBarItemDesc.Position.AdjustRightLastComp));
 
         return toolbarItems;
     }
