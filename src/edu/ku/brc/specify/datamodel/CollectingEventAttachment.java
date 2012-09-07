@@ -147,6 +147,16 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return CollectingEvent.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()

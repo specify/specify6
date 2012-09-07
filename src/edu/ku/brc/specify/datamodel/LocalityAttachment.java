@@ -143,6 +143,16 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return Locality.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()

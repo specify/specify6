@@ -146,6 +146,16 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return Preparation.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()

@@ -162,6 +162,16 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return FieldNotebook.getClassTableId();
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
     @Override

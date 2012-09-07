@@ -33,11 +33,17 @@ public class FileImportProcessor
 {
     protected static FileImportProcessor instance;
     
+    /**
+     * 
+     */
     protected FileImportProcessor()
     {
         // nothing
     }
     
+    /**
+     * @return
+     */
     public synchronized static FileImportProcessor getInstance()
     {
         if (instance==null)
@@ -47,12 +53,20 @@ public class FileImportProcessor
         return instance;
     }
     
-    public boolean importFileIntoRecord(FormDataObjIFace record, File file)
+    /**
+     * @param record
+     * @param tableId
+     * @param file
+     * @return
+     */
+    public boolean importFileIntoRecord(final FormDataObjIFace record, final  int tableId, final File file)
     {
         if (record instanceof Attachment)
         {
             Attachment a = (Attachment)record;
             a.setOrigFilename(file.getAbsolutePath());
+            a.setTableId(tableId);
+            
             return true;
         }
         else if (record instanceof ObjectAttachmentIFace<?>)
@@ -64,6 +78,7 @@ public class FileImportProcessor
                 return false;
             }
             a.setOrigFilename(file.getAbsolutePath());
+            a.setTableId(oa.getTableID());
             return true;
         }
         return false;

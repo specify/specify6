@@ -463,6 +463,16 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     {
         return getClassTableId();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
     
     /**
      * @return the Table ID for the class.
@@ -472,6 +482,10 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         return 103;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
     @Transient
     public Set<ConservDescriptionAttachment> getAttachmentReferences()
     {

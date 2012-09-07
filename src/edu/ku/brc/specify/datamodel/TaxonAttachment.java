@@ -142,6 +142,16 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return Taxon.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()

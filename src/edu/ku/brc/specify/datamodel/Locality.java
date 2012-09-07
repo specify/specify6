@@ -38,7 +38,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -925,6 +924,16 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         return getClassTableId();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
+
     /**
      * @return the Table ID for the class.
      */
@@ -1078,6 +1087,10 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         return (longitude2 != null) ? longitude2.doubleValue() : null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
     @Transient
     public Set<LocalityAttachment> getAttachmentReferences()
     {

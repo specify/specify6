@@ -539,6 +539,16 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     {
         return getClassTableId();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
     
     /**
      * @return the Table ID for the class.
@@ -548,6 +558,10 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
         return 73;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
     @Transient
     public Set<ConservEventAttachment> getAttachmentReferences()
     {

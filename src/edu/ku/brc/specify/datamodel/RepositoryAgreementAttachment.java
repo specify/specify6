@@ -142,6 +142,16 @@ public class RepositoryAgreementAttachment extends DataModelObjBase implements O
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return RepositoryAgreement.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()

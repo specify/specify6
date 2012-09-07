@@ -582,6 +582,8 @@ public class BatchAttachFiles
 					attachment.setOrigFilename(fileToSave.getName());
 				}
 				
+				attachment.setTableId(rec.getAttachmentTableId());
+				
 				attachment.setTitle(fileToSave.getName());
 				ObjectAttachmentIFace<DataModelObjBase> oaif = 
 				    (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec.getClass());

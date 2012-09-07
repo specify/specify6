@@ -6404,7 +6404,7 @@ public class BuildSampleDatabase
                             }
                             
                             // create the attachment record
-                            Attachment photoAttachment = createAttachment(photoPath, "image/jpeg");
+                            Attachment photoAttachment = createAttachment(photoPath, "image/jpeg", Agent.getClassTableId());
                             dataObjects.add(photoAttachment);
 
                             // link the attachment to the agent

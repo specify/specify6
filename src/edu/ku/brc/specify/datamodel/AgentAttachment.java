@@ -140,6 +140,16 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return Agent.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.Orderable#getOrderIndex()

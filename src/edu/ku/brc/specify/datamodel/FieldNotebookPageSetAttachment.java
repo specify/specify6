@@ -162,6 +162,16 @@ public class FieldNotebookPageSetAttachment extends DataModelObjBase implements 
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return FieldNotebookPageSet.getClassTableId();
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
     @Override

@@ -24,5 +24,14 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public interface AttachmentOwnerIFace <T extends ObjectAttachmentIFace>
 {
-    public Set<T> getAttachmentReferences();
+    /**
+     * @return
+     */
+    public abstract Set<T> getAttachmentReferences();
+    
+    /**
+     * @return the table id of the 'owner' of the attachment
+     */
+    public abstract int getAttachmentTableId();
+
 }

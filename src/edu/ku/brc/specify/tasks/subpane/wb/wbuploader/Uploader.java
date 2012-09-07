@@ -4964,16 +4964,14 @@ public class Uploader implements ActionListener, KeyListener
 		
 		
 		
-			DataProviderSessionIFace session = DataProviderFactory.getInstance()
-				.createSession();
+	    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 		boolean tblTransactionOpen = false;
 		try
 		{
 			session.attach(rec);
 			session.beginTransaction();
 			tblTransactionOpen = true;
-			Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
-					.getAttachmentReferences();
+			Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec.getAttachmentReferences();
 			Vector<ObjectAttachmentIFace<?>> currentAttachees = new Vector<ObjectAttachmentIFace<?>>();
 			int ordinal = 0;
 			for (WorkbenchRowImage image : images)
@@ -4981,6 +4979,7 @@ public class Uploader implements ActionListener, KeyListener
 				Attachment attachment = new Attachment();
 				attachment.initialize();
 				attachment.setOrigFilename(image.getCardImageFullPath());
+				attachment.setTableId(rec.getAttachmentTableId());
 				File dummy = new File(image.getCardImageFullPath());
 				if (!dummy.exists())
 				{

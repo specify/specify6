@@ -419,6 +419,16 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     {
         return getClassTableId();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
     
     /**
      * @return the Table ID for the class.
@@ -428,6 +438,10 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         return 6;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
     @Transient
     public Set<PermitAttachment> getAttachmentReferences()
     {

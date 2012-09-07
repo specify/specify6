@@ -66,4 +66,9 @@ public interface ObjectAttachmentIFace <T extends DataModelObjBase>
      */
     public abstract void setRemarks(String remarks);
     
+    /**
+     * @return the table id of the 'owner' of the attachment
+     */
+    public abstract int getTableID();
+    
 }

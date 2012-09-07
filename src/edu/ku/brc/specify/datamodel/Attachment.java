@@ -76,6 +76,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
     protected String                  attachmentLocation;
+    protected Byte                    tableID;
     protected Byte                    visibility;
     protected SpecifyUser             visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
@@ -346,6 +347,31 @@ public class Attachment extends DataModelObjBase implements Serializable
     {
         this.visibility = visibility;
     }   
+
+    /**
+     * @return the tableID
+     */
+    @Column(name = "TableID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Byte getTableID()
+    {
+        return tableID;
+    }
+
+    /**
+     * @param tableID the tableID to set
+     */
+    public void setTableID(Byte tableID)
+    {
+        this.tableID = tableID;
+    }
+
+    /**
+     * @param tableID the tableID to set
+     */
+    public void setTableId(int tableID)
+    {
+        this.tableID = (byte)tableID;
+    }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)

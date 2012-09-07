@@ -211,6 +211,16 @@ public class AccessionAttachment extends DataModelObjBase implements ObjectAttac
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return Accession.getClassTableId();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
     @Override

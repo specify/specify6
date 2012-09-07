@@ -665,7 +665,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
 
             int status = client.executeMethod(filePost);
             
-            System.out.println(filePost.getResponseBodyAsString());
+            System.out.println("Response["+filePost.getResponseBodyAsString()+"]");
 
             if (status == HttpStatus.SC_OK)
             {

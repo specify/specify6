@@ -77,46 +77,59 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAttachment;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEvent;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.FieldNotebook;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.PaleoContext;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
@@ -126,6 +139,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -1578,6 +1592,29 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     TaxonAttachment.class,
                 };
             
+            Class<?>[] ownerClasses = {
+                    Accession.class,
+                    Agent.class,
+                    Borrow.class,
+                    CollectingEvent.class,
+                    CollectionObject.class,
+                    ConservDescription.class,
+                    ConservEvent.class,
+                    DNASequence.class,
+                    DNASequencingRun.class,
+                    FieldNotebook.class,
+                    FieldNotebookPage.class,
+                    FieldNotebookPageSet.class,
+                    Gift.class,
+                    Loan.class,
+                    Locality.class,
+                    Permit.class,
+                    Preparation.class,
+                    ReferenceWork.class,
+                    RepositoryAgreement.class,
+                    Taxon.class,
+                };
+            
             frame.setProcess(0, attachmentClasses.length);
             PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET TableID = ? WHERE AttachmentID = ?");
             Statement         stmt   = conn.createStatement();
@@ -1587,13 +1624,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             {
                 int cnt = 0;
                 frame.setProcess(i);
-                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(cls.getName());
-                String    sql = String.format("SELECT a.AttachmentID FROM attachment a INNER JOIN %s aa ON a.AttachmentID = aa.AttachmentID", ti.getName());
+                DBTableInfo ownerTI = DBTableIdMgr.getInstance().getByClassName(ownerClasses[i-1].getName());
+                DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+                String      sql     = String.format("SELECT a.AttachmentID FROM attachment a INNER JOIN %s aa ON a.AttachmentID = aa.AttachmentID", ti.getName());
                 log.debug(sql);
                 ResultSet rs  = stmt.executeQuery(sql);
                 while (rs.next())
                 {
-                    pStmt.setInt(1, ti.getTableId());
+                    pStmt.setInt(1, ownerTI.getTableId());
                     pStmt.setInt(2, rs.getInt(1));
                     if (pStmt.executeUpdate() != 1)
                     {
@@ -1629,7 +1667,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 1 OR MX <> CNT ";
        
             int totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*)"+post);
-            int percent = totalCnt / 5;
+            //int percent = totalCnt / 5;
             frame.setProcess(totalCnt / 100, totalCnt);
             
             PreparedStatement pStmt  = conn.prepareStatement("SELECT CollectorID FROM collector WHERE CollectingEventID = ? ORDER BY OrderNumber");

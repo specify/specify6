@@ -288,6 +288,16 @@ public class FieldNotebookPage extends DisciplineMember implements AttachmentOwn
     {
         return getClassTableId();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
     
     /**
      * @return the Table ID for the class.

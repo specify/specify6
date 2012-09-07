@@ -127,10 +127,14 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
             for (ObjectAttachmentIFace<?> objAtt : aOwner.getAttachmentReferences())
             {
                 Attachment a = objAtt.getAttachment();
-                if (a != null && a.getAttachmentLocation() == null)
+                if (a != null)
                 {
-                    AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a, true);
-                    getHashSetForClass(dataObj).add(a.getAttachmentLocation());
+                    a.setTableId(aOwner.getAttachmentTableId());
+                    if (a.getAttachmentLocation() == null)
+                    {
+                        AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a, true);
+                        getHashSetForClass(dataObj).add(a.getAttachmentLocation());
+                    }
                 }
             }
         }
@@ -158,12 +162,16 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
             for (ObjectAttachmentIFace<?> objAtt : aOwner.getAttachmentReferences())
             {
                 Attachment a = objAtt.getAttachment();
-                
-                if (a != null && a.getAttachmentLocation() != null)
+                if (a != null)
                 {
-                    if (getHashSetForClass(dataObj).contains(a.getAttachmentLocation()))
+                    a.setTableId(aOwner.getAttachmentTableId());
+    
+                    if (a.getAttachmentLocation() != null)
                     {
-                        a.setStoreFile(true);
+                        if (getHashSetForClass(dataObj).contains(a.getAttachmentLocation()))
+                        {
+                            a.setStoreFile(true);
+                        }
                     }
                 }
             }

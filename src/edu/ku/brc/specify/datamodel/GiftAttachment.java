@@ -140,6 +140,16 @@ public class GiftAttachment extends DataModelObjBase implements ObjectAttachment
     {
         this.remarks = remarks;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return Gift.getClassTableId();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.Orderable#getOrderIndex()

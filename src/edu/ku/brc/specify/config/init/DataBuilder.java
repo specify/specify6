@@ -341,12 +341,14 @@ public class DataBuilder
      * @return
      */
     public static Attachment createAttachment(final String filename,
-                                              final String mimeType)
+                                              final String mimeType,
+                                              final int tableId)
     {
         Attachment attachment = new Attachment();
         attachment.initialize();
         attachment.setOrigFilename(filename);
         attachment.setMimeType(mimeType);
+        attachment.setTableId(tableId);
         persist(attachment);
         return attachment;
     }

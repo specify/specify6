@@ -1173,6 +1173,16 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     {
         return getClassTableId();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
     
     /**
      * @return the Table ID for the class.
@@ -1182,6 +1192,10 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         return 1;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
     @Transient
     public Set<CollectionObjectAttachment> getAttachmentReferences()
     {

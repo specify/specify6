@@ -497,7 +497,7 @@ public class IconViewObj implements Viewable
         }
 
         FileImportProcessor importer = FileImportProcessor.getInstance();
-        if (!importer.importFileIntoRecord(newObject, f))
+        if (!importer.importFileIntoRecord(newObject, newObject.getTableId(), f))
         {
             return false;
         }

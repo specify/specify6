@@ -55,8 +55,8 @@ import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * WorkbenchRow generated rods

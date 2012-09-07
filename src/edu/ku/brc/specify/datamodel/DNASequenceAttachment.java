@@ -153,6 +153,16 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.ObjectAttachmentIFace#getTableID()
+     */
+    @Override
+    @Transient
+    public int getTableID()
+    {
+        return DNASequence.getClassTableId();
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override

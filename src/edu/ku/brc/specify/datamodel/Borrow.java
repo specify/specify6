@@ -54,7 +54,8 @@ import org.hibernate.annotations.Index;
         @Index (name="BorReceivedDateIDX", columnNames={"ReceivedDate"}),
         @Index (name="BorColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class Borrow extends CollectionMember implements java.io.Serializable {
+public class Borrow extends CollectionMember implements java.io.Serializable, 
+                                                        AttachmentOwnerIFace<BorrowAttachment> {
 
     // Fields    
 
@@ -478,6 +479,27 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
     @Override
     @Transient
     public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Transient
+    @Override
+    public Set<BorrowAttachment> getAttachmentReferences()
+    {
+        return borrowAttachments;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
     {
         return getClassTableId();
     }
