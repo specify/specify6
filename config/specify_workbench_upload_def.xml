@@ -475,10 +475,10 @@
     <field table="Geography" name="city" treename="geography" maptofield="name" rankid="500"/>
     
     <!-- geologictimeperied -->
-   	<field table="GeologicTimePeriod" name="era" treename="geologictimeperiod" maptofield="name" rankid="100"/>
-   	<field table="GeologicTimePeriod" name="period" treename="geologictimeperiod" maptofield="name" rankid="200"/>
-   	<field table="GeologicTimePeriod" name="epoch" treename="geologictimeperiod" maptofield="name" rankid="300"/>
-   	<field table="GeologicTimePeriod" name="age" treename="geologictimeperiod" maptofield="name" rankid="400"/>
+   	<field table="GeologicTimePeriod" name="erathem/era" treename="geologictimeperiod" maptofield="name" rankid="100"/>
+   	<field table="GeologicTimePeriod" name="system/period" treename="geologictimeperiod" maptofield="name" rankid="200"/>
+   	<field table="GeologicTimePeriod" name="series/epoch" treename="geologictimeperiod" maptofield="name" rankid="300"/>
+   	<field table="GeologicTimePeriod" name="stage/age" treename="geologictimeperiod" maptofield="name" rankid="400"/>
     
    	<!-- habitatattributes -->
 	<field table="HabitatAttribute" name="habitatAttributeRemarks" actualname="Remarks"/>
