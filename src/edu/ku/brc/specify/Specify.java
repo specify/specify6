@@ -3025,7 +3025,28 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       }
   }
   
-
+/**
+ * 
+ */
+    public static void removeUnneededJars()
+    {
+        // Remove unwanted jar files
+        for (String fName : new String[] { "lucene-core-4.0-SNAPSHOT.jar",
+                                           "lucene-queryparser-4.0-SNAPSHOT.jar" })
+        {
+            File file = XMLHelper.getConfigDir(".." + File.separator + "libs" + File.separator
+                    + fName);
+            if (file.exists())
+            {
+                try
+                {
+                    file.delete();
+                } catch (SecurityException ex)
+                {
+                }
+            }
+        }
+    }
   
   /**
    *
@@ -3041,7 +3062,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       AppBase.processArgs(args);
       AppBase.setupTeeForStdErrStdOut(true, false);
       
-     
+      removeUnneededJars();
+      
       //UIHelper.attachUnhandledException();
       
       SwingUtilities.invokeLater(new Runnable() {
