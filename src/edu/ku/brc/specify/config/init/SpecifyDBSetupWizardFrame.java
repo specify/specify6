@@ -393,8 +393,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         AppBase.processArgs(args);
         AppBase.setupTeeForStdErrStdOut(true, false);
         
-        Specify.removeUnneededJars();
-        
         System.setProperty("appdatadir", "..");
         
         SwingUtilities.invokeLater(new Runnable()
