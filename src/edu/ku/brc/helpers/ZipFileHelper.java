@@ -76,8 +76,12 @@ public class ZipFileHelper
     {
         for (File dir : dirsToRemoveList)
         {
-            try {
-                FileUtils.deleteDirectory(dir);
+            try 
+            {
+                if (dir.exists())
+                {
+                    FileUtils.deleteDirectory(dir);
+                }
             } catch (IOException ex)
             {
                 System.err.println(ex);
