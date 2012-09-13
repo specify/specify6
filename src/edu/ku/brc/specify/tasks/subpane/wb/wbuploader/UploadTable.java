@@ -1670,12 +1670,19 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected String getLatLongText(UploadField ufld, Object value)
     {
-    	if (value != null)
+    	if (value != null && 
+    	    ufld  != null && 
+    	    ufld.getField() != null && 
+    	    ufld.getField().getName() != null)
     	{
-    		String result = getLatLongTextFldVal(ufld.getField().getName()).replace(':', ' ');
-    		//there may be issues with decimal places. WB enforces limits in
-    		//LatLonConverter.DECIMAL_SIZES[], but the forms don't seem to
-    		return result;
+            String latLonStr = getLatLongTextFldVal(ufld.getField().getName());
+            if (latLonStr != null)
+            {
+                String result = latLonStr.replace(':', ' ');
+        		//there may be issues with decimal places. WB enforces limits in
+        		//LatLonConverter.DECIMAL_SIZES[], but the forms don't seem to
+        		return result;
+            }
     	}
     	return null;
     }
