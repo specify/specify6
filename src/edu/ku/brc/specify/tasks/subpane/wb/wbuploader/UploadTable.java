@@ -1668,6 +1668,12 @@ public class UploadTable implements Comparable<UploadTable>
         return result;
     }
     
+    /**
+     * @param ufld
+     * @param value
+     * @return lat/long in text format saved in the sp db,
+     * 	or in DecimalDegree format in case of no formatted text in db
+     */
     protected String getLatLongText(UploadField ufld, Object value)
     {
     	if (value != null && 
@@ -1675,14 +1681,20 @@ public class UploadTable implements Comparable<UploadTable>
     	    ufld.getField() != null && 
     	    ufld.getField().getName() != null)
     	{
-            String latLonStr = getLatLongTextFldVal(ufld.getField().getName());
-            if (latLonStr != null)
-            {
-                String result = latLonStr.replace(':', ' ');
-        		//there may be issues with decimal places. WB enforces limits in
-        		//LatLonConverter.DECIMAL_SIZES[], but the forms don't seem to
-        		return result;
-            }
+    		String result = getLatLongTextFldVal(ufld.getField().getName());
+    		if (result == null)
+    		{
+    			LatLonConverter.LATLON ll = isLatFld(ufld) ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude;
+    			result = LatLonConverter.format((BigDecimal)value, ll, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.DEGREES_FORMAT.None,  
+    					LatLonConverter.DECIMAL_SIZES[LatLonConverter.FORMAT.DDDDDD.ordinal()]);
+    		}
+    		if (result != null)
+    		{
+    			result = result.replace(':', ' ');
+    		}     		
+    		//there may be issues with decimal places. WB enforces limits in
+    		//LatLonConverter.DECIMAL_SIZES[], but the forms don't seem to
+    		return result;
     	}
     	return null;
     }
