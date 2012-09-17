@@ -35,10 +35,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
 
 import javax.swing.JComponent;
+
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.dnd.ShadowFactory;
 import edu.ku.brc.util.Pair;
@@ -51,6 +55,8 @@ import edu.ku.brc.util.Pair;
  */
 public class BubbleGlassPane extends JComponent
 {
+    protected static final Logger  log = Logger.getLogger(BubbleGlassPane.class);
+
     private static final int     DEF_BAR_WIDTH      = 400;
     private static final int     DEF_BAR_HEIGHT     = 400;
     private static final int     SHADOW_SIZE        = 20;
@@ -72,6 +78,7 @@ public class BubbleGlassPane extends JComponent
     
     protected Vector<Pair<String, String>> textItems        = new Vector<Pair<String, String>>();
     protected Vector<BubbleBtnInfo>        btnItems         = new Vector<BubbleBtnInfo>();
+    protected int                          btnClicked       = -1;
     protected boolean                      needsBtnLayout   = true;
 
     /**
@@ -81,6 +88,23 @@ public class BubbleGlassPane extends JComponent
     {
         setBackground(Color.WHITE);
         setFont(new Font("Default", Font.BOLD, 16));
+        
+        addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                int inx = 0;
+                for (int i=0;i<btnItems.size();i++)
+                {
+                    if (btnItems.get(i).getRect().contains(e.getPoint()))
+                    {
+                        btnClicked = inx;
+                        break;
+                    }
+                }
+            }
+        });
     }
     
     /**
@@ -91,6 +115,7 @@ public class BubbleGlassPane extends JComponent
         textItems.clear();
         btnItems.clear();
         needsBtnLayout = true;
+        btnClicked     = -1;
     }
     
     /**
@@ -109,6 +134,14 @@ public class BubbleGlassPane extends JComponent
     public void addBtn(final String btnTitle, final ActionListener al)
     {
         btnItems.add(new BubbleBtnInfo(btnTitle, al));
+    }
+
+    /**
+     * @return the btnClicked
+     */
+    public int getBtnClicked()
+    {
+        return btnClicked;
     }
 
     /* (non-Javadoc)

@@ -69,8 +69,8 @@ public class ImagesTask extends BaseTask
 {
     private static final String  ON_TASKBAR        = "ImagesTask.OnTaskbar";
     private static final String  IMAGES           = "IMAGES";
-    private static final String  IMAGES_TITLE     = "IMAGES_TITLE";
-    private static final String  IMAGES_SECURITY  = "IMAGESEDIT";
+    //private static final String  IMAGES_TITLE     = "IMAGES_TITLE";
+    //private static final String  IMAGES_SECURITY  = "IMAGESEDIT";
     
     // Data Members
     protected ImagesPane              imagesPane       = null;
@@ -86,7 +86,7 @@ public class ImagesTask extends BaseTask
      */
     public ImagesTask()
     {
-        super(IMAGES, "Images");//UIRegistry.getResourceString(IMAGES_TITLE));
+        super(getResourceString(IMAGES), "Images");
         this.iconName = "image";
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }

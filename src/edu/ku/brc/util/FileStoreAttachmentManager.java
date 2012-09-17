@@ -283,6 +283,14 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getMetaDataAsJSON(int)
+     */
+    @Override
+    public String getMetaDataAsJSON(int attachmentID)
+    {
+        return null;
+    }
+    /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
      */
     @Override

@@ -42,6 +42,6 @@ public interface GalleryGridListener
      * @param index
      * @param isSelected
      */
-    public abstract void infoSelected(ImageCellDisplay icd, int index, boolean isSelected);
+    public abstract void infoSelected(ImageCellDisplay icd, int index, boolean isSelected, int whichBtn);
     
 }

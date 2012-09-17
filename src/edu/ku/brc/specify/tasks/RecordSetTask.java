@@ -523,7 +523,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     
     /**
      * Delete a record set
-     * @param rs the recordSet to be deleted
+     * @param rsController the recordSet to be deleted
      */
     public static void deleteItems(final Integer rsId, final List<Integer> rsiIds, final Integer rsiId)
     {

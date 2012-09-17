@@ -183,8 +183,7 @@ public class CollectionDataFetcher
         
         sqlSB.append("LEFT JOIN locality loc ON ce.LocalityID = loc.LocalityID ");
         sqlSB.append("LEFT JOIN geography geo ON loc.GeographyID = geo.GeographyID ");
-        sqlSB.append("WHERE ");
-        sqlSB.append("att.AttachmentID=");
+        sqlSB.append("WHERE att.AttachmentID=");
         sqlSB.append(attachmentID);
         
         if (isColObj) sqlSB.append(" AND det.IsCurrent <> 0");
@@ -201,10 +200,11 @@ public class CollectionDataFetcher
             
             if (rs.next())
             {
-                for (int i=1;i<=rsmd.getColumnCount();i++)
+                for (int i=1;i<rsmd.getColumnCount();i++)
                 {
                     dataMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
                 }
+                dataMap.put("Id", rs.getObject(rsmd.getColumnCount()));
             }
             rs.close();
             return dataMap;

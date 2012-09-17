@@ -111,7 +111,10 @@ public class LocalityCleanupProcessor
         prgDlg.getProcessProgress().setIndeterminate(true);
         prgDlg.setDesc(getResourceString("CLNUP_LC_INIT_MSG"));
         
-        cleanupIndexer.setProgressDlg(prgDlg);
+        if (cleanupIndexer != null)
+        {
+            cleanupIndexer.setProgressDlg(prgDlg);
+        }
         UIHelper.centerAndShow(prgDlg);
         
         //if (cleanupIndexer != null)

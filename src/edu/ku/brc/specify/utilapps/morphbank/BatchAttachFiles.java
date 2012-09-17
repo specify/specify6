@@ -203,10 +203,9 @@ public class BatchAttachFiles
                     PreparedStatement pStmt = null;
                     try
                     {
-                        int    numFiles  = files.size();
-                        int    total     = 0;
-                        int    one20th   = (int)((double)numFiles / 20.0);
-                        int    prevTenth = 0;
+                        int    totNumFiles = files.size();
+                        int    cnt         = 0;
+                        int    one20th     = (int)((double)totNumFiles / 10.0);
                         
                         String sql = String.format("SELECT %s FROM %s WHERE %s = ?", tblInfo.getPrimaryKeyName(), tblInfo.getName(), keyName);
                         //System.out.println(sql);
@@ -243,18 +242,14 @@ public class BatchAttachFiles
                                 rs.close();
                             }
                             
-                            total++;
-                            if (numFiles < 21)
+                            cnt++;
+                            if (totNumFiles < 21)
                             {
-                                firePropertyChange(PROGRESS, numFiles, total); 
-                            } else if (numFiles % one20th == 0)
+                                firePropertyChange(PROGRESS, totNumFiles, cnt); 
+                            } else if (cnt % one20th == 0)
                             {
-                                int percent = (int)(((double)total / numFiles) * 100.0);
-                                if (percent != prevTenth)
-                                {
-                                    prevTenth = percent;
-                                    firePropertyChange(PROGRESS, 100, percent);
-                                }
+                                 int percent = (int)(((double)cnt / totNumFiles) * 100.0);
+                                 firePropertyChange(PROGRESS, 100, percent);
                             }
                             //Thread.currentThread().sleep(2000);
                             //if (cnt == 2) break;

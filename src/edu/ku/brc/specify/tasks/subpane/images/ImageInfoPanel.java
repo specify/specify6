@@ -31,7 +31,6 @@ import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -50,7 +49,7 @@ import edu.ku.brc.ui.ImageDisplay;
  * Aug 31, 2012
  *
  */
-public class ImageInfoPanel extends JPanel
+public class ImageInfoPanel extends ExpandShrinkPanel
 {
     public static int IMG_SIZE = 300;
 
@@ -73,10 +72,16 @@ public class ImageInfoPanel extends JPanel
      */
     public ImageInfoPanel(final CollectionDataFetcher dataFetcher)
     {
-        super();
+        super(CONTRACTED, false);
         
         this.dataFetcher = dataFetcher;
-        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ExpandShrinkPanel#createUI()
+     */
+    public void createUI()
+    {
         setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
         setBackground(Color.WHITE);
         setOpaque(true);
@@ -120,6 +125,8 @@ public class ImageInfoPanel extends JPanel
         });
         blueMarbleFetcher.init();
         markerImg = blueMarbleFetcher.getMarkerImg();
+        
+        super.doneBuilding();
     }
     
     /**
@@ -160,7 +167,12 @@ public class ImageInfoPanel extends JPanel
         if (imgDataItem != null)
         {
             boolean isPointSet = false;
-            HashMap<String, Object> map = dataFetcher.getData(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
+            HashMap<String, Object> map = imgDataItem.getDataMap(); 
+            if (map == null)
+            {
+                map = dataFetcher.getData(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
+                imgDataItem.setDataMap(map);
+            }
             if (map != null)
             {
                 BigDecimal lat = (BigDecimal)map.get("Latitude1");
@@ -179,5 +191,4 @@ public class ImageInfoPanel extends JPanel
             }
         }
     }
-    
 }

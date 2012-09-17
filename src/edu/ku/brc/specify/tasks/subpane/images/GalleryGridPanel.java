@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.util.Stack;
 import java.util.Vector;
@@ -32,6 +33,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -57,7 +59,7 @@ public class GalleryGridPanel extends JPanel
     
     protected GalleryGridListener         infoListener;
     protected MouseAdapter                mouseAdapter;
-    protected ResultSetController         rs;
+    protected ResultSetController         rsController;
     
     private int gridRows;
     private int gridCols;
@@ -65,7 +67,8 @@ public class GalleryGridPanel extends JPanel
     private int numOfPages;
     private int pageNum;
     private int pageSize;
-    private int currIndex = 0;
+    private int currOffIndex  = 0;
+    private int currCellIndex = -1;
  
     /**
      * 
@@ -73,7 +76,33 @@ public class GalleryGridPanel extends JPanel
     public GalleryGridPanel(final ResultSetController rs)
     {
         super();
-        this.rs = rs;
+        this.rsController = rs;
+        
+        this.rsController.addListener(new ResultSetControllerListener()
+        {
+            @Override
+            public void newRecordAdded() { }
+            
+            @Override
+            public void indexChanged(int newIndex)
+            {
+                for (ImageCellDisplay icd : displayList)
+                {
+                    icd.getImageDataItem().setSelected(false);
+                }
+                if (pageNum != newIndex)
+                {
+                    pageNum      = newIndex;
+                    currOffIndex = (newIndex * pageSize);
+                    
+                    Rectangle r = getBounds();
+                    setBounds(r.x, r.y, r.width, r.height);
+                }
+            }
+            
+            @Override
+            public boolean indexAboutToChange(int oldIndex, int newIndex) { return true; }
+        });
         
         setBackground(Color.WHITE);
         setOpaque(true);
@@ -86,7 +115,7 @@ public class GalleryGridPanel extends JPanel
                                      final boolean          isSelected, 
                                      final int              clickCount)
             {
-                int inx = -1;
+                currCellIndex = -1;
                 int i   = 0;
                 for (ImageCellDisplay icd : displayList)
                 {
@@ -94,39 +123,40 @@ public class GalleryGridPanel extends JPanel
                     {
                         icd.setSelected(false);
                         icd.repaint();
-                        notifyItemSelected(icd, inx, false, clickCount);
+                        notifyItemSelected(icd, currCellIndex, false, clickCount);
                     }
                     if (icd == imgCellDsp)
                     {
-                        inx = i;
+                        currCellIndex = i;
                     }
                     i++;
                 }
                 
-                if (isSelected && inx > -1)
+                if (isSelected && currCellIndex > -1)
                 {
                     imgCellDsp.setSelected(true);
                     imgCellDsp.repaint();
-                    notifyItemSelected(imgCellDsp, inx, true, clickCount);
+                    int adjustedIndex = currCellIndex + (pageNum * pageSize);
+                    notifyItemSelected(imgCellDsp, adjustedIndex, true, clickCount);
                 }
             }
             
             @Override
-            public void infoSelected(final ImageCellDisplay imgCellDsp, final int index, final boolean isSelected)
+            public void infoSelected(final ImageCellDisplay imgCellDsp, final int index, final boolean isSelected, final int whichBtn)
             {
-                int inx = -1;
+                currCellIndex = -1;
                 int i   = 0;
                 for (ImageCellDisplay icd : displayList)
                 {
                     if (icd == imgCellDsp)
                     {
-                        inx = i;
+                        currCellIndex = i;
                         break;
                     }
                     i++;
                 }
 
-                notifyInfoSelected(imgCellDsp, inx, isSelected);
+                notifyInfoSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
             }
         };
     }
@@ -137,6 +167,11 @@ public class GalleryGridPanel extends JPanel
     @Override
     public void setBounds(int xc, int yc, int width, int height)
     {
+        Rectangle r = getBounds();
+        if (r.x == xc && r.y == yc && r.width == width && r.height == height)
+        {
+            //return;
+        }
         super.setBounds(xc, yc, width, height);
         
         for (ImageCellDisplay imgDsp : displayList)
@@ -153,6 +188,10 @@ public class GalleryGridPanel extends JPanel
             gridRows = (height - SEP_SIZE) / fullCellSize;
             gridCols = (width - SEP_SIZE) / fullCellSize;
             
+            // For Testing
+            //gridRows = 2;
+            //gridCols = 2;
+            
             pageSize = gridCols * gridRows;
             if (pageSize == 0)
             {
@@ -161,7 +200,7 @@ public class GalleryGridPanel extends JPanel
             
             int numItems = itemList.size();
             numOfPages = (numItems / pageSize) + (numItems % pageSize > 0 ? 1 : 0);
-            pageNum    = (currIndex / pageSize) + (currIndex % pageSize > 0 ? 1 : 0);
+            pageNum    = (currOffIndex / pageSize) + (currOffIndex % pageSize > 0 ? 1 : 0);
             
             int actualVSep = (height - (gridRows * fullCellSize)) / (gridRows + 1);
             int actualHSep = (width - (gridCols * fullCellSize)) /  (gridCols + 1);
@@ -185,9 +224,18 @@ public class GalleryGridPanel extends JPanel
                     imgDsp.addListener(infoListener);
                 }
                 
-                System.out.println("Display "+i);
-                imgDsp.setImageDataItem(itemList.get(i));
-                imgDsp.startLoad();
+                int dataInx = i + (pageSize * pageNum);
+                if (dataInx == itemList.size())
+                {
+                    break;
+                }
+                System.out.println("Display "+i+"   dataInx: "+dataInx);
+                imgDsp.setImageDataItem(itemList.get(dataInx));
+                
+                if (imgDsp.getImageDataItem() != null && imgDsp.getImageDataItem().getImgIcon() == null)
+                {
+                    imgDsp.startLoad();
+                }
                 displayList.add(imgDsp);
                 
                 
@@ -202,8 +250,8 @@ public class GalleryGridPanel extends JPanel
             
             fillDisplay();
             
-            rs.setLength(numOfPages);
-            rs.setIndex(pageNum);
+            rsController.setLength(numOfPages);
+            rsController.setIndex(pageNum);
             
         } else
         {
@@ -237,7 +285,7 @@ public class GalleryGridPanel extends JPanel
      */
     public ResultSetController getResultSetController()
     {
-        return rs;
+        return rsController;
     }
 
     /**
@@ -245,11 +293,11 @@ public class GalleryGridPanel extends JPanel
      */
     private void fillDisplay()
     {
-        int pageEnd = currIndex + pageSize; 
-        for (int i=currIndex;i<itemList.size() && i < pageEnd;i++)
+        int pageEnd = currOffIndex + pageSize; 
+        for (int i=currOffIndex;i<itemList.size() && i < pageEnd;i++)
         {
-           displayList.get(i).setImage(itemList.get(i).getImgIcon()); 
-           displayList.get(i).repaint();
+           displayList.get(i-currOffIndex).setImage(itemList.get(i).getImgIcon()); 
+           displayList.get(i-currOffIndex).repaint();
         }
     }
 
@@ -281,9 +329,17 @@ public class GalleryGridPanel extends JPanel
     /**
      * @return the currIndex
      */
-    public int getSelectedIndex()
+    public int getOffsetIndex()
     {
-        return currIndex;
+        return currOffIndex;
+    }
+    
+    /**
+     * @return the currIndex
+     */
+    public int getSelectedCellIndex()
+    {
+        return currCellIndex;
     }
     
     /**
@@ -316,11 +372,11 @@ public class GalleryGridPanel extends JPanel
         }
     }
     
-    private void notifyInfoSelected(ImageCellDisplay item, int index, boolean isSelected)
+    private void notifyInfoSelected(ImageCellDisplay item, int index, boolean isSelected, final int whichBtn)
     {
         for (GalleryGridListener lsl : selectionListeners)
         {
-            lsl.infoSelected(item, index, isSelected);
+            lsl.infoSelected(item, index, isSelected, whichBtn);
         }
     }
     

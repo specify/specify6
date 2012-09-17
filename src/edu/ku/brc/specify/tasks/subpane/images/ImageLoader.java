@@ -46,7 +46,6 @@ public class ImageLoader implements ImageLoaderIFace
     private ImageIcon imageIcon;
     private boolean   isError;
     private ImageLoaderListener listener;
-    private int id;
     
     static int cnt = 0;
     /**
@@ -68,8 +67,6 @@ public class ImageLoader implements ImageLoaderIFace
         this.doLoadFullImage = doLoadFullImage;
         this.scale = scale;
         this.listener = listener;
-        
-        this.id = cnt++;
     }
 
     /* (non-Javadoc)

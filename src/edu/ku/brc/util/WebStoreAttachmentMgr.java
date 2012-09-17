@@ -49,6 +49,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -278,6 +279,54 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             UIRegistry.showError(errMsg);
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getMetaDataAsJSON(int)
+     */
+    @Override
+    public String getMetaDataAsJSON(int attachmentID)
+    {
+        try
+        {
+            String fileName = BasicSQLUtils.querySingleObj("SELECT AttachmentLocation FROM attachment WHERE AttachmentID = "+attachmentID);
+            if (StringUtils.isNotEmpty(fileName))
+            {
+                String metaDataURLStr = "http://specifyassets.nhm.ku.edu/Informatics/getmetadata.php?type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>";
+                String urlStr         = subAllExtraData(metaDataURLStr, fileName, false, null);
+    
+                URL url = new URL(urlStr);
+                InputStream inpStream = url.openStream();
+                if (inpStream != null)
+                {
+                    StringBuilder jsonStr = new StringBuilder();
+                    BufferedInputStream  in  = new BufferedInputStream(inpStream);
+                    do
+                    {
+                        int numBytes = in.read(bytes);
+                        if (numBytes == -1)
+                        {
+                            break;
+                        }
+                        if (numBytes > 0)
+                        {
+                            String data = new String(bytes);
+                            jsonStr.append(data);
+                        }
+                        
+                    } while(true);
+                    in.close();
+                
+                    return jsonStr.toString();
+                }
+            }
+            
+        } catch (IOException ex)
+        {
+            log.error(ex.getMessage());
+        }
+
+        return null;
     }
 
     /* (non-Javadoc)

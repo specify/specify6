@@ -56,17 +56,22 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ImageCellDisplay extends ImageDisplay
 {
+    public static final int INFO_BTN     = -1;
+    public static final int METADATA_BTN = -2;
+    
     private final int   margin         = 6;
 
     private Border      nonSelBorder   = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-    private boolean     isSelected     = false;
+    //private boolean     isSelected     = false;
     private BasicStroke stdLineStroke  = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private Color       selectColor    = UIManager.getColor("Table.selectionBackground");
     private RoundRectangle2D.Double rr = new RoundRectangle2D.Double(0, 0, 0, 0, 10, 10);
     
     private ImageIcon   infoIcon16     = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
+    private ImageIcon   metaDataIcon   = IconManager.getIcon("MetaData", IconManager.STD_ICON_SIZE.Std16);
     
-    private Rectangle   hotRect   = new Rectangle();
+    private Rectangle   infoHitRect   = new Rectangle();
+    private Rectangle   mdHitRect     = new Rectangle(); // metadat icon
     
     private Vector<GalleryGridListener> listeners = new Vector<GalleryGridListener>();
     
@@ -82,7 +87,6 @@ public class ImageCellDisplay extends ImageDisplay
     {
         super(imgWidth, imgHeight, false, false);
         
-        isSelected = false;
         setBackground(Color.WHITE);
         setOpaque(true);
         
@@ -91,11 +95,17 @@ public class ImageCellDisplay extends ImageDisplay
             @Override
             public void mousePressed(MouseEvent e)
             {
-                if (hotRect != null && hotRect.contains(e.getPoint()))
+                if (infoHitRect != null && infoHitRect.contains(e.getPoint()))
                 {
                     for (GalleryGridListener l : listeners)
                     {
-                        l.infoSelected(ImageCellDisplay.this, -1, true);
+                        l.infoSelected(ImageCellDisplay.this, Integer.MIN_VALUE, true, INFO_BTN);
+                    }
+                } else if (mdHitRect != null && mdHitRect.contains(e.getPoint()))
+                {
+                    for (GalleryGridListener l : listeners)
+                    {
+                        l.infoSelected(ImageCellDisplay.this, Integer.MIN_VALUE, true, METADATA_BTN);
                     }
                 } else
                 {
@@ -144,7 +154,7 @@ public class ImageCellDisplay extends ImageDisplay
             int w   = getSize().width - 3;
             h       = getSize().height - 3;
             
-            if (isSelected)
+            if (imgDataItem != null && imgDataItem.isSelected())
             {
                 g2.setStroke(stdLineStroke);
                 g2.setColor(selectColor);
@@ -158,10 +168,19 @@ public class ImageCellDisplay extends ImageDisplay
             int imgY = y + h - infoIcon16.getIconHeight();
             g2.drawImage(infoIcon16.getImage(), imgX, imgY, null);
             
-            hotRect.x      = imgX;
-            hotRect.y      = imgY;
-            hotRect.width  = infoIcon16.getIconWidth();
-            hotRect.height = infoIcon16.getIconHeight();
+            infoHitRect.x      = imgX;
+            infoHitRect.y      = imgY;
+            infoHitRect.width  = infoIcon16.getIconWidth();
+            infoHitRect.height = infoIcon16.getIconHeight();
+            
+            imgX = x;
+            imgY = y + h - metaDataIcon.getIconHeight();
+            g2.drawImage(metaDataIcon.getImage(), imgX, imgY, null);
+            
+            mdHitRect.x      = imgX;
+            mdHitRect.y      = imgY;
+            mdHitRect.width  = metaDataIcon.getIconWidth();
+            mdHitRect.height = metaDataIcon.getIconHeight();
             
             //System.out.println(String.format("r: %d,%d,%d,%d", x,y,w,h));
             //System.out.println("HR: "+hotRect);
@@ -270,7 +289,7 @@ public class ImageCellDisplay extends ImageDisplay
      */
     public boolean isSelected()
     {
-        return isSelected;
+        return imgDataItem != null && imgDataItem.isSelected();
     }
 
     /**
@@ -278,7 +297,10 @@ public class ImageCellDisplay extends ImageDisplay
      */
     public void setSelected(boolean isSelected)
     {
-        this.isSelected = isSelected;
+        if (imgDataItem != null)
+        {
+            imgDataItem.setSelected(isSelected);
+        }
     }
     
     /**

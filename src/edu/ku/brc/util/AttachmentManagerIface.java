@@ -83,6 +83,12 @@ public interface AttachmentManagerIface
                                            int maxSideInPixels);
 
     /**
+     * @param attachmentID the record id of the attachment.
+     * @return the embedded image meta data for the image in the repository.
+     */
+    public abstract String getMetaDataAsJSON(int attachmentID);
+    
+    /**
      * Get a file handle to the attachment thumbnail.
      * 
      * @param attachment the attachment record

@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
+
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 

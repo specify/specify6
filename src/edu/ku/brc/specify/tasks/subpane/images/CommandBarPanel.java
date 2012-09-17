@@ -64,10 +64,10 @@ public class CommandBarPanel extends JPanel
         pb.add(rs.getPanel(), cc.xy(2, 2));
         pb.getPanel().setOpaque(false);
         
-        PanelBuilder tb = new PanelBuilder(new FormLayout("f:p:g,"+colDef+", 20px", "1px,p,3px"), this);
+        PanelBuilder tb = new PanelBuilder(new FormLayout("f:p:g,4px,"+colDef+", 20px", "1px,p,3px"), this);
         tb.add(pb.getPanel(), cc.xy(1, 2));
         
-        int x = 2;
+        int x = 3;
         for (JButton btn : btns)
         {
             tb.add(btn, cc.xy(x, 2));
