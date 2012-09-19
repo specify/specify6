@@ -1040,11 +1040,8 @@ public class MySQLBackupService extends BackupServiceFactory
         
         SynchronousWorker backupWorker = new SynchronousWorker()
         {
-            long dspMegs    = 0;
+            long dspMegs = 0;
             
-            /* (non-Javadoc)
-             * @see javax.swing.SwingWorker#doInBackground()
-             */
             @Override
             protected Integer doInBackground() throws Exception
             {
@@ -1055,85 +1052,93 @@ public class MySQLBackupService extends BackupServiceFactory
                     String userName  = itUsername != null ? itUsername : DBConnection.getInstance().getUserName();
                     String password  = itPassword != null ? itPassword : DBConnection.getInstance().getPassword();
                     
-                    DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
-                    if (dbMgr.connectToDBMS(userName, password, DBConnection.getInstance().getServerName()))
+                    DBConnection currDBConn = DBConnection.getInstance();
+                    String       dbName     = currDBConn.getDatabaseName();
+                    DBMSUserMgr  dbMgr      = DBMSUserMgr.getInstance();
+                    if (dbMgr != null)
                     {
-                        if (doDropDatabase)
+                        boolean isConnected = dbMgr.connectToDBMS(userName, password, currDBConn.getServerName(), dbName, currDBConn.isEmbedded());
+                        if (isConnected)
                         {
-                            if (dbMgr.doesDBExists(databaseName) && !dbMgr.dropDatabase(databaseName))
+                            if (doDropDatabase)
                             {
-                                log.error("Database["+databaseName+"] could not be dropped before load.");
-                                UIRegistry.showLocalizedError("MySQLBackupService.ERR_DRP_DB", databaseName);
-                                return null;
-                            }
-                            
-                            if (!dbMgr.createDatabase(databaseName))
-                            {
-                                log.error("Database["+databaseName+"] could not be created before load.");
-                                UIRegistry.showLocalizedError("MySQLBackupService.CRE_DRP_DB", databaseName);
-                                return null;
-                            }
-                        }
-
-                        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(DBConnection.getInstance().getDriverName());
-                        String             connStr    = DBConnection.getInstance().getConnectionStr();
-                        System.err.println(connStr);
-                        
-                        DBConnection itDBConn   = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), databaseName, connStr, userName, password);
-                        Connection   connection = itDBConn.createConnection();
-                        connection.setCatalog(databaseName);
-                        
-                        List<File> unzippedFiles = ZipFileHelper.getInstance().unzipToFiles(new File(restoreZipFilePath));
-                        
-                        boolean dbCreated = false;
-                        for (File file : unzippedFiles)
-                        {
-                            //System.out.println(file.getName());
-                            if (file.getName().equals("createdb.sql"))
-                            {
-                                long size = restoreFile(connection, file);
-                                log.debug("size: "+size);
-                                dbCreated = true;
-                            }
-                        }
-                        
-                        if (dbCreated)
-                        {
-                            for (File file : unzippedFiles)
-                            {
-                                if (file.getName().endsWith("infile"))
+                                if (dbMgr.doesDBExists(databaseName) && !dbMgr.dropDatabase(databaseName))
                                 {
-                                    String fPath = file.getCanonicalPath();
-                                    if (UIHelper.isWindows())
-                                    {
-                                        fPath = StringUtils.replace(fPath, "\\", "\\\\");
-                                    }
-                                    String sql = "LOAD DATA LOCAL INFILE '" + fPath + "' INTO TABLE " + FilenameUtils.getBaseName(file.getName());
-                                    log.debug(sql);
-                                    //System.err.println(sql);
-                                    int rv = BasicSQLUtils.update(connection, sql);
-                                    log.debug("done fPath["+fPath+"] rv= "+rv);
-                                    //System.err.println("done fPath["+fPath+"] rv= "+rv);
+                                    log.error("Database["+databaseName+"] could not be dropped before load.");
+                                    UIRegistry.showLocalizedError("MySQLBackupService.ERR_DRP_DB", databaseName);
+                                    return null;
+                                }
+                                
+                                if (!dbMgr.createDatabase(databaseName))
+                                {
+                                    log.error("Database["+databaseName+"] could not be created before load.");
+                                    UIRegistry.showLocalizedError("MySQLBackupService.CRE_DRP_DB", databaseName);
+                                    return null;
                                 }
                             }
-                        }
-                        
-                        ZipFileHelper.getInstance().cleanUp();
-                        
-                        /*if (!dbMgr.dropDatabase(databaseName))
+    
+                            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(DBConnection.getInstance().getDriverName());
+                            String             connStr    = DBConnection.getInstance().getConnectionStr();
+                            
+                            DBConnection itDBConn   = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), databaseName, connStr, userName, password);
+                            Connection   connection = itDBConn.createConnection();
+                            connection.setCatalog(databaseName);
+                            
+                            List<File> unzippedFiles = ZipFileHelper.getInstance().unzipToFiles(new File(restoreZipFilePath));
+                            
+                            boolean dbCreated = false;
+                            for (File file : unzippedFiles)
+                            {
+                                //System.out.println(file.getName());
+                                if (file.getName().equals("createdb.sql"))
+                                {
+                                    long size = restoreFile(connection, file);
+                                    log.debug("size: "+size);
+                                    dbCreated = true;
+                                }
+                            }
+                            
+                            if (dbCreated)
+                            {
+                                for (File file : unzippedFiles)
+                                {
+                                    if (file.getName().endsWith("infile"))
+                                    {
+                                        String fPath = file.getCanonicalPath();
+                                        if (UIHelper.isWindows())
+                                        {
+                                            fPath = StringUtils.replace(fPath, "\\", "\\\\");
+                                        }
+                                        String sql = "LOAD DATA LOCAL INFILE '" + fPath + "' INTO TABLE " + FilenameUtils.getBaseName(file.getName());
+                                        log.debug(sql);
+                                        //System.err.println(sql);
+                                        int rv = BasicSQLUtils.update(connection, sql);
+                                        log.debug("done fPath["+fPath+"] rv= "+rv);
+                                        //System.err.println("done fPath["+fPath+"] rv= "+rv);
+                                    }
+                                }
+                            }
+                            
+                            ZipFileHelper.getInstance().cleanUp();
+                            
+                            /*if (!dbMgr.dropDatabase(databaseName))
+                            {
+                                log.error("Database["+databaseName+"] could not be dropped after load.");
+                                UIRegistry.showLocalizedError("MySQLBackupService.ERR_DRP_DBAF", databaseName);
+                            }*/
+                            
+                            setProgress(100);
+                            
+                            //errorMsg = sb.toString();
+                            
+                            itDBConn.close();
+                        } else
                         {
-                            log.error("Database["+databaseName+"] could not be dropped after load.");
-                            UIRegistry.showLocalizedError("MySQLBackupService.ERR_DRP_DBAF", databaseName);
-                        }*/
-                        
-                        setProgress(100);
-                        
-                        //errorMsg = sb.toString();
-                        
-                        itDBConn.close();
+                            // error can't connect
+                        }
                     } else
                     {
-                        // error can't connect
+                        // error
                     }
                 } catch (Exception ex)
                 {

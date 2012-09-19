@@ -129,6 +129,8 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.ProcessListUtil;
+import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
+import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.FormHelper;
@@ -165,7 +167,6 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
-import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
@@ -211,6 +212,7 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -218,7 +220,6 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -365,16 +366,56 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     {
     	log.debug("StartUp..."); //$NON-NLS-1$
     	
-    	if (UIHelper.isLinux())
-    	{
-    	    checkForSpecifyAppsRunning();
-    	}
-    	
-    	if (UIRegistry.isEmbedded())
-    	{
-    	    SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
-    	}
-    	
+        if (UIHelper.isLinux())
+        {
+            checkForSpecifyAppsRunning();
+        }
+        
+        if (UIRegistry.isEmbedded())
+        {
+            ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
+            {
+                @Override
+                public void done(PROC_STATUS status) // called on the UI thread
+                {
+                    if (status == PROC_STATUS.eOK || status == PROC_STATUS.eFoundAndKilled)
+                    {
+                        startupContinuing(); // On UI Thread
+                    }
+                }
+            });
+            
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e)
+                    {
+                    }
+                }
+            });
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    startupContinuing();
+                }
+            });
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void startupContinuing() // needs to be called on the UI Thread
+    {
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
         
@@ -3061,8 +3102,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       
       AppBase.processArgs(args);
       AppBase.setupTeeForStdErrStdOut(true, false);
-      
-      removeUnneededJars();
       
       //UIHelper.attachUnhandledException();
       

@@ -715,7 +715,7 @@ public class BuildFromGeonames
             String               dbName = currDBConn.getDatabaseName();
             DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword); // opens and closes connection
             
-            if (!dbMgr.connect(itUsername, itPassword, currDBConn.getServerName(), dbName))
+            if (dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName(), dbName, currDBConn.isEmbedded()))
             {
                 UIRegistry.showError("Unable to login as IT user.");
                 return false;
@@ -796,7 +796,8 @@ public class BuildFromGeonames
             DBMSUserMgr  dbMgr      = DBMSUserMgr.getInstance();
             if (dbMgr != null)
             {
-                if (dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName()))
+                boolean isConnected = dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName(), dbName, currDBConn.isEmbedded());
+                if (isConnected)
                 {
                     Connection conn = dbMgr.getConnection();
                     Statement  stmt = null;

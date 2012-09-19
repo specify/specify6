@@ -77,6 +77,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.ProcessListUtil;
+import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
+import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
@@ -88,7 +91,6 @@ import edu.ku.brc.dbsupport.SchemaUpdateService.SchemaUpdateType;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
-import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -149,6 +151,7 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected JStatusBar                 statusBar;
 
     // Extra UI
+    @SuppressWarnings("rawtypes")
     protected JComboBox                  dbDriverCBX;
     protected JPanel                     extraPanel;
 
@@ -1131,8 +1134,8 @@ public class DatabaseLoginPanel extends JTiledPanel
             }
         }
 
-        final String name = getClass().getName();
-        statusBar.setIndeterminate(name, true);
+        final String clsName = getClass().getName();
+        statusBar.setIndeterminate(clsName, true);
         enableUI(false);
         
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false); //$NON-NLS-1$
@@ -1152,7 +1155,42 @@ public class DatabaseLoginPanel extends JTiledPanel
         {
             loginCount = 0;
         }
-
+        
+        if (checkForProcesses)
+        {
+            if (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile()) // isEmbdded may not be setup yet
+            {
+                ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
+                {
+                    @Override
+                    public void done(PROC_STATUS status) // called on the UI thread
+                    {
+                        checkForProcesses = false;
+                        if (status == PROC_STATUS.eOK || status == PROC_STATUS.eFoundAndKilled)
+                        {
+                            doLoginContinuing(clsName); // On UI Thread
+                        }
+                    }
+                });
+            }
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    doLoginContinuing(clsName); // Needs to be on the UI Thread
+                }
+            });
+        }
+    }
+    
+    /**
+     * @param clsName
+     */
+    private void doLoginContinuing(final String clsName)
+    {
         final SwingWorker worker = new SwingWorker()
         {
             long    eTime;
@@ -1162,16 +1200,9 @@ public class DatabaseLoginPanel extends JTiledPanel
             
             Pair<String, String> usrPwd = null;
 
-            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             @Override
             public Object construct()
             {
-                if (checkForProcesses && (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile())) // isEmbdded may not be setup yet
-                {
-                    SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
-                    checkForProcesses = false;
-                }
-                
                 if (UIRegistry.isMobile())
                 {
                     File mobileTmpDir = DBConnection.getMobileMachineDir(getDatabaseName());
@@ -1269,6 +1300,9 @@ public class DatabaseLoginPanel extends JTiledPanel
                             UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
                         }
                     }
+                } else
+                {
+                    DBConnection.resetEmbeddedDir();
                 }
                 return null;
             }
@@ -1277,7 +1311,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             @Override
             public void finished()
             {
-                statusBar.setIndeterminate(name, false);
+                statusBar.setIndeterminate(clsName, false);
                 
                 // I am not sure this is the rightplace for this
                 // but this is where I am putting it for now

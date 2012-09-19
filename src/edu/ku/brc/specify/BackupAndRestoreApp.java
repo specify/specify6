@@ -68,6 +68,9 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.ui.ProcessListUtil;
+import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
+import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel.MasterPasswordProviderIFace;
@@ -76,7 +79,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
-import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.prefs.MySQLPrefs;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -86,12 +88,12 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileCache;
@@ -580,8 +582,35 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         if (UIRegistry.isEmbedded())
         {
-            SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+            ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
+            {
+                @Override
+                public void done(PROC_STATUS status) // called on the UI thread
+                {
+                    if (status == PROC_STATUS.eOK || status == PROC_STATUS.eFoundAndKilled)
+                    {
+                        startupContinuing(); // On UI Thread
+                    }
+                }
+            });
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    startupContinuing();
+                }
+            });
         }
+    }
+    
+    /**
+     * 
+     */
+    private void startupContinuing() // needs to be called on the UI Thread
+    {
         
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();

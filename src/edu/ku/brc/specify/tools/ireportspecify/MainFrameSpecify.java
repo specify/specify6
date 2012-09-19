@@ -84,6 +84,9 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.ProcessListUtil;
+import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
+import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
@@ -97,8 +100,6 @@ import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
-import edu.ku.brc.specify.config.init.secwiz.SpecifyDBSecurityWizard;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
@@ -118,9 +119,9 @@ import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -1770,12 +1771,9 @@ public class MainFrameSpecify extends MainFrame
         System.setProperty(DBMSUserMgr.factoryName,                     "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
         
-        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         adjustLocaleFromPrefs();
-    	final String iRepPrefDir = localPrefs.getDirPath(); 
-        int mark = iRepPrefDir.lastIndexOf(UIRegistry.getAppName(), iRepPrefDir.length());
-        final String SpPrefDir = iRepPrefDir.substring(0, mark) + "Specify";
         HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
@@ -1783,201 +1781,223 @@ public class MainFrameSpecify extends MainFrame
         ImageIcon helpIcon = IconManager.getIcon(IconManager.makeIconName("AppIcon"), IconSize.Std16); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-          public void run()
+        try
+        {
+            UIHelper.OSTYPE osType = UIHelper.getOSType();
+            if (osType == UIHelper.OSTYPE.Windows )
             {
+                UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
                 
+            } else if (osType == UIHelper.OSTYPE.Linux )
+            {
+                UIManager.setLookAndFeel(new PlasticLookAndFeel());
+            }
+        }
+        catch (Exception e)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
+            log.error("Can't change L&F: ", e); //$NON-NLS-1$
+        }
+        
+        if (UIHelper.isLinux())
+        {
+            Specify.checkForSpecifyAppsRunning();
+        }
+        
+        if (UIRegistry.isEmbedded())
+        {
+            ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
+            {
+                @Override
+                public void done(PROC_STATUS status) // called on the UI thread
+                {
+                    if (status == PROC_STATUS.eOK || status == PROC_STATUS.eFoundAndKilled)
+                    {
+                        startupContinuing(); // On UI Thread
+                    }
+                }
+            });
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    startupContinuing();
+                }
+            });
+        }
+    }
+    
+    /**
+     * 
+     */
+    private static void startupContinuing() // needs to be called on the UI Thread
+    {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
+        final String iRepPrefDir = localPrefs.getDirPath(); 
+        final int    mark        = iRepPrefDir.lastIndexOf(UIRegistry.getAppName(), iRepPrefDir.length());
+        final String SpPrefDir   = iRepPrefDir.substring(0, mark) + "Specify";
+
+        DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
+        {
+            @Override
+            public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
+            {
+                if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
+                {
+                    UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                    boolean result = false;
+                    try
+                    {
+                    	try
+                    	{
+                    		AppPreferences.getLocalPrefs().flush();
+                    		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                    		AppPreferences.getLocalPrefs().setProperties(null);
+                    		result = UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
+                    	}
+                    	finally
+                    	{
+                    		AppPreferences.getLocalPrefs().flush();
+                    		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                    		AppPreferences.getLocalPrefs().setProperties(null);
+                    	}
+                    } catch (Exception e)
+                    {
+                    	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
+                    	result = false;
+                    }
+                    return result;
+                }
+                return false;
+            }
+            
+            @Override
+            public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
+            {
+                UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                Pair<String, String> result = null;
                 try
                 {
-                    UIHelper.OSTYPE osType = UIHelper.getOSType();
-                    if (osType == UIHelper.OSTYPE.Windows )
-                    {
-                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                        PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-                        
-                    } else if (osType == UIHelper.OSTYPE.Linux )
-                    {
-                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                    }
+                	try
+                	{
+                		AppPreferences.getLocalPrefs().flush();
+                		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                		AppPreferences.getLocalPrefs().setProperties(null);
+                		result = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+                	}
+                	finally
+                	{
+                		AppPreferences.getLocalPrefs().flush();
+                		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                		AppPreferences.getLocalPrefs().setProperties(null);
+                	}
+                } catch (Exception e)
+                {
+                	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+						.capture(MainFrameSpecify.class, e);
+                	result = null;
                 }
-                catch (Exception e)
+                return result;
+            }
+            @Override
+            public boolean editMasterInfo(final String username, final String dbName, final boolean askFroCredentials)
+            {
+                boolean result = false;
+            	try
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
-                    log.error("Can't change L&F: ", e); //$NON-NLS-1$
+                	try
+                	{
+                		AppPreferences.getLocalPrefs().flush();
+                		AppPreferences.getLocalPrefs()
+							.setDirPath(SpPrefDir);
+                		AppPreferences.getLocalPrefs().setProperties(null);
+                		result =  UserAndMasterPasswordMgr
+							.getInstance()
+							.editMasterInfo(username, dbName, askFroCredentials);
+                	} finally
+                	{
+                		AppPreferences.getLocalPrefs().flush();
+                		AppPreferences.getLocalPrefs().setDirPath(
+							iRepPrefDir);
+                		AppPreferences.getLocalPrefs().setProperties(null);
+                	}
+                } catch (Exception e)
+                {
+                	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+						.capture(MainFrameSpecify.class, e);
+                	result = false;
                 }
+            	return result;
+           }
+        };
+        
+        if (UIRegistry.isMobile())
+        {
+            DBConnection.setShutdownUI(new DBConnection.ShutdownUIIFace() 
+            {
+                CustomDialog processDlg;
                 
-                if (UIHelper.isLinux())
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayInitialDlg()
+                 */
+                @Override
+                public void displayInitialDlg()
                 {
-                    Specify.checkForSpecifyAppsRunning();
-                }
-                
-                if (UIRegistry.isEmbedded())
-                {
-                    SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
-                }
-                
-                DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
-                {
-                    @Override
-                    public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
-                    {
-                        if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
-                        {
-                            UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
-                            boolean result = false;
-                            try
-                            {
-                            	try
-                            	{
-                            		AppPreferences.getLocalPrefs().flush();
-                            		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
-                            		AppPreferences.getLocalPrefs().setProperties(null);
-                            		result = UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
-                            	}
-                            	finally
-                            	{
-                            		AppPreferences.getLocalPrefs().flush();
-                            		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
-                            		AppPreferences.getLocalPrefs().setProperties(null);
-                            	}
-                            } catch (Exception e)
-                            {
-                            	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
-                            	result = false;
-                            }
-                            return result;
-                        }
-                        return false;
-                    }
-                    
-                    @Override
-                    public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
-                    {
-                        UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
-                        Pair<String, String> result = null;
-                        try
-                        {
-                        	try
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        		result = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
-                        	}
-                        	finally
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        	}
-                        } catch (Exception e)
-                        {
-                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-								.capture(MainFrameSpecify.class, e);
-                        	result = null;
-                        }
-                        return result;
-                    }
-                    @Override
-                    public boolean editMasterInfo(final String username, final String dbName, final boolean askFroCredentials)
-                    {
-                        boolean result = false;
-                    	try
-                        {
-                        	try
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs()
-									.setDirPath(SpPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        		result =  UserAndMasterPasswordMgr
-									.getInstance()
-									.editMasterInfo(username, dbName, askFroCredentials);
-                        	} finally
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(
-									iRepPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        	}
-                        } catch (Exception e)
-                        {
-                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-								.capture(MainFrameSpecify.class, e);
-                        	result = false;
-                        }
-                    	return result;
-                   }
-                };
-                
-                if (UIRegistry.isMobile())
-                {
-                    DBConnection.setShutdownUI(new DBConnection.ShutdownUIIFace() 
-                    {
-                        CustomDialog processDlg;
-                        
-                        /* (non-Javadoc)
-                         * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayInitialDlg()
-                         */
+                    SwingUtilities.invokeLater(new Runnable() {
                         @Override
-                        public void displayInitialDlg()
+                        public void run()
                         {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run()
-                                {
-                                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_INTRO");
-                                }
-                            });
-                        }
-            
-                        /* (non-Javadoc)
-                         * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayFinalShutdownDlg()
-                         */
-                        @Override
-                        public void displayFinalShutdownDlg()
-                        {
-                            processDlg.setVisible(false);
-                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_FINI");
-                        }
-            
-                        /* (non-Javadoc)
-                         * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayShutdownMsgDlg()
-                         */
-                        @Override
-                        public void displayShutdownMsgDlg()
-                        {
-                            JPanel panel = new JPanel(new BorderLayout());
-                            panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
-                            
-                            panel.add(new JLabel(IconManager.getIcon(Specify.getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
-                            panel.add(UIHelper.createI18NLabel("MOBILE_SHUTTING_DOWN", SwingConstants.CENTER), BorderLayout.CENTER);
-                            processDlg = new CustomDialog((Frame)null, "Shutdown", false, CustomDialog.NONE_BTN, panel);
-                            processDlg.setAlwaysOnTop(true);
-                            
-                            UIHelper.centerAndShow(processDlg);
-                            
+                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_INTRO");
                         }
                     });
                 }
-                
-                String nameAndTitle = "Specify iReport"; // I18N
-                UIRegistry.setRelease(true);
-                UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), 
-                                 IconManager.makeIconName("SPIReports"), nameAndTitle, nameAndTitle, 
-                                 IconManager.makeIconName("SpecifyWhite32"), "iReport"); // true means do auto login if it can, 
-                                                               // second bool means use dialog instead of frame
-                
-                localPrefs.load();
-                
-            }
-        });
-
-       
+    
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayFinalShutdownDlg()
+                 */
+                @Override
+                public void displayFinalShutdownDlg()
+                {
+                    processDlg.setVisible(false);
+                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_FINI");
+                }
+    
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayShutdownMsgDlg()
+                 */
+                @Override
+                public void displayShutdownMsgDlg()
+                {
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+                    
+                    panel.add(new JLabel(IconManager.getIcon(Specify.getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
+                    panel.add(UIHelper.createI18NLabel("MOBILE_SHUTTING_DOWN", SwingConstants.CENTER), BorderLayout.CENTER);
+                    processDlg = new CustomDialog((Frame)null, "Shutdown", false, CustomDialog.NONE_BTN, panel);
+                    processDlg.setAlwaysOnTop(true);
+                    
+                    UIHelper.centerAndShow(processDlg);
+                    
+                }
+            });
+        }
+        
+        String nameAndTitle = "Specify iReport"; // I18N
+        UIRegistry.setRelease(true);
+        UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), 
+                         IconManager.makeIconName("SPIReports"), nameAndTitle, nameAndTitle, 
+                         IconManager.makeIconName("SpecifyWhite32"), "iReport"); // true means do auto login if it can, 
+                                                       // second bool means use dialog instead of frame
+        
+        localPrefs.load();
     }
 }

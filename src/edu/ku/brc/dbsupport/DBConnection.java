@@ -149,23 +149,34 @@ public class DBConnection
     }
 
     /**
+     * 
+     */
+    public static void resetEmbeddedDir()
+    {
+        DBConnection.embeddedDataDir = null;
+    }
+    
+    /**
      * For Embedded MySQL.
      * @param connectionStr JDBC connection string
      */
     public static void checkForEmbeddedDir(final String connectionStr)
     {
-        DBConnection.isEmbeddedDB = isEmbedded(connectionStr);
-        if (DBConnection.isEmbeddedDB)
+        if (connectionStr != null && DBConnection.embeddedDataDir == null)
         {
-            String attr = "server.basedir=";
-            int inx = connectionStr.indexOf(attr);
-            if (inx > -1)
+            DBConnection.isEmbeddedDB = isEmbedded(connectionStr);
+            if (DBConnection.isEmbeddedDB)
             {
-                inx += attr.length();
-                int eInx = connectionStr.indexOf("&", inx);
-                if (eInx > -1)
+                String attr = "server.basedir=";
+                int inx = connectionStr.indexOf(attr);
+                if (inx > -1)
                 {
-                    DBConnection.embeddedDataDir = new File(connectionStr.substring(inx, eInx));
+                    inx += attr.length();
+                    int eInx = connectionStr.indexOf("&", inx);
+                    if (eInx > -1)
+                    {
+                        DBConnection.embeddedDataDir = new File(connectionStr.substring(inx, eInx));
+                    }
                 }
             }
         }

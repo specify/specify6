@@ -19,14 +19,11 @@
 */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.af.ui.ProcessListUtil.getProcessIdWithText;
-import static edu.ku.brc.af.ui.ProcessListUtil.killProcess;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -58,6 +55,9 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.ProcessListUtil;
+import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
+import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
@@ -72,9 +72,9 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * @author rod
@@ -87,8 +87,9 @@ import edu.ku.brc.ui.IconManager.IconSize;
 public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFace
 {
     //private static final Logger  log = Logger.getLogger(SpecifyDBSetupWizardFrame.class);
-    public enum PROC_STATUS {None, FoundAndKilled, FoundNotKilled}
-    
+    private final static String VERSION_CHECK = "version_check.auto";
+    private final static String EXTRA_CHECK   = "extra.check";
+
     private String               appVersion          = "6.0"; //$NON-NLS-1$
     private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
  
@@ -183,55 +184,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         return AppBase.getTitle(appVersion, appBuildVersion, titleStr);
     }
     
-    /**
-     * @return a list of process IDs for user spawned MySQL processes.
-     */
-    private static List<Integer> checkForMySQLPrc()
-    {
-    	return UIHelper.isWindows() ? getProcessIdWithText("_data/bin/mysqld") : getProcessIdWithText("3337");
-    }
-    
-    /**
-     * Check for and kills and existing embedded MySQl processes.
-     * @return a status as to whether any were found and whether they were killed.
-     */
-    public static PROC_STATUS checkForMySQLProcesses()
-    {
-    	PROC_STATUS status = PROC_STATUS.None;
-        List<Integer> ids = checkForMySQLPrc();
-        if (ids.size() > 0)
-        {
-        	status = PROC_STATUS.FoundNotKilled;
-            if (UIHelper.promptForAction("CONTINUE", "CANCEL", "WARNING", getResourceString("Specify.EMBD_KILL_PROCS")))
-            {
-                for (Integer id : ids)
-                {
-                    killProcess(id);
-                }
-                status = PROC_STATUS.FoundAndKilled;
-            }
-            
-            /*try
-            {
-                boolean cont = true;
-                int cnt = 0;
-                while (cont)
-                {
-                    Thread.sleep(2000);
-                    
-                    ids = checkForMySQLPrc();
-                    cont = ids.size() > 0 && cnt < 5;
-                    cnt++;
-                }
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }*/
-        }
-    	return status;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.FrameworkAppIFace#doExit(boolean)
      */
@@ -393,82 +345,99 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         AppBase.processArgs(args);
         AppBase.setupTeeForStdErrStdOut(true, false);
         
-        Specify.removeUnneededJars();
-        
         System.setProperty("appdatadir", "..");
         
-        SwingUtilities.invokeLater(new Runnable()
+        // Then set this
+        IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+        
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        //try {
+        //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+(new File(UIRegistry.getAppDataDir()).getCanonicalPath())+"]");
+        //} catch (IOException ex) {}
+        
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        
+        // Check to see if we should check for a new version
+        if (localPrefs.getBoolean(VERSION_CHECK, null) == null)
         {
-            public void run()
+            localPrefs.putBoolean(VERSION_CHECK, true);
+        }
+
+        if (localPrefs.getBoolean(EXTRA_CHECK, null) == null)
+        {
+            localPrefs.putBoolean(EXTRA_CHECK, true);
+        }
+        
+        if (UIHelper.isLinux())
+        {
+            Specify.checkForSpecifyAppsRunning();
+        }
+        
+        if (UIRegistry.isEmbedded())
+        {
+            ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
             {
-                // Then set this
-                IconManager.setApplicationClass(Specify.class);
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
-                
-                // Load Local Prefs
-                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-                //try {
-                //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+(new File(UIRegistry.getAppDataDir()).getCanonicalPath())+"]");
-                //} catch (IOException ex) {}
-                
-                localPrefs.setDirPath(UIRegistry.getAppDataDir());
-                
-                // Check to see if we should check for a new version
-                String VERSION_CHECK = "version_check.auto";
-                if (localPrefs.getBoolean(VERSION_CHECK, null) == null)
+                @Override
+                public void done(PROC_STATUS status) // called on the UI thread
                 {
-                    localPrefs.putBoolean(VERSION_CHECK, true);
-                }
-
-                String EXTRA_CHECK = "extra.check";
-                if (localPrefs.getBoolean(EXTRA_CHECK, null) == null)
-                {
-                    localPrefs.putBoolean(EXTRA_CHECK, true);
-                }
-                
-                if (UIHelper.isLinux())
-                {
-                    Specify.checkForSpecifyAppsRunning();
-                }
-                
-                if (UIRegistry.isEmbedded())
-                {
-                    checkForMySQLProcesses();
-                }
-                
-                setUpSystemProperties();
-                final SpecifyDBSetupWizardFrame wizardFrame = new SpecifyDBSetupWizardFrame();
-
-                if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
-                {
-                    try
+                    if (status == PROC_STATUS.eOK || status == PROC_STATUS.eFoundAndKilled)
                     {
-                       com.install4j.api.launcher.SplashScreen.hide();
-                       ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
-                       {
-                           public void exited(int exitValue)
-                           {
-                               UIHelper.centerAndShow(wizardFrame);
-                           }
-                           public void prepareShutdown()
-                           {
-                               
-                           }
-                        };
-                        ApplicationLauncher.launchApplication("100", null, true, callback);
-                        
-                    } catch (Exception ex)
-                    {
-                        UIHelper.centerAndShow(wizardFrame);
+                        startupContinuing();
                     }
-                } else
-                {
-                    UIHelper.centerAndShow(wizardFrame);
                 }
+            });
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    startupContinuing();
+                }
+            });
+        }
+    }
+
+    /**
+     * 
+     */
+    private static void startupContinuing() // needs to be called on the UI Thread
+    {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        setUpSystemProperties();
+        final SpecifyDBSetupWizardFrame wizardFrame = new SpecifyDBSetupWizardFrame();
+
+        if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
+        {
+            try
+            {
+               com.install4j.api.launcher.SplashScreen.hide();
+               ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+               {
+                   public void exited(int exitValue)
+                   {
+                       UIHelper.centerAndShow(wizardFrame);
+                   }
+                   public void prepareShutdown()
+                   {
+                       
+                   }
+                };
+                ApplicationLauncher.launchApplication("100", null, true, callback);
+                
+            } catch (Exception ex)
+            {
+                UIHelper.centerAndShow(wizardFrame);
             }
-        });
+        } else
+        {
+            UIHelper.centerAndShow(wizardFrame);
+        }
     }
 
 }

@@ -18,6 +18,8 @@
  */
 package edu.ku.brc.af.ui;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -25,8 +27,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -39,6 +44,8 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ProcessListUtil
 {
+    public enum PROC_STATUS {eNone, eOK, eFoundAndKilled, eFoundNotKilled}
+
     private static String  CSV_PATTERN = "\"([^\"]+?)\",?|([^,]+),?|,";
     private static Pattern csvRE       = Pattern.compile(CSV_PATTERN);
 
@@ -234,6 +241,84 @@ public class ProcessListUtil
     }
     
     /**
+     * @return a list of process IDs for user spawned MySQL processes.
+     */
+    private static List<Integer> checkForMySQLPrc()
+    {
+        return UIHelper.isWindows() ? getProcessIdWithText("_data/bin/mysqld") : getProcessIdWithText("3337");
+    }
+    
+    /**
+     * Check for and kills and existing embedded MySQl processes.
+     * @return a status as to whether any were found and whether they were killed.
+     */
+    public static void checkForMySQLProcesses(final ProcessListener listener)
+    {
+        ProgressDialog progressDlg = null;
+        if (listener != null)
+        {
+            progressDlg = new ProgressDialog("Specify EZDB", false, false);
+            progressDlg.setDesc("Checking for MySQL Processes...");
+            progressDlg.getProcessProgress().setIndeterminate(true);
+            
+            final ProgressDialog dlg = progressDlg;
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    UIHelper.centerAndShow(dlg);
+                }
+            });
+        }
+        
+        final ProgressDialog dlg = progressDlg;
+        javax.swing.SwingWorker<Integer, Integer> worker = new javax.swing.SwingWorker<Integer, Integer>()
+        {
+            private PROC_STATUS   status = PROC_STATUS.eNone;
+            private List<Integer> ids    = null;
+            
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                status = PROC_STATUS.eOK;
+                ids    = checkForMySQLPrc();
+                if (ids.size() > 0)
+                {
+                    status = PROC_STATUS.eFoundNotKilled;
+                }
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                if (status == PROC_STATUS.eFoundNotKilled)
+                {
+                    if (UIHelper.promptForAction("CONTINUE", "CANCEL", "WARNING", getResourceString("Specify.EMBD_KILL_PROCS")))
+                    {
+                        for (Integer id : ids)
+                        {
+                            killProcess(id);
+                        }
+                        status = PROC_STATUS.eFoundAndKilled;
+                    }
+                }
+                
+                if (listener != null)
+                {
+                    listener.done(status);
+                }
+                
+                if (dlg != null) dlg.setVisible(false);
+            }
+        };
+        worker.execute();
+    }
+    
+    /**
      * @param args
      */
     public static void main(String[] args)
@@ -253,7 +338,11 @@ public class ProcessListUtil
             System.out.println("KILLING: "+id);
             //killProcess(id);
         }
-        
-        
+    }
+    
+    //-------------------------------------------------------------------
+    public interface ProcessListener
+    {
+        public abstract void done(PROC_STATUS status);
     }
 }

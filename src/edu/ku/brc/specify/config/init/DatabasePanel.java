@@ -53,10 +53,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -365,7 +366,7 @@ public class DatabasePanel extends BaseSetupPanel
         String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
         //System.err.println(connStrInitial);
         
-        DBConnection.checkForEmbeddedDir("createDB - "+connStrInitial);
+        DBConnection.checkForEmbeddedDir(connStrInitial);
         
         DBConnection.getInstance().setDriverName(driverInfo.getName());
         DBConnection.getInstance().setServerName(hostName);
@@ -385,9 +386,6 @@ public class DatabasePanel extends BaseSetupPanel
             
             SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
             {
-                /* (non-Javadoc)
-                 * @see javax.swing.SwingWorker#doInBackground()
-                 */
                 @Override
                 protected Object doInBackground() throws Exception
                 {
@@ -400,7 +398,7 @@ public class DatabasePanel extends BaseSetupPanel
                     {
                         if (checkForProcesses)
                         {
-                            SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+                            ProcessListUtil.checkForMySQLProcesses(null);
                             checkForProcesses = false;
                         }
                         

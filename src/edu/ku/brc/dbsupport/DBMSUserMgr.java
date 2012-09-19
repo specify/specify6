@@ -287,6 +287,29 @@ public abstract class DBMSUserMgr
         this.hostName = hostName;
     }
     
+    
+    /**
+     * Helper that calls connectToDBMS for full databases, and connect for embedded databases.
+     * @param itUsernameArg
+     * @param itPasswordArg
+     * @param databaseHost
+     * @param dbName
+     * @param isEmbedded
+     * @return true if connected
+     */
+    public boolean connectToDBMS(final String itUsernameArg, 
+                                 final String itPasswordArg,
+                                 final String databaseHost,
+                                 final String dbName,
+                                 final boolean isEmbedded)
+    {
+        if (isEmbedded)
+        {
+            return connect(itUsernameArg, itPasswordArg, databaseHost, dbName);
+        }
+        return connectToDBMS(itUsernameArg, itPasswordArg, databaseHost);
+    }
+
     /**
      * If there is no database, or the database has no tables then it returns true, 
      * or it prompts the user whether to proceed.

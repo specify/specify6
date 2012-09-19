@@ -120,7 +120,11 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public String getConnectionStr(final ConnectionType type, final String server, final String database)
     {
-        return getConnectionStr(type, server, database, true, true, null, null, getName());
+        if (!isEmbedded || StringUtils.isNotEmpty(server) && StringUtils.isNotEmpty(database))
+        {
+            return getConnectionStr(type, server, database, true, true, null, null, getName());
+        }
+        return null;
     }
     
     /**
@@ -161,8 +165,10 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             {
                 connStr = connStr.replaceFirst("SPECIFY_DATA", databaseName+"_data"); //$NON-NLS-1$
             }
+            log.debug(">>>>> "+(StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr));
             return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
         }
+        log.debug("connStr >>>>> "+connStr);
         return null;
     }
     
