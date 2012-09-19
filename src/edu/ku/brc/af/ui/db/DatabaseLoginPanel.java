@@ -1156,10 +1156,8 @@ public class DatabaseLoginPanel extends JTiledPanel
             loginCount = 0;
         }
         
-        if (checkForProcesses)
+        if (checkForProcesses && DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile()) // isEmbdded may not be setup yet
         {
-            if (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile()) // isEmbdded may not be setup yet
-            {
                 ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
                 {
                     @Override
@@ -1172,7 +1170,6 @@ public class DatabaseLoginPanel extends JTiledPanel
                         }
                     }
                 });
-            }
         } else
         {
             SwingUtilities.invokeLater(new Runnable()
