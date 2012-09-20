@@ -28,6 +28,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -63,6 +64,9 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.ProcessListUtil;
+import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
+import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
@@ -121,6 +125,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     
     protected JTable mapsDisplay;
 	protected DefaultTableModel mapsModel;
+	protected JButton quitBtn;
 	protected JButton exportToDbTblBtn;
 	protected JButton exportToTabDelimBtn;
 	protected JButton setupWebPortalBtn;
@@ -433,6 +438,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 					else
 					{
+					    JPanel panel = new JPanel(new BorderLayout());
+					    
 						SpExportSchemaMapping map = maps.get(row);
 						String iptSQL = ExportToMySQLDB
 								.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
@@ -442,10 +449,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						ta.setRows(10);
 						ta.selectAll();
 						JScrollPane scrp = new JScrollPane(ta);
+						panel.add(scrp, BorderLayout.CENTER);
+						panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 						CustomDialog cd = new CustomDialog((Frame) UIRegistry
 								.getTopWindow(), UIRegistry
 								.getResourceString("ExportPanel.SQLTitle"),
-								true, scrp);
+								true, CustomDialog.OK_BTN, panel);
+						cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
 						UIHelper.centerAndShow(cd);
 					}
 				}
@@ -459,31 +469,94 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         helpBtn = createButton(getResourceString("HELP"));
         HelpMgr.registerComponent(helpBtn, "schema_tool");
     	
-        PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu", "p, p, 7dlu"));
+        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,4px,p,8px,p,8px,p,8px,p,8px,p", "p"));
+        quitBtn = UIHelper.createButton("Quit");
+        
+        btnPB.add(helpBtn,             cc.xy(1, 1));
+        btnPB.add(showIPTSQLBtn,       cc.xy(4, 1));
+        btnPB.add(exportToTabDelimBtn, cc.xy(6, 1));
+        btnPB.add(exportToDbTblBtn,    cc.xy(8, 1));
+        btnPB.add(setupWebPortalBtn,   cc.xy(10, 1));
+        btnPB.add(quitBtn,             cc.xy(12, 1));
+        
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
     	status.setFont(status.getFont().deriveFont(Font.ITALIC));
     	Dimension pref = status.getPreferredSize();
     	pref.setSize(Math.max(300, pref.getWidth()), pref.getHeight());
     	status.setPreferredSize(pref);
-    	pbb.add(status, cc.xy(2, 1));
-    	pbb.add(this.showIPTSQLBtn, cc.xy(3, 1));
-    	pbb.add(exportToTabDelimBtn, cc.xy(9, 1));
-    	pbb.add(exportToDbTblBtn, cc.xy(5, 1));
-    	pbb.add(setupWebPortalBtn, cc.xy(7, 1));
-    	pbb.add(helpBtn, cc.xy(9, 1));
+    	
     	
     	progPane = new JPanel(new CardLayout());
     	progPane.add(new JPanel(), "blank");
+    	
     	prog = new JProgressBar();
     	progPane.add(prog, "prog");
-    	pbb.add(progPane, cc.xyw(2, 2, 6));
+    	
+    	
+        PanelBuilder pbb = new PanelBuilder(new FormLayout("f:p:g,8px,f:p:g", "p, 8px, p"));
+        pbb.add(status,           cc.xy(1, 1));
+        pbb.add(progPane,         cc.xy(3, 1));
+        pbb.add(btnPB.getPanel(), cc.xyw(1, 3, 3));
+    	
     	//prog.setVisible(false);
     	add(pbb.getPanel(), BorderLayout.SOUTH);
 
+    	setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    	
         HelpMgr.setAppDefHelpId("schema_tool");
-
+        
+        quitBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        shutdown();
+                    }
+                });
+            }
+        });
 	}
 	
+    /**
+     * 
+     */
+    private void shutdown()
+    {
+        helpBtn.setEnabled(false);
+        showIPTSQLBtn.setEnabled(false);
+        exportToTabDelimBtn.setEnabled(false);
+        exportToDbTblBtn.setEnabled(false);
+        setupWebPortalBtn.setEnabled(false);
+        quitBtn.setEnabled(false);
+        
+        // Need for proper UI feedback
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                doQuit();
+            }
+        });
+    }
+    
+    /**
+     * 
+     */
+    private void doQuit()
+    {
+        DataProviderFactory.getInstance().shutdown();
+        DBConnection.shutdown();
+        DBConnection.shutdownFinalConnection(true, false); // true means System.exit
+        
+        System.exit(1);
+    }
+    
 	/**
 	 * @param map
 	 * @return true if map lock status is ok.
@@ -1288,9 +1361,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			{
 				super.done();
 				SwingUtilities.invokeLater(new Runnable() {
-					/* (non-Javadoc)
-					 * @see java.lang.Runnable#run()
-					 */
 					@Override
 					public void run()
 					{
@@ -1375,6 +1445,147 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		
 	}
 	
+	private static void startUp()
+	{
+        if (UIRegistry.isEmbedded())
+        {
+            ProcessListUtil.checkForMySQLProcesses(new ProcessListener()
+            {
+                @Override
+                public void done(PROC_STATUS status) // called on the UI thread
+                {
+                    if (status == PROC_STATUS.eOK || status == PROC_STATUS.eFoundAndKilled)
+                    {
+                        startupContinuing(); // On UI Thread
+                    }
+                }
+            });
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    startupContinuing();
+                }
+            });
+        }
+    }
+    
+    /**
+     * 
+     */
+    private static void startupContinuing() // needs to be called on the UI Thread
+    {
+        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        adjustLocaleFromPrefs();
+        final String iRepPrefDir = localPrefs.getDirPath(); 
+        int mark = iRepPrefDir.lastIndexOf(UIRegistry.getAppName(), iRepPrefDir.length());
+        final String SpPrefDir = iRepPrefDir.substring(0, mark) + "Specify";
+
+        DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
+        {
+            @Override
+            public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
+            {
+                if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
+                {
+                    UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                    
+                    boolean result = false;
+                    try
+                    {
+                        try
+                        {
+                            AppPreferences.getLocalPrefs().flush();
+                            AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                            AppPreferences.getLocalPrefs().setProperties(null);
+                            result = UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
+                        }
+                        finally
+                        {
+                            AppPreferences.getLocalPrefs().flush();
+                            AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                            AppPreferences.getLocalPrefs().setProperties(null);
+                        }
+                    } catch (Exception e)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+                            .capture(MainFrameSpecify.class, e);
+                        result = false;
+                    }
+                    return result;
+                }
+                return false;
+            }
+            
+            @Override
+            public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
+            {
+                UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                Pair<String, String> result = null;
+                try
+                {
+                    try
+                    {
+                        AppPreferences.getLocalPrefs().flush();
+                        AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                        AppPreferences.getLocalPrefs().setProperties(null);
+                        result = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+                    }
+                    finally
+                    {
+                        AppPreferences.getLocalPrefs().flush();
+                        AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                        AppPreferences.getLocalPrefs().setProperties(null);
+                    }
+                } catch (Exception e)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+                        .capture(MainFrameSpecify.class, e);
+                    result = null;
+                }
+                return result;
+            }
+            @Override
+            public boolean editMasterInfo(final String username, final String dbName, final boolean askFroCredentials)
+            {
+                boolean result = false;
+                try
+                {
+                    try
+                    {
+                        AppPreferences.getLocalPrefs().flush();
+                        AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                        AppPreferences.getLocalPrefs().setProperties(null);
+                        result =  UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, dbName, askFroCredentials);
+                    } finally
+                    {
+                        AppPreferences.getLocalPrefs().flush();
+                        AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                        AppPreferences.getLocalPrefs().setProperties(null);
+                    }
+                } catch (Exception e)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
+                    result = false;
+                }
+                return result;
+           }
+        };
+        String nameAndTitle = UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"); // I18N
+        UIRegistry.setRelease(true);
+        UIHelper.doLogin(usrPwdProvider, true, false, false, new SchemaExportLauncher(), Specify.getLargeIconName(), nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); 
+        
+        localPrefs.load();
+
+	}
+	
     public static void main(String[] args)
     {
         log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -1393,8 +1604,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
         IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
         IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
-
-        
         
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
@@ -1413,12 +1622,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         System.setProperty(DBMSUserMgr.factoryName,                     "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
         
-        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getAppDataDir());
-        adjustLocaleFromPrefs();
-    	final String iRepPrefDir = localPrefs.getDirPath(); 
-        int mark = iRepPrefDir.lastIndexOf(UIRegistry.getAppName(), iRepPrefDir.length());
-        final String SpPrefDir = iRepPrefDir.substring(0, mark) + "Specify";
         HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
@@ -1451,120 +1654,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
                 
-                DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
-                {
-                    @Override
-                    public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
-                    {
-                        if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
-                        {
-                            UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
-                            
-                            boolean result = false;
-                            try
-                            {
-                            	try
-                            	{
-                            		AppPreferences.getLocalPrefs().flush();
-                            		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
-                            		AppPreferences.getLocalPrefs().setProperties(null);
-                            		result = UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
-                            	}
-                            	finally
-                            	{
-                            		AppPreferences.getLocalPrefs().flush();
-                            		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
-                            		AppPreferences.getLocalPrefs().setProperties(null);
-                            	}
-                            } catch (Exception e)
-                            {
-                            	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-    								.capture(MainFrameSpecify.class, e);
-                            	result = false;
-                            }
-                            return result;
-                        }
-                        return false;
-                    }
-                    
-                    @Override
-                    public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
-                    {
-                        UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
-                        Pair<String, String> result = null;
-                        try
-                        {
-                        	try
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        		result = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
-                        	}
-                        	finally
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        	}
-                        } catch (Exception e)
-                        {
-                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-								.capture(MainFrameSpecify.class, e);
-                        	result = null;
-                        }
-                        return result;
-                    }
-                    @Override
-                    public boolean editMasterInfo(final String username, final String dbName, final boolean askFroCredentials)
-                    {
-                        boolean result = false;
-                    	try
-                        {
-                        	try
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        		result =  UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, dbName, askFroCredentials);
-                        	} finally
-                        	{
-                        		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
-                        		AppPreferences.getLocalPrefs().setProperties(null);
-                        	}
-                        } catch (Exception e)
-                        {
-                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
-                        	result = false;
-                        }
-                    	return result;
-                   }
-                };
-                String nameAndTitle = UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"); // I18N
-                UIRegistry.setRelease(true);
-                UIHelper.doLogin(usrPwdProvider, true, false, false, new SchemaExportLauncher(), Specify.getLargeIconName(), nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); // true
-																																	// means
-																																	// do
-																																	// auto
-																																	// login
-																																	// if
-																																	// it
-																																	// can,
-																																	// second
-																																	// bool
-																																	// means
-																																	// use
-																																	// dialog
-																																	// instead
-																																	// of
-																																	// frame
-                
-                localPrefs.load();
-                
+                startUp(); 
             }
         });
 
