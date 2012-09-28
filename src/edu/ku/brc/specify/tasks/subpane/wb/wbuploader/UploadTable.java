@@ -1728,6 +1728,12 @@ public class UploadTable implements Comparable<UploadTable>
     protected String getSystemTypeCodeText(Object value) 
     {
     	//Assuming this is never called unless isSpSystemTypeFld(ufld) returns true.
+
+    	if (!(value instanceof Number))
+    	{
+    		return value.toString();
+    	}
+
     	try
     	{
     		Method textGetter = this.tblClass.getMethod("getSpSystemTypeCodes");
