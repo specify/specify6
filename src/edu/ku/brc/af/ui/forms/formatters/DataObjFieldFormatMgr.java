@@ -90,7 +90,6 @@ public class DataObjFieldFormatMgr
     protected Hashtable<Class<?>, DataObjSwitchFormatter> formatClassHash = new Hashtable<Class<?>, DataObjSwitchFormatter>();
     protected Hashtable<String,   DataObjAggregator>      aggHash         = new Hashtable<String, DataObjAggregator>();
     protected Hashtable<Class<?>, DataObjAggregator>      aggClassHash    = new Hashtable<Class<?>, DataObjAggregator>();
-    protected Object[]                                    args            = new Object[2]; // start with two slots
     
     protected Hashtable<String, Class<?>>                 typeHash        = new Hashtable<String, Class<?>>();
     protected Hashtable<Class<?>, String>                 typeHashRevMap  = new Hashtable<Class<?>, String>(); // reverse mapping
@@ -747,6 +746,8 @@ public class DataObjFieldFormatMgr
             
             DataObjectGettable getter = DataObjectGettableFactory.get(format.getDataClass().getName(), 
                                                                       FormHelper.DATA_OBJ_GETTER);
+            
+            
             if (getter != null)
             {
                 StringBuilder strBuf = new StringBuilder(128);
@@ -831,11 +832,10 @@ public class DataObjFieldFormatMgr
                                 //log.debug("["+value+"]["+format+"]");
                                 if (field.getFormat() != null)
                                 {
-                                    args[0] = value;
+                                	Object[] arg = {value};
                                     Formatter formatter = new Formatter();
-                                    formatter.format(field.getFormat(), args);
+                                    formatter.format(field.getFormat(), arg);
                                     strBuf.append(formatter.toString());
-                                    args[0] = null;
                                     
                                 } else
                                 {
@@ -910,11 +910,10 @@ public class DataObjFieldFormatMgr
                                     strBuf.append(value.toString());
                                 } else
                                 {
-                                    args[0] = value;
+                                	Object[] arg = {value};
                                     Formatter formatter = new Formatter();
-                                    formatter.format(format.getFormat(), args);
+                                    formatter.format(format.getFormat(), arg);
                                     strBuf.append(formatter.toString());
-                                    args[0] = null;
                                 }
                             } else
                             {
