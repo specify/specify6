@@ -25,6 +25,9 @@ import java.util.HashMap;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import net.sf.json.JSONArray;
@@ -49,7 +52,9 @@ import edu.ku.brc.util.Pair;
  */
 public class MetaDataPanel extends ExpandShrinkPanel
 {
-    private Integer attachmentId = null;
+    private Integer attachmentId      = null;
+    private String  currentTabName    = null;
+    private boolean ignoreTabSelected = false;
     
     //private ArrayList<JTable>        tables = new ArrayList<JTable>();
     //private ArrayList<MetaDataModel> models = new ArrayList<MetaDataModel>();
@@ -76,6 +81,25 @@ public class MetaDataPanel extends ExpandShrinkPanel
         tabbedPane = new JTabbedPane();
         pb.add(tabbedPane, cc.xy(1, 1));
         
+        ChangeListener changeListener = new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent changeEvent)
+            {
+                JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+                int index = sourceTabbedPane.getSelectedIndex();
+                if (index > -1)
+                {
+                    if (!ignoreTabSelected)
+                    {
+                        currentTabName = sourceTabbedPane.getTitleAt(index);
+                        System.out.println("Selected: "+currentTabName);
+                    }
+                    ignoreTabSelected = false;
+                }
+            }
+        };
+        tabbedPane.addChangeListener(changeListener);
+        
         super.doneBuilding();
     }
     
@@ -90,27 +114,33 @@ public class MetaDataPanel extends ExpandShrinkPanel
         String jsonStr = attachmentMgr.getMetaDataAsJSON(attachmentId);
         if (jsonStr != null)
         {
-            JSONArray sections = JSONArray.fromObject(jsonStr);
-            for (Object section : sections)
+            try
             {
-                JSONObject obj = (JSONObject)section;
-                for (Object key : obj.keySet())
+                JSONArray sections = JSONArray.fromObject(jsonStr);
+                for (Object section : sections)
                 {
-                    Object     name      = obj.get("Name");
-                    JSONObject fieldsObj = (JSONObject)obj.get("Fields");
-                    HashMap<String, Object> subMap = new HashMap<String, Object>();
-                    
-                    sectionMap.put(name.toString(), subMap);
-                    
-                    for (Object subKey : fieldsObj.keySet())
+                    JSONObject obj = (JSONObject)section;
+                    for (Object key : obj.keySet())
                     {
-                        Object value = fieldsObj.get(subKey);
-                        if (value != null)
+                        Object     name      = obj.get("Name");
+                        JSONObject fieldsObj = (JSONObject)obj.get("Fields");
+                        HashMap<String, Object> subMap = new HashMap<String, Object>();
+                        
+                        sectionMap.put(name.toString(), subMap);
+                        
+                        for (Object subKey : fieldsObj.keySet())
                         {
-                            subMap.put(subKey.toString(), value);
+                            Object value = fieldsObj.get(subKey);
+                            if (value != null)
+                            {
+                                subMap.put(subKey.toString(), value);
+                            }
                         }
                     }
                 }
+            } catch (Exception ex)
+            {
+                System.out.println(ex.getMessage());
             }
         }
         if (sectionMap != null && sectionMap.size() > 0)
@@ -125,6 +155,7 @@ public class MetaDataPanel extends ExpandShrinkPanel
     private void updateMetaDataUI()
     {
         tabbedPane.removeAll();
+        ignoreTabSelected = true;
         
         for (String key : sectionMap.keySet())
         {
@@ -132,8 +163,9 @@ public class MetaDataPanel extends ExpandShrinkPanel
             if (map.size() > 0)
             {
                 MetaDataModel model = new MetaDataModel(map);
-                JTable table = new JTable(model);
-                JScrollPane sp = UIHelper.createScrollPane(table);
+                JTable      table = new JTable(model);
+                JScrollPane sp    = UIHelper.createScrollPane(table);
+                UIHelper.setVisibleRowCount(table, 10);
                 tabbedPane.addTab(key, sp);
             }
         }
@@ -158,6 +190,26 @@ public class MetaDataPanel extends ExpandShrinkPanel
         if (this.attachmentId != null)
         {
             loadMetaData();
+            
+            if (currentTabName != null)
+            {
+                for (int i = 0; i < tabbedPane.getTabCount(); i++)
+                {
+                    if (tabbedPane.getTitleAt(i).equals(currentTabName))
+                    {
+                        final int index = i;
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                tabbedPane.setSelectedIndex(index);
+                            }
+                        });
+                        break;
+                    }
+                }
+            }
         }
     }
 

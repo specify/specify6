@@ -24,6 +24,12 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,7 +37,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JToolBar;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXHeader.IconPosition;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -169,7 +184,7 @@ public class ImagesTask extends BaseTask
                 public void actionPerformed(ActionEvent e)
                 {
                     if (starterPane != null) removeSubPaneFromMgr(starterPane);
-                    starterPane = imagesPane = new ImagesPane(IMAGES, ImagesTask.this, false); 
+                    starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, false); 
                     addSubPaneToMgr(starterPane);
                 }
             });
@@ -181,7 +196,7 @@ public class ImagesTask extends BaseTask
                 {
                     //showAllImages(false);
                     if (starterPane != null) removeSubPaneFromMgr(starterPane);
-                    starterPane = imagesPane = new ImagesPane(IMAGES, ImagesTask.this, true); 
+                    starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, true); 
                     addSubPaneToMgr(starterPane);
                 }
             });

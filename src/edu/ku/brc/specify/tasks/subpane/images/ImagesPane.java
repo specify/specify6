@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -28,6 +29,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -41,6 +44,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -73,6 +77,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -108,6 +113,7 @@ public class ImagesPane extends BaseSubPane
 
     protected JButton               infoBtn;
     protected JButton               metaDataBtn;
+    protected JButton               filterBtn;
     protected boolean               isInfoShown = false;
     
     protected HashMap<String, String> dataMap = new HashMap<String, String>();
@@ -165,7 +171,7 @@ public class ImagesPane extends BaseSubPane
      */
     protected void createUI()
     {
-        infoPanel = new ImageInfoPanel(dataFetcher);
+        infoPanel = new ImageInfoPanel(dataFetcher, this);
         infoPanel.createUI();
         
         metaDataPanel = new MetaDataPanel();
@@ -177,8 +183,15 @@ public class ImagesPane extends BaseSubPane
         metaDataBtn = UIHelper.createIconBtn("MetaData", IconManager.STD_ICON_SIZE, null, null);
         metaDataBtn.setEnabled(true);
         
+        filterBtn = UIHelper.createIconBtn("Filter20", IconManager.STD_ICON_SIZE, null, null);
+        filterBtn.setEnabled(true);
+        
         rsController.getPanel().setOpaque(true);
-        CommandBarPanel  cbp = new CommandBarPanel(rsController, metaDataBtn, infoBtn);
+        CommandBarPanel  cbp = new CommandBarPanel(rsController);
+        cbp.setLeftBtns(filterBtn);
+        cbp.setRightBtns(metaDataBtn, infoBtn);
+        cbp.createUI();
+        
         JPanel botPanel = new JPanel(new BorderLayout());
         botPanel.add(cbp, BorderLayout.NORTH);
         botPanel.add(metaDataPanel, BorderLayout.CENTER);
@@ -210,9 +223,30 @@ public class ImagesPane extends BaseSubPane
         
         metaDataPanel.setVisible(false);
         
-        createColObjSearch();
+        filterBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+               UIRegistry.showError("This is the filtering dialog.");
+            }
+        });
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#setBounds(int, int, int, int)
+     */
+    @Override
+    public void setBounds(int x, int y, int width, int height)
+    {
+        super.setBounds(x, y, width, height);
+        
+        if (gridPanel != null)
+        {
+            gridPanel.setLayoutSize(new Dimension(width, height));
+        }
+    }
+
     /**
      * @param index
      */
@@ -237,7 +271,8 @@ public class ImagesPane extends BaseSubPane
     protected void showInfoPanel(final int index)
     {
         //log.debug("infoBtn showInfoPanel - isInfoShown: "+isInfoShown);
-
+        gridPanel.clearSelection();
+        
         // Current State of the Info Panel
         if (!infoPanel.isExpanded())
         {
@@ -267,6 +302,7 @@ public class ImagesPane extends BaseSubPane
      */
     protected void showMetaDataPanel(final int index)
     {
+        gridPanel.clearSelection();
         if (!metaDataPanel.isExpanded())
         {
             fillMetaDataPanel(index);
@@ -296,8 +332,10 @@ public class ImagesPane extends BaseSubPane
             if (!isAllImages)
             {
                 coVBP.getMultiView().getDataFromUI();
+                //System.out.println("["+dataMap.get("CatalogNumber")+"]");
                 String catNum   = (String)fmt.formatFromUI(dataMap.get("CatalogNumber"));
                 queryStr        = String.format(sql, catNum);
+                System.out.println(queryStr);
             }
             Statement stmt  = null;
             try
@@ -307,11 +345,19 @@ public class ImagesPane extends BaseSubPane
                 ResultSet rs = stmt.executeQuery(queryStr);
                 while (rs.next())
                 {
-                    ImageDataItem imgDataItem = new ImageDataItem(CollectionObject.getClassTableId(), 
-                            rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                    ImageDataItem imgDataItem = new ImageDataItem(rs.getInt(1), CollectionObject.getClassTableId(), 
+                                                                  rs.getString(2), rs.getString(3), rs.getString(4));
                     rowsVector.add(imgDataItem);
                 }
                 rs.close();
+                
+                Collections.sort(rowsVector, new Comparator<ImageDataItem>() {
+                    @Override
+                    public int compare(ImageDataItem o1, ImageDataItem o2)
+                    {
+                        return o1.getShortName().compareTo(o2.getShortName());
+                    }
+                });
                 
             } catch (Exception e)
             {
@@ -345,6 +391,14 @@ public class ImagesPane extends BaseSubPane
             }
             rs.close();
             
+            Collections.sort(rowsVector, new Comparator<ImageDataItem>() {
+                @Override
+                public int compare(ImageDataItem o1, ImageDataItem o2)
+                {
+                    return o1.getShortName().compareTo(o2.getShortName());
+                }
+            });
+            
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -373,6 +427,55 @@ public class ImagesPane extends BaseSubPane
                 SubPaneMgr.getInstance().addPane(pane);
             }
         }
+    }
+    
+    /**
+     * @param item
+     * @return
+     */
+    protected HashMap<String, Object> getImageData(final ImageDataItem item)
+    {
+        HashMap<String, Object> map = item.getDataMap();
+        if (map == null)
+        {
+            map = dataFetcher.getData(item.getAttachmentId(), item.getTableId());
+            item.setDataMap(map);
+        }
+        return map;
+    }
+    
+    /**
+     * @param item
+     * @return
+     */
+    protected Vector<Pair<String, Object>> getImageDataValueList(final ImageDataItem item)
+    {
+        Vector<Pair<String, Object>> list = new Vector<Pair<String, Object>>();
+        
+        HashMap<String, Object> map = getImageData(item);
+        if (map != null)
+        {
+            int i = 0;
+            for (String key : fieldNames)
+            {
+                Object val = map.get(key);
+                if (val != null)
+                {
+                    if (key.equals("OrigFilename"))
+                    {
+                        val = FilenameUtils.getName(val.toString());
+                    }
+                    if (formatters[i] != null)
+                    {
+                        val = formatters[i].formatToUI(val);
+                    }
+                    Pair<String, Object> p = new Pair<String, Object>(labels[i]+":", val != null ? val.toString() : "");
+                    list.add(p);
+                }
+                i++;
+            }
+        }
+        return list;
     }
     
     /**
@@ -418,55 +521,21 @@ public class ImagesPane extends BaseSubPane
             }
         });
         
-        HashMap<String, Object> map = null;
+        Vector<Pair<String, Object>> values = null;
         if (whichBtn == ImageCellDisplay.INFO_BTN)
         {
-            if (map == null)
+            values = getImageDataValueList(item);
+            if (values != null)
             {
-                map = dataFetcher.getData(item.getAttachmentId(), item.getTableId());
-                item.setDataMap(map);
-            }
-            
-            if (map != null)
-            {
-                int i = 0;
-                for (String key : fieldNames)
+                for (Pair<String, Object> p : values)
                 {
-                    Object val = map.get(key);
-                    if (val != null)
-                    {
-                        if (formatters[i] != null)
-                        {
-                            val = formatters[i].formatToUI(val);
-                        }
-                        bubblePane.addLine(labels[i]+":", val != null ? val.toString() : "");
-                    }
-                    i++;
+                    bubblePane.addLine(p.first, p.second.toString());
                 }
             }
-        } /*else
-        {
-            map = getImageMetaDataMap(item);
-            if (map != null)
-            {
-                for (String key : map.keySet())
-                {
-                    bubblePane.addLine(key, "-");
-                    Object val = map.get(key);
-                    @SuppressWarnings("unchecked")
-                    HashMap<String, Object> subMap = (HashMap<String, Object>)val;
-                    for (String subKey : subMap.keySet())
-                    {
-                        Object subVal = subMap.get(subKey);
-                        bubblePane.addLine(subKey+":", subVal != null ? subVal.toString() : "");
-                    }
-                }
-            }
-        }*/
+        }
         
-        if (map != null)
+        if (values != null)
         {
-            
             String btnTitle = String.format("Show %s", DBTableIdMgr.getInstance().getTitleForId(item.getTableId()));
             bubblePane.addBtn(btnTitle, null);
         
@@ -614,9 +683,9 @@ public class ImagesPane extends BaseSubPane
         {
             searchForAllImages();
             gridPanel.setItemList(rowsVector);
-            //JScrollPane sb = UIHelper.createScrollPane(gridPanel);
-            //return sb;
-            return gridPanel;
+            JScrollPane sb = new JScrollPane(gridPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            return sb;
+            //return gridPanel;
         }
         
         CellConstraints cc = new CellConstraints();
@@ -637,6 +706,8 @@ public class ImagesPane extends BaseSubPane
         JButton     searchBtn = fvo.getCompById("2");
         JTextField  textField = fvo.getCompById("1");
         y += 2;
+        
+        //fvo.setAlwaysGetDataFromUI(true);
     
         if (searchBtn != null)
         {

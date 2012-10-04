@@ -3,7 +3,7 @@
  */
 package edu.ku.brc.specify.utilapps.morphbank;
 
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +34,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
@@ -57,6 +65,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -102,22 +111,27 @@ public class BatchAttachFiles
 	protected DataProviderSessionIFace session;
 	protected String errLogName = "errors";
 	
-	protected HashMap<String, String> mapFileNameToCatNum = null;
+    protected ArrayList<String> errFiles = new ArrayList<String>();
+
 	
-	//protected List<Integer> attachments = new Vector<Integer>();
+	protected HashMap<String, String> mapFileNameToCatNum = null;
 	
 	/**
 	 * @param tblClass
 	 * @param fnParser
-	 * @param directoryName
+	 * @param directory
+	 * @throws Exception
 	 */
-	public BatchAttachFiles(Class<?> tblClass, FileNameParserIFace fnParser, File directory) throws Exception
+	public BatchAttachFiles(final Class<?> tblClass, 
+	                        final FileNameParserIFace fnParser, 
+	                        final File directory) throws Exception
 	{
 		super();
 		this.tblClass = tblClass;
 		this.fnParser = fnParser;
 		this.directory = directory;
 		attachmentClass = determineAttachmentClass();
+		
 		if (directory.isDirectory())
 		{
 			files = bldFilesFromDir(directory, exts);
@@ -127,6 +141,12 @@ public class BatchAttachFiles
 		}
 	}
 	
+    /**
+     * @param tblClass
+     * @param keyName
+     * @param directory
+     * @throws Exception
+     */
     public BatchAttachFiles(final Class<?> tblClass,
                             final String keyName,
                             final File directory) throws Exception
@@ -137,6 +157,7 @@ public class BatchAttachFiles
         this.fnParser   = null;
         this.directory  = directory;
         attachmentClass = determineAttachmentClass();
+        
         if (directory.isDirectory())
         {
             files = bldFilesFromDir(directory, exts);
@@ -149,21 +170,37 @@ public class BatchAttachFiles
      */
     public boolean attachFileFromIndexFile(final File indexFile)
     {
+        if (files != null) files = null;
+        
         mapFileNameToCatNum = new HashMap<String, String>();
         try
         {
-            List<?>      records     = (List<?>)FileUtils.readLines(indexFile);
+            ArrayList<File>   dirFiles = new ArrayList<File>();
+            List<?> records = (List<?>)FileUtils.readLines(indexFile);
             for (Object lineObj : records)
             {
                 String[] cols = StringUtils.split(lineObj.toString(), '\t');
                 if (cols.length == 2)
                 {
                     String fileName = cols[1];
-                    mapFileNameToCatNum.put(fileName, cols[0]);
-                    System.out.println(String.format("%s %s", cols[0], fileName));
+                    fileName = StringUtils.replaceChars(fileName, ' ', '_');
+                    fileName = StringUtils.replaceChars(fileName, ',', '_');
+                    
+                    File upFile = new File(directory.getAbsolutePath() + File.separator + fileName);
+                    if (upFile.exists())
+                    {
+                        mapFileNameToCatNum.put(fileName, cols[0]);
+                        //System.out.println(String.format("%s %s", cols[0], fileName));
+                        dirFiles.add(upFile);
+                    } else
+                    {
+                        errFiles.add(fileName);
+                    }
                 }
             }
+            files = dirFiles;
             attachFilesByFieldName();
+            
             return true;
             
         } catch (IOException ex)
@@ -190,11 +227,11 @@ public class BatchAttachFiles
             @Override
             protected Integer doInBackground() throws Exception
             {
-                for (File file : files)
+                /*for (File file : files)
                 {
                     String catNum = mapFileNameToCatNum.get(file.getName());
                     if (catNum != null) System.out.println("catNum["+catNum+"]  ["+file.getName()+"]");
-                }
+                }*/
                 
                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
                 if (tblInfo != null)
@@ -207,8 +244,20 @@ public class BatchAttachFiles
                         int    cnt         = 0;
                         int    one20th     = (int)((double)totNumFiles / 10.0);
                         
-                        String sql = String.format("SELECT %s FROM %s WHERE %s = ?", tblInfo.getPrimaryKeyName(), tblInfo.getName(), keyName);
+                        String specCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tblInfo, false);
+                        String sql      = String.format("SELECT %s FROM %s WHERE %s AND %s = ?", tblInfo.getPrimaryKeyName(), tblInfo.getName(), specCols, keyName);
                         //System.out.println(sql);
+                        
+                        String path = UIRegistry.getAppDataDir() + File.separator + "fileupload.html";
+                        TableWriter tw = new TableWriter(path, "File upload issues");
+                        tw.startTable();
+                        tw.logHdr("File", "Reason");
+                        
+                        for (String fileName : errFiles)
+                        {
+                            tw.logErrors(fileName, "This file name was referenced in the mapping file, did not exist.");
+                        }
+                        
                         pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
                         for (File file : files)
                         {
@@ -220,12 +269,16 @@ public class BatchAttachFiles
                                 if (catNum != null)
                                 {
                                     primaryName = catNum;
+                                } else
+                                {
+                                    tw.logErrors(file.getName(), "There was no Catalog Number mapped for this file.");
+                                    continue;
                                 }
                             } else
                             {
                                 primaryName = FilenameUtils.getBaseName(file.getName()); 
                             }
-                            if (primaryName != null) System.out.println("["+primaryName+"]");
+                            //if (primaryName != null) System.out.println("["+primaryName+"]");
                             
                             Object value = fmt != null ? fmt.formatFromUI(primaryName) : primaryName;  
                             
@@ -236,10 +289,24 @@ public class BatchAttachFiles
                                 if (rs.next())
                                 {
                                     int id = rs.getInt(1);
-                                    System.out.println(String.format("%s -> id: %d", value.toString(), id));
-                                    attachFileTo(file, id);
+                                    if (!rs.wasNull())
+                                    {
+                                        //System.out.println(String.format("%s -> id: %d", value.toString(), id));
+                                        if (!attachFileTo(file, id))
+                                        {
+                                            tw.logErrors(file.getName(), "There was error saving the Attachment Catalog Number["+value.toString()+"] File["+file.getName()+"]");
+                                        }
+                                    } else
+                                    {
+                                        tw.logErrors(file.getName(), "The Catalog Number ["+value.toString()+"] was not in the database. File["+file.getName()+"]");
+                                    }
                                 }
                                 rs.close();
+                            } else if (value == null)
+                            {
+                                String msg = mapFileNameToCatNum != null ? "There was no Catalog Number mapped for this file." :
+                                                                           "The file could not be converted to a valid Catalog Number.";
+                                tw.logErrors(file.getName(), msg);
                             }
                             
                             cnt++;
@@ -254,6 +321,14 @@ public class BatchAttachFiles
                             //Thread.currentThread().sleep(2000);
                             //if (cnt == 2) break;
                         }
+                        tw.close();
+                        
+                        if (tw.hasLines())
+                        {
+                            File twFile = new File(path);
+                            AttachmentUtils.openFile(twFile);
+                        }
+                        
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
@@ -282,7 +357,7 @@ public class BatchAttachFiles
             }
         };
         
-        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.BACKINGUP", ""), 24);
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getResourceString("BatchAttachFiles.UPLOADING"), 24);
         glassPane.setProgress(0);
         
         backupWorker.addPropertyChangeListener(
@@ -290,7 +365,7 @@ public class BatchAttachFiles
                     public  void propertyChange(final PropertyChangeEvent evt) {
                         if (PROGRESS.equals(evt.getPropertyName())) 
                         {
-                            System.out.println("Progress: "+evt.getNewValue());
+                            //System.out.println("Progress: "+evt.getNewValue());
                             glassPane.setProgress((Integer)evt.getNewValue());
                         }
                     }
@@ -361,7 +436,7 @@ public class BatchAttachFiles
 			return CollectionObjectAttachment.class;
 		} else
 		{
-			throw new Exception(String.format(UIRegistry.getResourceString("BatchAttachFiles.ClassNotSupported"), tblClass.getName()));
+			throw new Exception(String.format(getResourceString("BatchAttachFiles.ClassNotSupported"), tblClass.getName()));
 		}
 	}
 	
@@ -390,7 +465,7 @@ public class BatchAttachFiles
 	/**
 	 * build a list of files in directory.
 	 */
-	public static Vector<File> bldFilesFromDir(File directory, String[] exts)
+	public static Vector<File> bldFilesFromDir(final File directory, final String[] exts)
 	{
 		Vector<File> result = new Vector<File>();
 		Collection<?> fs = FileUtils.listFiles(directory, exts, false);
@@ -470,7 +545,7 @@ public class BatchAttachFiles
 		if (ids.size() == 0)
 		{
 			errors.add(new Pair<String, String>(f.getName(), 
-					UIRegistry.getResourceString("BatchAttachFiles.FileNameParseError")));
+					getResourceString("BatchAttachFiles.FileNameParseError")));
 			return;
 		} 
 		
@@ -538,20 +613,49 @@ public class BatchAttachFiles
      * Attaches f to the object with key attachTo
      */
     @SuppressWarnings("unchecked")
-    protected void attachFileTo(final File f, final Integer attachTo)
+    protected boolean attachFileTo(final File f, final Integer attachTo)
     {
-        attachFileTo(f, attachTo, null);
+        return attachFileTo(f, attachTo, null);
+    }
+    
+    /**
+     * @param metaData
+     * @param cls
+     * @param tagId
+     * @return
+     */
+    private Calendar getExifFileDate(final Metadata metadata, final Class<? extends Directory> cls, final int tagId)
+    {
+        if (metadata != null)
+        {
+            Directory directory = metadata.getDirectory(cls);
+            if (directory != null)
+            {
+                Date date = directory.getDate(tagId);
+                if (date != null)
+                {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(date);
+                    return cal.get(Calendar.YEAR) > 1850 ? cal : null;
+                }
+            }
+        }
+        return null;
     }
 
     /**
+     * Attaches f to the object with key attachTo
+     * 
      * @param fileToSave
      * @param attachToId
-     * 
-     * Attaches f to the object with key attachTo
+     * @param session
      */
     @SuppressWarnings("unchecked")
-    protected void attachFileTo(final File fileToSave, final Integer attachToId, final DataProviderSessionIFace session)
+    protected boolean attachFileTo(final File    fileToSave, 
+                                   final Integer attachToId, 
+                                   final DataProviderSessionIFace session)
     {
+        boolean isOK = true;
 		//System.out.println("Attaching " + f.getName() + " to " + attachTo);
 		//System.out.println("attachFileTo Entry: " + Runtime.getRuntime().freeMemory());
 		DataProviderSessionIFace localSession = session == null ? DataProviderFactory.getInstance().createSession() : session;
@@ -579,6 +683,23 @@ public class BatchAttachFiles
 				
 				attachment.setTableId(rec.getAttachmentTableId());
 				
+                Metadata metadata = ImageMetadataReader.readMetadata(fileToSave);
+                Calendar fileCreateCal = getExifFileDate(metadata, ExifSubIFDDirectory.class, ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+                if (fileCreateCal == null)
+                {
+                    fileCreateCal = getExifFileDate(metadata, ExifIFD0Directory.class, ExifIFD0Directory.TAG_DATETIME);
+                }
+                
+                if (fileCreateCal != null)
+                {
+                    attachment.setFileCreatedDate(fileCreateCal);
+                } else
+                {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(fileToSave.lastModified());
+                    attachment.setFileCreatedDate(cal);
+                }
+				
 				attachment.setTitle(fileToSave.getName());
 				ObjectAttachmentIFace<DataModelObjBase> oaif = 
 				    (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec.getClass());
@@ -592,8 +713,7 @@ public class BatchAttachFiles
 				
 				attachees.add(oaif);
 
-				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
-						.getBusinessRule(rec.getClass());
+				BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(rec.getClass());
 				if (busRule != null)
 				{
 					busRule.beforeSave(rec, localSession);
@@ -610,9 +730,11 @@ public class BatchAttachFiles
 				}
 				if (fileToSave.exists())
 				{
-					AttachmentUtils.getAttachmentManager()
-						.setStorageLocationIntoAttachment(oaif.getAttachment(), false);
+					AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(oaif.getAttachment(), false);
 					oaif.getAttachment().storeFile(false); // false means do not display an error dialog
+				} else
+				{
+				    log.debug(fileToSave.getName()+" doesn't exist.");
 				}
 
 				localSession.commit();
@@ -635,6 +757,7 @@ public class BatchAttachFiles
 			
 			} catch (HibernateException he)
 			{
+			    isOK = false;
 				if (tblTransactionOpen)
 				{
 					localSession.rollback();
@@ -643,6 +766,7 @@ public class BatchAttachFiles
 				
 			} catch (Exception ex)
 			{
+                isOK = false;
 				if (tblTransactionOpen)
 				{
 					localSession.rollback();
@@ -661,8 +785,10 @@ public class BatchAttachFiles
 		{
 			errors.add(new Pair<String, String>(fileToSave.getName(), UIRegistry
 					.getResourceString("BatchAttachFiles.UnableToAttach")));
+            isOK = false;
 		}
-		System.out.println("attachFileTo Exit: " + Runtime.getRuntime().freeMemory());
+		//System.out.println("attachFileTo Exit: " + Runtime.getRuntime().freeMemory());
+		return isOK;
 	}
 	
 	/**
@@ -901,7 +1027,7 @@ public class BatchAttachFiles
 	                    	return result;
 	                   }
 	                };
-	                String nameAndTitle = UIRegistry.getResourceString("BatchAttachFiles.AppTitle"); // I18N
+	                String nameAndTitle = getResourceString("BatchAttachFiles.AppTitle"); // I18N
 	                UIRegistry.setRelease(true);
 	                UIHelper.doLogin(usrPwdProvider, true, false, false, new BatchAttachLauncher(), Specify.getLargeIconName(), nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); // true
 																																		// means

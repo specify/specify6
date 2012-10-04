@@ -86,6 +86,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	protected boolean      isNoImage       = true;
     protected JFileChooser chooser;
     protected boolean      doShowText      = true;
+    protected boolean      isLoading       = false;
     
     protected ChangeListener changeListener = null;
     protected JComponent     paintComponent = null;
@@ -186,6 +187,22 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     public void setChangeListener(ChangeListener changeListener)
     {
         this.changeListener = changeListener;
+    }
+
+    /**
+     * @return the isLoading
+     */
+    public boolean isLoading()
+    {
+        return isLoading;
+    }
+
+    /**
+     * @param isLoading the isLoading to set
+     */
+    public void setLoading(boolean isLoading)
+    {
+        this.isLoading = isLoading;
     }
 
     /**
@@ -402,10 +419,17 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		int w = getWidth();
 		int h = getHeight();
 
-		if (image != null && (!isNoImage && status == kImageOK))
+        Image dspImg = image;
+		boolean doDisplayImage = (image != null && (!isNoImage && status == kImageOK)) || isLoading;
+		if (isLoading)
 		{
-			int imgW = image.getWidth(null);
-			int imgH = image.getHeight(null);
+		    doDisplayImage = true;
+		    dspImg = IconManager.getImage("Loading").getImage();
+		}
+		if (doDisplayImage && dspImg != null)
+		{
+			int imgW = dspImg.getWidth(null);
+			int imgH = dspImg.getHeight(null);
 
 			if (doScale && (imgW > w || imgH > h))
 			{
@@ -438,7 +462,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 			{
 				y = (h - imgH) / 2;
 			}
-			g.drawImage(image, x, y, imgW, imgH, null);
+			g.drawImage(dspImg, x, y, imgW, imgH, null);
 			
 		} else if (doShowText)
 		{

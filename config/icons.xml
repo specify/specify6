@@ -77,8 +77,9 @@
     <icon name="EditForm20"    file="FormEdit20x20.png" sizes="NonStd"/>
     <icon name="EditIcon"      file="edit_icon.gif"  sizes="NonStd"/>
     <icon name="EditForm"      file="FormEdit16x16.png" sizes="16"/>
-    <icon name="InfoIcon"      file="info.png"       sizes="all"/>
+    <icon name="InfoIcon"      file="info.png"           sizes="all"/>
     <icon name="MetaData"      file="metadata.png"       sizes="all"/>
+    <icon name="Filter20"      file="filter20x20.png"    sizes="20"/>
     <icon name="Reload"        file="view-refresh16.png" sizes="16"/>
     <icon name="ViewForm16"    file="Form16x16.png" sizes="16"/>
     <icon name="ViewForm"      file="Form32x32.png" sizes="32"/>

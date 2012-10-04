@@ -79,6 +79,8 @@ jazzy-core                              0.5.2
 lucene-core.jar                         3.6.1
 lucene-queryparser.jar                  3.6.1
 
+metadata-extractor.jar                  2.6.2
+
 Missing information:
 --------------------
 

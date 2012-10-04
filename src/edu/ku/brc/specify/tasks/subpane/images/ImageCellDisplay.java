@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tasks.subpane.images;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -41,6 +42,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.ImageLoaderExector;
@@ -56,22 +58,24 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ImageCellDisplay extends ImageDisplay
 {
-    public static final int INFO_BTN     = -1;
-    public static final int METADATA_BTN = -2;
+    public static final int INFO_BTN        = -1;
+    public static final int METADATA_BTN    = -2;
+    public static final int SELECTION_WIDTH = 3;
     
-    private final int   margin         = 6;
+    private final int   margin              = 6;
 
-    private Border      nonSelBorder   = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+    private Border      nonSelBorder    = BorderFactory.createEmptyBorder(2, 2, 2, 2);
     //private boolean     isSelected     = false;
-    private BasicStroke stdLineStroke  = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private Color       selectColor    = UIManager.getColor("Table.selectionBackground");
-    private RoundRectangle2D.Double rr = new RoundRectangle2D.Double(0, 0, 0, 0, 10, 10);
+    private BasicStroke stdLineStroke   = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private Color       selectColor     = UIManager.getColor("Table.selectionBackground");
+    private RoundRectangle2D.Double rr  = new RoundRectangle2D.Double(0, 0, 0, 0, 10, 10); // Selection Rect
+    private RoundRectangle2D.Double rr2 = null;  // Text Background
     
-    private ImageIcon   infoIcon16     = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
-    private ImageIcon   metaDataIcon   = IconManager.getIcon("MetaData", IconManager.STD_ICON_SIZE.Std16);
+    private ImageIcon   infoIcon16      = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
+    //private ImageIcon   metaDataIcon    = IconManager.getIcon("MetaData", IconManager.STD_ICON_SIZE.Std16);
     
-    private Rectangle   infoHitRect   = new Rectangle();
-    private Rectangle   mdHitRect     = new Rectangle(); // metadat icon
+    private Rectangle   infoHitRect     = new Rectangle();
+    private Rectangle   mdHitRect       = new Rectangle(); // metadat icon
     
     private Vector<GalleryGridListener> listeners = new Vector<GalleryGridListener>();
     
@@ -137,28 +141,34 @@ public class ImageCellDisplay extends ImageDisplay
     {
         super.paintComponent(gr);
         
+        Graphics2D g2 = (Graphics2D)gr;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        int         x = 1;
+        int         y = 1;
+        int         w = 0;
+        int         h = 0;
+        
         if (image != null)
         {
             Dimension s    = getSize();
             int       imgW = image.getWidth(null);
-            int       h    = s.height - (margin*2);
+            h = s.height - (margin*2);
             if (imgW < h)
             {
                 imgW = h;
             }
-            Graphics2D g2          = (Graphics2D)gr;
             Stroke     cacheStroke = g2.getStroke();
             
-            int x   = 1;
-            int y   = 1;
-            int w   = getSize().width - 3;
-            h       = getSize().height - 3;
+            w       = getSize().width  - SELECTION_WIDTH;
+            h       = getSize().height - SELECTION_WIDTH;
+            
+            //System.out.println(imgDataItem.getShortName()+"  "+imgDataItem.isSelected());
             
             if (imgDataItem != null && imgDataItem.isSelected())
             {
                 g2.setStroke(stdLineStroke);
                 g2.setColor(selectColor);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
                 rr.setRoundRect(x, y, w, h, 10, 10);
                 g2.draw(rr);
@@ -173,19 +183,41 @@ public class ImageCellDisplay extends ImageDisplay
             infoHitRect.width  = infoIcon16.getIconWidth();
             infoHitRect.height = infoIcon16.getIconHeight();
             
-            imgX = x;
+            /*imgX = x;
             imgY = y + h - metaDataIcon.getIconHeight();
             g2.drawImage(metaDataIcon.getImage(), imgX, imgY, null);
             
             mdHitRect.x      = imgX;
             mdHitRect.y      = imgY;
             mdHitRect.width  = metaDataIcon.getIconWidth();
-            mdHitRect.height = metaDataIcon.getIconHeight();
+            mdHitRect.height = metaDataIcon.getIconHeight();*/
             
             //System.out.println(String.format("r: %d,%d,%d,%d", x,y,w,h));
             //System.out.println("HR: "+hotRect);
             
             g2.setStroke(cacheStroke);
+        }
+        
+        if (imgDataItem != null)
+        {
+            g2.setFont(g2.getFont().deriveFont(10.0f));
+            FontMetrics fm = g2.getFontMetrics();
+            
+            int txtW =  w-infoIcon16.getIconWidth();
+            String shortName = imgDataItem.getShortName();
+            shortName = GraphicsUtils.clipString(fm, shortName, txtW);
+            
+            int txtY = y + h-fm.getDescent()-2;
+            int rrY  = y + h-fm.getHeight()-2;
+            //if (rr2 == null)
+            {
+                rr2 = new RoundRectangle2D.Double(5, rrY, txtW-4, fm.getHeight(), 10, 10);
+            }
+            g2.setColor(new Color(255, 255, 255, 196));
+            g2.fill(rr2);
+            g2.setColor(Color.BLACK);
+            g2.drawString(shortName, 5, txtY);
+            //GraphicsUtils.drawCenteredString(shortName, g2, (w/2) - infoIcon16.getIconWidth(), y + h-fm.getDescent()-4);
         }
     }
 
@@ -258,7 +290,9 @@ public class ImageCellDisplay extends ImageDisplay
                                          ImageIcon imgIcon,
                                          File localFile)
                 {
-                    System.out.println(imageName+" -> "+isError);
+                    setLoading(false);
+
+                    //System.out.println(imageName+" -> "+isError);
                     if (!isError)
                     {
                         setImage(imgIcon);
@@ -275,12 +309,15 @@ public class ImageCellDisplay extends ImageDisplay
                     }
                 }
             };
-            imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, ImageDataItem.STD_ICON_SIZE, listener);
+            
+            int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
+            imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, listener);
         } else
         {
             imageLoader.setImageName(imgDataItem.getImgName());
             imageLoader.setMimeType(imgDataItem.getMimeType());
         }
+        setLoading(true);
         ImageLoaderExector.getInstance().loadImage(imageLoader);
     }
     

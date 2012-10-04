@@ -46,33 +46,87 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class CommandBarPanel extends JPanel
 {
+    private ResultSetController rs;
+    private JButton[]           leftBtns;
+    private JButton[]           rightBtns;
+    
     /**
      * 
      */
-    public CommandBarPanel(final ResultSetController rs, final JButton...btns)
+    public CommandBarPanel(final ResultSetController rs)
     {
         super();
         
         setOpaque(true);
         
+        this.rs = rs;
         rs.getPanel().setOpaque(false);
-        
+    }
+
+    /**
+     * @param btns
+     */
+    public void setLeftBtns(final JButton...btns)
+    {
+        leftBtns = btns;
+    }
+    
+    /**
+     * @param btns
+     */
+    public void setRightBtns(final JButton...btns)
+    {
+        rightBtns = btns;
+    }
+    
+    /**
+     * 
+     */
+    public void createUI()
+    {
         CellConstraints cc = new CellConstraints();
-        String       colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", btns.length);
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,f:p:g"));
-        pb.add(rs.getPanel(), cc.xy(2, 2));
+        PanelBuilder leftPB = null;
+        if (leftBtns != null)
+        {
+            String colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", leftBtns.length);
+            leftPB = new PanelBuilder(new FormLayout("20px," + colDef + ",f:p:g", "p"));
+            leftPB.getPanel().setOpaque(false);
+            int x = 2;
+            for (JButton btn : leftBtns)
+            {
+                leftPB.add(btn, cc.xy(x, 1));
+                x += 2;
+            }
+        }
+        
+        PanelBuilder rightPB = null;
+        if (rightBtns != null)
+        {
+            String colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", rightBtns.length);
+            rightPB = new PanelBuilder(new FormLayout("f:p:g, "+colDef + ", 20px", "p"));
+            rightPB.getPanel().setOpaque(false);
+            int x = 2;
+            for (JButton btn : rightBtns)
+            {
+                rightPB.add(btn, cc.xy(x, 1));
+                x += 2;
+            }
+        }
+        
+        String leftP  = leftPB != null ? "p" : "f:p:g";
+        String rightP = rightPB != null ? "p" : "f:p:g";
+        PanelBuilder pb = new PanelBuilder(new FormLayout(leftP+", f:p:g, p, f:p:g, "+rightP, "f:p:g,p,f:p:g"), this);
+        
+        if (leftPB != null) pb.add(leftPB.getPanel(), cc.xy(1, 2));
+        pb.add(rs.getPanel(), cc.xy(3, 2));
+        if (rightPB != null) pb.add(rightPB.getPanel(), cc.xy(5, 2));
         pb.getPanel().setOpaque(false);
         
-        PanelBuilder tb = new PanelBuilder(new FormLayout("f:p:g,4px,"+colDef+", 20px", "1px,p,3px"), this);
-        tb.add(pb.getPanel(), cc.xy(1, 2));
-        
-        int x = 3;
-        for (JButton btn : btns)
-        {
-            tb.add(btn, cc.xy(x, 2));
-            x += 2;
-        }
+        // No longer needed.
+        this.rs        = null;
+        this.leftBtns  = null;
+        this.rightBtns = null;
     }
     
     @Override

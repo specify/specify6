@@ -69,6 +69,8 @@ public class ImageLoaderExector
      */
     public Future<ImageLoaderIFace> loadImage(final ImageLoaderIFace imageLoadObj)
     {
+        //System.out.println("loadImage  - "+imageLoadObj.getStatus());
+
         // create a background thread to do the web service work
         @SuppressWarnings("unused") //$NON-NLS-1$
         Callable<ImageLoaderIFace> imgLoadWorker = new Callable<ImageLoaderIFace>()

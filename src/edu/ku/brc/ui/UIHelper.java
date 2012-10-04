@@ -203,6 +203,7 @@ public final class UIHelper
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
     protected static boolean        isMacOS_10_7_X   = false;
+    protected static boolean        isMacOS_10_8_X   = false;
     protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     
     protected static DoubleValidator     doubleValidator = new DoubleValidator();
@@ -258,10 +259,13 @@ public final class UIHelper
                 isMacOS_10_5_X = true;
             }*/
             String osVersion = System.getProperty("os.version");
-            if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.7.0") >= 0)
+            if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.8.0") >= 0)
+            {
+                isMacOS_10_8_X = true;
+            } else if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.7.0") >= 0)
             {
                 isMacOS_10_7_X = true;
-            }
+            } 
 
         } else if (osStr.indexOf("Windows") != -1)
         {
@@ -323,6 +327,14 @@ public final class UIHelper
     public static boolean isMacOS_10_7_X()
     {
         return isMacOS_10_7_X;
+    }
+
+    /**
+     * @return the isMacOS_10_7_X
+     */
+    public static boolean isMacOS_10_8_X()
+    {
+        return isMacOS_10_8_X;
     }
 
     /**
@@ -2240,7 +2252,7 @@ public final class UIHelper
     public static JScrollPane createScrollPane(final JComponent content, final boolean makeHorzAsNeeded)
     {
         return new JScrollPane(content, 
-                               isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                               isMacOS() && !isMacOS_10_8_X() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
                                        makeHorzAsNeeded ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     }
     

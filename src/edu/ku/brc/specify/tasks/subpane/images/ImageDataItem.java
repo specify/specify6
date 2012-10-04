@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeListener;
 
-import edu.ku.brc.ui.IconManager;
+import org.apache.commons.io.FilenameUtils;
+
 import edu.ku.brc.ui.ImageLoaderExector;
 
 /**
@@ -54,6 +54,8 @@ public class ImageDataItem
     private HashMap<String, Object> dataMap = null;
     private int       currScale   = 0;
     private boolean   isSelected  = false;
+    
+    private String shortName = null;
 
     
     private ItemImageLoaderListener itemImgLoadListener;
@@ -86,10 +88,10 @@ public class ImageDataItem
         this.imgIcon        = null;
         this.localFile      = null;
         
-        if (noImage == null)
+        /*if (noImage == null)
         {
             noImage = IconManager.getImage("Loading");
-        }
+        }*/
         //loadImage(false, STD_ICON_SIZE, this.changeListener);
     }
     
@@ -99,10 +101,10 @@ public class ImageDataItem
      */
     public ImageIcon getImageIcon()
     {
-        if (imgIcon == null || isLoading.get() || isError.get())
+        /*if (imgIcon == null || isLoading.get() || isError.get())
         {
             return noImage;
-        }
+        }*/
         return imgIcon;
     }
     
@@ -122,7 +124,7 @@ public class ImageDataItem
                            final int                 scale,
                            final ImageLoaderListener imgLoadListener)
     {
-        System.out.println("loadImage - doLoadFullImage "+doLoadFullImage+"   scale "+scale);
+        //System.out.println("loadImage - doLoadFullImage "+doLoadFullImage+"   scale "+scale);
         if (loadImage == null)
         {
             itemImgLoadListener = new ItemImageLoaderListener();
@@ -260,6 +262,20 @@ public class ImageDataItem
         this.isSelected = isSelected;
     }
 
+    /**
+     * @return the shortName
+     */
+    public String getShortName()
+    {
+        if (shortName == null)
+        {
+            shortName = FilenameUtils.getBaseName(title);
+        }
+        return shortName;
+    }
+
+
+    //--------------------------------------------------------------
     class ItemImageLoaderListener implements ImageLoaderListener
     {
         private ImageLoaderListener imgLoadListener;

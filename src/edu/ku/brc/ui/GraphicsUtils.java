@@ -421,7 +421,7 @@ public class GraphicsUtils
         String dots = "...";
         
         StringBuilder sb = new StringBuilder(text + dots);
-        while (fm.stringWidth(sb.toString()) > availableWidth)
+        while (sb.length()-4 > 0 && fm.stringWidth(sb.toString()) > availableWidth)
         {
             sb.deleteCharAt(sb.length()-4);
         }

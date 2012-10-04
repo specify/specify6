@@ -30,6 +30,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.UIHelper;
 
@@ -90,6 +91,7 @@ public class FullImagePane extends BaseSubPane
                 FullImagePane.this.repaint();
             }
         }); 
+        imgDisp.setImage(IconManager.getImage("Loading"));
     }
 
     /* (non-Javadoc)
