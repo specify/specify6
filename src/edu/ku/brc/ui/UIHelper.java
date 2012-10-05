@@ -443,7 +443,12 @@ public final class UIHelper
      */
     public static boolean isPrimitiveObjectType(final Class<?> clazz)
     {
-        return baseClassHash.get(clazz);
+        if (clazz != null)
+        {
+            Boolean val = baseClassHash.get(clazz.getSimpleName());
+            return val != null && val;
+        }
+        return false;
     }
     
     /**

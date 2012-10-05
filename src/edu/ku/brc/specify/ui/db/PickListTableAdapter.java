@@ -20,10 +20,12 @@
 package edu.ku.brc.specify.ui.db;
 
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -34,6 +36,7 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -118,6 +121,14 @@ public class PickListTableAdapter extends PickListDBAdapter
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try
                 {
+                    boolean isBasicType = false;
+                    boolean isFromField = type == PickListDBAdapterIFace.Type.TableField;
+                    if (isFromField)
+                    {
+                        DBFieldInfo fi = tableInfo.getFieldByColumnName(pickList.getFieldName());
+                        isBasicType = fi != null ? UIHelper.isPrimitiveObjectType(fi.getDataClass()) : false;
+                    }
+                    
                     String sqlStr = buildHQL(tableInfo, type == PickListDBAdapterIFace.Type.TableField ? pickList.getFieldName() : null);
                     //log.debug(sqlStr);
                     if (StringUtils.isNotEmpty(sqlStr))
@@ -127,7 +138,8 @@ public class PickListTableAdapter extends PickListDBAdapter
                         {
                             if (type == PickListDBAdapterIFace.Type.TableField)
                             {
-                                String   formatterStr = pickList.getFormatter();
+                                TreeSet<String> values = isBasicType ? new TreeSet<String>(String.CASE_INSENSITIVE_ORDER) : null;
+                                String   formatterStr = isBasicType ? null : pickList.getFormatter();
                                 boolean  hasFormatter = StringUtils.isNotEmpty(formatterStr);
                                 for (Object dataObj : dataList)
                                 {
@@ -135,10 +147,27 @@ public class PickListTableAdapter extends PickListDBAdapter
                                     {
                                         dataObj = ((Object[])dataObj)[0];
                                     }
-                                    String valStr = hasFormatter ? String.format(formatterStr, dataObj) : dataObj.toString();
-                                    items.add(pickList.addItem(valStr, valStr));
+                                    
+                                    if (dataObj != null)
+                                    {
+                                        String valStr = hasFormatter ? String.format(formatterStr, dataObj) : dataObj.toString();
+                                        if (isBasicType)
+                                        {
+                                            values.add(valStr);
+                                        } else
+                                        {
+                                            items.add(pickList.addItem(valStr, valStr));
+                                        }
+                                    }
                                 }
                                 
+                                if (isBasicType)
+                                {
+                                    for (String v : values)
+                                    {
+                                        items.add(pickList.addItem(v, v));
+                                    }
+                                }
                             } else
                             {
                                 for (Object dataObj : dataList)
@@ -170,10 +199,10 @@ public class PickListTableAdapter extends PickListDBAdapter
                     }
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
+                    log.error(ex);
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListTableAdapter.class, ex);
-                    log.error(ex);
-                    ex.printStackTrace();
                     
                 } finally
                 {
