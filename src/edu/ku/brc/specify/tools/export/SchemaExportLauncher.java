@@ -133,13 +133,11 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                     try
                     {
                     	maps = session.getDataList(SpExportSchemaMapping.class);
-                    	Discipline disc = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                    	//XXX CollectionScoping Issue!!! Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
+                    	Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
                     	for (int m = maps.size() - 1; m >= 0; m--)
                     	{
                     		SpExportSchemaMapping map = maps.get(m);
-                    		if (!map.getSpExportSchema().getDiscipline().getId().equals(disc.getId()))
-                        	//XXX CollectionScoping Issue!!! if (!map.getCollectionMemberId().equals(coll.getId()))
+                        	if (!map.getCollectionMemberId().equals(coll.getId()))
                     		{
                     			maps.remove(m);
                     		}
