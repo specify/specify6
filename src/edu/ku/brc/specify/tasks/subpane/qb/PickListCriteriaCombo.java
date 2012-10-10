@@ -170,14 +170,73 @@ public class PickListCriteriaCombo extends JComboBox
         StringBuilder sb = new StringBuilder();
         for (PickListItemIFace sel : sels)
         {
-            String s = getValues ? (items instanceof PickListTableAdapter ? ((DataModelObjBase )sel.getValueObject()).getId().toString() : sel.getValue()) : sel.getTitle();
-            if (sb.length() != 0)
+            String s;
+			if (getValues) 
+			{
+				if (items instanceof PickListTableAdapter) 
+				{
+					Object selObj = sel.getValueObject();
+					if (selObj != null) 
+					{
+						if (selObj instanceof DataModelObjBase) 
+						{
+							DataModelObjBase dataObj = (DataModelObjBase) sel
+									.getValueObject();
+							Integer id = dataObj.getId();
+							s = id != null ? id.toString() : "";
+
+						} else if (selObj instanceof String) 
+						{
+							s = "'" + selObj.toString() + "'";
+						} else 
+						{
+							s = selObj.toString();
+						}
+					} else 
+					{
+						s = "";
+					}
+				} else 
+				{
+					s = sel.getValue();
+				}
+			} else 
+			{
+				s = sel.getTitle();
+			}
+
+            if (s != null)
             {
-                sb.append(", ");
+            	if (sb.length() != 0)
+            	{	
+            		sb.append(", ");
+            	}
+            	sb.append(s);
             }
-            sb.append(s);
         }
         return sb.toString();
+    }
+    
+    
+    /**
+     * @return true is an item whose value is null is picked
+     */
+    public boolean nullItemIsPicked() 
+    {
+    	for (PickListItemIFace sel : sels) 
+    	{
+            if (items instanceof PickListTableAdapter)
+            {
+                if (sel.getValueObject() == null)
+                {
+                	return true;
+                }
+            } else if (sel.getValue() == null)
+            {
+            	return true;
+            }
+    	}
+    	return false;
     }
     
     /**

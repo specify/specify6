@@ -142,6 +142,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected SpQueryField					queryField		= null;
 	protected SpExportSchemaItem			schemaItem      = null;
 	protected boolean						conditionForSchema = false;
+	protected boolean			            forSchema = false;
 	protected PickListDBAdapterIFace		pickList		= null;
 
 	protected FormValidator					validator;
@@ -378,7 +379,23 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final SpQueryField  queryField,
                            final SpExportSchemaItem schemaItem)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, false);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, false, true);
+    }
+
+    /**
+     * @param ownerQuery
+     * @param fieldQRI
+     * @param columnDefStr
+     * @param saveBtn
+     * @param queryField
+     */
+    public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
+                           final FieldQRI      fieldQRI, 
+                           final String        columnDefStr,
+                           final Component       saveBtn,
+                           final SpQueryField  queryField)
+    {
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, null, false, false);
     }
 
     /**
@@ -398,7 +415,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             final SpExportSchemaItem schemaItem,
             final boolean conditionForSchema)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, conditionForSchema);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, conditionForSchema, false);
     }
 
     /**
@@ -414,10 +431,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final Component       saveBtn,
                            final SpQueryField  queryField,
                            final SpExportSchemaItem schemaItem,
-                           final boolean conditionForSchema)
+                           final boolean conditionForSchema,
+                           final boolean forSchema)
     {        
         this.ownerQuery = ownerQuery;
         this.conditionForSchema = conditionForSchema;
+        this.forSchema = forSchema;
         if (this.ownerQuery.isPromptMode())
         {
             if (!conditionForSchema && schemaItem == null)
@@ -522,6 +541,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         throw new RuntimeException("Unrecognized criteria component: " + criteria.getClass());
     }
+    
     
     public void updateQueryField(final SpQueryField qField)
     {
@@ -748,7 +768,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 		else
 		{
 			isDisplayedCkbx.setVisible(false);
-			isPromptCkbx.setVisible(false);
+			//isPromptCkbx.setVisible(false);
 			//isEnforcedCkbx.setVisible(false);
 		}
     	setQueryField(qf);
@@ -892,7 +912,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
         	return true;
         }
-        return StringUtils.isNotEmpty(getCriteriaText(true).trim());
+        return StringUtils.isNotEmpty(getCriteriaText(false).trim());
     }
  
     
@@ -1126,6 +1146,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         if (hasCriteria())
         {
             boolean addNullConjunction = false;
+            boolean nullPick = criteria instanceof PickListCriteriaCombo && ((PickListCriteriaCombo)criteria).nullItemIsPicked();
         	Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
             String criteriaFormula = "";
             String operStr = operatorCBX.getSelectedItem().toString();
@@ -1297,7 +1318,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 operStr = "Like";
             }
                             
-            if (criteriaFormula.length() > 0 || fieldQRI instanceof TreeLevelQRI)
+            if (criteriaFormula.length() > 0 || nullPick || fieldQRI instanceof TreeLevelQRI)
             {
                 if (fieldQRI instanceof TreeLevelQRI)
                 {
@@ -1319,9 +1340,17 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
                 str.append(isNotCheckbox.isSelected() ? "(NOT " : "");
                 str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " ");
-                str.append(operStr);
+                if (nullPick && "=".equals(operStr))
+                {
+                	str.append(" is null ");
+                } else {
+                	str.append(operStr);
+                }
                 str.append(" ");
-                str.append(criteriaFormula);
+                if (!(nullPick && "=".equals(operStr)))
+                {
+                	str.append(criteriaFormula);
+                }
                 if (isNotCheckbox.isSelected()) 
                 {
                     if (!operStr.equals(SpQueryField.OperatorType
@@ -1332,8 +1361,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     str.append(")");
                 }
                 String result =  str.toString();
-                if (addNullConjunction || (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && conditionForSchema))
+                if (addNullConjunction 
+                		|| (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && conditionForSchema)
+                		|| (nullPick && !"=".equals(operStr)))
                 {
+                	//Currently, when the null value is picked with the IN condition, a '' entry is included in the IN list
+                	//This is not technically correct, but probably will never matter, and possibly produce more desirable 
+                	//results then the technically correct criteria 
                 	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " is null)";
                 }                
                 return result;
