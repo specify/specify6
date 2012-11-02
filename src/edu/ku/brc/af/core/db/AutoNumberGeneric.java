@@ -163,7 +163,6 @@ public class AutoNumberGeneric implements AutoNumberIFace
             if (yearPos != null)
             {
                 sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearLen+") desc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                
             }
             
             if (pos != null)
@@ -177,11 +176,14 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+posLen+") desc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
             
-            //System.err.println(sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
-                return list.get(0).toString();
+                Object dataObj = list.get(0);
+                if (dataObj != null)
+                {
+                    return dataObj.toString();
+                }
             }
             
         } catch (Exception ex)
