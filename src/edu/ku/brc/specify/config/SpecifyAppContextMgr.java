@@ -785,11 +785,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             sb.append(" AND userType is null"); //$NON-NLS-1$
         }
+        sb.append(" ORDER BY id ASC"); //$NON-NLS-1$
         
         //log.debug(sb.toString());
         
         List<?> list = sessionArg.getDataList(sb.toString());
-        if (list.size() == 1)
+        if (list.size() > 0)
         {
             SpAppResourceDir appResDir = (SpAppResourceDir)list.get(0);
             
@@ -1555,6 +1556,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             String           title     = getResourceString(L10N + ""+PERSONALDIR);
             SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, title, true);
+            //System.out.println("PERSONALDIR Dir: "+appResDir.getId()+", UT: "+appResDir.getUserType()+",  IsPers: "+appResDir.getIsPersonal()+", Disp: "+appResDir.getDisciplineType());  
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(PERSONALDIR, appResDir);
             viewSetMgrHash.put(PERSONALDIR, new Pair<String, File>(null, null));
@@ -1565,6 +1567,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             title     = getResourceString(L10N + ""+USERTYPEDIR);
             appResDir = getAppResDir(session, user, discipline, collection, userType, false, title, true);
+            //System.out.println("USERTYPEDIR Dir: "+appResDir.getId()+", UT: "+appResDir.getUserType()+",  IsPers: "+appResDir.getIsPersonal()+", Disp: "+appResDir.getDisciplineType());
             File dir  = XMLHelper.getConfigDir(folderName + File.separator + userType);
             if (dir.exists())
             {
@@ -1579,6 +1582,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             title     = getResourceString(L10N + ""+COLLECTIONDIR);
             appResDir = getAppResDir(session, user, discipline, collection, null, false, title, true);
+            //System.out.println("COLLECTIONDIR Dir: "+appResDir.getId()+", UT: "+appResDir.getUserType()+",  IsPers: "+appResDir.getIsPersonal()+", Disp: "+appResDir.getDisciplineType());
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(COLLECTIONDIR, appResDir);
             viewSetMgrHash.put(COLLECTIONDIR, new Pair<String, File>(null, null));
@@ -1589,6 +1593,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             title     = getResourceString(L10N + ""+DISCPLINEDIR);
             appResDir = getAppResDir(session, user, discipline, null, null, false, title, true);
+            //System.out.println("DISCPLINEDIR Dir: "+appResDir.getId()+", UT: "+appResDir.getUserType()+",  IsPers: "+appResDir.getIsPersonal()+", Disp: "+appResDir.getDisciplineType());
             dir       = XMLHelper.getConfigDir(folderName);
             if (dir.exists())
             {
@@ -1602,6 +1607,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             title     = getResourceString(L10N + ""+COMMONDIR);
             appResDir = getAppResDir(session, user, null, null, COMMONDIR, false, title, true);
+            //System.out.println("COMMONDIR Dir: "+appResDir.getId()+", UT: "+appResDir.getUserType()+",  IsPers: "+appResDir.getIsPersonal()+", Disp: "+appResDir.getDisciplineType());
             dir = XMLHelper.getConfigDir("common"); //$NON-NLS-1$
             if (dir.exists())
             {
@@ -1619,6 +1625,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (dir.exists())
             {
                 appResDir = createAppResourceDefFromDir(BACKSTOPDIR, dir); //$NON-NLS-1$
+                //System.out.println("appResDir Dir: "+appResDir.getId()+", UT: "+appResDir.getUserType()+",  IsPers: "+appResDir.getIsPersonal()+", Disp: "+appResDir.getDisciplineType());
                 appResDir.setUserType(BACKSTOPDIR); //$NON-NLS-1$
                 appResDir.setTitle(getResourceString(L10N + ""+BACKSTOPDIR)); //$NON-NLS-1$
                 
