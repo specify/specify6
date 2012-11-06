@@ -20,6 +20,10 @@
 package edu.ku.brc.helpers;
 
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
@@ -52,6 +56,11 @@ public class HTTPGetter implements Runnable
     protected HttpClient   httpClient = null;
     protected GetMethod    method     = null;
     protected InputStream  iStream    = null;
+    protected File         fileCache  = null;
+    
+    protected boolean      isThrowingErrors = true;
+    
+    protected HTTPGetterListener listener = null;
 
 
     /**
@@ -62,9 +71,23 @@ public class HTTPGetter implements Runnable
         this.urlStr = null;
     }
 
-    public HTTPGetter(final String urlStr, final boolean cacheFile)
+    public HTTPGetter(final String urlStr)
     {
         this.urlStr = urlStr;
+    }
+
+    public HTTPGetter(final String urlStr, final File fileCache)
+    {
+        this.urlStr    = urlStr;
+        this.fileCache = fileCache;
+    }
+
+    /**
+     * @param listener the listener to set
+     */
+    public void setListener(final HTTPGetterListener listener)
+    {
+        this.listener = listener;
     }
 
     public String getUrlStr()
@@ -75,6 +98,22 @@ public class HTTPGetter implements Runnable
     public void setUrlStr(String urlStr)
     {
         this.urlStr = urlStr;
+    }
+
+    /**
+     * @return the isThrowingErrors
+     */
+    public boolean isThrowingErrors()
+    {
+        return isThrowingErrors;
+    }
+
+    /**
+     * @param isThrowingErrors the isThrowingErrors to set
+     */
+    public void setThrowingErrors(boolean isThrowingErrors)
+    {
+        this.isThrowingErrors = isThrowingErrors;
     }
 
     public ErrorCode getStatus()
@@ -127,65 +166,121 @@ public class HTTPGetter implements Runnable
      */
     public byte[] doHTTPRequest(final String url)
     {
-        byte[] bytes = null;
-        status = ErrorCode.NoError;
+        return doHTTPRequest(url, null);
+    }
+
+    /**
+     * Performs a "generic" HTTP request and fill member variable with results
+     * use "getDigirResultsetStr" to get the results as a String
+     *
+     * @param url URL to be executed
+     * @param fileCache the file to place the results
+     * @return returns an error code
+     */
+    public byte[] doHTTPRequest(final String url, final File fileCache)
+    {
+        byte[]    bytes = null;
+        Exception excp  = null;
+        status          = ErrorCode.NoError;
 
         // Create an HttpClient with the MultiThreadedHttpConnectionManager.
         // This connection manager must be used if more than one thread will
         // be using the HttpClient.
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-        GetMethod mthod = new GetMethod(url);
+        GetMethod method = null;
         try
         {
+            method = new GetMethod(url);
+            
+            //log.debug("getting " + method.getURI()); //$NON-NLS-1$
+            httpClient.executeMethod(method);
 
-            log.debug("getting " + mthod.getURI()); //$NON-NLS-1$
-            // execute the method
-            httpClient.executeMethod(mthod);
-
-            //System.out.println("Get executed"); //$NON-NLS-1$
             // get the response body as an array of bytes
-            bytes = mthod.getResponseBody();
+            long bytesRead = 0;
+            if (fileCache == null)
+            {
+                bytes = method.getResponseBody();
+                bytesRead = bytes.length;
+                
+            } else
+            {
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileCache));
+                bytes = new byte[4096];
+                InputStream ins =  method.getResponseBodyAsStream();
+                BufferedInputStream bis = new BufferedInputStream(ins);
+                while (bis.available() > 0)
+                {
+                    int numBytes = bis.read(bytes);
+                    if (numBytes > 0)
+                    {
+                        bos.write(bytes, 0, numBytes);
+                        bytesRead += numBytes;
+                    }
+                }
+                
+                bos.flush();
+                bos.close();
+                
+                bytes = null;
+            }
 
-            log.debug(bytes.length + " bytes read"); //$NON-NLS-1$
+            log.debug(bytesRead + " bytes read"); //$NON-NLS-1$
 
         } catch (ConnectException ce)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, ce);
-            log.error("Could not make HTTP connection.  (" //$NON-NLS-1$
-                    + ce.toString() + ")"); //$NON-NLS-1$
+            excp = ce;
+            log.error(String.format("Could not make HTTP connection. (%s)", ce.toString())); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (HttpException he)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, he);
-            log.error("Http problem making request.  (" //$NON-NLS-1$
-                    + he.toString() + ")"); //$NON-NLS-1$
+            excp = he;
+            log.error(String.format("Http problem making request.  (%s)", he.toString())); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (IOException ioe)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, ioe);
-            log.error("IO problem making request.  (" + ioe.toString() //$NON-NLS-1$
-                    + ")"); //$NON-NLS-1$
+            excp = ioe;
+            log.error(String.format("IO problem making request.  (%s)", ioe.toString())); //$NON-NLS-1$
             status = ErrorCode.IOError;
 
+        } catch (java.lang.IllegalArgumentException ioe)
+        {
+            excp = ioe;
+            log.error(String.format("IO problem making request.  (%s)", ioe.toString())); //$NON-NLS-1$
+            status = ErrorCode.IOError;
+            
         } catch (Exception e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, e);
+            excp = e;
             log.error("Error: " + e); //$NON-NLS-1$
             status = ErrorCode.Error;
 
         } finally
         {
             // always release the connection after we're done
-            mthod.releaseConnection();
-            log.debug("Connection released"); //$NON-NLS-1$
+            if (isThrowingErrors && status != ErrorCode.NoError)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, excp);
+            }
+            
+            if (method != null) method.releaseConnection();
+            //log.debug("Connection released"); //$NON-NLS-1$
         }
+        
+        if (listener != null)
+        {
+            if (status == ErrorCode.NoError)
+            {
+                listener.completed(this);
+            } else
+            {
+                listener.completedWithError(this, status);
+            }
+        }
+        
         return bytes;
     }
 
@@ -223,8 +318,27 @@ public class HTTPGetter implements Runnable
     {
         //Thread me = Thread.currentThread();
 
-        doHTTPRequest(urlStr);
+        doHTTPRequest(urlStr, fileCache);
 
         stop();
+    }
+    
+    //-------------------------------------------------------------------------
+    //--
+    //-------------------------------------------------------------------------
+    public interface HTTPGetterListener
+    {
+        /**
+         * Notifies the consumer that the data has arrived ok
+         * @param getter the getter that got the data
+         */
+        public abstract void completed(HTTPGetter getter);
+
+        /**
+         * Notifies the consumer that the data was in error
+         * @param getter the getter that got the data
+         */
+        public abstract void completedWithError(HTTPGetter getter, ErrorCode errCode);
+
     }
 }
