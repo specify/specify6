@@ -1388,6 +1388,61 @@ public class DatabaseLoginPanel extends JTiledPanel
     }
     
     /**
+     * @param usrLblKey
+     * @param userNameTF
+     * @param pwdLblKey
+     * @param passwordTF
+     * @param statusLbl
+     * @param iconName
+     * @return
+     */
+    public static JPanel createLoginPanel(final String usrLblKey,
+                                          final JTextField userNameTF,
+                                          final String pwdLblKey,
+                                          final JPasswordField passwordTF,
+                                          final JLabel statusLbl,
+                                          final String iconName)
+    {
+        return createLoginPanel(usrLblKey, userNameTF, pwdLblKey, passwordTF, statusLbl, IconManager.getIcon(iconName));
+    }
+    
+    /**
+     * @param usrLblKey
+     * @param userNameTF
+     * @param pwdLblKey
+     * @param passwordTF
+     * @param statusLbl
+     * @param iconName
+     * @return
+     */
+    public static JPanel createLoginPanel(final String usrLblKey,
+                                          final JTextField userNameTF,
+                                          final String pwdLblKey,
+                                          final JPasswordField passwordTF,
+                                          final JLabel statusLbl,
+                                          final ImageIcon imgIcon)
+    {
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,10px,p,8px"));
+        
+        pb.add(UIHelper.createI18NFormLabel(usrLblKey), cc.xy(1, 1));
+        pb.add(userNameTF, cc.xy(3, 1));
+        
+        pb.add(UIHelper.createI18NFormLabel(pwdLblKey), cc.xy(1, 3));
+        pb.add(passwordTF, cc.xy(3, 3));
+        pb.add(statusLbl, cc.xyw(1, 5, 3));
+        
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+        JLabel       icon       = new JLabel(imgIcon); 
+        icon.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 2));
+        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+        outerPanel.add(icon, cc.xy(1, 1));
+        outerPanel.add(pb.getPanel(), cc.xy(3, 1));
+        
+        return outerPanel.getPanel();
+    }
+    
+    /**
      * @return a username/password pair if valid or null if canceled
      * @throws SQLException
      */
@@ -1397,27 +1452,11 @@ public class DatabaseLoginPanel extends JTiledPanel
         JPasswordField passwordTF = UIHelper.createPasswordField();
         JLabel         statusLbl  = UIHelper.createLabel("");
         
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,10px,p"));
-        
-        pb.add(UIHelper.createI18NFormLabel("IT_Username"), cc.xy(1, 1));
-        pb.add(userNameTF, cc.xy(3, 1));
-        
-        pb.add(UIHelper.createI18NFormLabel("IT_Password"), cc.xy(1, 3));
-        pb.add(passwordTF, cc.xy(3, 3));
-        pb.add(statusLbl, cc.xyw(1, 5, 3));
-        
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
-        JLabel icon = new JLabel(IconManager.getIcon("MySQLFull")); // Not DB agnostic
-        icon.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 2));
-        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
-        outerPanel.add(icon, cc.xy(1, 1));
-        outerPanel.add(pb.getPanel(), cc.xy(3, 1));
-        //outerPanel.setDefaultDialogBorder();
+        JPanel loginPanel = createLoginPanel("IT_Username", userNameTF, "IT_Password", passwordTF, statusLbl, "MySQLFull");
         
         while (true)
         {
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, outerPanel.getPanel());
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, loginPanel);
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
