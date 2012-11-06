@@ -159,6 +159,23 @@ public interface AttachmentManagerIface
     public abstract File getDirectory();
     
     /**
+     * @return true if a networked mapped drive is being used for the attachment manager. false if a Web Service is being used.
+     */
+    public abstract boolean isDiskBased();
+
+    /**
+     * @return string URI 'template' that includes symbols for substituting various parameters that can be substituted with the 
+     * appropriate values for locating the proper image. Any service or app can ask for this URL template, the Attachment Manager does not
+     * have to support all of the symbols listed below, but they may be passed in.<br>
+     * FILENAME - name of the file.<br>
+     * COLL - Collection Name  (same as in Specify)<br>
+     * DIV - Division Name (same as in Specify)<br>
+     * INST - Institution Name (same as in Specify)<br>
+     * SCALE - an integer number in pixels indicating the size of the largest side of the image. Blank for no scaling.<br>
+     */
+    public abstract String getImageAttachmentURL();
+    
+    /**
      * Perform any internal cleanup needed before shutdown.
      */
     public abstract void cleanup();

@@ -81,11 +81,12 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     private HashMap<String, String> attachNameOrigMap  = new HashMap<String, String>();
     
     // URLs
-    private String                  readURLStr  = null;
-    private String                  writeURLStr = null;
-    private String                  delURLStr   = null;
+    private String                  readURLStr    = null;
+    private String                  writeURLStr   = null;
+    private String                  delURLStr     = null;
+    private String                  fileGetURLStr = null;
     
-    private String[]                symbols = {"<coll>", "<disp>", "<div>", "<inst>"};
+    private String[]                symbols        = {"<coll>", "<disp>", "<div>", "<inst>"};
     private String[]                values  = new String[symbols.length];
     
     static
@@ -208,9 +209,9 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     {
                         delURLStr = urlStr;
                         
-                    } else 
+                    } else if (type.equals("fileget"))
                     {
-                        return false;
+                        fileGetURLStr = urlStr;
                     }
                 }
             }
@@ -909,7 +910,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#setDirectory(java.io.File)
      */
     @Override
-    public void setDirectory(File baseDir) throws IOException
+    public void setDirectory(final File baseDir) throws IOException
     {
         
     }
@@ -924,12 +925,29 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#isDiskBased()
+     */
+    @Override
+    public boolean isDiskBased()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getImageAttachmentURL()
+     */
+    @Override
+    public String getImageAttachmentURL()
+    {
+        return fileGetURLStr;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#cleanup()
      */
     @Override
     public void cleanup()
     {
-        
+        // no op
     }
-
 }

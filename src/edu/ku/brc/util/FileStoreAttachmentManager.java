@@ -500,6 +500,24 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#isDiskBased()
+     */
+    @Override
+    public boolean isDiskBased()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getImageAttachmentURL()
+     */
+    @Override
+    public String getImageAttachmentURL()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#cleanup()
      */
     public void cleanup()
