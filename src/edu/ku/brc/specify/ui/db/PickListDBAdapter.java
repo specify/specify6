@@ -255,8 +255,6 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
      */
     public void save()
     {
-log.debug("Listeners: "+getListDataListeners().length);
-
         if (needsToBeSaved)
         {
             DataProviderSessionIFace session = null;

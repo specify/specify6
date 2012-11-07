@@ -19,8 +19,13 @@
 */
 package edu.ku.brc.specify.ui.db;
 
+import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -36,6 +41,7 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -223,8 +229,64 @@ public class PickListTableAdapter extends PickListDBAdapter
      * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#addItem(java.lang.String, java.lang.String)
      */
     @Override
-    public PickListItemIFace addItem(String title, String value)
+    public PickListItemIFace addItem(final String title, final String value)
     {
-        throw new RuntimeException("This type of PickList cannot be added to");
+        // this should never happen!
+        if (pickList.getType() != PickListDBAdapterIFace.Type.TableField.value())
+        {
+            throw new RuntimeException("This type of PickList cannot be added to");
+        }
+        
+        int     sizeLimit = 50; // arbitrary size could be a pref (XXX PREF)
+        Integer sizeLimitInt = pickList.getSizeLimit();
+        if (sizeLimitInt != null)
+        {
+            sizeLimit = sizeLimitInt.intValue();
+        }
+        
+        searchablePLI.setTitle(title);
+        int index = Collections.binarySearch(items, searchablePLI);
+        if (index < 0)
+        {
+            // find oldest item and remove it
+            if (items.size() >= sizeLimit && sizeLimit > 0) 
+            {
+                PickListItemIFace oldest = null;
+                for (PickListItemIFace pli : items)
+                {
+                    if (oldest == null || pli.getTimestampCreated().getTime() < oldest.getTimestampCreated().getTime())
+                    {
+                        oldest = pli;
+                    }
+                }
+                items.remove(oldest);
+                pickList.removeItem(oldest);
+            }
+            
+            PickListItem item = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
+            items.add(item);
+            
+            if (pickList != null)
+            {
+                pickList.addItem(item);
+                item.setPickList(pickList);
+                pickList.reorder();
+            }
+            
+            Collections.sort(items);
+            
+            super.fireContentsChanged(this, 0, items.size()-1);
+            
+            for (ChangeListener cl : changeListeners)
+            {
+                cl.stateChanged(new ChangeEvent(this));
+            }
+
+            return item;
+            
+        }
+        // else
+        return items.elementAt(index);
+
     }
 }

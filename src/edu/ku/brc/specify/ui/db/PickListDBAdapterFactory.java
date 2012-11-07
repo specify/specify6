@@ -136,7 +136,7 @@ public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdap
         {
             boolean doLoad = true;
             pickList = hash.get(name);
-            if (pickList != null)
+            if (pickList != null && pickList.getId() != null)
             {
                 int version = BasicSQLUtils.getCount("SELECT Version FROM picklist WHERE PickListID = " + pickList.getId());
                 doLoad = version != pickList.getVersion();
