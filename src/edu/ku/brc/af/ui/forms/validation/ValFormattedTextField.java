@@ -506,7 +506,8 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
      */
     protected void checkForPaste(final KeyEvent e)
     {
-        if (e.getKeyCode() == pasteKeyStroke.getKeyCode())
+        if (e.getKeyCode() == pasteKeyStroke.getKeyCode() &&
+            e.getModifiers() == pasteKeyStroke.getModifiers())
         {
             String text = UIHelper.getTextFromClipboard();
             if (text != null && text.length() <= formatter.getLength())
