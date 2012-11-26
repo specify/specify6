@@ -49,6 +49,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.Scriptlet;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentGeography;
@@ -210,7 +211,7 @@ public class AgentCleanupProcessor
 
             // First get LastNames that are duplicates
             sql = "SELECT NM, CNT FROM (SELECT NM, COUNT(NM) CNT FROM (SELECT LOWER(CONCAT(IFNULL(LastName, ''), ' ', IFNULL(FirstName, ''),  ' ', IFNULL(MiddleInitial, ''))) NM FROM agent " +
-            		"WHERE DivisionID = DIVID AND SpecifyUserID IS NULL) T0 GROUP BY NM) T1 WHERE CNT > 1 ORDER BY CNT DESC";
+            		"WHERE DivisionID = DIVID AND SpecifyUserID IS NULL) T0 GROUP BY NM) T1 WHERE CNT > 1 ORDER BY CNT DESC, NM ASC";
             sql =  QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             System.out.println(sql);
             int i = 0;
@@ -369,6 +370,8 @@ public class AgentCleanupProcessor
      */
     private void checkForAddrs(final FindItemInfo fii)
     {
+        System.out.println("\ncheckForAddrs (async)");
+
         SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
         {
             boolean hasAddrs = false;
@@ -427,39 +430,43 @@ public class AgentCleanupProcessor
                        
                        mrc.loadData();
                        
-                       mrcDlg = new MultipleRecordCleanupDlg(mrc, "Agent Cleanup");
-                       mrcDlg.createUI();
-                       if (!mrcDlg.isSingle())
+                       if (mrc.hasColmnsOfDataThatsDiff() || mrc.hasKidsDataThatsDiff())
                        {
-                           mrcDlg.pack();
-                           mrcDlg.setSize(800, 500);
-                           UIHelper.centerWindow(mrcDlg);
-                           mrcDlg.toFront();
-                           prgDlg.toBack();
-                           mrcDlg.setVisible(true);
-                           prgDlg.toFront();
-                           isContinuing = !mrcDlg.isCancelled();
-                           isSkipping   = mrcDlg.getBtnPressed() == CustomDialog.APPLY_BTN;
+                           mrcDlg = new MultipleRecordCleanupDlg(mrc, "Agent Cleanup");
+                           mrcDlg.createUI();
+                           if (!mrcDlg.isSingle())
+                           {
+                               mrcDlg.pack();
+                               mrcDlg.setSize(800, 500);
+                               UIHelper.centerWindow(mrcDlg);
+                               mrcDlg.toFront();
+                               prgDlg.toBack();
+                               mrcDlg.setVisible(true);
+                               prgDlg.toFront();
+                               isContinuing = !mrcDlg.isCancelled();
+                               isSkipping   = mrcDlg.getBtnPressed() == CustomDialog.APPLY_BTN;
+                           }
+                           
+                           if (isContinuing)
+                           {
+                               MergeInfo       mainItem = mrcDlg.getMainMergedInfo();
+                               List<MergeInfo> kidItems = mrcDlg.getKidsMergedInfo();
+                               if (!cleanupMerges(Agent.getClassTableId(), mainItem, kidItems))
+                               {
+                                   String msg = String.format("There was an error cleaning up addresses for agent '%s'", fii.getValue().toString());
+                                   showError(msg);
+                                   log.error(msg);
+                                   isContinuing = false;
+                               }
+                           }
+                       } else
+                       {
+                           isContinuing = true;
                        }
-                       
                    } catch (Exception ex)
                    {
                        ex.printStackTrace();
                    }
-                   
-                   if (isContinuing)
-                   {
-                       MergeInfo       mainItem = mrcDlg.getMainMergedInfo();
-                       List<MergeInfo> kidItems = mrcDlg.getKidsMergedInfo();
-                       if (!cleanupMerges(Agent.getClassTableId(), mainItem, kidItems))
-                       {
-                           String msg = String.format("There was an error cleaning up addresses for agent'%s'", fii.getValue().toString());
-                           showError(msg);
-                           log.error(msg);
-                           isContinuing = false;
-                       }
-                   }
-
                    
                    if (isContinuing)
                    {
@@ -489,11 +496,19 @@ public class AgentCleanupProcessor
                                   final MergeInfo       mainItem,
                                   final List<MergeInfo> kidItems)
     {
+        /*boolean cont = false;
+        if (cont)
+        {
+            return false;
+        }*/
+        
         DBTableInfo parentTI = DBTableIdMgr.getInstance().getInfoById(parentTblId);
+        System.out.println("ParentTbl: "+parentTI.getTitle());
         
         // Find Merged into record (Master)
         MergeInfoItem intoRec = mainItem.getMergeInto();
-        if (intoRec == null)
+        List<MergeInfoItem> fromRec = mainItem.getMergeFrom();
+        if (intoRec == null && fromRec.size() > 0)
         {
             String msg = String.format("No 'merged into' record for %s", parentTI.getTitle());
             showError(msg);
@@ -505,6 +520,7 @@ public class AgentCleanupProcessor
         for (MergeInfo kidMergeInfo : kidItems)
         {
             DBTableInfo ti = kidMergeInfo.getTblInfo();
+            System.out.println("KidTbl: "+parentTI.getTitle());
             
             for (MergeInfoItem mi : kidMergeInfo.getMergeNotIncluded())
             {
@@ -521,8 +537,7 @@ public class AgentCleanupProcessor
             
             for (MergeInfoItem mi : kidMergeInfo.getMergeIncluded())
             {
-                String sql = String.format("UPDATE %s SET %s=%d WHERE %s = %d", 
-                        ti.getName(), parentTI.getIdColumnName(), intoRec.getId(), ti.getIdColumnName(), mi.getId());
+                String sql = String.format("UPDATE %s SET %s=%d WHERE %s = %d", ti.getName(), parentTI.getIdColumnName(), intoRec.getId(), ti.getIdColumnName(), mi.getId());
                 logSQL(sql);
                 if (BasicSQLUtils.update(sql) != 1)
                 {
@@ -534,6 +549,8 @@ public class AgentCleanupProcessor
             }
         }
         
+        // ZZZ 
+        /*
         DBTableInfo ti = mainItem.getTblInfo();
         for (MergeInfoItem mi : mainItem.getMergeFrom())
         {
@@ -546,7 +563,7 @@ public class AgentCleanupProcessor
                 log.error(msg);
                 return false;
             }
-        }
+        }*/
         
         //outputRows[2].append("Removed Address: "+addrStr+"<BR>");
         //outputRows[2].append("Updated Address: "+getAddrStr(ai.id)+"<BR>");
@@ -745,11 +762,11 @@ public class AgentCleanupProcessor
         switch (tblId)
         {
             // Has Role
-            case  12: otherFld  = "AccessionID";break;
-            case  19: otherFld  = "BorrowID";break;
-            case  35: otherFld  = "DeaccessionID";break;
-            case  53: otherFld  = "LoanID";break;
-            case  133: otherFld = "GiftID";break;
+            case  12: otherFld  = "AccessionID";   break;
+            case  19: otherFld  = "BorrowID";      break;
+            case  35: otherFld  = "DeaccessionID"; break;
+            case  53: otherFld  = "LoanID";        break;
+            case  133: otherFld = "GiftID";        break;
             
             // No Role
             case  30: otherFld = "CollectingEventID";break;
@@ -816,7 +833,7 @@ public class AgentCleanupProcessor
      */
     private void logSQL(final String sql)
     {
-        //System.out.println(sql);
+        System.out.println(sql);
     }
     
     /**
@@ -824,6 +841,8 @@ public class AgentCleanupProcessor
      */
     private void doProcessMerge(final FindItemInfo fii)
     {
+        System.out.println("\ndoProcessMerge");
+        
         boolean isError  = false;
         int     cnt      = 1;
         String  inClause = fii.getInClause(false);
@@ -914,7 +933,7 @@ public class AgentCleanupProcessor
 
         if (!isError)
         {
-            String sql = String.format("DELETE FROM Agent WHERE AgentID IN %s", inClause);
+            String sql = String.format("DELETE FROM agent WHERE AgentID IN %s", inClause);
             logSQL(sql);
             if (doUpdates)
             {

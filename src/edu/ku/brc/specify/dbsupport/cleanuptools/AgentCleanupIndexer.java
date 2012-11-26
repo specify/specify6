@@ -211,7 +211,7 @@ public class AgentCleanupIndexer extends LuceneHelperBase
             System.out.println(sql);
             
             Vector<Object[]> rows = query(sql);
-            if (rows == null || rows.size() == 0)
+            if (rows == null || rows.size() < 2)
             {
                 isQuitting = true;
                 return null;

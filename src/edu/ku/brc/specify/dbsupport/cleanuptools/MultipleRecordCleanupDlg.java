@@ -25,11 +25,16 @@ import java.awt.HeadlessException;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -80,10 +85,17 @@ public class MultipleRecordCleanupDlg extends CustomDialog
         
         super.createUI();
         
+        JLabel      lbl  = UIHelper.createLabel(mrc.getTitle(), SwingConstants.CENTER);
         JTabbedPane pane = new JTabbedPane();
         
+        JPanel localPanel = new JPanel(new BorderLayout());
+        localPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 4, 8));
+        localPanel.add(lbl, BorderLayout.NORTH);
+        localPanel.add(pane, BorderLayout.CENTER);
+        
         System.out.println(mrc.getNumColsWithData());
-        if (mrc.getNumColsWithData() > 0)
+        boolean hasMasterPanel = mrc.getNumColsWithData() > 0;
+        if (hasMasterPanel)
         {
             mrcPanel = new MultipleRecordPanel(mrc);
             mrcPanel.createUI();
@@ -100,19 +112,31 @@ public class MultipleRecordCleanupDlg extends CustomDialog
         
         for (MultipleRecordComparer mrcKid : mrc.getKids())
         {
-            if (mrcKid.hasColmnsOfData())
+            if (mrcKid.hasColmnsOfDataThatsDiff())
             {
                 MultipleRecordPanel kidPanel = new MultipleRecordPanel(mrcKid);
                 kidPanel.setSingleRowIncluded(mrcKid.isSingleRowIncluded());
                 kidPanel.createUI();
                 kidPanels.add(kidPanel);
+                
+                if (!hasMasterPanel)
+                {
+                    kidPanel.setChangeListener(new ChangeListener()
+                    {
+                        @Override
+                        public void stateChanged(ChangeEvent arg0)
+                        {
+                            okBtn.setEnabled(true); // XXX this needs to check to make sure at least one item is checked
+                        }
+                    });
+                }
                 pane.addTab(mrcKid.getTblInfo().getTitle(), kidPanel);
             }
         }
         
         okBtn.setEnabled(false);
         
-        contentPanel = pane;
+        contentPanel = localPanel;
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         pack();
     }
@@ -122,7 +146,11 @@ public class MultipleRecordCleanupDlg extends CustomDialog
      */
     public MergeInfo getMainMergedInfo()
     {
-        return new MergeInfo(true, true, mrcPanel.tblInfo, mrcPanel.getMergeInfo());
+        if (mrcPanel != null)
+        {
+            return new MergeInfo(true, true, mrcPanel.tblInfo, mrcPanel.getMergeInfo());
+        } 
+        return null;
     }
     
     /**

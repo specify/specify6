@@ -54,8 +54,8 @@ public class MultipleRecordComparer
     protected FindItemInfo                fii;
     
     protected int                         numColsWithData  = 0;
-    protected boolean                     hasColmnsOfData  = false;
-    protected boolean                     hasKidsData      = false;
+    protected boolean                     hasColmnsOfDataThatsDiff  = false;
+    protected boolean                     hasKidsDataThatsDiff      = false;
     
     protected boolean                     isSingleRowIncluded = false;
     
@@ -164,6 +164,8 @@ public class MultipleRecordComparer
      */
     public boolean loadData()
     {
+        columns.clear();
+        
         int numSQLCols = 0;
         for (DisplayColInfo dci : displayCols)
         {
@@ -358,8 +360,8 @@ public class MultipleRecordComparer
                 }
             }
             
-            hasColmnsOfData = numColsWithData > 0;
-            if (hasColmnsOfData)
+            hasColmnsOfDataThatsDiff = numColsWithData > 0;
+            if (hasColmnsOfDataThatsDiff)
             {
                 numColsWithData += 2; // For IsIncluded and IdColumn
                 if (isParent) numColsWithData++;
@@ -392,15 +394,16 @@ public class MultipleRecordComparer
             }
         }
         
-        /*for (MultipleRecordComparer mrc : kids)
+        hasKidsDataThatsDiff = false;
+        for (MultipleRecordComparer mrc : kids)
         {
             if (mrc.loadData())
             {
-                hasKidsData = true;
+                hasKidsDataThatsDiff = true;
             }
-        }*/
+        }
         
-        return hasColmnsOfData;
+        return hasColmnsOfDataThatsDiff;
     }
     
     /**
@@ -499,7 +502,7 @@ public class MultipleRecordComparer
                 return  fmtObj != null ? fmtObj.toString() : displayObj.getIdentityTitle();
             }
         }
-        return null;
+        return fii.toString();
     }
 
     /**
@@ -513,17 +516,17 @@ public class MultipleRecordComparer
     /**
      * @return the hasColmnsOfData
      */
-    public boolean hasColmnsOfData()
+    public boolean hasColmnsOfDataThatsDiff()
     {
-        return hasColmnsOfData;
+        return hasColmnsOfDataThatsDiff;
     }
 
     /**
      * @return the hasKidsData
      */
-    public boolean hasKidsData()
+    public boolean hasKidsDataThatsDiff()
     {
-        return hasKidsData;
+        return hasKidsDataThatsDiff;
     }
 
     /**
