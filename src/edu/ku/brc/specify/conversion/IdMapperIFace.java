@@ -87,4 +87,10 @@ public interface IdMapperIFace
      * Removes the table.
      */
     public abstract void reset();
+    
+    /**
+     * @param newId
+     * @return
+     */
+    public abstract Integer reverseGet(final Integer newId);
 }

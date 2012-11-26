@@ -545,6 +545,7 @@ public class IdHashMapper implements IdMapperIFace
      * @param newId
      * @return the OldID
      */
+    @Override
     public Integer reverseGet(final Integer newId)
     {
         if (newId == null )
