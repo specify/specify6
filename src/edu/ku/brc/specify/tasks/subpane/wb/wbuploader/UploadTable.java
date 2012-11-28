@@ -4854,27 +4854,25 @@ public class UploadTable implements Comparable<UploadTable>
     protected List<UploadField> getBlankFields(int blankSeq, int row, UploadData uploadData)
     {
 		List<UploadField> result = new LinkedList<UploadField>();
-    	for (UploadField blankSeqFld : uploadFields.get(blankSeq))
-		{
-			if (blankSeqFld.getIndex() != -1)
-			{
-				result.add(blankSeqFld);
-			}            			
-		}
-		
-		//Set<Class<?>> pts = getSequedParentClasses();
-		for (Vector<ParentTableEntry> ptes : parentTables)
-		{
-			for (ParentTableEntry pte : ptes)
-			{
-				if (pte.getImportTable().isSequenced)
-//				if (pts.contains(pte.getImportTable().getTblClass()))
-				{
-					result.addAll(pte.getImportTable().getBlankFields(blankSeq, row, uploadData));
+		if (blankSeq < uploadFields.size()) {
+			for (UploadField blankSeqFld : uploadFields.get(blankSeq)) {
+				if (blankSeqFld.getIndex() != -1) {
+					result.add(blankSeqFld);
+				}
+			}
+
+			// Set<Class<?>> pts = getSequedParentClasses();
+			for (Vector<ParentTableEntry> ptes : parentTables) {
+				for (ParentTableEntry pte : ptes) {
+					if (pte.getImportTable().isSequenced)
+					// if (pts.contains(pte.getImportTable().getTblClass()))
+					{
+						result.addAll(pte.getImportTable().getBlankFields(
+								blankSeq, row, uploadData));
+					}
 				}
 			}
 		}
-		
 		return result;
     }
     
@@ -4906,7 +4904,7 @@ public class UploadTable implements Comparable<UploadTable>
 					if (pte.getImportTable().isSequenced)
 //					if (parentClasses.contains(pte.getImportTable().getTblClass()))
 					{
-						if (!pte.getImportTable().isBlankRow(row, uploadData, seq))
+						if (!pte.getImportTable().isBlankSequence(blank, uploadData, row, seq))
 						{
 							return false;
 						}
