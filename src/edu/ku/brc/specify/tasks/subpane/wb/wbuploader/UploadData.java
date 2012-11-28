@@ -82,7 +82,7 @@ public class UploadData
     	}
     	
     	WorkbenchRow wbrow = getWbRow(row);
-    	for (int c = 0; c < getCols(); c++)
+    	for (int c = 0; c < wbrow.getItems().size(); c++)
     	{
     		if (!StringUtils.isBlank(wbrow.getData(c)))
     		{
