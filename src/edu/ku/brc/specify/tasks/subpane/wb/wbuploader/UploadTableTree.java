@@ -23,6 +23,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,6 +49,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -71,7 +73,7 @@ public class UploadTableTree extends UploadTable
     protected TreeDefIface<?, ?, ?> treeDef;
     protected boolean incrementalNodeNumberUpdates = false;
     protected boolean allowUnacceptedMatches = true;
-    
+    protected List<UploadField> nameFields = null;
     
 
 	/**
@@ -147,7 +149,77 @@ public class UploadTableTree extends UploadTable
         throw new UploaderException(getResourceString("WB_UPLOAD_MISSING_TREE_DEF") + " (" + tblClass.getSimpleName() + ")", UploaderException.ABORT_IMPORT);
     }    
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shouldEnforceNonNullConstraint(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData, int)
+     */
+    @Override
+	protected boolean shouldEnforceNonNullConstraint(int row,
+			UploadData uploadData, int seq) {
+		boolean result = super.shouldEnforceNonNullConstraint(row, uploadData, seq);
+		if (!result) 
+		{
+			result = parentsAreBlank(row, uploadData) && !childrenAreBlank(row, uploadData);
+		}
+		return result;
+	}
+
     /**
+     * @param row
+     * @param uploadData
+     * @return
+     */
+    protected boolean childrenAreBlank(int row, UploadData uploadData)
+    {
+    	boolean result = false;
+    	if (!child.isAllBlank(row, uploadData))
+    	{
+    		result = false;
+    	} else
+    	{
+    		result = child.childrenAreBlank(row, uploadData);
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param row
+     * @param uploadData
+     * @return
+     */
+    protected boolean parentsAreBlank(int row, UploadData uploadData)
+    {
+    	boolean result = getParent() == null;
+    	if (!result)
+    	{
+    		if (!getParent().isAllBlank(row, uploadData))
+    		{
+    			result = false;
+    		} else
+    		{
+    			result = getParent().parentsAreBlank(row, uploadData);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param row
+     * @param uploadData
+     * @return
+     */
+    protected boolean isAllBlank(int row, UploadData uploadData)
+    {
+    	for (Pair<Boolean, Boolean> b : blankness(row, uploadData))
+    	{
+    		if (!b.getFirst()) 
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+	/**
      * @return TreeDefItem corresponding to tblClass and rank.
      * @throws UploaderException
      */
@@ -955,16 +1027,9 @@ public class UploadTableTree extends UploadTable
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#validateRowValues(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData, java.util.Vector)
-     */
-    @Override
-    public void validateRowValues(int row,
-                                     UploadData uploadData,
-                                     Vector<UploadTableInvalidValue> invalidValues)
+    List<Pair<Boolean, Boolean>> blankness(int row, UploadData uploadData)
     {
-        super.validateRowValues(row, uploadData, invalidValues);
-        //check that the "name" (currently the 'main' field for all specify trees) is not blank or that all other fields are.
+    	List<Pair<Boolean, Boolean>> result = new ArrayList<Pair<Boolean,Boolean>>();
         for (Vector<UploadField> flds : uploadFields)
         {
             boolean nameBlank = true;
@@ -988,12 +1053,87 @@ public class UploadTableTree extends UploadTable
                     }
                 }
             }
+            result.add(new Pair<Boolean,Boolean>(allBlank, nameBlank));
+        }
+    	return result;
+    }
+    
+    protected UploadField getNameField(int seq)
+    {
+    	if (nameFields == null) 
+    	{
+    		nameFields = new ArrayList<UploadField>();
+            for (Vector<UploadField> flds : uploadFields)
+            {
+                for (UploadField fld : flds)
+                {
+                    if (fld.getField().getName().equalsIgnoreCase("name"))
+                    {
+                        nameFields.add(fld);
+                        break;
+                    }
+                }
+            }
+    	}
+    	if (seq >= nameFields.size())
+    	{
+    		return null;
+    	}
+    	return nameFields.get(seq);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#validateRowValues(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData, java.util.Vector)
+     */
+    @Override
+    public void validateRowValues(int row,
+                                     UploadData uploadData,
+                                     Vector<UploadTableInvalidValue> invalidValues)
+    {
+        super.validateRowValues(row, uploadData, invalidValues);
+        //check that the "name" (currently the 'main' field for all specify trees) is not blank or that all other fields are.
+        List<Pair<Boolean, Boolean>> blankity = blankness(row, uploadData);
+        int seq = 0;
+        for (Pair<Boolean, Boolean> b : blankity)
+        {
+        	boolean allBlank = b.getFirst();
+        	boolean nameBlank = b.getSecond();
             if (nameBlank && !allBlank)
             {
-                invalidValues.add(new UploadTableInvalidValue(null,
-                        this, mainFld, row, new Exception(getResourceString("WB_UPLOAD_INVALID_EMPTY_CELL"))));
-            }
+            	invalidValues.add(new UploadTableInvalidValue(null,
+                        this, getNameField(seq), row, new Exception(getResourceString("WB_UPLOAD_INVALID_EMPTY_CELL"))));
+            }        	
+            seq++;
         }
+//        for (Vector<UploadField> flds : uploadFields)
+//        {
+//            boolean nameBlank = true;
+//            boolean allBlank = true;
+//            UploadField mainFld = null;
+//            for (UploadField fld : flds)
+//            {
+//                if (fld.getField().getName().equalsIgnoreCase("name"))
+//                {
+//                    mainFld = fld;
+//                }
+//                if (fld.getIndex() != -1)
+//                {
+//                    if (!StringUtils.isEmpty(uploadData.get(row, fld.getIndex())))
+//                    {
+//                        allBlank = false;
+//                        if (fld == mainFld)
+//                        {
+//                            nameBlank = false;
+//                        }
+//                    }
+//                }
+//            }
+//            if (nameBlank && !allBlank)
+//            {
+//                invalidValues.add(new UploadTableInvalidValue(null,
+//                        this, mainFld, row, new Exception(getResourceString("WB_UPLOAD_INVALID_EMPTY_CELL"))));
+//            }
+//        }
     }
 
     /* (non-Javadoc)
