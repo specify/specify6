@@ -218,6 +218,8 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
                 pickList.reorder();
             }
             Collections.sort(items);
+            
+            final int newItemInx = items.indexOf(item);
 
             if (doAutoSaveOnAdd)
             {
@@ -233,6 +235,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
                     {
                         cl.stateChanged(new ChangeEvent(PropertiesPickListAdapter.this));
                     }
+                    PropertiesPickListAdapter.this.comboBox.getComboBox().setSelectedIndex(newItemInx);
                 }
             });
             
