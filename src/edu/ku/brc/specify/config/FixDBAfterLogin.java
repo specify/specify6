@@ -61,6 +61,7 @@ import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -129,6 +130,12 @@ public class FixDBAfterLogin
     {
     	update("update workbenchtemplate t inner join workbench w on w.workbenchtemplateid = t.workbenchtemplateid set t.SpecifyUserID = w.SpecifyUserID");
     	AppPreferences.getGlobalPrefs().putBoolean("FixedUnMatchedWBSpecifyUserIDs", true);
+    }
+    
+    public static void fixQueryOperators()
+    {
+    	QueryTask.fixOperatorStorageForAllQueries();
+    	AppPreferences.getGlobalPrefs().putBoolean("FixedSpQueryOperators", true);
     }
     
     /**

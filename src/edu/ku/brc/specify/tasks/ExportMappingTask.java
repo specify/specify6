@@ -70,8 +70,8 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ColorWrapper;
@@ -79,6 +79,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -1170,11 +1171,11 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#saveImportedQueries(java.util.List)
 	 */
 	@Override
-	protected boolean saveImportedQueries(List<SpQuery> queriesList) 
+	protected boolean saveImportedQueries(List<Pair<SpQuery, Boolean>> queriesList) throws Exception
 	{
-		for (SpQuery q : queriesList)
+		for (Pair<SpQuery, Boolean> q : queriesList)
 		{
-			SpExportSchemaMapping m = q.getMapping();
+			SpExportSchemaMapping m = q.getFirst().getMapping();
 			//assuming m is not null...
 			
 			for (SpExportSchema e : m.getSpExportSchemas())
@@ -1197,8 +1198,12 @@ public class ExportMappingTask extends QueryTask
 				}
 			}
 			
-			m.setMappingName(q.getName()); //assuming q already got a unique name and that mapping name==query name always
-			if (!DataModelObjBase.saveWithError(true, q, m))
+			m.setMappingName(q.getFirst().getName()); //assuming q already got a unique name and that mapping name==query name always
+        	if (q.getSecond())
+        	{
+        		QueryTask.fixOperatorStorageForQuery(q.getFirst());
+        	}
+			if (!DataModelObjBase.saveWithError(true, q.getFirst(), m))
 			{
 				return false;
 			}

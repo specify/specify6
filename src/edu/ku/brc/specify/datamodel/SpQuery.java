@@ -42,6 +42,8 @@ import javax.persistence.Transient;
 import org.dom4j.Element;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * @author rod
  *
@@ -413,6 +415,8 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         addAttr(sb, "isFavorite", isFavorite);
         addAttr(sb, "named", named);
         addAttr(sb, "ordinal", ordinal);
+        addAttr(sb, "appversion", UIRegistry.getAppVersion());
+        
         sb.append(">\r\n");
         
         if (sqlStr != null)

@@ -563,7 +563,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
             
             qField.setSortType((byte)sortCheckbox.getState());
-            qField.setOperStart((byte)operatorCBX.getSelectedIndex());
+            
+            qField.setOperStart(((SpQueryField.OperatorType)operatorCBX.getSelectedItem()).getOrdinal());
+           
             qField.setStartValue(getCriteriaText(false));
             String lbl = this.getLabel();
             if (fieldQRI instanceof RelQRI)
@@ -644,7 +646,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 isNotCheckbox.setSelected(queryField.getIsNot());
                 try
                 {
-                	operatorCBX.setSelectedIndex(queryField.getOperStart());
+
+                	OperatorType o = OperatorType.values()[queryField.getOperStart()];
+                	operatorCBX.setSelectedItem(o);
                 } catch(IllegalArgumentException ex)
                 {
                 	log.error("unable to set operator index for " + queryField.getStringId() + ": " + ex);
@@ -781,25 +785,36 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         validator.reset(true);
     }
 
-    
     /**
      * @param field
      * @return list of comparators appropriate for field.
      */
     protected SpQueryField.OperatorType[] getComparatorList(final FieldQRI field)
     {
-        if (fieldQRI ==  null)
+        if (field ==  null)
         {
             return new SpQueryField.OperatorType[]{};
         }
-        if (pickList != null)
+        return getComparatorList(field instanceof TreeLevelQRI, pickList != null, field.getFieldInfo(),
+        		field.getDataClass());
+    }    
+
+    
+    /**
+     * @param field
+     * @return list of comparators appropriate for field.
+     */
+    public static SpQueryField.OperatorType[] getComparatorList(boolean isTreeLevel, boolean isPickList, 
+    		DBFieldInfo fieldInfo, Class<?> dataClass)
+    {
+        if (isPickList)
         {
             return new SpQueryField.OperatorType[] {
                     SpQueryField.OperatorType.EQUALS,
                     SpQueryField.OperatorType.IN,
                     SpQueryField.OperatorType.EMPTY};
         }
-        if (fieldQRI instanceof TreeLevelQRI)
+        if (isPickList)
         {
             return new SpQueryField.OperatorType[] {
                 SpQueryField.OperatorType.EQUALS,
@@ -808,10 +823,10 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
-        if (field.getFieldInfo() != null && field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
-                && field.getTableInfo().getClassObj().equals(CollectionObject.class))
+        if (fieldInfo != null && fieldInfo.getName().equalsIgnoreCase("catalognumber") 
+                && fieldInfo.getTableInfo().getClassObj().equals(CollectionObject.class))
         {
-            if (field.getFieldInfo().getFormatter() != null && field.getFieldInfo().getFormatter().isNumeric())
+            if (fieldInfo.getFormatter() != null && fieldInfo.getFormatter().isNumeric())
             {
             	return getComparatorListForClass(Number.class);
             }
@@ -828,7 +843,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             return result;
         }
         //else
-        return getComparatorListForClass(field.getDataClass());
+        return getComparatorListForClass(dataClass);
     }
     
     /**

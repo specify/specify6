@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.FileDialog;
@@ -29,6 +30,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -71,6 +74,8 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -91,18 +96,21 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
@@ -1844,20 +1852,29 @@ public class QueryTask extends BaseTask
      * @param topNode
      * @return list queries defined in file.
      */
-    protected static Vector<SpQuery> getQueriesFromFile(final String filePath, final String topNode)
+    protected static Vector<Pair<SpQuery, Boolean>> getQueriesFromFile(final String filePath, final String topNode)
     {
-        Vector<SpQuery> queries = new Vector<SpQuery>();
+        Vector<Pair<SpQuery, Boolean>> queries = new Vector<Pair<SpQuery, Boolean>>();
         try
         {
             Element root = XMLHelper.readFileToDOM4J(new File(filePath));
             for (Object obj : root.selectNodes(topNode))
             {
                 Element el = (Element)obj;
+                boolean fixOps = getAttr(el, "appversion", null) == null;
                 SpQuery query = new SpQuery();
                 query.initialize();
                 query.fromXML(el);
                 query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-                queries.add(query);
+                queries.add(new Pair<SpQuery, Boolean>(query, fixOps){
+                	/* (non-Javadoc)
+                	 * @see edu.ku.brc.util.Pair#toString()
+                	 */
+                	@Override
+                	public String toString() {
+                		return getFirst().toString();
+                	}
+                });
             }
             return queries;
         } catch (Exception ex)
@@ -1875,13 +1892,13 @@ public class QueryTask extends BaseTask
      * 
      * Modifies imported query names if necessary to ensure uniqueness.
      */
-    protected static void adjustImportedQueryNames(List<SpQuery> importedQueries, List<String> existingQueries)
+    protected static void adjustImportedQueryNames(List<Pair<SpQuery, Boolean>> importedQueries, List<String> existingQueries)
     {
     	Set<String> names = new HashSet<String>();
     	names.addAll(existingQueries);
-    	for (SpQuery query : importedQueries)
+    	for (Pair<SpQuery, Boolean> query : importedQueries)
         {
-            String origName = query.getName();
+            String origName = query.getFirst().getName();
             int    cnt      = 0;
             String qName    = origName;
             while (names.contains(qName))
@@ -1889,7 +1906,7 @@ public class QueryTask extends BaseTask
                 cnt++;
                 qName = origName + cnt;
             }
-            query.setName(qName);
+            query.getFirst().setName(qName);
             names.add(qName);
         }
     }
@@ -1900,9 +1917,9 @@ public class QueryTask extends BaseTask
      * 
      * imports all queries from file
      */
-    protected static boolean importQueries(final String filePath)
+    protected static boolean importQueries(final String filePath) throws Exception
     {
-    	Vector<SpQuery> queries = getQueriesFromFile(filePath, "/queries/query");
+    	Vector<Pair<SpQuery, Boolean>> queries = getQueriesFromFile(filePath, "/queries/query");
         Vector<String> names = new Vector<String>(); 
         DataProviderSessionIFace session = null;
         try
@@ -1921,6 +1938,13 @@ public class QueryTask extends BaseTask
         	}
         }
         adjustImportedQueryNames(queries, names);
+        for (Pair<SpQuery, Boolean> q : queries)
+        {
+        	if (q.getSecond())
+        	{
+        		fixOperatorStorageForQuery(q.getFirst());
+        	}
+        }
         return DataModelObjBase.saveWithError(true, queries);
     }
     
@@ -1932,6 +1956,8 @@ public class QueryTask extends BaseTask
         UsageTracker.incrUsageCount("QB.IMPORT");
         String path = AppPreferences.getLocalPrefs().get(XML_PATH_PREF, null);
         
+        try
+        {
         FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), "Open", FileDialog.LOAD);
         if (path != null)
         {
@@ -1948,9 +1974,8 @@ public class QueryTask extends BaseTask
         path = dirStr + fileName;
         AppPreferences.getLocalPrefs().put(XML_PATH_PREF, path);
         
-        Vector<SpQuery> queries = getQueriesFromFile(path, getTopLevelNodeSelector());
-        
-        ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getMostRecentWindow(),
+        Vector<Pair<SpQuery, Boolean>> queries = getQueriesFromFile(path, getTopLevelNodeSelector());
+        ToggleButtonChooserDlg<Pair<SpQuery, Boolean>> dlg = new ToggleButtonChooserDlg<Pair<SpQuery, Boolean>>((Frame)UIRegistry.getMostRecentWindow(),
                 "QY_IMPORT_QUERIES",
                 "QY_SEL_QUERIES_IMP",
                 queries,
@@ -1961,7 +1986,7 @@ public class QueryTask extends BaseTask
         dlg.setUseScrollPane(true);
         dlg.setHelpContext("QBImport");
         UIHelper.centerAndShow(dlg);
-        List<SpQuery> queriesList = dlg.getSelectedObjects();
+        List<Pair<SpQuery, Boolean>> queriesList = dlg.getSelectedObjects();
         if (queriesList == null || queriesList.size() == 0)
         {
             return;
@@ -1976,17 +2001,23 @@ public class QueryTask extends BaseTask
         
         if (saveImportedQueries(queriesList))
         {
-            for (SpQuery query : queriesList)
+            for (Pair<SpQuery, Boolean> query : queriesList)
             {
                 RecordSet rs = new RecordSet();
                 rs.initialize();
-                rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
-                rs.addItem(query.getSpQueryId());
+                rs.set(query.getFirst().getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
+                rs.addItem(query.getFirst().getSpQueryId());
                 addToNavBox(rs);
             }
             
             navBox.validate();
             navBox.repaint();  
+        }
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
+            ex.printStackTrace();
         }
     }
     
@@ -1995,10 +2026,23 @@ public class QueryTask extends BaseTask
      * 
      * @return true if the queries are successfully saved to the db.
      */
-    protected boolean saveImportedQueries(List<SpQuery> queriesList)
+    protected boolean saveImportedQueries(List<Pair<SpQuery, Boolean>> queriesList) throws Exception
     {
-    	return DataModelObjBase.saveWithError(true, queriesList);
+        for (Pair<SpQuery, Boolean> q : queriesList)
+        {
+        	if (q.getSecond())
+        	{
+        		fixOperatorStorageForQuery(q.getFirst());
+        	}
+        }
+    	List<SpQuery> queries = new ArrayList<SpQuery>();
+    	for (Pair<SpQuery, Boolean> q : queriesList)
+    	{
+    		queries.add(q.getFirst());
+    	}
+    	return DataModelObjBase.saveWithError(true, queries);
     }
+    
     /**
      * @return id for usage tracker
      */
@@ -2351,4 +2395,96 @@ public class QueryTask extends BaseTask
         }
     }
     
+    /**
+     * @param q
+     */
+    public static void fixOperatorStorageForQuery(SpQuery q) throws Exception
+    {
+    	for (SpQueryField fld : q.getFields())
+    	{
+    		try
+    		{
+    			fixOperatorStorageForField(fld);
+    		} catch (Exception e)
+    		{
+    			throw e;
+    		}
+    	}
+    }
+    
+    /**
+     * @param qFld
+     * @throws Exception
+     */
+    public static void fixOperatorStorageForField(SpQueryField qFld) throws Exception
+    {
+    	String[] idParts = qFld.getStringId().split(",");
+    	String idFinal = idParts[idParts.length - 1];
+    	String[] fldParts = idFinal.split("\\.");
+    	String tableName = fldParts[1];
+    	String fieldName = fldParts[2];
+    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tableName);
+    	DBFieldInfo fld = tbl.getFieldByName(fieldName);
+    	boolean isTreeLevel = fld == null && Treeable.class.isAssignableFrom(tbl.getClassObj());
+    	boolean isRel = false;
+    	if (fld == null && !isTreeLevel)
+    	{
+    		String relName = qFld.getFieldName();
+    		for (DBRelationshipInfo rInfo : tbl.getRelationships())
+    		{
+    			if (relName.equals(rInfo.getOtherSide()))
+    			{
+    				isRel = true;
+    				break;
+    			}
+    		}
+    	}
+    	boolean isDatePart = false;
+    	if (fld == null && !isTreeLevel & !isRel)
+    	{
+    		 DBFieldInfo dateFld = tbl.getFieldByName(qFld.getFieldName());
+    		 if (dateFld != null)
+    		 {
+    			 isDatePart = Calendar.class.isAssignableFrom(dateFld.getDataClass());
+    		 }
+    		
+    	}
+    	SpQueryField.OperatorType op = SpQueryField.OperatorType.EQUALS;
+    	if (fld != null || isTreeLevel || isDatePart)
+    	{
+    		boolean isPickList = fld != null && (StringUtils.isNotEmpty(fld.getPickListName())
+    				|| RecordTypeCodeBuilder.getTypeCode(fld) != null);
+    		SpQueryField.OperatorType[] ops = QueryFieldPanel.getComparatorList(isTreeLevel, isPickList, fld, 
+    				fld != null ? fld.getDataClass() : null);
+    		op = ops[qFld.getOperStart()];
+    		//qFld.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+    	}     	
+    	qFld.setOperStart(op.getOrdinal());
+    }
+    	
+    public static void fixOperatorStorageForAllQueries()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+        	List<SpQuery> queries = session.getDataList(SpQuery.class);
+        	try
+        	{
+        		for (SpQuery q : queries)
+        		{
+        			q.forceLoad();
+        			fixOperatorStorageForQuery(q);
+        			//q.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        			session.saveOrUpdate(q);
+        		}
+        	} catch (Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+        } finally 
+        {
+        	session.close();
+        }
+
+    }
 }
