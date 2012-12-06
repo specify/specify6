@@ -580,6 +580,16 @@ public class ValComboBox extends JPanel implements UIValidatable,
    public UIValidatable.ErrorType validateState()
     {
         //log.debug(isRequired+"  "+ comboBox.getSelectedIndex());
+        boolean requiresVal = isRequired && comboBox.getSelectedIndex() == -1;
+        if (adapter != null && adapter.getType() == PickListDBAdapterIFace.Type.TableField)
+        {
+            if (requiresVal)
+            {
+                String text = textEditor.getText();
+                return StringUtils.isEmpty(text) ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+            }
+            return UIValidatable.ErrorType.Valid;
+        }
         valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
