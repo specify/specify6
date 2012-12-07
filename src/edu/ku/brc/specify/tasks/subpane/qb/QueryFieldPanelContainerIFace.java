@@ -64,6 +64,24 @@ public interface QueryFieldPanelContainerIFace
     boolean isPromptMode();
     
     /**
+     * For ExportSchema Mapper
+     * 
+     * update available concepts for a schema mapping
+     */
+    void updateAvailableConcepts();
+    
+    /**
+     * @return true if available concepts are being updated
+     */
+    boolean isUpdatingAvailableConcepts();
+    
+    /**
+     * @param qfp
+     * @param name
+     * @return true if name if not used by another contained qfp.
+     */
+    boolean isAvailableExportFieldName(final QueryFieldPanel qfp, String name);
+    /**
      * run the query.
      */
     void doSearch();

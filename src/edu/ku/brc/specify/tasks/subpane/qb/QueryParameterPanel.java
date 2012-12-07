@@ -149,6 +149,25 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
         return hasPrompts;
     }
 
+    
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#updateAvailableConcepts()
+	 */
+	@Override
+	public void updateAvailableConcepts() 
+	{
+		//nada
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#isUpdatingAvailableConcepts()
+	 */
+	@Override
+	public boolean isUpdatingAvailableConcepts() 
+	{
+		return false;
+	}
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#doSearch()
 	 */
@@ -157,5 +176,14 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
 	{
 		//do nothing
 	}
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#isAvailableExportFieldName(edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel, java.lang.String)
+	 */
+	@Override
+	public boolean isAvailableExportFieldName(QueryFieldPanel qfp, String name) 
+	{
+		return false;
+	}
 
+	
 }

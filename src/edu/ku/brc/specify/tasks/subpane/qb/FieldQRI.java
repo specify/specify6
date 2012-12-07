@@ -109,7 +109,7 @@ public class FieldQRI extends BaseQRI
      * @return sql/hql specification for this field.
      */
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause, 
-    		final boolean forSchemaExport)
+    		final boolean forSchemaExport, final String formatName)
     {
         String result = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
         if (addPartialDateColumn(forWhereClause, forSchemaExport))
@@ -132,9 +132,9 @@ public class FieldQRI extends BaseQRI
      * @param negate
      * @return the null or not null condition for the field
      */
-    public String getNullCondition(final TableAbbreviator ta, final boolean forSchemaExport, final boolean negate)
+    public String getNullCondition(final TableAbbreviator ta, final boolean forSchemaExport, final boolean negate, final String formatName)
     {
-        return getSQLFldSpec(ta, true, forSchemaExport) + (negate ? " is not " : " is ") + "null";
+        return getSQLFldSpec(ta, true, forSchemaExport, formatName) + (negate ? " is not " : " is ") + "null";
     }
     
     /**

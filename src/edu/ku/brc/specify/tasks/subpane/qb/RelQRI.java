@@ -121,12 +121,12 @@ public class RelQRI extends FieldQRI
     /**
      * @return the DataObjDataFieldFormatter for the related table.
      */
-    public DataObjDataFieldFormatIFace getDataObjFormatter()
+    public DataObjDataFieldFormatIFace getDataObjFormatter(final String preferredFormatter)
     {
     	List<DataObjSwitchFormatter> sfs = DataObjFieldFormatMgr.getInstance().getFormatterList(getTableInfo().getClassObj());
     	for (DataObjSwitchFormatter sf : sfs)
     	{
-    		if (sf.isDefault())
+    		if ((preferredFormatter != null && sf.getName().equals(preferredFormatter)) || (preferredFormatter == null && sf.isDefault()))
     		{
     	        if (sf.isSingle())
     	        {
@@ -147,7 +147,7 @@ public class RelQRI extends FieldQRI
      */
     @Override
     public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause, 
-    		final boolean forSchemaExport)
+    		final boolean forSchemaExport, final String formatName)
     {
         if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany)
                 || relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne) /*What about ManyToMany?? And some OneToOnes???*/)
@@ -175,7 +175,7 @@ public class RelQRI extends FieldQRI
         //XXX Formatter.getSingleField() checks for OneToOne rels
         if (relationshipInfo.getType() == RelationshipType.ManyToOne && !forWhereClause)
         {
-            DataObjDataFieldFormatIFace formatter = getDataObjFormatter();
+            DataObjDataFieldFormatIFace formatter = getDataObjFormatter(formatName);
             if (formatter != null)
             {
                 String formatField = formatter.getSingleField();

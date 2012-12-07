@@ -58,7 +58,7 @@ public class TreeLevelQRI extends FieldQRI
      * @throws Exception
      */
     public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId, final String realFldName,
-    		final TreeDefIface<?, ?, ?> treeDef )
+    		final TreeDefIface<?, ?, ?> treeDef)
             throws Exception
     {
         super(parent, fi);
@@ -190,7 +190,7 @@ public class TreeLevelQRI extends FieldQRI
      */
     @Override
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause,
-    		final boolean forSchemaExport)
+    		final boolean forSchemaExport, final String formatName)
     {
         String result = getSQLFldName(ta);
         return result;
@@ -229,7 +229,7 @@ public class TreeLevelQRI extends FieldQRI
 	 */
 	@Override
 	public String getNullCondition(TableAbbreviator ta,
-			boolean forSchemaExport, boolean negate)
+			boolean forSchemaExport, boolean negate, String formatName)
 	{
         String result = "exists (select treetbl.nodeNumber from " + table.getTableTree().getName() + " treetbl where "
 		+ "treetbl.rankId = " + rankId + " and " + ta.getAbbreviation(table.getTableTree()) + ".nodeNumber between "

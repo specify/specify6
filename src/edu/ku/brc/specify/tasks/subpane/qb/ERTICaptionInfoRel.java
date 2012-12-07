@@ -68,7 +68,8 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
                            String colStringId,
                            DBRelationshipInfo relationship,
                            boolean useCache,
-                           Integer cacheSize)
+                           Integer cacheSize,
+                           String processor)
     {
         super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId, null, null);
         //Don't like having a 'permanent' (until finalize()) session
@@ -86,54 +87,77 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         {
             lookupCache = null;
         }
-        
-        DBTableInfo otherSideTbl = DBTableIdMgr.getInstance().getByClassName(relationship.getClassName());
-        if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
-        {
-        	//processor = otherSideTbl.getAggregatorName();
-            
-            DBRelationshipInfo otherSideRel = otherSideTbl.getRelationshipByName(relationship.getOtherSide());
-            String otherSideCol = otherSideRel.getColName();
-            otherSideCol = otherSideCol.substring(0, 1).toLowerCase().concat(otherSideCol.substring(1));
-            otherSideCol = otherSideCol.substring(0, otherSideCol.length()-2) + "Id";
-            List<DataObjAggregator> aggs = DataObjFieldFormatMgr.getInstance().getAggregatorList(relationship.getDataClass());
-            String orderByFld = null;
-            String aggregator = null;
-            for (DataObjAggregator agg : aggs)
-            {
-            	if (agg.isDefault())
-            	{
-            		orderByFld = agg.getOrderFieldName();
-            		aggregator = agg.getName();
-            		break;
-            	}
-            }
-            processor = aggregator;
-            listHql = "from " + relationship.getDataClass().getName() + " where " + otherSideCol + " = &id"
-             + (StringUtils.isNotEmpty(orderByFld) ? " order by " + orderByFld : "");
-        }
-        else
-        {
-        	List<DataObjSwitchFormatter> forms = DataObjFieldFormatMgr.getInstance().getFormatterList(relationship.getDataClass());
-            String formatter = null; 
-        	for (DataObjSwitchFormatter form : forms)
-        	{
-        		if (form.isDefault()) 
-        		{
-        			formatter = form.getName();
-        			break;
-        		}
-        	}
-            processor = formatter;
-        	listHql = null;
-        }
-        if (processor == null) 
-        {
-        	log.error("couldn't find formatter or aggregator for " + otherSideTbl.getName());
-        }
+		DBTableInfo otherSideTbl = DBTableIdMgr.getInstance().getByClassName(
+				relationship.getClassName());
+		if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany) {
+			// processor = otherSideTbl.getAggregatorName();
+			// Find the default or named aggregator
+			// XXX this code can probably be simplified greatly
+
+			DBRelationshipInfo otherSideRel = otherSideTbl
+					.getRelationshipByName(relationship.getOtherSide());
+			String otherSideCol = otherSideRel.getColName();
+			otherSideCol = otherSideCol.substring(0, 1).toLowerCase()
+					.concat(otherSideCol.substring(1));
+			otherSideCol = otherSideCol.substring(0, otherSideCol.length() - 2)
+					+ "Id";
+			List<DataObjAggregator> aggs = DataObjFieldFormatMgr.getInstance()
+					.getAggregatorList(relationship.getDataClass());
+			String orderByFld = null;
+			String aggregator = null;
+			for (DataObjAggregator agg : aggs) {
+				if ((processor == null && agg.isDefault())
+						|| (processor != null && agg.getName()
+								.equals(processor))) {
+					orderByFld = agg.getOrderFieldName();
+					aggregator = agg.getName();
+					break;
+				}
+			}
+			this.processor = aggregator;
+
+			listHql = "from "
+					+ relationship.getDataClass().getName()
+					+ " where "
+					+ otherSideCol
+					+ " = &id"
+					+ (StringUtils.isNotEmpty(orderByFld) ? " order by "
+							+ orderByFld : "");
+		} else {
+			if (processor != null) {
+				this.processor = processor;
+			} else {
+				List<DataObjSwitchFormatter> forms = DataObjFieldFormatMgr
+						.getInstance().getFormatterList(
+								relationship.getDataClass());
+				String formatter = null;
+				for (DataObjSwitchFormatter form : forms) {
+					if (form.isDefault()) {
+						formatter = form.getName();
+						break;
+					}
+				}
+				this.processor = formatter;
+			}
+			listHql = null;
+		}
+		if (this.processor == null) {
+			log.error("couldn't find formatter or aggregator for "
+					+ otherSideTbl.getName());
+		}
     }
     
+    
     /**
+	 * @return the processor
+	 */
+	public String getProcessor() 
+	{
+		return processor;
+	}
+
+
+	/**
      * @return
      */
     public DBRelationshipInfo getRelationship()

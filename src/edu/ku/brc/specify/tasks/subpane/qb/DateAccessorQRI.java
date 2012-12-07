@@ -49,7 +49,7 @@ public class DateAccessorQRI extends FieldQRI
 
 	@Override
 	public String getSQLFldSpec(TableAbbreviator ta, boolean forWhereClause,
-			boolean forSchemaExport) {
+			boolean forSchemaExport, String formatName) {
         String fldExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
         
         String validPartialDates = null;

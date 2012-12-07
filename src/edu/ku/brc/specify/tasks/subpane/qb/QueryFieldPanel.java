@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
-import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -44,10 +43,13 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -85,6 +87,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
+import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpQueryField.OperatorType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
@@ -112,6 +115,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
     
+//    private static final String operatorSavingFixDateStr = "2012-12-05"; 
+//    private static final Date operatorSavingFixDate = DateFormat.getDateInstance(DateFormat.LONG, Locale.US).parse("2012-12-05");
+    
     protected String           noMappingStr = getResourceString("WB_NO_MAPPING");
 
     protected QueryFieldPanelContainerIFace    ownerQuery;
@@ -124,7 +130,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected JLabel						fieldLabel;
 	protected boolean						labelQualified	= false;
 	protected JButton						closeBtn;
-	protected JLabel						schemaItemLabel;
+	protected JComboBox						schemaItemCBX;
 	protected JLabel						iconLabel;
 	protected ImageIcon						icon;
 	protected IconManager.IconSize			iconSize = IconManager.IconSize.Std24;
@@ -140,9 +146,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
 	protected FieldQRI						fieldQRI;
 	protected SpQueryField					queryField		= null;
+	protected SpExportSchemaMapping	        schemaMapping   = null;
 	protected SpExportSchemaItem			schemaItem      = null;
-	protected boolean						conditionForSchema = false;
-	protected boolean			            forSchema = false;
+	protected String	 					schemaItemName  = null;
+	protected boolean						autoMapped      = false;
+	
 	protected PickListDBAdapterIFace		pickList		= null;
 
 	protected FormValidator					validator;
@@ -364,24 +372,25 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     }
     
 
+
     /**
      * @param ownerQuery
      * @param fieldQRI
      * @param columnDefStr
      * @param saveBtn
      * @param queryField
-     * @param schemaItem
+     * @param schemaMapping
      */
     public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
-                           final FieldQRI      fieldQRI, 
-                           final String        columnDefStr,
-                           final Component       saveBtn,
-                           final SpQueryField  queryField,
-                           final SpExportSchemaItem schemaItem)
+            final FieldQRI      fieldQRI, 
+            final String        columnDefStr,
+            final Component       saveBtn,
+            final SpQueryField  queryField,
+            final SpExportSchemaMapping schemaMapping)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, false, true);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaMapping, null);
     }
-
+ 
     /**
      * @param ownerQuery
      * @param fieldQRI
@@ -395,7 +404,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final Component       saveBtn,
                            final SpQueryField  queryField)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, null, false, false);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, null, null);
     }
 
     /**
@@ -404,42 +413,46 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      * @param columnDefStr
      * @param saveBtn
      * @param queryField
+     * @param schemaMapping
      * @param schemaItem
-     * @param conditionForSchema
      */
     public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
             final FieldQRI      fieldQRI, 
             final String        columnDefStr,
             final Component       saveBtn,
             final SpQueryField  queryField,
-            final SpExportSchemaItem schemaItem,
-            final boolean conditionForSchema)
+            final SpExportSchemaMapping schemaMapping,
+            final SpExportSchemaItem schemaItem)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, conditionForSchema, false);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaMapping, schemaItem);
     }
 
     /**
-     * Constructor.
-     * @param fieldName the field Name
-     * @param icon the icon to use once it is mapped
+     * @param ownerQuery
+     * @param fieldQRI
+     * @param iconSize
+     * @param columnDefStr
+     * @param saveBtn
+     * @param queryField
+     * @param schemaMapping
+     * @param schemaItem
      */
-
     public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
                            final FieldQRI      fieldQRI, 
                            final IconManager.IconSize iconSize,
                            final String        columnDefStr,
                            final Component       saveBtn,
                            final SpQueryField  queryField,
-                           final SpExportSchemaItem schemaItem,
-                           final boolean conditionForSchema,
-                           final boolean forSchema)
+                           final SpExportSchemaMapping schemaMapping,
+                           final SpExportSchemaItem schemaItem)
     {        
         this.ownerQuery = ownerQuery;
-        this.conditionForSchema = conditionForSchema;
-        this.forSchema = forSchema;
+        this.schemaMapping = schemaMapping;
+        this.schemaItem = schemaItem;
+        boolean isForSchema = this.schemaMapping != null;
         if (this.ownerQuery.isPromptMode())
         {
-            if (!conditionForSchema && schemaItem == null)
+            if (!isForSchema)
             {
             	labelStrs = new String[]{ " ",
                     UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
@@ -461,7 +474,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         else
         {
-            if (schemaItem == null)
+            if (!isForSchema)
             {
             	labelStrs = new String[]{ " ",
                     /*UIRegistry.getResourceString("QB_FIELD")*/" ", UIRegistry.getResourceString("QB_NOT"),
@@ -474,8 +487,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             	labelStrs = new String[]{ UIRegistry.getResourceString("QB_SCHEMAITEM"), " ",
                         /*UIRegistry.getResourceString("QB_FIELD")*/" ", UIRegistry.getResourceString("QB_NOT"),
                         UIRegistry.getResourceString("QB_OPERATOR"),
-                        UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"), getResourceString("QB_ALLOW_NULL"),
-                        /*UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), getResourceString("QB_ALWAYS_ENFORCE"), */" ", " " };
+                        UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"), 
+                        UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_ALLOW_NULL"), " ", " " };
             }
         }
         this.iconSize = iconSize;
@@ -500,7 +513,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         
         boolean createAsHeader = StringUtils.isEmpty(columnDefStr);
         
-        this.schemaItem = schemaItem;
         int[] widths = buildControlLayout(iconSize, createAsHeader, saveBtn);
         if (createAsHeader)
         {
@@ -545,11 +557,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     
     public void updateQueryField(final SpQueryField qField)
     {
-        if (qField != null && !ownerQuery.isPromptMode())
+        boolean isForSchema = schemaMapping != null;
+    	if (qField != null && !ownerQuery.isPromptMode())
         {
             qField.setIsDisplay(isDisplayedCkbx.isSelected());
             qField.setIsPrompt(isPromptCkbx.isSelected());
-            if (conditionForSchema)
+            if (isForSchema)
             {
             	qField.setAllowNulls(isEnforcedCkbx.isSelected());
             } else
@@ -589,10 +602,49 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             qField.setTableList(tablesIds);
             qField.setStringId(getStringId());
             
+            if (schemaItemCBX != null)
+            {
+            	SpExportSchemaItemMapping mapping = qField.getMapping();
+            	if (mapping != null)
+            	{
+            		schemaItem = (SpExportSchemaItem )schemaItemCBX.getSelectedItem();
+            		if (schemaItem.getId() == null)
+            		{
+            			mapping.setExportSchemaItem(null);
+            			if (mapping.getExportedFieldName() == null)
+            			{
+            				mapping.setExportedFieldName(getDefaultExportedFieldName());
+            			}
+            		} else
+            		{
+            			mapping.setExportSchemaItem(schemaItem);
+            		}
+            	}
+            }
         } else
         {
             log.error("QueryField is null or ownerQuery is prompt only. Unable to update database object.");
         }
+    }
+    
+    /**
+     * @return customized fieldname/column header for schema mapping items that are not mapped to a concept.
+     */
+    protected String getExportedFieldName()
+    {
+    	SpExportSchemaItemMapping mi = this.getItemMapping();
+    	if (mi == null || mi.getExportedFieldName() == null)
+    	{
+    		return getDefaultExportedFieldName();
+    	} else
+    	{
+    		return mi.getExportedFieldName();
+    	}
+    }
+    
+    protected String getDefaultExportedFieldName()
+    {
+    	return queryField.getColumnAlias();
     }
     
     /**
@@ -633,12 +685,19 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         
     }
+    
+//    private SpQueryField.OperatorType getOperatorType(final SpQueryField fld)
+//    {
+//    	Timestamp fldTimeStamp = fld.getTimeStampModified();
+//    	
+//    }
     /**
      * @param queryField the queryField to set
      */
     private void setQueryField(SpQueryField queryField)
     {
         this.queryField = queryField;
+        boolean isForSchema = schemaMapping != null;
         if (queryField != null)
         {
             if (queryField.getSpQueryFieldId() != null)
@@ -660,21 +719,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 {
                     isDisplayedCkbx.setSelected(queryField.getIsDisplay());
                     isPromptCkbx.setSelected(queryField.getIsPrompt() == null ? true : queryField.getIsPrompt());
-                    if (conditionForSchema || schemaItem != null)
+                    if (isForSchema)
                     {
                     	isEnforcedCkbx.setSelected(queryField.getAllowNulls() == null ? false : queryField.getAllowNulls());
                     } else
                     {
                     	isEnforcedCkbx.setSelected(queryField.getAlwaysFilter() == null ? true : queryField.getAlwaysFilter());
                     }
-                } else
-                {
-                	if (conditionForSchema)
-                	{
-                		isEnforcedCkbx.setSelected(queryField.getAllowNulls() == null ? true : queryField.getAllowNulls());
-                	}
-                }
-                validator.setHasChanged(false);
+                }                validator.setHasChanged(false);
             } else
             {
                 validator.reset(true); // tells it it is a new data object
@@ -751,28 +803,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 							.getType() != RelationshipType.OneToMany);
 		}
 
-		if (schemaItem == null)
+		if (schemaMapping != null)
 		{
-			if (conditionForSchema)
-			{
-				schemaItemLabel.setText(UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition"));
-				sortCheckbox.setVisible(false);
-				isDisplayedCkbx.setVisible(false);
 				isPromptCkbx.setVisible(false);
-				//isEnforcedCkbx.setVisible(false);
-			}
-			if (!ownerQuery.isPromptMode())
-			{
+		} else if (!ownerQuery.isPromptMode())
+		{
 				isDisplayedCkbx.setVisible(fieldQRI != null && !isRel);
 				isPromptCkbx.setVisible(fieldQRI != null && !isRel);
 				isEnforcedCkbx.setVisible(fieldQRI != null && !isRel);
-			}
-		}
-		else
-		{
-			isDisplayedCkbx.setVisible(false);
-			//isPromptCkbx.setVisible(false);
-			//isEnforcedCkbx.setVisible(false);
 		}
     	setQueryField(qf);
     }
@@ -798,6 +836,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         		field.getDataClass());
     }    
 
+    /**
+     * @return the format name.
+     */
+    protected String getFormatName()
+    {
+    	return getQueryField() != null ? getQueryField().getFormatName() : null;
+    }
     
     /**
      * @param field
@@ -1147,7 +1192,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
         {
             //return fieldQRI.getSQLFldSpec(ta, true, this.schemaItem != null) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
-        	return fieldQRI.getNullCondition(ta, schemaItem != null, isNotCheckbox.isSelected());
+        	return fieldQRI.getNullCondition(ta, schemaItem != null, isNotCheckbox.isSelected(), getFormatName());
         }
         
         if (hasCriteria())
@@ -1346,7 +1391,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 StringBuilder str = new StringBuilder();
 
                 str.append(isNotCheckbox.isSelected() ? "(NOT " : "");
-                str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " ");
+                str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " ");
                 if (nullPick && "=".equals(operStr))
                 {
                 	str.append(" is null ");
@@ -1363,19 +1408,19 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     if (!operStr.equals(SpQueryField.OperatorType
                             .getString(SpQueryField.OperatorType.EMPTY.getOrdinal())))
                     {
-                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " is null");
+                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null");
                     }
                     str.append(")");
                 }
                 String result =  str.toString();
                 if (addNullConjunction 
-                		|| (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && conditionForSchema)
+                		|| (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && schemaMapping != null)
                 		|| (nullPick && !"=".equals(operStr)))
                 {
                 	//Currently, when the null value is picked with the IN condition, a '' entry is included in the IN list
                 	//This is not technically correct, but probably will never matter, and possibly produce more desirable 
                 	//results then the technically correct criteria 
-                	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " is null)";
+                	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null)";
                 }                
                 return result;
             }
@@ -1507,25 +1552,61 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         
         comparators = getComparatorList(fieldQRI);
         //XXX need to build schemaItem for header panel too...
-        if (schemaItem != null)
+        if (schemaMapping != null)
         {
-        	schemaItemLabel = createLabel(schemaItem.getFieldName());
-        	schemaItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        	schemaItemLabel.setText(schemaItem.getFieldName());
-        }
-        else if (conditionForSchema)
+        	schemaItemCBX = edu.ku.brc.ui.UIHelper.createComboBox();
+        	schemaItemCBX.addItem("empty"); //to work around validator blow up for empty lists.
+            DataChangeNotifier dcnsi = validator.hookupComponent(schemaItemCBX, "sicbx",
+                    UIValidator.Type.Changed, "", true);
+            schemaItemCBX.addActionListener(dcnsi);
+        	
+            schemaItemCBX.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e)
+                {
+                    if (!QueryFieldPanel.this.ownerQuery.isUpdatingAvailableConcepts())
+                    {
+                    	if (e.getStateChange() == ItemEvent.SELECTED)
+                    	{
+                    		if (e.getItem() instanceof SpExportSchemaItem)
+                    		{
+                    			QueryFieldPanel.this.schemaItem = (SpExportSchemaItem )e.getItem();
+                    		} else
+                    		{
+                    			SpExportSchemaItemMapping m = QueryFieldPanel.this.getItemMapping(); 
+                    			SpExportSchemaItem si = QueryFieldPanel.this.schemaItem;
+                    			String item = e.getItem().toString();
+                    			if (StringUtils.isNotBlank(item) && ownerQuery.isAvailableExportFieldName(QueryFieldPanel.this, item))
+                    			{
+                    				if (m != null)
+                    				{
+                    					m.setExportedFieldName(e.getItem().toString());
+                    				}
+                    				if (si != null)
+                    				{
+                    					si.setFieldName(e.getItem().toString());
+                    				}
+                    			} else
+                    			{
+                    				if (StringUtils.isBlank(item))
+                    				{
+                    					UIRegistry.displayErrorDlgLocalized("QueryFieldPanel.ExportFieldNameInvalid", item);
+                    				} else
+                    				{
+                    					UIRegistry.displayErrorDlgLocalized("QueryFieldPanel.ExportFieldNameAlreadyUsed", item);
+                    				}
+                    				schemaItemCBX.setSelectedIndex(0);
+                    			}
+                    		}
+                    		ownerQuery.updateAvailableConcepts();
+                    	}
+                    }
+                }
+            });
+        } else
         {
-        	String caption = fieldQRI == null ? 
-        			UIRegistry.getResourceString("QueryFieldPanel.AddUnmappedCondition") :
-        			UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition");	
-        	schemaItemLabel = createLabel(caption);
-        	schemaItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        	schemaItemLabel.setText(UIRegistry.getResourceString(caption)); 
-        }
-        else
-        {
-        	this.schemaItemLabel = null;
-        }
+        	schemaItemCBX = null;
+        }	
         
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
@@ -1630,7 +1711,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         sortCheckbox.addFocusListener(focusListener);
         sortCheckbox.addActionListener(dcn);
         sortCheckbox.addKeyListener(enterListener);
-        if (!this.ownerQuery.isPromptMode() || conditionForSchema || schemaItem != null)
+        if (!this.ownerQuery.isPromptMode())
         {
             isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
             dcn = validator.hookupComponent(isEnforcedCkbx, "iecb",
@@ -1674,13 +1755,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             isPromptCkbx.addActionListener(dcn);
             isPromptCkbx.addFocusListener(focusListener);
             isPromptCkbx.addKeyListener(enterListener);
-//            isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
-//            dcn = validator.hookupComponent(isEnforcedCkbx, "iecb",
-//                    UIValidator.Type.Changed, "", true);
-//            isEnforcedCkbx.addActionListener(dcn);
-//            isEnforcedCkbx.addFocusListener(focusListener);
-//            isEnforcedCkbx.addKeyListener(enterListener);
-            closeBtn = createIconBtn("Close", "QB_REMOVE_FLD", new ActionListener()
+            closeBtn = edu.ku.brc.ui.UIHelper.createIconBtn("Close", "QB_REMOVE_FLD", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
@@ -1717,19 +1792,16 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
             isDisplayedCkbx = null;
             this.isPromptCkbx = null;
-            if (!conditionForSchema && schemaItem == null)
-            {
-            	isEnforcedCkbx = null;
-            }
+            this.isEnforcedCkbx = null;            
             this.closeBtn = null;
-        }
+    	}
 
         JComponent[] qComps = {iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
                 sortCheckbox, isDisplayedCkbx, isPromptCkbx, isEnforcedCkbx, closeBtn, null };
-        JComponent[] sComps = { schemaItemLabel, iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
-                sortCheckbox, isEnforcedCkbx, closeBtn, null };
+        JComponent[] sComps = { schemaItemCBX, iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
+                sortCheckbox, isDisplayedCkbx, isEnforcedCkbx, closeBtn, null };
         // 0 1 2 3 4 5 6 7 8 9
-        if (schemaItem == null && !conditionForSchema)
+        if (schemaMapping == null)
         {
         	comps = qComps;
         }
@@ -1746,7 +1818,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 sb.append(i == 0 ? "" : ",");
                 if (isCenteredComp(i))
                     sb.append("c:");
-                if (i != 0 || schemaItem == null || !conditionForSchema)
+                if (i != 0 || schemaMapping != null)
                 {
                 	sb.append("p");
                 }
@@ -1834,7 +1906,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 widths[i] = comps[i] != null ? comps[i].getSize().width : 0;
             }
-            if (this.schemaItemLabel == null)
+            if (this.schemaMapping == null)
             {
             	widths[0] = iconSize.size();
             	widths[1] = 200;
@@ -1854,7 +1926,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      */
     protected boolean isCenteredComp(int compIdx)
     {
-        if (schemaItemLabel == null)
+        if (schemaMapping == null)
         {
         	return compIdx == 1 || compIdx == 2 || compIdx == 5 || compIdx == 6 || compIdx == 7;
         }
@@ -1871,7 +1943,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      */
     protected boolean isGrowComp(int compIdx)
     {
-    	return schemaItemLabel == null ? compIdx == 4 : compIdx == 5;
+    	return schemaMapping == null ? compIdx == 4 : compIdx == 5;
     }
     
     /**
@@ -1975,17 +2047,30 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         return fieldLabel.getText();
     }
     
+    /**
+     * @return true if field is displayed in results
+     */
     public boolean isForDisplay()
     {
-        return !conditionForSchema && 
-        	(ownerQuery.isPromptMode() || isDisplayedCkbx.isSelected());
+        return ownerQuery.isPromptMode() || isDisplayedCkbx.isSelected();
     }
     
+    /**
+     * @return the field label text
+     */
     public String getLabel()
     {
         return this.fieldLabel.getText();
     }
 
+    /**
+     * @return the schemaItem combo box
+     */
+    public JComboBox getSchemaItemCBX()
+    {
+    	return this.schemaItemCBX;
+    }
+    
     /**
      * @return the labelQualified
      */
@@ -2219,12 +2304,23 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 		return queryField != null ? queryField.getMapping() : null;
 	}
 
+
 	/**
-	 * @return the conditionForSchema
+	 * @return the autoMapped
 	 */
-	public boolean isConditionForSchema()
+	public boolean isAutoMapped() 
 	{
-		return conditionForSchema;
+		return autoMapped;
+	}
+
+
+	/**
+	 * @param autoMapped the autoMapped to set
+	 */
+	public void setAutoMapped(boolean autoMapped) 
+	{
+		this.autoMapped = autoMapped;
 	}
     
+	
 }

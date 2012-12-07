@@ -127,13 +127,14 @@ public class QBResultSetTableModel extends ResultSetTableModel
                 Vector<Object> info = (Vector<Object>) data;
                 int row = (Integer) info.get(0);
                 int col = (Integer) info.get(1);
-                Class<?> cls = (Class<?>) info.get(2);
+                //Class<?> cls = (Class<?>) info.get(2);
+                String agg = (String) info.get(2);
                 Vector<Object> cols = (Vector<Object>) info.get(3);
 
                 synchronized (this)
                 {
                     cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
-                            jpa.getDataObjects(), cls));
+                            jpa.getDataObjects(), agg));
                     bgTaskCount--;
                     if (bgTaskCount < 10)
                     {
@@ -249,8 +250,9 @@ public class QBResultSetTableModel extends ResultSetTableModel
 									Vector<Object> info = new Vector<Object>();
 									info.add(rowNum);
 									info.add(row.size());
-									info.add(ertiRel.getRelationship()
-											.getDataClass());
+									//info.add(ertiRel.getRelationship()
+									//		.getDataClass());
+									info.add(ertiRel.getProcessor());
 									info.add(row);
 									jpa.setData(info);
 									if (debugging)
