@@ -309,6 +309,17 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
+     * @param value
+     * @param numberOfDecimalPlaces
+     * @return returns value formatted with the specified number of decimal places
+     */
+    public String formatBigDecimal(final BigDecimal value,
+    			                      final int numberOfDecimalPlaces)
+    {
+    	return String.format("%." + numberOfDecimalPlaces + "f", value);
+    }
+    
+    /**
      * Formats a String with a float value as a degrees.
      * @param floatStr
      * @param isLat indicates whether it is a latitude or a longitude
