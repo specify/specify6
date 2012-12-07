@@ -170,6 +170,11 @@
 	     Mac Common Components Build
 	     ************************************************************* -->
 	
+    <target name="installer-localizer" depends="">
+        <antcall target="installer-minibase"/>
+        <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+    </target>
+    
     <target name="installer-linux" depends="">
         <antcall target="installer-base"/>
         <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
@@ -323,7 +328,39 @@
 		</copy>  -->
 	</target>
 	
-	
+    <target name="installer-minibase" depends="">
+        
+        <delete dir="${installer.dir}"/>
+        <mkdir dir="${installer.dir}" />
+        
+        <antcall target="clean-jar"/>
+        <antcall target="dist-jar-mac"/>
+        
+        <!-- Copy config dir -->
+        <copy todir="${installer.dir}/config">
+            <fileset dir="config">
+                <exclude name="**/*.svn" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installer.dir}/libs">
+            <fileset dir="libs">
+                <exclude name="**/*.svn" />
+                <exclude name="**/derby.jar" />
+            </fileset>
+        </copy>
+        
+        <copy file="${jar.name}.jar" todir="${installer.dir}" />
+        
+        <copy file="hibernate_libs/dom4j.jar" todir="${installer.dir}/libs" />
+        
+        
+        <copy file="packaging/readme.html" todir="${installer.dir}" />
+        <copy file="packaging/license_agreement.html" todir="${installer.dir}" />
+        <copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
+        <rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
+     </target>
+		
 	<target name="installer-updater" depends="">
 		<delete dir="UpdaterInstall"/>
 		<mkdir dir="UpdaterInstall" />
@@ -441,8 +478,9 @@
 	</target>
 	
 	<!-- *************************************************************
-	     Common files between Windows and Linux
+	       Common files between Windows and Linux
 	     ************************************************************* -->
+	     
 	<target name="basic-non-mac-dist">
 
 		<mkdir dir="${appdir}/classes" />
@@ -468,7 +506,7 @@
 		</copy>
 		
 		<!-- Copy the main app jar -->
-		<copy file="${jar.name}.jar" todir="${appdir}/libs" />
+        <copy file="${jar.name}.jar" todir="${appdir}/libs" />
 
 		<copy todir="${appdir}/libs">
 			<fileset dir="libs">

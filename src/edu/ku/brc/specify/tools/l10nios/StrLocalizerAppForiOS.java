@@ -32,11 +32,14 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -64,6 +67,7 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -72,6 +76,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -85,7 +90,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -103,7 +107,6 @@ import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
-import edu.ku.brc.helpers.AskForDirectory;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -378,6 +381,18 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
 //    	}
 //    }
     
+    private JTextArea setTAReadOnly(final JTextArea textArea)
+    {
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        if (!UIHelper.isMacOS())
+        {
+            textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            //textArea.setBackground(new Color(245,245,245));
+        }
+        return textArea;
+    }
+    
     /**
      * 
      */
@@ -395,14 +410,11 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
         fileList = new JList(fileModel = new DefaultListModel());
         termList = new JList(model = new ItemModel(null));
         
-        srcLbl = UIHelper.createTextArea(3, 40);
+        srcLbl = setTAReadOnly(UIHelper.createTextArea(3, 40));
         //srcLbl.setBorder(new LineBorder(srcLbl.getForeground()));
-        srcLbl.setEditable(false);
         textField  = UIHelper.createTextField(40);
         
-        comment = UIHelper.createTextArea(3, 40);
-        comment.setEditable(false);
-        comment.setLineWrap(true);
+        comment = setTAReadOnly(UIHelper.createTextArea(3, 40));
         
         /*textField.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
@@ -462,7 +474,7 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
 
         PanelBuilder fpb = new PanelBuilder(new FormLayout("8px,f:p:g", "p,4px,f:p:g"));
         JScrollPane filesp  = UIHelper.createScrollPane(fileList);
-        fpb.add(UIHelper.createLabel("Files", SwingConstants.CENTER), cc.xy(1,1));
+        fpb.add(UIHelper.createLabel("Files", SwingConstants.CENTER), cc.xy(2,1));
         fpb.add(filesp, cc.xy(2,3));
 
         setLayout(new BorderLayout());
@@ -471,6 +483,15 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
         add(statusBar, BorderLayout.SOUTH);
         
         mainPane = this;
+        
+        textField.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                checkForChange();
+            }
+        });
         
         termList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -808,8 +829,6 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
     {
         if (doAppExit)
         {
-            checkForChanges();
-            
         	System.exit(0);
         	return true;
         }
@@ -1044,7 +1063,34 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
 //            }
 //            return true;
 //        }
-        return false;
+        
+        boolean hasChanges = false;
+        for (L10NFile f : srcFiles)
+        {
+            if (f.isChanged())
+            {
+                hasChanges = true;
+                break;
+            }
+        }
+        
+        if (hasChanges)
+          {
+            int response = JOptionPane.showOptionDialog((Frame )getTopWindow(), 
+                    "Changes have not been saved.\n\nDo you wish to save them?", 
+                    getResourceString("StrLocalizerApp.SaveChangesTitle"), 
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.YES_OPTION);
+            if (response == JOptionPane.CANCEL_OPTION)
+            {
+                return false;
+            }
+            if (response == JOptionPane.YES_OPTION)
+            {
+                doSave(); 
+                return true; //what if it fails? 
+            }
+          }
+        return true;
     }
     
     private void doScanSources()
@@ -2026,6 +2072,14 @@ public class StrLocalizerAppForiOS extends JPanel implements FrameworkAppIFace, 
             this.isChanged = isChanged;
         }
         
+        /**
+         * @return the isChanged
+         */
+        public boolean isChanged()
+        {
+            return isChanged;
+        }
+
         /**
          * 
          */
