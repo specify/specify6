@@ -1718,33 +1718,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
             }
             
-            UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
-            if (catNumFmtr != null)
-            {
-                DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
-                field.setFormatter(catNumFmtr);
-            }
-            
-            Institution institution = getClassObject(Institution.class);
-            if (!institution.getIsAccessionsGlobal())
-            {
-                for (AutoNumberingScheme ans : collection.getNumberingSchemes())
-                {
-                    if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
-                    {
-                        DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
-                        if (field != null)
-                        {
-                            UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
-                            if (accNumFmtr != null)
-                            {
-                                field.setFormatter(accNumFmtr);
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
+            //setUpCatNumAccessionFormatters(getClassObject(Institution.class), collection);
             
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session
@@ -1792,6 +1766,40 @@ public class SpecifyAppContextMgr extends AppContextMgr
         showLocalizedError(L10N + "CRITICAL_LOGIN_ERR"); //$NON-NLS-1$
         System.exit(0);
         return null;
+    }
+    
+    /**
+     * @param institution
+     * @param collection
+     */
+    public static void setUpCatNumAccessionFormatters(final Institution institution, final Collection collection)
+    {
+        UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
+        if (catNumFmtr != null)
+        {
+            DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
+            field.setFormatter(catNumFmtr);
+        }
+        
+        if (!institution.getIsAccessionsGlobal())
+        {
+            for (AutoNumberingScheme ans : collection.getNumberingSchemes())
+            {
+                if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
+                {
+                    DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
+                    if (field != null)
+                    {
+                        UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
+                        if (accNumFmtr != null)
+                        {
+                            field.setFormatter(accNumFmtr);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
     }
     
     /**

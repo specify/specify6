@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
@@ -36,6 +37,12 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class gets all the L10N string from the database for a locale and populates the DBTableInfo etc structures.
@@ -200,6 +207,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
 
+        Institution inst       = AppContextMgr.getInstance().getClassObject(Institution.class);
+        Collection  collection =  AppContextMgr.getInstance().getClassObject(Collection.class);
+        SpecifyAppContextMgr.setUpCatNumAccessionFormatters(inst, collection);
         
         sql = "SELECT cn.Name, splocalecontaineritem.Name, splocaleitemstr.Text, splocalecontaineritem.IsHidden "+
               "FROM splocalecontainer cn INNER JOIN splocalecontaineritem ON cn.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
