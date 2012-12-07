@@ -137,8 +137,10 @@ public class FixDBAfterLogin
      */
     public static void fixQueryOperators()
     {
-    	QueryTask.fixOperatorStorageForAllQueries();
-    	AppPreferences.getGlobalPrefs().putBoolean("FixedSpQueryOperators", true);
+    	if (QueryTask.fixOperatorStorageForAllQueries())
+    	{
+    		AppPreferences.getGlobalPrefs().putBoolean("FixedSpQueryOperators", true);
+    	} //else what exactly???
     }
     
     /**

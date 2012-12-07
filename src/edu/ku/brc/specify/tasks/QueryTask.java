@@ -2462,7 +2462,7 @@ public class QueryTask extends BaseTask
     	qFld.setOperStart(op.getOrdinal());
     }
     	
-    public static void fixOperatorStorageForAllQueries()
+    public static boolean fixOperatorStorageForAllQueries()
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -2470,24 +2470,26 @@ public class QueryTask extends BaseTask
         	List<SpQuery> queries = session.getDataList(SpQuery.class);
         	try
         	{
+    			session.beginTransaction();
         		for (SpQuery q : queries)
         		{
         			q.forceLoad();
         			fixOperatorStorageForQuery(q);
-        			session.beginTransaction();
         			session.saveOrUpdate(q);
-        			session.commit();
-        		}
+         		}
+       			session.commit();
         	} catch (Exception e)
         	{
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, e);
         		e.printStackTrace();
+        		session.rollback();
+        		return false;
         	}
         } finally 
         {
         	session.close();
         }
-
+        return true;
     }
 }
