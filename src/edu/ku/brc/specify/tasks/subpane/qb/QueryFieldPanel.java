@@ -646,7 +646,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 isNotCheckbox.setSelected(queryField.getIsNot());
                 try
                 {
-
                 	OperatorType o = OperatorType.values()[queryField.getOperStart()];
                 	operatorCBX.setSelectedItem(o);
                 } catch(IllegalArgumentException ex)
@@ -813,13 +812,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     SpQueryField.OperatorType.EQUALS,
                     SpQueryField.OperatorType.IN,
                     SpQueryField.OperatorType.EMPTY};
-        }
-        if (isPickList)
-        {
-            return new SpQueryField.OperatorType[] {
-                SpQueryField.OperatorType.EQUALS,
-                SpQueryField.OperatorType.LIKE,
-                SpQueryField.OperatorType.IN, SpQueryField.OperatorType.EMPTY};
         }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????

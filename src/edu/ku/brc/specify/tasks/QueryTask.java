@@ -2474,11 +2474,14 @@ public class QueryTask extends BaseTask
         		{
         			q.forceLoad();
         			fixOperatorStorageForQuery(q);
-        			//q.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        			session.beginTransaction();
         			session.saveOrUpdate(q);
+        			session.commit();
         		}
         	} catch (Exception e)
         	{
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, e);
         		e.printStackTrace();
         	}
         } finally 

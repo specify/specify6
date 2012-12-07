@@ -2561,6 +2561,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                     	FixDBAfterLogin.fixQueryOperators();
                     }
+                    
+                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnmappedSchemaConditions", false))
+                    {
+                    	FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
+                    }
+                    
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.checkMultipleLocalities();
                 }

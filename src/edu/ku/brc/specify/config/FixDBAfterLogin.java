@@ -132,12 +132,34 @@ public class FixDBAfterLogin
     	AppPreferences.getGlobalPrefs().putBoolean("FixedUnMatchedWBSpecifyUserIDs", true);
     }
     
+    /**
+     * Fixes SpQueryField.operStart storage for all queries
+     */
     public static void fixQueryOperators()
     {
     	QueryTask.fixOperatorStorageForAllQueries();
     	AppPreferences.getGlobalPrefs().putBoolean("FixedSpQueryOperators", true);
     }
     
+    /**
+     * Sets SpQueryField.IsDisplay for unmapped schema items so they will be compatible with 6.12+ schemamappings.
+     */
+    public static void fixIsDisplayForUnmappedSchemaConditions()
+    {
+        String sql = "select distinct SpQueryID from spexportschemamapping m inner join "
+        		+ "spexportschemaitemmapping mi on mi.SpExportSchemaMappingID = m.SpExportSchemaMappingID"
+        		+ " inner join spqueryfield f on f.SpQueryFieldID = mi.SpQueryFieldID";
+    	List<Object> schemaMappingQuerys = BasicSQLUtils.querySingleCol(sql);
+        sql = "update spqueryfield qf left join spexportschemaitemmapping sim on sim.SpQueryFieldID = qf.SpQueryFieldID"
+        		+ " set IsDisplay = false where sim.spexportschemaitemmappingid is null and qf.SpQueryID = ";
+        for (Object q : schemaMappingQuerys)
+        {
+        	BasicSQLUtils.update(sql + q);
+        }
+        AppPreferences.getGlobalPrefs().putBoolean("FixedUnmappedSchemaConditions", true);
+        
+    	
+    }
     /**
      * @param pStmt
      * @param locId
