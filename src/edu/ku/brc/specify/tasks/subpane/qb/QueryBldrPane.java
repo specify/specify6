@@ -1390,7 +1390,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         sqlStr.append("select ");
         if (distinct || hqlHasSynJoins)
         {
-            sqlStr.append(" distinct ");
+            sqlStr.append("distinct ");
         }
         if (!distinct)
         {
