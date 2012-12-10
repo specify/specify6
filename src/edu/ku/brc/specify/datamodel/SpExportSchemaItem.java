@@ -48,7 +48,7 @@ import edu.ku.brc.helpers.XMLHelper;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spexportschemaitem")
 @org.hibernate.annotations.Table(appliesTo="spexportschemaitem")
-public class SpExportSchemaItem extends DataModelObjBase
+public class SpExportSchemaItem extends DataModelObjBase implements Comparable<SpExportSchemaItem>
 {
     protected Integer               spExportSchemaItemId;
     protected String                fieldName;
@@ -300,6 +300,17 @@ public class SpExportSchemaItem extends DataModelObjBase
 		// TODO Auto-generated method stub
 		return getFieldName();
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(SpExportSchemaItem o) 
+	{
+		if (o == null) return -1;
+		return this.getFieldName().compareTo(o.getFieldName());
+	}
     
+	
     
 }

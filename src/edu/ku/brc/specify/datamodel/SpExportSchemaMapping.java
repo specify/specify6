@@ -335,12 +335,20 @@ public class SpExportSchemaMapping extends CollectionMember
 	@Override
 	public void forceLoad()
 	{
+		this.forceLoad(true);
+	}
+	
+	/**
+	 * @param loadQuery
+	 */
+	public void forceLoad(boolean loadQuery)
+	{
 		super.forceLoad();
 		for (SpExportSchema schema : getSpExportSchemas())
 		{
 			schema.getId();
 		}
-		boolean loadedQuery = false;
+		boolean loadedQuery = !loadQuery;
 		for (SpExportSchemaItemMapping map : getMappings())
 		{
 			if (!loadedQuery)

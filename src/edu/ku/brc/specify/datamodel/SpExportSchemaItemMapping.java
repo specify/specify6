@@ -31,6 +31,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
     protected Integer               spExportSchemaItemMappingId;
     protected SpExportSchemaMapping	spExportSchemaMapping;
     protected SpExportSchemaItem    exportSchemaItem;
+    protected String			    exportedFieldName;
     protected SpQueryField			queryField;
     protected String                remarks;
     
@@ -50,10 +51,13 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
      */
     public void toXML(final StringBuilder sb)
     {
+    	String schema = exportSchemaItem != null ? exportSchemaItem.getSpExportSchema().getSchemaName() : null;
+    	String schemaItem = exportSchemaItem != null ? exportSchemaItem.getFieldName() : null;
     	sb.append("<spexportschemaitemmapping ");
     	XMLHelper.addAttr(sb, "queryField", queryField.getStringId()); //unique id for field within query
-    	XMLHelper.addAttr(sb, "exportSchema", exportSchemaItem.getSpExportSchema().getSchemaName());
-    	XMLHelper.addAttr(sb, "exportSchemaItem", exportSchemaItem.getFieldName()); //unique id for item in schema
+    	XMLHelper.addAttr(sb, "exportSchema", schema);
+    	XMLHelper.addAttr(sb, "exportSchemaItem", schemaItem); //unique id for item in schema
+    	XMLHelper.addAttr(sb, "exportedFieldName", exportedFieldName);
     	XMLHelper.addAttr(sb, "remarks", remarks);
     	sb.append(" />\n");
     }
@@ -97,6 +101,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
     		}
     	}
     	
+    	exportedFieldName = XMLHelper.getAttr(element, "exportedFieldName", null);
     }
     
 	/* (non-Javadoc)
@@ -156,6 +161,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 		spExportSchemaMapping = null;
 		exportSchemaItem = null;
 		queryField = null;
+		exportedFieldName =  null;
 		remarks = null;
 	}
 	/**
@@ -241,6 +247,25 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 	public void setRemarks(String remarks)
 	{
 		this.remarks = remarks;
+	}
+
+
+	/**
+	 * @return the exportedFieldName
+	 */
+	@Column(name = "ExportedFieldName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getExportedFieldName() 
+	{
+		return exportedFieldName;
+	}
+
+
+	/**
+	 * @param exportedFieldName the exportedFieldName to set
+	 */
+	public void setExportedFieldName(String exportedFieldName) 
+	{
+		this.exportedFieldName = exportedFieldName;
 	}
     
     
