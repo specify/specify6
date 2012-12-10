@@ -1999,32 +1999,32 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(' ');
                     sqlStr.append(alias);
                     sqlStr.append(' ');
-                    if (searchSynonymy && Treeable.class.isAssignableFrom(((TableQRI )qri).getTableInfo().getClassObj()))
+                }
+                if (searchSynonymy && Treeable.class.isAssignableFrom(((TableQRI )qri).getTableInfo().getClassObj()))
+                {
+                    //check to see if Name is inUse and if so, add joins for accepted taxa
+                    TableQRI tqri = (TableQRI )qri;
+                    boolean addSynJoin = false;
+                    for (QueryFieldPanel qfp : fieldPanels)
                     {
-                        //check to see if Name is inUse and if so, add joins for accepted taxa
-                        TableQRI tqri = (TableQRI )qri;
-                        boolean addSynJoin = false;
-                        for (QueryFieldPanel qfp : fieldPanels)
-                        {
-                        	if (qfp.getFieldQRI() != null)
-                        	{
-                        		if (isSynSearchable(qfp.getFieldQRI()) && qfp.hasCriteria())
-                        		{
-                        			addSynJoin = true;
-                        			break;
-                        		}
-                        	}
-                        }
-                        if (addSynJoin)
-                        {
-                            hqlHasSynJoins = true;
-                            sqlStr.append("left join ");
-                            sqlStr.append(alias + ".acceptedChildren " + getAcceptedChildrenAlias(alias) + " ");
-                            sqlStr.append("left join ");
-                            sqlStr.append(alias + ".accepted" + tqri.getTableInfo().getShortClassName() + " " 
-                                    + getAcceptedParentAlias(alias) + " left join "
-                                    + getAcceptedParentAlias(alias) + ".acceptedChildren " + getAcceptedParentChildrenAlias(alias) + " ");
-                        }
+                    	if (qfp.getFieldQRI() != null)
+                    	{
+                    		if (isSynSearchable(qfp.getFieldQRI()) && qfp.hasCriteria())
+                    		{
+                    			addSynJoin = true;
+                    			break;
+                    		}
+                    	}
+                    }
+                    if (addSynJoin)
+                    {
+                        hqlHasSynJoins = true;
+                        sqlStr.append("left join ");
+                        sqlStr.append(alias + ".acceptedChildren " + getAcceptedChildrenAlias(alias) + " ");
+                        sqlStr.append("left join ");
+                        sqlStr.append(alias + ".accepted" + tqri.getTableInfo().getShortClassName() + " " 
+                                + getAcceptedParentAlias(alias) + " left join "
+                                + getAcceptedParentAlias(alias) + ".acceptedChildren " + getAcceptedParentChildrenAlias(alias) + " ");
                     }
                 }
                 //XXX - should only use left joins when necessary (see 4th param below)
