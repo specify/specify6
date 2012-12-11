@@ -9,6 +9,10 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -324,11 +328,28 @@ public class CollectionObjectFieldMapper
 				}
 			} catch(NoSuchMethodException ex)
 			{
-				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": no create method in Object Factory");
-				xmlSpec.addUserProperty(mi.getName(), val.toString());
+				log.warn("CollectionObjectMapper:setDwcSpecimenFields: adding user property " + mi.getName() + ": no create method in Object Factory");
+				xmlSpec.addUserProperty(mi.getName(), getStrValForUserProperty(mi, val));
 				continue;
 			}
 		}
+	}
+	
+	protected String getStrValForUserProperty(MappingInfo mi, Object val)
+	{
+		if (val instanceof String)
+		{
+			return (String) val;
+		}
+		if (val instanceof Date)
+		{
+			return val.toString();
+		}
+		if (val instanceof Calendar)
+		{
+			return DateFormat.getDateInstance(DateFormat.MEDIUM).format(((Calendar) val).getTime());
+		}
+		return val.toString();
 	}
 	
 	/**

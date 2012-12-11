@@ -65,21 +65,22 @@ public class MappingInfo implements Comparable<MappingInfo>
 	 * @param dwcType
 	 * @return
 	 */
-	protected Class<?> getClassForDwcType(String dwcType, String name)
+	protected Class<?> getClassForDwcType(String aDwcType, String mappedName)
 	{
-		
+		String name = mappedName.toLowerCase();
+		String dwcType = aDwcType.toLowerCase();
 		if (dwcType == null)
 		{
 			//Some concepts don't have type is spexportschemaitem - possibly an import problem or a problem with our .xsd files??
-			if (name.startsWith("DecimalLatitude") || name.equals("DecimalLongitude"))
+			if (name.startsWith("decimallatitude") || name.equals("decimallongitude"))
 			{
 				return Double.class;
 			}
-			if (name.equalsIgnoreCase("DayCollected"))
+			if (name.equalsIgnoreCase("daycollected"))
 			{
 				return Calendar.class;
 			}
-			if (name.endsWith("Collected") || name.endsWith("Identified"))
+			if (name.endsWith("collected") || name.endsWith("identified"))
 			{
 				return Integer.class;
 			}
@@ -91,19 +92,19 @@ public class MappingInfo implements Comparable<MappingInfo>
 		{
 			return String.class;
 		}
-		if (dwcType.endsWith(":dateTime"))
+		if (dwcType.endsWith(":datetime") || dwcType.endsWith(":datetimeiso"))
 		{
 			return Date.class;
 		}
-		if (dwcType.endsWith(":decimal") || dwcType.endsWith(":double"))
+		if (dwcType.startsWith("dwc:decimal") || dwcType.endsWith(":decimal") || dwcType.endsWith(":double"))
 		{
 			return Double.class;
 		}
-		if (dwcType.endsWith(":nonNegativeInteger"))
+		if (dwcType.endsWith(":nonnegativeinteger") || dwcType.endsWith(":positiveinteger"))
 		{
 			return Integer.class;
 		}
-		if (dwcType.endsWith(":gYear"))
+		if (dwcType.endsWith(":gyear"))
 		{
 			return Integer.class;
 		}

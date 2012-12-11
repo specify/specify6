@@ -95,7 +95,7 @@ public class MorphBankTest
 		for (XmlBaseObject xmlImage : xmlImages)
 		{
 			xmlImage.setOwner(owner);
-			xmlImage.getView().add(new XmlId(77407));			
+			//xmlImage.getView().add(new XmlId(77407));			
 			insert.getXmlObjectList().add(xmlImage);
 		}
 		return request;
@@ -121,11 +121,13 @@ public class MorphBankTest
 		insert.setContributor(owner);
 		request.getInsert().add(insert);
 		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
+		xmlSpecimen.setOwner(owner);
 		insert.getXmlObjectList().add(xmlSpecimen);
 		Vector<XmlBaseObject> xmlImages = fieldMapper.getXmlImages();
 		for (XmlBaseObject xmlImage : xmlImages)
 		{
-			xmlImage.getView().add(new XmlId(77407));			
+			//xmlImage.getView().add(new XmlId(77407));			
+			xmlImage.setOwner(owner);
 			insert.getXmlObjectList().add(xmlImage);
 		}
 		return request;
@@ -152,10 +154,12 @@ public class MorphBankTest
 		insert.setContributor(owner);
 		request.getInsert().add(insert);
 		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
+		xmlSpecimen.setOwner(owner);
 		insert.getXmlObjectList().add(xmlSpecimen);
 		XmlBaseObject xmlImage = fieldMapper.getXmlImage(image);
+		xmlImage.setOwner(owner);
 		//xmlImage.getView().add(new XmlId(1000349));			
-		xmlImage.getView().add(new XmlId(2088978));			
+		//xmlImage.getView().add(new XmlId(2088978));			
 		insert.getXmlObjectList().add(xmlImage);
 		return request;
 	}

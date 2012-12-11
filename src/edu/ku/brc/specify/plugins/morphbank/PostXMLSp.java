@@ -33,7 +33,8 @@ public class PostXMLSp
 	// "C:/dev/morphbank/spiderfiles/spiders0004.xml";
 	// static String URL = "http://localhost:8080/mb/restful";
 	//http://www.susemorph.nrm.se/Image/imageFileUpload.php
-	static String morphBankServiceURLSuffix = "/mbd/restful";
+	static String morphBankServiceURLSuffix = ":8080/mbd/restful";
+
 	
 	final String morphBankServiceURL;
 	
