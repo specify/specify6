@@ -184,6 +184,12 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
 	{
 		return false;
 	}
-
 	
+	@Override
+	public boolean isForSchemaExport() 
+	{
+		return false;
+	}
+
+
 }

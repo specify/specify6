@@ -4331,7 +4331,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));
                 fieldQRI.setIsInUse(true);
-                if (fieldQRI.isFieldHidden() && !container.isPromptMode())
+                if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
                 {
                 	UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
                 }
@@ -4452,7 +4452,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		newPanel.setAutoMapped(autoMapped);
         		result.add(newPanel);
         		fieldQRI.setIsInUse(true);
-        		if (fieldQRI.isFieldHidden() && !container.isPromptMode())
+        		if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
         		{
         			UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
         		}
@@ -4497,7 +4497,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         			result.add(new QueryFieldPanel(container, fieldQRI, 
             				container.getColumnDefStr(), saveBtn, fld, schemaMapping, null));
         			fieldQRI.setIsInUse(true);
-        			if (fieldQRI.isFieldHidden() && !container.isPromptMode())
+        			if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
         			{
         				UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
         			}
@@ -5298,6 +5298,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		}
 		return true;
 	}
+
+	@Override
+	public boolean isForSchemaExport() 
+	{
+		return false;
+	}
+	
 	
 }
 

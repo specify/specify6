@@ -71,6 +71,11 @@ public interface QueryFieldPanelContainerIFace
     void updateAvailableConcepts();
     
     /**
+     * @return true if schema export is underway
+     */
+    boolean isForSchemaExport();
+    
+    /**
      * @return true if available concepts are being updated
      */
     boolean isUpdatingAvailableConcepts();

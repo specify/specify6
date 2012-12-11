@@ -884,7 +884,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                 break;
             }
         }
-        QueryParameterPanel qpp = new QueryParameterPanel();
+        QueryParameterPanel qpp = new QueryParameterPanel(){
+
+			@Override
+			public boolean isPromptMode() {
+				return false;
+			}
+
+			@Override
+			public boolean isForSchemaExport() {
+				return true;
+			} 
+        	
+        };
         qpp.setQuery(exportQuery, tblTree, ttHash, false);
         Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
         		null, theMapping, null, null);

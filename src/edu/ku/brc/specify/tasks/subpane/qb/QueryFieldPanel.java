@@ -555,7 +555,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     public void updateQueryField(final SpQueryField qField)
     {
         boolean isForSchema = schemaMapping != null;
-    	if (qField != null && !ownerQuery.isPromptMode())
+    	if (qField != null && !ownerQuery.isPromptMode() && !ownerQuery.isForSchemaExport())
         {
             qField.setIsDisplay(isDisplayedCkbx.isSelected());
             qField.setIsPrompt(isPromptCkbx.isSelected());
