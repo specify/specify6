@@ -68,6 +68,18 @@
     <xs:element name="informationWithheld" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
     <xs:element name="dataGeneralizations" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
     <xs:element name="dynamicProperties" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+ 	
+ 	<!-- Modifications for Specify6 -->
+ 	<xs:element name="type" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+    <xs:element name="modified" substitutionGroup="dwc:anyRecordLevelTerm" type="dwc:dateTimeISO"/>
+    <xs:element name="language" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+    <xs:element name="rights" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+    <xs:element name="rightsHolder" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+    <xs:element name="accessRights" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+    <xs:element name="bibliographicCitatio" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+    <xs:element name="references" substitutionGroup="dwc:anyRecordLevelTerm" type="xs:string"/>
+ 	<!-- End Specify6 Modifications -->
+ 
     <xs:group name="RecordLevelTerms">
         <xs:sequence>
             <xs:element ref="dcterms:type" minOccurs="0"/>
