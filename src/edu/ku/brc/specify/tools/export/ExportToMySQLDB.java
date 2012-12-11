@@ -116,8 +116,7 @@ public class ExportToMySQLDB
 	 */
 	protected static String getFieldName(ERTICaptionInfo column)
 	{
-		//XXX TESTING!!!!!!!
-		return /*"_" + */column.getColLabel();
+		return fixNameForMySQL(column.getColLabel());
 	}
 	
 	/**
@@ -127,7 +126,7 @@ public class ExportToMySQLDB
 	public static String fixNameForMySQL(String name)
 	{
         //XXX probably lots of other possibilities to fix
-		return name.trim().replaceAll(" ", "_").replaceAll("\\.", "_");
+		return name.trim().replaceAll(" ", "_").replaceAll("\\.", "_").replaceAll("/", "_").replaceAll("#", "_");
 	}
 	
 	/**
@@ -198,12 +197,15 @@ public class ExportToMySQLDB
 			boolean commafy = idColumn;
 			for (ERTICaptionInfo col : columns)
 			{
-				if (commafy)
+				if (col.isVisible())
 				{
-					sql.append(", ");
+					if (commafy)
+					{
+						sql.append(", ");
+					}
+					commafy = true;
+					sql.append(getFieldDef(col));
 				}
-				commafy = true;
-				sql.append(getFieldDef(col));
 			}
 			sql.append(")");
 			sql.append(" CHARSET=utf8");
@@ -559,7 +561,7 @@ public class ExportToMySQLDB
 					bulk.add(getBulkLine(row));
 					if (bulk.size() == bulkBlockSize) 
 					{
-						FileUtils.writeLines(new File(fullFilePathName),bulk, currentRow / bulkBlockSize > 0 || !firstPass);
+						FileUtils.writeLines(new File(fullFilePathName), "utf8", bulk, currentRow / bulkBlockSize > 0 || !firstPass);
 						bulk.clear();
 					}
 				} else
@@ -574,7 +576,7 @@ public class ExportToMySQLDB
             }
 			if (doBulk && bulk.size() > 0) 
 			{
-				FileUtils.writeLines(new File(fullFilePathName),bulk, currentRow / bulkBlockSize > 0 || !firstPass);
+				FileUtils.writeLines(new File(fullFilePathName),"utf8", bulk, currentRow / bulkBlockSize > 0 || !firstPass);
 				bulk.clear();
 			}
 			return currentRow;
@@ -586,7 +588,7 @@ public class ExportToMySQLDB
 			
 			if (doBulk && bulk.size() > 0) 
 			{
-				FileUtils.writeLines(new File(fullFilePathName),bulk, currentRow / bulkBlockSize > 0 || !firstPass);
+				FileUtils.writeLines(new File(fullFilePathName),"utf8", bulk, currentRow / bulkBlockSize > 0 || !firstPass);
 				bulk.clear();
 			}
 		}

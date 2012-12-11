@@ -26,6 +26,8 @@ public class WebPortalFieldDef
 	private final String spFld;
 	private final String spFldTitle;
 	private final String spDescription;
+	private String treeId;
+	private Integer treeRank;
 	private final int colIdx; //col idx in db table
 	private final ExportMappingInfo mapInfo;
 
@@ -48,10 +50,20 @@ public class WebPortalFieldDef
 
 		DBTableChildIFace dbInfo = mapInfo.getInfo();
 		
-		this.spFldTitle = dbInfo.getTitle();
-		this.title = this.spFldTitle;
-		this.spDescription = dbInfo.getDescription();
-			
+		if (dbInfo != null) 
+		{
+			this.spFldTitle = dbInfo.getTitle();
+			this.title = this.spFldTitle;
+			this.spDescription = dbInfo.getDescription();
+		} else
+		{
+			this.spFldTitle = mapInfo.getSpFldName();
+			this.title = this.spFldTitle;
+			this.spDescription = null;
+		}
+		
+		boolean treed = false;
+		
 		if (dbInfo instanceof DBFieldInfo)
 		{
 			this.type = ((DBFieldInfo) dbInfo).getType();
@@ -67,8 +79,24 @@ public class WebPortalFieldDef
 			DBTreeLevelInfo treeInfo = (DBTreeLevelInfo )dbInfo;
 			if (treeInfo.getFldInfo() != null)
 			{
-				this.type = treeInfo.getFldInfo().getType();
-				this.width = treeInfo.getFldInfo().getLength();
+				String tempType = treeInfo.getFldInfo().getType();
+				if ("java.util.Calendar".equals(tempType)) 
+            	{	
+            		String fldId = mapInfo.getFldId();
+            		if (fldId.endsWith("NumericDay") || fldId.endsWith("NumericMonth") || fldId.endsWith("NumericYear"))
+            		{
+            			tempType = "java.lang.Integer";
+            			//XXX technically should change length also, but it probably doesn't matter
+            		}		
+            	}
+				this.type = tempType;
+            	this.width = treeInfo.getFldInfo().getLength();
+            	if (treeInfo.getFldInfo().getName().equalsIgnoreCase("name"))
+            	{
+    				this.treeId = mapInfo.getTblInfo().getName();
+    				this.treeRank = treeInfo.getRankId();
+    				treed = true;            		
+            	}
 			} else
 			{
 				this.type = "java.lang.String";
@@ -86,6 +114,12 @@ public class WebPortalFieldDef
 	
 		
 		this.advancedSearch = true;
+		
+		if (!treed)
+		{
+			this.treeId = null;
+			this.treeRank = null;
+		}
 	}
 
 	/**
@@ -101,6 +135,16 @@ public class WebPortalFieldDef
 		return "\"";
 	}
 	
+	private String escape4Json(String str) {
+		//escapes quotes,\, /, \r, \n, \b, \f, \t
+		String[] badJson = {"\\", "\"", "\r", "\n", "\b", "\f", "\t"};
+		String result = str;
+		for (String bad : badJson) {
+			result = result.replace(bad, "\\" + bad);
+		}
+		return result;
+	}
+
 	/**
 	 * @param name
 	 * @param val
@@ -108,7 +152,7 @@ public class WebPortalFieldDef
 	 */
 	protected String toJson(String name, Object val)
 	{
-		return "\"" + name + "\":" + getJsonDelim(val) + val + getJsonDelim(val);
+		return "\"" + name + "\":" + getJsonDelim(val) + escape4Json(val.toString()) + getJsonDelim(val);
 	}
 	
 	/**
@@ -284,6 +328,19 @@ public class WebPortalFieldDef
 	public ExportMappingInfo getMapInfo() {
 		return mapInfo;
 	}
-	
+
+	/**
+	 * @return the treeId
+	 */
+	public String getTreeId() {
+		return treeId;
+	}
+
+	/**
+	 * @return the treeRank
+	 */
+	public Integer getTreeRank() {
+		return treeRank;
+	}
 	
 }

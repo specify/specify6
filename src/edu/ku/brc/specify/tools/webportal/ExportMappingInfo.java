@@ -5,6 +5,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  * @author timo
@@ -146,7 +147,7 @@ public class ExportMappingInfo
 				DBTableInfo tblInfo = getTblInfo();
 				if (tblInfo !=  null)
 				{
-					return tblInfo.getRelationshipByName(getSpFldName());
+					tblInfo.getRelationshipByName(getSpFldName());
 				}
 			}	
 			return null;
@@ -159,7 +160,7 @@ public class ExportMappingInfo
 		 */
 		public DBTreeLevelInfo getTreeInfo()
 		{
-			if (getFldInfo() == null && getRelInfo() == null)
+			if (getFldInfo() == null && getRelInfo() == null && Treeable.class.isAssignableFrom(getTblInfo().getClassObj()))
 			{
 				String[] chunks = fldId.split("\\.");
 				String levelStr = chunks[chunks.length-1];
@@ -167,7 +168,10 @@ public class ExportMappingInfo
 				String rank = chunks[0];
 				String fld = chunks.length == 1 ? "Name" : chunks[1];
 				DBFieldInfo fldInfo = getTblInfo().getFieldByColumnName(fld);
-				return new DBTreeLevelInfo(rank, fldInfo);
+				if (fldInfo != null)
+				{
+					return new DBTreeLevelInfo(rank, fldInfo);
+				}	
 			}
 			return null;
 		}

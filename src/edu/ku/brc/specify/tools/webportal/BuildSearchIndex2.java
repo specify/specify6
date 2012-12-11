@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
@@ -55,8 +56,10 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 
@@ -102,6 +105,13 @@ public class BuildSearchIndex2
     
     protected String 		fieldsXml; //the "fields" block for the solr schema.xml file.
     
+    protected final String[][] systemFlds = {
+    		{"spid", "string", "true", "true", "true"},
+    		{"cs", "string", "true", "false", "true"},
+    		{"contents", "string", "false", "true", "true"},
+    		{"img", "string", "true", "true", "false"},
+    		{"geoc", "string", "true", "true", "false"}
+    };
     /**
      * @param server
      * @param port
@@ -334,8 +344,14 @@ public class BuildSearchIndex2
      * Result is not added to used. 
      * 
      */
-    private String getAbbreviation(String str, int len, List<String> used)
+    private String getAbbreviation(String inStr, int len, List<String> used)
     {
+    	String[] bad = {"°", ",", " ", "°","\\","{","}","[","]",";",":","\"","'","!","@","#","$","%","^","&","*","(",")","+","=","|","/","?","<",">","~","`","."};
+    	String str = inStr;
+    	for (String b : bad) 
+    	{
+    		str.replace(b, "_");
+    	}
     	String abbr = str.substring(0, 1).toLowerCase();
     	int c = 1;
     	int lastUsed = 1;
@@ -392,6 +408,10 @@ public class BuildSearchIndex2
     {
     	Map<Integer, String> result = new HashMap<Integer, String>();
 		ArrayList<String> used = new ArrayList<String>();
+		for (String[] sys : systemFlds)
+		{
+			used.add(sys[0]);
+		}
     	for (ExportMappingInfo mapping : map.getMappings())
     	{
     		//XXX need to watch out that the QueryField.position-columnIndex relationship maintained --- is not messed up by un-mapped conditions, etc
@@ -415,15 +435,38 @@ public class BuildSearchIndex2
     		+ "/>";
     }
     
-    private String getSolrFldType(DBFieldInfo  fld)
+    private String getSolrFldType(ExportMappingInfo info)
     {
+    	DBFieldInfo fld = info.getFldInfo();
     	if (fld != null)
     	{
+            if (fld.getTableInfo().getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"))
+            {
+            	//XXX ouch. What happens if there are multiple collections in a single portal, some with numeric catnums and some string???
+            	UIFieldFormatterIFace formatter = fld.getFormatter();
+            	if (formatter.isNumeric())
+            	{
+            		return "int";
+            	} else
+            	{
+            		return "string";
+            	}
+            }
             String type = fld.getType();
             if (StringUtils.isNotEmpty(type))
             {
             	if (type.equals("java.lang.String")) {return "string";}
-            	else if (type.equals("java.util.Calendar")) {return "string";}//XXX need to ALWAYS format dates in YYYY-MM-DD (plus time?) format???
+            	else if (type.equals("java.util.Calendar")) 
+            	{	
+            		String fldId = info.getFldId();
+            		if (fldId.endsWith("NumericDay") || fldId.endsWith("NumericMonth") || fldId.endsWith("NumericYear"))
+            		{
+            			return "int";
+            		} else
+            		{
+            			return "string";//XXX need to ALWAYS format dates in YYYY-MM-DD (plus time?) format???
+            		}
+            	}
             	else if (type.equals("java.lang.Float")) {return "tfloat";}
             	else if (type.equals("text")) {return "string";}
             	else if (type.equals("java.sql.Timestamp")) {return "string";}//XXX format???
@@ -452,11 +495,20 @@ public class BuildSearchIndex2
     	}
     }
     
-    private String getSolrFldTypeForSchema(DBFieldInfo  fld)
+    /*private String getSolrFldTypeForSchema(DBFieldInfo  fld)
     {
     	if (fld != null)
     	{
-            String type = fld.getType();
+            if (fld.getTableInfo().getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"))
+            {
+            	//XXX ouch. What happens if there are multiple collections in a single portal, some with numeric catnums and some string???
+            	UIFieldFormatterIFace formatter = fld.getFormatter();
+            	if (formatter.isNumeric())
+            	{
+            		return "
+            	}
+            }
+    		String type = fld.getType();
             if (StringUtils.isNotEmpty(type))
             {
             	if (type.equals("java.lang.String")) {return "string";}
@@ -476,7 +528,7 @@ public class BuildSearchIndex2
         }
     	//else the fld is formatted or aggregated
     	return "string";
-    }
+    }*/
 
 
     public List<String> getDbFieldInfoTypes() 
@@ -506,13 +558,14 @@ public class BuildSearchIndex2
     	for (ExportMappingInfo info : map.getMappings())
     	{
     		String name = shortNames.get(info.getColIdx()); 
-    		String type = getSolrFldTypeForSchema(info.getFldInfo());
+    		//String type = getSolrFldTypeForSchema(info.getFldInfo());  why is getSolrFldTypeForSchema different than getSolrFldType?????
+    		String type = getSolrFldType(info);
     		result.add(getFldXmlForSolr(name, type, true, true, false));
     	}
-    	result.add(0, getFldXmlForSolr("id", "string", true, true, true));
-    	result.add(1, getFldXmlForSolr("cs", "string", true, false, true));
-    	result.add(2, getFldXmlForSolr("contents", "string", false, true, true));
-    	result.add(3, getFldXmlForSolr("img", "string", true, true, false));
+    	for (int f = 0; f < systemFlds.length; f++) {
+    		String[] fld = systemFlds[f];
+    		result.add(f, getFldXmlForSolr(fld[0], fld[1], Boolean.valueOf(fld[2]), Boolean.valueOf(fld[3]), Boolean.valueOf(fld[4])));
+    	}
     	//XXX do we need the xref thing or something like it???
     	//result.add(3, getFldXmlForSolr("xref", "string", false, true, true));
     	return result;
@@ -523,11 +576,11 @@ public class BuildSearchIndex2
     {
     	List<String> result = new ArrayList<String>();
     	result.add("[");
-    	result.add("{\"colname\":\"id\", \"solrname\":\"id\", \"solrtype\":\"int\"},");
+    	result.add("{\"colname\":\"spid\", \"solrname\":\"spid\", \"solrtype\":\"int\"},");
     	for (ExportMappingInfo m : map.getMappings()) 
     	{
     		WebPortalFieldDef def = new WebPortalFieldDef(m, shortNames.get(m.getColIdx()),
-    				getSolrFldType(m.getFldInfo()));
+    				getSolrFldType(m));
     		result.add(def.toJson() + (result.size() > 0 ? "," : "")); 
     	}
     	result.add("{\"colname\":\"img\", \"solrname\":\"img\", \"solrtype\":\"string\", \"title\":\"image\"}");
@@ -565,6 +618,16 @@ public class BuildSearchIndex2
         FileUtils.writeLines(f, myCopy);
     }
     
+    protected void writePortalInstanceJsonToFile() throws IOException
+    {
+    	String portalInstance = UUID.randomUUID().toString();
+    	File f = new File(writeToDir + File.separator + mapping.getMappingName() + "_PortalInstanceSetting.json");
+    	List<String> lines = new ArrayList<String>();
+    	lines.add("//Place the following line at the second line of resorces/config/settings.json. Remove previous portalInstance line if necessary.");
+    	lines.add("\"portalInstance\":\"" + portalInstance + "\",");
+    	FileUtils.writeLines(f, lines);
+    }
+    	
     /**
      * 
      */
@@ -638,7 +701,7 @@ public class BuildSearchIndex2
                 StringBuilder indexStr = new StringBuilder();
                 StringBuilder contents = new StringBuilder();
                 StringBuilder sb       = new StringBuilder();
-                
+                String lat1 = null, lng1 = null, lat2 = null, lng2 = null;
                 solrFldXml = getFldsXmlForSchema(map, shortNames);
                 portalFldJson = getModelInJson(map, shortNames);
                 while (rs.next())
@@ -661,13 +724,13 @@ public class BuildSearchIndex2
                     		}
                     		if (c == 1)
                     		{
-                    			doc.add(new Field("id", value, Field.Store.YES, Field.Index.ANALYZED));
+                    			doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
                     		} else 
                     		{
                     			if (value != null)
                     			{
                     				ExportMappingInfo info = map.getMappingByColIdx(c-2);
-                    				String fldType = getSolrFldType(info.getFldInfo());
+                    				String fldType = getSolrFldType(info);
                     				Field.Index solrIdxType = getSolrIdxType(info);
                     				if (fldType.equals("string"))
                     				{
@@ -696,6 +759,19 @@ public class BuildSearchIndex2
                     			}
                     			contents.append(StringUtils.isNotEmpty(value) ? value : " ");
                     			contents.append('\t');
+                    			if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
+                    			{
+                    				lat1 = value;
+                    			} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
+                    			{
+                    				lat2 = value;
+                    			} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
+                    			{
+                    				lng1 = value;
+                    			} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
+                    			{
+                    				lng2 = value;
+                    			}
                     		}
                     	}
                     }
@@ -703,6 +779,17 @@ public class BuildSearchIndex2
 
                     doc.add(new Field("cs", indexStr.toString(), Field.Store.NO, Field.Index.ANALYZED));
                     doc.add(new Field("contents", contents.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                    
+                    if (lat1 != null && lng1 != null)
+                    {
+                    	String geoc = lat1 + " " + lng1;
+                    	if (lat2 != null && lng2 != null)
+                    	{
+                    		geoc += lat2 + " " + lng2;
+                    	}
+                        doc.add(new Field("geoc", geoc, Field.Store.NO, Field.Index.NOT_ANALYZED));
+                    }
+                    
                     String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
                     if (attachments != null && attachments.length() > 0)
                     {
@@ -731,6 +818,7 @@ public class BuildSearchIndex2
                 
                 writePortalJsonToFile(portalFldJson);
                 writeSolrFldXmlToFile(solrFldXml);
+                writePortalInstanceJsonToFile();
                 
 
             } catch (Exception ex) 
@@ -804,7 +892,16 @@ public class BuildSearchIndex2
     }
     
        
-    
+    /**
+     * @param mapping
+     * @return
+     */
+    private boolean isGeoCoord(ExportMappingInfo mapping)
+    {
+    	String fldName = mapping.getSpFldName().toLowerCase();
+    	return "latitude1".equals(fldName) || "latitude2".equals(fldName)
+    			|| "longitude1".equals(fldName) || "longitude2".equals(fldName);
+    }
     
     
     /**

@@ -1,7 +1,12 @@
 package edu.ku.brc.specify.tools.webportal;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  * @author timo
@@ -14,6 +19,8 @@ public class DBTreeLevelInfo implements DBTableChildIFace
 
 	final String rankName;
 	final DBFieldInfo fldInfo;
+	final Integer treeId;
+	Integer rankId = 0;
 	
 	/**
 	 * @param rankName
@@ -23,6 +30,16 @@ public class DBTreeLevelInfo implements DBTableChildIFace
 	{
 		this.rankName = rankName;
 		this.fldInfo = fldInfo;
+		TreeDefIface<?, ?, ?> treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )fldInfo.getTableInfo().getClassObj());
+		this.treeId = treeDef.getTreeDefId();
+		for (TreeDefItemIface<?, ?, ?> defItem : treeDef.getTreeDefItems()) 
+		{
+			if (defItem.getName().equals(rankName)) //XXX Name vs Title??? Is rankName acutally the Title???
+			{
+				this.rankId = defItem.getRankId();
+				break;
+			}
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -146,6 +163,22 @@ public class DBTreeLevelInfo implements DBTableChildIFace
 	public DBFieldInfo getFldInfo() 
 	{
 		return fldInfo;
+	}
+
+	/**
+	 * @return the treeId
+	 */
+	public Integer getTreeId() 
+	{
+		return treeId;
+	}
+
+	/**
+	 * @return the rankId
+	 */
+	public Integer getRankId() 
+	{
+		return rankId;
 	}
 
 	

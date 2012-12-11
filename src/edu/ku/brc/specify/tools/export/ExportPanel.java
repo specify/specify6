@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -42,6 +43,8 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -141,7 +144,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected long rowCount = 0;
 	protected long rowsExported = 0;
 	protected long cacheRowCount = 0;
-	protected int mapUpdating = -1;
+	protected AtomicInteger mapUpdating = new AtomicInteger(-1);
 	protected int stupid = -1;
 	protected javax.swing.SwingWorker<Object, Object> updater = null;
 	protected javax.swing.SwingWorker<Object, Object> dumper = null;
@@ -189,12 +192,41 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		}
 	}
 	
+	/**
+	 * @param mappingName
+	 * @return
+	 */
 	public static String getCacheTableName(String mappingName)
 	{
 		//return  ExportToMySQLDB.fixTblNameForMySQL(mappingName + AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName());
 		return  ExportToMySQLDB.fixTblNameForMySQL(mappingName);
 	}
 	
+	/**
+	 * 
+	 */
+	protected void updateUIAfterMapSelection()
+	{
+		updateBtnStates();
+	}
+	
+	/**
+	 * 
+	 */
+	protected void updateBtnStates()
+	{
+		//boolean upToDate = isUpToDateForRow(selectedIdx);
+		int selectedIdx = mapsDisplay.getSelectedRow();
+		boolean isCheckingStatus = isCheckingStatusForRow(selectedIdx);
+		boolean isBuilt = isBuiltForRow(selectedIdx);
+		boolean notUpdating = mapUpdating.get() == -1;
+		//System.out.println("updateUIAfterMapSelection: Row: " + selectedIdx + ", isBuilt: " + isBuilt + ", updating: " + !notUpdating);
+		this.showIPTSQLBtn.setEnabled(notUpdating && isBuilt);
+		this.exportToTabDelimBtn.setEnabled(notUpdating && isBuilt);
+		this.setupWebPortalBtn.setEnabled(notUpdating && isBuilt);
+		this.exportToDbTblBtn.setEnabled(notUpdating && !isCheckingStatus);
+		
+	}
 	/**
 	 * 
 	 */
@@ -212,7 +244,31 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
 			
 		};
+		mapsDisplay.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
+			/* (non-Javadoc)
+			 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+			 */
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting())
+				{
+					SwingUtilities.invokeLater(new Runnable(){
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							updateUIAfterMapSelection();
+						}
+					
+					});
+				}
+				
+			}
+			
+		});
 		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
 		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
@@ -231,7 +287,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				int row = mapsDisplay.getSelectedRow();
 				if (row != -1)
 				{
-					mapUpdating = row;
+					mapUpdating.set(row);
 					stupid = 1;
 					SpExportSchemaMapping map = maps.get(row);
 					boolean reBuildIt = false;
@@ -249,9 +305,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						if (updater != null) 
 						{
 							updater.execute();
-							exportToDbTblBtn.setEnabled(false);
-							exportToTabDelimBtn.setEnabled(false);
-
 							SwingUtilities.invokeLater(new Runnable() 
 							{
 
@@ -263,6 +316,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 								@Override
 								public void run() 
 								{
+									updateBtnStates();
 									((CardLayout) progPane.getLayout())
 											.last(progPane);
 								}
@@ -285,7 +339,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			public void actionPerformed(ActionEvent arg0) {
 				int row = mapsDisplay.getSelectedRow();
 				if (row != -1) {
-					mapUpdating = row;
+					mapUpdating.set(row);
 					stupid = 1;
 					SpExportSchemaMapping map = maps.get(row);
 					if (rebuildForRow(row)) {
@@ -364,7 +418,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
 		});
     	//disabling for jar release for WB RecordSet-to-Dataset fix.
-    	setupWebPortalBtn.setVisible(false);
+    	//setupWebPortalBtn.setVisible(false);
 
     	this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
     	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
@@ -390,7 +444,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						return;
 					}
     				localPrefs.put(EXPORT_TEXT_PATH, save.getCurrentDirectory().getPath());
-					mapUpdating = row;
+					mapUpdating.set(row);
 					stupid = 0;
 					SpExportSchemaMapping map = maps.get(row);
 					SpQuery q = map.getMappings().iterator().next()
@@ -574,7 +628,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 */
 	protected void unlock(int mapUpdatingArg)
 	{
-		if (mapUpdating != -1)
+		if (mapUpdating.get() != -1)
 		{
 			ExportMappingTask.unlockMapping(maps.get(mapUpdatingArg));
 		}
@@ -603,6 +657,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return mapsModel.getValueAt(row, 2).toString().equals(UIRegistry.getResourceString("ExportPanel.Uptodate"));
 	}
 	
+	protected boolean isCheckingStatusForRow(int row)
+	{
+		return mapsModel.getValueAt(row, 2).toString().equals(UIRegistry.getResourceString("ExportPanel.CalculatingStatus"));
+	}
 	/**
 	 * @param map
 	 * @return text description of update status for map.
@@ -743,10 +801,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	{
         if (map.getTimestampExported() != null)
         {
-        	if (getNumberColumnsInCache(map) - 1 != map.getMappings().size())
-        	{
-        		return true;
-        	}
+        	int numberOfColumnsMapped = 0;
         	for (SpExportSchemaItemMapping im : map.getMappings())
         	{
         		if (im.getTimestampCreated().compareTo(map.getTimestampExported()) > 0)
@@ -757,6 +812,14 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         		{
         			return true;
         		}
+        		if (im.getQueryField().getIsDisplay())
+        		{
+        			numberOfColumnsMapped++;
+        		}
+        	}
+        	if (getNumberColumnsInCache(map) - 1 != numberOfColumnsMapped)
+        	{
+        		return true;
         	}
         	SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
     		if (q.getTimestampCreated().compareTo(map.getTimestampExported()) > 0)
@@ -979,6 +1042,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			try
         				{
         					//XXX if this fails, there's no need to roll back right?
+            				bulkLoadStmt.executeUpdate("set character_set_database='utf8'");
         					bulkLoadStmt.executeUpdate("load data local infile '" + bulkFilePath + 
         							"'into table " + actualTblName + " fields terminated by '\\t' optionally enclosed by '\\''");
         					FileUtils.delete(new File(bulkFilePath));
@@ -1124,8 +1188,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			return;
 		}
 		
-		unlock(mapUpdating);
-		if (rows == -1 || (stupid == 0 && mapUpdating != -1))
+		unlock(mapUpdating.get());
+		if (rows == -1 || (stupid == 0 && mapUpdating.get() != -1))
 		{
 			final long frows = rows;
 			
@@ -1164,13 +1228,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 					if (updater != null && frows != -1)
 					{
-						refreshUpdatedMapDisplay(mapUpdating);
+						refreshUpdatedMapDisplay(mapUpdating.get());
 					}
 					((CardLayout )progPane.getLayout()).first(progPane);
 					prog.setValue(0);
-					exportToDbTblBtn.setEnabled(true);
-					exportToTabDelimBtn.setEnabled(true);
-					mapUpdating = -1;
+					mapUpdating.set(-1);
+					updateBtnStates();
 					updater = null;
 					dumper = null;
 				}
@@ -1191,7 +1254,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         	SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class,	maps.get(mapToRefresh).getId());
 			newMap.forceLoad();
 			newMap.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
-			newMap.getSpExportSchema().forceLoad();
+			if (newMap.getSpExportSchema() != null)
+			{
+				newMap.getSpExportSchema().forceLoad();
+			}
 	        maps.set(mapToRefresh, newMap);
        }
         finally
@@ -1330,10 +1396,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			                    }
 			                }
 			                otherRecs = query.list().size();
-			                List<?> recs = query.list();
-			                for (Object rec : recs) {
-			                	System.out.println(rec);
-			                }
 				        } finally
 				        {
 				        	theSession.close();

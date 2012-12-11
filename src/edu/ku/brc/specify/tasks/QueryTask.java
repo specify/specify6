@@ -1138,6 +1138,11 @@ public class QueryTask extends BaseTask
             if (dataObj != null)
             {
                 ((SpQuery )dataObj).forceLoad(true);
+                SpExportSchemaMapping m = ((SpQuery )dataObj).getMapping();
+                if (m != null)
+                {
+                	m.forceLoad(false);
+                }
             	return editQuery((SpQuery)dataObj);
             }
             return false;
@@ -1223,7 +1228,6 @@ public class QueryTask extends BaseTask
     	if (checkLock(query)) 
     	{
 			QueryBldrPane newPane = getNewQbPane(query);
-
 			if (starterPane != null) 
 			{
 				SubPaneMgr.getInstance().replacePane(starterPane, newPane);

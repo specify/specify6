@@ -16,9 +16,11 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -327,14 +329,20 @@ public class ExportMappingTask extends QueryTask
 		try
 		{
 			Vector<SpExportSchemaMapping> result = new Vector<SpExportSchemaMapping>();
-			Integer disciplineId = AppContextMgr.getInstance().getClassObject(
-					Discipline.class).getId();
+			//Integer disciplineId = AppContextMgr.getInstance().getClassObject(
+			//		Discipline.class).getId();
+			List<Collection> collections = session.getDataList(edu.ku.brc.specify.datamodel.Collection.class, "discipline", AppContextMgr.getInstance().getClassObject(
+					Discipline.class));
+			List<Integer> collIds = new ArrayList<Integer>();
+			for (Collection c : collections)
+			{
+				collIds.add(c.getCollectionId());
+			}
 			List<SpExportSchemaMapping> mappings = session
 					.getDataList(SpExportSchemaMapping.class);
 			for (SpExportSchemaMapping mapping : mappings)
 			{
-				if (mapping.getSpExportSchema().getDiscipline().getId().equals(
-						disciplineId))
+				if (collIds.indexOf(mapping.getCollectionMemberId()) != -1)
 				{
 					mapping.forceLoad();
 					result.add(mapping);
@@ -352,11 +360,15 @@ public class ExportMappingTask extends QueryTask
 	 */
 	protected SpExportSchema chooseExportSchema()
 	{
+		List<SpExportSchema> schemas = getExportSchemas();
+		SpExportSchema noSchema = new SpExportSchema();
+		noSchema.setSchemaName("no schema");
+		schemas.add(0,noSchema);
 		ChooseFromListDlg<SpExportSchema> dlg = new ChooseFromListDlg<SpExportSchema>(
 				(Frame) UIRegistry.getTopWindow(),
 				UIRegistry
 						.getResourceString("ExportSchemaMapEditor.ChooseSchemaTitle"),
-				getExportSchemas());
+				schemas);
 		centerAndShow(dlg);
 		if (dlg.isCancelled()) return null;
 		return dlg.getSelectedObject();
@@ -400,7 +412,8 @@ public class ExportMappingTask extends QueryTask
 		DBTableInfo tableInfo = getTableInfo();
 		SpQuery query = new SpQuery();
 		query.initialize();
-		query.setName(exportSchema.getSchemaName() + exportSchema.getVersion());
+		//query.setName(exportSchema.getSchemaName() + exportSchema.getVersion());
+		query.setName("I18N New Mapping I18N");
 		query.setNamed(false);
 		query.setContextTableId((short) tableInfo.getTableId());
 		query.setContextName(tableInfo.getShortClassName());
@@ -486,7 +499,13 @@ public class ExportMappingTask extends QueryTask
 			SpExportSchema selectedSchema = chooseExportSchema();
 			if (selectedSchema != null) 
 			{
-				exportSchema = selectedSchema;
+				if (selectedSchema.getSpExportSchemaId() == null)
+				{
+					exportSchema = null;
+				} else
+				{
+					exportSchema = selectedSchema;
+				}
 				schemaMapping = new SpExportSchemaMapping();
 				schemaMapping.initialize();
 				schemaMapping.setSpExportSchema(exportSchema);
@@ -599,24 +618,14 @@ public class ExportMappingTask extends QueryTask
 	            Integer collId = currentCollection.getId();
 	            if (collId != null)
 	            {
-	                List<SpExportSchema> exportSchemas = getExportSchemas(session);
-	                if (exportSchemas != null)
-	                {
-                		for (SpExportSchema spExportSchema : exportSchemas)
+                	for (SpExportSchemaMapping mapping : getMappings())
+                	{
+                		if (mapping.getCollectionMemberId().equals(collId))
                 		{
-                			for (SpExportSchemaMapping mapping : spExportSchema.getSpExportSchemaMappings())
-                			{
-                				if (mapping.getCollectionMemberId().equals(collId))
-                				{
-                					result.add(mapping.getMappings().iterator().next()
-                						.getQueryField().getQuery());
-                				}
-                			}
+                			result.add(mapping.getMappings().iterator().next()
+                				.getQueryField().getQuery());
                 		}
-	                } else
-	                {
-	                    log.error("exportSchemas list is null");
-	                }
+                	}
 	            } else
 	            {
 	                log.error("Collection Id is null");
