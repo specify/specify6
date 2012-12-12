@@ -4148,7 +4148,7 @@ public class UploadTable implements Comparable<UploadTable>
     		return true;
     	}
     	
-    	if (seq == 0 && parentTableIsNonBlank(row, uploadData, true))
+    	if (seq == 0 && parentTableIsNonBlank(row, uploadData, true, seq))
     	{
     		return true;
     	}
@@ -4232,7 +4232,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData)
     {
-    	return parentTableIsNonBlank(row, uploadData, false);
+    	return parentTableIsNonBlank(row, uploadData, false, -1);
     }
 
     
@@ -4242,7 +4242,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @param ignorControllingParents
      * @return
      */
-    protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData, final Boolean ignoreControllingParents)
+    protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData, final Boolean ignoreControllingParents, final int seq)
     {
     	for (Vector<ParentTableEntry> parents : parentTables)
     	{
@@ -4253,7 +4253,16 @@ public class UploadTable implements Comparable<UploadTable>
     			{
     				break;
     			}
-    			for (int seq = 0; seq < ut.getUploadFields().size(); seq++)
+    			if (seq == -1)
+    			{
+        			for (int s = 0; s < ut.getUploadFields().size(); s++)
+        			{
+        				if (!ut.isBlankRow(row, uploadData, s))
+        				{
+        					return true;
+        				}
+        			}
+    			} else 
     			{
     				if (!ut.isBlankRow(row, uploadData, seq))
     				{
