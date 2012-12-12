@@ -214,7 +214,14 @@ public class XLSImport extends DataImport implements DataImportIFace
         
                                     } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
                                     {
-                                        value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
+                                        Date d = cell.getDateCellValue();
+                                        if (d != null)
+                                        {
+                                        	value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
+                                        } else
+                                        {
+                                        	value = null;
+                                        }
                                     } else 
                                     {
                                         double numeric = cell.getNumericCellValue();
@@ -284,7 +291,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                     log.warn("Hyperlinks vector not empty after import. Overlapping hyperlink ranges?");
                 }
                 return status = this.truncations.size() == 0 && this.messages.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
-            } catch (IOException ex)
+            } catch (Exception ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSImport.class, ex);
