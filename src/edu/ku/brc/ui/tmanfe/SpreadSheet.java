@@ -884,7 +884,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         {
             for (int j = 0; j < numcols; j++)
             {
-                sbf.append(getValueAt(rowsselected[i], colsselected[j]));
+                Object val = getValueAt(rowsselected[i], colsselected[j]);
+                if (val == null || "".equals(val)) //Add place holder for empty cell
+                {
+                	val = "\b";
+                }
+            	sbf.append(val);
                 if (j < numcols - 1)
                 {
                     sbf.append("\t");
@@ -946,7 +951,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 				int colInx = startCol + j;
                 				if (tokens[j].length() <= model.getColDataLen(colInx))
                 				{
-                					setValueAt(tokens[j], startRow + i, colInx);
+                					String token = tokens[j];
+                					if ("\b".equals(token)) //is placeholder for empty cell
+                					{
+                						token = "";
+                					}
+                					setValueAt(token, startRow + i, colInx);
                 				} else
                 				{
                 					String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
