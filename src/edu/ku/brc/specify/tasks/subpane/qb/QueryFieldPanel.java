@@ -608,9 +608,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             		if (schemaItem.getId() == null)
             		{
             			mapping.setExportSchemaItem(null);
-            			if (mapping.getExportedFieldName() == null)
+            			String exportName = schemaItemCBX.getEditor().getItem().toString();
+            			if (exportName == null || exportName.equals(getResourceString("QueryBldrPane.UnmappedSchemaItemName")))            			
             			{
             				mapping.setExportedFieldName(getDefaultExportedFieldName());
+            			} else
+            			{
+            				mapping.setExportedFieldName(exportName);
             			}
             		} else
             		{
@@ -688,6 +692,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 //    	Timestamp fldTimeStamp = fld.getTimeStampModified();
 //    	
 //    }
+    
+    /**
+     * @param queryField
+     */
+    public void setQueryFieldForAutomapping(SpQueryField queryField)
+    {
+    	this.queryField = queryField;
+    }
+    
     /**
      * @param queryField the queryField to set
      */

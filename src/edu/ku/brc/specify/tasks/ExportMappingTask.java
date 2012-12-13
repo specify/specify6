@@ -413,7 +413,7 @@ public class ExportMappingTask extends QueryTask
 		SpQuery query = new SpQuery();
 		query.initialize();
 		//query.setName(exportSchema.getSchemaName() + exportSchema.getVersion());
-		query.setName("I18N New Mapping I18N");
+		query.setName(UIRegistry.getResourceString("ExportMappingTask.DefaultNewMappingName"));
 		query.setNamed(false);
 		query.setContextTableId((short) tableInfo.getTableId());
 		query.setContextName(tableInfo.getShortClassName());

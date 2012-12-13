@@ -1060,6 +1060,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				qf.initialize();
 				qf.setFieldName(qfp.getFieldQRI().getFieldName());
 				qf.setStringId(qfp.getFieldQRI().getStringId());
+				qfp.setQueryFieldForAutomapping(qf);
 				query.addReference(qf, "fields");
 				addNewMapping(qfp.getFieldQRI(), qf, qfp, false);
 				dirty = true;
@@ -5252,7 +5253,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 							String expFldName = qfp.getExportedFieldName();
 							if (StringUtils.isBlank(expFldName))
 							{
-								unMappedItem.setFieldName(getResourceString("QueryBldrPane.UnmappedSchemaItemName"));
+								if (available.size() > 0)
+								{
+									unMappedItem.setFieldName(getResourceString("QueryBldrPane.UnmappedSchemaItemName"));
+								} else
+								{
+									unMappedItem.setFieldName(qfp.getFieldTitle());
+								}
 							} else 
 							{
 								unMappedItem.setFieldName(expFldName);
