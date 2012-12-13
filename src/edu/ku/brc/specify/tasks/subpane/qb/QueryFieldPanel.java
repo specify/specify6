@@ -1821,6 +1821,16 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         
         StringBuilder sb = new StringBuilder();
+        Integer[] qFixedCmps = {300};
+        Integer[] sFixedCmps = {268, 300};
+        Integer[] fixedCmps;
+        if (schemaMapping != null) 
+        {
+        	fixedCmps = sFixedCmps;
+        } else
+        {
+        	fixedCmps = qFixedCmps;
+        }
         if (columnDefStr == null)
         {
             for (int i = 0; i < comps.length; i++)
@@ -1828,13 +1838,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 sb.append(i == 0 ? "" : ",");
                 if (isCenteredComp(i))
                     sb.append("c:");
-                if (i != 0 || schemaMapping != null)
+                if (i >= fixedCmps.length)
                 {
                 	sb.append("p");
                 }
                 else
                 {
-                	sb.append("300px");
+                	sb.append(fixedCmps[i] + "px");
                 }
                 if (isGrowComp(i))
                     sb.append(":g");
