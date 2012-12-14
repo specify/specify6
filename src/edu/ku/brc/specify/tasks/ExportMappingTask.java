@@ -16,11 +16,12 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -56,7 +57,9 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -75,6 +78,7 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
@@ -667,6 +671,74 @@ public class ExportMappingTask extends QueryTask
 	{
 		//assuming query was produced by this.getQueriesForLoading()
 		return true;
+	}
+
+	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#okToDeleteQuery(edu.ku.brc.specify.datamodel.SpQuery)
+	 */
+	@Override
+	protected boolean okToDeleteQuery(SpQuery q, DataProviderSessionIFace session) throws Exception
+	{
+		boolean result = super.okToDeleteQuery(q, session);
+		if (result)
+		{
+			SpExportSchemaMapping mapping = getMappingForQuery(q, session);
+			if (mapping != null)
+			{
+				String tableName = ExportToMySQLDB.fixTblNameForMySQL(mapping.getMappingName());
+				Connection connection = DBConnection.getInstance().getConnection();
+				if (BasicSQLUtils.doesTableExist(connection, tableName))
+				{
+					UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.IT_Permission_Required_To_Delete");
+					Pair<String, String> it = null;
+					it = DatabaseLoginPanel.getITUsernamePwd();
+					if (it == null)
+					{
+						UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.Lack_Permission_To_Delete");
+						result = false;
+					} else
+					{
+						int count = BasicSQLUtils.getCountAsInt("select count(*) from " + tableName);
+						int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+		                String.format(UIRegistry.getResourceString("ExportMappingTask.CONFIRM_CACHE_DELETE"), 
+		                		tableName, count),
+		                UIRegistry.getResourceString("ExportMappingTask.CONFIRM_CACHE_DELETE_TITLE"), 
+		                	JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
+		                	null, 
+		                	null, 
+		                	JOptionPane.NO_OPTION);
+						if (option == JOptionPane.CANCEL_OPTION)
+						{
+							result = false;
+						} else if (option == JOptionPane.YES_OPTION)
+						{
+				    	
+							DBConnection dbc    = DBConnection.getInstance();
+							DBConnection itConnection = DBConnection.createInstance(dbc.getDriver(), 
+				                                                          dbc.getDialect(), 
+				                                                          dbc.getDatabaseName(), 
+				                                                          dbc.getConnectionStr(), 
+				                                                          it.getFirst(), 
+				                                                          it.getSecond());
+							if (itConnection != null)
+							{
+								try 
+								{
+									Statement stmt = itConnection.getConnection().createStatement();
+									stmt.execute("drop table " + tableName);
+								} finally
+								{
+									itConnection.close();
+								}
+							}
+						}
+					}
+				}
+			}
+		}		
+		return result;
 	}
 
 	/* (non-Javadoc)

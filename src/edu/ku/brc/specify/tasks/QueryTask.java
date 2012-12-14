@@ -1349,6 +1349,34 @@ public class QueryTask extends BaseTask
     }
     
     /**
+     * @param q
+     * @param session
+     * @return true if q has no associated reports or user confirms delete
+     * @throws Exception
+     */
+    protected boolean okToDeleteQuery(final SpQuery q, DataProviderSessionIFace session) throws Exception
+    {
+        //assumes q is force-loaded
+    	if (q.getReports().size() > 0)
+        {
+            CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"),
+                    true, CustomDialog.OKHELP, new QBReportInfoPanel(q, UIRegistry.getResourceString("QB_UNDELETABLE_REPS")));
+            cd.setHelpContext("QBUndeletableReps");
+            UIHelper.centerAndShow(cd);
+            cd.dispose();
+            return false;
+        }
+    	
+        int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), q.getName()),
+                UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"), 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); 
+        
+        
+        return option == JOptionPane.YES_OPTION;
+    }
+    
+    /**
      * Delete a record set
      * @param rs the recordSet to be deleted
      */
@@ -1361,23 +1389,8 @@ public class QueryTask extends BaseTask
         SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
         try
         {
-            query.forceLoad(true);
-            if (query.getReports().size() > 0)
-            {
-                CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"),
-                        true, CustomDialog.OKHELP, new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_UNDELETABLE_REPS")));
-                cd.setHelpContext("QBUndeletableReps");
-                UIHelper.centerAndShow(cd);
-                cd.dispose();
-                return false;
-            }
-            int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                    String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), query.getName()),
-                    UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"), 
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
-            
-            
-            if (option == JOptionPane.YES_OPTION)
+            query.forceLoad(true);            
+            if (okToDeleteQuery(query, session))
             {
                 session.beginTransaction();
                 transOpen = true;
@@ -1856,6 +1869,7 @@ public class QueryTask extends BaseTask
      * @param topNode
      * @return list queries defined in file.
      */
+    @SuppressWarnings("serial")
     protected static Vector<Pair<SpQuery, Boolean>> getQueriesFromFile(final String filePath, final String topNode)
     {
         Vector<Pair<SpQuery, Boolean>> queries = new Vector<Pair<SpQuery, Boolean>>();
