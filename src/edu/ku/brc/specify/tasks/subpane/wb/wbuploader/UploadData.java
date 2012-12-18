@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import java.util.Hashtable;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -82,9 +83,10 @@ public class UploadData
     	}
     	
     	WorkbenchRow wbrow = getWbRow(row);
-    	for (int c = 0; c < wbrow.getItems().size(); c++)
+    	Hashtable<Short, WorkbenchDataItem> items = wbrow.getItems();
+    	for (WorkbenchDataItem di : items.values())
     	{
-    		if (!StringUtils.isBlank(wbrow.getData(c)))
+    		if (!StringUtils.isBlank(di.getCellData()))
     		{
     			return false;
     		}
