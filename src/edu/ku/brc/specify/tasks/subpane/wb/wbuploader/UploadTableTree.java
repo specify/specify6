@@ -712,6 +712,11 @@ public class UploadTableTree extends UploadTable
         			{
         				if (!defItem.getRankId().equals(currLevel.rank))
         				{
+        					if (currLevel.child == null && defItem.getRankId() > currLevel.rank)
+        					{
+        						//don't complain about missing required levels outside the range of ranks of tables being uploaded
+        						break;
+        					}
         					currLevel = currLevel.child;
         				}
         				else
