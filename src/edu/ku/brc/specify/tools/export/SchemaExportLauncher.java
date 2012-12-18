@@ -6,10 +6,7 @@ package edu.ku.brc.specify.tools.export;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Window;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.List;
-import java.util.Locale;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,10 +15,8 @@ import javax.swing.WindowConstants;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.PermissionIFace;
-import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -30,7 +25,6 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
@@ -79,8 +73,6 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                 return;
             }
             
-            int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
-            SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {
             if (AppContextMgr.getInstance().getClassObject(Collection.class) == null)
