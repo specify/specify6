@@ -1902,7 +1902,7 @@ public class TemplateEditor extends CustomDialog
             for (int m=0; m<mapModel.getSize(); m++)
             {
                 FieldMappingPanel fmp = mapModel.getElementAt(m);
-                String fldName = fmp.getFieldName();
+                String fldName = fmp.getFieldInfo().getFieldInfo().getName();
                 if (fldName.endsWith("1") || fldName.endsWith("2"))
                 {
                     fldName = fldName.substring(0, fldName.length()-1);
