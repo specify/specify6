@@ -1122,6 +1122,8 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     public void doLogin()
     {
+        DBConnection.resetEmbeddedDir();
+        
         isLoggingIn = true;
         save();
         
@@ -1297,9 +1299,6 @@ public class DatabaseLoginPanel extends JTiledPanel
                             UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
                         }
                     }
-                } else
-                {
-                    DBConnection.resetEmbeddedDir();
                 }
                 return null;
             }
