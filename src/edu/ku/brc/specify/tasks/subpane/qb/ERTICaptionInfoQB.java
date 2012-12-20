@@ -19,11 +19,14 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.Calendar;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.specify.dbsupport.TypeCode;
 
 /**
@@ -85,13 +88,49 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             {
                 return this.uiFieldFormatter.formatToUI((Object[] )value);
             }
+            if (fieldInfo.isPartialDate() && ((Object[])value).length == 2)
+            {
+            	Object date = ((Object[])value)[0];
+            	if (date == null)
+            	{
+            		return "";
+            	}
+            	
+            	Byte precision = (Byte)((Object[])value)[1];
+            	if (precision == null)
+            	{
+            		precision = 1;
+            	}
+            	UIFieldFormatterIFace.PartialDateEnum datePrec = UIFieldFormatterIFace.PartialDateEnum.values()[precision];
+            	boolean isPartial = false;
+            	String formatName = "Date";
+            	if (datePrec.equals(UIFieldFormatterIFace.PartialDateEnum.Month))
+            	{
+            		isPartial = true;
+            		formatName = "PartialDateMonth";
+            	} else if (datePrec.equals(UIFieldFormatterIFace.PartialDateEnum.Year))
+            	{
+            		isPartial = true;
+            		formatName = "PartialDateYear";
+            	}
+            	for (UIFieldFormatterIFace formatter : UIFieldFormatterMgr.getInstance().getDateFormatterList(isPartial))
+            	{
+                    if (formatter.getName().equals(formatName))
+                    {
+                    	//return formatter.formatToUI(date);
+                    	return formatter.getDateWrapper().format(((Calendar)date).getTime());
+                    }
+
+            	}
+            }
         }	
     	//else another complication - formats for export to db
     	if (uiFieldFormatter instanceof ExportFieldFormatter)
     	{
     		return this.uiFieldFormatter.formatToUI(value);
     	}
-    	
+
+
     	//else
     	//XXX for large picklists the next two blocks could become time-consuming...
     	if (value != null && pickList instanceof TypeCode)

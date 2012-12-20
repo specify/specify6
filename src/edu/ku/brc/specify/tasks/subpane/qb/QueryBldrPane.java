@@ -118,7 +118,6 @@ import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -2228,8 +2227,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp, forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                if (!forSchemaExport && 
-                		qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate())
+                if (qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate())
                 {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
                     
@@ -2244,7 +2242,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     erti.setColInfoList(colInfoList);
                     erti.setColName(null);
                     // XXX We need to get this from the SchemaConfig
-                    erti.setUiFieldFormatter(UIFieldFormatterMgr.getInstance().getFormatter("PartialDate"));
+                    //erti.setUiFieldFormatter(UIFieldFormatterMgr.getInstance().getFormatter("PartialDate"));
                 }
                 if (forSchemaExport)
                 {
