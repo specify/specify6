@@ -81,6 +81,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
@@ -596,6 +597,43 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
      */
     private void doQuit()
     {
+        try
+        {
+            DataProviderSessionIFace session     = null;
+            SpecifyUser              currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            if (currentUser != null)
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                SpecifyUser user = session.getData(SpecifyUser.class, "id", currentUser.getId(), DataProviderSessionIFace.CompareType.Equals);
+                user.setIsLoggedIn(false);
+                user.setLoginDisciplineName(null);
+                user.setLoginCollectionName(null);
+                user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+                
+                try
+                {
+                    session.beginTransaction();
+                    session.saveOrUpdate(user);
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
         DataProviderFactory.getInstance().shutdown();
         DBConnection.shutdown();
         DBConnection.shutdownFinalConnection(true, false); // true means System.exit
