@@ -817,7 +817,7 @@ public class ResultSetTableModel extends DefaultTableModel implements SQLExecuti
                     }
                     
                     // Now for each Caption column get a value
-                    for (ERTICaptionInfo caption :  captions)
+                    for (ERTICaptionInfo caption : captions)
                     {
                         int posIndex = caption.getPosIndex();
                         if (caption == aggCaption) // Checks to see if we need to take multiple columns and make one column
@@ -902,8 +902,23 @@ public class ResultSetTableModel extends DefaultTableModel implements SQLExecuti
                             
                         } else if (row != null)
                         {
-                            Object obj = caption.processValue(resultSet.getObject(posIndex + 1));
-                            row.add(obj);
+                            if (caption.getColName() == null && caption.getColInfoList().size() > 0)
+                            {
+                                int len = caption.getColInfoList().size();
+                                Object[] val = new Object[len];
+                                for (int i = 0; i < caption.getColInfoList().size(); i++)
+                                {
+                                    int inx = posIndex + 1 + i;
+                                    val[i] = caption.processValue(resultSet.getObject(inx));
+                                }
+                                row.add(caption.getUiFieldFormatter().formatToUI(val));
+                                //col += caption.getColInfoList().size() - 1;
+
+                            } else
+                            {
+                                Object obj = caption.processValue(resultSet.getObject(posIndex + 1));
+                                row.add(obj);
+                            }
                         }
                     }
                     
