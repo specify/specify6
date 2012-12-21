@@ -193,7 +193,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         {
             int processIdx = isRawCol ? colInfoIdx : colNames.get(colInfoIdx).getColInfoIdx();
             ERTICaptionInfoQB col = columnInfo.get(processIdx);
-            Object value;
+            Object value = null;
             if (col.getColInfoList() != null && col.getColInfoList().size() > 1)
             {
             	//Then assume the values for the fields in the colInfo list are
@@ -207,7 +207,11 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             }
             else
             {
-            	value = ((Object[] )theRow)[adjustedFldIdx];
+                Object[] rowArray = (Object[])theRow;
+                if (rowArray != null && adjustedFldIdx > -1 && adjustedFldIdx < rowArray.length)
+                {
+                    value = ((Object[])theRow)[adjustedFldIdx];
+                }
             }
             return processValue(processIdx, col.processValue(value));
         }
