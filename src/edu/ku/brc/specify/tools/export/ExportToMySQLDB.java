@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,6 +27,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.FieldMetaData;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
@@ -803,6 +805,30 @@ public class ExportToMySQLDB
 		return result.toString();
 	}
 	
+	protected static String getSQLForTabDelimExport(Connection conn, String tbl)
+	{
+		List<FieldMetaData> flds = BasicSQLUtils.getFieldMetaDataFromSchema(conn, tbl);
+		String fldStr = "";
+		for (FieldMetaData fld : flds)
+		{
+			System.out.println(fld.getName() + ": " + fld.getType());
+			if (fldStr.length() > 0)
+			{
+				fldStr += ", ";
+			}
+			if (!fld.getType().equals("DATE"))
+			{
+				fldStr += "`" + fld.getName() + "`";
+			} else
+			{
+				String fldText = "`" + fld.getName() + "`";
+				String dateStr = "concat(year(" + fldText + "), " + "CASE WHEN month(" + fldText + ") = 0 THEN '' ELSE concat('-', month(" + fldText + ")) END, "
+						+ "CASE WHEN day(" + fldText + ") = 0 THEN '' ELSE concat('-', day(" + fldText + ")) END) " + fldText;
+				fldStr += dateStr;
+			}
+		}
+		return "select " + fldStr + " from `" + tbl + "`";
+	}
 	/**
 	 * @param file
 	 * @param headers
@@ -834,7 +860,9 @@ public class ExportToMySQLDB
 							listener.loading();
 						}
 						stmt = conn.createStatement();
-						ResultSet rows = stmt.executeQuery("select * from " + tableName);
+						List<FieldMetaData> flds = BasicSQLUtils.getFieldMetaDataFromSchema(conn, tableName);
+						String sql = getSQLForTabDelimExport(conn, tableName);
+						ResultSet rows = stmt.executeQuery(sql);
 						//no simple way to get record count from ResultSet??
 						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from " + tableName);
 						for (QBDataSourceListenerIFace listener : listeners)

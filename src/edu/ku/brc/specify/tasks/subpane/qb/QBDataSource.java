@@ -179,6 +179,16 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         
         boolean skipProcessing = isRawCol && fldIdx == 0; //it's a request for the id field.
         
+        //adjust fldIdx to account for additional 'hidden' cols such as those for PartialDatePrecision values.
+        int adjustedFldIdx = fldIdx;
+        for (int c = 0; c < colInfoIdx; c++)
+        {
+        	ERTICaptionInfoQB col = columnInfo.get(c);
+        	if (col.getColInfoList() != null && col.getColInfoList().size() > 0)
+        	{
+        		adjustedFldIdx += col.getColInfoList().size() - 1;
+        	}
+        }
         if (!processed && !skipProcessing)
         {
             int processIdx = isRawCol ? colInfoIdx : colNames.get(colInfoIdx).getColInfoIdx();
@@ -189,25 +199,25 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
             	//Then assume the values for the fields in the colInfo list are
             	//stored consecutively in the resultset.
             	value = new Object[col.getColInfoList().size()];
-            	((Object[] )value)[0] = ((Object[] )theRow)[fldIdx];
+            	((Object[] )value)[0] = ((Object[] )theRow)[adjustedFldIdx];
             	for (int i = 1; i < col.getColInfoList().size(); i++)
             	{
-            		((Object[] )value)[i] = ((Object[] )theRow)[fldIdx+i];
+            		((Object[] )value)[i] = ((Object[] )theRow)[adjustedFldIdx+i];
             	}
             }
             else
             {
-            	value = ((Object[] )theRow)[fldIdx];
+            	value = ((Object[] )theRow)[adjustedFldIdx];
             }
             return processValue(processIdx, col.processValue(value));
         }
         if (!processed)
         {
-        	return ((Object[] )theRow)[fldIdx];
+        	return ((Object[] )theRow)[adjustedFldIdx];
         }
         //else processing already done
         //int colIdx = this.recordIdsIncluded ? fldIdx - 1 : fldIdx;       
-        return ((Vector<Object> )theRow).get(fldIdx);
+        return ((Vector<Object> )theRow).get(adjustedFldIdx);
     }
     
     /* (non-Javadoc)
