@@ -238,11 +238,11 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
      * @see edu.ku.brc.af.core.expresssearch.ERTICaptionInfo#processValue(java.lang.Object)
      */
     @Override
-    public Object processValue(Object key)
+    public Object processValue(final Object key)
     {
-        if (processor != null)
+        if (processor != null && key instanceof Integer)
         {
-        	Object value = useCache ? lookupCache.lookupKey((Integer )key) : null;
+        	Object value = useCache ? lookupCache.lookupKey((Integer)key) : null;
         	if (value == null)
         	{
         		if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
@@ -257,14 +257,12 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         		}
         		if (useCache && key != null)
         		{
-        			lookupCache.addKey((Integer )key, value);
+        			lookupCache.addKey((Integer)key, value);
         		}
         	}
         	return value;
-        } else
-        {
-        	return null;
         }
+    	return null;
     }
         
     /**
@@ -278,7 +276,12 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         {
             return getListFromKey(value);
         }
-        return (Collection<?>)value;
+        
+        if (value instanceof Collection<?>)
+        {
+            return (Collection<?>)value;
+        }
+        return null;
     }
     
     /**
