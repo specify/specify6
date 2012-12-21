@@ -172,19 +172,22 @@ public class ERTICaptionInfoTreeLevelGrp
 //            return null;
 //        }
         
-        Object current = useCache ? lookupCache.lookupKey((Integer )value) : null;
-        if (current == null)
+        if (value instanceof Integer)
         {
-            current = newValue(value);
-            if (useCache)
+            Object current = useCache ? lookupCache.lookupKey((Integer)value) : null;
+            if (current == null)
             {
-            	lookupCache.addKey((Integer )value, current);
+                current = newValue(value);
+                if (useCache)
+                {
+                	lookupCache.addKey((Integer)value, current);
+                }
             }
-        }
-        Object[] currentRank = (Object[])((Object[] )current)[rankIdx];
-        if (currentRank != null)
-        {
-         	return currentRank[fldIdx];
+            Object[] currentRank = (Object[])((Object[])current)[rankIdx];
+            if (currentRank != null)
+            {
+             	return currentRank[fldIdx];
+            }
         }
         return null;        
         
