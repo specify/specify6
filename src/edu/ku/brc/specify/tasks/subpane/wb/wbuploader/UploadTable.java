@@ -97,6 +97,7 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
+import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
@@ -2685,7 +2686,7 @@ public class UploadTable implements Comparable<UploadTable>
 
     protected boolean needToMatchChild(Class<?> childClass)
     {
-        // temporary fix. Really should determine based on cascade rules and the fields in the
+        //XXX temporary fix. REALLY should determine based on cascade rules and the fields in the
         // dataset.
         logDebug("need to add more child classes");
         if (tblClass.equals(Agent.class))
@@ -2710,7 +2711,8 @@ public class UploadTable implements Comparable<UploadTable>
                 || childClass.equals(CollectionObjectAttribute.class)
                 || childClass.equals(CollectionObjectCitation.class)
                 || childClass.equals(DNASequence.class)
-                || childClass.equals(ConservDescription.class); 
+                || childClass.equals(ConservDescription.class)
+                || childClass.equals(OtherIdentifier.class); 
         }
         if (tblClass.equals(Locality.class))
         {
