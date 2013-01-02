@@ -2072,7 +2072,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         setNameIntoStatusBarText(statusBarText);
 
         boolean nonNullSelection = (selectedNode != null);
-        boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
+        boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank() && selectedNode.getAcceptedParentId() == null): false;
         boolean isVisibleRoot    = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
         //int rank = nonNullSelection ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
         //List<Integer> ranks = listModel.getVisibleRanks();
