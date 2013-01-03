@@ -1261,7 +1261,7 @@ public class DataEntryTask extends BaseTask
     @Override
     public void doConfigure()
     {
-        ContextMgr.dump();
+        //ContextMgr.dump();
         
         //stdViews  = getStdViews();
         //miscViews = getMiscViews();

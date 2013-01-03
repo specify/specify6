@@ -955,7 +955,7 @@ public class MultiView extends JPanel
             }*/
 
             int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING) : 0);
-            //MultiView.printCreateOptions("createViewable", createOptions);
+            //MultiView.printCreateOptions("createViewable: "+altView.getName(), createOptions);
             Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, cellNameArg, getBackground());
             if (viewable != null)
             {
@@ -1753,23 +1753,23 @@ public class MultiView extends JPanel
      */
     public static void printCreateOptions(final String msg, final int options)
     {
-        log.debug(" ");
-        log.debug(msg);
-        log.debug("RESULTSET_CONTROLLER  ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
-        log.debug("IS_NEW_OBJECT         ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
-        log.debug("VIEW_SWITCHER         ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
-        log.debug("HIDE_SAVE_BTN         ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
-        log.debug("IS_EDITTING           ["+((options & MultiView.IS_EDITTING) == MultiView.IS_EDITTING ? "true" : "false")+"]");
-        log.debug("IS_SINGLE_OBJ         ["+((options & MultiView.IS_SINGLE_OBJ) == MultiView.IS_SINGLE_OBJ ? "true" : "false")+"]");
-        log.debug("NO_SCROLLBARS         ["+((options & MultiView.NO_SCROLLBARS) == MultiView.NO_SCROLLBARS ? "true" : "false")+"]");
-        log.debug("ADD_SEARCH_BTN        ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
-        log.debug("DONT_ADD_ALL_ALTVIEWS ["+((options & MultiView.DONT_ADD_ALL_ALTVIEWS) == MultiView.DONT_ADD_ALL_ALTVIEWS ? "true" : "false")+"]");
-        log.debug("USE_ONLY_CREATION_MODE["+((options & MultiView.USE_ONLY_CREATION_MODE) == MultiView.USE_ONLY_CREATION_MODE ? "true" : "false")+"]");
-        log.debug("DONT_USE_EMBEDDED_SEP ["+((options & MultiView.DONT_USE_EMBEDDED_SEP) == MultiView.DONT_USE_EMBEDDED_SEP ? "true" : "false")+"]");
-        log.debug("NO_MORE_BTN_FOR_SEP   ["+((options & MultiView.NO_MORE_BTN_FOR_SEP) == MultiView.NO_MORE_BTN_FOR_SEP ? "true" : "false")+"]");
-        log.debug("COLLAPSE_SEPARATOR    ["+((options & MultiView.COLLAPSE_SEPARATOR) == MultiView.COLLAPSE_SEPARATOR ? "true" : "false")+"]");
-        log.debug("INCLUDE_ADD_BTN       ["+((options & MultiView.INCLUDE_ADD_BTN) == MultiView.INCLUDE_ADD_BTN ? "true" : "false")+"]");
-        log.debug(" ");        
+        System.err.println(" ");
+        System.err.println(msg);
+        System.err.println("RESULTSET_CONTROLLER  ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
+        System.err.println("IS_NEW_OBJECT         ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
+        System.err.println("VIEW_SWITCHER         ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
+        System.err.println("HIDE_SAVE_BTN         ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
+        System.err.println("IS_EDITTING           ["+((options & MultiView.IS_EDITTING) == MultiView.IS_EDITTING ? "true" : "false")+"]");
+        System.err.println("IS_SINGLE_OBJ         ["+((options & MultiView.IS_SINGLE_OBJ) == MultiView.IS_SINGLE_OBJ ? "true" : "false")+"]");
+        System.err.println("NO_SCROLLBARS         ["+((options & MultiView.NO_SCROLLBARS) == MultiView.NO_SCROLLBARS ? "true" : "false")+"]");
+        System.err.println("ADD_SEARCH_BTN        ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
+        System.err.println("DONT_ADD_ALL_ALTVIEWS ["+((options & MultiView.DONT_ADD_ALL_ALTVIEWS) == MultiView.DONT_ADD_ALL_ALTVIEWS ? "true" : "false")+"]");
+        System.err.println("USE_ONLY_CREATION_MODE["+((options & MultiView.USE_ONLY_CREATION_MODE) == MultiView.USE_ONLY_CREATION_MODE ? "true" : "false")+"]");
+        System.err.println("DONT_USE_EMBEDDED_SEP ["+((options & MultiView.DONT_USE_EMBEDDED_SEP) == MultiView.DONT_USE_EMBEDDED_SEP ? "true" : "false")+"]");
+        System.err.println("NO_MORE_BTN_FOR_SEP   ["+((options & MultiView.NO_MORE_BTN_FOR_SEP) == MultiView.NO_MORE_BTN_FOR_SEP ? "true" : "false")+"]");
+        System.err.println("COLLAPSE_SEPARATOR    ["+((options & MultiView.COLLAPSE_SEPARATOR) == MultiView.COLLAPSE_SEPARATOR ? "true" : "false")+"]");
+        System.err.println("INCLUDE_ADD_BTN       ["+((options & MultiView.INCLUDE_ADD_BTN) == MultiView.INCLUDE_ADD_BTN ? "true" : "false")+"]");
+        System.err.println(" ");        
     }
     
     class ViewState 

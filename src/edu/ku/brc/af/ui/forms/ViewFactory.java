@@ -1876,6 +1876,9 @@ public class ViewFactory
                         if (!(isACollection && !isSingle))
                         {
                             options &= ~MultiView.ADD_SEARCH_BTN;
+                        } else
+                        {
+                            options |= cellSubView.getPropertyAsBoolean("addsearch", false) ? MultiView.ADD_SEARCH_BTN : 0;
                         }
           
                         //MultiView.printCreateOptions("_______________________________", parent.getCreateOptions());

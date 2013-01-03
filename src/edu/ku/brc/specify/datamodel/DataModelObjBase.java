@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -327,6 +328,11 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
      */
     public static boolean removeFromCollection(final Object dataObject, final String fieldName, final FormDataObjIFace ref)
     {
+        if (removeFromCollectionById(dataObject, fieldName, ref))
+        {
+            return true;
+        }
+        
         DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
         Object             dataMember = getter.getFieldValue(dataObject, fieldName);
         try
@@ -349,6 +355,49 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
 
         return false;
     }
+    /**
+     * @param dataObject
+     * @param fieldName
+     * @param ref
+     * @return
+     */
+    public static boolean removeFromCollectionById(final Object dataObject, 
+                                                   final String fieldName, 
+                                                   final FormDataObjIFace ref)
+    {
+        if (ref.getId() != null)
+        {
+            try
+            {
+                DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+                Object             dataMember = getter.getFieldValue(dataObject, fieldName);
+                if (dataMember != null && dataMember instanceof Set<?>)
+                {
+                    Set<?> dataSet = (Set<?>)dataMember;
+                    for (Object obj : dataSet)
+                    {
+                        if (obj instanceof DataModelObjBase)
+                        {
+                            Integer id1 = ((DataModelObjBase)ref).getId();
+                            Integer id2 = ref.getId();
+                            if (id2 != null && id1.equals(id2))
+                            {
+                                dataSet.remove(ref);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+    
     
     /**
      * Retruns whether a given field in a data object is a collection/

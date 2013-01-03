@@ -1271,6 +1271,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         {
             ce.forceLoad();
         }
+        
+        for (Project prj : projects)
+        {
+            prj.getCollectionObjects().size();
+        }
     }
     
     

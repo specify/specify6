@@ -136,7 +136,11 @@ public class Project extends CollectionMember implements java.io.Serializable {
     @Override
     public void forceLoad()
     {
-        collectionObjects.size();
+        // loads the Project's CollectionObjects and then each ColObj's Project
+        for (CollectionObject co : collectionObjects)
+        {
+            co.getProjects().size();
+        }
     }
 
     /**

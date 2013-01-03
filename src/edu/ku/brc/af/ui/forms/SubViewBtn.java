@@ -508,27 +508,31 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         multiView.setClassToCreate(classToCreate);
         
-        FormValidator formVal = multiView.getCurrentViewAsFormViewObj().getValidator();
-        if (formVal != null)
+        FormValidator formVal = null;
+        if (multiView.getCurrentViewAsFormViewObj() != null)
         {
-            formVal.setEnabled(true);
-            multiView.addCurrentValidator();
-            if (multiView.getCurrentViewAsFormViewObj() != null)
+            formVal = multiView.getCurrentViewAsFormViewObj().getValidator();
+            if (formVal != null)
             {
-                final ResultSetController rsc = multiView.getCurrentViewAsFormViewObj().getRsController();
-                if (rsc != null && rsc.getNewRecBtn() != null)
+                formVal.setEnabled(true);
+                multiView.addCurrentValidator();
+                if (multiView.getCurrentViewAsFormViewObj() != null)
                 {
-                    rsc.getNewRecBtn().setEnabled(true);
-                    /*if (rsc.getLength() == 0)
+                    final ResultSetController rsc = multiView.getCurrentViewAsFormViewObj().getRsController();
+                    if (rsc != null && rsc.getNewRecBtn() != null)
                     {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                //rsc.getNewRecBtn().doClick();
-                            }
-                        });
-                    }*/
+                        rsc.getNewRecBtn().setEnabled(true);
+                        /*if (rsc.getLength() == 0)
+                        {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    //rsc.getNewRecBtn().doClick();
+                                }
+                            });
+                        }*/
+                    }
                 }
             }
         }
