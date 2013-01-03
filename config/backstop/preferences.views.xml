@@ -912,7 +912,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="SHIPMETH" label="SHIPMETH"/>
-                    <cell type="field" id="SHIPMETH" name="SHIPMETH" uitype="combobox" ignore="true" picklist="ShipmentMethod" colspan="2"/>
+                    <cell type="field" id="SHIPMETH" name="SHIPMETH" uitype="combobox" ignore="true" colspan="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="SHIPPEDBY" label="SHIPPEDBY"/>

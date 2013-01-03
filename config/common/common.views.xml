@@ -1657,7 +1657,7 @@
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" uitype="plugin" name="this" initialize="name=PartialDateUI;df=startDate;tp=startDatePrecision" uifieldformatter="Date"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
+                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -2358,7 +2358,7 @@
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=Accession;newbtn=false;editbtn=false"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="type" uitype="combobox" picklist="DeaccessionType"/>
+                    <cell type="field" id="2" name="type" uitype="combobox"/>
                 </row>
                 <row>
                     <cell type="iconview" viewname="DeaccessionAgent" id="8" name="deaccessionAgents" desc="Agents" colspan="12"/>
@@ -2396,7 +2396,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="role" uitype="combobox" picklist="DeaccessionRole"/>
+                    <cell type="field" id="2" name="role" uitype="combobox"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -4419,7 +4419,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="permitNumber" uitype="text"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="type" uitype="combobox" picklist="PermitType"/>
+                    <cell type="field" id="2" name="type" uitype="combobox"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -4840,7 +4840,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="repositoryAgreementNumber" uitype="text"/> 
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus"/>
+                    <cell type="field" id="2" name="status"  uitype="combobox"/>
                     <cell type="label" labelfor="13"/>
                     <cell type="field" id="13" name="originator" uitype="querycbx" initialize="name=Agent"/>
                 </row>
@@ -5012,7 +5012,7 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="numberOfPackages" uitype="text" default="1"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod"/>
+                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent"/>
                 </row>
@@ -5169,7 +5169,7 @@
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="type" uitype="combobox" picklist="TreatmentType"/>
+                    <cell type="field" id="12" name="type" uitype="combobox"/>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false"/>
                 </row>
@@ -5238,7 +5238,7 @@
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="type" uitype="combobox" picklist="TreatmentType"/>
+                    <cell type="field" id="12" name="type" uitype="combobox"/>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false"/>
                 </row>
