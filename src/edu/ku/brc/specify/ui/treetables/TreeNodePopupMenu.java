@@ -49,6 +49,7 @@ public class TreeNodePopupMenu extends JPopupMenu
     protected JMenuItem find;
     protected JMenuItem edit;
     protected JMenuItem newChild;
+    protected JMenuItem newChildInViewMode = null;
     protected JMenuItem subtree;
     protected List<AbstractButton> selectionSensativeButtons;
 	
@@ -198,6 +199,15 @@ public class TreeNodePopupMenu extends JPopupMenu
         {
             newChild.setEnabled(enable);
         }
+        if (newChildInViewMode != null)
+        {
+        	newChildInViewMode.setEnabled(enable);
+        }
+    }
+    
+    public void setNewChildInViewModeMenuItem(JMenuItem menuItem)
+    {
+    	this.newChildInViewMode = menuItem;
     }
     
     public void setEditEnabled(boolean enable)

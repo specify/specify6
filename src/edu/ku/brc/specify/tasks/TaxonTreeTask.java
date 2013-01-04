@@ -215,6 +215,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
                 });
                 popup.add(taxonMenu, true);
+                popup.setNewChildInViewModeMenuItem(taxonMenu);
             }
         }
         
