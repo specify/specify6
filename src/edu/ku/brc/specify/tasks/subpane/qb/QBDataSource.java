@@ -181,12 +181,15 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         
         //adjust fldIdx to account for additional 'hidden' cols such as those for PartialDatePrecision values.
         int adjustedFldIdx = fldIdx;
-        for (int c = 0; c < colInfoIdx; c++)
+        if (isRawCol)
         {
-        	ERTICaptionInfoQB col = columnInfo.get(c);
-        	if (col.getColInfoList() != null && col.getColInfoList().size() > 0)
+        	for (int c = 0; c < colInfoIdx; c++)
         	{
-        		adjustedFldIdx += col.getColInfoList().size() - 1;
+        		ERTICaptionInfoQB col = columnInfo.get(c);
+        		if (col.getColInfoList() != null && col.getColInfoList().size() > 0)
+        		{
+        			adjustedFldIdx += col.getColInfoList().size() - 1;
+        		}
         	}
         }
         if (!processed && !skipProcessing)

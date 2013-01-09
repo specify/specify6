@@ -566,13 +566,13 @@
     <field column="Georeference Date" name="geoRefDetDate" type="java.util.Calendar" />
     <field column="GeoRefDetRef" name="geoRefDetRef" type="java.lang.String" length="100"/>
     <field column="GeoRefVerificationStatus" name="geoRefVerificationStatus" type="java.lang.String" length="50"/>
-    <field column="Max Uncertainty" name="maxUncertaintyEst" type="java.lang.Float"/>
+    <field column="Max Uncertainty" name="maxUncertaintyEst" type="java.math.BigDecimal"/>
     <field column="Max Uncertainty Unit" name="MaxUncertaintyEstUnit" type="java.lang.String" length="8" />
     <field column="NoGeoRefBecause" name="noGeoRefBecause" type="java.lang.String" length="100"/>
     <field column="Original Coord System" name="originalCoordSystem" type="java.lang.String" length="32"/>
     <field column="Protocol" name="protocol" type="java.lang.String" length="64"/>
     <field column="Source" name="source" type="java.lang.String" length="64"/>
-    <field column="NamedPlaceExtent" name="namedPlaceExtent" type="java.lang.Float"/>
+    <field column="NamedPlaceExtent" name="namedPlaceExtent" type="java.math.BigDecimal"/>
     <field column="Georeferenced By Last Name" name="geoRefByLast" type="java.lang.String" length="120"/> 
     <field column="Georeferenced By First Name" name="geoRefByFirst" type="java.lang.String" length="50"/> 
     <field column="Georeferenced By Middle Initials" name="geoRefByMiddle" type="java.lang.String" length="50"/> 
@@ -668,13 +668,13 @@
     <field column="Township" name="township" type="java.lang.String" length="50"/>
     <field column="Township Direction" name="townshipDirection" type="java.lang.String" length="50"/>
     <field column="UtmDatum" name="utmDatum" type="java.lang.String" length="255"/>
-    <field column="UtmEasting" name="utmEasting" type="java.lang.Double"/>
-    <field column="UtmNorthing" name="utmNorthing" type="java.lang.Double"/>
+    <field column="UtmEasting" name="utmEasting" type="java.math.BigDecimal"/>
+    <field column="UtmNorthing" name="utmNorthing" type="java.math.BigDecimal"/>
     <field column="UtmFalseEasting" name="utmFalseEasting" type="java.lang.Integer"/>
     <field column="UtmFalseNorthing" name="utmFalseNorthing" type="java.lang.Integer"/>
     <field column="UtmOrigLatitude" name="utmOrigLatitude" type="java.math.BigDecimal"/>
     <field column="UtmOrigLongitude" name="utmOrigLongitude" type="java.math.BigDecimal"/>
-    <field column="UtmScale" name="utmScale" type="java.lang.String" length="8" />
+    <field column="UtmScale" name="utmScale" type="java.math.BigDecimal" />
     <field column="UtmZone" name="utmZone" type="java.lang.Short" />
     <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
     <field column="Number 1 (Locality)" name="localityNumber1" type="java.lang.Double"/>
