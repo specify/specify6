@@ -133,7 +133,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
         int nn = nodeNumber;
 		List<?> children = getChildrenInfo(node);
 		boolean addParent = false;
-        if (doFullNames /*&& node.isAccepted()*/) 
+        if (doFullNames && node.isAccepted()) 
         {
         	if (fullNameBuilder.isInFullName(node.getRank()))
         	{
