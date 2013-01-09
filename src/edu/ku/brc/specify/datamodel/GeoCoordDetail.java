@@ -517,7 +517,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
             ((geoRefAccuracyUnits == null && o.geoRefAccuracyUnits == null) || ((geoRefAccuracyUnits != null && o.geoRefAccuracyUnits != null) && geoRefAccuracyUnits.equals(o.geoRefAccuracyUnits))) &&
             ((geoRefDetRef == null && o.geoRefDetRef == null) || ((geoRefDetRef != null && o.geoRefDetRef != null) && geoRefDetRef.equals(o.geoRefDetRef))) &&
             ((geoRefDetDate == null && o.geoRefDetDate == null) || ((geoRefDetDate != null && o.geoRefDetDate != null)
-            		&& geoRefDetDate.equals(o.geoRefDetDate))) &&
+            		&& geoRefDetDate.compareTo(o.geoRefDetDate) == 0)) &&
             ((geoRefDetBy == null && o.geoRefDetBy == null) || ((geoRefDetBy != null && o.geoRefDetBy != null)
             		&& geoRefDetBy.equals(o.geoRefDetBy))) &&
             ((noGeoRefBecause == null && o.noGeoRefBecause == null) || ((noGeoRefBecause != null && o.noGeoRefBecause != null)
