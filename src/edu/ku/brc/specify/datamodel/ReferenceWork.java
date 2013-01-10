@@ -60,7 +60,8 @@ import edu.ku.brc.ui.UIRegistry;
         @Index (name="RefWrkGuidIDX", columnNames={"GUID"}),
         @Index (name="ISBNIDX", columnNames={"ISBN"})
     })
-public class ReferenceWork extends DataModelObjBase implements java.io.Serializable 
+public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIFace<ReferenceWorkAttachment>,
+                                                               java.io.Serializable 
 {
     // Record types
     public static final byte                BOOK              = 0;
@@ -149,8 +150,9 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         authors = new HashSet<Author>();
         exsiccatae = new HashSet<Exsiccata>();
         
-        containedRFParent       = null;
-        containedReferenceWorks = new HashSet<ReferenceWork>();
+        containedRFParent        = null;
+        containedReferenceWorks  = new HashSet<ReferenceWork>();
+        referenceWorkAttachments = new HashSet<ReferenceWorkAttachment>();
     }
     // End Initializer
 
@@ -657,6 +659,26 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         exsiccata.setReferenceWork(null);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<ReferenceWorkAttachment> getAttachmentReferences()
+    {
+        return referenceWorkAttachments;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */
