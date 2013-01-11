@@ -42,14 +42,14 @@ import javax.swing.JPopupMenu;
 public class TreeNodePopupMenu extends JPopupMenu
 {
 	protected JList list;
-	@SuppressWarnings("unchecked")
-	protected TreeTableViewer ttv;
+	protected TreeTableViewer<?, ?, ?> ttv;
     protected JMenuItem delete;
     protected JMenuItem unSyn;
     protected JMenuItem find;
     protected JMenuItem edit;
     protected JMenuItem newChild;
     protected JMenuItem newChildInViewMode = null;
+    protected JMenuItem lifeMapperDisplay = null;
     protected JMenuItem subtree;
     protected List<AbstractButton> selectionSensativeButtons;
 	
@@ -58,8 +58,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 	 * @param owner the popup owner (the tree)
 	 * @param isEditMode whether it is in edit mode or not
 	 */
-	@SuppressWarnings("unchecked")
-	public TreeNodePopupMenu(final TreeTableViewer owner, final boolean isEditMode, final boolean canAdd, final boolean canDelete)
+	public TreeNodePopupMenu(final TreeTableViewer<?,?,?> owner, final boolean isEditMode, final boolean canAdd, final boolean canDelete)
 	{
 		this.ttv = owner;
 		
@@ -193,6 +192,14 @@ public class TreeNodePopupMenu extends JPopupMenu
         }
     }
 
+    public void setLifeMapperDisplayEnabled(boolean enable)
+    {
+    	if (lifeMapperDisplay != null)
+    	{
+    		lifeMapperDisplay.setEnabled(enable);
+    	}
+    }
+    
     public void setNewEnabled(boolean enable)
     {
         if (newChild != null)
@@ -208,6 +215,13 @@ public class TreeNodePopupMenu extends JPopupMenu
     public void setNewChildInViewModeMenuItem(JMenuItem menuItem)
     {
     	this.newChildInViewMode = menuItem;
+        selectionSensativeButtons.add(menuItem);
+    }
+    
+    public void setLifeMapperDisplayMenuItem(JMenuItem menuItem)
+    {
+    	this.lifeMapperDisplay = menuItem;
+        selectionSensativeButtons.add(menuItem);
     }
     
     public void setEditEnabled(boolean enable)

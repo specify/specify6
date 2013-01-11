@@ -195,6 +195,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                 }
             });
             popup.add(lifeMapperDisplay, true);
+            popup.setLifeMapperDisplayMenuItem(lifeMapperDisplay);
             
             if (!isEditMode)
             {

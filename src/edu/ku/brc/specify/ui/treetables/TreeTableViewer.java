@@ -2053,6 +2053,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 	
 	/**
+	 * @param rankID
+	 * @return true if the 'LifeMapper' menu item should be enabled for the rank.
+	 */
+	protected boolean canDisplayLifeMapperForRank(int rankID)
+	{
+		return rankID >= 180;
+	}
+	
+	/**
 	 * Updates the status bar text to display the full name of the currently
 	 * selected nodes and updates the enabled/disabled status of the buttons.
 	 *
@@ -2074,6 +2083,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean nonNullSelection = (selectedNode != null);
         boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank() && selectedNode.getAcceptedParentId() == null): false;
         boolean isVisibleRoot    = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
+        boolean canDisplayLifeMapper = selectedNode != null ? canDisplayLifeMapperForRank(selectedNode.getRank()) : false; 
         //int rank = nonNullSelection ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
         //List<Integer> ranks = listModel.getVisibleRanks();
         //boolean isLowestRoot = rank == ranks.get(ranks.size()-1);
@@ -2081,9 +2091,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         popupMenu.setSelectionSensativeButtonsEnabled(nonNullSelection);
         
         // disable the buttons so the user can't click them until the background task verifies if they should be enabled
+        popupMenu.setNewEnabled(canAddChild && nonNullSelection);
+        popupMenu.setDeleteEnabled(false); // turn off until the bg thread can find out if user can delete this node
         if (sourceList == lists[0])
         {
-            popupMenu.setNewEnabled(canAddChild && nonNullSelection);
             editNode0.setEnabled(nonNullSelection);
             if (canAdd)
             {
@@ -2092,16 +2103,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             enableSubTreeButtons();
             toParent0.setEnabled(!isVisibleRoot);
 
-            // turn these off until the bg thread can find out if user can delete this node
+            // turn off until the bg thread can find out if user can delete this node
             if (canDelete)
             {
                 deleteNode0.setEnabled(false);
             }
-            popupMenu.setDeleteEnabled(false);
         }
         else
         {
-            popupMenu.setNewEnabled(canAddChild && nonNullSelection); 
             editNode1.setEnabled(nonNullSelection);
             if (canAdd)
             {
@@ -2110,15 +2119,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             enableSubTreeButtons();
             toParent1.setEnabled(!isVisibleRoot && nonNullSelection);
             
-            // turn these off until the bg thread can find out if user can delete this node
+            // turn off until the bg thread can find out if user can delete this node
             if (canDelete)
             {
                 deleteNode1.setEnabled(false);
             }
-            popupMenu.setDeleteEnabled(false);
         }
 
-        popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);      
+        popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);   
+        popupMenu.setLifeMapperDisplayEnabled(canDisplayLifeMapper);
         //popupMenu.setUnSynEnabled(false);
 
         SwingWorker bgWork = new SwingWorker()
