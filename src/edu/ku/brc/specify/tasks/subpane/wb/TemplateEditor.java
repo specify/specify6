@@ -1902,32 +1902,44 @@ public class TemplateEditor extends CustomDialog
             for (int m=0; m<mapModel.getSize(); m++)
             {
                 FieldMappingPanel fmp = mapModel.getElementAt(m);
-                String fldName = fmp.getFieldInfo().getFieldInfo().getName();
-                if (fldName.endsWith("1") || fldName.endsWith("2"))
-                {
-                    fldName = fldName.substring(0, fldName.length()-1);
-                }
-                FieldInfo newInfo = null;
-                //System.out.println("re-mapping " + fldName);
-                for (FieldInfo fi : taxaOnly.getFieldItems())
-                {
-                    //System.out.println("  checking " + fi.getFieldInfo().getName());
-                	if (fi.getFieldInfo().getName().equalsIgnoreCase(fldName))
-                    {
-                        newInfo = fi;
-                        break;
-                    }
-                }   
-                if (newInfo == null)
-                {
-                    log.warn("Couldn't find Taxon Only field info for " + fldName);
-                    continue;
-                }             
-                
-                fmp.getFieldInfo().setInUse(false);
-                newInfo.setInUse(true);
-                fmp.setFieldInfo(newInfo);
-                fmp.setIcon(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getIcon(IconManager.STD_ICON_SIZE));
+				if (fmp.getFieldInfo() != null) 
+				{
+					String fldName = fmp.getFieldInfo().getFieldInfo()
+							.getName();
+					if (fldName.endsWith("1") || fldName.endsWith("2")) 
+					{
+						fldName = fldName.substring(0, fldName.length() - 1);
+					}
+					FieldInfo newInfo = null;
+					// System.out.println("re-mapping " + fldName);
+					for (FieldInfo fi : taxaOnly.getFieldItems()) 
+					{
+						System.out.println("  checking "
+								+ fi.getFieldInfo().getName());
+						if (fi.getFieldInfo().getName()
+								.equalsIgnoreCase(fldName)) 
+						{
+							newInfo = fi;
+							break;
+						}
+					}
+					if (newInfo == null) 
+					{
+						log.warn("Couldn't find Taxon Only field info for "
+								+ fldName);
+						continue;
+					}
+
+					if (fmp.getFieldInfo() != newInfo) 
+					{
+						fmp.getFieldInfo().setInUse(false);
+						newInfo.setInUse(true);
+						fmp.setFieldInfo(newInfo);
+						fmp.setIcon(DBTableIdMgr.getInstance()
+								.getByClassName(Taxon.class.getName())
+								.getIcon(IconManager.STD_ICON_SIZE));
+					}
+				}
             }
         }
         else if (unMapTaxOnlys)
