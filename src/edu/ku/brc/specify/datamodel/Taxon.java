@@ -241,6 +241,16 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 
 	}
 
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        taxonAttachments.size();
+    }
+    
     @Id
     @GeneratedValue
     @Column(name = "TaxonID")

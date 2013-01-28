@@ -123,6 +123,14 @@ public class AgentCleanupIndexer extends LuceneHelperBase
     }
     
     /**
+     * @return the prgDlg
+     */
+    public ProgressDialog getPrgDlg()
+    {
+        return prgDlg;
+    }
+
+    /**
      * @return
      */
     public boolean hasMoreAgents()

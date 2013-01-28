@@ -22,6 +22,7 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 import static edu.ku.brc.specify.dbsupport.cleanuptools.FirstLastVerifier.appendSuffixTo;
 import static edu.ku.brc.specify.dbsupport.cleanuptools.FirstLastVerifier.parseName;
 import static edu.ku.brc.ui.UIHelper.autoResizeColWidth;
+import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
@@ -29,13 +30,18 @@ import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -54,12 +60,16 @@ import edu.ku.brc.ui.CustomDialog;
  */
 public class AgentNameCleanupParserDlg extends CustomDialog
 {
+    
     private Connection    conn;
     private JTable        table;
     private NameDataModel model; 
     
-    private Vector<DataItem> list = new Vector<DataItem>();
+    protected JButton     selectAllBtn;
+    protected JButton     deselectAllBtn;
     
+    private Vector<DataItem> list = new Vector<DataItem>();
+
     /**
      * @param connection
      * @throws HeadlessException
@@ -76,12 +86,14 @@ public class AgentNameCleanupParserDlg extends CustomDialog
     @Override
     public void createUI()
     {
+        
         CellConstraints cc  = new CellConstraints();
-        PanelBuilder    pb  = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,12px,p,2px,f:p:g,8px,p,4px,p,4px,p,10px,p"));
+        PanelBuilder    pb  = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,2px,p"));
 
         this.contentPanel = pb.getPanel();
 
-        setCancelLabel(getResourceString("CLOSE"));
+        setOkLabel(getResourceString("CLNUP_PROCESS"));
+        //setCancelLabel(getResourceString("CLOSE"));
         super.createUI();
         
         fillModel();
@@ -91,8 +103,16 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         
         autoResizeColWidth(table, model);
         
-        pb.addSeparator(getResourceString("CLNUP_VERIFY_NMS"), cc.xy(1, 5));
-        pb.add(createScrollPane(table, true), cc.xy(1, 7));
+        pb.addSeparator(getResourceString("CLNUP_VERIFY_NMS"), cc.xy(1, 1));
+        pb.add(createScrollPane(table, true), cc.xy(1, 3));
+        
+        PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
+        selectAllBtn   = createI18NButton("SELECTALL"); //$NON-NLS-1$
+        deselectAllBtn = createI18NButton("DESELECTALL"); //$NON-NLS-1$
+        btnPB.add(selectAllBtn,   cc.xy(2, 1));
+        btnPB.add(deselectAllBtn, cc.xy(4, 1));
+        
+        pb.add(btnPB.getPanel(), cc.xy(1, 5));
         
         pb.setDefaultDialogBorder();
         
@@ -101,6 +121,57 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         Dimension d = getPreferredSize();
         d.width += 150;
         setSize(d);
+        
+        selectAllBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                for (DataItem di : list)
+                {
+                    di.setIncluded(true);
+                }
+                model.fireTableDataChanged();
+            }
+        });
+        deselectAllBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                for (DataItem di : list)
+                {
+                    di.setIncluded(false);
+                }
+                model.fireTableDataChanged();
+            }
+        });
+    }
+    
+    /**
+     * @param str
+     * @return
+     */
+    private boolean doIncludeStr(final String str)
+    {
+        if (StringUtils.isNotEmpty(str))
+        {
+            String lower = StringUtils.remove(str.toLowerCase(), '.');
+            if (lower.startsWith("ltd") || 
+                lower.startsWith("exp") || 
+                lower.equals("party") || 
+                lower.equals("etal") || 
+                lower.equals("et al") || 
+                lower.equals("et") || 
+                lower.equals("mrs") || 
+                lower.equals("mr") || 
+                StringUtils.isNumeric(lower))
+            {
+                return false;
+            }
+            return true;
+        }
+        return true;
     }
     
     /**
@@ -116,35 +187,49 @@ public class AgentNameCleanupParserDlg extends CustomDialog
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             System.out.println(sql);
             
+            int row = 1;
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
             {
-                String fullName  = rs.getString(1);
+                String fullName = rs.getString(1);
+                String lower    = fullName.toLowerCase();
+                
+                boolean doInclude = !lower.contains(" and ") && !lower.contains("+") && !lower.contains("&");
+                
                 String lastName  = "";
                 String firstName = "";
                 String midName   = "";
-
-                String[] nms = parseName(fullName.toString(), false);
-                if (nms != null)
+                
+                if (doInclude)
                 {
-                    if (nms.length > 1 && nms[1].length() > 2 && !flVerifier.isLastName(nms[0]) && flVerifier.isFirstName(nms[1]))
+                    String[] nms = parseName(fullName.toString(), false);
+                    if (nms != null)
                     {
-                        System.out.println(nms[0]+" "+nms[1]);
-                        String tmp = nms[1];
-                        nms[1] = nms[0];
-                        nms[0] = tmp;
+                        if (nms.length > 1 && nms[1].length() > 2 && !flVerifier.isLastName(nms[0]) && flVerifier.isFirstName(nms[1]))
+                        {
+                            System.out.println(nms[0]+" "+nms[1]);
+                            String tmp = nms[1];
+                            nms[1] = nms[0];
+                            nms[0] = tmp;
+                        }
+                        
+                        lastName = appendSuffixTo(nms[0]);
+                        if ( nms.length == 2)
+                        {
+                            firstName = nms[1];
+                        } else if (nms.length == 3)
+                        {
+                            firstName = nms[1];
+                            midName   = nms[2];
+                        }
+                        
+                        if (!doIncludeStr(firstName) || !doIncludeStr(midName))
+                        {
+                            doInclude = false;
+                        }
                     }
                     
-                    lastName = appendSuffixTo(nms[0]);
-                    if ( nms.length == 2)
-                    {
-                        firstName = nms[1];
-                    } else if (nms.length == 3)
-                    {
-                        firstName = nms[1];
-                        midName   = nms[2];
-                    }
-                    DataItem di = new DataItem(fullName, lastName, firstName, midName, rs.getInt(2));
+                    DataItem di = new DataItem(row++, doInclude, fullName, lastName, firstName, midName, rs.getInt(2));
                     list.add(di);
                 }
             }
@@ -154,11 +239,20 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         }
         flVerifier.shutdown();
     }
-
     
+    /**
+     * @return the list
+     */
+    public Vector<DataItem> getList()
+    {
+        return list;
+    }
+
+
+    //---------------------------------------------------------------------
     class NameDataModel extends DefaultTableModel
     {
-        protected String[] headers = {"ISINCL", "FULLNM", "LAST", "FIRST", "MID"};
+        protected String[] headers = {"ROW", "ISINCL", "FULLNM", "LAST", "FIRST", "MID"};
         
         /**
          * 
@@ -206,7 +300,7 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         @Override
         public boolean isCellEditable(int row, int column)
         {
-            return column != 1;
+            return column != 0 && column != 2;
         }
 
         /* (non-Javadoc)
@@ -218,11 +312,12 @@ public class AgentNameCleanupParserDlg extends CustomDialog
             DataItem di = list.get(row);
             switch (column)
             {
-                case 0: return di.isIncluded();
-                case 1: return di.getFullName();
-                case 2: return di.getLastName();
-                case 3: return di.getFirstName();
-                case 4: return di.getMidName();
+                case 0: return di.getRowNum();
+                case 1: return di.isIncluded();
+                case 2: return di.getFullName();
+                case 3: return di.getLastName();
+                case 4: return di.getFirstName();
+                case 5: return di.getMidName();
             }
             return null;
         }
@@ -236,19 +331,19 @@ public class AgentNameCleanupParserDlg extends CustomDialog
             DataItem di = list.get(row);
             switch (column)
             {
-                case 0: 
+                case 1: 
                     di.setIncluded((Boolean)val);
                     break;
-                case 1: 
+                case 2: 
                     di.setFullName((String)val);
                     break;
-                case 2: 
+                case 3: 
                     di.setLastName((String)val);
                     break;
-                case 3: 
+                case 4: 
                     di.setFirstName((String)val);
                     break;
-                case 4: 
+                case 5: 
                     di.setMidName((String)val);
                     break;
             }
@@ -262,23 +357,26 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         {
             switch (column)
             {
-                case 0: return Boolean.class;
+                case 0: return Integer.class;
+                case 1: return Boolean.class;
                 default: return String.class;
             }
         }
     }
     
-    
-    class DataItem 
+    //---------------------------------------------------------------------
+    public class DataItem 
     {
+        int     rowNum;
         boolean isIncluded;
-        String fullName;
-        String lastName;
-        String firstName;
-        String midName;
+        String  fullName;
+        String  lastName;
+        String  firstName;
+        String  midName;
         Integer agentId;
         
         /**
+         * @param rowNum
          * @param isIncluded
          * @param fullName
          * @param lastName
@@ -286,16 +384,22 @@ public class AgentNameCleanupParserDlg extends CustomDialog
          * @param midName
          * @param agentId
          */
-        public DataItem(String fullName, String lastName, String firstName,
-                String midName, int agentId)
+        public DataItem(final int rowNum,
+                        final boolean isIncluded,
+                        final String fullName, 
+                        final String lastName, 
+                        final String firstName,
+                        final String midName, 
+                        final int agentId)
         {
             super();
-            this.isIncluded = true;
-            this.fullName = fullName;
-            this.lastName = lastName;
-            this.firstName = firstName;
-            this.midName = midName;
-            this.agentId = agentId;
+            this.rowNum     = rowNum;
+            this.isIncluded = isIncluded;
+            this.fullName   = fullName;
+            this.lastName   = lastName;
+            this.firstName  = firstName;
+            this.midName    = midName;
+            this.agentId    = agentId;
         }
 
 
@@ -388,6 +492,15 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         public void setMidName(String midName)
         {
             this.midName = midName;
+        }
+
+
+        /**
+         * @return the rowNum
+         */
+        public int getRowNum()
+        {
+            return rowNum;
         }
         
     }

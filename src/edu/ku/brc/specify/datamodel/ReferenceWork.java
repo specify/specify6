@@ -157,6 +157,15 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     // End Initializer
 
     // Property accessors
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        referenceWorkAttachments.size();
+    }
 
     /**
      *      * PrimaryKey

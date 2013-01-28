@@ -120,6 +120,15 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     // End Initializer
 
     // Property accessors
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        permitAttachments.size();
+    }
 
     /**
      *      * Primary key

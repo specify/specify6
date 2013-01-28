@@ -114,7 +114,7 @@ public class BatchAttachFiles
     protected ArrayList<String> errFiles = new ArrayList<String>();
 
 	
-	protected HashMap<String, String> mapFileNameToCatNum = null;
+	protected HashMap<String, ArrayList<String>> mapFileNameToCatNum = null;
 	
 	/**
 	 * @param tblClass
@@ -172,7 +172,7 @@ public class BatchAttachFiles
     {
         if (files != null) files = null;
         
-        mapFileNameToCatNum = new HashMap<String, String>();
+        mapFileNameToCatNum = new HashMap<String, ArrayList<String>>();
         try
         {
             ArrayList<File>   dirFiles = new ArrayList<File>();
@@ -184,12 +184,18 @@ public class BatchAttachFiles
                 {
                     String fileName = cols[1];
                     fileName = StringUtils.replaceChars(fileName, ' ', '_');
-                    fileName = StringUtils.replaceChars(fileName, ',', '_');
+                    fileName = StringUtils.replaceChars(fileName, ",", "");
                     
                     File upFile = new File(directory.getAbsolutePath() + File.separator + fileName);
                     if (upFile.exists())
                     {
-                        mapFileNameToCatNum.put(fileName, cols[0]);
+                        ArrayList<String> catNumList = mapFileNameToCatNum.get(fileName);
+                        if (catNumList == null)
+                        {
+                            catNumList = new ArrayList<String>();
+                            mapFileNameToCatNum.put(fileName, catNumList);    
+                        }
+                        catNumList.add(cols[0]);
                         //System.out.println(String.format("%s %s", cols[0], fileName));
                         dirFiles.add(upFile);
                     } else
@@ -240,9 +246,10 @@ public class BatchAttachFiles
                     PreparedStatement pStmt = null;
                     try
                     {
+                        double percentThreshold = 10.0;
                         int    totNumFiles = files.size();
                         int    cnt         = 0;
-                        int    one20th     = (int)((double)totNumFiles / 10.0);
+                        int    incr        = (int)((double)totNumFiles / percentThreshold);
                         
                         String specCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tblInfo, false);
                         String sql      = String.format("SELECT %s FROM %s WHERE %s AND %s = ?", tblInfo.getPrimaryKeyName(), tblInfo.getName(), specCols, keyName);
@@ -258,62 +265,63 @@ public class BatchAttachFiles
                             tw.logErrors(fileName, "This file name was referenced in the mapping file, did not exist.");
                         }
                         
+                        ArrayList<String> catNumList = new ArrayList<String>();
+                        
                         pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
                         for (File file : files)
                         {
-                            String primaryName = null;
                             if (mapFileNameToCatNum != null)
                             {
                                 //System.out.println("file.getName()["+file.getName()+"]");
-                                String catNum = mapFileNameToCatNum.get(file.getName());
-                                if (catNum != null)
-                                {
-                                    primaryName = catNum;
-                                } else
+                                catNumList = mapFileNameToCatNum.get(file.getName());
+                                if (catNumList == null || catNumList.size() == 0)
                                 {
                                     tw.logErrors(file.getName(), "There was no Catalog Number mapped for this file.");
                                     continue;
                                 }
                             } else
                             {
-                                primaryName = FilenameUtils.getBaseName(file.getName()); 
+                                String catNum = FilenameUtils.getBaseName(file.getName()); 
+                                catNumList.clear();
+                                catNumList.add(catNum);
                             }
-                            //if (primaryName != null) System.out.println("["+primaryName+"]");
                             
-                            Object value = fmt != null ? fmt.formatFromUI(primaryName) : primaryName;  
-                            
-                            if (value instanceof String)
+                            for (String catNum : catNumList)
                             {
-                                pStmt.setString(1, value.toString());
-                                ResultSet rs = pStmt.executeQuery();
-                                if (rs.next())
+                                Object value = fmt != null ? fmt.formatFromUI(catNum) : catNum;  
+                                if (value instanceof String)
                                 {
-                                    int id = rs.getInt(1);
-                                    if (!rs.wasNull())
+                                    pStmt.setString(1, value.toString());
+                                    ResultSet rs = pStmt.executeQuery();
+                                    if (rs.next())
                                     {
-                                        //System.out.println(String.format("%s -> id: %d", value.toString(), id));
-                                        if (!attachFileTo(file, id))
+                                        int id = rs.getInt(1);
+                                        if (!rs.wasNull())
                                         {
-                                            tw.logErrors(file.getName(), "There was error saving the Attachment Catalog Number["+value.toString()+"] File["+file.getName()+"]");
+                                            //System.out.println(String.format("%s -> id: %d", value.toString(), id));
+                                            if (!attachFileTo(file, id))
+                                            {
+                                                tw.logErrors(file.getName(), "There was error saving the Attachment Catalog Number["+value.toString()+"] File["+file.getName()+"]");
+                                            }
+                                        } else
+                                        {
+                                            tw.logErrors(file.getName(), "The Catalog Number ["+value.toString()+"] was not in the database. File["+file.getName()+"]");
                                         }
-                                    } else
-                                    {
-                                        tw.logErrors(file.getName(), "The Catalog Number ["+value.toString()+"] was not in the database. File["+file.getName()+"]");
                                     }
+                                    rs.close();
+                                } else if (value == null)
+                                {
+                                    String msg = mapFileNameToCatNum != null ? "There was no Catalog Number mapped for this file." :
+                                                                               "The file could not be converted to a valid Catalog Number.";
+                                    tw.logErrors(file.getName(), msg);
                                 }
-                                rs.close();
-                            } else if (value == null)
-                            {
-                                String msg = mapFileNameToCatNum != null ? "There was no Catalog Number mapped for this file." :
-                                                                           "The file could not be converted to a valid Catalog Number.";
-                                tw.logErrors(file.getName(), msg);
                             }
                             
                             cnt++;
                             if (totNumFiles < 21)
                             {
-                                firePropertyChange(PROGRESS, totNumFiles, cnt); 
-                            } else if (cnt % one20th == 0)
+                                firePropertyChange(PROGRESS, totNumFiles, cnt*5); 
+                            } else if (cnt % incr == 0)
                             {
                                  int percent = (int)(((double)cnt / totNumFiles) * 100.0);
                                  firePropertyChange(PROGRESS, 100, percent);

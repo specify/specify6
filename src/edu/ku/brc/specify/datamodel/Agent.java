@@ -343,6 +343,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     {
         // Do not override this method
         super.forceLoad();
+        
+        agentAttachments.size();
     }
 
     /**
@@ -613,7 +615,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      *
      */
     @OneToMany(mappedBy = "group")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    /*@Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} ) */
     public Set<GroupPerson> getGroups() 
     {
         return this.groups;

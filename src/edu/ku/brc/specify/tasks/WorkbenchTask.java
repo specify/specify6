@@ -125,7 +125,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
-import edu.ku.brc.specify.tools.export.ExportPanel;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -169,8 +168,8 @@ public class WorkbenchTask extends BaseTask
     public static final String     PRINT_REPORT          = "WB.PrintReport";
     public static final String     WB_TOP10_REPORT       = "WB.Top10Report";
     public static final String     WB_IMPORTCARDS        = "WB.ImportCardImages";
+    public static final String     WB_IMPORT_IMGINDEX    = "WB.ImportImagesIndex";
     public static final String     EXPORT_DATA_FILE      = "WB.ExportData";
-    //public static final String     UPLOAD                = "WB.Upload";
     public static final String     EXPORT_TEMPLATE       = "WB.ExportTemplate";
     public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "WB.NewDataSetFromTemplate";
     public static final String 	   EXPORT_RS_TO_WB	     = "WB.ExportRStoWB";
@@ -270,7 +269,9 @@ public class WorkbenchTask extends BaseTask
             {
                 makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import16", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
                 makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
+                makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_IMGINDX"),  "ImportImages", getResourceString("WB_IMPORTIMGINDX_TT"), new CommandAction(WORKBENCH, WB_IMPORT_IMGINDEX, wbTblId),   null, false, false);// true means make it draggable
             
+                
                 roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
                 roc.addDropDataFlavor(DATASET_FLAVOR);
             }
@@ -3427,10 +3428,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @return
      */
     public static boolean importImages(final Workbench       workbench, 
-                                final Vector<File>    fileList,
-                                final WorkbenchPaneSS pane,
-                                final boolean         isNew,
-                                final boolean         doOneImagePerRow)
+                                       final Vector<File>    fileList,
+                                       final WorkbenchPaneSS pane,
+                                       final boolean         isNew,
+                                       final boolean         doOneImagePerRow)
     {
         boolean                  isOK    = false;
         DataProviderSessionIFace session = null;
@@ -3750,6 +3751,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param workbenchArg the {@link Workbench} to append rows to, or <code>null</code> if a new {@link Workbench} should be created
      * @param doOneImagePerRow indicates whether the images are assign to a single row or not.
      */
+    public void importImageIndexFile(Workbench workbench, final boolean doOneImagePerRow)
+    {
+    }
+    
+    /**
+     * Imports a set of image files, creating a new row per file, to the provided {@link Workbench} parameter.  If the
+     * given {@link Workbench} is <code>null</code>, a new {@link Workbench} is created.
+     * 
+     * @param workbenchArg the {@link Workbench} to append rows to, or <code>null</code> if a new {@link Workbench} should be created
+     * @param doOneImagePerRow indicates whether the images are assign to a single row or not.
+     */
     public void importCardImages(Workbench workbench, final boolean doOneImagePerRow)
     {
         // ask the user to select the files to import
@@ -3872,7 +3884,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 return null;
             }
 
-            @SuppressWarnings("synthetic-access")
             @Override
             public void finished()
             {
@@ -4373,6 +4384,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             if (isClickedOn)
             {
                 importCardImages(null, true);
+            }
+        } else if (cmdAction.isAction(WB_IMPORT_IMGINDEX))
+        {
+            if (isClickedOn)
+            {
+                importImageIndexFile(null, true);
             }
             
         } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE)) // XXX This can be removed

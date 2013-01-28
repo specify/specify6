@@ -135,13 +135,16 @@ public class ImageInfoPanel extends ExpandShrinkPanel
             @Override
             public void imageFetched(BufferedImage image)
             {
-                blueMarble = image;
-                blueMarbleDisplay.setImage(blueMarble);
-                
-                ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
-                colorConvert.filter(blueMarble, blueMarble);
-
-                // 0.21 R + 0.71 G + 0.07 B
+                if (image != null)
+                {
+                    blueMarble = image;
+                    blueMarbleDisplay.setImage(blueMarble);
+                    
+                    ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+                    colorConvert.filter(blueMarble, blueMarble);
+    
+                    // 0.21 R + 0.71 G + 0.07 B
+                }
             }
 
             @Override

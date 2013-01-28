@@ -33,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -64,7 +65,7 @@ public class AgentCleanupListDlg extends CustomDialog
 {
     protected enum ItemStatusType {eOK, eProcessed, eRelated}
     
-    protected String[]             headers     = new String[] {"Name", "Count"};
+    protected String[]             headers     = new String[] {"Include", "Name", "Count"};
     protected JTable               table;
     protected FindItemTableModel   model;
     protected Vector<FindItemInfo> itemsList;
@@ -85,7 +86,7 @@ public class AgentCleanupListDlg extends CustomDialog
                                final String topMsg,
                                final Vector<FindItemInfo> itemsList) throws HeadlessException
     {
-        super((Frame)getTopWindow(), getLocalizedMessage("CLNUP.FNDTITLE", title), true, OKCANCEL, null);
+        super((Frame)getTopWindow(), getResourceString("CLNUP.FNDTITLE"), true, OKCANCEL, null);
         this.title  = title;
         this.topMsg = topMsg;
         this.itemsList = itemsList;
@@ -138,7 +139,7 @@ public class AgentCleanupListDlg extends CustomDialog
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    updateBtnUI();
+                    //updateBtnUI();
                 }
             }
         });
@@ -151,21 +152,19 @@ public class AgentCleanupListDlg extends CustomDialog
                 
                 if (e.getClickCount() == 2)
                 {
-                    getOkBtn().setEnabled(true);
-                    getOkBtn().doClick();
+                    //getOkBtn().setEnabled(true);
+                    //getOkBtn().doClick();
                 }
             }
         });
-        
-        getOkBtn().setEnabled(false);
-        deselectAllBtn.setEnabled(false);
         
         selectAllBtn.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                table.selectAll();
+                doSetSelection(true);
+                getOkBtn().setEnabled(true);
             }
         });
         deselectAllBtn.addActionListener(new ActionListener()
@@ -173,9 +172,22 @@ public class AgentCleanupListDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                table.clearSelection();
+                doSetSelection(false);
+                getOkBtn().setEnabled(false);
             }
         });
+    }
+    
+    /**
+     * @param selected
+     */
+    private void doSetSelection(final boolean selected)
+    {
+        for (FindItemInfo fii : itemsList)
+        {
+            fii.setIncluded(selected);
+        }
+        model.fireTableDataChanged();
     }
     
     /**
@@ -183,10 +195,19 @@ public class AgentCleanupListDlg extends CustomDialog
      */
     private void updateBtnUI()
     {
-        boolean enable = table.getSelectedRowCount() > 0;
-        selectAllBtn.setEnabled(table.getSelectedRowCount() != table.getRowCount());
-        deselectAllBtn.setEnabled(enable);
-        getOkBtn().setEnabled(enable);
+        //boolean enable = table.getSelectedRowCount() > 0;
+        //selectAllBtn.setEnabled(table.getSelectedRowCount() != table.getRowCount());
+        //deselectAllBtn.setEnabled(enable);
+        boolean enabled = false;
+        for (FindItemInfo fii : itemsList)
+        {
+            if (fii.isIncluded())
+            {
+                enabled = true;
+                break;
+            }
+        }
+        getOkBtn().setEnabled(enabled);
     }
     
     /**
@@ -194,7 +215,29 @@ public class AgentCleanupListDlg extends CustomDialog
      */
     public int[] getSelectedIndexes()
     {
-        return table.getSelectedRows();
+        ArrayList<Integer> selectedIndexes = new ArrayList<Integer>(500);
+        int inx = 0;
+        for (FindItemInfo fii : itemsList)
+        {
+            if (fii.isIncluded())
+            {
+                selectedIndexes.add(inx);
+            }
+            inx++;
+        }
+        
+        if (selectedIndexes.size() == 0)
+        {
+            return new int[0];
+        }
+        
+        int[] indexes = new int[selectedIndexes.size()];
+        inx = 0;
+        for (Integer index : selectedIndexes)
+        {
+            indexes[inx++] = index;
+        }        
+        return indexes;
     }
     
     //----------------------------------------------------------
@@ -220,16 +263,31 @@ public class AgentCleanupListDlg extends CustomDialog
         }
 
         @Override
+        public void setValueAt(final Object aValue, final int row, final int column)
+        {
+            if (column == 0)
+            {
+                FindItemInfo fii = itemsList.get(row);
+                fii.setIncluded((Boolean)aValue);
+                updateBtnUI();
+            }
+        }
+
+        @Override
         public Object getValueAt(int row, int column)
         {
             FindItemInfo fii = itemsList.get(row);
-            return column == 0 ? fii.getValue() : fii.getCount() + 1;
+            if (column == 0) return fii.isIncluded();
+            
+            return column == 1 ? fii.getValue() : fii.getCount() + 1;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex)
         {
-            return columnIndex == 0 ? String.class : Integer.class;
+            if (columnIndex == 0) return Boolean.class;
+            
+            return columnIndex == 1 ? String.class : Integer.class;
         }
 
         /* (non-Javadoc)
@@ -238,7 +296,7 @@ public class AgentCleanupListDlg extends CustomDialog
         @Override
         public boolean isCellEditable(int row, int column)
         {
-            return false;
+            return column == 0;
         }
         
     }

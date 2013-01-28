@@ -60,11 +60,12 @@ public class MultipleRecordComparer
     protected boolean                     isSingleRowIncluded = false;
     
     protected Vector<DBFieldInfo>         columns       = new Vector<DBFieldInfo>();
+    protected Vector<DBFieldInfo>         hiddenCols    = new Vector<DBFieldInfo>();
     protected boolean[]                   colHasData    = null;
     protected boolean[]                   colIsSame     = null;
     protected Vector<Object[]>            dataItems     = new Vector<Object[]>();
     
-    protected Vector<MergeInfoItem>            mergeItems   = new Vector<MergeInfoItem>();
+    protected Vector<MergeInfoItem>       mergeItems    = new Vector<MergeInfoItem>();
     
     // for formatting
     private HashMap<DBFieldInfo, Integer> colToIndexMap = new HashMap<DBFieldInfo, Integer>();
@@ -164,6 +165,8 @@ public class MultipleRecordComparer
      */
     public boolean loadData()
     {
+        boolean isVerbose = true;
+        
         columns.clear();
         
         int numSQLCols = 0;
@@ -182,7 +185,10 @@ public class MultipleRecordComparer
             {
                 columns.insertElementAt(fi, numSQLCols);
                 
-            } else if (!fi.isHidden())
+            } else if (fi.isHidden())
+            {
+                hiddenCols.add(fi);
+            } else
             {
                 columns.add(fi);
             }
@@ -199,7 +205,9 @@ public class MultipleRecordComparer
             index++;
         }
         
+        //----------------------------------------------
         // Build SELECT
+        //----------------------------------------------
         StringBuilder cols = new StringBuilder();
         for (DBFieldInfo fi : columns)
         {
@@ -213,12 +221,14 @@ public class MultipleRecordComparer
                                          cols.toString(), tblInfo.getIdColumnName(), 
                                          tblInfo.getName(), ti.getIdColumnName(), fii.getInClause(true));
 
-        System.out.println("Data ------------\n"+sql);
+        if (isVerbose) System.out.println("Data ------------\n"+sql);
         dataItems = BasicSQLUtils.query(sql);
         
         if (dataItems.size() > 0)
         {
+            //----------------------------------------------
             // First check to see which columns have data
+            //----------------------------------------------
             for (Object[] row : dataItems)
             {
                 if (colHasData == null)
@@ -242,17 +252,16 @@ public class MultipleRecordComparer
                             colHasData[i] = true;
                         }
                     }
-                    System.out.print(row[i]+", ");
+                    if (isVerbose) System.out.print(row[i]+", ");
                 }
-                System.out.println();
+                if (isVerbose) System.out.println();
             }
-            System.out.println("------------"+sql);
+            if (isVerbose) System.out.println("------------"+sql);
             //for (int j=0;j<hasData.length;j++) System.out.print(j+" "+hasData[j]+", ");
             //System.out.println();
             
-            // Now check to see if all value in the each column are the same.
+            // Now check to see if the value in the each column are the same.
             colIsSame = new boolean[colHasData.length];
-            //colIsSame[0] = true;
             
             // Don't check last column
             for (int i=0;i<colHasData.length-1;i++)
@@ -286,7 +295,7 @@ public class MultipleRecordComparer
                         }
                     } else
                     {
-                        System.out.println("Skipping "+i);
+                        if (isVerbose) System.out.println("Skipping "+i);
                     }
                 } else
                 {
@@ -340,23 +349,25 @@ public class MultipleRecordComparer
                 if (indexForTitle > -1) indexForTitle++;
             }
             
+            if (isVerbose)
+            {
+                for (int j=0;j<colIsSame.length;j++) System.out.print(String.format("%3d", j));
+                System.out.println();
+                for (int j=0;j<colHasData.length;j++) System.out.print(String.format("  %s", colHasData[j] ? "Y" : "N"));
+                System.out.println("  (Has Data)");
+                for (int j=0;j<colIsSame.length;j++) System.out.print(String.format("  %s", colIsSame[j] ? "Y" : "N"));
+                System.out.println("  (Is Same)");
+            }
             
-            for (int j=0;j<colIsSame.length;j++) System.out.print(String.format("%3d", j));
-            System.out.println();
-            for (int j=0;j<colHasData.length;j++) System.out.print(String.format("  %s", colHasData[j] ? "Y" : "N"));
-            System.out.println("  (Has Data)");
-            for (int j=0;j<colIsSame.length;j++) System.out.print(String.format("  %s", colIsSame[j] ? "Y" : "N"));
-            System.out.println("  (Is Same)");
-
             numColsWithData = 0;
             for (int i=0;i<colHasData.length-1;i++)
             {
-                System.out.println(i+" -> "+(colHasData[i] && !colIsSame[i])+" Has: "+colHasData[i]+"  !SM: "+!colIsSame[i]+"  "+oldColumns.get(i).getTitle());
+                if (isVerbose) System.out.println(i+" -> "+(colHasData[i] && !colIsSame[i])+" Has: "+colHasData[i]+"  !SM: "+!colIsSame[i]+"  "+oldColumns.get(i).getTitle());
                 if (colHasData[i] && !colIsSame[i]) 
                 {
                     numColsWithData++;
                     columns.add(oldColumns.get(i));
-                    System.out.println(i+" Added: "+oldColumns.get(i).getTitle());
+                    if (isVerbose) System.out.println(i+" Added: "+oldColumns.get(i).getTitle());
                 }
             }
             
@@ -379,7 +390,7 @@ public class MultipleRecordComparer
                     
                     for (int i=0;i<row.length;i++)
                     {
-                        //System.out.println(i+" -> "+(colHasData[i] && !colIsSame[i])+" "+colHasData[i]+" "+!colIsSame[i]);
+                        //if (isVerbose) System.out.println(i+" -> "+(colHasData[i] && !colIsSame[i])+" "+colHasData[i]+" "+!colIsSame[i]);
                         if (colHasData[i] && !colIsSame[i])
                         {
                             newRow[inx++] = row[i];
@@ -388,9 +399,12 @@ public class MultipleRecordComparer
                     dataItems.add(newRow);
                 }
                 
-                for (int j=0;j<columns.size();j++) System.out.print(j+" "+columns.get(j).getTitle()+", ");
-                System.out.println();
-                System.out.println(String.format("Cols %d  hd: %d", columns.size(), colHasData.length));
+                if (isVerbose)
+                {
+                    for (int j=0;j<columns.size();j++) System.out.print(j+" "+columns.get(j).getTitle()+", ");
+                    System.out.println();
+                    System.out.println(String.format("Cols %d  hd: %d", columns.size(), colHasData.length));
+                }
             }
         }
         
@@ -407,19 +421,8 @@ public class MultipleRecordComparer
     }
     
     /**
-     * @param cols
-     */
-    /*public void addDisplayColumns(final DBFieldInfo...cols)
-    {
-        for (DBFieldInfo col : cols)
-        {
-            displayCols.add(col);
-        }
-        isSingleCol = false;
-    }*/
-    
-    /**
-     * @param col
+     * Adds column to display.
+     * @param col column name
      */
     public void addDisplayColumn(final String colName)
     {
@@ -435,17 +438,17 @@ public class MultipleRecordComparer
      * @param colTitle
      * @param sql 
      */
-    public void addDisplayColumn(final String colName, 
-                                 final String colTitle, 
-                                 final String sql)
-    {
-        DBFieldInfo fi = new DBFieldInfo(tblInfo, sql, colName, "text", 256, true, true, false, false, false, null);
-        if (fi != null)
-        {
-            fi.setTitle(colTitle);
-            displayCols.add(new DisplayColInfo(fi, true));
-        }
-    }
+//    public void addDisplayColumn(final String colName, 
+//                                 final String colTitle, 
+//                                 final String sql)
+//    {
+//        DBFieldInfo fi = new DBFieldInfo(tblInfo, sql, colName, "text", 256, true, true, false, false, false, null);
+//        if (fi != null)
+//        {
+//            fi.setTitle(colTitle);
+//            displayCols.add(new DisplayColInfo(fi, true));
+//        }
+//    }
 
     /**
      * @return
@@ -457,7 +460,7 @@ public class MultipleRecordComparer
             Object[] firstRow = dataItems.get(0);
             return getFormattedTitle(firstRow);
         }
-        return "N / A";
+        return "N/A";
     }
 
     /**
@@ -530,6 +533,14 @@ public class MultipleRecordComparer
     }
 
     /**
+     * @return the hasKidsData
+     */
+    public boolean hasKids()
+    {
+        return kids != null && kids.size() > 0;
+    }
+
+    /**
      * @return the kids
      */
     public List<MultipleRecordComparer> getKids()
@@ -551,6 +562,14 @@ public class MultipleRecordComparer
     public FindItemInfo getFindItemInfo()
     {
         return fii;
+    }
+
+    /**
+     * @return true if there are records
+     */
+    public boolean hasRecords()
+    {
+        return dataItems != null && dataItems.size() > 0;
     }
 
     /**
@@ -577,6 +596,7 @@ public class MultipleRecordComparer
         return isParent;
     }
     
+    //----------------------------------------------------------------------------
     class DisplayColInfo
     {
         private DBFieldInfo fi;

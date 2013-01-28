@@ -190,6 +190,7 @@ public class TableViewObj implements Viewable,
     protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
     protected Boolean                       isRestricted     = null;
     protected String                        restrictedStr    = null;
+    protected boolean                       isAlwaysGetDataFromUI = false;
     
     protected String                        dataClassName;
     protected String                        dataSetFieldName;
@@ -2293,6 +2294,24 @@ public class TableViewObj implements Viewable,
     public void setSkippingAttach(boolean isSkippingAttach)
     {
         this.isSkippingAttach = isSkippingAttach;
+    }
+
+    /**
+     * @return the isAlwaysGetDataFromUI
+     */
+    @Override
+    public boolean isAlwaysGetDataFromUI()
+    {
+        return isAlwaysGetDataFromUI;
+    }
+
+    /**
+     * @param isAlwaysGetDataFromUI the isAlwaysGetDataFromUI to set
+     */
+    @Override
+    public void setAlwaysGetDataFromUI(boolean isAlwaysGetDataFromUI)
+    {
+        this.isAlwaysGetDataFromUI = isAlwaysGetDataFromUI;
     }
     
     //-----------------------------------------------------

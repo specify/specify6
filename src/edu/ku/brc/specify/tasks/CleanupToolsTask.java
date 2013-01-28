@@ -23,6 +23,11 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
@@ -30,8 +35,12 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
@@ -62,13 +71,16 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyMerging;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityGeoBoundsChecker2;
+import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataItem;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 
 /**
  * @author rods
@@ -80,6 +92,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class CleanupToolsTask extends BaseTask
 {
+    private static final Logger  log = Logger.getLogger(CleanupToolsTask.class);
+    
     private static final String  CLEANUP           = "CLEANUP";
     private static final String  CLEANUP_TITLE     = "CLEANUP";
     //private static final String  CLEANUP_SECURITY  = "CLEANUPEDIT";
@@ -91,6 +105,7 @@ public class CleanupToolsTask extends BaseTask
     private static final String  LOCALITY          = Locality.class.getSimpleName();
     
 
+    protected ProgressDialog           prgDlg;
 
     protected Vector<NavBoxIFace>      extendedNavBoxes = new Vector<NavBoxIFace>();
     protected ToolBarDropDownBtn       toolBarBtn       = null;
@@ -302,12 +317,117 @@ public class CleanupToolsTask extends BaseTask
     }
 
     /**
+     * @param pStmt
+     * @param inx
+     * @param str
+     * @throws SQLException
+     */
+    private void setColumn(final PreparedStatement pStmt, final int inx, final String str) throws SQLException
+    {
+        pStmt.setString(inx, StringUtils.isNotEmpty(str) ? str : null);
+    }
+    
+    /**
+     * 
+     */
+    private void updateNames(final Vector<AgentNameCleanupParserDlg.DataItem> dataItemsList)
+    {
+        final String PRC = "PROCESS";
+        final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg("Processing agents...", 24);
+        
+        //prgDlg = new ProgressDialog(getResourceString("CLNUP_AG_PRG_TITLE"), true, false);
+        //prgDlg.getProcessProgress().setIndeterminate(true);
+        //prgDlg.setDesc(getResourceString("CLNUP_AG_INIT_MSG"));
+        //UIHelper.centerAndShow(prgDlg);
+
+        final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
+        {
+            double tot  = 0; // 1 -> 100
+            double step = 1.0;
+            int    cnt  = 0;
+            
+            @Override
+            protected Object doInBackground() throws Exception
+            {
+                step = 100.0 / dataItemsList.size();
+
+                Connection conn = null;
+                PreparedStatement pStmt = null;
+                try
+                {
+                    String sql = "UPDATE agent SET LastName=?, FirstName=?,MiddleInitial=? WHERE AgentID = ?";
+                    conn  = DBConnection.getInstance().createConnection();
+                    pStmt = conn.prepareStatement(sql);
+                    
+                    for (DataItem di : dataItemsList)
+                    {
+                        if (di.isIncluded())
+                        {
+                            setColumn(pStmt, 1, di.getLastName());
+                            setColumn(pStmt, 2, di.getFirstName());
+                            setColumn(pStmt, 3, di.getMidName());
+                            pStmt.setInt(4, di.getAgentId());
+                            
+                            if (pStmt.executeUpdate() != 1)
+                            {
+                                log.error(String.format("Error updating AgentID %d", di.getAgentId()));
+                            }
+                        }
+                        
+                        tot += step;
+                        if (((int)tot) > cnt)
+                        {
+                            cnt = (int)tot;
+                            firePropertyChange(PRC, -1, cnt);
+                        }
+                    }
+                    dataItemsList.clear();
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    try
+                    {
+                        if (pStmt != null) pStmt.close();
+                        if (conn != null) conn.close();
+                        
+                    } catch (SQLException ex){}
+                }
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                UIRegistry.clearSimpleGlassPaneMsg();
+                UIRegistry.showLocalizedMsg("Done.");
+            }
+        };
+        worker.addPropertyChangeListener(new PropertyChangeListener() {
+            public  void propertyChange(PropertyChangeEvent evt) {
+                if (PRC.equals(evt.getPropertyName())) 
+                {
+                    glassPane.setProgress((Integer)evt.getNewValue());
+                }
+            }
+        });
+        worker.execute();
+    }
+
+    /**
      * 
      */
     private void doLastNameParsing()
     {
         AgentNameCleanupParserDlg dlg = new AgentNameCleanupParserDlg(DBConnection.getInstance().getConnection());
         UIHelper.centerAndShow(dlg);
+        
+        if (!dlg.isCancelled())
+        {
+            updateNames(dlg.getList());
+        }
     }
     
     /**

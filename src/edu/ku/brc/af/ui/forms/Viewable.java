@@ -270,6 +270,16 @@ public interface Viewable
     public abstract boolean isDataCompleteAndValid(boolean throwAwayOnDiscard);
     
     /**
+     * @param always
+     */
+    public abstract void setAlwaysGetDataFromUI(boolean always);
+    
+    /**
+     * @return
+     */
+    public abstract boolean isAlwaysGetDataFromUI();
+    
+    /**
      * After a new data object is created.
      * @param newDataObj the newly created object.
      */

@@ -146,7 +146,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
     @Override
     public void forceLoad()
     {
-        //attachments.size();
+        attachments.size();
     }
 
     /**

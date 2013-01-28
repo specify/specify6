@@ -101,6 +101,7 @@ public class IconViewObj implements Viewable
     protected Class<?>                      classToCreate = null;
     protected boolean                       ignoreChanges = false;
     protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
+    protected boolean                       isAlwaysGetDataFromUI = false;
 
     protected FormDataObjIFace              parentDataObj;
     protected Set<Object>                   dataSet;
@@ -1162,6 +1163,24 @@ public class IconViewObj implements Viewable
     public void setSkippingAttach(boolean isSkippingAttach)
     {
         this.isSkippingAttach = isSkippingAttach;
+    }
+
+    /**
+     * @return the isAlwaysGetDataFromUI
+     */
+    @Override
+    public boolean isAlwaysGetDataFromUI()
+    {
+        return isAlwaysGetDataFromUI;
+    }
+
+    /**
+     * @param isAlwaysGetDataFromUI the isAlwaysGetDataFromUI to set
+     */
+    @Override
+    public void setAlwaysGetDataFromUI(boolean isAlwaysGetDataFromUI)
+    {
+        this.isAlwaysGetDataFromUI = isAlwaysGetDataFromUI;
     }
     
     //-----------------------------------------------------------------------------------------------

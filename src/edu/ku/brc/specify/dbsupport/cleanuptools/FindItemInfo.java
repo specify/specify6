@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FindItemInfo
 {
+    protected boolean        isIncluded;
     protected int            id;
     protected Object         value;
     protected String         title;
@@ -43,18 +44,19 @@ public class FindItemInfo
      * @param id
      * @param value
      */
-    public FindItemInfo(int id, Object value)
+    public FindItemInfo(final int id, final Object value)
     {
         super();
-        this.id    = id;
-        this.value = value;
+        this.isIncluded = true;
+        this.id         = id;
+        this.value      = value;
     }
 
     /**
      * @param id
      * @param value
      */
-    public FindItemInfo(int id, Object value, String title)
+    public FindItemInfo(final int id, final Object value, final String title)
     {
         this(id, value);
         this.title = title;
@@ -95,6 +97,30 @@ public class FindItemInfo
         return getInClause(includePrimaryId, null);
     }*/
     
+    /**
+     * @return the isIncluded
+     */
+    public boolean isIncluded()
+    {
+        return isIncluded;
+    }
+
+    /**
+     * @param isIncluded the isIncluded to set
+     */
+    public void setIncluded(boolean isIncluded)
+    {
+        this.isIncluded = isIncluded;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
     /**
      * @param includePrimaryId
      * @param usedIds

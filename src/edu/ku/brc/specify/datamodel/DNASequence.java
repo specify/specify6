@@ -149,6 +149,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     public void forceLoad()
     {
         dnaSequencingRuns.size();
+        attachments.size();
     }
 
     /**

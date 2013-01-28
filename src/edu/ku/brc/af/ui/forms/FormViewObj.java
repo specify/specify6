@@ -245,6 +245,7 @@ public class FormViewObj implements Viewable,
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
     protected int                           options;
+    protected boolean                       isAlwaysGetDataFromUI = false;
 
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
@@ -5331,7 +5332,7 @@ public class FormViewObj implements Viewable,
                     boolean hasFormControlChanged = hasFormControlChanged(id);
                     //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged));
                     
-                    if (!isReadOnly && !isInoreGetSet && hasFormControlChanged)
+                    if (!isReadOnly && !isInoreGetSet && (hasFormControlChanged || isAlwaysGetDataFromUI))
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
                         // which enables the control to set data into the data object
@@ -6572,6 +6573,24 @@ public class FormViewObj implements Viewable,
         {
             fieldNames.add(fieldInfo.getName());
         }
+    }
+
+    /**
+     * @return the isAlwaysGetDataFromUI
+     */
+    @Override
+    public boolean isAlwaysGetDataFromUI()
+    {
+        return isAlwaysGetDataFromUI;
+    }
+
+    /**
+     * @param isAlwaysGetDataFromUI the isAlwaysGetDataFromUI to set
+     */
+    @Override
+    public void setAlwaysGetDataFromUI(boolean isAlwaysGetDataFromUI)
+    {
+        this.isAlwaysGetDataFromUI = isAlwaysGetDataFromUI;
     }
     
     //-------------------------------------------------

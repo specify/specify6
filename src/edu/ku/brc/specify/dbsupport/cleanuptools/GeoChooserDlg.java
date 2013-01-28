@@ -29,6 +29,7 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
@@ -55,9 +56,12 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -70,7 +74,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -97,15 +101,17 @@ public class GeoChooserDlg extends CustomDialog
     private int        countryTotal;
     
     private StateCountryContXRef stCntXRef;
-    private Vector<Pair<String, Integer>> countryInfo = new Vector<Pair<String, Integer>>();
+    private Vector<Triple<String, Integer, String>> countryInfo = new Vector<Triple<String, Integer, String>>();
     
     private Integer          lookupId   = null;
 
-    private Vector<Pair<String, Integer>> coInfoList;
+    private Vector<Triple<String, Integer, String>> coInfoList;
     private Vector<Object>   i18NLabels = null;
     private JCheckBox        updateNameCB;
     private JCheckBox        mergeCB;
     private JCheckBox        addISOCodeCB;
+    private JTextField       isoCodeTF;
+    
     @SuppressWarnings("rawtypes")
     private JList            mainList;
     @SuppressWarnings("rawtypes")
@@ -133,8 +139,8 @@ public class GeoChooserDlg extends CustomDialog
                          final int        level,
                          final String[]   parentNames,
                          final Integer    geonameId,
-                         StateCountryContXRef stCntXRef,
-                         Vector<Pair<String, Integer>> countryInfo,
+                         final StateCountryContXRef stCntXRef,
+                         final Vector<Triple<String, Integer, String>> countryInfo,
                          boolean[]        doAllCountries,
                          boolean[]        doInvCountry,
                          final Connection readConn,
@@ -185,14 +191,14 @@ public class GeoChooserDlg extends CustomDialog
         try
         {
             String geoName   = null;
-            String selectStr = "SELECT geonameId, asciiname FROM geoname ";
+            String selectStr = "SELECT geonameId, asciiname, ISOCode FROM geoname ";
             String whereStr  = "";
             String orderStr  = " ORDER BY asciiname";
             
             switch (rankId)
             {
                 case 200:
-                    selectStr = "SELECT geonameId, name FROM countryinfo ";
+                    selectStr = "SELECT geonameId, name, iso_alpha2 FROM countryinfo ";
                     orderStr = "ORDER BY name";
                     geoName = parentNames[level];
                     break;
@@ -258,7 +264,7 @@ public class GeoChooserDlg extends CustomDialog
             if (rankId > 200)
             {
                 Statement stmt = readConn.createStatement();
-                coInfoList = new Vector<Pair<String, Integer>>();
+                coInfoList = new Vector<Triple<String, Integer, String>>();
                 
                 String sql = selectStr + whereStr;
                 log.debug(sql);
@@ -268,7 +274,7 @@ public class GeoChooserDlg extends CustomDialog
                     String name = rs.getString(2);
                     if (StringUtils.isNotEmpty(name))
                     {
-                        coInfoList.add(new Pair<String, Integer>(name, rs.getInt(1)));
+                        coInfoList.add(new Triple<String, Integer, String>(name, rs.getInt(1), rs.getString(3)));
                     }
                 }
                 rs.close();
@@ -278,20 +284,20 @@ public class GeoChooserDlg extends CustomDialog
                 coInfoList = countryInfo;
             }
             
-            Collections.sort(coInfoList, new Comparator<Pair<String, Integer>>()
+            Collections.sort(coInfoList, new Comparator<Triple<String, Integer, String>>()
             {
                 @Override
-                public int compare(Pair<String, Integer> p1, Pair<String, Integer> p2)
+                public int compare(Triple<String, Integer, String> p1, Triple<String, Integer, String> p2)
                 {
                     return p1.first.compareTo(p2.first);
                 }
             });
             
-            for (Pair<String, Integer> p : coInfoList)
+            for (Triple<String, Integer, String> p : coInfoList)
             {
                 String name = p.first;
-                char   fc  = name.charAt(0);
-                String cmp = name.length() > 1 ? name.substring(0, 2) : null;
+                char   fc   = name.charAt(0);
+                String cmp  = name.length() > 1 ? name.substring(0, 2) : null;
                 dlm.addElement(name);
                 
                 if (inx == -1)
@@ -335,10 +341,23 @@ public class GeoChooserDlg extends CustomDialog
                     }
                 }
             });
+            mainList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    if (!e.getValueIsAdjusting()) 
+                    {
+                        listItemSelected();
+                    }
+                }
+            });
             
             updateNameCB = createCheckBox("Update Name");
             mergeCB      = createCheckBox("Merge Geographies");
             addISOCodeCB = createCheckBox("Add ISO Code");
+            isoCodeTF    = createTextField(8);
+            isoCodeTF.setVisible(rankId < 400);
     
             updateNameCB.setSelected(true);
             mergeCB.setSelected(true);
@@ -357,7 +376,7 @@ public class GeoChooserDlg extends CustomDialog
                 }
             });
             
-            labels.add(nameStr + "  (Unknown)");
+            labels.add(nameStr);// + "  (Unknown)");
             
             PanelBuilder lookPB    = null;
             JButton      lookupBtn = null;
@@ -394,7 +413,13 @@ public class GeoChooserDlg extends CustomDialog
             pb.add(sb,               cc.xy(1, 7));
             pb.add(updateNameCB,     cc.xy(1, 9));
             pb.add(mergeCB,          cc.xy(1, 11));
-            pb.add(addISOCodeCB,     cc.xy(1, 13));
+            
+            
+            PanelBuilder pbc  = new PanelBuilder(new FormLayout("p,10px,p,f:p:g", "p"));
+            pbc.add(addISOCodeCB,     cc.xy(1, 1));
+            pbc.add(isoCodeTF,        cc.xy(3, 1));
+            
+            pb.add(pbc.getPanel(),   cc.xy(1, 13));
             
             i = 15;
             if (isStCnty) 
@@ -449,6 +474,19 @@ public class GeoChooserDlg extends CustomDialog
         } catch (Exception ex)
         {
             ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void listItemSelected()
+    {
+        int inx = mainList.getSelectedIndex();
+        if (inx > -1)
+        {
+            Triple<String, Integer, String> item = coInfoList.get(inx);
+            isoCodeTF.setText(item.third);
         }
     }
 
@@ -576,6 +614,14 @@ public class GeoChooserDlg extends CustomDialog
     public String getSelectedListValue()
     {
         return (String)mainList.getSelectedValue();
+    }
+    
+    /**
+     * @return
+     */
+    public String getSelectedISOValue()
+    {
+        return isoCodeTF.getText();
     }
     
     /**

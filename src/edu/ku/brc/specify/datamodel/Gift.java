@@ -133,7 +133,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
         
         division        = null;
         addressOfRecord = null;
-        giftAttachments =  null;
+        giftAttachments =  new HashSet<GiftAttachment>();
 
     }
     // End Initializer
@@ -542,6 +542,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
         getGiftAgents().size();
         getShipments().size();
         getGiftPreparations().size();
+        giftAttachments.size();
     }
 
     /* (non-Javadoc)

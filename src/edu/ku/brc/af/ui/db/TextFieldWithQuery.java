@@ -1000,7 +1000,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         {
                             value = UIHelper.getFormattedValue(format, value);
                         }
-                        list.addElement(value.toString());
+                    list.addElement(value != null ? value.toString() : "xxx");
                         
                     } else
                     {

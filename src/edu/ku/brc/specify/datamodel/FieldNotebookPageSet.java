@@ -97,6 +97,15 @@ public class FieldNotebookPageSet extends DisciplineMember implements Attachment
         pages                  = new HashSet<FieldNotebookPage>();
         attachments            = new TreeSet<FieldNotebookPageSetAttachment>();
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        attachments.size();
+    }
 
     /**
      * @param fieldNotebookPageSetId the fieldNotebookPageSetId to set

@@ -105,6 +105,15 @@ public class FieldNotebook extends DisciplineMember implements AttachmentOwnerIF
         collection      = AppContextMgr.getInstance().getClassObject(Collection.class);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        attachments.size();
+    }
+
     /**
      * @param fieldNotebookId the fieldNotebookId to set
      */

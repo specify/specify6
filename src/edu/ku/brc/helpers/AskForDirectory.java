@@ -21,6 +21,7 @@ package edu.ku.brc.helpers;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.util.NoSuchElementException;
 
 import javax.swing.JComponent;
@@ -37,13 +38,13 @@ import javax.swing.JOptionPane;
 public class AskForDirectory
 {
 
-    protected JComponent parent;
+    protected Component parent;
     
     /**
      * Constructor with UI parent.
      * @param aParent the UI parent
      */
-    public AskForDirectory(JComponent aParent)
+    public AskForDirectory(Component aParent)
     {
         parent = aParent;
     }

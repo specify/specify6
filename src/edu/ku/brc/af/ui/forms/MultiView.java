@@ -512,7 +512,7 @@ public class MultiView extends JPanel
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
-            if (viewable.getValidator() != null && viewable.getValidator().hasChanged()) // XXX Not sure why it must have a validator ???
+            if (viewable.isAlwaysGetDataFromUI() || (viewable.getValidator() != null && viewable.getValidator().hasChanged())) // XXX Not sure why it must have a validator ???
             {
                 viewable.getDataFromUI();
                 //if (viewable.getValidator() != null && viewable.getValidator().hasChanged())

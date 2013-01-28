@@ -141,7 +141,14 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     }
     // End Initializer
 
-    // Property accessors
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        accessionAttachments.size();
+    }
 
     /**
      *      * Primary key

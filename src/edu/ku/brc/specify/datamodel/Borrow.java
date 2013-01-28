@@ -157,6 +157,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
         super.forceLoad();
         
         borrowAgents.size();
+        borrowAttachments.size();
     }
 
     /*

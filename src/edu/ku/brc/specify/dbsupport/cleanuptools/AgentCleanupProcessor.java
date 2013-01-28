@@ -22,7 +22,6 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlg;
 import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static edu.ku.brc.ui.UIRegistry.showError;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.io.File;
@@ -31,7 +30,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
@@ -39,6 +40,7 @@ import java.util.Vector;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
@@ -49,15 +51,13 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.Scriptlet;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.TableWriter;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentGeography;
-import edu.ku.brc.specify.datamodel.AgentSpecialty;
 import edu.ku.brc.specify.datamodel.AgentVariant;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -72,6 +72,8 @@ public class AgentCleanupProcessor
 {
     private static final Logger  log = Logger.getLogger(AgentCleanupProcessor.class);
     
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
     private static boolean     doUpdates       = true;
     static Integer[]           agentIdTable    = {12, 86, 19, 30, 35, 146, 49, 53, 133};
     static String[]            roleTableIds    = {"AccessionID", "BorrowID", "DeaccessionID", "LoanID", "GiftID", };
@@ -87,12 +89,16 @@ public class AgentCleanupProcessor
     protected int              currIndex       = 0;
     
     protected HashSet<Integer> usedIds         = null;
+    protected HashSet<Integer> skipJoinTables  = null;
     
     protected Vector<FindItemInfo> itemsList   = new Vector<FindItemInfo>();
     protected TableWriter      tblWriter;
     protected StringBuilder[]  outputRows      = new StringBuilder[5];
     protected int              updCnt          = 0;
     protected boolean          isForExactMatches;
+    
+    protected int              totalUpdated    = 0;
+    protected int              totalDeleted    = 0;
     
     protected AgentCleanupIndexer cleanupIndexer = null;
     
@@ -107,7 +113,7 @@ public class AgentCleanupProcessor
      * @param isForExactMatches
      */
     public AgentCleanupProcessor(final AgentCleanupIndexer cleanupIndexer, 
-                                  final boolean isForExactMatches)
+                                 final boolean isForExactMatches)
     {
         super();
         this.cleanupIndexer     = cleanupIndexer;
@@ -214,6 +220,7 @@ public class AgentCleanupProcessor
             		"WHERE DivisionID = DIVID AND SpecifyUserID IS NULL) T0 GROUP BY NM) T1 WHERE CNT > 1 ORDER BY CNT DESC, NM ASC";
             sql =  QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             System.out.println(sql);
+            
             int i = 0;
             for (Object[] row : BasicSQLUtils.query(sql))
             {
@@ -422,9 +429,10 @@ public class AgentCleanupProcessor
                        MultipleRecordComparer mrc = new MultipleRecordComparer(fii, 
                                                                                Agent.getClassTableId(), 
                                                                                Address.getClassTableId(), 
-                                                                               AgentVariant.getClassTableId(),
-                                                                               AgentSpecialty.getClassTableId(),
-                                                                               AgentGeography.getClassTableId());
+                                                                               AgentVariant.getClassTableId()
+                                                                               //AgentSpecialty.getClassTableId(),
+                                                                               //AgentGeography.getClassTableId()
+                                                                               );
                        mrc.setSingleRowIncluded(false, false, false, false);
                        mrc.addDisplayColumn("Agent's Name");
                        
@@ -454,11 +462,14 @@ public class AgentCleanupProcessor
                                if (!cleanupMerges(Agent.getClassTableId(), mainItem, kidItems))
                                {
                                    String msg = String.format("There was an error cleaning up addresses for agent '%s'", fii.getValue().toString());
-                                   showError(msg);
+                                   showProcessingMessage(msg);
                                    log.error(msg);
                                    isContinuing = false;
                                }
                            }
+                       } else if (mrc.hasRecords())
+                       {
+                           log.debug("Here");
                        } else
                        {
                            isContinuing = true;
@@ -505,18 +516,22 @@ public class AgentCleanupProcessor
         DBTableInfo parentTI = DBTableIdMgr.getInstance().getInfoById(parentTblId);
         System.out.println("ParentTbl: "+parentTI.getTitle());
         
+        //------------------------------------------
         // Find Merged into record (Master)
-        MergeInfoItem intoRec = mainItem.getMergeInto();
+        //------------------------------------------
+        MergeInfoItem       intoRec = mainItem.getMergeInto();
         List<MergeInfoItem> fromRec = mainItem.getMergeFrom();
         if (intoRec == null && fromRec.size() > 0)
         {
             String msg = String.format("No 'merged into' record for %s", parentTI.getTitle());
-            showError(msg);
+            showProcessingMessage(msg);
             log.error(msg);
             return false;
         }
         
+        //--------------------------------------------------------------------
         // Merge Kid's Information before removing unwanted 'parent' records.
+        //--------------------------------------------------------------------
         for (MergeInfo kidMergeInfo : kidItems)
         {
             DBTableInfo ti = kidMergeInfo.getTblInfo();
@@ -529,10 +544,11 @@ public class AgentCleanupProcessor
                 if (BasicSQLUtils.update(sql) != 1)
                 {
                     String msg = String.format("Error deleting child record for %s (record id %d)", ti.getTitle(), mi.getId());
-                    showError(msg);
+                    showProcessingMessage(msg);
                     log.error(msg);
                     return false;
                 }
+                totalDeleted++;
             }
             
             for (MergeInfoItem mi : kidMergeInfo.getMergeIncluded())
@@ -542,10 +558,11 @@ public class AgentCleanupProcessor
                 if (BasicSQLUtils.update(sql) != 1)
                 {
                     String msg = String.format("Error updating child record for %s (record id %d)", ti.getTitle(), mi.getId());
-                    showError(msg);
+                    showProcessingMessage(msg);
                     log.error(msg);
                     return false;
                 }
+                totalUpdated++;
             }
         }
         
@@ -610,9 +627,16 @@ public class AgentCleanupProcessor
             }
             if (BasicSQLUtils.update(sql) != 1)
             {
-                showError(String.format("Error deleting/updating table groupperson"));
+                showProcessingMessage(String.format("Error deleting/updating table groupperson"));
                 isError = true;
                 break;
+            }
+            if (cnt > 0)
+            {
+                totalDeleted++;
+            } else
+            {
+                totalUpdated++;
             }
         }
         return isError ? JoinTableDupStatus.eError : JoinTableDupStatus.eOK;
@@ -638,22 +662,172 @@ public class AgentCleanupProcessor
         
         for (Integer agentId : fii.getDuplicateIds())
         {
-            Integer otherId = BasicSQLUtils.getCountAsInt(String.format(fmt, agentId)); // Get the ID to be changed
-            if (otherId != null)
+            sql = String.format(fmt, agentId);
+            logSQL(sql);
+            Integer otherId = BasicSQLUtils.getCountAsInt(sql); // Get the ID to be changed
+            if (otherId != null && otherId != 0)
             {
                 // Move it over
                 sql = String.format("UPDATE agentspecialty SET AgentID = %d, OrderNumber=%d WHERE AgentID = %d AND AgentSpecialtyId = %d", fii.getId(), orderNum, agentId, otherId);
                 logSQL(sql);
-                if (BasicSQLUtils.update(sql) != 1)
+                int updtCnt = BasicSQLUtils.update(sql);
+                if (updtCnt != 1)
                 {
-                    showError(String.format("Error deleting/updating table %s", ti.getName()));
+                    showProcessingMessage(String.format("Error deleting/updating table %s", ti.getName()));
                     isError = true;
                     break;
                 }
+                totalUpdated++;
                 orderNum++;
             }
         }
         return isError ? JoinTableDupStatus.eError : JoinTableDupStatus.eOK;
+    }
+    
+    /**
+     * @param fii
+     * @return
+     */
+    public boolean isFundingAgentOK(final FindItemInfo fii)
+    {    
+        //     SELECT ct.CollectingTripID, fa.AgentID FROM collectingtrip ct INNER JOIN fundingagent fa ON ct.CollectingTripID = fa.CollectingTripID
+
+        String sql = String.format("SELECT CTID FROM (SELECT ct.CollectingTripID CTID, COUNT(ct.CollectingTripID) CNT " +
+        		                   "FROM collectingtrip ct INNER JOIN fundingagent fa ON ct.CollectingTripID = fa.CollectingTripID " +
+        		                   "WHERE fa.AgentID IN %s GROUP BY ct.CollectingTripID) T1 WHERE CNT > 1", fii.getInClause(true));
+        logSQL(sql);
+        StringBuilder strBldr = new StringBuilder("The Collecting Trips are:<BR>");
+        Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+        if (ids.size() > 0)
+        {
+            int cnt = 0;
+            for (Integer ctId : ids)
+            {
+                sql = "SELECT CollectingTripName, StartDate FROM collectingtrip WHERE CollectingTripID = " + ctId;
+                Object[] row = BasicSQLUtils.queryForRow(sql);
+                StringBuilder sb = new StringBuilder();
+                if (row[0] !=  null)
+                {
+                    sb.append((String)row[0]);
+                }
+                if (row[1] !=  null)
+                {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(sdf.format((Date)row[1]));
+                }
+                strBldr.append(sb);
+                strBldr.append("<BR>");
+                cnt++;
+            }
+            String suffix = strBldr.toString()+"<BR>";
+            String title  = String.format("Agent '%s' cannot be merged because it would create a duplicate funding agent.<BR>", getAgentStr(fii.getId()));
+            String msg    = title + (cnt < 5 ? suffix : " (See report).");
+            showProcessingMessage(msg);
+            outputRows[4].append(msg);
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * @param fii
+     * @return
+     */
+    public boolean isCollectorsOK(final FindItemInfo fii)
+    {    
+        String sql = String.format("SELECT CEID FROM (SELECT ce.CollectingEventID CEID, COUNT(ce.CollectingEventID) CNT FROM collectingevent ce " +
+                "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID WHERE c.AgentID IN %s GROUP BY ce.CollectingEventID) T1 WHERE CNT > 1", fii.getInClause(true));
+        logSQL(sql);
+        StringBuilder strBldr = new StringBuilder("The Collecting Events are:<BR>");
+        Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+        if (ids.size() > 0)
+        {
+            int cnt = 0;
+            for (Integer ceId : ids)
+            {
+                sql = "SELECT StationFieldNumber, StartDate FROM collectingevent WHERE CollectingEventID = " + ceId;
+                Object[] row = BasicSQLUtils.queryForRow(sql);
+                StringBuilder sb = new StringBuilder();
+                if (row[0] !=  null)
+                {
+                    sb.append((String)row[0]);
+                }
+                if (row[1] !=  null)
+                {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(sdf.format((Date)row[1]));
+                }
+                strBldr.append(sb);
+                strBldr.append("<BR>");
+                cnt++;
+            }
+            String suffix = strBldr.toString()+"<BR>";
+            String title  = String.format("Agent '%s' cannot be merged because it would create a duplicate collector.<BR>", getAgentStr(fii.getId()));
+            String msg    = title + (cnt < 5 ? suffix : " (See report).");
+            showProcessingMessage(msg);
+            outputRows[4].append(msg);
+            return false;
+        }
+        return true;
+    }
+    
+    
+    /**
+     * @param fii
+     * @return
+     */
+    public boolean isGroupOK(final FindItemInfo fii)
+    {    
+        String sql = "SELECT AGID FROM (SELECT a.AgentID AGID, COUNT(a.AgentID) CNT FROM agent a " +
+                     "INNER JOIN groupperson gp ON a.AgentID = gp.GroupID " +
+                     "WHERE gp.MemberID IN %s GROUP BY a.AgentID) T1 WHERE CNT > 1";
+        return isRelationshipOK(fii, sql, "Groups", "group", "SELECT LastName FROM agent WHERE AgentID = ");
+    }
+    
+    /**
+     * @param fii
+     * @return
+     */
+    public boolean isRelationshipOK(final FindItemInfo fii, 
+                                    final String sqlStr, 
+                                    final String objTitle, 
+                                    final String objTitle2, 
+                                    final String sqlLookUp)
+    {    
+        String sql = String.format(sqlStr, fii.getInClause(true));
+        logSQL(sql);
+        StringBuilder strBldr = new StringBuilder("The "+objTitle+" are:<BR>");
+        Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+        if (ids.size() > 0)
+        {
+            int cnt = 0;
+            for (Integer agId : ids)
+            {
+                String sql2 = sqlLookUp + agId;
+                Object[] row = BasicSQLUtils.queryForRow(sql2);
+                StringBuilder sb = new StringBuilder();
+                if (row[0] !=  null)
+                {
+                    sb.append((String)row[0]);
+                }
+                if (row.length > 1 && row[1] !=  null)
+                {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(sdf.format((Date)row[1]));
+                }
+                strBldr.append(sb);
+                strBldr.append("<BR>");
+                cnt++;
+            }
+            String suffix = strBldr.toString()+"<BR>";
+            String title  = String.format("Agent '%s' cannot be merged because it would create a duplicate %s.<BR>", getAgentStr(fii.getId()), objTitle2);
+            String msg    = title + (cnt < 5 ? suffix : " (See report).");
+            showProcessingMessage(msg);
+            outputRows[4].append(msg);
+            return false;
+        }
+        return true;
+
     }
     
     /**
@@ -704,11 +878,59 @@ public class AgentCleanupProcessor
         {
             String title = String.format("Agent '%s' cannot be merged because duplicate Roles for the\nsame person will be created during the merge for the following tables:", getAgentStr(fii.getId()));
             String msg   = title + sb.toString();
+            showProcessingMessage(msg);
             outputRows[4].append(msg+"<BR>");
-            showError(msg);
             return false;
         }
         return true;
+    }
+    
+    /**
+     * @param fii
+     * @return
+     */
+    public boolean isVariantOK(final FindItemInfo fii)
+    {
+        boolean hasBadVariant = false;
+        try
+        {
+            String  inClause = fii.getInClause(true);
+            String  sql      = String.format("SELECT COUNT(*) FROM (SELECT VarType,COUNT(VarType) CNT FROM agentvariant WHERE AgentID IN %s GROUP BY VarType) T1 WHERE CNT > 1", inClause);
+            logSQL(sql);
+            if (BasicSQLUtils.getCountAsInt(sql) > 0)
+            {
+                if (!hasBadVariant)
+                {
+                    hasBadVariant = true;
+                } 
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        if (hasBadVariant)
+        {
+            String msg = String.format("Agent '%s' cannot be merged because duplicate Variant Types for the\nsame person will be created during the merge of the Agent Variant table:");
+            showProcessingMessage(msg);
+            outputRows[4].append(msg+"<BR>");
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * @param message
+     */
+    private void showProcessingMessage(final String message)
+    {
+        String msg = message;
+        if (StringUtils.contains(msg.toLowerCase(), "<br>"))
+        {
+            msg = StringUtils.replace(msg, "<BR>", "\n");
+        }
+        cleanupIndexer.getPrgDlg().toBack();
+        UIRegistry.displayInfoMsgDlg(msg);
+        cleanupIndexer.getPrgDlg().toFront();
     }
     
     /**
@@ -734,8 +956,8 @@ public class AgentCleanupProcessor
          // Ordering
         86 - AgentSpecialty.java:   @UniqueConstraint(columnNames = {"AgentID", "OrderNumber"}) })
         49 - GroupPerson.java:      @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) 
-        
       */
+        
         int tblId = ti.getTableId();
         
         if (tblId == 86)
@@ -802,21 +1024,30 @@ public class AgentCleanupProcessor
             
             int cnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM %s WHERE %s = %d AND AgentID = %d", tblName, otherFld, otherId, fii.getId()));
             logSQL(sql);
+            boolean isDelete;
             if (cnt > 0 || usedSet.contains(otherId))
             {
                 sql = String.format("DELETE FROM %s WHERE AgentID = %d AND %s = %d", tblName, agentId, otherFld, otherId);
-                
+                isDelete = true;
             } else
             {
                 sql = String.format("UPDATE %s SET AgentID = %d WHERE AgentID = %d AND %s = %d", tblName, fii.getId(), agentId, otherFld, otherId);
                 usedSet.add(otherId);
+                isDelete = false;
             }
             logSQL(sql);
             if (BasicSQLUtils.update(sql) != 1)
             {
-                showError(String.format("Error deleting/updating table %s", tblName));
+                showProcessingMessage(String.format("Error deleting/updating table %s", tblName));
                 isError = true;
                 break;
+            }
+            if (isDelete)
+            {
+                totalDeleted++;
+            } else
+            {
+                totalUpdated++;
             }
         }
         
@@ -874,6 +1105,18 @@ public class AgentCleanupProcessor
                 status = fixRelationships(ti, fii, inClause); 
             }
 
+            //HashSet<Integer> skipTables = new HashSet<Integer>();
+            /*
+                AccessionAgent
+                AgentSpecialty
+                BorrowAgent 
+                Collector
+                DeaccessionAgent
+                FundingAgent
+                GiftAgent 
+                LoanAgent 
+             */
+            
             if (status == JoinTableDupStatus.eNeedUpdating)
             {
                 for (DBRelationshipInfo ri : ti.getRelationships())
@@ -894,12 +1137,13 @@ public class AgentCleanupProcessor
                                 if (numChanged != totalCount)
                                 {
                                     String msg = String.format("Error updating AgentIds - Should have updated %d, only updated %d", totalCount, numChanged);
-                                    showError(msg);
+                                    showProcessingMessage(msg);
                                     isContinuing = false;
                                     isError      = true;
                                 } else
                                 {
                                     wasUpdated = true;
+                                    totalUpdated += numChanged;
                                 }
                             }
                             
@@ -942,9 +1186,12 @@ public class AgentCleanupProcessor
                 if (numChanged != totalCount)
                 {
                     String msg = String.format("Error deleting AgentIds - Should have updated %d, only updated %d", totalCount, numChanged);
-                    showError(msg);
+                    showProcessingMessage(msg);
                     isContinuing = false;
                     isError      = true;
+                } else
+                {
+                    totalDeleted += numChanged;
                 }
             }
         }
@@ -1010,19 +1257,19 @@ public class AgentCleanupProcessor
      * @param fii
      * @return
      */
-    private boolean isGroupPersonsOK(final FindItemInfo fii)
-    {
-        String sql = "SELECT COUNT(*) FROM groupperson WHERE GroupID IN " + fii.getInClause(true);
-        int cnt = BasicSQLUtils.getCountAsInt(sql);
-        if (cnt > 0)
-        {
-            String msg = String.format("One of the agents being merged as part of agent '%s' is a Group and cannot be merged.", getAgentStr(fii.getId()));
-            outputRows[4].append(msg+"<BR>");
-            showError(msg);
-            return false;
-        }
-        return true;
-    }
+//    private boolean isGroupPersonsOK(final FindItemInfo fii)
+//    {
+//        String sql = "SELECT COUNT(*) FROM groupperson WHERE GroupID IN " + fii.getInClause(true);
+//        int cnt = BasicSQLUtils.getCountAsInt(sql);
+//        if (cnt > 0)
+//        {
+//            String msg = String.format("One of the agents being merged as part of agent '%s' is a Group and cannot be merged.", getAgentStr(fii.getId()));
+//            outputRows[4].append(msg+"<BR>");
+//            showError(msg);
+//            return false;
+//        }
+//        return true;
+//    }
     
     /**
      * @return
@@ -1099,7 +1346,8 @@ public class AgentCleanupProcessor
                     outputRows[1].append(getAgentStr(agentID));
                 }
                 
-                if (isGroupPersonsOK(fii) && isRolesOK(fii))
+                if (isGroupOK(fii) && isRolesOK(fii) && 
+                    isCollectorsOK(fii) && isFundingAgentOK(fii) && isVariantOK(fii))
                 {
                     if (usedIds == null || !usedIds.contains(fii.getId()))
                     {
@@ -1158,7 +1406,17 @@ public class AgentCleanupProcessor
         
         if (cleanupIndexer == null || !cleanupIndexer.isQuitting())
         {
-            displayInfoMsgDlg(getResourceString("DONE"));
+            String msg = "";
+            if (totalDeleted > 0)
+            {
+                msg += String.format("Records updated: %d", totalUpdated);
+            }
+            if (totalDeleted > 0)
+            {
+                if (!msg.isEmpty()) msg += "\n";
+                msg += String.format("Records deleted: %d", totalDeleted);
+            }
+            displayInfoMsgDlg(msg.isEmpty() ? "Done" : msg);
         }
         
         if (tblWriter.hasLines())
