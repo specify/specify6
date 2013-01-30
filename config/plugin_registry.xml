@@ -39,7 +39,7 @@
         
         <plugin name="ImagesTask" class="edu.ku.brc.specify.tasks.ImagesTask" addui="true" prefname="imagetask"/>
         
-        <plugin name="CleanupToolsTask" class="edu.ku.brc.specify.tasks.CleanupToolsTask" addui="true" prefname="cleanuptask"/>
+        <plugin name="CleanupToolsTask" class="edu.ku.brc.specify.tasks.CleanupToolsTask" addui="true"/>
         
 		<plugin name="ExpressSearchTask" class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
 		
@@ -51,7 +51,7 @@
         
         <plugin name="VisualQueryTask" class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true" prefname="visualquery"/>
         
-        <plugin name="iPadExporterTask" class="edu.ku.brc.specify.plugins.ipadexporter.iPadDBExporterPlugin" addui="true"  prefname="ipadexporter"/>
+        <plugin name="iPadExporterTask" class="edu.ku.brc.specify.plugins.ipadexporter.iPadDBExporterPlugin" addui="true"/>
 
         <plugin name="WorkbenchRecordSetCleanupTask" class="edu.ku.brc.specify.tasks.WorkbenchRecordSetCleanupTask" addui="false"/>
            
