@@ -66,6 +66,7 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.AppContextMgr.CONTEXT_STATUS;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -1219,7 +1220,26 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final boolean isFirstTime,
                                      final boolean doPrompt)
     {
-        return setContext(databaseName, userName, startingOver, doPrompt, isFirstTime, null);
+        return setContext(databaseName, userName, startingOver, doPrompt, isFirstTime, null, true);
+    }
+
+    /**
+     * @param databaseName
+     * @param userName
+     * @param startingOver
+     * @param isFirstTime
+     * @param doPrompt
+     * @param isMainAppContext
+     * @return
+     */
+    public CONTEXT_STATUS setContext(final String  databaseName,
+            final String  userName,
+            final boolean startingOver,
+            final boolean isFirstTime,
+            final boolean doPrompt,
+            final boolean isMainAppContext)
+    {
+    	return setContext(databaseName, userName, startingOver, doPrompt, isFirstTime, null, isMainAppContext);
     }
 
     /**
@@ -1235,7 +1255,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final boolean startingOver,
                                      final boolean doPrompt,
                                      final boolean isFirstTime,
-                                     final String collectionName)
+                                     final String collectionName,
+                                     final boolean isMainSpecifyApp)
     {
         if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
@@ -1282,7 +1303,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.evict( user.getAgents());
                 setClassObject(SpecifyUser.class, user);
                 
-                if (!startingOver)
+                if (!startingOver && isMainSpecifyApp)
                 {                    
                     if (user.getIsLoggedIn())
                     {

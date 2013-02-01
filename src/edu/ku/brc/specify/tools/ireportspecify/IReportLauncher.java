@@ -35,6 +35,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -75,7 +76,7 @@ public class IReportLauncher implements DatabaseLoginListener
         }
         
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
-        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseName, userName, true, true, true);
+        AppContextMgr.CONTEXT_STATUS status = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).setContext(databaseName, userName, true, true, true, false);
        // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         
