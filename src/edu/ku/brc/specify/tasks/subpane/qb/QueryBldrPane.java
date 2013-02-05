@@ -1598,6 +1598,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         //Assumes the ID field is selected by hql -
     	//Assumes that  'select' is lower case.
+    	
     	int fromStart = hql.toLowerCase().indexOf(" from ");
     	int orderStart = hql.toLowerCase().indexOf(" order by ");
     	
@@ -2837,10 +2838,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 this);
         
         String hql = hqlSpecs.getHql();
-        if (countOnly)
-        {
-        	hql = getCountHql(hql);
-        }
+        qri.setCount(countOnly);
         qri.setSQL(hql);
         qri.setParams(hqlSpecs.getArgs());
         qri.setSort(hqlSpecs.getSortElements());

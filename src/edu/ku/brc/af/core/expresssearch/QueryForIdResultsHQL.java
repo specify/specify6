@@ -62,6 +62,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     protected RecordSetIFace        recordSet;
     protected boolean               isMultipleSelection   = true;
     protected boolean               isEditable            = false;
+    protected boolean			    count				  = false; //if true then matching records are counted but not retrieved
     protected int                   tableId;
 
     //protected SortedSet<SearchResultReportServiceInfo> reports = null;
@@ -340,6 +341,24 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     
 
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#isCount()
+	 */
+	@Override
+	public boolean isCount() 
+	{
+		return this.count;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#setCount(boolean)
+	 */
+	@Override
+	public void setCount(boolean value) 
+	{
+		this.count = value;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getDescription()
      */
     public String getDescription()

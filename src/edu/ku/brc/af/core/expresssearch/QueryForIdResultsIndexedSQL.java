@@ -381,6 +381,29 @@ public class QueryForIdResultsIndexedSQL implements QueryForIdResultsIFace
     {
         // nothing to do
     }
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#isCount()
+	 */
+	@Override
+	public boolean isCount() 
+	{
+		// Auto-generated method stub
+		return false;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#setCount(boolean)
+	 */
+	@Override
+	public void setCount(boolean value) 
+	{
+		// ignore
+		
+	}
+ 
     
     
 }

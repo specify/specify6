@@ -59,6 +59,7 @@ public class JPAQuery implements CustomQueryIFace
     protected boolean					quiet       = false; //don't dispatch errors when quiet - for use by background tasks 
     protected List<?>                   resultsList = null;
     protected boolean                   isUnique    = false;
+    protected boolean					isCount = false;        
     protected int						maxResults  = 0;
     protected int						firstResult = 0;
     protected boolean                   doDebug     = AppPreferences.getLocalPrefs().getBoolean("esdebug", false);
@@ -130,7 +131,24 @@ public class JPAQuery implements CustomQueryIFace
         this.isUnique = isUnique;
     }
 
+    
     /**
+	 * @return the isCount
+	 */
+	public boolean isCount() 
+	{
+		return isCount;
+	}
+
+	/**
+	 * @param isCount the isCount to set
+	 */
+	public void setCount(boolean isCount) 
+	{
+		this.isCount = isCount;
+	}
+
+	/**
      * @return the inError
      */
     public boolean isInError()
@@ -264,6 +282,10 @@ public class JPAQuery implements CustomQueryIFace
                     objArray.add(qry.uniqueResult());
                     resultsList = objArray;
                     
+                } else if (isCount) {
+                	List<Object> objArray = new ArrayList<Object>(1);
+                	objArray.add(qry.list().size());
+                	resultsList = objArray;
                 } else
                 {
                     resultsList = qry.list();

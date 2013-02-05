@@ -111,6 +111,16 @@ public interface QueryForIdResultsIFace
     public abstract boolean isHQL();
     
     /**
+     * @return whether results are being counted or retrieved
+     */
+    public abstract boolean isCount();
+    
+    /**
+     * @param value - whether to retrieve count or records
+     */
+    public abstract void setCount(boolean value);
+    
+    /**
      * @return indicates whether the results panel should be expanded at start up.
      */
     public abstract boolean isExpanded();
