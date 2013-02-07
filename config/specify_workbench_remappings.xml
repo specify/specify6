@@ -32,9 +32,12 @@
 	<remapping field="tribeAuthor" table="taxon" newfield="tribeAuthor1" newtable="determination" />
 	<remapping field="subtribeAuthor" table="taxon" newfield="subtribeAuthor1" newtable="determination" />
 	-->
+	<!-- these remappings were intended to adjust level names to the defaults produced by the wizard, but they 
+	may be causing more problems than they fix--> 
+	<!--
 	<remapping field="era" table="geologictimeperiod" newfield="erathem/era" newtable="geologictimeperiod" />
 	<remapping field="period" table="geologictimeperiod" newfield="system/period" newtable="geologictimeperiod" />
 	<remapping field="epoch" table="geologictimeperiod" newfield="series/epoch" newtable="geologictimeperiod" />
 	<remapping field="age" table="geologictimeperiod" newfield="stage/age" newtable="geologictimeperiod" />
-	
+	-->		
 </remappings>
