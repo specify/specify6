@@ -1520,16 +1520,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         alterFieldLength(conn, databaseName, tblName, geoCode, 8, 24);
                     }
                     
-                    String tableID = "TableID";
-                    tblName = getTableTitleForFrame(Attachment.getClassTableId());
-                    if (!doesColumnExist(databaseName, tblName, tableID))
+                    if (!addTableIDToAttchmentTable(conn, databaseName))
                     {
-                        if (!addColumn(conn, databaseName, tblName, tableID,  "TINYINT", "Title"))
-                        {
-                            return false;
-                        }
-                    } 
-                    addTableIDToAttchmentTable(conn);
+                        return false;
+                    }
                     frame.incOverall(); // #35
                     
                     return true;
@@ -1558,14 +1552,131 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
                                   
-                                  
+    /**
+     * @param conn
+     * @param stmt
+     * @param classes
+     * @param sqls
+     * @param colName
+     * @param scopeType
+     * @return
+     * @throws SQLException
+     */
+    private boolean fixTablesAttachmentsColMemID(final Connection conn, 
+                                               final Statement stmt,
+                                               final Class<?>[] classes, 
+                                               final String[] sqls, 
+                                               final String colName,
+                                               final byte[] scopeType) throws SQLException
+     {
+         PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET ScopeID=?,ScopeType=? WHERE AttachmentID = ?");
+         int i = 0;
+         for (Class<?> cls : classes)
+         {
+             DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+             
+             int cnt = 0;
+             frame.setProcess(i);
+             
+             String      nm      = ti.getName();
+             String      nma     = (ti.getTableId() == 88 ? "dnasequencerun" : ti.getName()) + "attachment";
+             String      nmCap   = cls.getSimpleName();
+             String      sql;
+             if (sqls == null)
+             {
+                 sql     = String.format("SELECT a.AttachmentID,cc.%s FROM attachment a " +
+                                         "INNER JOIN %s aa ON a.AttachmentID = aa.AttachmentID " +  
+                                         "INNER JOIN %s cc ON aa.%sID = cc.%sID", 
+                                         colName, nma, nm, nmCap, nmCap);
+             } else
+             {
+                 sql = sqls[i];
+             }
+             log.debug(sql);
+             
+             ResultSet rs  = stmt.executeQuery(sql);
+             while (rs.next())
+             {
+                 if (scopeType[i] == Attachment.GLOBAL_SCOPE)
+                 {
+                     pStmt.setObject(1, null);
+                 } else
+                 {
+                     pStmt.setInt(1, rs.getInt(2));
+                 }
+             
+                 pStmt.setByte(2, scopeType[i]);
+                 pStmt.setInt(3, rs.getInt(1));
+                 
+                 if (pStmt.executeUpdate() != 1)
+                 {
+                     log.error("Error updating AttachmentID "+rs.getInt(1));
+                     return false;
+                 }
+                 cnt++;
+             }
+             rs.close();
+             log.debug(String.format("Updated %d for %s", cnt, nmCap));
+             i++;
+         }
+         pStmt.close();
+         return true;
+     }
+    
+    /**
+     * @param conn
+     * @param stmt
+     * @param classes
+     * @param sqls
+     * @param colName
+     * @param scopeType
+     * @return
+     * @throws SQLException
+     */
+    private boolean fixTablesAttachmentsColMemID(final Connection conn, 
+                                                 final Statement stmt,
+                                                 final Class<?>[] classes, 
+                                                 final String[] sqls, 
+                                                 final String colName,
+                                                 final byte scopeType) throws SQLException
+    {
+        byte[] scopes = new byte[classes.length];
+        for (int i=0;i<scopes.length;i++) scopes[i] = scopeType;
+        return fixTablesAttachmentsColMemID(conn, stmt, classes, sqls, colName, scopes);
+    }
                                   
     /**
      * @param conn
      */
-    public void addTableIDToAttchmentTable(final Connection conn)
+    public boolean addTableIDToAttchmentTable(final Connection conn, final String databaseName)
     {
         frame.setDesc("Updating Attachments...");
+
+        String tableID = "TableID";
+        String tblName = getTableTitleForFrame(Attachment.getClassTableId());
+        if (!doesColumnExist(databaseName, tblName, tableID))
+        {
+            if (!addColumn(conn, databaseName, tblName, tableID,  "TINYINT", "Title"))
+            {
+                return false;
+            }
+        } 
+        String scopeId = "ScopeID";
+        if (!doesColumnExist(databaseName, tblName, scopeId))
+        {
+            if (!addColumn(conn, databaseName, tblName, scopeId,  "INT(11)", "TableID"))
+            {
+                return false;
+            }
+        } 
+        String scopeType = "ScopeType";
+        if (!doesColumnExist(databaseName, tblName, scopeType))
+        {
+            if (!addColumn(conn, databaseName, tblName, scopeType,  "TINYINT", "ScopeID"))
+            {
+                return false;
+            }
+        } 
 
         try
         {
@@ -1614,11 +1725,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     RepositoryAgreement.class,
                     Taxon.class,
                 };
-            
+
             frame.setProcess(0, attachmentClasses.length);
             PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET TableID = ? WHERE AttachmentID = ?");
             Statement         stmt   = conn.createStatement();
-
+            
             int i = 1;
             for (Class<?> cls : attachmentClasses)
             {
@@ -1636,6 +1747,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (pStmt.executeUpdate() != 1)
                     {
                         log.error("Error updating AttachmentID "+rs.getInt(1));
+                        return false;
                     }
                     cnt++;
                 }
@@ -1644,12 +1756,115 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 i++;
             }
             pStmt.close();
+            
+            
+            int step = 1;
+            frame.setProcess(0, 4);
+            
+            Class<?>[] attachOwnerClasses = {
+                    CollectionObject.class,  
+                    Borrow.class,  // Borrow -> BorrowMaterial.ColMemID
+                    DNASequence.class, 
+                    DNASequencingRun.class, 
+                    Preparation.class, 
+                };
+            if (!fixTablesAttachmentsColMemID(conn, stmt, attachOwnerClasses, null, "CollectionMemberID", Attachment.COLLECTION_SCOPE))
+            {
+                return false;
+            }
+            frame.setProcess(step++);
+            
+//            Class<?>[] fnbOwnerClasses = {
+//                    FieldNotebook.class,  
+//                };
+//            if (!fixTablesAttachmentsColMemID(conn, stmt, fnbOwnerClasses, null, "CollectionID", Attachment.COLLECTION_SCOPE))
+//            {
+//                return false;
+//            }
+//            frame.setProcess(step++);
+            
+            Class<?>[] divOwnerClasses = {
+                    Agent.class,
+                    ConservDescription.class,
+                    Gift.class,
+                    Loan.class,
+                    RepositoryAgreement.class,
+            };
+            if (!fixTablesAttachmentsColMemID(conn, stmt, divOwnerClasses, null, "DivisionID", Attachment.DIVISION_SCOPE))
+            {
+                return false;
+            }
+            frame.setProcess(step++);
+            
+            Class<?>[] dispOwnerClasses = {
+                    Locality.class,
+                    FieldNotebook.class,  
+            };
+            if (!fixTablesAttachmentsColMemID(conn, stmt, dispOwnerClasses, null, "DisciplineID", Attachment.DISCIPLINE_SCOPE))
+            {
+                return false;
+            }
+            frame.setProcess(step++);
+            
+            String[] sqls = { 
+                    "SELECT a.AttachmentID, co.CollectionID FROM attachment a INNER JOIN conserveventattachment cea ON a.AttachmentID = cea.AttachmentID " +
+                    "INNER JOIN conservevent ce ON cea.ConservEventID = ce.ConservEventID " +
+                    "INNER JOIN conservdescription cd ON ce.ConservDescriptionID = cd.ConservDescriptionID " +
+                    "INNER JOIN collectionobject co ON cd.CollectionObjectID = co.CollectionObjectID",
+            
+                    "SELECT a.AttachmentID, fb.DisciplineID FROM attachment a INNER JOIN fieldnotebookpagesetattachment fbpsa ON a.AttachmentID = fbpsa.AttachmentID " +
+                    "INNER JOIN fieldnotebookpageset fbps ON fbpsa.FieldNotebookPageSetID = fbps.FieldNotebookPageSetID " +
+                    "INNER JOIN fieldnotebook fb ON fbps.FieldNotebookID = fb.FieldNotebookID",
+            
+                    "SELECT a.AttachmentID, fb.DisciplineID FROM attachment a INNER JOIN fieldnotebookpageattachment fbpa ON a.AttachmentID = fbpa.AttachmentID " +
+                    "INNER JOIN fieldnotebookpage fbp ON fbpa.FieldNotebookPageID = fbp.FieldNotebookPageID " +
+                    "INNER JOIN fieldnotebookpageset fbps ON fbp.FieldNotebookPageSetID = fbps.FieldNotebookPageSetID " +
+                    "INNER JOIN fieldnotebook fb ON fbps.FieldNotebookID = fb.FieldNotebookID",
+                    
+                    "SELECT a.AttachmentID FROM attachment a INNER JOIN permitattachment pa ON a.AttachmentID = pa.AttachmentID " +
+                    "INNER JOIN permit p ON pa.PermitID = p.PermitID",
+                    
+                    "SELECT a.AttachmentID FROM attachment a INNER JOIN referenceworkattachment rwa ON a.AttachmentID = rwa.AttachmentID " +
+                    "INNER JOIN referencework rw ON rwa.ReferenceWorkID = rw.ReferenceWorkID",
+                    
+                    "SELECT a.AttachmentID FROM attachment a INNER JOIN accessionattachment aa ON a.AttachmentID = aa.AttachmentID " +
+                    "INNER JOIN accession ac ON aa.AccessionID = ac.AccessionID",
+                    
+                    "SELECT a.AttachmentID, d.UserGroupScopeId FROM attachment a INNER JOIN taxonattachment ta ON a.AttachmentID = ta.AttachmentID " +
+                    "INNER JOIN taxon t ON ta.TaxonID = t.TaxonID " +
+                    "INNER JOIN discipline d ON t.TaxonTreeDefID = d.TaxonTreeDefID",
+            };        
+            
+            Class<?>[] extraAttachOwnerClasses = {
+                ConservEvent.class, // ConservEvent -> ConservDescription.ColMemID
+                FieldNotebookPage.class, // FieldNotebookPage -> FieldNotebook.CollectionID 
+                FieldNotebookPageSet.class, // FieldNotebookPageSet -> FieldNotebookPage -> FieldNotebook.CollectionID 
+                Permit.class, 
+                ReferenceWork.class, 
+                Accession.class, 
+                Taxon.class,
+            };
+            byte[] scopes = {Attachment.COLLECTION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
+                             Attachment.GLOBAL_SCOPE, Attachment.GLOBAL_SCOPE, Attachment.GLOBAL_SCOPE, Attachment.DISCIPLINE_SCOPE};
+            
+            if (!fixTablesAttachmentsColMemID(conn, stmt, extraAttachOwnerClasses, sqls, null, scopes))
+            {
+                return false;
+            }
+            frame.setProcess(step++);
+
             stmt.close();
 
+            update(conn, "CREATE INDEX AttchScopeIDIDX ON attachment(ScopeID)");
+            update(conn, "CREATE INDEX AttchScopeTypeIDX ON attachment(ScopeType)");
+            
+            return true;
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
         }
+        return false;
     }
     
     /**

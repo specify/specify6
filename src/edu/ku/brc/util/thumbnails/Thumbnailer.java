@@ -27,7 +27,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,6 +43,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * The main class used for generating 'thumbnails' of various types of files.
@@ -196,9 +196,7 @@ public class Thumbnailer
 	                              final boolean doHighQuality) throws IOException
 	{
             // get the system MIME type mapper
-            MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
-            mimeMap.addMimeTypes("image/png    png");
-            mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
+            MimetypesFileTypeMap mimeMap = AttachmentUtils.getMimeMap();
             
             // get the MIME type of the given original file
     		String mimeType = mimeMap.getContentType(originalFile);

@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -114,7 +115,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         blueMarbleDisplay = new ImageDisplay(IMG_SIZE, IMG_SIZE/2, false, false);
         CellConstraints cc = new CellConstraints();
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,8px,f:p:g,4px,p"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,8px,f:p:g,4px,p"));
         
         imgDisplay = new ImageDisplay(IMG_SIZE, IMG_SIZE, false, false);
         Dimension s = new Dimension(IMG_SIZE, IMG_SIZE);
@@ -155,6 +156,11 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         blueMarbleFetcher.init();
         markerImg = blueMarbleFetcher.getMarkerImg();
         
+        setLayout(new BorderLayout());
+        
+        JScrollPane sb = new JScrollPane(pb.getPanel(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        add(sb, BorderLayout.CENTER);
+        
         super.doneBuilding();
     }
     
@@ -169,7 +175,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
             model.setItems(imagesPane.getImageDataValueList(imgDataItem));
             
             ImageIcon img = imgDataItem.getImgIcon();
-            System.out.println(String.format("%d,%d", img.getIconWidth(), ImageDataItem.STD_ICON_SIZE));
+            //System.out.println(String.format("%d,%d", img.getIconWidth(), ImageDataItem.STD_ICON_SIZE));
             if (img == null || img.getIconWidth() != IMG_SIZE)
             {
                 imgDataItem.loadScaledImage(IMG_SIZE, new ImageLoaderListener()
@@ -196,6 +202,8 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         } else
         {
             imgDisplay.setImage((ImageIcon)null);
+            model.setItems(null);
+            blueMarbleDisplay.setImage(blueMarbleFetcher.getBlueMarbleImage());
         }
         
         if (imgDataItem != null)

@@ -342,6 +342,17 @@
             </altviews>
         </view>
         
+         <view 
+            name="ImageDateSearch"
+            class="edu.ku.brc.specify.datamodel.Attachment"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Image Date Search Form]]></desc>
+            <altviews>
+                <altview name="ImageDateSearch" viewdef="ImageDateSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
 
@@ -1102,5 +1113,34 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef type="form"
+            name="ImageDateSearch"
+            class="edu.ku.brc.specify.datamodel.Attachment"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Image Date Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Dates" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" label="Start Date"/>
+                    <cell type="field" id="1" name="StartDate" uitype="formattedtext" uifieldformatter="SearchDate" initialize="ispartial=true;"/>
+                </row>
+               <row>
+                    <cell type="label" label="End Date"/>
+                    <cell type="field" id="2" name="EndDate" uitype="formattedtext" uifieldformatter="SearchDate" initialize="ispartial=true;"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        
     </viewdefs>
 </viewset>

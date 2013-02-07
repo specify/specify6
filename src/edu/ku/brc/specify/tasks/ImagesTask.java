@@ -24,12 +24,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -37,20 +31,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JToolBar;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.swingx.JXHeader.IconPosition;
-
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
-import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
@@ -59,9 +44,25 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.AttachmentImageAttribute;
+import edu.ku.brc.specify.datamodel.Borrow;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.ConservDescription;
+import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.DNASequence;
+import edu.ku.brc.specify.datamodel.DNASequencingRun;
+import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
+import edu.ku.brc.specify.datamodel.Gift;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane;
 import edu.ku.brc.specify.utilapps.morphbank.BatchAttachFiles;
@@ -83,7 +84,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class ImagesTask extends BaseTask
 {
     private static final String  ON_TASKBAR        = "ImagesTask.OnTaskbar";
-    private static final String  IMAGES           = "IMAGES";
+    private static final String  IMAGES            = "IMAGES";
+    private static final String  IMAGES_SEARCH     = "IMAGES.SEARCH";
     //private static final String  IMAGES_TITLE     = "IMAGES_TITLE";
     //private static final String  IMAGES_SECURITY  = "IMAGESEDIT";
     
@@ -119,21 +121,22 @@ public class ImagesTask extends BaseTask
             
             extendedNavBoxes.clear();
             
-            // Network
+            // Actions
+            RolloverCommand showAllBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Show All Images", "image", null, null);
             RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Images", "image", null, null);
             RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Image Index", "image", null, null);
             //RolloverCommand uploadOCRBtn    = (RolloverCommand)addNavBoxItem(actionNavBox, "Import OCR Data", "image", null, null);
             //addNavBoxItem(actionNavBox, "Import OCR Data", "network_node_del", null, null);
             //RolloverCommand showStatusBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Status",   "InfoIcon", null, null);
             
-            DBTableInfo coTI  = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+            //DBTableInfo coTI  = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
             //DBTableInfo geoTI = DBTableIdMgr.getInstance().getInfoById(Geography.getClassTableId());
             //DBTableInfo taxTI = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
 
             // Query Panels
-            RolloverCommand showAllBtn = (RolloverCommand)addNavBoxItem(viewsNavBox, "Show All Images", "image", null, null);
-            RolloverCommand coBtn      = (RolloverCommand)addNavBoxItem(viewsNavBox, coTI.getTitle(), "image", null, null);
-            coBtn.setIcon(coTI.getIcon(IconManager.STD_ICON_SIZE));
+            //RolloverCommand showAllBtn = (RolloverCommand)addNavBoxItem(viewsNavBox, "Show All Images", "image", null, null);
+            //RolloverCommand coBtn      = (RolloverCommand)addNavBoxItem(viewsNavBox, coTI.getTitle(), "image", null, null);
+            //coBtn.setIcon(coTI.getIcon(IconManager.STD_ICON_SIZE));
             
             //RolloverCommand configOutgoingBtn = (RolloverCommand)addNavBoxItem(viewsNavBox, "Config Outgoing", "notify", null, null);
             //RolloverCommand notiLogBtn        = (RolloverCommand)addNavBoxItem(viewsNavBox, "Review Notifications", "logfile", null, null);
@@ -147,8 +150,37 @@ public class ImagesTask extends BaseTask
             */
             
             navBoxes.add(actionNavBox);
-            navBoxes.add(viewsNavBox);
+            //navBoxes.add(viewsNavBox);
             //navBoxes.add(adminNavBox);
+            
+            int[] attachmentTableIDs = {AttachmentImageAttribute.getClassTableId(),
+                    Borrow.getClassTableId(),
+                    CollectingEvent.getClassTableId(),
+                    CollectionObject.getClassTableId(),
+                    ConservDescription.getClassTableId(),
+                    ConservEvent.getClassTableId(),
+                    DNASequence.getClassTableId(),
+                    DNASequencingRun.getClassTableId(),
+                    FieldNotebook.getClassTableId(),
+                    FieldNotebookPage.getClassTableId(),
+                    FieldNotebookPageSet.getClassTableId(),
+                    Gift.getClassTableId(),
+                    Loan.getClassTableId(),
+                    Locality.getClassTableId(),
+                    Permit.getClassTableId(),
+                    Preparation.getClassTableId(),
+                    ReferenceWork.getClassTableId(),
+                    RepositoryAgreement.getClassTableId()};
+            for (int tblId : attachmentTableIDs)
+            {
+                DBTableInfo   tblInfo   = DBTableIdMgr.getInstance().getInfoById(1);
+                CommandAction cmdAction = new CommandAction(IMAGES, IMAGES_SEARCH);
+                cmdAction.setProperty("id",    Integer.toString(tblId));
+                
+                cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                String serviceName = String.format("Image Search %s", tblInfo.getTitle());
+                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "image", tblInfo.getTitle(), true); // the Name gets Hashed
+            }
 
             
             uploadImagesBtn.addActionListener(new ActionListener()
@@ -178,24 +210,26 @@ public class ImagesTask extends BaseTask
                 }
             });*/
             
-            coBtn.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (starterPane != null) removeSubPaneFromMgr(starterPane);
-                    starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, false); 
-                    addSubPaneToMgr(starterPane);
-                }
-            });
+//            coBtn.addActionListener(new ActionListener()
+//            {
+//                @Override
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    if (starterPane != null) removeSubPaneFromMgr(starterPane);
+//                    starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, false); 
+//                    addSubPaneToMgr(starterPane);
+//                }
+//            });
             
             showAllBtn.addActionListener(new ActionListener()
             {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    //showAllImages(false);
-                    if (starterPane != null) removeSubPaneFromMgr(starterPane);
+                    if (starterPane != null) 
+                    {
+                        removeSubPaneFromMgr(starterPane);
+                    }
                     starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, true); 
                     addSubPaneToMgr(starterPane);
                 }
@@ -230,7 +264,7 @@ public class ImagesTask extends BaseTask
     }
     
     /**
-     * @param uploadImages
+     * 
      */
     private void uploadIndexFile()
     {
@@ -253,15 +287,19 @@ public class ImagesTask extends BaseTask
                 ex.printStackTrace();
             }
         }
- 
     }
     
     /**
-     * @param uploadImages
+     * @param rs
      */
-    private void uploadOCRData(final boolean uploadImages)
+    private void searchForImages(final RecordSetIFace rs)
     {
-        
+        if (starterPane != null)
+        {
+            removeSubPaneFromMgr(starterPane);
+        }
+        starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, rs); 
+        addSubPaneToMgr(starterPane);
     }
     
     /* (non-Javadoc)
@@ -275,8 +313,8 @@ public class ImagesTask extends BaseTask
         // Create and add the Actions NavBox first so it is at the top at the top
         actionNavBox = new NavBox(getResourceString("Actions"));
         
-        viewsNavBox = new NavBox("Image Search");
-        adminNavBox  = new NavBox("Admin");
+        //viewsNavBox = new NavBox("Image Search");
+        //adminNavBox  = new NavBox("Admin");
     }
 
 
@@ -317,13 +355,13 @@ public class ImagesTask extends BaseTask
 
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
-        
-        RecordSetTask     rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        List<NavBoxIFace> nbs    = rsTask.getNavBoxes();
-        if (nbs != null)
-        {
-            extendedNavBoxes.addAll(nbs);
-        }
+//        
+//        RecordSetTask     rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+//        List<NavBoxIFace> nbs    = rsTask.getNavBoxes();
+//        if (nbs != null)
+//        {
+//            extendedNavBoxes.addAll(nbs);
+//        }
 
         return extendedNavBoxes;
     }
@@ -455,6 +493,13 @@ public class ImagesTask extends BaseTask
                 imagesPane.doSearchGenusSpecies(p.first.getFullName(), true);
                 requestContext();
             }*/
+        } if (cmdAction.isAction(IMAGES_SEARCH))
+        {
+            if (cmdAction.getData() instanceof RecordSetIFace)
+            {
+                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
+                searchForImages(rs);
+            } 
         }
     }
     

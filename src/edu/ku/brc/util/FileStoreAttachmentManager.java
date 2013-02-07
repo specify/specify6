@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -36,6 +37,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.helpers.ImageMetaDataHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.UIRegistry;
@@ -281,6 +284,33 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         }
         return null;
     }
+    
+    /**
+     * @param attachmentID
+     * @return
+     */
+    private File getFileFromID(final int attachmentID)
+    {
+        String sql = "SELECT AttachmentLocation, OrigFilename FROM attachment WHERE AttachmentID="+attachmentID;
+        log.debug(sql);
+        
+        Object[] columns = BasicSQLUtils.getRow(sql);
+        if (columns != null && columns.length == 2)
+        {
+            return getFile((String)columns[0], (String)columns[1], false, null);
+        }
+        return null;
+ 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getFileEmbddedDate(int)
+     */
+    @Override
+    public Calendar getFileEmbddedDate(int attachmentID)
+    {
+        return ImageMetaDataHelper.getEmbeddedDateOrFileDate(getFileFromID(attachmentID)); 
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getMetaDataAsJSON(int)
@@ -288,8 +318,17 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     @Override
     public String getMetaDataAsJSON(int attachmentID)
     {
+        String sql = "SELECT AttachmentLocation, OrigFilename FROM attachment WHERE AttachmentID="+attachmentID;
+        log.debug(sql);
+        
+        Object[] columns = BasicSQLUtils.getRow(sql);
+        if (columns != null && columns.length == 2)
+        {
+            return ImageMetaDataHelper.getJSONMetaData(getFileFromID(attachmentID)); // for file existence
+        }
         return null;
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
      */

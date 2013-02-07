@@ -728,8 +728,8 @@ public class AgentCleanupIndexer extends LuceneHelperBase
     //----------------------------------------------------------------------
     class ModelItem implements Comparable<ModelItem>
     {
-        boolean isMergedInto;
-        boolean isMergedFrom;
+        boolean isPrimary;
+        boolean isIncluded;
         String  title;
         String  last;
         String  first;
@@ -753,8 +753,8 @@ public class AgentCleanupIndexer extends LuceneHelperBase
                 String first, String mid, String address, int agentId)
         {
             super();
-            this.isMergedInto = isMergedInto;
-            this.isMergedFrom = isMergedFrom;
+            this.isPrimary = isMergedInto;
+            this.isIncluded = isMergedFrom;
             this.title        = title != null ? title : "N/A";
             this.last         = getDisplayStr(last);
             this.first        = getDisplayStr(first);
@@ -792,7 +792,7 @@ public class AgentCleanupIndexer extends LuceneHelperBase
     //----------------------------------------------------------------------
     class FindItemTableModel extends DefaultTableModel
     {
-        private String[] headers = {"Merge Into", "Merge From", "Full Name", "Last", "First", "Middle", "Location"};
+        private String[] headers = {"Primary", "Include", "Full Name", "Last", "First", "Middle", "Location"};
         private Vector<ModelItem> items;
         private boolean hasLocation;
         
@@ -835,8 +835,8 @@ public class AgentCleanupIndexer extends LuceneHelperBase
             ModelItem item = items.get(row);
             switch (column)
             {
-                case 0 : return item.isMergedInto;
-                case 1 : return item.isMergedFrom;
+                case 0 : return item.isPrimary;
+                case 1 : return item.isIncluded;
                 case 2 : return item.title;
                 case 3 : return item.last;
                 case 4 : return item.first;
@@ -874,20 +874,20 @@ public class AgentCleanupIndexer extends LuceneHelperBase
                 {
                     for (int i=0;i<items.size();i++)
                     {
-                        items.get(i).isMergedInto = false;
+                        items.get(i).isPrimary = false;
                     }
                     ModelItem item = items.get(row);
-                    item.isMergedFrom = false;
-                    item.isMergedInto = true;
+                    item.isIncluded = false;
+                    item.isPrimary = true;
                     
                 } else if (column == 1)
                 {
                     ModelItem item = items.get(row);
-                    if (item.isMergedInto)
+                    if (item.isPrimary)
                     {
-                        item.isMergedInto = false;
+                        item.isPrimary = false;
                     }
-                    item.isMergedFrom = true;
+                    item.isIncluded = true;
                 }
                 
                 SwingUtilities.invokeLater(new Runnable()
@@ -903,10 +903,10 @@ public class AgentCleanupIndexer extends LuceneHelperBase
                 ModelItem item = items.get(row);
                 if (column == 0)
                 {
-                    item.isMergedInto = false;
+                    item.isPrimary = false;
                 } else
                 {
-                    item.isMergedFrom = false;
+                    item.isIncluded = false;
                 }
             }
             
@@ -916,8 +916,8 @@ public class AgentCleanupIndexer extends LuceneHelperBase
             for (int i=0;i<items.size();i++)
             {
                 ModelItem item = items.get(i);
-                cntInto += item.isMergedInto ? 1 : 0;
-                cntFrom += item.isMergedFrom ? 1 : 0;
+                cntInto += item.isPrimary ? 1 : 0;
+                cntFrom += item.isIncluded ? 1 : 0;
                 //System.out.println(String.format("%d %d  %s %s", cntInto, cntFrom, item.isMergedInto ? "Y" : "N", item.isMergedFrom ? "Y" : "N"));
             }
             dlg.getOkBtn().setEnabled(cntInto == 1 && cntFrom > 0 && cntFrom < items.size());

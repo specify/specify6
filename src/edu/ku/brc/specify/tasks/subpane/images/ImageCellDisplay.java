@@ -22,7 +22,6 @@ package edu.ku.brc.specify.tasks.subpane.images;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -42,7 +41,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.ImageLoaderExector;
@@ -69,7 +67,7 @@ public class ImageCellDisplay extends ImageDisplay
     private BasicStroke stdLineStroke   = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private Color       selectColor     = UIManager.getColor("Table.selectionBackground");
     private RoundRectangle2D.Double rr  = new RoundRectangle2D.Double(0, 0, 0, 0, 10, 10); // Selection Rect
-    private RoundRectangle2D.Double rr2 = null;  // Text Background
+    //private RoundRectangle2D.Double rr2 = null;  // Text Background
     
     private ImageIcon   infoIcon16      = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
     //private ImageIcon   metaDataIcon    = IconManager.getIcon("MetaData", IconManager.STD_ICON_SIZE.Std16);
@@ -198,27 +196,28 @@ public class ImageCellDisplay extends ImageDisplay
             g2.setStroke(cacheStroke);
         }
         
-        if (imgDataItem != null)
-        {
-            g2.setFont(g2.getFont().deriveFont(10.0f));
-            FontMetrics fm = g2.getFontMetrics();
-            
-            int txtW =  w-infoIcon16.getIconWidth();
-            String shortName = imgDataItem.getShortName();
-            shortName = GraphicsUtils.clipString(fm, shortName, txtW);
-            
-            int txtY = y + h-fm.getDescent()-2;
-            int rrY  = y + h-fm.getHeight()-2;
-            //if (rr2 == null)
-            {
-                rr2 = new RoundRectangle2D.Double(5, rrY, txtW-4, fm.getHeight(), 10, 10);
-            }
-            g2.setColor(new Color(255, 255, 255, 196));
-            g2.fill(rr2);
-            g2.setColor(Color.BLACK);
-            g2.drawString(shortName, 5, txtY);
-            //GraphicsUtils.drawCenteredString(shortName, g2, (w/2) - infoIcon16.getIconWidth(), y + h-fm.getDescent()-4);
-        }
+        // Disabling display any text below the image thumbnail
+//        if (imgDataItem != null)
+//        {
+//            g2.setFont(g2.getFont().deriveFont(10.0f));
+//            FontMetrics fm = g2.getFontMetrics();
+//            
+//            int txtW =  w-infoIcon16.getIconWidth();
+//            String shortName = imgDataItem.getShortName();
+//            shortName = GraphicsUtils.clipString(fm, shortName, txtW);
+//            
+//            int txtY = y + h-fm.getDescent()-2;
+//            int rrY  = y + h-fm.getHeight()-2;
+//            //if (rr2 == null)
+//            {
+//                rr2 = new RoundRectangle2D.Double(5, rrY, txtW-4, fm.getHeight(), 10, 10);
+//            }
+//            g2.setColor(new Color(255, 255, 255, 196));
+//            g2.fill(rr2);
+//            g2.setColor(Color.BLACK);
+//            g2.drawString(shortName, 5, txtY);
+//            //GraphicsUtils.drawCenteredString(shortName, g2, (w/2) - infoIcon16.getIconWidth(), y + h-fm.getDescent()-4);
+//        }
     }
 
     /**

@@ -61,6 +61,7 @@
    <mapID target="WorkbenchImportCSV" url="SpecifyHelp/Workbench/ImportCSV.html"/>
    <mapID target="WorkbenchImportXLS" url="SpecifyHelp/Workbench/ImportXLS.html"/>
    <mapID target="WorkbenchImportImages" url="SpecifyHelp/Workbench/ImportImages.html"/>
+   <mapID target="ImageBrowser" url="SpecifyHelp/Workbench/ImportImages.html"/>
    <mapID target="Interactions" url="SpecifyHelp/Interactions/Interactions.html"/>
    <mapID target="Intro" url="SpecifyHelp/Intro/intro.html"/>
    <mapID target="WorkbenchLatLongConverter" url="SpecifyHelp/Workbench/LatLongConvert.html"/>

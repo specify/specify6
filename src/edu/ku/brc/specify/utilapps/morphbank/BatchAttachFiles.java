@@ -34,11 +34,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
-import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
@@ -63,6 +60,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
+import edu.ku.brc.helpers.ImageMetaDataHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.TableWriter;
@@ -470,23 +468,47 @@ public class BatchAttachFiles
 		return directory;
 	}
 	
+	public boolean isCatalogNumberFileNameOK(final File file, final UIFieldFormatterIFace formatter)
+	{
+	    String  fnm       = file.getName();
+        String  baseName  = FilenameUtils.getBaseName(file.getName());
+        String  fileName  = FilenameUtils.getName(file.getName());
+	    int     fmtLen    = formatter.getLength();
+	    boolean isNumeric = formatter.isNumeric();
+	    
+	    if (isNumeric)
+	    {
+	        if (!StringUtils.isNumeric(baseName)) // no trailing letters etc.
+	        {
+	           // int inx = 
+	        }
+	        //String formatter.formatFromUI(baseName)
+	    } else
+	    {
+	        
+	    }
+	    
+	    return false;
+	}
+	
 	/**
 	 * build a list of files in directory.
 	 */
 	public static Vector<File> bldFilesFromDir(final File directory, final String[] exts)
 	{
-		Vector<File> result = new Vector<File>();
-		Collection<?> fs = FileUtils.listFiles(directory, exts, false);
-		for (Object f : fs)
+		Vector<File>  destFileList = new Vector<File>();
+		Collection<?> srcFileList  = FileUtils.listFiles(directory, exts, false);
+		for (Object f : srcFileList)
 		{
-			result.add((File )f);
+			destFileList.add((File)f);
+			
 //			if (files.size() == 10)
 //			{
 //				System.out.println("!!!!!!!!!Only processing first 10 files!!!!!!!!!");
 //				break;
 //			}
 		}
-		return result;
+		return destFileList;
 	}
 	
 	/**
@@ -691,22 +713,7 @@ public class BatchAttachFiles
 				
 				attachment.setTableId(rec.getAttachmentTableId());
 				
-                Metadata metadata = ImageMetadataReader.readMetadata(fileToSave);
-                Calendar fileCreateCal = getExifFileDate(metadata, ExifSubIFDDirectory.class, ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-                if (fileCreateCal == null)
-                {
-                    fileCreateCal = getExifFileDate(metadata, ExifIFD0Directory.class, ExifIFD0Directory.TAG_DATETIME);
-                }
-                
-                if (fileCreateCal != null)
-                {
-                    attachment.setFileCreatedDate(fileCreateCal);
-                } else
-                {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(fileToSave.lastModified());
-                    attachment.setFileCreatedDate(cal);
-                }
+                attachment.setFileCreatedDate(ImageMetaDataHelper.getEmbeddedDateOrFileDate(fileToSave));
 				
 				attachment.setTitle(fileToSave.getName());
 				ObjectAttachmentIFace<DataModelObjBase> oaif = 

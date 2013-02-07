@@ -51,8 +51,11 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.Scriptlet;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentGeography;
+import edu.ku.brc.specify.datamodel.AgentSpecialty;
 import edu.ku.brc.specify.datamodel.AgentVariant;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressDialog;
@@ -430,6 +433,7 @@ public class AgentCleanupProcessor
                                                                                Agent.getClassTableId(), 
                                                                                Address.getClassTableId(), 
                                                                                AgentVariant.getClassTableId()
+                                                                               //AccessionAgent.getClassTableId()
                                                                                //AgentSpecialty.getClassTableId(),
                                                                                //AgentGeography.getClassTableId()
                                                                                );
@@ -517,13 +521,13 @@ public class AgentCleanupProcessor
         System.out.println("ParentTbl: "+parentTI.getTitle());
         
         //------------------------------------------
-        // Find Merged into record (Master)
+        // Find Merged into (Primary) record (Master)
         //------------------------------------------
         MergeInfoItem       intoRec = mainItem.getMergeInto();
         List<MergeInfoItem> fromRec = mainItem.getMergeFrom();
         if (intoRec == null && fromRec.size() > 0)
         {
-            String msg = String.format("No 'merged into' record for %s", parentTI.getTitle());
+            String msg = String.format("No 'Primary' record for %s", parentTI.getTitle());
             showProcessingMessage(msg);
             log.error(msg);
             return false;
@@ -532,10 +536,17 @@ public class AgentCleanupProcessor
         //--------------------------------------------------------------------
         // Merge Kid's Information before removing unwanted 'parent' records.
         //--------------------------------------------------------------------
+        System.out.println("Kid Tables to be merged:");
         for (MergeInfo kidMergeInfo : kidItems)
         {
             DBTableInfo ti = kidMergeInfo.getTblInfo();
-            System.out.println("KidTbl: "+parentTI.getTitle());
+            System.out.println("KidTbl: "+ti.getTitle());
+        }
+        
+        for (MergeInfo kidMergeInfo : kidItems)
+        {
+            DBTableInfo ti = kidMergeInfo.getTblInfo();
+            System.out.println("KidTbl: "+ti.getTitle());
             
             for (MergeInfoItem mi : kidMergeInfo.getMergeNotIncluded())
             {
@@ -567,7 +578,7 @@ public class AgentCleanupProcessor
         }
         
         // ZZZ 
-        /*
+        
         DBTableInfo ti = mainItem.getTblInfo();
         for (MergeInfoItem mi : mainItem.getMergeFrom())
         {
@@ -576,11 +587,11 @@ public class AgentCleanupProcessor
             if (BasicSQLUtils.update(sql) != 1)
             {
                 String msg = String.format("Error deleting 'merge from' record for %s (record id %d)", parentTI.getTitle(), mi.getId());
-                showError(msg);
+                showProcessingMessage(msg);
                 log.error(msg);
                 return false;
             }
-        }*/
+        }
         
         //outputRows[2].append("Removed Address: "+addrStr+"<BR>");
         //outputRows[2].append("Updated Address: "+getAddrStr(ai.id)+"<BR>");
@@ -1404,20 +1415,17 @@ public class AgentCleanupProcessor
         }
         tblWriter.close();
         
-        if (cleanupIndexer == null || !cleanupIndexer.isQuitting())
+        String msg = "";
+        if (totalDeleted > 0)
         {
-            String msg = "";
-            if (totalDeleted > 0)
-            {
-                msg += String.format("Records updated: %d", totalUpdated);
-            }
-            if (totalDeleted > 0)
-            {
-                if (!msg.isEmpty()) msg += "\n";
-                msg += String.format("Records deleted: %d", totalDeleted);
-            }
-            displayInfoMsgDlg(msg.isEmpty() ? "Done" : msg);
+            msg += String.format("Records updated: %d", totalUpdated);
         }
+        if (totalDeleted > 0)
+        {
+            if (!msg.isEmpty()) msg += "\n";
+            msg += String.format("Records deleted: %d", totalDeleted);
+        }
+        displayInfoMsgDlg(msg.isEmpty() ? "Done" : msg);
         
         if (tblWriter.hasLines())
         {

@@ -419,7 +419,7 @@ public class LocalityCleanupProcessor
         MergeInfoItem intoRec = mainItem.getMergeInto();
         if (intoRec == null)
         {
-            String msg = String.format("No 'merged into' record for %s", parentTI.getTitle());
+            String msg = String.format("No 'Primary' record for %s", parentTI.getTitle());
             showError(msg);
             log.error(msg);
             return false;

@@ -92,7 +92,7 @@ public class MetaDataPanel extends ExpandShrinkPanel
                     if (!ignoreTabSelected)
                     {
                         currentTabName = sourceTabbedPane.getTitleAt(index);
-                        System.out.println("Selected: "+currentTabName);
+                        //System.out.println("Selected: "+currentTabName);
                     }
                     ignoreTabSelected = false;
                 }
@@ -120,7 +120,7 @@ public class MetaDataPanel extends ExpandShrinkPanel
                 for (Object section : sections)
                 {
                     JSONObject obj = (JSONObject)section;
-                    for (Object key : obj.keySet())
+                    for (@SuppressWarnings("unused") Object key : obj.keySet())
                     {
                         Object     name      = obj.get("Name");
                         JSONObject fieldsObj = (JSONObject)obj.get("Fields");
@@ -225,7 +225,7 @@ public class MetaDataPanel extends ExpandShrinkPanel
             for (String key : valuesMap.keySet())
             {
                 Object obj = valuesMap.get(key);
-                System.out.println(key);
+                //System.out.println(key);
                 values.add(new Pair<String, Object>(key, obj));
             }
         }

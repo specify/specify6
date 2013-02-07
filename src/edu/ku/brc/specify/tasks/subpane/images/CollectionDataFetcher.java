@@ -87,23 +87,24 @@ public class CollectionDataFetcher
     protected static final Logger  log = Logger.getLogger(CollectionDataFetcher.class);
     
     protected Connection conn = DBConnection.getInstance().getConnection();
-    protected HashMap<Class<?>, Class<?>> clsHashMap = new HashMap<Class<?>, Class<?>>();
+    protected static HashMap<Class<?>, Class<?>> clsHashMap = new HashMap<Class<?>, Class<?>>();
+    protected static Class<?>[] attachmentClassesForMap;
+    protected static Class<?>[] attachmentClasses;
     
     protected boolean isEmbeded;
     
-    /**
-     * 
-     */
-    public CollectionDataFetcher()
+    static 
     {
-        super();
-
-        Class<?>[] attachmentClasses = {
+        CollectionDataFetcher.attachmentClassesForMap = new Class<?>[] {
+                CollectingEvent.class,    CollectingEventAttachment.class,
+                CollectionObject.class,   CollectionObjectAttachment.class,
+                Locality.class,           LocalityAttachment.class,
+                Preparation.class,        PreparationAttachment.class,
+                Taxon.class,              TaxonAttachment.class,
+                
                 Accession.class,          AccessionAttachment.class,
                 Agent.class,              AgentAttachment.class,
                 Borrow.class,             BorrowAttachment.class,
-                CollectingEvent.class,    CollectingEventAttachment.class,
-                CollectionObject.class,   CollectionObjectAttachment.class,
                 ConservDescription.class, ConservDescriptionAttachment.class,
                 ConservEvent.class,       ConservEventAttachment.class,
                 DNASequence.class,        DNASequenceAttachment.class,
@@ -113,22 +114,52 @@ public class CollectionDataFetcher
                 FieldNotebookPageSet.class, FieldNotebookPageSetAttachment.class,
                 Gift.class,               GiftAttachment.class,
                 Loan.class,               LoanAttachment.class,
-                Locality.class,           LocalityAttachment.class,
                 Permit.class,             PermitAttachment.class,
-                Preparation.class,        PreparationAttachment.class,
                 ReferenceWork.class,      ReferenceWorkAttachment.class,
                 RepositoryAgreement.class, RepositoryAgreementAttachment.class,
-                Taxon.class,              TaxonAttachment.class,
             };
+        CollectionDataFetcher.attachmentClasses = new Class<?>[CollectionDataFetcher.attachmentClassesForMap.length/2];
+        for (int i=0;i<CollectionDataFetcher.attachmentClassesForMap.length;i+=2)
+        {
+            CollectionDataFetcher.attachmentClasses[i/2] = CollectionDataFetcher.attachmentClassesForMap[i];
+            //System.out.println(String.format("[%s][%s] %d / %d", attachmentClasses[i/2].getSimpleName(), attachmentClassesForMap[i].getSimpleName(), i/2, i));
+        }
+        
         for (int i=0;i<attachmentClasses.length;i++)
         {
-            clsHashMap.put(attachmentClasses[i], attachmentClasses[i+1]);
+            clsHashMap.put(attachmentClassesForMap[i], attachmentClassesForMap[i+1]);
+            //System.out.println(String.format("[%s][%s]", attachmentClassesForMap[i].getSimpleName(), attachmentClassesForMap[i+1].getSimpleName()));
             i++;
         }
+    }
+    
+    /**
+     * 
+     */
+    public CollectionDataFetcher()
+    {
+        super();
+
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         isEmbeded  = collection.getIsEmbeddedCollectingEvent();
     }
     
+    /**
+     * @return the clsHashMap
+     */
+    public static HashMap<Class<?>, Class<?>> getAttachmentClassMap()
+    {
+        return clsHashMap;
+    }
+
+    /**
+     * @return the attachmentClasses
+     */
+    public static Class<?>[] getAttachmentClasses()
+    {
+        return attachmentClasses;
+    }
+
     /**
      * @param ti
      * @return
@@ -162,6 +193,7 @@ public class CollectionDataFetcher
     public HashMap<String, Object> getData(final int attachmentID, final int tableId)
     {
         DBTableInfo ti     = DBTableIdMgr.getInstance().getInfoById(tableId);
+        Class<?> cls = clsHashMap.get(ti.getClassObj());
         DBTableInfo joinTI = DBTableIdMgr.getInstance().getByClassName(clsHashMap.get(ti.getClassObj()).getName());
         
         boolean isColObj = ti.getTableId() == CollectionObject.getClassTableId();

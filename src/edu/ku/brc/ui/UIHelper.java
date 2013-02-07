@@ -1069,7 +1069,7 @@ public final class UIHelper
         } // switch
         return "exp";
     }
-
+    
     //-----------------------------------------------------------------------------------------
     // Menu Helpers
     //-----------------------------------------------------------------------------------------
@@ -3706,7 +3706,7 @@ public final class UIHelper
            
         } else
         {
-            helpBtn = createButton(IconManager.getIcon("Help"));
+            helpBtn = createButton(IconManager.getIcon(isMacOS() ? "MacHelp" : "Help"));
             helpBtn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         }
         helpBtn.setFocusable(false);

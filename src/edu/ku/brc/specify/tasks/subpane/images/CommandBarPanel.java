@@ -26,7 +26,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
-import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -47,8 +47,8 @@ import edu.ku.brc.ui.UIHelper;
 public class CommandBarPanel extends JPanel
 {
     private ResultSetController rs;
-    private JButton[]           leftBtns;
-    private JButton[]           rightBtns;
+    private JComponent[]        leftComps;
+    private JComponent[]        rightComps;
     
     /**
      * 
@@ -64,19 +64,19 @@ public class CommandBarPanel extends JPanel
     }
 
     /**
-     * @param btns
+     * @param comps
      */
-    public void setLeftBtns(final JButton...btns)
+    public void setLeftComps(final JComponent...comps)
     {
-        leftBtns = btns;
+        leftComps = comps;
     }
     
     /**
-     * @param btns
+     * @param comps
      */
-    public void setRightBtns(final JButton...btns)
+    public void setRightComps(final JComponent...comps)
     {
-        rightBtns = btns;
+        rightComps = comps;
     }
     
     /**
@@ -87,36 +87,36 @@ public class CommandBarPanel extends JPanel
         CellConstraints cc = new CellConstraints();
         
         PanelBuilder leftPB = null;
-        if (leftBtns != null)
+        if (leftComps != null)
         {
-            String colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", leftBtns.length);
-            leftPB = new PanelBuilder(new FormLayout("20px," + colDef + ",f:p:g", "p"));
+            String colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", leftComps.length);
+            leftPB = new PanelBuilder(new FormLayout("20px," + colDef + ",f:p:g", "2px,p,4px"));
             leftPB.getPanel().setOpaque(false);
             int x = 2;
-            for (JButton btn : leftBtns)
+            for (JComponent comp : leftComps)
             {
-                leftPB.add(btn, cc.xy(x, 1));
+                leftPB.add(comp, cc.xy(x, 2));
                 x += 2;
             }
         }
         
         PanelBuilder rightPB = null;
-        if (rightBtns != null)
+        if (rightComps != null)
         {
-            String colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", rightBtns.length);
-            rightPB = new PanelBuilder(new FormLayout("f:p:g, "+colDef + ", 20px", "p"));
+            String colDef = UIHelper.createDuplicateJGoodiesDef("p", "4px", rightComps.length);
+            rightPB = new PanelBuilder(new FormLayout("f:p:g, "+colDef + ", 20px", "2px,p,4px"));
             rightPB.getPanel().setOpaque(false);
             int x = 2;
-            for (JButton btn : rightBtns)
+            for (JComponent comp : rightComps)
             {
-                rightPB.add(btn, cc.xy(x, 1));
+                rightPB.add(comp, cc.xy(x, 2));
                 x += 2;
             }
         }
         
         String leftP  = leftPB != null ? "p" : "f:p:g";
         String rightP = rightPB != null ? "p" : "f:p:g";
-        PanelBuilder pb = new PanelBuilder(new FormLayout(leftP+", f:p:g, p, f:p:g, "+rightP, "f:p:g,p,f:p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout(leftP+", f:p:g, p, f:p:g, "+rightP, "f:p:g,p:g,f:p:g"), this);
         
         if (leftPB != null) pb.add(leftPB.getPanel(), cc.xy(1, 2));
         pb.add(rs.getPanel(), cc.xy(3, 2));
@@ -125,8 +125,8 @@ public class CommandBarPanel extends JPanel
         
         // No longer needed.
         this.rs        = null;
-        this.leftBtns  = null;
-        this.rightBtns = null;
+        this.leftComps  = null;
+        this.rightComps = null;
     }
     
     @Override

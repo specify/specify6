@@ -54,7 +54,30 @@ public class AttachmentUtils
     private static AttachmentManagerIface attachMgr;
     private static Thumbnailer            thumbnailer;
     private static boolean                isConfigForPath = true;
+    private static MimetypesFileTypeMap   mimeMap;
     
+    static
+    {
+        MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
+        mimeMap.addMimeTypes("image/tif    tif");
+        mimeMap.addMimeTypes("image/tif    TIF");
+        mimeMap.addMimeTypes("image/jpeg   jpg");
+        mimeMap.addMimeTypes("image/jpeg   JPG");
+        mimeMap.addMimeTypes("image/jpeg   jpeg");
+        mimeMap.addMimeTypes("image/jpeg   JPEG");
+        mimeMap.addMimeTypes("image/png    png");
+        mimeMap.addMimeTypes("image/png    PNG");
+        mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
+    }
+    
+    /**
+     * @return the mimeMap
+     */
+    public static MimetypesFileTypeMap getMimeMap()
+    {
+        return mimeMap;
+    }
+
     /**
      * @return the manager
      */
@@ -257,13 +280,6 @@ public class AttachmentUtils
             return null;
         }
         
-        MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
-        mimeMap.addMimeTypes("image/tif    tif");
-        mimeMap.addMimeTypes("image/tif    TIF");
-        mimeMap.addMimeTypes("image/png    png");
-        mimeMap.addMimeTypes("image/png    PNG");
-        mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
-
         return mimeMap.getContentType(filename);
     }
     

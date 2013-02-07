@@ -81,6 +81,7 @@ import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.helpers.ImageMetaDataHelper;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -4993,6 +4994,8 @@ public class Uploader implements ActionListener, KeyListener
 					title = title.substring(0,64);
 				}
 				attachment.setTitle(title);
+                attachment.setFileCreatedDate(ImageMetaDataHelper.getEmbeddedDateOrFileDate(dummy));
+
 				ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
 						.getClass());
 				if (oaif == null)

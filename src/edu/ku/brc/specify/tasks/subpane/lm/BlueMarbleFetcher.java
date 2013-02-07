@@ -194,6 +194,16 @@ public class BlueMarbleFetcher
      * @param lon
      * @return
      */
+    public BufferedImage getBlueMarbleImage()
+    {
+        return plotPoint(Double.MIN_VALUE, Double.MIN_VALUE);
+    }
+
+    /**
+     * @param lat
+     * @param lon
+     * @return
+     */
     public BufferedImage plotPoint(double lat, double lon)
     {
         if (renderImage == null)
@@ -207,10 +217,13 @@ public class BlueMarbleFetcher
             {
                 g2d.drawImage(blueMarble, 0, 0, null);
                 
-                double[] pnt = toMillerXY(lat, lon);
-                g2d.setColor(Color.RED);
-                //System.out.println(String.format("%d, %d   %8.5f,%8.5f", (int)Math.round(pnt[0]), (int)Math.round(pnt[1]), lat, lon));
-                g2d.fillArc((int)Math.round(pnt[0]), (int)Math.round(pnt[1]), 4, 4, 0, 360);
+                if (lat != Double.MIN_VALUE && lon != Double.MIN_VALUE)
+                {
+                    double[] pnt = toMillerXY(lat, lon);
+                    g2d.setColor(Color.YELLOW);
+                    //System.out.println(String.format("%d, %d   %8.5f,%8.5f", (int)Math.round(pnt[0]), (int)Math.round(pnt[1]), lat, lon));
+                    g2d.fillArc((int)Math.round(pnt[0]), (int)Math.round(pnt[1]), 4, 4, 0, 360);
+                }
             }
             g2d.dispose();
         }

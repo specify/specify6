@@ -21,6 +21,7 @@ package edu.ku.brc.af.ui.forms;
 
 import java.io.File;
 
+import edu.ku.brc.helpers.ImageMetaDataHelper;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 
@@ -66,6 +67,8 @@ public class FileImportProcessor
             Attachment a = (Attachment)record;
             a.setOrigFilename(file.getAbsolutePath());
             a.setTableId(tableId);
+            
+            a.setFileCreatedDate(ImageMetaDataHelper.getEmbeddedDateOrFileDate(file)); // Checks MimeType
             
             return true;
         }

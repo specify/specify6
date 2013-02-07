@@ -73,7 +73,7 @@ public class GalleryGridPanel extends JPanel
     private int currCellIndex = -1;
  
     /**
-     * 
+     * @param rs
      */
     public GalleryGridPanel(final ResultSetController rs)
     {
@@ -192,6 +192,15 @@ public class GalleryGridPanel extends JPanel
         }
         notifyInfoSelected(null, -1, false, -10);
     }
+    
+    /**
+     * 
+     */
+    public void reloadGallery()
+    {
+        Rectangle r = getBounds();
+        reload(r.width, r.height);
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#setBounds(int, int, int, int)
@@ -215,7 +224,7 @@ public class GalleryGridPanel extends JPanel
      */
     private void reload(int width, int height)
     {
-        System.out.println(String.format("%d, %d", width, height));
+        //System.out.println(String.format("%d, %d", width, height));
         
         for (ImageCellDisplay imgDsp : displayList)
         {

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,6 +47,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -59,10 +61,19 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @Table(name = "attachment")
 @org.hibernate.annotations.Table(appliesTo="attachment", indexes =
     {   @Index (name="TitleIDX", columnNames={"Title"}),
-        @Index (name="DateImagedIDX", columnNames={"DateImaged"})
+        @Index (name="DateImagedIDX", columnNames={"DateImaged"}),
+        @Index (name="AttchScopeIDIDX", columnNames={"ScopeID"}),
+        @Index (name="AttchScopeTypeIDX", columnNames={"ScopeType"})
     })
 public class Attachment extends DataModelObjBase implements Serializable
 {
+    private static final HashMap<Integer, Byte> tblIdToScopeType = createTblScoprMapping();
+    
+    public static final byte COLLECTION_SCOPE = 0;
+    public static final byte DISCIPLINE_SCOPE = 1;
+    public static final byte DIVISION_SCOPE   = 2;
+    public static final byte GLOBAL_SCOPE     = 3;
+    
     protected Integer                 attachmentId;
     protected String                  mimeType;
     protected String                  origFilename;
@@ -82,6 +93,9 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<AttachmentMetadata> metadata;
     protected Set<AttachmentTag>      tags;
     protected AttachmentImageAttribute   attachmentImageAttribute;
+    
+    protected Integer scopeID;
+    protected Byte    scopeType;
     
     // transient field
     protected boolean                 storeFile;
@@ -141,6 +155,9 @@ public class Attachment extends DataModelObjBase implements Serializable
         dateImaged         = null;
         metadata           = new HashSet<AttachmentMetadata>();
         tags               = new HashSet<AttachmentTag>();
+        
+        scopeID            = null;
+        scopeType          = null;
         
         storeFile          = false;
         
@@ -300,8 +317,6 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.dateImaged = dateImaged;
     }
 
-    
-
 	@Temporal(TemporalType.DATE)
     @Column(name = "FileCreatedDate")
     public Calendar getFileCreatedDate()
@@ -368,9 +383,69 @@ public class Attachment extends DataModelObjBase implements Serializable
     /**
      * @param tableID the tableID to set
      */
-    public void setTableId(int tableID)
+    public void setTableId(int tableIDArg)
     {
-        this.tableID = (byte)tableID;
+        this.tableID = (byte)tableIDArg;
+        
+        scopeType = tblIdToScopeType.get(tableIDArg);
+        if (scopeType == null)
+        {
+            UIRegistry.showError(String.format("Attachment TableID was set to %d, an unknown attachment Owner!", tableIDArg));
+            scopeType = GLOBAL_SCOPE;
+        } else
+        {
+            AppContextMgr acm = AppContextMgr.getInstance();
+            switch (scopeType)
+            {
+                case COLLECTION_SCOPE:
+                    scopeID = acm.getClassObject(Collection.class).getId();
+                    break;
+                    
+                case DISCIPLINE_SCOPE:
+                    scopeID = acm.getClassObject(Discipline.class).getId();
+                    break;
+                    
+                case DIVISION_SCOPE:
+                    scopeID = acm.getClassObject(Division.class).getId();
+                    break;
+                    
+                default:
+                    scopeID = null;
+                    break;
+            }
+        }
+    }
+    
+    private static HashMap<Integer, Byte>  createTblScoprMapping()
+    {
+        int[] ids = {
+            CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
+            Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
+            DNASequence.getClassTableId(), Attachment.COLLECTION_SCOPE,
+            DNASequencingRun.getClassTableId(), Attachment.COLLECTION_SCOPE,
+            Preparation.getClassTableId(), Attachment.COLLECTION_SCOPE,
+            Agent.getClassTableId(), Attachment.DIVISION_SCOPE,
+            ConservDescription.getClassTableId(), Attachment.DIVISION_SCOPE,
+            Gift.getClassTableId(), Attachment.DIVISION_SCOPE,
+            Loan.getClassTableId(), Attachment.DIVISION_SCOPE,
+            RepositoryAgreement.getClassTableId(), Attachment.DIVISION_SCOPE,
+            Locality.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            FieldNotebook.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            ConservEvent.getClassTableId(), Attachment.COLLECTION_SCOPE,
+            FieldNotebookPage.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
+            FieldNotebookPageSet.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            Permit.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            ReferenceWork.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            Accession.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            Taxon.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
+        };
+        HashMap<Integer, Byte> map = new HashMap<Integer, Byte>();
+        for (int i=0;i<ids.length;i++)
+        {
+            map.put(ids[i], (byte)ids[i+1]);
+            i++;
+        }
+        return map;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -788,6 +863,48 @@ public class Attachment extends DataModelObjBase implements Serializable
         }
     }
     
+    /**
+     * @return the scopeID
+     */
+    @Column(name = "ScopeID", nullable = true)
+    public Integer getScopeID()
+    {
+        return scopeID;
+    }
+
+    /**
+     * @param scopeID the scopeID to set
+     */
+    public void setScopeID(Integer scopeID)
+    {
+        this.scopeID = scopeID;
+    }
+
+    /**
+     * @return the scopeType
+     */
+    @Column(name = "ScopeType", nullable = true)
+    public Byte getScopeType()
+    {
+        return scopeType;
+    }
+
+    /**
+     * @param scopeType the scopeType to set
+     */
+    public void setScopeType(Byte scopeType)
+    {
+        this.scopeType = scopeType;
+    }
+
+    /**
+     * @param scopeType the scopeType to set
+     */
+    public void setScopeType(Integer scopeType)
+    {
+        this.scopeType = scopeType != null ? scopeType.byteValue() : null;
+    }
+
     /**
      * @param objAttachment
      * @return

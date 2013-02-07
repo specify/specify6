@@ -39,7 +39,8 @@
     <icon name="SpecifyWhite32E"   file="specify32EWhite.png" sizes="32"/>
     <icon name="SpecifyWhite32M"   file="specify32MWhite.png" sizes="32"/>
     
-    <icon name="Help"             file="win_help.png" sizes="16"/>
+    <icon name="Help"             file="win_help.png"     sizes="16"/>
+    <icon name="MacHelp"          file="MacHelp24x24.png" sizes="24"/>
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
     <icon name="Import16"         file="ImportData16x16.png" sizes="16"/>
     <icon name="ImportImages"     file="ImportImages16x16.png" sizes="16"/>
@@ -116,6 +117,7 @@
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
     <icon name="Formatting"     file="formatting.png" sizes="32"/>
     <icon name="WebLink"        file="weblink.png" sizes="32"/>
+    <icon name="Calendar"       file="Calendar32x32.png" sizes="all"/>
     
     <icon name="VisualQuery"    file="Search32x32.png" sizes="32"/>
     

@@ -30,6 +30,10 @@ import java.net.URL;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -69,7 +73,8 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 public final class WebStoreAttachmentMgr implements AttachmentManagerIface
 {
     private static final Logger  log   = Logger.getLogger(WebStoreAttachmentMgr.class);
-    
+    private static final String DEFAULT_URL    = "http://specifyassets.nhm.ku.edu/Informatics/getmetadata.php?dt=<dt>&type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>";
+    private static final String ATTACHMENT_URL = "SELECT AttachmentLocation FROM attachment WHERE AttachmentID = ";
     private static MessageDigest sha1 = null;
 
     
@@ -79,12 +84,14 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     private FileCache               shortTermCache;
     private HashMap<String, String> attachNameThumbMap = new HashMap<String, String>();
     private HashMap<String, String> attachNameOrigMap  = new HashMap<String, String>();
+    private SimpleDateFormat        dateFormat         = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
     
     // URLs
     private String                  readURLStr    = null;
     private String                  writeURLStr   = null;
     private String                  delURLStr     = null;
     private String                  fileGetURLStr = null;
+    private String                  fileGetMetaDataURLStr = null;
     
     private String[]                symbols        = {"<coll>", "<disp>", "<div>", "<inst>"};
     private String[]                values  = new String[symbols.length];
@@ -212,6 +219,10 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     } else if (type.equals("fileget"))
                     {
                         fileGetURLStr = urlStr;
+                        
+                    } else if (type.equals("getmetadata"))
+                    {
+                        fileGetMetaDataURLStr = urlStr;
                     }
                 }
             }
@@ -223,7 +234,6 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         return false;
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#setStorageLocationIntoAttachment(edu.ku.brc.specify.datamodel.Attachment, boolean)
@@ -281,26 +291,22 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         return false;
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#getMetaDataAsJSON(int)
+    
+    /**
+     * @param urlStr
+     * @return
      */
-    @Override
-    public String getMetaDataAsJSON(int attachmentID)
+    public String getURLDataAsString(final String urlStr)
     {
         try
         {
-            String fileName = BasicSQLUtils.querySingleObj("SELECT AttachmentLocation FROM attachment WHERE AttachmentID = "+attachmentID);
-            if (StringUtils.isNotEmpty(fileName))
+            if (StringUtils.isNotEmpty(urlStr))
             {
-                String metaDataURLStr = "http://specifyassets.nhm.ku.edu/Informatics/getmetadata.php?type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>";
-                String urlStr         = subAllExtraData(metaDataURLStr, fileName, false, null);
-    
-                URL url = new URL(urlStr);
+                URL         url       = new URL(urlStr);
                 InputStream inpStream = url.openStream();
                 if (inpStream != null)
                 {
-                    StringBuilder jsonStr = new StringBuilder();
+                    StringBuilder dataStr = new StringBuilder();
                     BufferedInputStream  in  = new BufferedInputStream(inpStream);
                     do
                     {
@@ -312,13 +318,14 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                         if (numBytes > 0)
                         {
                             String data = new String(bytes);
-                            jsonStr.append(data);
+                            dataStr.append(data);
                         }
                         
                     } while(true);
                     in.close();
                 
-                    return jsonStr.toString();
+                    System.out.println(dataStr.toString());
+                    return dataStr.toString();
                 }
             }
             
@@ -327,6 +334,60 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             log.error(ex.getMessage());
         }
 
+        return null;
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getFileEmbddedDate(int)
+     */
+    @Override
+    public Calendar getFileEmbddedDate(int attachmentID)
+    {
+        String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
+        if (StringUtils.isNotEmpty(fileName))
+        {
+            String metaDataURLStr = StringUtils.isNotEmpty(fileGetMetaDataURLStr) ? fileGetMetaDataURLStr :  DEFAULT_URL;
+            
+            String urlStr  = subAllExtraData(metaDataURLStr, fileName, false, null, "date");
+            String dateStr = getURLDataAsString(urlStr);
+            
+            if (dateStr != null && dateStr.length() == 10)
+            {
+                try
+                {
+                    Date convertedDate = dateFormat.parse(dateStr);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(convertedDate.getTime());
+                    return cal;
+                    
+                } catch (ParseException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+            
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getMetaDataAsJSON(int)
+     */
+    @Override
+    public String getMetaDataAsJSON(int attachmentID)
+    {
+        String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
+        if (StringUtils.isNotEmpty(fileName))
+        {
+            String metaDataURLStr = StringUtils.isNotEmpty(fileGetMetaDataURLStr) ? fileGetMetaDataURLStr : DEFAULT_URL;
+            
+            String urlStr  = subAllExtraData(metaDataURLStr, fileName, false, null, "json");
+            String jsonStr = getURLDataAsString(urlStr);
+        
+            System.out.println(jsonStr);
+            return jsonStr;
+        }
         return null;
     }
 
@@ -409,9 +470,12 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     }
 
     /**
-     * @param attachment
+     * @param attachLocation
+     * @param originalLoc
+     * @param mimeType
      * @param nameHash
      * @param isThumb
+     * @param scale
      * @return
      */
     private synchronized File getFile(final String attachLocation,
@@ -592,7 +656,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             //                  isThumb ? "thumbs" : "originals", fileName, StringUtils.isNotEmpty(mimeType) ? mimeType : "",
             //                  discipline.getName());
             
-            String urlStr = subAllExtraData(readURLStr, fileName, isThumb, scale);
+            String urlStr = subAllExtraData(readURLStr, fileName, isThumb, scale, null);
             
             log.debug("["+urlStr+"]");
             return fillFileFromWeb(urlStr, tmpFile) ? tmpFile : null;
@@ -652,7 +716,8 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     private String subAllExtraData(final String urlStr, 
                                    final String fileName, 
                                    final boolean isThumb,
-                                   final Integer scale)
+                                   final Integer scale,
+                                   final String datatype)
     {
         fillValuesArray(); // with current values
         
@@ -664,6 +729,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         
         newURLStr = doSub(newURLStr, "<type>", isThumb ? "T" : "O");
         newURLStr = doSub(newURLStr, "<fname>", fileName);
+        newURLStr = doSub(newURLStr, "<dt>", datatype);
         
         if (scale != null)
         {
@@ -781,7 +847,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             //String     targetURL  = String.format("http://localhost/cgi-bin/filedelete.php?filename=%s;disp=%s", targetName, discipline.getName());
-            String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null);
+            String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
             GetMethod  getMethod  = new GetMethod(targetURL);
 
             System.out.println("Deleting " + fileName + " from " + targetURL );

@@ -146,7 +146,7 @@ public class ExpandShrinkPanel extends JPanel implements TimingTarget
             prefSize.width = (int)(super.getPreferredSize().width * sizeFrac);
         }
         
-        System.out.println(shrinking+"  "+sizeFrac+"  "+prefSize);
+        //System.out.println(shrinking+"  "+sizeFrac+"  "+prefSize);
         
         Component c = getParent().getParent();
         c.invalidate();

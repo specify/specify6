@@ -660,9 +660,10 @@ public class TaskMgr implements CommandListener
                     if (StringUtils.isEmpty(prefName))
                     {
                         log.error(ex);
-                        ex.printStackTrace();
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
+                        UIRegistry.showError(String.format("The plugin '%s' could not be loaded.\nPlease contact cutomer suppoer.", pi.getPluginName()));
+                        //ex.printStackTrace();
+                        //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                     }
                     
                     // go to the next plugin

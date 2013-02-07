@@ -21,7 +21,6 @@ package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
@@ -52,7 +51,7 @@ public class ImageDataItem
     private ImageIcon imgIcon;
     private ImageIcon fullImgIcon = null;
     private HashMap<String, Object> dataMap = null;
-    private int       currScale   = 0;
+    //private int       currScale   = 0;
     private boolean   isSelected  = false;
     
     private String shortName = null;
@@ -60,8 +59,8 @@ public class ImageDataItem
     
     private ItemImageLoaderListener itemImgLoadListener;
     
-    private AtomicBoolean isLoading = new AtomicBoolean(false);
-    private AtomicBoolean isError   = new AtomicBoolean(false);
+    //private AtomicBoolean isLoading = new AtomicBoolean(false);
+    //private AtomicBoolean isError   = new AtomicBoolean(false);
     
     private ImageLoader     loadImage = null;
 

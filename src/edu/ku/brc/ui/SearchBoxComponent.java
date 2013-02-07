@@ -44,7 +44,6 @@ import javax.swing.UIManager;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.specify.tasks.ExpressSearchTask.SearchBoxMenuCreator;
 
 /**
  * @author rods
@@ -64,7 +63,7 @@ public class SearchBoxComponent extends JPanel
     protected Color                         badSearchColor   = new Color(255,235,235);
 
     // For initialization
-    protected SearchBoxMenuCreator   sbCreator;
+    protected SearchBox.MenuCreator  sbCreator;
     protected ActionListener         actionListener;
     protected boolean                includeClearIcon;
     protected PickListDBAdapterIFace plAdapter;
@@ -73,7 +72,7 @@ public class SearchBoxComponent extends JPanel
      * @param sbCreator
      * @param actionListener
      */
-    public SearchBoxComponent(final SearchBoxMenuCreator sbCreator,
+    public SearchBoxComponent(final SearchBox.MenuCreator sbCreator,
                               final ActionListener actionListener,
                               final boolean includeClearIcon,
                               final PickListDBAdapterIFace plAdapter)
@@ -100,7 +99,7 @@ public class SearchBoxComponent extends JPanel
      * @param sbCreator
      * @param actionListener
      */
-    public SearchBoxComponent(final SearchBoxMenuCreator sbCreator,
+    public SearchBoxComponent(final SearchBox.MenuCreator sbCreator,
                               final ActionListener actionListener)
     {
         this(sbCreator, actionListener, false, null);

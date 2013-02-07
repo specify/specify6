@@ -21,6 +21,7 @@ package edu.ku.brc.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 
@@ -87,6 +88,12 @@ public interface AttachmentManagerIface
      * @return the embedded image meta data for the image in the repository.
      */
     public abstract String getMetaDataAsJSON(int attachmentID);
+    
+    /**
+     * @param attachmentID the record id of the attachment.
+     * @return the embedded image meta data for the image in the repository.
+     */
+    public abstract Calendar getFileEmbddedDate(int attachmentID);
     
     /**
      * Get a file handle to the attachment thumbnail.
