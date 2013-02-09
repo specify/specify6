@@ -59,7 +59,8 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 @org.hibernate.annotations.Table(appliesTo="collectingevent", indexes =
     {   @Index (name="CEStationFieldNumberIDX", columnNames={"StationFieldNumber"}),
         @Index (name="CEStartDateIDX", columnNames={"StartDate"}),
-        @Index (name="CEEndDateIDX", columnNames={"EndDate"})
+        @Index (name="CEEndDateIDX", columnNames={"EndDate"}),
+        @Index (name="CEGuidIDX", columnNames={"GUID"})
     })
 public class CollectingEvent extends DisciplineMember implements AttachmentOwnerIFace<CollectingEventAttachment>, 
                                                                  AttributeProviderIFace, 
@@ -91,6 +92,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected Locality              locality;
     protected CollectingTrip        collectingTrip;
     protected Byte					sgrStatus;
+    protected String                guid;
     
     protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
@@ -132,9 +134,10 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         startTime = null;
         endTime = null;
         verbatimLocality = null;
-        remarks = null;
+        remarks    = null;
         visibility = null;
-        sgrStatus = null;
+        sgrStatus  = null;
+        guid       = null;
         
         collectionObjects            = new HashSet<CollectionObject>();
         collectors                   = new HashSet<Collector>();
@@ -184,7 +187,8 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     }
 
     /**
-     *      * Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.
+     * Station number or field number of the site where collecting event took place, 
+     * A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.
      */
     @Column(name = "StationFieldNumber", length = 50)
     public String getStationFieldNumber() {
@@ -196,8 +200,18 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     }
 
     /**
-	 * @return the sgrStatus
-	 */
+	 * @return the     /**
+     *
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
     @Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
 	public Byte getSgrStatus() 
 	{

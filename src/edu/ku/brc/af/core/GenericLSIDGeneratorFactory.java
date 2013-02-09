@@ -22,6 +22,7 @@ package edu.ku.brc.af.core;
 import java.beans.PropertyChangeListener;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.UUID;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -38,10 +39,18 @@ public class GenericLSIDGeneratorFactory
 {
     public static final String factoryName = "edu.ku.brc.af.core.CollectionObjLSIDGenFactory"; //$NON-NLS-1$
     
-    public enum CATEGORY_TYPE {Specimen, Taxonomy, Geography, LithoStrat, Locality, Person, ReferenceWork, Journal}
+    public enum CATEGORY_TYPE {Specimen, Taxonomy, CollectingEvent, LithoStrat, Locality, Person, ReferenceWork, Journal}//, Geography, }
     
     protected static GenericLSIDGeneratorFactory instance = null;
     
+    /**
+     * 
+     */
+    public GenericLSIDGeneratorFactory()
+    {
+        super();
+    }
+
     /**
      * @return true if the Factory is ready to generate LSIDs. (Default is true).
      */
@@ -80,7 +89,8 @@ public class GenericLSIDGeneratorFactory
                              final String collectionCode, 
                              final String catalogNumer)
     {
-        return String.format("urn:lsid:%s:%s:%s:%s", lsidAuthority, institutionCode, collectionCode, catalogNumer);
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
     
     /**
@@ -92,7 +102,8 @@ public class GenericLSIDGeneratorFactory
      */
     public String createLSID(final CATEGORY_TYPE category, final String id)
     {
-        return null;
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
     
     /**
@@ -127,10 +138,10 @@ public class GenericLSIDGeneratorFactory
      * @param version the version
      * @return the LSID
      */
-    public String createLSID(final CATEGORY_TYPE category, final String id, final int version)
-    {
-        return null;
-    }
+//    public String createLSID(final CATEGORY_TYPE category, final String id, final int version)
+//    {
+//        return null;
+//    }
     
     /**
      * Returns the instance of the CollectionObjLSIDGenFactory.

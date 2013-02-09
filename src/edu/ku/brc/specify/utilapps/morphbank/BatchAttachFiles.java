@@ -23,6 +23,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -97,6 +98,9 @@ public class BatchAttachFiles
     protected static final String PROGRESS = "PROGRESS";
     
     protected static final Logger log = Logger.getLogger(BatchAttachFiles.class);
+    protected static final int CN_ERROR_NONE      = 0;
+    protected static final int CN_ERROR_INVALID   = 0;
+    protected static final int CN_ERROR_NOT_IN_DB = 0;
     
 	protected static String[] exts = {"TIF", "JPG", "PNG", "jpg", "png", "tif", "TIFF", "tiff"};
 	protected final Class<?> tblClass;
@@ -110,10 +114,16 @@ public class BatchAttachFiles
 	protected String errLogName = "errors";
 	
     protected ArrayList<String> errFiles = new ArrayList<String>();
-
-	
-	protected HashMap<String, ArrayList<String>> mapFileNameToCatNum = null;
-	
+    
+    protected HashMap<String, ArrayList<String>> mapFileNameToCatNum = null;
+    
+    // Data Members for converting FileNames to Cat Nums
+    protected Pattern           regExNumericCatNumPattern = Pattern.compile("(?<=[0-9])-(?=[0-9a-zA-Z])|(?<=\\d)(?=\\p{L})|(?<=\\p{L})(?=\\d)");
+    protected ArrayList<String> fileNamesInErrList        = new ArrayList<String>();
+    protected PreparedStatement pStmtRE                   = null;
+    protected String            catNumLookupSQL           = "SELECT COUNT(*) FROM ccollecitonobject WHERE CollectionID=?, CatalogNumber=?";
+	protected int               collectionId              = -1;
+	protected int               catNumErrStatus           = CN_ERROR_NONE;
 	/**
 	 * @param tblClass
 	 * @param fnParser
@@ -162,6 +172,21 @@ public class BatchAttachFiles
         }
     }
     
+    /**
+     * 
+     */
+    public BatchAttachFiles()
+    {
+        super();
+        
+        this.tblClass        = null;
+        this.keyName         = null;
+        this.fnParser        = null;
+        this.directory       = null;
+        this.attachmentClass = null;
+        this.files           = null;
+    }
+
     /**
      * @param indexFile
      * @return
@@ -384,52 +409,52 @@ public class BatchAttachFiles
     /**
      * 
      */
-    public void attachFilesByFieldNameOld()
-    {
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
-        if (tblInfo != null)
-        {
-            UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(tblClass, keyName);
-            PreparedStatement pStmt = null;
-            try
-            {
-                String sql = String.format("SELECT %s FROM %s WHERE %s = ?", tblInfo.getIdFieldName(), tblInfo.getName(), keyName);
-                pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
-                for (File file : files)
-                {
-                    Object value = FilenameUtils.getBaseName(file.getName());
-                    if (fmt != null)
-                    {
-                        value = fmt.formatFromUI(value);
-                    }
-                    if (value instanceof String)
-                    {
-                        pStmt.setString(1, value.toString());
-                        ResultSet rs = pStmt.executeQuery();
-                        if (rs.next())
-                        {
-                            int id = rs.getInt(1);
-                            attachFileTo(file, id);
-                        }
-                        rs.close();
-                    }
-                }
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                
-            } finally
-            {
-                if (pStmt != null)
-                {
-                    try
-                    {
-                        pStmt.close();
-                    } catch (SQLException ex) {}
-                }
-            }
-        }
-    }
+//    public void attachFilesByFieldNameOld()
+//    {
+//        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
+//        if (tblInfo != null)
+//        {
+//            UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(tblClass, keyName);
+//            PreparedStatement pStmt = null;
+//            try
+//            {
+//                String sql = String.format("SELECT %s FROM %s WHERE %s = ?", tblInfo.getIdFieldName(), tblInfo.getName(), keyName);
+//                pStmt = DBConnection.getInstance().getConnection().prepareStatement(sql);
+//                for (File file : files)
+//                {
+//                    Object value = FilenameUtils.getBaseName(file.getName());
+//                    if (fmt != null)
+//                    {
+//                        value = fmt.formatFromUI(value);
+//                    }
+//                    if (value instanceof String)
+//                    {
+//                        pStmt.setString(1, value.toString());
+//                        ResultSet rs = pStmt.executeQuery();
+//                        if (rs.next())
+//                        {
+//                            int id = rs.getInt(1);
+//                            attachFileTo(file, id);
+//                        }
+//                        rs.close();
+//                    }
+//                }
+//            } catch (Exception ex)
+//            {
+//                ex.printStackTrace();
+//                
+//            } finally
+//            {
+//                if (pStmt != null)
+//                {
+//                    try
+//                    {
+//                        pStmt.close();
+//                    } catch (SQLException ex) {}
+//                }
+//            }
+//        }
+//    }
 	
 	/**
 	 * @return attachment class for the table class
@@ -468,46 +493,130 @@ public class BatchAttachFiles
 		return directory;
 	}
 	
-	public boolean isCatalogNumberFileNameOK(final File file, final UIFieldFormatterIFace formatter)
+	/**
+	 * @param collId
+	 * @param catNum
+	 * @return
+	 * @throws SQLException
+	 */
+	private boolean isCatNumInDB(final String catNum) throws SQLException
 	{
-	    String  fnm       = file.getName();
+	    boolean isInDB = false;
+	    
+	    pStmtRE.setInt(1, collectionId);
+        pStmtRE.setString(2, catNum);
+        ResultSet rs = pStmtRE.executeQuery();
+        if (rs.next())
+        {
+            isInDB = rs.getInt(1) == 1;
+        }
+        rs.close();
+        return isInDB;
+	}
+	
+	/**
+	 * @param file
+	 * @param formatter
+	 * @return
+	 * @throws SQLException
+	 */
+	public String isCatalogNumberFileNameOK(final File file, final UIFieldFormatterIFace formatter) throws SQLException
+	{
+	    catNumErrStatus = CN_ERROR_NONE;
+	    
         String  baseName  = FilenameUtils.getBaseName(file.getName());
-        String  fileName  = FilenameUtils.getName(file.getName());
 	    int     fmtLen    = formatter.getLength();
 	    boolean isNumeric = formatter.isNumeric();
 	    
 	    if (isNumeric)
 	    {
-	        if (!StringUtils.isNumeric(baseName)) // no trailing letters etc.
+	        String catNum = null;
+	        if (!StringUtils.isNumeric(baseName)) // has trailing letters etc.
 	        {
-	           // int inx = 
+	            String[] tokens = regExNumericCatNumPattern.split(baseName);
+	            if (tokens.length > 0)
+	            {
+	                catNum = (String)formatter.formatFromUI(tokens[0]);
+	            } else
+	            {
+	                catNumErrStatus = CN_ERROR_INVALID;
+	                return null;
+	            }
+	        } else // Just Numeric
+	        {
+	            catNum = (String)formatter.formatFromUI(baseName);
 	        }
-	        //String formatter.formatFromUI(baseName)
+	        
+	        if (catNum != null)
+	        {
+                if (isCatNumInDB(catNum))
+                {
+                    return catNum;
+                }
+                catNumErrStatus = CN_ERROR_NOT_IN_DB;
+                return null;
+	        }
+	        catNumErrStatus = CN_ERROR_INVALID;
+	        
 	    } else
 	    {
-	        
+	        String catNum = baseName.length() == fmtLen ? baseName : baseName.substring(0, fmtLen);
+            if (formatter.isValid(catNum))
+            {
+                if (isCatNumInDB(catNum))
+                {
+                    return catNum;
+                }
+                catNumErrStatus = CN_ERROR_NOT_IN_DB;
+            } else
+            {
+                catNumErrStatus = CN_ERROR_INVALID;
+            }
 	    }
-	    
-	    return false;
+	    return null;
 	}
 	
 	/**
 	 * build a list of files in directory.
 	 */
-	public static Vector<File> bldFilesFromDir(final File directory, final String[] exts)
+	public Vector<File> bldFilesFromDir(final File directory, final String[] exts)
 	{
-		Vector<File>  destFileList = new Vector<File>();
-		Collection<?> srcFileList  = FileUtils.listFiles(directory, exts, false);
-		for (Object f : srcFileList)
+	    DBTableInfo           colObjTI   = DBTableIdMgr.getInstance().getInfoById(1); // '1' is CollectionObject Table
+	    UIFieldFormatterIFace catNumFmtr = colObjTI.getFieldByColumnName("CatalogNumber").getFormatter();
+	    
+	    collectionId = ((edu.ku.brc.specify.datamodel.Collection)AppContextMgr.getInstance().getClassObject(Collection.class)).getId();
+
+	    Vector<File>  destFileList = new Vector<File>();
+	    try
+	    {
+	        pStmtRE = DBConnection.getInstance().getConnection().prepareStatement(catNumLookupSQL);
+	        
+    	    fileNamesInErrList.clear();
+    		
+    		Collection<?> srcFileList  = FileUtils.listFiles(directory, exts, false);
+    		for (Object f : srcFileList)
+    		{
+    		    String catNum = isCatalogNumberFileNameOK((File)f, catNumFmtr);
+    		    if (catNum != null)
+    		    {
+    		        destFileList.add((File)f);
+    		    } else
+    		    {
+    		        // OK, it is in Error
+    		    }
+    		}
+    		
+		} catch (Exception ex)
 		{
-			destFileList.add((File)f);
-			
-//			if (files.size() == 10)
-//			{
-//				System.out.println("!!!!!!!!!Only processing first 10 files!!!!!!!!!");
-//				break;
-//			}
+		    ex.printStackTrace();
+		} finally
+		{
+		    try
+		    {
+		        if (pStmtRE != null) pStmtRE.close();
+		    } catch (Exception ex) {}
 		}
+	    
 		return destFileList;
 	}
 	

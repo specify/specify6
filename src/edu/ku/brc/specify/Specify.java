@@ -199,6 +199,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -212,6 +213,7 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
@@ -2535,40 +2537,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 });
             }*/
 
-            // Temp Code to Fix issues with Release 6.0.9 and below
-            SwingUtilities.invokeLater(new Runnable() 
+            SwingUtilities.invokeLater(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
-                    {
-                        FixDBAfterLogin fixer = new FixDBAfterLogin();
-                        fixer.fixUploaderRecordsets();
-                    }
-                    
-                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixNullEmbeddedCollectingEvents", false))
-                    {
-                        FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
-                    }
-                    
-                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnMatchedWBSpecifyUserIDs", false))
-                    {
-                    	FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
-                    }
-                    
-                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixedSpQueryOperators", false))
-                    {
-                    	FixDBAfterLogin.fixQueryOperators();
-                    }
-                    
-                    if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnmappedSchemaConditions", false))
-                    {
-                    	FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
-                    }
-                    
-                    FixDBAfterLogin fixer = new FixDBAfterLogin();
-                    fixer.checkMultipleLocalities();
+                    performManualDBUdpatesAfterLogin();
                 }
             });
             
@@ -2615,6 +2589,71 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
         setDatabaseNameAndCollection();
     }
+    
+    /**
+     * 
+     */
+    private void performManualDBUdpatesAfterLogin()
+    {
+        final ProgressFrame frame = new ProgressFrame("Updating database for release...");
+        frame.adjustProgressFrame();
+        frame.getCloseBtn().setVisible(false);
+        UIHelper.centerAndShow(frame);
+        frame.toFront();
+        
+        javax.swing.SwingWorker<Boolean, Boolean> worker = new javax.swing.SwingWorker<Boolean, Boolean>()
+        {
+            @Override
+            protected Boolean doInBackground() throws Exception
+            {
+                if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
+                {
+                    FixDBAfterLogin fixer = new FixDBAfterLogin();
+                    fixer.fixUploaderRecordsets();
+                }
+                
+                if (!AppPreferences.getGlobalPrefs().getBoolean("FixNullEmbeddedCollectingEvents", false))
+                {
+                    FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
+                }
+                
+                if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnMatchedWBSpecifyUserIDs", false))
+                {
+                    FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
+                }
+                
+                if (!AppPreferences.getGlobalPrefs().getBoolean("FixedSpQueryOperators", false))
+                {
+                    FixDBAfterLogin.fixQueryOperators();
+                }
+                
+                if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnmappedSchemaConditions", false))
+                {
+                    FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
+                }
+                
+                FixDBAfterLogin fixer = new FixDBAfterLogin();
+                fixer.checkMultipleLocalities();
+                        
+                if (!AppPreferences.getRemote().getBoolean("ConvertGUIDs", false))
+                {
+                    // Check and update GUIDS
+                    ((SpecifySchemaUpdateService)SpecifySchemaUpdateService.getInstance()).checkForGUIDs(frame);
+                }
+                return true;
+            }
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                frame.setVisible(false);
+                frame.dispose();
+            }
+        };
+        worker.execute();
+    }
+
     
     /**
      * 

@@ -319,5 +319,12 @@ public class ProgressFrame extends JFrame
     public JProgressBar getProcessProgress()
     {
         return processProgress;
+    }    
+    /**
+     * @return
+     */
+    public JProgressBar getOverallProgress()
+    {
+        return overallProgress;
     }
 }

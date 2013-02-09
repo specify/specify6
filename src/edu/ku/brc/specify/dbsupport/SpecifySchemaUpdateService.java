@@ -61,6 +61,7 @@ import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -73,6 +74,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
@@ -115,6 +117,8 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.Journal;
+import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -136,6 +140,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -1512,18 +1517,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+                    frame.setDesc("Adding ISO Code field to Geography"); // I18N
                     String geoCode = "GeographyCode";
                     tblName = getTableTitleForFrame(Geography.getClassTableId());
-                    len = getFieldLength(conn, databaseName, tblName, geoCode);
+                    len     = getFieldLength(conn, databaseName, tblName, geoCode);
                     if (len != null && len == 8)
                     {
                         alterFieldLength(conn, databaseName, tblName, geoCode, 8, 24);
                     }
                     
+                    // Adding fields to the 'attachment' table and fill them in
+                    frame.setDesc("Updating the Attachments"); // I18N
                     if (!addTableIDToAttchmentTable(conn, databaseName))
                     {
                         return false;
                     }
+                    
+                    frame.setDesc("Updating GUIDs"); // I18N
+                    if (!checkAndUpdateGUIDs(conn, databaseName))
+                    {
+                        return false;
+                    }
+                    // Setting new Field Length for QueryFields
+                    String startValue = "StartValue";
+                    tblName = getTableTitleForFrame(SpQueryField.getClassTableId());
+                    len     = getFieldLength(conn, databaseName, tblName, startValue);
+                    if (len != null && len == 64)
+                    {
+                        alterFieldLength(conn, databaseName, tblName, startValue, 64, 255);
+                    }
+                    String endValue = "EndValue";
+                    len     = getFieldLength(conn, databaseName, tblName, endValue);
+                    if (len != null && len == 64)
+                    {
+                        alterFieldLength(conn, databaseName, tblName, endValue, 64, 255);
+                    }
+
                     frame.incOverall(); // #35
                     
                     return true;
@@ -1643,6 +1672,86 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         byte[] scopes = new byte[classes.length];
         for (int i=0;i<scopes.length;i++) scopes[i] = scopeType;
         return fixTablesAttachmentsColMemID(conn, stmt, classes, sqls, colName, scopes);
+    }
+    
+    /**
+     * 
+     */
+    public static void checkForGUIDs(final ProgressFrame frame)
+    {
+        Class<?>[] guidClasses = {
+            Agent.class, 
+            CollectingEvent.class, 
+            CollectionObject.class, 
+            Geography.class, 
+            GeologicTimePeriod.class, 
+            Journal.class, 
+            LithoStrat.class, 
+            Locality.class, 
+            ReferenceWork.class, 
+            Taxon.class, 
+        };
+        
+        ArrayList<Class<?>> tblsWithGUIDs = new ArrayList<Class<?>>();
+        StringBuilder sb = new StringBuilder();
+        for (Class<?> cls : guidClasses)
+        {
+            DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+            int         numRecs = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM %s WHERE GUID IS NOT NULL", ti.getName()));
+            //System.out.println(ti.getName()+"  "+numRecs);
+            if (numRecs > 0)
+            {
+                tblsWithGUIDs.add(cls);
+                sb.append(String.format("%s<BR>", ti.getTitle()));
+            }
+        }
+        
+        if (tblsWithGUIDs.size() > 0)
+        {
+            if (frame != null) frame.toBack();
+            String msg = String.format("<HTML>Specify is changing how it generates LSIDs/GUIDs to be compliant with iDigBio.<br>" +
+            		     "The following tables contain values in the GUID field:<BR><BR>%s" +
+                         "<BR>Select 'Update' to update all the GUIDs to the new format.<BR>" +
+            		     "Select 'Continue' to proceed without making changes.<BR>" + 
+                         "<BR>It is highly recommended that you call the Specify Support Desk before using your database.", 
+            		     sb.toString());
+            boolean doCont = UIRegistry.displayConfirm("GUIDs", msg, "Continue", "Update", JOptionPane.QUESTION_MESSAGE);
+            if (frame != null) frame.toFront();
+            if (!doCont)
+            {
+                if (GenericLSIDGeneratorFactory.getInstance() instanceof SpecifyLSIDGeneratorFactory)
+                {
+                    SpecifyLSIDGeneratorFactory lsidGen = (SpecifyLSIDGeneratorFactory)GenericLSIDGeneratorFactory.getInstance();
+                    lsidGen.setClasses(tblsWithGUIDs);
+                    lsidGen.setDoAll(true);
+                    lsidGen.setFrame(frame);
+                    lsidGen.buildLSIDs(null);
+                }
+
+            }
+        }
+    }
+    
+    /**
+     * @param conn
+     * @param databaseName
+     * @return
+     */
+    public boolean checkAndUpdateGUIDs(final Connection conn, final String databaseName)
+    {
+        frame.setDesc("Adding GUID field to Collecting Events"); // I18N
+        String guidField = "GUID";
+        String tblName   = getTableTitleForFrame(CollectingEvent.getClassTableId());
+        if (!doesColumnExist(databaseName, tblName, guidField))
+        {
+            if (!addColumn(conn, databaseName, tblName, guidField,  "VARCHAR(128)", "SGRStatus"))
+            {
+                return false;
+            }
+            update(conn, "CREATE INDEX CEGuidIDX ON collectingevent(GUID)");
+        }
+        
+        return true;
     }
                                   
     /**
@@ -1854,9 +1963,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             frame.setProcess(step++);
 
             stmt.close();
-
-            update(conn, "CREATE INDEX AttchScopeIDIDX ON attachment(ScopeID)");
-            update(conn, "CREATE INDEX AttchScopeTypeIDX ON attachment(ScopeType)");
+            
+            if (!doesIndexExist("attachment", "AttchScopeIDIDX"))
+            {
+                update(conn, "CREATE INDEX AttchScopeIDIDX ON attachment(ScopeID)");
+            }            
+            if (!doesIndexExist("attachment", "AttchScopeTypeIDX"))
+            {
+                update(conn, "CREATE INDEX AttchScopeTypeIDX ON attachment(ScopeType)");
+            }
             
             return true;
             

@@ -23,15 +23,12 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.swing.JButton;
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -39,11 +36,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
-import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.GenericLSIDGeneratorFactory.CATEGORY_TYPE;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
@@ -51,9 +43,9 @@ import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.GhostGlassPane;
 
 /**
  * @author rods
@@ -164,91 +156,10 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
     {
         if (mgr == null || mgr.closePrefs())
         {
-            final String COUNT = "COUNT";
-            
-            final GhostGlassPane glassPane = UIRegistry.writeGlassPaneMsg(getResourceString("SETTING_LSIDS"), UIRegistry.STD_FONT_SIZE);
-            glassPane.setProgress(0);
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run()
-                {
-                    if (SubPaneMgr.getInstance().aboutToShutdown())
-                    {
-                        Taskable task = TaskMgr.getTask("Startup");
-                        if (task != null)
-                        {
-                            SubPaneIFace splash = edu.ku.brc.specify.tasks.StartUpTask.createFullImageSplashPanel(task.getTitle(), task);
-                            SubPaneMgr.getInstance().addPane(splash);
-                            SubPaneMgr.getInstance().showPane(splash);
-                        }
-                        
-                        final LSIDWorker worker = new LSIDWorker()
-                        {
-                            protected Integer doInBackground() throws Exception
-                            {
-                                GenericLSIDGeneratorFactory.getInstance().buildLSIDs(this);                           
-                                return null;
-                            }
-                            
-                            @Override
-                            public void propertyChange(PropertyChangeEvent evt)
-                            {
-                                if (evt.getPropertyName().equals("COUNT"))
-                                {
-                                    firePropertyChange("COUNT", 0, evt.getNewValue());
-                                }
-                            }
-
-                            @Override
-                            protected void done()
-                            {
-                                glassPane.setProgress(100);
-                                UIRegistry.clearGlassPaneMsg();
-                            }
-                        };
-                        
-                        
-                        worker.addPropertyChangeListener(
-                                new PropertyChangeListener() {
-                                    public  void propertyChange(final PropertyChangeEvent evt) {
-                                        if (COUNT.equals(evt.getPropertyName())) 
-                                        {
-                                            glassPane.setProgress((int)((Integer)evt.getNewValue() * 100.0 / CATEGORY_TYPE.values().length));
-                                        }
-                                    }
-                                });
-                        worker.execute();
-                    }
-                }
-            });
+            SpecifyLSIDGeneratorFactory.buildAllLSIDsAynch(null); // performs in SwingWorker
         }
     }
     
-    class LSIDWorker extends javax.swing.SwingWorker<Integer, Integer> implements PropertyChangeListener
-    {
-        /* (non-Javadoc)
-         * @see javax.swing.SwingWorker#doInBackground()
-         */
-        @Override
-        protected Integer doInBackground() throws Exception
-        {
-            return null;
-        }
-        
-        @Override
-        public void propertyChange(PropertyChangeEvent evt)
-        {
-            
-        }
-        
-        @Override
-        protected void done()
-        {
-            super.done();
-        }
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getValidator()
      */
