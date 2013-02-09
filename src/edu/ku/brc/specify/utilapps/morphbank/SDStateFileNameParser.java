@@ -96,9 +96,11 @@ public class SDStateFileNameParser implements FileNameParserIFace
 		String[] exts = {"jpg", "JPG"};
 		try
 		{
-			File picDir = new File(picDirName);
-			Vector<File> files = BatchAttachFiles.bldFilesFromDir(picDir, exts);
-			SDStateFileNameParser p = new SDStateFileNameParser();
+		    BatchAttachFiles      batchAttachFiles = new BatchAttachFiles();
+			File                  picDir           = new File(picDirName);
+			Vector<File>          files            = batchAttachFiles.bldFilesFromDir(picDir, exts);
+			SDStateFileNameParser p                = new SDStateFileNameParser();
+			
 			String connStr = "jdbc:mysql://localhost/sdstate6202?characterEncoding=UTF-8&autoReconnect=true"; 
 			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
 			p.setTestConnection(conn);
