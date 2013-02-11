@@ -408,6 +408,9 @@ public class UIRegistry
         if (rb != null)
         {
             push(resName, rb);
+        } else
+        {
+            log.error("Unable to load ResourceBundle["+resName+"]");
         }
         return rb;
     }
@@ -501,7 +504,7 @@ public class UIRegistry
                 {
                     if (i == 0 || doShowAllResStrErors)
                     {
-                        log.error("Couldn't find key["+key+"] in resource bundle ["+ri.getName()+"]");
+                        //log.error("Couldn't find key["+key+"] in resource bundle ["+ri.getName()+"]");
                     }
                 }
             }

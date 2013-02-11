@@ -190,6 +190,7 @@ import edu.ku.brc.util.Triple;
  * @author rods
  *
  */
+@SuppressWarnings("rawtypes")
 public final class UIHelper
 {
     public enum OSTYPE {Unknown, Windows, MacOSX, Linux}
@@ -3297,6 +3298,17 @@ public final class UIHelper
         return lbl;
     }
     
+    /**
+     * @param key
+     * @return
+     */
+    public static JRadioButton createI18NRadioButton(final String key)
+    {
+        JRadioButton rb = new JRadioButton(getResourceString(key));
+        setControlSize(rb);
+        return rb;
+    }
+    
     public static JRadioButton createRadioButton(final String text)
     {
         JRadioButton rb = new JRadioButton(text);
@@ -3350,8 +3362,10 @@ public final class UIHelper
         return cbx;
     }
     
+    @SuppressWarnings("rawtypes")
     public static JComboBox createComboBox(final Object[] items)
     {
+        @SuppressWarnings("unchecked")
         JComboBox cbx = new JComboBox(items);
         setControlSize(cbx);
         if (isMacOS_10_5_X)
@@ -3363,6 +3377,7 @@ public final class UIHelper
     
     public static JComboBox createComboBox(final Vector<?> items)
     {
+        @SuppressWarnings("unchecked")
         JComboBox cbx = new JComboBox(items);
         setControlSize(cbx);
         if (isMacOS_10_5_X)
@@ -3374,6 +3389,7 @@ public final class UIHelper
     
     public static JComboBox createComboBox(final ComboBoxModel model)
     {
+        @SuppressWarnings("unchecked")
         JComboBox cbx = new JComboBox(model);
         setControlSize(cbx);
         if (isMacOS_10_5_X)
@@ -3417,6 +3433,7 @@ public final class UIHelper
 
     public static JList createList(final ListModel model)
     {
+        @SuppressWarnings("unchecked")
         JList lst = new JList(model);
         if (isMacOS_10_5_X)
         {
@@ -3427,6 +3444,7 @@ public final class UIHelper
 
     public static JList createList(final Vector<?> items)
     {
+        @SuppressWarnings("unchecked")
         JList lst = new JList(items);
         if (isMacOS_10_5_X)
         {

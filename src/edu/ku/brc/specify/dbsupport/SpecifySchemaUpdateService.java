@@ -61,10 +61,12 @@ import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -90,6 +92,7 @@ import edu.ku.brc.specify.datamodel.BorrowAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
@@ -1675,10 +1678,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
     
     /**
+     * @return
+     */
+    public String getGUIDPrefNameForCollection()
+    {
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        return String.format("UPDATED_GUIDS_CNV_%d", collection.getId());
+    }
+    
+    /**
      * 
      */
-    public static void checkForGUIDs(final ProgressFrame frame)
-    {
+    public void checkForGUIDs(final ProgressFrame frame)
+    {        
         Class<?>[] guidClasses = {
             Agent.class, 
             CollectingEvent.class, 
@@ -1697,8 +1709,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         for (Class<?> cls : guidClasses)
         {
             DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(cls.getName());
-            int         numRecs = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM %s WHERE GUID IS NOT NULL", ti.getName()));
-            //System.out.println(ti.getName()+"  "+numRecs);
+            String      scope   = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
+            String      sql     = String.format("SELECT COUNT(*) FROM %s WHERE %s AND GUID IS NOT NULL", ti.getName(), scope);
+            int         numRecs = BasicSQLUtils.getCountAsInt(sql);
+            System.out.println(sql+"\n"+ti.getName()+"  "+numRecs);
             if (numRecs > 0)
             {
                 tblsWithGUIDs.add(cls);
@@ -1715,7 +1729,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             		     "Select 'Continue' to proceed without making changes.<BR>" + 
                          "<BR>It is highly recommended that you call the Specify Support Desk before using your database.", 
             		     sb.toString());
-            boolean doCont = UIRegistry.displayConfirm("GUIDs", msg, "Continue", "Update", JOptionPane.QUESTION_MESSAGE);
+            boolean doCont = UIRegistry.displayConfirm("LSIDs/GUIDs", msg, "Continue", "Update", JOptionPane.QUESTION_MESSAGE);
             if (frame != null) frame.toFront();
             if (!doCont)
             {

@@ -123,24 +123,19 @@ public class FixDBAfterLogin
     public void fixUploaderRecordsets()
     {
     	update( "update recordset set TimestampCreated = now(), Version = 0 where Type = 1 and Version is null");
-        AppPreferences.getGlobalPrefs().putBoolean("FixUploaderRecordsets", true);
     }
     
     public static void fixUnMatchedWBSpecifyUserIDs()
     {
     	update("update workbenchtemplate t inner join workbench w on w.workbenchtemplateid = t.workbenchtemplateid set t.SpecifyUserID = w.SpecifyUserID");
-    	AppPreferences.getGlobalPrefs().putBoolean("FixedUnMatchedWBSpecifyUserIDs", true);
     }
     
     /**
      * Fixes SpQueryField.operStart storage for all queries
      */
-    public static void fixQueryOperators()
+    public static boolean fixQueryOperators()
     {
-    	if (QueryTask.fixOperatorStorageForAllQueries())
-    	{
-    		AppPreferences.getGlobalPrefs().putBoolean("FixedSpQueryOperators", true);
-    	} //else what exactly???
+    	return QueryTask.fixOperatorStorageForAllQueries();
     }
     
     /**
@@ -158,10 +153,8 @@ public class FixDBAfterLogin
         {
         	BasicSQLUtils.update(sql + q);
         }
-        AppPreferences.getGlobalPrefs().putBoolean("FixedUnmappedSchemaConditions", true);
-        
-    	
     }
+    
     /**
      * @param pStmt
      * @param locId
@@ -357,7 +350,6 @@ public class FixDBAfterLogin
     				throw new Exception("fixNullEmbeddedCollectingEvents: error updating colllectingevent IDs");
     			}
     			log.info("added " + insertedCnt + " collectingevent records");
-    	        AppPreferences.getGlobalPrefs().putBoolean("FixNullEmbeddedCollectingEvents", true);
     	}
 		} catch (Exception ex)
 		{

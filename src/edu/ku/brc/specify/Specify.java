@@ -213,10 +213,10 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
@@ -2595,51 +2595,84 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     private void performManualDBUdpatesAfterLogin()
     {
-        final ProgressFrame frame = new ProgressFrame("Updating database for release...");
-        frame.adjustProgressFrame();
-        frame.getCloseBtn().setVisible(false);
-        UIHelper.centerAndShow(frame);
-        frame.toFront();
+        final AppPreferences             globalPrefs   = AppPreferences.getGlobalPrefs();
+        final SpecifySchemaUpdateService schemaUpdater = (SpecifySchemaUpdateService)SpecifySchemaUpdateService.getInstance();
+        
+        final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
+                                    "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", schemaUpdater.getGUIDPrefNameForCollection()};
+        final boolean[] isFixed   = new boolean[prefNames.length];
+        
+        boolean anyNeededToBeFixed = false;
+        for (int i=0;i<isFixed.length;i++)
+        {
+            isFixed[i] = globalPrefs.getBoolean(prefNames[i], false);
+            if (!isFixed[i]) anyNeededToBeFixed = true;
+        }
+        
+        final ProgressFrame frame = anyNeededToBeFixed ? new ProgressFrame("Updating database for release...") : null;
+        if (frame != null)
+        {
+            frame.adjustProgressFrame();
+            frame.getCloseBtn().setVisible(false);
+            UIHelper.centerAndShow(frame);
+            frame.toFront();
+        }
         
         javax.swing.SwingWorker<Boolean, Boolean> worker = new javax.swing.SwingWorker<Boolean, Boolean>()
         {
             @Override
             protected Boolean doInBackground() throws Exception
             {
-                if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
+                int inx = 0;
+                if (!isFixed[inx])
                 {
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.fixUploaderRecordsets();
+                    globalPrefs.putBoolean(prefNames[inx], true);
                 }
+                inx++;
                 
-                if (!AppPreferences.getGlobalPrefs().getBoolean("FixNullEmbeddedCollectingEvents", false))
+                if (!isFixed[inx])
                 {
                     FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
+                    globalPrefs.putBoolean(prefNames[inx], true);
                 }
+                inx++;
                 
-                if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnMatchedWBSpecifyUserIDs", false))
+                if (!isFixed[inx])
                 {
                     FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
+                    globalPrefs.putBoolean(prefNames[inx], true);
                 }
+                inx++;
                 
-                if (!AppPreferences.getGlobalPrefs().getBoolean("FixedSpQueryOperators", false))
+                if (!isFixed[inx])
                 {
-                    FixDBAfterLogin.fixQueryOperators();
+                    if (FixDBAfterLogin.fixQueryOperators())
+                    {
+                        globalPrefs.putBoolean(prefNames[inx], true);
+                    }
                 }
+                inx++;
                 
-                if (!AppPreferences.getGlobalPrefs().getBoolean("FixedUnmappedSchemaConditions", false))
+                if (!isFixed[inx])
                 {
                     FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
+                    globalPrefs.putBoolean(prefNames[inx], true);
                 }
+                inx++;
                 
                 FixDBAfterLogin fixer = new FixDBAfterLogin();
                 fixer.checkMultipleLocalities();
                         
-                if (!AppPreferences.getRemote().getBoolean("ConvertGUIDs", false))
+                if (!isFixed[inx])
                 {
                     // Check and update GUIDS
-                    ((SpecifySchemaUpdateService)SpecifySchemaUpdateService.getInstance()).checkForGUIDs(frame);
+                    schemaUpdater.checkForGUIDs(frame);
+                    globalPrefs.putBoolean(prefNames[inx], true);
                 }
+                inx++;
+                
                 return true;
             }
             @Override
@@ -2647,8 +2680,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             {
                 super.done();
                 
-                frame.setVisible(false);
-                frame.dispose();
+                if (frame != null)
+                {
+                    frame.setVisible(false);
+                    frame.dispose();
+                }
             }
         };
         worker.execute();
