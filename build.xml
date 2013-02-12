@@ -132,12 +132,29 @@
 	</target>
 	
     <target name="ipad-jar" depends="">
-        <jar destfile="ipad.jar">
+    	
+    	<delete file="ipad.jar"/>
+    	<delete dir="${installer.dir}"/>
+    	
+        <mkdir dir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter"/>
+        
+        <copy todir="${installer.dir}/ipad/edu/ku/brc/specify/plugins/ipadexporter">
             <fileset dir="${class.root}/edu/ku/brc/specify/plugins/ipadexporter">
+                <include name="**/*.class" />
+                <include name="**/*.xml" />
+                <include name="**/*.png" />
+                <include name="**/*.sql" />
+                <include name="**/*.properties" />
+            </fileset>
+        </copy>
+        
+        <jar destfile="ipad.jar">
+            <fileset dir="${installer.dir}/ipad">
                 <include name="**/*.class" />
                 <include name="**/*.properties" />
                 <include name="**/*.xml" />
                 <include name="**/*.png" />
+                <include name="**/*.sql" />
             </fileset>
         </jar>
     </target>
@@ -178,6 +195,7 @@
     <target name="installer-linux" depends="">
         <antcall target="installer-base"/>
         <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+        <copy file="./system_dep_libs/ipad.jar" todir="${installer.dir}/libs" />
         <!--
         <antcall target="build-help-index"/>
         <antcall target="build-help-fulltext-linux"/>
@@ -185,6 +203,7 @@
     </target>
     
     <target name="installer-mac" depends="">
+        <copy file="./system_dep_libs/mac/ipad.jar" todir="${installer.dir}/libs" />
         <antcall target="installer-base"/>
         <!--
         <antcall target="build-help-index"/>
