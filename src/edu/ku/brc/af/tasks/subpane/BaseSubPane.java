@@ -349,6 +349,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneIFace#getTitle()
      */
+    @Override
     public String getTitle()
     {
         return name;
@@ -357,6 +358,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneIFace#getIcon()
      */
+    @Override
     public Icon getIcon()
     {
         return task.getIcon(Taskable.StdIcon16);
@@ -365,6 +367,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getPaneName()
      */
+    @Override
     public String getPaneName()
     {
         return name;
@@ -373,6 +376,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#setPaneName(java.lang.String)
      */
+    @Override
     public void setPaneName(final String name)
     {
         this.name = name;
@@ -381,6 +385,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneIFace#getUIComponent()
      */
+    @Override
     public JComponent getUIComponent()
     {
         return this;
@@ -389,6 +394,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getFirstFocusable()
      */
+    @Override
     public Component getFirstFocusable()
     {
         return null;
@@ -397,6 +403,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getMultiView()
      */
+    @Override
     public MultiView getMultiView()
     {
         return null;
@@ -405,6 +412,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneIFace#getTask()
      */
+    @Override
     public Taskable getTask()
     {
         return task;
@@ -413,6 +421,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getRecordSet()
      */
+    @Override
     public RecordSetIFace getRecordSet()
     {
         return null;
@@ -421,6 +430,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see java.awt.Component#showingPane(boolean)
      */
+    @Override
     public void showingPane(boolean show)
     {
         //log.info("showingPane "+name+"  "+show);
@@ -429,6 +439,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getHelpTarget()
      */
+    @Override
     public String getHelpTarget()
     {
         return task != null ? task.getHelpTarget() : null;
@@ -437,6 +448,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#aboutToShutdown()
      */
+    @Override
     public boolean aboutToShutdown()
     {
         return true;
@@ -445,6 +457,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#shutdown()
      */
+    @Override
     public void shutdown()
     {
     }

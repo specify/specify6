@@ -1753,6 +1753,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     public boolean checkAndUpdateGUIDs(final Connection conn, final String databaseName)
     {
+        // CollectingEvent
         frame.setDesc("Adding GUID field to Collecting Events"); // I18N
         String guidField = "GUID";
         String tblName   = getTableTitleForFrame(CollectingEvent.getClassTableId());
@@ -1765,6 +1766,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             update(conn, "CREATE INDEX CEGuidIDX ON collectingevent(GUID)");
         }
         
+        frame.setDesc("Adding GUID field to Attachments"); // I18N
+        // Attachment
+        tblName   = getTableTitleForFrame(Attachment.getClassTableId());
+        if (!doesColumnExist(databaseName, tblName, guidField))
+        {
+            if (!addColumn(conn, databaseName, tblName, guidField,  "VARCHAR(128)", "ScopeType"))
+            {
+                return false;
+            }
+            update(conn, "CREATE INDEX AttchmentGuidIDX ON attachment(GUID)");
+        }
         return true;
     }
                                   
