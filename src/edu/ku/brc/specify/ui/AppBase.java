@@ -77,7 +77,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -234,7 +234,7 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         
         System.setProperty(DBMSUserMgr.factoryName,                     "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
-        System.setProperty(GenericLSIDGeneratorFactory.factoryName,     "edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory");
+        System.setProperty(GenericGUIDGeneratorFactory.factoryName,     "edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory");
     }
     
     /**

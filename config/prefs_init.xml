@@ -93,8 +93,8 @@
         </pref>
     </section>
     
-    <section title="LSIDs">
-        <pref name="LSIDs" title="LSIDS" icon="SpecifyLargeIcon" panelClass="edu.ku.brc.specify.prefs.LSIDPrefsPanel" help="PrefsLSID">
+    <section title="GUIDs">
+        <pref name="GUIDs" title="GUIDS" icon="SpecifyLargeIcon" panelClass="edu.ku.brc.specify.prefs.GUIDPrefsPanel" help="PrefsGUID">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="false,false,false,false"/>
             <defperm name="LimitedAccess" perm="false,false,false,false"/>

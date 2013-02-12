@@ -36,17 +36,14 @@ import javax.swing.JButton;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -972,39 +969,6 @@ public class BaseBusRules implements BusinessRulesIFace
         
     }
 
-    /**
-     * @param data
-     */
-    protected void setLSID(final FormDataObjIFace data)
-    {
-        if (data != null)
-        {
-            boolean doLSID = ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).isPrefOn(data.getTableId());
-            if (doLSID)
-            {
-                //----------------------------------------------------------------
-                // We want Version to always be on
-                //AppPreferences remote = AppPreferences.getRemote();
-                //String                prefix       = "Prefs.LSID.";
-                boolean               doVersioning = true;//remote.getBoolean(prefix + "UseVersioning", false);
-                //----------------------------------------------------------------
-                UIFieldFormatterIFace formatter    = null;
-                
-                if (data.getTableId() == 1)
-                {
-                    DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
-                    formatter = fi.getFormatter();
-                }
-                
-                String lsid = GenericLSIDGeneratorFactory.getInstance().setLSIDOnId(data, doVersioning, formatter);
-                if (lsid != null)
-                {
-                    FormHelper.setValue(data, "guid", lsid);
-                }
-            }
-        }
-    }
-    
     /**
      * Removed an Object from a Collection by Id.
      * @param collection the Java Collection

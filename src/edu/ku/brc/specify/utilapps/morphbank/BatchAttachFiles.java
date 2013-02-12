@@ -43,7 +43,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -1016,7 +1016,7 @@ public class BatchAttachFiles
 	        System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
 	        System.setProperty(DBMSUserMgr.factoryName,                     "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
 	        System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
-	        System.setProperty(GenericLSIDGeneratorFactory.factoryName,     "edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory");
+	        System.setProperty(GenericGUIDGeneratorFactory.factoryName,     "edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory");
 	        
 	        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
 	        localPrefs.setDirPath(UIRegistry.getAppDataDir());

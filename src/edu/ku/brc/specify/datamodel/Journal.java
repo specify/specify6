@@ -91,6 +91,8 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
         text1       = null;
         remarks     = null;
         referenceWorks = new HashSet<ReferenceWork>();
+        
+        setGUID(this);
     }
     // End Initializer
 

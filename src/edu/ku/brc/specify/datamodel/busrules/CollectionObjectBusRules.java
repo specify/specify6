@@ -747,8 +747,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
-        setLSID((FormDataObjIFace)dataObj);
-
         if (formViewObj != null && formViewObj.isEditing())
         {
             Component comp = formViewObj.getControlByName("generateLabelChk");

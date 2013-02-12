@@ -128,7 +128,7 @@
    <mapID target="PrefsGeolocate" url="SpecifyHelp/Prefs/Geolocate.html"/>
    <mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/> 
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
-   <mapID target="PrefsLSID" url="SpecifyHelp/Prefs/lsid.html"/> 
+   <mapID target="PrefsGUID" url="SpecifyHelp/Prefs/guid.html"/> 
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
    <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
    <mapID target="security_wiz" url="SpecifyHelp/Security/Security_Wizard.html"/>
@@ -320,9 +320,9 @@
    <mapID target="schema_authority" url="SpecifyHelp//QueryBuilder/third_party.html#schema_authority"/>
    <mapID target="export_schema_map" url="SpecifyHelp//QueryBuilder/third_party.html#export_schema_map"/>
    <mapID target="delete_schema_map" url="SpecifyHelp//QueryBuilder/third_party.html#delete_schema_map"/>
-   <mapID target="lsid" url="SpecifyHelp/Prefs/lsid.html#lsid"/>
-   <mapID target="guid" url="SpecifyHelp/Prefs/lsid.html#guid"/>
-   <mapID target="automatic_lsid" url="SpecifyHelp/Prefs/lsid.html#automatic_lsid"/>
+   <mapID target="guid" url="SpecifyHelp/Prefs/guid.html#guid"/>
+   <mapID target="guid" url="SpecifyHelp/Prefs/guid.html#guid"/>
+   <mapID target="automatic_guid" url="SpecifyHelp/Prefs/guid.html#automatic_guid"/>
    <mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
    <mapID target="third_party" url="SpecifyHelp/QueryBuilder/third_party.html#third_party"/>
    <mapID target="login_master" url="SpecifyHelp/login.html#login_master"/>

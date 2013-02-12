@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -62,13 +62,13 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
  * Jan 9, 2009
  *
  */
-public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
+public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
 {
-    protected static String PREF_NAME_PREFIX = "Prefs.LSID.";
+    protected static String PREF_NAME_PREFIX = "Prefs.GUID.";
     protected static int[]  TABLE_IDS = {1, 4, 3, 10, 100, 2, 5, 69, 51};
     protected static boolean doAllRecords = false;
     
-    protected String       I18NPre   = SpecifyLSIDGeneratorFactory.class.getSimpleName();
+    protected String       I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
 
     protected StringBuilder errMsg   = new StringBuilder();
     
@@ -81,7 +81,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjLSIDGenFactory#isReady()
+     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#isReady()
      */
     @Override
     public boolean isReady()
@@ -90,7 +90,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjLSIDGenFactory#getErrorMsg()
+     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#getErrorMsg()
      */
     @Override
     public String getErrorMsg()
@@ -99,7 +99,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjLSIDGenFactory#reset()
+     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#reset()
      */
     @Override
     public void reset()
@@ -107,26 +107,26 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjLSIDGenFactory#getLSID(java.lang.String)
+     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#getGUID(java.lang.String)
      */
     @Override
-    public String createLSID(final CATEGORY_TYPE category, final String id)
+    public String createGUID(final CATEGORY_TYPE category, final String id)
     {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericLSIDGeneratorFactory#getLSID(edu.ku.brc.af.core.GenericLSIDGeneratorFactory.CATEGORY_TYPE, java.lang.String, int)
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#getGUID(edu.ku.brc.af.core.GenericGUIDGeneratorFactory.CATEGORY_TYPE, java.lang.String, int)
      */
 //    @Override
-//    public String createLSID(final CATEGORY_TYPE category, final String id, final int version)
+//    public String createGUID(final CATEGORY_TYPE category, final String id, final int version)
 //    {
 //        if (isReady() && category != null && StringUtils.isNotEmpty(id))
 //        {
 //            return String.format("urn:lsid:%s:%s-%s:%s:%s:%d", lsidAuthority, instCode, colCode, category.toString(), id, version);
 //        }
-//        return super.createLSID(category, id, version);
+//        return super.createGUID(category, id, version);
 //    }
     
     /**
@@ -166,12 +166,12 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericLSIDGeneratorFactory#buildLSIDs(java.beans.PropertyChangeListener)
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#buildGUIDs(java.beans.PropertyChangeListener)
      */
     @Override
-    public void buildLSIDs(final PropertyChangeListener pcl)
+    public void buildGUIDs(final PropertyChangeListener pcl)
     {
-        if (frame != null) frame.setDesc("Updating LSIDs/GUIDs..."); // I18N
+        if (frame != null) frame.setDesc("Updating GUIDs/GUIDs..."); // I18N
 
         reset();
         
@@ -193,7 +193,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
             {
                 try
                 {
-                    buildLSIDs(DBConnection.getInstance().getConnection(), cat, false, null);
+                    buildGUIDs(DBConnection.getInstance().getConnection(), cat, false, null);
                     
                 } catch (Exception ex)
                 {
@@ -215,10 +215,10 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericLSIDGeneratorFactory#setLSIDOnId(edu.ku.brc.af.ui.forms.FormDataObjIFace, boolean, edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace)
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#setGUIDOnId(edu.ku.brc.af.ui.forms.FormDataObjIFace, boolean, edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace)
      */
     @Override
-    public String setLSIDOnId(final FormDataObjIFace      data,
+    public String setGUIDOnId(final FormDataObjIFace      data,
                               final boolean               doVersioning,
                               final UIFieldFormatterIFace formatter)
     {
@@ -308,7 +308,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
      * @param formatter
      * @return
      */
-    private int buildLSIDs(final Connection            connection,
+    private int buildGUIDs(final Connection            connection,
                            final CATEGORY_TYPE         category, 
                            final boolean               doVersioning,
                            final UIFieldFormatterIFace formatter)
@@ -362,7 +362,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                         
                         if (updStmt.executeUpdate() != 1)
                         {
-                            String msg = "Error updating table["+tableInfo.getName()+"] field["+tableInfo.getIdFieldName()+"] with GUID/LSID.";
+                            String msg = "Error updating table["+tableInfo.getName()+"] field["+tableInfo.getIdFieldName()+"] with GUID/GUID.";
                             System.err.println(msg);
                         }
                         cnt++;
@@ -401,26 +401,26 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
      */
     public static void setDoAll(boolean doAll)
     {
-        SpecifyLSIDGeneratorFactory.doAllRecords = doAll;
+        SpecifyGUIDGeneratorFactory.doAllRecords = doAll;
     }
 
     /**
      * @param pcl
      */
-    public static void buildAllLSIDsAynch(final PropertyChangeListener pcl)
+    public static void buildAllGUIDsAynch(final PropertyChangeListener pcl)
     {
-        buildAllLSIDsAynch(pcl, null);
+        buildAllGUIDsAynch(pcl, null);
     }
 
     /**
      * @param pcl
      * @param classes
      */
-    public static void buildAllLSIDsAynch(final PropertyChangeListener pcl, final ArrayList<Class<?>> classes)
+    public static void buildAllGUIDsAynch(final PropertyChangeListener pcl, final ArrayList<Class<?>> classes)
     {
         final String COUNT = "COUNT";
         
-        final GhostGlassPane glassPane = UIRegistry.writeGlassPaneMsg(getResourceString("SETTING_LSIDS"), UIRegistry.STD_FONT_SIZE);
+        final GhostGlassPane glassPane = UIRegistry.writeGlassPaneMsg(getResourceString("SETTING_GUIDS"), UIRegistry.STD_FONT_SIZE);
         glassPane.setProgress(0);
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -437,15 +437,15 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                         SubPaneMgr.getInstance().showPane(splash);
                     }
                     
-                    final LSIDWorker worker = new LSIDWorker()
+                    final GUIDWorker worker = new GUIDWorker()
                     {
                         protected Integer doInBackground() throws Exception
                         {
-                            if (getInstance() instanceof SpecifyLSIDGeneratorFactory)
+                            if (getInstance() instanceof SpecifyGUIDGeneratorFactory)
                             {
-                                SpecifyLSIDGeneratorFactory lsidGen = (SpecifyLSIDGeneratorFactory)getInstance();
-                                lsidGen.setClasses(classes);
-                                lsidGen.buildLSIDs(this);
+                                SpecifyGUIDGeneratorFactory guidGen = (SpecifyGUIDGeneratorFactory)getInstance();
+                                guidGen.setClasses(classes);
+                                guidGen.buildGUIDs(this);
                             }
                             return null;
                         }
@@ -503,7 +503,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
         this.classes = classes;
     }
 
-    protected static class LSIDWorker extends javax.swing.SwingWorker<Integer, Integer> implements PropertyChangeListener
+    protected static class GUIDWorker extends javax.swing.SwingWorker<Integer, Integer> implements PropertyChangeListener
     {
         /* (non-Javadoc)
          * @see javax.swing.SwingWorker#doInBackground()

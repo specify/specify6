@@ -184,6 +184,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         localityDetails     = new HashSet<LocalityDetail>();
         geoCoordDetails     = new HashSet<GeoCoordDetail>();
         latLonpolygons      = new HashSet<LatLonPolygon>();
+        
+        setGUID(this);
     }
     // End Initializer
 

@@ -62,7 +62,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -76,7 +76,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
+import edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
@@ -1723,23 +1723,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (tblsWithGUIDs.size() > 0)
         {
             if (frame != null) frame.toBack();
-            String msg = String.format("<HTML>Specify is changing how it generates LSIDs/GUIDs to be compliant with iDigBio.<br>" +
+            String msg = String.format("<HTML>Specify is changing how it generates GUIDs/GUIDs to be compliant with iDigBio.<br>" +
             		     "The following tables contain values in the GUID field:<BR><BR>%s" +
                          "<BR>Select 'Update' to update all the GUIDs to the new format.<BR>" +
             		     "Select 'Continue' to proceed without making changes.<BR>" + 
                          "<BR>It is highly recommended that you call the Specify Support Desk before using your database.", 
             		     sb.toString());
-            boolean doCont = UIRegistry.displayConfirm("LSIDs/GUIDs", msg, "Continue", "Update", JOptionPane.QUESTION_MESSAGE);
+            boolean doCont = UIRegistry.displayConfirm("GUIDs/GUIDs", msg, "Continue", "Update", JOptionPane.QUESTION_MESSAGE);
             if (frame != null) frame.toFront();
             if (!doCont)
             {
-                if (GenericLSIDGeneratorFactory.getInstance() instanceof SpecifyLSIDGeneratorFactory)
+                if (GenericGUIDGeneratorFactory.getInstance() instanceof SpecifyGUIDGeneratorFactory)
                 {
-                    SpecifyLSIDGeneratorFactory lsidGen = (SpecifyLSIDGeneratorFactory)GenericLSIDGeneratorFactory.getInstance();
-                    lsidGen.setClasses(tblsWithGUIDs);
-                    lsidGen.setDoAll(true);
-                    lsidGen.setFrame(frame);
-                    lsidGen.buildLSIDs(null);
+                    SpecifyGUIDGeneratorFactory guidGen = (SpecifyGUIDGeneratorFactory)GenericGUIDGeneratorFactory.getInstance();
+                    guidGen.setClasses(tblsWithGUIDs);
+                    guidGen.setDoAll(true);
+                    guidGen.setFrame(frame);
+                    guidGen.buildGUIDs(null);
                 }
 
             }

@@ -43,7 +43,7 @@ public class AuthorBusRules extends BaseBusRules
      */
     public AuthorBusRules()
     {
-        super();
+        super(Author.class);
     }
     
     /* (non-Javadoc)

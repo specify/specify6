@@ -285,17 +285,17 @@ public class BuildSampleDatabase
     public enum UpdateType {eBuildNew, eImport, eMerge, eLocalize}
     
     //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
-    private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
+    private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species guid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
     private static String[] TaxonFieldNames = {"CommonName",         "Author",         "Source",         "GUID",         "CommonName",          "Author",            "Source",            "GUID",            "CommonName"};
     
     private static int FAMILY_COMMON_NAME     = 0;
     private static int SPECIES_AUTHOR         = 1;
     private static int SPECIES_SOURCE         = 2;
-    private static int SPECIES_LSID           = 3;
+    private static int SPECIES_GUID           = 3;
     private static int SPECIES_COMMON_NAME    = 4;
     private static int SUBSPECIES_AUTHOR      = 5;
     private static int SUBSPECIES_SOURCE      = 6;
-    private static int SUBSPECIES_LSID        = 7;
+    private static int SUBSPECIES_GUID        = 7;
     private static int SUBSPECIES_COMMON_NAME = 8;
     
     private static String SHOW                = "show";
@@ -9363,7 +9363,7 @@ public class BuildSampleDatabase
                                   final int                   txTreeDefId) throws SQLException
     {
         /*
-         * kingdom     phylum      class   order       superfamily family      genus       species   subspecies  species author  species source  species lsid    species common name family common name  subspecies author   subspecies source   subspecies lsid subspecies common name
+         * kingdom     phylum      class   order       superfamily family      genus       species   subspecies  species author  species source  species guid    species common name family common name  subspecies author   subspecies source   subspecies lsid subspecies common name
            Animalia    Arthropoda  Insecta Orthoptera  Acridoidea  Acrididae   Abisares    depressus             Uvarov 1938 orthoptera.speciesfile.org  urn:lsid:catalogueoflife.org:taxon:e32007de-29c1-102b-9a4a-00304854f820:ac2008                      
          */
         String fullName = "";
@@ -9508,11 +9508,11 @@ public class BuildSampleDatabase
                 break;
                 
             case 220: // Species
-                loadTaxonFields(sb, new int[] {SPECIES_AUTHOR, SPECIES_SOURCE, SPECIES_LSID, SPECIES_COMMON_NAME}, cells, doFieldNames);
+                loadTaxonFields(sb, new int[] {SPECIES_AUTHOR, SPECIES_SOURCE, SPECIES_GUID, SPECIES_COMMON_NAME}, cells, doFieldNames);
                 break;
                 
             case 230: // SubSpecies
-                loadTaxonFields(sb, new int[] {SUBSPECIES_AUTHOR, SUBSPECIES_SOURCE, SUBSPECIES_LSID, SUBSPECIES_COMMON_NAME}, cells, doFieldNames);
+                loadTaxonFields(sb, new int[] {SUBSPECIES_AUTHOR, SUBSPECIES_SOURCE, SUBSPECIES_GUID, SUBSPECIES_COMMON_NAME}, cells, doFieldNames);
                 break;
                 
             default:

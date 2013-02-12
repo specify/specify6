@@ -28,31 +28,31 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
- * Base Factory class (not Abstract) for generating LSID for Collection Objects. 
+ * Base Factory class (not Abstract) for generating GUID for Collection Objects. 
  *
  * @code_status Beta
  *
  * @author rods
  *
  */
-public class GenericLSIDGeneratorFactory
+public class GenericGUIDGeneratorFactory
 {
-    public static final String factoryName = "edu.ku.brc.af.core.CollectionObjLSIDGenFactory"; //$NON-NLS-1$
+    public static final String factoryName = "edu.ku.brc.af.core.CollectionObjGUIDGenFactory"; //$NON-NLS-1$
     
     public enum CATEGORY_TYPE {Specimen, Taxonomy, CollectingEvent, LithoStrat, Locality, Person, ReferenceWork, Journal}//, Geography, }
     
-    protected static GenericLSIDGeneratorFactory instance = null;
+    protected static GenericGUIDGeneratorFactory instance = null;
     
     /**
      * 
      */
-    public GenericLSIDGeneratorFactory()
+    public GenericGUIDGeneratorFactory()
     {
         super();
     }
 
     /**
-     * @return true if the Factory is ready to generate LSIDs. (Default is true).
+     * @return true if the Factory is ready to generate GUIDs. (Default is true).
      */
     public boolean isReady()
     {
@@ -76,15 +76,15 @@ public class GenericLSIDGeneratorFactory
     }
     
     /**
-     * Generic GBIF LSID.
+     * Generic GBIF GUID.
      * 
-     * @param lsidAuthority
+     * @param GUIDAuthority
      * @param institutionCode
      * @param collectionCode
      * @param catalogNumer
      * @return
      */
-    public String createLSID(final String lsidAuthority, 
+    public String createGUID(final String GUIDAuthority, 
                              final String institutionCode, 
                              final String collectionCode, 
                              final String catalogNumer)
@@ -96,24 +96,24 @@ public class GenericLSIDGeneratorFactory
     /**
      * Default implementation to be overridden for an internal implementation. 
      * Returns null if not overridden.
-     * @param category the LSID category
+     * @param category the GUID category
      * @param id the unique identifier
-     * @return the LSID
+     * @return the GUID
      */
-    public String createLSID(final CATEGORY_TYPE category, final String id)
+    public String createGUID(final CATEGORY_TYPE category, final String id)
     {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
     
     /**
-     * This sets a LSID on a data object
+     * This sets a GUID on a data object
      * @param data the data object
      * @param doVersioning whether to add the versioning to the end
      * @param formatter the field formatter if it has or needs one.
-     * @return the LSID it assigned
+     * @return the GUID it assigned
      */
-    public String setLSIDOnId(final FormDataObjIFace      data,
+    public String setGUIDOnId(final FormDataObjIFace      data,
                               final boolean               doVersioning,
                               final UIFieldFormatterIFace formatter)
     {
@@ -125,7 +125,7 @@ public class GenericLSIDGeneratorFactory
      * This is usually for the the tables represented by the enum CATEGORY_TYPE.
      * @param pcl PropertyChangeListener for progress
      */
-    public void buildLSIDs(PropertyChangeListener pcl)
+    public void buildGUIDs(PropertyChangeListener pcl)
     {
         
     }
@@ -133,21 +133,21 @@ public class GenericLSIDGeneratorFactory
     /**
      * Default implementation to be overridden for an internal implementation. 
      * Returns null if not overridden.
-     * @param category the LSID category
+     * @param category the GUID category
      * @param id the unique identifier
      * @param version the version
-     * @return the LSID
+     * @return the GUID
      */
-//    public String createLSID(final CATEGORY_TYPE category, final String id, final int version)
+//    public String createGUID(final CATEGORY_TYPE category, final String id, final int version)
 //    {
 //        return null;
 //    }
     
     /**
-     * Returns the instance of the CollectionObjLSIDGenFactory.
-     * @return the instance of the CollectionObjLSIDGenFactory.
+     * Returns the instance of the CollectionObjGUIDGenFactory.
+     * @return the instance of the CollectionObjGUIDGenFactory.
      */
-    public static GenericLSIDGeneratorFactory getInstance()
+    public static GenericGUIDGeneratorFactory getInstance()
     {
         if (instance != null)
         {
@@ -165,12 +165,12 @@ public class GenericLSIDGeneratorFactory
         {
             try 
             {
-                instance = (GenericLSIDGeneratorFactory)Class.forName(factoryNameStr).newInstance();
+                instance = (GenericGUIDGeneratorFactory)Class.forName(factoryNameStr).newInstance();
                 return instance;
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate CollectionObjLSIDGenFactory factory " + factoryNameStr); //$NON-NLS-1$
+                InternalError error = new InternalError("Can't instantiate CollectionObjGUIDGenFactory factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }

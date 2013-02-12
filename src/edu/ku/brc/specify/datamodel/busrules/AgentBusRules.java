@@ -357,9 +357,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
-        setLSID((FormDataObjIFace)dataObj);
-        
-
         if (cachedAgents.size() > 0)
         {
             try

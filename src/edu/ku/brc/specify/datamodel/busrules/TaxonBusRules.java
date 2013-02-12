@@ -182,17 +182,6 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
-    {
-        setLSID((FormDataObjIFace)dataObj);
-
-        return super.afterSaveCommit(dataObj, session);
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#getExtraWhereColumns(edu.ku.brc.af.core.db.DBTableInfo)
      */
     @Override

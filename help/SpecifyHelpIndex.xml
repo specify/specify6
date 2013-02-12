@@ -63,7 +63,7 @@
 		<indexitem text="Return Loans" target="Int_Return_Loans" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Introduction to Specify" target="Intro" mergetype="javax.help.SortMerge" />
-	<indexitem text="Life Science Identifier (LSID)" target="automatic_lsid" mergetype="javax.help.SortMerge" />
+	<indexitem text="Global Unique Identifier GUID" target="automatic_guid" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift_Catalog Number Dialog" target="AskForCatNumbers" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift _ Choose Record Set" target="ChooseRecordSet" mergetype="javax.help.SortMerge" />
 	<indexitem text="Login Process" target="Login" mergetype="javax.help.SortMerge" />

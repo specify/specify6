@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -63,7 +64,8 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
     {   @Index (name="TitleIDX", columnNames={"Title"}),
         @Index (name="DateImagedIDX", columnNames={"DateImaged"}),
         @Index (name="AttchScopeIDIDX", columnNames={"ScopeID"}),
-        @Index (name="AttchScopeTypeIDX", columnNames={"ScopeType"})
+        @Index (name="AttchScopeTypeIDX", columnNames={"ScopeType"}),
+        @Index (name="AttchmentGuidIDX", columnNames={"GUID"}),
     })
 public class Attachment extends DataModelObjBase implements Serializable
 {
@@ -87,6 +89,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
     protected String                  attachmentLocation;
+    protected String                  guid;
     protected Byte                    tableID;
     protected Byte                    visibility;
     protected SpecifyUser             visibilitySetBy;
@@ -161,6 +164,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         storeFile          = false;
         
+        guid               = null;
+        
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
         borrowAttachments              = new HashSet<BorrowAttachment>();
@@ -178,6 +183,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         repositoryAgreementAttachments = new HashSet<RepositoryAgreementAttachment>();
         referenceWorkAttachments       = new HashSet<ReferenceWorkAttachment>();
         taxonAttachments               = new HashSet<TaxonAttachment>();
+        
+        setGUID(this);
     }
 
     @Id
@@ -448,6 +455,18 @@ public class Attachment extends DataModelObjBase implements Serializable
         return map;
     }
 
+    /**
+     *
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+    
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getVisibilitySetBy() {

@@ -57,7 +57,7 @@
 			<tocitem text="GEOLocate" target="PrefsGeolocate" />
 			<tocitem text="Loan" target="PrefsLoan" />
 			<tocitem text="Login" target="PrefsLogin" />
-			<tocitem text="LSID" target="PrefsLSID" />
+			<tocitem text="GUID" target="PrefsGUID" />
 			<tocitem text="MySQL" target="PrefsMySQL" />
 			<tocitem text="Network" target="PrefsNetwork" />
 			<tocitem text="Task Bar" target="PrefsMisc" />

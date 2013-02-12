@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>About Specify</title>
+</head>
+
+
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../images/topbar.png">
+  
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><a name="GUID"><a name="guid">GUID</a></a> </h2>
+<h3>GUID Overview</h3>
+<blockquote>
+  <p>A field for a unique identifier exists within the Collection Object, Taxon, Geography, Lithostratigraphy, Locality, Agent, Reference Work and Journal tables in Specify. The field is named Globally Unique Identifier, (GUID).</p>
+  <p>A more specific form of GUID, Life Science Identifiers (GUIDs) have become the universally accepted identification scheme for the biological collections community. Using an GUID to identify information allows that information to be shared and recognized globally. As more biological information systems use GUIDs it will become possible to instantly recognize when globally exchanged information has been updated or duplicated. </p>
+  <p>Specify has adapted its own scheme for creating GUIDs, but was also written to include the flexibility for institutions wanting to include their own scheme to create a plugin. </p>
+  <p>Specify&rsquo;s GUID scheme was created with specific sections so that information about the referenced information is instantly recognizable. This scheme includes a version number, which will change each time the record is updated.</p>
+  <p align="center"><img src="../../images/GUID.png" width="593" height="242" /></p>
+  <p>&nbsp;</p>
+  <p><strong>GUID Authority</strong> refers to the source of the data, which is typically the url for the institution. This is edited  using the Institution form (<em>System &gt; System Setup &gt; Configuration</em>).<br />
+    <strong>Institution Code</strong> is the code located within Specify for the Institution. This is edited using the Institution form (<em>System &gt; System Setup &gt; Configuration</em>).<br />
+    <strong>Collection Code</strong> is the code for the collection. This is edited using the Collection form (<em>System &gt; System Setup &gt; Configuration</em>).<br />
+    <strong>Collecton Code</strong> refers to the type of record. This is edited using the Collection form (<em>System &gt; System Setup &gt; Configuration</em>)<br />
+    <strong>Catalog Number</strong> is the catalog number for the data in Specify.<br />
+    <strong>Version</strong> refers to the amount of times the information has been updated. </p>
+  <p>The Catalog Number is used within the GUID schema to identify specimen records, but all other records are identified using the primary record id found within MySQL.</p>
+  <p>GUIDs can be automatically created by Specify for each specimen, taxonomy, geography, lithostratigraphy, locality, person, reference work and journal record located within Specify. GUIDs are configured in the System Preferences. </p>
+</blockquote>
+<p>&nbsp;</p>
+<h2>GUID Preference</h2>
+<blockquote>
+  <p>For Mac: Choose <em>Specify &gt; Preferences &gt; GUID</em>. <br />
+    For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; GUID</em>.</p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> The GUID preference is only available to the Administrator by default in Specify. If GUID does not appear in your system preferences tool bar please visit your Specify Administrator to have your permissions changed.</p>
+    <p align="center"><img src="../../images/pref_GUID.png" alt="lisd" width="433" height="243" /></p>
+    <p align="center" class="imgcaption">GUID Preference</p>
+  </blockquote>
+  <ul>
+    <li><strong name="automatic_GUID"><a name="automatic_GUID">Automatic GUID Generation</a></strong><br />
+      Check the box to choose tables for automatically create GUIDs. This will allow new records in each specific table to include an automatically generated GUID. To automatically generate GUIDs for existing records in tables first choose the tables in this section, then click the <em>Create GUIDs</em> button.</li>
+  </ul>
+
+  <ul>
+    <li><strong>Additional Options</strong><br />
+      Click the <em>Create GUIDs</em> button to automatically generate GUIDs for existing records in the tables selected in the <em>Automatic GUID Generation</em> section. </li>
+  </ul>
+  <p>Specify will not override GUID information. </p>
+</blockquote>
+</BODY>
+</html>

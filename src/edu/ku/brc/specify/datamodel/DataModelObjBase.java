@@ -43,6 +43,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -53,6 +55,7 @@ import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.weblink.WebLinkDataProviderIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -79,7 +82,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     
     // Transient
     protected Integer   parentTblId = null;
-   
+    protected Boolean   hasGUIDField     = null;
+    
     // Transient Static
     protected static String errMsg = null;
      
@@ -226,6 +230,44 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     {
         return false;
     }
+    
+    /**
+     * @param data
+     */
+    protected void setGUID(final DataModelObjBase data)
+    {
+        if (hasGUIDField == null)
+        {
+            hasGUIDField = false;
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(getTableId());
+            if (ti != null)
+            {
+                DBFieldInfo fi = ti.getFieldByColumnName("GUID");
+                if (fi != null)
+                {
+                    hasGUIDField = true;
+                }
+            }
+        }
+        
+        if (data != null && hasGUIDField)
+        {
+            UIFieldFormatterIFace formatter    = null;
+            
+            if (data.getTableId() == 1)
+            {
+                DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
+                formatter = fi != null ? fi.getFormatter() : null;
+            }
+            
+            String guid = GenericGUIDGeneratorFactory.getInstance().setGUIDOnId(data, false, formatter);
+            if (guid != null)
+            {
+                FormHelper.setValue(data, "guid", guid);
+            }
+        }
+    }
+
     
     /**
      * Sets a value into the current object.

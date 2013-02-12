@@ -221,6 +221,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
         
         exsiccataItems              = new HashSet<ExsiccataItem>();
+        
+        setGUID(this);
     }
     // End Initializer
     

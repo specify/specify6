@@ -177,8 +177,6 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
     @Override
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
-        setLSID((FormDataObjIFace)dataObj);
-
         return super.afterSaveCommit(dataObj, session);
     }
 }

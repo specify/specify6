@@ -36,14 +36,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory.CATEGORY_TYPE;
+import edu.ku.brc.af.core.GenericGUIDGeneratorFactory.CATEGORY_TYPE;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
-import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
+import edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -55,9 +55,9 @@ import edu.ku.brc.ui.UIRegistry;
  * Jul 7, 2009
  *
  */
-public class LSIDPrefsPanel extends GenericPrefsPanel
+public class GUIDPrefsPanel extends GenericPrefsPanel
 {
-    protected static String PREF_NAME_PREFIX = "Prefs.LSID.";
+    protected static String PREF_NAME_PREFIX = "Prefs.GUID.";
     
     //Specimen, Taxonomy, Geography, LithoStrat, Locality, Person, Publication, Media
     protected Hashtable<CATEGORY_TYPE, ValCheckBox> checkBoxes = new Hashtable<CATEGORY_TYPE, ValCheckBox>();
@@ -67,15 +67,15 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
     /**
      * 
      */
-    public LSIDPrefsPanel()
+    public GUIDPrefsPanel()
     {
         super();
         
-        title    = "LSIDPrefsPanel";
+        title    = "GUIDPrefsPanel";
         name     = title;
-        hContext = "PrefsLSID";
+        hContext = "PrefsGUID";
         
-        validator.setName("LSID Validator");
+        validator.setName("GUID Validator");
         validator.setNewObj(true);
         
         UIRegistry.loadAndPushResourceBundle("preferences");
@@ -129,19 +129,19 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
         DataChangeNotifier dcn = validator.createDataChangeNotifer(pName, useVersioning, null);
         useVersioning.addActionListener(dcn);
         
-        JButton updateLSIDsBtn = UIHelper.createI18NButton("CREATE_LSIDS");
-        updateLSIDsBtn.addActionListener(new ActionListener() {
+        JButton updateGUIDsBtn = UIHelper.createI18NButton("CREATE_GUIDS");
+        updateGUIDsBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 savePrefs();
-                createLSIDs();
+                createGUIDs();
             }
         });
         
         PanelBuilder pbInner = new PanelBuilder(new FormLayout("p,20px,p", "p"));
         //pbInner.add(useVersioning, cc.xy(1, 1));
-        pbInner.add(updateLSIDsBtn, cc.xy(1, 1));
+        pbInner.add(updateGUIDsBtn, cc.xy(1, 1));
         
         pb.add(pbInner.getPanel(), cc.xyw(1, y, 3));
         y += 2;
@@ -152,11 +152,11 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
     /**
      * 
      */
-    protected void createLSIDs()
+    protected void createGUIDs()
     {
         if (mgr == null || mgr.closePrefs())
         {
-            SpecifyLSIDGeneratorFactory.buildAllLSIDsAynch(null); // performs in SwingWorker
+            SpecifyGUIDGeneratorFactory.buildAllGUIDsAynch(null); // performs in SwingWorker
         }
     }
     

@@ -83,8 +83,8 @@ public class RecordSetBatchMatch
     {
 //      CollectionObject obj = session.get(CollectionObject.class, item.getRecordId());
       
-//      String id = GenericLSIDGeneratorFactory.getInstance().createLSID(
-//              GenericLSIDGeneratorFactory.CATEGORY_TYPE.Specimen,
+//      String id = GenericGUIDGeneratorFactory.getInstance().createGUID(
+//              GenericGUIDGeneratorFactory.CATEGORY_TYPE.Specimen,
 //              obj.getCatalogNumber());
       
         return new MatchableIndexedId(item.getRecordId().toString() + "-KANU");

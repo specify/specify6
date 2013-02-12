@@ -130,8 +130,6 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
     @Override
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
-        setLSID((FormDataObjIFace)dataObj);
-
         return super.afterSaveCommit(dataObj, session);
     }
     

@@ -63,7 +63,7 @@ public class UIControlTOHTML
                                     FileNotFoundException, 
                                     IOException
     {
-        boolean doUIControls = false;
+        boolean doUIControls = true;
         boolean doForeign    = false;
         String  outFileName  = "UIControls.html";
         
