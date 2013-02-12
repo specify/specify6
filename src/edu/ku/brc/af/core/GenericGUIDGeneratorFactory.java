@@ -26,6 +26,17 @@ import java.util.UUID;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Journal;
+import edu.ku.brc.specify.datamodel.LithoStrat;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
+import edu.ku.brc.specify.datamodel.Taxon;
 
 /**
  * Base Factory class (not Abstract) for generating GUID for Collection Objects. 
@@ -39,7 +50,8 @@ public class GenericGUIDGeneratorFactory
 {
     public static final String factoryName = "edu.ku.brc.af.core.CollectionObjGUIDGenFactory"; //$NON-NLS-1$
     
-    public enum CATEGORY_TYPE {Specimen, Taxonomy, CollectingEvent, LithoStrat, Locality, Person, ReferenceWork, Journal}//, Geography, }
+    public enum CATEGORY_TYPE {Attachment, Specimen, Taxonomy, Geography, CollectingEvent, LithoStrat, 
+                              Locality, Person, ReferenceWork, Journal, GeologicTimePeriod}
     
     protected static GenericGUIDGeneratorFactory instance = null;
     

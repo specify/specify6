@@ -23,6 +23,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,6 +52,18 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Journal;
+import edu.ku.brc.specify.datamodel.LithoStrat;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -65,8 +80,10 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
 {
     protected static String PREF_NAME_PREFIX = "Prefs.GUID.";
-    protected static int[]  TABLE_IDS = {1, 4, 3, 10, 100, 2, 5, 69, 51};
-    protected static boolean doAllRecords = false;
+    protected static int[]  TABLE_IDS = {Attachment.getClassTableId(), CollectionObject.getClassTableId(), Taxon.getClassTableId(), 
+                                         Geography.getClassTableId(), CollectingEvent.getClassTableId(), LithoStrat.getClassTableId(), 
+                                         Locality.getClassTableId(), Agent.getClassTableId(), ReferenceWork.getClassTableId(), 
+                                         Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), };
     
     protected String       I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
 
@@ -76,8 +93,8 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     protected String        instCode = null;
     protected String        colCode  = null;
     
-    protected ArrayList<Class<?>> classes = null;
     protected ProgressFrame       frame;
+    protected PrintWriter         pw      = null;
     
 
     /* (non-Javadoc)
@@ -115,19 +132,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#getGUID(edu.ku.brc.af.core.GenericGUIDGeneratorFactory.CATEGORY_TYPE, java.lang.String, int)
-     */
-//    @Override
-//    public String createGUID(final CATEGORY_TYPE category, final String id, final int version)
-//    {
-//        if (isReady() && category != null && StringUtils.isNotEmpty(id))
-//        {
-//            return String.format("urn:lsid:%s:%s-%s:%s:%s:%d", lsidAuthority, instCode, colCode, category.toString(), id, version);
-//        }
-//        return super.createGUID(category, id, version);
-//    }
     
     /**
      * @param tableId the table id
@@ -171,7 +175,17 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     @Override
     public void buildGUIDs(final PropertyChangeListener pcl)
     {
-        if (frame != null) frame.setDesc("Updating GUIDs/GUIDs..."); // I18N
+        Collection col = AppContextMgr.getInstance().getClassObject(Collection.class);
+        File outFile = new File(UIRegistry.getAppDataDir() + File.separator + String.format("guids_%d.txt", col.getId()));
+        try
+        {
+            pw = new PrintWriter(outFile);
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        if (frame != null) frame.setDesc("Updating GUIDs..."); // I18N
 
         reset();
         
@@ -181,37 +195,32 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         double tot = CATEGORY_TYPE.values().length;
         for (CATEGORY_TYPE cat : CATEGORY_TYPE.values())
         {
-            String pName = PREF_NAME_PREFIX + cat.toString();
-            
             if (pcl != null)
             {
                 pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count));
             }
             
-            if (classes != null || 
-                (AppContextMgr.getInstance().hasContext() && AppPreferences.getRemote().getBoolean(pName, false)))
+            try
             {
-                try
+                buildGUIDs(DBConnection.getInstance().getConnection(), cat);
+                
+            } catch (Exception ex)
+            {
+                 ex.printStackTrace();
+                 
+            } finally
+            {
+                if (pcl != null)
                 {
-                    buildGUIDs(DBConnection.getInstance().getConnection(), cat, false, null);
-                    
-                } catch (Exception ex)
-                {
-                     ex.printStackTrace();
-                     
-                } finally
-                {
-                    if (pcl != null)
-                    {
-                        pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count));
-                    }
-
+                    pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count));
                 }
+
             }
             setProgressValue(true, (int)(((double)count / tot)*100.0));
             count++;
         }
-        classes = null;
+        
+        pw.close();
     }
     
     /* (non-Javadoc)
@@ -308,102 +317,91 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
      * @param formatter
      * @return
      */
-    private int buildGUIDs(final Connection            connection,
-                           final CATEGORY_TYPE         category, 
-                           final boolean               doVersioning,
-                           final UIFieldFormatterIFace formatter)
+    private void buildGUIDs(final Connection    connection,
+                            final CATEGORY_TYPE category)
     {
         int count = 0;
         
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(TABLE_IDS[category.ordinal()]);
         if (tableInfo != null)
         {
-            if (classes != null && classes.indexOf(tableInfo.getClassObj()) == -1)
-            {
-                return count;
-            }
-            
             String scope = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
             //System.out.println(tableInfo.getTitle()+" -> "+scope);
-            String where = doAllRecords ? scope : " (GUID IS NULL OR LOWER(GUID) = 'null' OR GUID = '') AND " + scope;
-            String sql   = String.format("SELECT COUNT(*) FROM %s WHERE %s", tableInfo.getName(), where);
-            
-            //System.out.println(sql);
-            count = BasicSQLUtils.getCountAsInt(sql);
-            if (count > 0)
+            String where = "GUID IS NOT NULL AND " + scope;
+            String sql   = String.format("SELECT %s,GUID FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
+
+            Statement         stmt    = null;
+            PreparedStatement updStmt = null;
+            try
             {
+                stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next())
+                {
+                    pw.write(String.format("%d\t%d\t%s\n", tableInfo.getTableId(), rs.getInt(1), rs.getString(2)));
+                }
+                rs.close();
+                stmt.close();
+                stmt = null;
+                pw.flush();
+                
+                // Do all Records
+                sql   = String.format("SELECT %s,GUID FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), scope);
+                count = BasicSQLUtils.getCountAsInt(sql);
+                System.out.println(sql);
+                System.out.println(tableInfo.getName()+" -> "+count);
+                
+                // Set all GUIDs
                 int percentage = count / 10;
                 if (percentage == 0) percentage = 1;
                 
                 setProgressValue(false, 0, count);
                 
                 sql = String.format("SELECT %s,Version FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
-                
-                Statement         stmt    = null;
-                PreparedStatement updStmt = null;
+                System.out.println(sql);
 
+                String updateStr = String.format("UPDATE %s SET GUID=?, VERSION=? WHERE %s AND %s=?", tableInfo.getName(), scope, tableInfo.getIdColumnName());
+                stmt    = connection.createStatement();
+                updStmt = connection.prepareStatement(updateStr);
+
+                int cnt = 0;
+                rs = stmt.executeQuery(sql);
+                while (rs.next())
+                {
+                    Integer id      = rs.getInt(1);
+                    int     version = rs.getInt(2) + 1;
+                    UUID    uuid    = UUID.randomUUID();
+                    
+                    updStmt.setString(1, uuid.toString());
+                    updStmt.setInt(2, version);
+                    updStmt.setInt(3, id);
+                    
+                    if (updStmt.executeUpdate() != 1)
+                    {
+                        String msg = "Error updating table["+tableInfo.getName()+"] field["+tableInfo.getIdFieldName()+"] with GUID.";
+                        System.err.println(msg);
+                    }
+                    cnt++;
+                    if (frame != null && cnt % percentage == 0) setProgressValue(false, cnt);
+                }
+                rs.close();
+                if (frame != null) frame.setProcess(count);
+           
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+                
+            } finally
+            {
                 try
                 {
-                    String updateStr = String.format("UPDATE %s SET GUID=?, VERSION=? WHERE %s AND %s=?", tableInfo.getName(), scope, tableInfo.getIdColumnName());
-                    stmt    = connection.createStatement();
-                    updStmt = connection.prepareStatement(updateStr);
-
-                    int cnt = 0;
-                    ResultSet rs = stmt.executeQuery(sql);
-                    while (rs.next())
-                    {
-                        Integer id      = rs.getInt(1);
-                        int     version = rs.getInt(2) + 1;
-                        UUID    uuid    = UUID.randomUUID();
-                        
-                        updStmt.setString(1, uuid.toString());
-                        updStmt.setInt(2, version);
-                        updStmt.setInt(3, id);
-                        
-                        if (updStmt.executeUpdate() != 1)
-                        {
-                            String msg = "Error updating table["+tableInfo.getName()+"] field["+tableInfo.getIdFieldName()+"] with GUID/GUID.";
-                            System.err.println(msg);
-                        }
-                        cnt++;
-                        if (frame != null && cnt % percentage == 0) setProgressValue(false, cnt);
-                    }
-                    rs.close();
-                    if (frame != null) frame.setProcess(count);
-                    
-                } catch (SQLException e)
-                {
-                    e.printStackTrace();
-                    
-                } finally
-                {
-                    try
-                    {
-                        if (stmt != null) stmt.close();
-                        if (updStmt != null) updStmt.close();
-                    } catch (SQLException e) {}
-                }
+                    if (stmt != null) stmt.close();
+                    if (updStmt != null) updStmt.close();
+                } catch (SQLException e) {}
             }
         }
-        return count;
     }
     
-    /**
-     * @return the doAll
-     */
-    public static boolean isDoAllRecords()
-    {
-        return doAllRecords;
-    }
-
-    /**
-     * @param doAll the doAll to set
-     */
-    public static void setDoAll(boolean doAll)
-    {
-        SpecifyGUIDGeneratorFactory.doAllRecords = doAll;
-    }
-
     /**
      * @param pcl
      */
@@ -444,7 +442,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                             if (getInstance() instanceof SpecifyGUIDGeneratorFactory)
                             {
                                 SpecifyGUIDGeneratorFactory guidGen = (SpecifyGUIDGeneratorFactory)getInstance();
-                                guidGen.setClasses(classes);
                                 guidGen.buildGUIDs(this);
                             }
                             return null;
@@ -493,14 +490,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     public void setFrame(final ProgressFrame frame)
     {
         this.frame = frame;
-    }
-
-    /**
-     * @param classes the classes to set
-     */
-    public void setClasses(ArrayList<Class<?>> classes)
-    {
-        this.classes = classes;
     }
 
     protected static class GUIDWorker extends javax.swing.SwingWorker<Integer, Integer> implements PropertyChangeListener

@@ -93,15 +93,6 @@
         </pref>
     </section>
     
-    <section title="GUIDs">
-        <pref name="GUIDs" title="GUIDS" icon="SpecifyLargeIcon" panelClass="edu.ku.brc.specify.prefs.GUIDPrefsPanel" help="PrefsGUID">
-            <defperm name="Manager"       perm="true,true,true,true"/>
-            <defperm name="FullAccess"    perm="false,false,false,false"/>
-            <defperm name="LimitedAccess" perm="false,false,false,false"/>
-            <defperm name="Guest"         perm="false,false,false,false"/>
-        </pref>
-    </section>
-    
     <section title="GEOLocate">
         <pref name="GEOLocate" title="GEOLocate" icon="GEOLocate" panelClass="edu.ku.brc.specify.prefs.GEOLocatePrefsPanel" help="PrefsGeolocate">
             <defperm name="Manager"       perm="true,true,true,true"/>

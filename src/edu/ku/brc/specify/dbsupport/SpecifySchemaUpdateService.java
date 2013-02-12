@@ -1687,62 +1687,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
     
     /**
-     * 
+     * @param frame
      */
     public void checkForGUIDs(final ProgressFrame frame)
     {        
-        Class<?>[] guidClasses = {
-            Agent.class, 
-            CollectingEvent.class, 
-            CollectionObject.class, 
-            Geography.class, 
-            GeologicTimePeriod.class, 
-            Journal.class, 
-            LithoStrat.class, 
-            Locality.class, 
-            ReferenceWork.class, 
-            Taxon.class, 
-        };
-        
-        ArrayList<Class<?>> tblsWithGUIDs = new ArrayList<Class<?>>();
-        StringBuilder sb = new StringBuilder();
-        for (Class<?> cls : guidClasses)
+        if (GenericGUIDGeneratorFactory.getInstance() instanceof SpecifyGUIDGeneratorFactory)
         {
-            DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(cls.getName());
-            String      scope   = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
-            String      sql     = String.format("SELECT COUNT(*) FROM %s WHERE %s AND GUID IS NOT NULL", ti.getName(), scope);
-            int         numRecs = BasicSQLUtils.getCountAsInt(sql);
-            System.out.println(sql+"\n"+ti.getName()+"  "+numRecs);
-            if (numRecs > 0)
-            {
-                tblsWithGUIDs.add(cls);
-                sb.append(String.format("%s<BR>", ti.getTitle()));
-            }
-        }
-        
-        if (tblsWithGUIDs.size() > 0)
-        {
-            if (frame != null) frame.toBack();
-            String msg = String.format("<HTML>Specify is changing how it generates GUIDs/GUIDs to be compliant with iDigBio.<br>" +
-            		     "The following tables contain values in the GUID field:<BR><BR>%s" +
-                         "<BR>Select 'Update' to update all the GUIDs to the new format.<BR>" +
-            		     "Select 'Continue' to proceed without making changes.<BR>" + 
-                         "<BR>It is highly recommended that you call the Specify Support Desk before using your database.", 
-            		     sb.toString());
-            boolean doCont = UIRegistry.displayConfirm("GUIDs/GUIDs", msg, "Continue", "Update", JOptionPane.QUESTION_MESSAGE);
-            if (frame != null) frame.toFront();
-            if (!doCont)
-            {
-                if (GenericGUIDGeneratorFactory.getInstance() instanceof SpecifyGUIDGeneratorFactory)
-                {
-                    SpecifyGUIDGeneratorFactory guidGen = (SpecifyGUIDGeneratorFactory)GenericGUIDGeneratorFactory.getInstance();
-                    guidGen.setClasses(tblsWithGUIDs);
-                    guidGen.setDoAll(true);
-                    guidGen.setFrame(frame);
-                    guidGen.buildGUIDs(null);
-                }
-
-            }
+            SpecifyGUIDGeneratorFactory guidGen = (SpecifyGUIDGeneratorFactory)GenericGUIDGeneratorFactory.getInstance();
+            guidGen.setFrame(frame);
+            guidGen.buildGUIDs(null);
         }
     }
     
