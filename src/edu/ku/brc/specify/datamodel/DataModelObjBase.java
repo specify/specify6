@@ -259,11 +259,14 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                 DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
                 formatter = fi != null ? fi.getFormatter() : null;
             }
-            
-            String guid = GenericGUIDGeneratorFactory.getInstance().setGUIDOnId(data, false, formatter);
-            if (guid != null)
+            GenericGUIDGeneratorFactory guidFactory = GenericGUIDGeneratorFactory.getInstance();
+            if (guidFactory != null)
             {
-                FormHelper.setValue(data, "guid", guid);
+                String guid = guidFactory.setGUIDOnId(data, false, formatter);
+                if (guid != null)
+                {
+                    FormHelper.setValue(data, "guid", guid);
+                }
             }
         }
     }
