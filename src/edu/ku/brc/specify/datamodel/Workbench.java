@@ -651,10 +651,10 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     }
     
     @Transient
-    public int getColumnIndex(int dataTableId, String fieldNameOrCaption)
+    public int getColumnIndex(final int dataTableId, final String fieldNameOrCaption)
     {
         // get the template mapping data
-        WorkbenchTemplate template = getWorkbenchTemplate();
+        WorkbenchTemplate                 template     = getWorkbenchTemplate();
         Set<WorkbenchTemplateMappingItem> mappingItems = template.getWorkbenchTemplateMappingItems();
         
         for( WorkbenchTemplateMappingItem item: mappingItems )
@@ -663,7 +663,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
             if (itemDataTableId == dataTableId)
             {
                 String fieldName = item.getFieldName();
-                String caption = item.getCaption();
+                String caption  = item.getCaption();
                 if (fieldName.equalsIgnoreCase(fieldNameOrCaption) || 
                     caption.equalsIgnoreCase(fieldNameOrCaption))
                 {
@@ -675,9 +675,14 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         return -1;
     }
     
-    public int getColumnIndex(Class<?> dataClass, String fieldNameOrCaption)
+    /**
+     * @param dataClass
+     * @param fieldNameOrCaption
+     * @return
+     */
+    public int getColumnIndex(final Class<?> dataClass, final String fieldNameOrCaption)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(dataClass.getName());
-        return getColumnIndex(tableId,fieldNameOrCaption);
+        return getColumnIndex(tableId, fieldNameOrCaption);
     }
 }

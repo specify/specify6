@@ -177,37 +177,42 @@ public class CleanupToolsTask extends BaseTask
                 }
             })); 
             
-            localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_EX"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_EX_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doLocalityMatching(false);
-                }
-            })); 
+            boolean inclLocalities = AppPreferences.getLocalPrefs().getBoolean("INCL_LOCALITIES", false);
             
-            localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_LL"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_LL_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doLocalityMatching(true);
-                }
-            })); 
-            
-            localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_FZ"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_FZ_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doLocalityNameFuzzyMatch();   
-                }
-            })); 
-            
-            localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_VERIFY_FZ"), LOCALITY, getResourceString("CLNUP_LOCALITY_VERIFY_FZ_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doLocalityLatLonVerify();   
-                }
-            })); 
-            
+            if (inclLocalities)
+            {
+                localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_EX"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_EX_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doLocalityMatching(false);
+                    }
+                })); 
+                
+                localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_LL"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_LL_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doLocalityMatching(true);
+                    }
+                })); 
+                
+                localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_FZ"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_FZ_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doLocalityNameFuzzyMatch();   
+                    }
+                })); 
+                
+                localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_VERIFY_FZ"), LOCALITY, getResourceString("CLNUP_LOCALITY_VERIFY_FZ_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doLocalityLatLonVerify();   
+                    }
+                })); 
+            }            
             navBoxes.add(geoNavBox);
             navBoxes.add(agentNavBox);
-            navBoxes.add(localityNavBox);
+            
+            if (inclLocalities) navBoxes.add(localityNavBox);
         }
         isShowDefault = true;
     }

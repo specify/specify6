@@ -62,11 +62,6 @@ public class WorkbenchSpreadSheet extends SpreadSheet
         this.workbenchPaneSS = workbenchPaneSS;
         buildComparators();
     }
-	
-
-
-    
-    
     
     /**
 	 * @return the comparators
@@ -75,11 +70,6 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	{
 		return comparators;
 	}
-
-
-
-
-
 
 	/* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheet#paste()
@@ -103,6 +93,9 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 
 
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#cutOrCopy(boolean)
+	 */
 	@Override
 	public void cutOrCopy(boolean isCut) 
 	{
@@ -122,8 +115,6 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			workbenchPaneSS.validateRows(rows);
 		}
 	}
-
-
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#createSearchReplacePanel()
@@ -202,7 +193,6 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			
 		};
 	}
-
 
 	/**
      * Builds custom comparators for columns that requre them.
@@ -285,7 +275,8 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#createMenuForSelection(java.awt.Point)
 	 */
 	@Override
-	protected JPopupMenu createMenuForSelection(Point pnt) {
+	protected JPopupMenu createMenuForSelection(final Point pnt) 
+	{
 		JPopupMenu result = super.createMenuForSelection(pnt);
 		final int modelCol = convertColumnIndexToModel(columnAtPoint(pnt));
         if (getSelectedColumnCount() == 1 && getModel().getColumnClass(modelCol).equals(String.class))
@@ -332,8 +323,6 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 	//------------------------------------------------------------------------------
     //-- Inner Classes
     //------------------------------------------------------------------------------
-
-
 
 	/**
      * @author timbo
@@ -451,7 +440,6 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			
 			return ll0.compareTo(ll1);
 		}
-    	
     }
  
      /**

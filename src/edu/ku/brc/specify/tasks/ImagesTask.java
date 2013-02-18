@@ -30,8 +30,6 @@ import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JToolBar;
 
-import org.apache.commons.io.FilenameUtils;
-
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -121,9 +119,10 @@ public class ImagesTask extends BaseTask
             extendedNavBoxes.clear();
             
             // Actions
-            RolloverCommand showAllBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Show All Images", "image", null, null);
-            RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Images", "image", null, null);
+            RolloverCommand showAllBtn = (RolloverCommand)addNavBoxItem(actionNavBox,      "Show All Images",    "image", null, null);
+            RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Images",      "image", null, null);
             RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Image Index", "image", null, null);
+            
             //RolloverCommand uploadOCRBtn    = (RolloverCommand)addNavBoxItem(actionNavBox, "Import OCR Data", "image", null, null);
             //addNavBoxItem(actionNavBox, "Import OCR Data", "network_node_del", null, null);
             //RolloverCommand showStatusBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Status",   "InfoIcon", null, null);
@@ -187,7 +186,8 @@ public class ImagesTask extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    uploadImages(false);
+                    BatchAttachFiles batchAttachFiles = new BatchAttachFiles();
+                    batchAttachFiles.uploadImagesByFileName();
                 }
             });
             
@@ -196,7 +196,8 @@ public class ImagesTask extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    uploadIndexFile();
+                    BatchAttachFiles batchAttachFiles = new BatchAttachFiles();
+                    batchAttachFiles.uploadImagesByFileName();
                 }
             });
             
@@ -235,57 +236,6 @@ public class ImagesTask extends BaseTask
             });
         }
         isShowDefault = true;
-    }
-    
-    /**
-     * @param doCreateNewRecs
-     */
-    private void uploadImages(final boolean doCreateNewRecs)
-    {
-        JFileChooser chooser = new JFileChooser("Choose a Directory"); // I18N
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-        String path      = null;
-        int    returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            path = chooser.getSelectedFile().getAbsolutePath();
-            try
-            {
-                BatchAttachFiles batchFile = new BatchAttachFiles(CollectionObject.class, "CatalogNumber", new File(path));
-                batchFile.attachFilesByFieldName();
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    /**
-     * 
-     */
-    private void uploadIndexFile()
-    {
-        JFileChooser chooser = new JFileChooser("Choose a Index File"); // I18N
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        File indexFile      = null;
-        int    returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            indexFile = chooser.getSelectedFile();
-            try
-            {
-                String path = FilenameUtils.getFullPath(indexFile.getAbsolutePath());
-                BatchAttachFiles batchFile = new BatchAttachFiles(CollectionObject.class, "CatalogNumber", new File(path));
-                batchFile.attachFileFromIndexFile(indexFile);
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
     }
     
     /**

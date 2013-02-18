@@ -11,9 +11,13 @@ import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 
 /**
  * @author timo
@@ -27,7 +31,7 @@ public class SDStateFileNameParser implements FileNameParserIFace
 	
 	protected String prefix = "Picture Files/Specimen Pics/";
 	
-	protected int picType;
+	protected int    picType;
 	protected String srchFieldName;
 	protected String suffix;
 	
@@ -70,7 +74,52 @@ public class SDStateFileNameParser implements FileNameParserIFace
 	}
 
 	
-	/**
+	/* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getAttachmentOwnerClass()
+     */
+    @Override
+    public Class<?> getAttachmentOwnerClass()
+    {
+        return CollectionObject.class;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getAttachmentJoinClass()
+     */
+    @Override
+    public Class<?> getAttachmentJoinClass()
+    {
+        return CollectionObjectAttachment.class;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getFieldTitle()
+     */
+    @Override
+    public String getFieldTitle()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getFormatter()
+     */
+    @Override
+    public UIFieldFormatterIFace getFormatter()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getFieldName()
+     */
+    @Override
+    public String getFieldName()
+    {
+        return srchFieldName;
+    }
+
+    /**
 	 * @return the testConnection
 	 */
 	public Connection getTestConnection() 
@@ -298,6 +347,42 @@ public class SDStateFileNameParser implements FileNameParserIFace
 			suffix = "V";
 		}
 	}
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#isNameValid(java.lang.String)
+     */
+    @Override
+    public boolean isNameValid(String fileName)
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getRecordId(java.lang.String)
+     */
+    @Override
+    public Integer getRecordId(String fileName)
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getName()
+     */
+    @Override
+    public String getTitle()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getRow(edu.ku.brc.specify.datamodel.Workbench, java.lang.String)
+     */
+    @Override
+    public WorkbenchRow getRow(Workbench workBench, String fileName)
+    {
+        return null;
+    }
 
 	
 }

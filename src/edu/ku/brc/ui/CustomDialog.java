@@ -32,15 +32,21 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -553,6 +559,15 @@ public class CustomDialog extends JDialog
     }
 
     /**
+     * Returns whether it was NOT cancelled.
+     * @return whether it was NOT cancelled
+     */
+    public boolean isNotCancelled()
+    {
+        return !isCancelled;
+    }
+
+    /**
      * @param text
      */
     public void setOkLabel(final String text)
@@ -732,4 +747,69 @@ public class CustomDialog extends JDialog
     {
         this.extraBtn = extraBtn;
     }
+    
+//    /**
+//     * @param titleKey
+//     * @param content
+//     * @return
+//     */
+//    public static CustomDialog createI18NDlg(final String titleKey, final JComponent content)
+//    {
+//        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+//        pb.add(content, (new CellConstraints().xy(1, 1)));
+//        pb.setDefaultDialogBorder();
+//        
+//        return new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString(titleKey), true, pb.getPanel());
+//    }
+//    
+//    /**
+//     * @param titleKey
+//     * @param model
+//     * @return
+//     */
+//    @SuppressWarnings({ "unchecked", "rawtypes" })
+//    public static CustomDialog createI18NDlg(final String titleKey, final JList list)
+//    {
+////        PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
+////        selectAllBtn   = createI18NButton("SELECTALL"); //$NON-NLS-1$
+////        deselectAllBtn = createI18NButton("DESELECTALL"); //$NON-NLS-1$
+////        btnPB.add(selectAllBtn,   cc.xy(2, 1));
+////        btnPB.add(deselectAllBtn, cc.xy(4, 1));
+////        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", (topMsg != null ? "p,2px," : "") + "p,2px,p,2px,p"));
+//
+//        JScrollPane  sb   = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//        PanelBuilder pb   = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+//        pb.add(sb, (new CellConstraints().xy(1, 1)));
+//        pb.setDefaultDialogBorder();
+//        
+//        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString(titleKey), true, pb.getPanel());
+//        dlg.createUI();
+//        dlg.getOkBtn().setEnabled(false);
+//        
+//        list.addListSelectionListener(new ListSelectionListener()
+//        {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e)
+//            {
+//                if (!e.getValueIsAdjusting())
+//                {
+//                    dlg.getOkBtn().setEnabled(!list.isSelectionEmpty());
+//                }
+//            }
+//        });
+//        
+//        list.addMouseListener(new MouseAdapter()
+//        {
+//            @Override
+//            public void mouseClicked(MouseEvent e)
+//            {
+//                if (e.getClickCount() == 2)
+//                {
+//                    dlg.getOkBtn().doClick();
+//                }
+//            }
+//        });
+//        
+//        return dlg;
+//    }
 }

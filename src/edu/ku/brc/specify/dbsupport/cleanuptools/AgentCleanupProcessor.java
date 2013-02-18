@@ -425,6 +425,7 @@ public class AgentCleanupProcessor
                        }
                    }*/
                    
+                   
                    MultipleRecordCleanupDlg mrcDlg = null;
                    try
                    {
@@ -464,6 +465,13 @@ public class AgentCleanupProcessor
                                MergeInfo       mainItem = mrcDlg.getMainMergedInfo();
                                List<MergeInfo> kidItems = mrcDlg.getKidsMergedInfo();
                                if (!cleanupMerges(Agent.getClassTableId(), mainItem, kidItems))
+                               {
+                                   String msg = String.format("There was an error cleaning up addresses for agent '%s'", fii.getValue().toString());
+                                   showProcessingMessage(msg);
+                                   log.error(msg);
+                                   isContinuing = false;
+                               }
+                               if (!deleteMerges(Agent.getClassTableId(), mainItem, kidItems))
                                {
                                    String msg = String.format("There was an error cleaning up addresses for agent '%s'", fii.getValue().toString());
                                    showProcessingMessage(msg);
@@ -576,6 +584,42 @@ public class AgentCleanupProcessor
                 totalUpdated++;
             }
         }
+        
+        // ZZZ 
+        
+//        DBTableInfo ti = mainItem.getTblInfo();
+//        for (MergeInfoItem mi : mainItem.getMergeFrom())
+//        {
+//            String sql = String.format("DELETE FROM %s WHERE %s = %d", ti.getName(), ti.getIdColumnName(), mi.getId());
+//            logSQL(sql);
+//            if (BasicSQLUtils.update(sql) != 1)
+//            {
+//                String msg = String.format("Error deleting 'merge from' record for %s (record id %d)", parentTI.getTitle(), mi.getId());
+//                showProcessingMessage(msg);
+//                log.error(msg);
+//                return false;
+//            }
+//        }
+        
+        //outputRows[2].append("Removed Address: "+addrStr+"<BR>");
+        //outputRows[2].append("Updated Address: "+getAddrStr(ai.id)+"<BR>");
+
+        return true;
+    }
+
+    /**
+     * @param parentTblId
+     * @param mainItem
+     * @param kidItems
+     * @return
+     */
+    private boolean deleteMerges(final int             parentTblId,
+                                  final MergeInfo       mainItem,
+                                  final List<MergeInfo> kidItems)
+    {
+        DBTableInfo parentTI = DBTableIdMgr.getInstance().getInfoById(parentTblId);
+        System.out.println("ParentTbl: "+parentTI.getTitle());
+        
         
         // ZZZ 
         

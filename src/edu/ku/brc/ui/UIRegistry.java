@@ -1412,6 +1412,7 @@ public class UIRegistry
                                          final int    iconOption)
     {
         // Custom button text
+        // NOTE: clicking the 'X' returns a -1
         Object[] options = { keyBtn1, keyBtn2 };
         
         return JOptionPane.showOptionDialog(getMostRecentWindow(), msg, 

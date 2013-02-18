@@ -610,6 +610,11 @@ public class ChooseFromListDlg<T> extends JDialog
         return isCancelled;
     }
 
+    public boolean isNotCancelled()
+    {
+        return !isCancelled;
+    }
+
     public void setOkLabel(final String text)
     {
         this.okLabel = text;

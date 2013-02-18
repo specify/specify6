@@ -13,11 +13,12 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
-
 import net.morphbank.mbsvc3.xml.Credentials;
 import net.morphbank.mbsvc3.xml.Request;
 import net.morphbank.mbsvc3.xml.XmlUtils;
+
+import org.apache.commons.io.FileUtils;
+
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.plugins.morphbank.CollectionObjectFieldMapper;

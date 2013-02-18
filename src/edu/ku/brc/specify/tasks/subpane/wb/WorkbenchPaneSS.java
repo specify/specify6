@@ -802,7 +802,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     });
 
             // now enable/disable the geo ref related buttons
-            String[] missingGeoRefFields = getMissingGeoRefFields();
+            String[] missingGeoRefFields = getMissingGeoRefLatLonFields();
             if (missingGeoRefFields.length > 0)
             {
                 convertGeoRefFormatBtn.setEnabled(false);
@@ -3089,7 +3089,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected boolean isTemplateBGCompatible()
     {
         // look for the locality fields
-        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+        int localityTableId = Locality.getClassTableId();
         if (workbench.getColumnIndex(localityTableId, "localityName") == -1 || // I18N
             workbench.getColumnIndex(localityTableId, "latitude1") == -1 ||
             workbench.getColumnIndex(localityTableId, "longitude1") == -1)
@@ -3098,51 +3098,61 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // look for the geography fields
-        int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
+        int geographyTableId = Geography.getClassTableId();
         if (workbench.getColumnIndex(geographyTableId, "Country") == -1 || // I18N
             workbench.getColumnIndex(geographyTableId, "State") == -1 ||
             workbench.getColumnIndex(geographyTableId, "County") == -1)
         {
             return false;
         }
-        
         return true;
     }
     
-    protected String[] getMissingButRequiredColumnsForBioGeomancer()
+    /**
+     * @param tableId
+     * @param fieldName
+     * @return
+     */
+    private String getTitleForField(final int tableId, final String fieldName)
+    {
+        String title = DBTableIdMgr.getInstance().getTitleForField(tableId, fieldName);
+        return StringUtils.isNotEmpty(title) ? title : fieldName;
+    }
+    
+    /**
+     * @param missingCols
+     * @param tblId
+     * @param fieldNames
+     */
+    private void checkForGeoFields(final List<String> missingCols, final int tblId, final String...fieldNames)
+    {
+        for (String fldName : fieldNames)
+        {
+            if (workbench.getColumnIndex(tblId, fldName) == -1)
+            {
+                missingCols.add(getTitleForField(tblId, fldName));
+            }
+        }
+    }
+    
+    /**
+     * @return
+     */
+    /**
+     * @param checkAllFields true checks all fields, false checks just Lat, Lon
+     * @return
+     */
+    protected String[] getMissingButRequiredColumnsForBioGeomancer(final boolean checkAllFields)
     {
         List<String> missingCols = new Vector<String>();
         
-        // check the locality fields
-        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        
-        if (workbench.getColumnIndex(localityTableId, "localityName") == -1)
+        if (checkAllFields)
         {
-            missingCols.add("Locality Name");  // i18n
-        }
-        if (workbench.getColumnIndex(localityTableId, "latitude1") == -1)
+            checkForGeoFields(missingCols, Locality.getClassTableId(),  "localityName", "latitude1", "longitude1");
+            checkForGeoFields(missingCols, Geography.getClassTableId(), "country", "state", "county");
+        } else
         {
-            missingCols.add("Latitude 1"); // i18n
-        }
-        if (workbench.getColumnIndex(localityTableId, "longitude1") == -1)
-        {
-            missingCols.add("Longitude 1"); // i18n
-        }
-        
-        // check the geography fields
-        int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
-
-        if (workbench.getColumnIndex(geographyTableId, "country") == -1)
-        {
-            missingCols.add("Country"); // i18n
-        }
-        if (workbench.getColumnIndex(geographyTableId, "state") == -1)
-        {
-            missingCols.add("State"); // i18n
-        }
-        if (workbench.getColumnIndex(geographyTableId, "county") == -1)
-        {
-            missingCols.add("County"); // i18n
+            checkForGeoFields(missingCols, Locality.getClassTableId(),  "latitude1", "longitude1");
         }
         
         // convert to a String[]  (toArray() converts to a Object[])
@@ -3155,30 +3165,23 @@ public class WorkbenchPaneSS extends BaseSubPane
         return reqdFields;
     }
     
-    protected String[] getMissingGeoRefFields()
+    /**
+     * @return
+     */
+    protected String[] getMissingButRequiredColumnsForBioGeomancer()
     {
-        List<String> missingCols = new Vector<String>();
-        
-        // check the locality fields
-        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        
-        if (workbench.getColumnIndex(localityTableId, "latitude1") == -1)
-        {
-            missingCols.add("Latitude 1"); // i18n
-        }
-        if (workbench.getColumnIndex(localityTableId, "longitude1") == -1)
-        {
-            missingCols.add("Longitude 1"); // i18n
-        }
-        
-        // convert to a String[]  (toArray() converts to a Object[])
-        String[] reqdFields = new String[missingCols.size()];
-        for (int i = 0; i < missingCols.size(); ++i)
-        {
-            String s = missingCols.get(i);
-            reqdFields[i] = s;
-        }
-        return reqdFields;
+        return getMissingButRequiredColumnsForBioGeomancer(true);
+    }
+    
+    /**
+     * @return
+     */
+    /**
+     * @return
+     */
+    protected String[] getMissingGeoRefLatLonFields()
+    {
+        return getMissingButRequiredColumnsForBioGeomancer(false);
     }
     
     /**
@@ -4394,7 +4397,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	{
     		toggleImageFrameBtn.setEnabled(enabled);
     	}
-    	boolean missingGeoRefFlds = getMissingGeoRefFields().length > 0;
+    	boolean missingGeoRefFlds = getMissingGeoRefLatLonFields().length > 0;
     	if (showMapBtn != null)
     	{
     		showMapBtn.setEnabled(enabled && !missingGeoRefFlds);

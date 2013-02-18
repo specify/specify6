@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.dbsupport.cleanuptools;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -42,6 +44,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -76,6 +79,7 @@ public class MultipleRecordPanel extends JPanel implements ResultSetControllerLi
     private boolean               isSingleRowIncluded  = false; 
     
     protected Vector<Object[]>    dataItems            = new Vector<Object[]>();
+    protected Vector<Boolean[]>   chosenItems          = new Vector<Boolean[]>();
     protected Vector<Boolean>     isSelected           = new Vector<Boolean>();
     protected JCheckBox[]         isSelChkBox          = new JCheckBox[] { null, null};
     protected boolean             ignoreSelections     = false;
@@ -104,6 +108,14 @@ public class MultipleRecordPanel extends JPanel implements ResultSetControllerLi
         this.dataItems = mrc.getDataItems();
         this.tblInfo   = mrc.getTblInfo();
         this.isParent  = mrc.isParent();
+        
+        
+        for (Object[] row : dataItems)
+        {
+            Boolean[] chosenRow = new Boolean[row.length];
+            for (int i=0;i<chosenRow.length;i++) chosenRow[i] = false;
+            chosenItems.add(chosenRow);
+        }
     }
     
     /**
@@ -234,6 +246,44 @@ public class MultipleRecordPanel extends JPanel implements ResultSetControllerLi
         model = new LocKidsTableModel();
         table = new JTable(model);
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        JCheckboxTableCellRenderer cellRenderer = new JCheckboxTableCellRenderer();
+        
+        DefaultCellEditor defRenderer = new DefaultCellEditor(new JCheckBox())
+        {
+            @Override
+            public Component getTableCellEditorComponent(JTable table,
+                                                         Object value,
+                                                         boolean isSelected,
+                                                         int row,
+                                                         int column)
+            {
+                JCheckBox cbx =  (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
+                System.out.println("Edit: "+value+"  "+row+"  col "+column+"  "+cbx.isSelected());
+                
+                Boolean[] isSelRow = chosenItems.get(row);
+                isSelRow[column] = !isSelRow[column];
+                cbx.setSelected(isSelRow[column]);
+
+                if (value instanceof Boolean || value == null)
+                {
+                    cbx.setSelected((Boolean)value);
+                    cbx.setText("");
+                } else if (value instanceof String)
+                {
+                    cbx.setText((String)value);
+                }
+                return cbx;
+            }
+            
+        };
+        
+        for (int i=0;i<table.getColumnModel().getColumnCount();i++)
+        {
+            table.getColumnModel().getColumn(i).setCellEditor(defRenderer);
+            table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+           
+        }
         //UIHelper.calcColumnWidths(table, 5); // 5 - is the number visible rows
         //UIHelper.autoResizeColWidth(table, model);
         UIHelper.setVisibleRowCount(table, 5);
@@ -471,6 +521,31 @@ public class MultipleRecordPanel extends JPanel implements ResultSetControllerLi
     {
     }
     
+    class JCheckboxTableCellRenderer extends JCheckBox implements TableCellRenderer
+    {
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column)
+        {
+            Boolean[] isSelRow = chosenItems.get(row);
+            //isSelRow[column] = !isSelRow[column];
+            setSelected(isSelRow[column]);
+            if (value instanceof Boolean)
+            {
+                setText("");
+            } else if (value instanceof String)
+            {
+                setText((String)value);
+            }
+            return this;
+        }
+        
+    };
+    //--------------------------------------------------------------------------
     class LocKidsTableModel extends DefaultTableModel
     {
         /* (non-Javadoc)
@@ -517,7 +592,7 @@ public class MultipleRecordPanel extends JPanel implements ResultSetControllerLi
         public boolean isCellEditable(int row, int column)
         {
             //System.out.println(String.format("%d %d  %s", row, column, (column < (mrc.isParent() ? 2 : 1) ? "Y" : "N")));
-            return column < (mrc.isParent() ? 2 : 1);
+            return true;//column < (mrc.isParent() ? 2 : 1);
         }
 
         /* (non-Javadoc)
@@ -535,67 +610,69 @@ public class MultipleRecordPanel extends JPanel implements ResultSetControllerLi
         @Override
         public void setValueAt(Object obj, int row, int column)
         {
-            System.out.println("isSingleRowIncluded: "+isSingleRowIncluded+"  "+mrc.isParent());
-            Object[] rowData = dataItems.get(row);
-            if (mrc.isParent())
-            {
-                Boolean value = (Boolean)obj;
-                if (value)
-                {
-                    if (column == 0)
-                    {
-                        for (int i=0;i<dataItems.size();i++)
-                        {
-                            dataItems.get(i)[0] = false;
-                        }
-                        Object[] rd = dataItems.get(row);
-                        rd[0] = true;
-                        rd[1] = false;
-                        
-                    } else if (column == 1)
-                    {
-                        Object[] rd = dataItems.get(row);
-                        if ((Boolean)rd[0])
-                        {
-                            rd[0] = false;
-                        }
-                        rd[1] = true;
-                    }
-                } else
-                {
-                    Object[] rd = dataItems.get(row);
-                    if (column == 0)
-                    {
-                        rd[0] = false;
-                    } else
-                    {
-                        rd[1] = false;
-                    }
-                }
-                
-            } else if (isSingleRowIncluded)
-            {
-                for (int i=0;i<dataItems.size();i++)
-                {
-                    dataItems.get(i)[0] = false;
-                }
-                dataItems.get(row)[0] = (Boolean)obj;
-            } else
-            {
-                rowData[column] = obj;
-            }
+            System.out.println(obj+"  "+row+"  col "+column);
             
-            
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    fireTableDataChanged();
-                    fillForm();
-                    notifyChangeListener();
-                }
-            });
+//            System.out.println("isSingleRowIncluded: "+isSingleRowIncluded+"  "+mrc.isParent());
+//            Object[] rowData = dataItems.get(row);
+//            if (mrc.isParent())
+//            {
+//                Boolean value = (Boolean)obj;
+//                if (value)
+//                {
+//                    if (column == 0)
+//                    {
+//                        for (int i=0;i<dataItems.size();i++)
+//                        {
+//                            dataItems.get(i)[0] = false;
+//                        }
+//                        Object[] rd = dataItems.get(row);
+//                        rd[0] = true;
+//                        rd[1] = false;
+//                        
+//                    } else if (column == 1)
+//                    {
+//                        Object[] rd = dataItems.get(row);
+//                        if ((Boolean)rd[0])
+//                        {
+//                            rd[0] = false;
+//                        }
+//                        rd[1] = true;
+//                    }
+//                } else
+//                {
+//                    Object[] rd = dataItems.get(row);
+//                    if (column == 0)
+//                    {
+//                        rd[0] = false;
+//                    } else
+//                    {
+//                        rd[1] = false;
+//                    }
+//                }
+//                
+//            } else if (isSingleRowIncluded)
+//            {
+//                for (int i=0;i<dataItems.size();i++)
+//                {
+//                    dataItems.get(i)[0] = false;
+//                }
+//                dataItems.get(row)[0] = (Boolean)obj;
+//            } else
+//            {
+//                rowData[column] = obj;
+//            }
+//            
+//            
+//            SwingUtilities.invokeLater(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    fireTableDataChanged();
+//                    fillForm();
+//                    notifyChangeListener();
+//                }
+//            });
 
         }
     }
