@@ -291,7 +291,7 @@ public class BatchAttachFiles
         final List<FileNameParserIFace>             items = FileNameParserFactory.getList();
         String title = getResourceString("BatchAttachFiles.CHOOSE_DEST");
         String msg   = getResourceString("BatchAttachFiles.CHOOSE_DESTMSG");
-        ChooseFromListDlg<FileNameParserIFace> dlg = new ChooseFromListDlg<>((Frame)getMostRecentWindow(), title, msg, ChooseFromListDlg.OKCANCELHELP, items);
+        ChooseFromListDlg<FileNameParserIFace> dlg = new ChooseFromListDlg<FileNameParserIFace>((Frame)getMostRecentWindow(), title, msg, ChooseFromListDlg.OKCANCELHELP, items);
         dlg.setHelpContext("");
         
         UIHelper.centerAndShow(dlg);
@@ -375,10 +375,11 @@ public class BatchAttachFiles
                 {
                     String title = "title";
                     FileDialog dialog = new FileDialog((Frame)null, title, FileDialog.LOAD);
-                    dialog.setMultipleMode(true);
+                    //dialog.setMultipleMode(true);
+                    
                     // FILE FILTER!!!!!!!!!
                     UIHelper.centerAndShow(dialog);
-                    File[] selectedFiles = dialog.getFiles();
+                    File[] selectedFiles = null;//dialog.getFiles();
                     if (selectedFiles == null || selectedFiles.length == 0)
                     {
                         return;
