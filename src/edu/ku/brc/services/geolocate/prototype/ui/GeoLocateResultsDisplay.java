@@ -96,7 +96,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.markers.BasicMarker;
-import gov.nasa.worldwind.view.OrbitView;
+//ZZZ import gov.nasa.worldwind.view.OrbitView;
 
 /**
  * A UI panel for use in displaying the results of a GEOLocate web service query.
@@ -1215,24 +1215,25 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                 lastClickPos = wwPanel.getWorld().getCurrentPosition();
                 
                 // There is a picked object with a position
-                if (wwPanel.getWorld().getView() instanceof OrbitView)
-                {
-                    if (event.getTopObject().getClass().equals(BasicMarker.class))
-                    {
-                        int inx = wwPanel.getMarkers().indexOf(event.getTopObject());
-                        if (inx > -1)
-                        {
-                            resultsTable.setRowSelectionInterval(inx, inx);
-                        }
-                    } else if (event.getTopObject().getClass().equals(GlobeAnnotation.class))
-                    {
-                        int inx = wwPanel.getAnnotations().indexOf(event.getTopObject());
-                        if (inx > -1)
-                        {
-                            resultsTable.setRowSelectionInterval(inx, inx);
-                        }
-                    }
-                }
+// ZZZ                 
+//                if (wwPanel.getWorld().getView() instanceof OrbitView)
+//                {
+//                    if (event.getTopObject().getClass().equals(BasicMarker.class))
+//                    {
+//                        int inx = wwPanel.getMarkers().indexOf(event.getTopObject());
+//                        if (inx > -1)
+//                        {
+//                            resultsTable.setRowSelectionInterval(inx, inx);
+//                        }
+//                    } else if (event.getTopObject().getClass().equals(GlobeAnnotation.class))
+//                    {
+//                        int inx = wwPanel.getAnnotations().indexOf(event.getTopObject());
+//                        if (inx > -1)
+//                        {
+//                            resultsTable.setRowSelectionInterval(inx, inx);
+//                        }
+//                    }
+//                }
             }
         }
     }

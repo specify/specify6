@@ -23,24 +23,29 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.util.LatLonConverter.convertIntToFORMAT;
 import static edu.ku.brc.util.LatLonConverter.ensureFormattedString;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.tasks.subpane.lm.LatLonPlacemark;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -48,9 +53,14 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
 import edu.ku.brc.util.LatLonConverter.LATLON;
+import gov.nasa.worldwind.Configuration;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 
 /**
  * Implementation of a Google Earth Export plugin for the form system.
@@ -65,7 +75,7 @@ import gov.nasa.worldwind.geom.Position;
 public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implements SelectListener
 {
     protected Position       lastClickPos  = null;
-    protected WorldWindPanel wwPanel       = new WorldWindPanel();
+    protected WorldWindPanel wwPanel;
     protected LatLonPoint    latLonPnt     = null;
     
     protected  CustomDialog  worldWindDlg  = null;
@@ -76,6 +86,10 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     public LocalityWorldWindPlugin()
     {
         super();
+        
+        wwPanel = new WorldWindPanel(false);
+        wwPanel.setPreferredSize(new Dimension(900, 700));
+        wwPanel.setZoomInMeters(600000.0);
     }
     
     /* (non-Javadoc)
@@ -84,7 +98,7 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     @Override
     protected void doButtonAction()
     {
-        List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
+        final List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
         Pair<BigDecimal, BigDecimal> llPair = latLonPlugin.getLatLon();
         
         if (latLonPlugin != null && llPair != null && llPair.first != null && llPair.second != null)
@@ -180,8 +194,40 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
         
         if (items.size() > 0)
         {
-            wwPanel.placeMarkers(items, 0);
+            //wwPanel.placeMarkers(items, 0);
         }
+        
+//        JFrame frame = new JFrame();
+//        frame.setContentPane(wwPanel);
+//        frame.setSize(900, 700);
+//        frame.setVisible(true);
+        
+        SwingWorker worker = null;
+        wwPanel.reset();
+        if (items.size() > 0)
+        {
+            worker = new SwingWorker()
+            {
+                @Override
+                public Object construct()
+                {
+                    try
+                    {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {}
+                    return null;
+                }
+    
+                @Override
+                public void finished()
+                {
+                    wwPanel.placeMarkers(items, 0);
+                    wwPanel.flyToMarker(0);
+                    super.finished();
+                }
+            };
+        }
+
         
         if (worldWindDlg == null)
         {
@@ -193,6 +239,10 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
             worldWindDlg.setSize(900, 700);
         }
         
+        if (worker != null)
+        {
+            worker.start();
+        }
         worldWindDlg.setVisible(true);
         
         if (!worldWindDlg.isCancelled() && locality != null && latLonPlugin != null && latLonPnt != null)

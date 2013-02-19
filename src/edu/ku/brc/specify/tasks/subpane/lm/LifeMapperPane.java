@@ -672,7 +672,6 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             { 
                 BasicMarkerAttributes bmAttrs = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.CONE, 1d, 3, 3);
                 wwPanel.placeMarkers(coPoints, true, false, 0, bmAttrs, false);
-                
             }
         } 
         catch (SQLException ex)

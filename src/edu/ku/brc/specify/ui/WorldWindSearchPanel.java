@@ -67,7 +67,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.examples.LineBuilder;
+// ZZZ import gov.nasa.worldwind.examples.LineBuilder;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.MarkerLayer;
@@ -75,8 +75,8 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.render.markers.BasicMarker;
-import gov.nasa.worldwind.util.GeometryMath;
-import gov.nasa.worldwind.view.OrbitView;
+//ZZZ import gov.nasa.worldwind.util.GeometryMath;
+//ZZZ import gov.nasa.worldwind.view.OrbitView;
 
 /**
  * @author rods
@@ -131,7 +131,7 @@ public class WorldWindSearchPanel extends JPanel
     // Map Selection
     protected Position              lastClickPos      = null;
     
-    protected LineBuilder           lineBuilder;
+ // ZZZ protected LineBuilder           lineBuilder;
     protected RenderableLayer       lineLayer;
     protected Polyline              polyline = new Polyline();
     
@@ -258,7 +258,7 @@ public class WorldWindSearchPanel extends JPanel
         
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
 
-        lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
+     // ZZZ lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
         rightPB.add(wwPanel, cc.xy(1, 1)); y += 2;
         
         polyline.setAntiAliasHint(Polyline.ANTIALIAS_NICEST);
@@ -332,7 +332,7 @@ public class WorldWindSearchPanel extends JPanel
                 searchBtn.setEnabled(false);
                 endBtn.setEnabled(true);
                 startBtn.setEnabled(false);
-                lineBuilder.setArmed(true);
+             // ZZZ lineBuilder.setArmed(true);
             }
         });
         
@@ -351,7 +351,7 @@ public class WorldWindSearchPanel extends JPanel
                 //polygonWWPoints.add(polygonWWPoints.get(0));
                 //createPolyline();
                 
-                lineBuilder.setArmed(false);
+             // ZZZ lineBuilder.setArmed(false);
 
             }
         });
@@ -464,7 +464,7 @@ public class WorldWindSearchPanel extends JPanel
             polyline.setFollowTerrain(true);
             
             lineLayer   = new RenderableLayer();
-            lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
+         // ZZZ lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
             //WorldWindPanel.insertAfterPlacenames(wwPanel.getWorld(), lineLayer);
         }
         
@@ -588,24 +588,26 @@ public class WorldWindSearchPanel extends JPanel
             double lon = ((BigDecimal)row[2]).doubleValue();
             
             Position pos = Position.fromDegrees(lat, lon, 0.0);
-            if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
-            {
-                LatLonPoint llp = new LatLonPoint((Integer)row[0], lat, lon);
-                String title;
-                if (row[3] != null)
-                {
-                    title = (fldFmt != null ? fldFmt.formatToUI(row[3]) : row[3]).toString();
-                } else
-                {
-                    title = "N/A";
-                }
-                llp.setTitle(title);
-                llp.setIndex(index++);
-                availPoints.add(llp);
-                markers.add(llp);
-                model.addElement(llp);
-                topIdHash.add(llp.getLocId());
-            }
+            
+            // ZZZ
+//            if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
+//            {
+//                LatLonPoint llp = new LatLonPoint((Integer)row[0], lat, lon);
+//                String title;
+//                if (row[3] != null)
+//                {
+//                    title = (fldFmt != null ? fldFmt.formatToUI(row[3]) : row[3]).toString();
+//                } else
+//                {
+//                    title = "N/A";
+//                }
+//                llp.setTitle(title);
+//                llp.setIndex(index++);
+//                availPoints.add(llp);
+//                markers.add(llp);
+//                model.addElement(llp);
+//                topIdHash.add(llp.getLocId());
+//            }
         }
         
         if (markers.size() > 0)
@@ -678,24 +680,25 @@ public class WorldWindSearchPanel extends JPanel
                         lastClickPos = wwPanel.getWorld().getCurrentPosition();
                         
                         // There is a picked object with a position
-                        if (wwPanel.getWorld().getView() instanceof OrbitView)
-                        {
-                            if (event.getTopObject().getClass().equals(BasicMarker.class))
-                            {
-                                int inx = wwPanel.getMarkers().indexOf(event.getTopObject());
-                                if (inx > -1)
-                                {
-                                    //resultsTable.setRowSelectionInterval(inx, inx);
-                                }
-                            } else if (event.getTopObject().getClass().equals(GlobeAnnotation.class))
-                            {
-                                int inx = wwPanel.getAnnotations().indexOf(event.getTopObject());
-                                if (inx > -1)
-                                {
-                                    //resultsTable.setRowSelectionInterval(inx, inx);
-                                }
-                            }
-                        }
+// ZZZ                        
+//                        if (wwPanel.getWorld().getView() instanceof OrbitView)
+//                        {
+//                            if (event.getTopObject().getClass().equals(BasicMarker.class))
+//                            {
+//                                int inx = wwPanel.getMarkers().indexOf(event.getTopObject());
+//                                if (inx > -1)
+//                                {
+//                                    //resultsTable.setRowSelectionInterval(inx, inx);
+//                                }
+//                            } else if (event.getTopObject().getClass().equals(GlobeAnnotation.class))
+//                            {
+//                                int inx = wwPanel.getAnnotations().indexOf(event.getTopObject());
+//                                if (inx > -1)
+//                                {
+//                                    //resultsTable.setRowSelectionInterval(inx, inx);
+//                                }
+//                            }
+//                        }
                     }
                 }
             }
@@ -718,14 +721,15 @@ public class WorldWindSearchPanel extends JPanel
                     @Override
                     public void run()
                     {
-                        if (!lineBuilder.isArmed())
-                        {
-                            Position pos = wwPanel.getWorld().getCurrentPosition();
-                            if (!pos.equals(lastClickPos))
-                            {
-                                
-                            } 
-                        }
+// ZZZ                        
+//                        if (!lineBuilder.isArmed())
+//                        {
+//                            Position pos = wwPanel.getWorld().getCurrentPosition();
+//                            if (!pos.equals(lastClickPos))
+//                            {
+//                                
+//                            } 
+//                        }
                     }
                 });
             }

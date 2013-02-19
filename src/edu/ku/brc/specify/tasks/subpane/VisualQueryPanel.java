@@ -82,13 +82,13 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
-import gov.nasa.worldwind.examples.LineBuilder;
+//ZZZ import gov.nasa.worldwind.examples.LineBuilder;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Polyline;
-import gov.nasa.worldwind.util.GeometryMath;
+//ZZZ import gov.nasa.worldwind.util.GeometryMath;
 
 /**
  * @author rods
@@ -144,7 +144,7 @@ public class VisualQueryPanel extends BaseSubPane
     // Map Selection
     protected Position              lastClickPos      = null;
     
-    protected LineBuilder           lineBuilder;
+ // ZZZ protected LineBuilder           lineBuilder;
     protected RenderableLayer       lineLayer;
     protected Polyline              polyline = new Polyline();
     
@@ -283,7 +283,7 @@ public class VisualQueryPanel extends BaseSubPane
         
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
 
-        lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
+     // ZZZ lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
         rightPB.add(wwPanel, cc.xy(1, 1)); y += 2;
         
         polyline.setAntiAliasHint(Polyline.ANTIALIAS_NICEST);
@@ -394,7 +394,7 @@ public class VisualQueryPanel extends BaseSubPane
                 searchBtn.setEnabled(false);
                 endBtn.setEnabled(true);
                 startBtn.setEnabled(false);
-                lineBuilder.setArmed(true);
+             // ZZZ lineBuilder.setArmed(true);
             }
         });
         
@@ -414,7 +414,7 @@ public class VisualQueryPanel extends BaseSubPane
                 //polygonWWPoints.add(polygonWWPoints.get(0));
                 //createPolyline();
                 
-                lineBuilder.setArmed(false);
+             // ZZZ lineBuilder.setArmed(false);
 
             }
         });
@@ -535,7 +535,7 @@ public class VisualQueryPanel extends BaseSubPane
             polyline.setFollowTerrain(true);
             
             lineLayer   = new RenderableLayer();
-            lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
+         // ZZZ lineBuilder = new LineBuilder(wwPanel.getWorld(), lineLayer, polyline);
             //WorldWindPanel.insertAfterPlacenames(wwPanel.getWorld(), lineLayer);
         }
         
@@ -637,30 +637,31 @@ public class VisualQueryPanel extends BaseSubPane
                             double lon = rs.getBigDecimal(3).doubleValue();
                             
                             Position pos = Position.fromDegrees(lat, lon, 0.0);
-                            if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
-                            {
-                                LatLonPoint llp = new LatLonPoint(rs.getInt(1), lat, lon);
-                                String title = rs.getString(4);
-                                if (title != null)
-                                {
-                                    title = (fldFmt != null ? fldFmt.formatToUI(title) :title).toString();
-                                } else
-                                {
-                                    title = "N/A";
-                                }
-                                llp.setTitle(title);
-                                llp.setIndex(index++);
-                                availPoints.add(llp);
-                                markers.add(llp);
-                                topIdHash.add(llp.getLocId());
-                                System.out.println(index+" / "+currCnt+" In:      "+lat+",  "+lon);
-                                pmStr.append(String.format(placeMark, "In: ",index, currCnt, lon, lat));
-                                
-                            } else
-                            {
-                                System.out.println(index+" / "+currCnt+" Tossing: "+lat+",  "+lon);
-                                pmStr.append(String.format(placeMark, "Tossing: ", index, currCnt, lon, lat));
-                            }
+// ZZZ                            
+//                            if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
+//                            {
+//                                LatLonPoint llp = new LatLonPoint(rs.getInt(1), lat, lon);
+//                                String title = rs.getString(4);
+//                                if (title != null)
+//                                {
+//                                    title = (fldFmt != null ? fldFmt.formatToUI(title) :title).toString();
+//                                } else
+//                                {
+//                                    title = "N/A";
+//                                }
+//                                llp.setTitle(title);
+//                                llp.setIndex(index++);
+//                                availPoints.add(llp);
+//                                markers.add(llp);
+//                                topIdHash.add(llp.getLocId());
+//                                System.out.println(index+" / "+currCnt+" In:      "+lat+",  "+lon);
+//                                pmStr.append(String.format(placeMark, "In: ",index, currCnt, lon, lat));
+//                                
+//                            } else
+//                            {
+//                                System.out.println(index+" / "+currCnt+" Tossing: "+lat+",  "+lon);
+//                                pmStr.append(String.format(placeMark, "Tossing: ", index, currCnt, lon, lat));
+//                            }
                         }
                         currCnt++;
                         if (currCnt % 100 == 0)

@@ -42,7 +42,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Polyline;
-import gov.nasa.worldwind.util.GeometryMath;
+//ZZZ import gov.nasa.worldwind.util.GeometryMath;
 
 /**
  * @author rods
@@ -187,10 +187,11 @@ public class LocalityGeoBoundsChecker2
         Position pos = Position.fromDegrees(lat, lon, 0.0);
         for (Polyline polygon : stateInfo.polygons)
         {
-            if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
-            {
-                return true;
-            }
+// ZZZ            
+//            if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
+//            {
+//                return true;
+//            }
         }
         return false;
     }
@@ -440,11 +441,12 @@ public class LocalityGeoBoundsChecker2
             Position pos = Position.fromDegrees(lat, lon, 0.0);
             for (Polyline p : polygons)
             {
-                if (GeometryMath.isLocationInside(pos, p.getPositions()))
-                {
-                    System.out.println("Found: "+ name);
-                    return true;
-                }
+// ZZZ                
+//                if (GeometryMath.isLocationInside(pos, p.getPositions()))
+//                {
+//                    System.out.println("Found: "+ name);
+//                    return true;
+//                }
             }
             return false;
         }
@@ -458,7 +460,7 @@ public class LocalityGeoBoundsChecker2
         LocalityGeoBoundsChecker2 lgbc = new LocalityGeoBoundsChecker2();
         lgbc.load();
         
-        // 38.9717¡ N, 95.2350¡ W
+        // 38.9717ï¿½ N, 95.2350ï¿½ W
         double lat = 38.9717;
         double lon = -95.2350;
         lgbc.getState(lat, lon);

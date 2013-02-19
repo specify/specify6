@@ -6,15 +6,14 @@ All Rights Reserved.
 */
 package edu.ku.brc.specify.ui;
 
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.util.Logging;
-import gov.nasa.worldwind.view.FlyToOrbitViewStateIterator;
-import gov.nasa.worldwind.view.OrbitView;
+//ZZZ import gov.nasa.worldwind.view.FlyToOrbitViewStateIterator;
+//ZZZ import gov.nasa.worldwind.view.OrbitView;
 
 /**
  * Handles view 'fly to' on left clicked picked objects with a position.
@@ -68,7 +67,7 @@ public class ClickAndGoSelectListener  implements SelectListener
      *
      * @param event the SelectEvent
      */
-    public void selected(SelectEvent event)
+/*    public void selected(SelectEvent event)
     {
         if (event.getEventAction().equals(SelectEvent.LEFT_CLICK))
         {
@@ -77,25 +76,53 @@ public class ClickAndGoSelectListener  implements SelectListener
             {
                 //System.err.println(event.getTopObject().getClass());
                 // There is a picked object with a position
-                if (event.getTopObject().getClass().equals(pickedObjClass)
-                        && this.wwd.getView() instanceof OrbitView)
+// ZZZ                
+//                if (event.getTopObject().getClass().equals(pickedObjClass)
+//                        && this.wwd.getView() instanceof OrbitView)
+//                {
+//                    // This object class we handle and we have an orbit view
+//                    Position targetPos = event.getTopPickedObject().getPosition();
+//                    OrbitView view = (OrbitView)this.wwd.getView();
+//                    Globe globe = this.wwd.getModel().getGlobe();
+//                    if(globe != null && view != null)
+//                    {
+//                        // Use a PanToIterator to iterate view to target position
+//                        view.applyStateIterator(FlyToOrbitViewStateIterator.createPanToIterator(
+//                            // The elevation component of 'targetPos' here is not the surface elevation,
+//                            // so we ignore it when specifying the view center position.
+//                            view, globe, new Position(targetPos, 0),
+//                            Angle.ZERO, Angle.ZERO, targetPos.getElevation() + this.elevationOffset));
+//                    }
+//                }
+            }
+        }
+    }*/
+    
+    public void selected(SelectEvent event)
+    {
+        if (event.getEventAction().equals(SelectEvent.LEFT_CLICK))
+        {
+            // This is a left click
+            if (event.hasObjects() && event.getTopPickedObject().hasPosition())
+            {
+                // There is a picked object with a position
+                if (event.getTopObject().getClass().equals(pickedObjClass))
                 {
                     // This object class we handle and we have an orbit view
                     Position targetPos = event.getTopPickedObject().getPosition();
-                    OrbitView view = (OrbitView)this.wwd.getView();
-                    Globe globe = this.wwd.getModel().getGlobe();
-                    if(globe != null && view != null)
-                    {
+                    View view = this.wwd.getView();
                         // Use a PanToIterator to iterate view to target position
-                        view.applyStateIterator(FlyToOrbitViewStateIterator.createPanToIterator(
+                    if(view != null)
+                    {
                             // The elevation component of 'targetPos' here is not the surface elevation,
                             // so we ignore it when specifying the view center position.
-                            view, globe, new Position(targetPos, 0),
-                            Angle.ZERO, Angle.ZERO, targetPos.getElevation() + this.elevationOffset));
+                        view.goTo(new Position(targetPos, 0),
+                            targetPos.getElevation() + this.elevationOffset);
                     }
                 }
             }
         }
     }
+    
 
 }

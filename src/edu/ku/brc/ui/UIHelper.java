@@ -93,7 +93,6 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.media.opengl.GLCanvas;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -3846,85 +3845,87 @@ public final class UIHelper
             return true;
         }
         
-        try 
-        {
-            SwingUtilities.invokeLater(new Runnable() 
-            {
-                @Override
-                public void run() 
-                {
-                    Boolean hasOpenGL = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
-                    if (hasOpenGL == null)
-                    {
-                        final JDialog frame = new JDialog();
-                        try
-                        {
-                            GLCanvas canvas = new GLCanvas();
-                            
-                            frame.getContentPane().add(canvas);
-                            
-                            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-                            if (topFrame != null)
-                            {
-                                Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
-                                frame.setBounds(screenRect.width, screenRect.height+50, 50, 50);
-                                
-                            } else
-                            {
-                                frame.setBounds(-100, -100, 50, 50);
-                            }
-                            frame.setVisible(true);
-                            
-                            hasOpenGL = true;
-                            
-                        } catch (javax.media.opengl.GLException ex)
-                        {
-                            hasOpenGL = false;
-                            
-                        } catch (Exception ex)
-                        {
-                            hasOpenGL = false;
-                            
-                        } finally
-                        {
-                            if (hasOpenGL == null)
-                            {
-                                hasOpenGL = UIHelper.isMacOS();
-                            }
-                            localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL);
-                            if (initialUseWordWind == null || (initialHasOpenGL != null && hasOpenGL != initialHasOpenGL))
-                            {
-                                localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    
-                            }
-                            
-                            SwingUtilities.invokeLater(new Runnable() 
-                            {
-                                @Override
-                                public void run() 
-                                {
-                                    if (frame != null)
-                                    {
-                                        frame.setVisible(false);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-                
-            });
-        } catch (java.lang.Error e) 
-        {
-            e.printStackTrace();
-            
-            localPrefs.putBoolean(HAS_OPENGL_PREF, false);
-            if (initialUseWordWind == null || (initialHasOpenGL != null && initialHasOpenGL))
-            {
-                localPrefs.putBoolean(USE_WORLDWIND, false);    
-            }
-        }
-
-        return localPrefs.getBoolean(HAS_OPENGL_PREF, false);  
+//        try 
+//        {
+//            SwingUtilities.invokeLater(new Runnable() 
+//            {
+//                @Override
+//                public void run() 
+//                {
+//                    Boolean hasOpenGL = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
+//                    if (hasOpenGL == null)
+//                    {
+//                        final JDialog frame = new JDialog();
+//                        try
+//                        {
+//                            GLCanvas canvas = new GLCanvas();
+//                            
+//                            frame.getContentPane().add(canvas);
+//                            
+//                            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+//                            if (topFrame != null)
+//                            {
+//                                Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
+//                                frame.setBounds(screenRect.width, screenRect.height+50, 50, 50);
+//                                
+//                            } else
+//                            {
+//                                frame.setBounds(-100, -100, 50, 50);
+//                            }
+//                            frame.setVisible(true);
+//                            
+//                            hasOpenGL = true;
+//                            
+//                        } catch (javax.media.opengl.GLException ex)
+//                        {
+//                            hasOpenGL = false;
+//                            
+//                        } catch (Exception ex)
+//                        {
+//                            hasOpenGL = false;
+//                            
+//                        } finally
+//                        {
+//                            if (hasOpenGL == null)
+//                            {
+//                                hasOpenGL = UIHelper.isMacOS();
+//                            }
+//                            localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL);
+//                            if (initialUseWordWind == null || (initialHasOpenGL != null && hasOpenGL != initialHasOpenGL))
+//                            {
+//                                localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    
+//                            }
+//                            
+//                            SwingUtilities.invokeLater(new Runnable() 
+//                            {
+//                                @Override
+//                                public void run() 
+//                                {
+//                                    if (frame != null)
+//                                    {
+//                                        frame.setVisible(false);
+//                                    }
+//                                }
+//                            });
+//                        }
+//                    }
+//                }
+//                
+//            });
+//        } catch (java.lang.Error e) 
+//        {
+//            e.printStackTrace();
+//            
+//            localPrefs.putBoolean(HAS_OPENGL_PREF, false);
+//            if (initialUseWordWind == null || (initialHasOpenGL != null && initialHasOpenGL))
+//            {
+//                localPrefs.putBoolean(USE_WORLDWIND, false);    
+//            }
+//        }
+//
+//        return localPrefs.getBoolean(HAS_OPENGL_PREF, false);  
+        
+        return localPrefs.getBoolean(HAS_OPENGL_PREF, true);  
     }
     
     /**

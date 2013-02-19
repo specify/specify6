@@ -21,13 +21,13 @@ package edu.ku.brc.specify.ui;
 
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.util.Pair;
+import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.examples.GazetteerPanel;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
@@ -49,8 +49,6 @@ import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.util.StatusBar;
-import gov.nasa.worldwind.view.FlyToOrbitViewStateIterator;
-import gov.nasa.worldwind.view.OrbitView;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -61,6 +59,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLEventListener;
 import javax.swing.JPanel;
 
 /**
@@ -89,6 +89,13 @@ public class WorldWindPanel extends JPanel
     protected BasicMarkerAttributes      markerAttrs;
     protected double                     zoomInMeters = 20000.0;
 
+    static {
+        Configuration.setValue(AVKey.INITIAL_LATITUDE, 38.9581);
+        Configuration.setValue(AVKey.INITIAL_LONGITUDE, -95.2478);
+        Configuration.setValue(AVKey.INITIAL_ALTITUDE, 60000);
+        Configuration.setValue(AVKey.INITIAL_HEADING, 27);
+        //Configuration.setValue(AVKey.INITIAL_PITCH
+    }
     /**
      * @throws HeadlessException
      */
@@ -118,6 +125,7 @@ public class WorldWindPanel extends JPanel
             try
             {
                 world = new WorldWindowGLCanvas();
+                
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -225,25 +233,26 @@ public class WorldWindPanel extends JPanel
        
        add(world, BorderLayout.CENTER);
        
-       if (includeGazetter)
-       {
-            try
-            {
-               add(new GazetteerPanel(world, null), BorderLayout.NORTH);
-               
-            } catch (IllegalAccessException e)
-            {
-                e.printStackTrace();
-                
-            } catch (InstantiationException e)
-            {
-                e.printStackTrace();
-                
-            } catch (ClassNotFoundException e)
-            {
-                e.printStackTrace();
-            }
-       }
+// ZZZ       
+//       if (includeGazetter)
+//       {
+//            try
+//            {
+//               add(new GazetteerPanel(world, null), BorderLayout.NORTH);
+//               
+//            } catch (IllegalAccessException e)
+//            {
+//                e.printStackTrace();
+//                
+//            } catch (InstantiationException e)
+//            {
+//                e.printStackTrace();
+//                
+//            } catch (ClassNotFoundException e)
+//            {
+//                e.printStackTrace();
+//            }
+//       }
     }
     
     /**
@@ -379,7 +388,8 @@ public class WorldWindPanel extends JPanel
         if (markerIndex > -1 && markerIndex < markers.size())
         {
             Marker marker = markers.get(markerIndex);
-            flyTo(marker.getPosition().getLatLon());
+            
+            flyTo(marker.getPosition());
         }
     }
 
@@ -574,18 +584,25 @@ public class WorldWindPanel extends JPanel
      */
     public void flyTo (final LatLon latlon) 
     {
-       Position pos = new Position(latlon.latitude, latlon.longitude, 3e3);
+       //Position pos = new Position(latlon.latitude, latlon.longitude, 3e3);
        View view       = world.getView();
-       Globe globe = world.getModel().getGlobe();
+       //Globe globe = world.getModel().getGlobe();
+       
+       LatLon latLon = LatLon.fromDegrees(latlon.latitude.degrees, latlon.longitude.degrees);
+       
+       //double distance = view.getCenterPoint().distanceTo3(view.getEyePoint());
+       view.goTo(new Position(latLon, 0), zoomInMeters);
+
    
-       view.applyStateIterator(FlyToOrbitViewStateIterator.createPanToIterator(
-                                       (OrbitView)view
-                                       , globe
-                                       , pos          // bbox
-                                       , Angle.ZERO   // Heading
-                                       , Angle.ZERO   // Pitch
-                                       , zoomInMeters )        // Altitude/Zoom (m)
-                                       );
+// ZZZ       
+//       view.applyStateIterator(FlyToOrbitViewStateIterator.createPanToIterator(
+//                                       (OrbitView)view
+//                                       , globe
+//                                       , pos          // bbox
+//                                       , Angle.ZERO   // Heading
+//                                       , Angle.ZERO   // Pitch
+//                                       , zoomInMeters )        // Altitude/Zoom (m)
+//                                       );
     }
 
 }
