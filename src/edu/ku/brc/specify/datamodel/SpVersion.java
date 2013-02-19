@@ -51,6 +51,7 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
     protected String            appName;
     protected String            appVersion;
     protected String            schemaVersion;
+    protected String			workbenchSchemaVersion;
     
     protected Boolean           isDBClosed;
     protected String            dbClosedBy;
@@ -74,13 +75,14 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        spVersionId    = null;
-        appName        = null;
-        appVersion     = null;
-        schemaVersion  = null;
+        spVersionId    			= null;
+        appName        			= null;
+        appVersion     			= null;
+        schemaVersion  			= null;
+        workbenchSchemaVersion 	= null;
         
-        isDBClosed     = null;
-        dbClosedBy     = null;
+        isDBClosed     			= null;
+        dbClosedBy     			= null;
     }
     // End Initializer
 
@@ -169,6 +171,24 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
     public void setSchemaVersion(String schemaVersion)
     {
         this.schemaVersion = schemaVersion;
+    }
+
+
+    /**
+     * @return the workbenchSchemaVersion
+     */
+    @Column(name = "WorkbenchSchemaVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    public String getWorkbenchSchemaVersion()
+    {
+        return workbenchSchemaVersion;
+    }
+
+    /**
+     * @param workbenchSchemaVersion the workbenchSchemaVersion to set
+     */
+    public void setWorkbenchSchemaVersion(String workbenchSchemaVersion)
+    {
+        this.workbenchSchemaVersion = workbenchSchemaVersion;
     }
 
 
