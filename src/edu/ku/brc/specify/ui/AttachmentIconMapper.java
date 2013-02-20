@@ -107,7 +107,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
         boolean doGen = true;
         synchronized (thumbGenStarted)
         {
-            if (thumb == null || thumbGenStarted.contains(attatchment))
+            if (thumb != null || thumbGenStarted.contains(attatchment))
             {
                 doGen = false;
             }
@@ -149,7 +149,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                     if (thumbFile != null)
                     {
                         ImageIcon icon = new ImageIcon(thumbFile.getAbsolutePath());
-                        icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
+                        //icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
                         log.debug("Caching thumb for " + attatchment.getOrigFilename());
                         thumbnailCache.put(attatchment, icon);
                     }

@@ -59,6 +59,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -83,7 +84,8 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     protected static int[]  TABLE_IDS = {Attachment.getClassTableId(), CollectionObject.getClassTableId(), Taxon.getClassTableId(), 
                                          Geography.getClassTableId(), CollectingEvent.getClassTableId(), LithoStrat.getClassTableId(), 
                                          Locality.getClassTableId(), Agent.getClassTableId(), ReferenceWork.getClassTableId(), 
-                                         Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), };
+                                         Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), 
+                                         Collection.getClassTableId(), Institution.getClassTableId(), };
     
     protected String       I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
 
@@ -98,7 +100,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#isReady()
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#isReady()
      */
     @Override
     public boolean isReady()
@@ -107,7 +109,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#getErrorMsg()
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#getErrorMsg()
      */
     @Override
     public String getErrorMsg()
@@ -116,7 +118,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#reset()
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#reset()
      */
     @Override
     public void reset()
@@ -124,7 +126,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.CollectionObjGUIDGenFactory#getGUID(java.lang.String)
+     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#createGUID(edu.ku.brc.af.core.GenericGUIDGeneratorFactory.CATEGORY_TYPE, java.lang.String)
      */
     @Override
     public String createGUID(final CATEGORY_TYPE category, final String id)
@@ -492,6 +494,9 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         this.frame = frame;
     }
 
+    /**
+     *
+     */
     protected static class GUIDWorker extends javax.swing.SwingWorker<Integer, Integer> implements PropertyChangeListener
     {
         /* (non-Javadoc)
@@ -515,6 +520,4 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
             super.done();
         }
     }
-
-    
 }

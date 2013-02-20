@@ -66,7 +66,8 @@ public class AttachmentUtils
         mimeMap.addMimeTypes("image/jpeg   jpeg");
         mimeMap.addMimeTypes("image/jpeg   JPEG");
         mimeMap.addMimeTypes("image/png    png");
-        mimeMap.addMimeTypes("image/png    PNG");
+        mimeMap.addMimeTypes("application/pdf    pdf");
+        mimeMap.addMimeTypes("application/pdf    PDF");
         mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
     }
     

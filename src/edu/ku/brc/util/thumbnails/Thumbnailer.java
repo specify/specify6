@@ -82,9 +82,9 @@ public class Thumbnailer
 		mimeTypeToGeneratorMap = new Hashtable<String, ThumbnailGeneratorIFace>();
 		
 		
-		quality = 1f;
-		maxWidth = 32;
-		maxHeight = 32;
+		quality   = 1f;
+		maxWidth  = 100;
+		maxHeight = 100;
 	}
 	
 	/**

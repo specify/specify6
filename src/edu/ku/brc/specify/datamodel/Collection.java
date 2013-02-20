@@ -48,7 +48,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 //@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collection")
 @org.hibernate.annotations.Table(appliesTo="collection", indexes =
-    {   @Index (name="CollectionNameIDX", columnNames={"CollectionName"})
+    {   @Index (name="CollectionNameIDX", columnNames={"CollectionName"}),
+        @Index (name="CollectionGuidIDX", columnNames={"GUID"})
     })
 public class Collection extends UserGroupScope implements java.io.Serializable, Comparable<Collection>
 {
@@ -79,6 +80,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected String                     scope;
     protected String                     dbContentVersion;
     protected Integer                    estimatedSize;
+    protected String                     guid;
     
     // Relationships
     protected Discipline                 discipline;
@@ -137,6 +139,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         webSiteURI             = null;
         isaNumber              = null;
         estimatedSize          = 0;
+        guid                   = null;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -152,6 +155,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         rightSideRelTypes      = new HashSet<CollectionRelType>();
         
         institutionNetwork     = null;
+        
+        setGUID(this);
     }
     // End Initializer
 
@@ -562,6 +567,18 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     public void setEstimatedSize(Integer estimatedSize)
     {
         this.estimatedSize = estimatedSize;
+    }
+
+    /**
+     *
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     /**

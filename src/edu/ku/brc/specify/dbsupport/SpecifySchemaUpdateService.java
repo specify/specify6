@@ -66,7 +66,6 @@ import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -120,8 +119,6 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.Journal;
-import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -361,11 +358,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             }
                         }
                         
-                        String schemaVers = AppPreferences.getLocalPrefs().get("UPDATE_SCHEMA", null);
-                        if (schemaVers != null)
+                        if (StringUtils.isNotEmpty(schemaVerFromDB))
                         {
-                            AppPreferences.getLocalPrefs().remove("UPDATE_SCHEMA");
-                            schemaVerFromDB = schemaVers;
+                            boolean doOverrideUpdateSchema = AppPreferences.getLocalPrefs().getBoolean("UPDATE_SCHEMA", false);
+                            if (doOverrideUpdateSchema)
+                            {
+                                AppPreferences.getLocalPrefs().putBoolean("UPDATE_SCHEMA", false);
+                                double currVersion = Double.parseDouble(schemaVerFromDB.trim());
+                                if (currVersion > 1.6)
+                                {
+                                    dbVersion = String.format("%2.1f", currVersion);
+                                    currVersion -= 0.1;
+                                    schemaVerFromDB = String.format("%2.1f", currVersion);
+                                }
+                            }
                         }
                         
                         if (dbVersion != null && schemaVerFromDB != null)
@@ -1706,31 +1712,28 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     public boolean checkAndUpdateGUIDs(final Connection conn, final String databaseName)
     {
-        // CollectingEvent
-        frame.setDesc("Adding GUID field to Collecting Events"); // I18N
-        String guidField = "GUID";
-        String tblName   = getTableTitleForFrame(CollectingEvent.getClassTableId());
-        if (!doesColumnExist(databaseName, tblName, guidField))
+        String   guidField = "GUID";
+        int[]    tblIds    = {CollectingEvent.getClassTableId(), Attachment.getClassTableId(), Collection.getClassTableId(), Institution.getClassTableId()};
+        String[] afterName = {"SGRStatus", "ScopeType", "EstimatedSize", "MinimumPwdLength"};
+        String[] indexName = {"CEGuidIDX", "AttchmentGuidIDX", "CollectionGuidIDX", "InstGuidIDX"};
+        
+        for (int i=0;i<tblIds.length;i++)
         {
-            if (!addColumn(conn, databaseName, tblName, guidField,  "VARCHAR(128)", "SGRStatus"))
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tblIds[i]);
+            //frame.setDesc(String.format("Adding GUID field to %s", ti.getTitle())); // I18N
+            String tblName = getTableTitleForFrame(tblIds[i]);
+            if (!doesColumnExist(databaseName, tblName, guidField))
             {
-                return false;
+                if (!addColumn(conn, databaseName, tblName, guidField,  "VARCHAR(128)", afterName[i]))
+                {
+                    UIRegistry.showError(String.format("There was an error updating the schema for table `%s`\n please contact the Specify Help Desk.", ti.getTitle()));
+                    return false;
+                }
+                update(conn, String.format("CREATE INDEX %s ON %s(GUID)", indexName[i], ti.getName()));
             }
-            update(conn, "CREATE INDEX CEGuidIDX ON collectingevent(GUID)");
         }
         
-        frame.setDesc("Adding GUID field to Attachments"); // I18N
-        // Attachment
-        tblName   = getTableTitleForFrame(Attachment.getClassTableId());
-        if (!doesColumnExist(databaseName, tblName, guidField))
-        {
-            if (!addColumn(conn, databaseName, tblName, guidField,  "VARCHAR(128)", "ScopeType"))
-            {
-                return false;
-            }
-            update(conn, "CREATE INDEX AttchmentGuidIDX ON attachment(GUID)");
-        }
-        return true;
+       return true;
     }
                                   
     /**

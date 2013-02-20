@@ -142,6 +142,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         ReorderableTrayListModel<Object> model = (ReorderableTrayListModel<Object>)listModel;

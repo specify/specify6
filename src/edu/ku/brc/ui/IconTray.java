@@ -61,7 +61,7 @@ public class IconTray extends JPanel
     public static final int SINGLE_ROW = 1;
     public static final int MULTIPLE_ROWS = 2;
     
-    protected int minHeight = 64;
+    protected int minHeight = 300;
     protected int maxWidth = 750;
 
     /** A JList used to display the icons representing the items. */

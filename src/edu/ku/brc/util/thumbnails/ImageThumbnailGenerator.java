@@ -54,8 +54,8 @@ public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
 	 */
 	public ImageThumbnailGenerator()
 	{
-		maxWidth  = 32;
-		maxHeight = 32;
+		maxWidth  = 100;
+		maxHeight = 100;
 	}
 	
 	/* (non-Javadoc)

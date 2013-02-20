@@ -500,7 +500,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     public void intervalAdded(ListDataEvent e)
     {
         widthsValid = false;
-        if (list.getGraphics() != null)
+        if (list != null && list.getGraphics() != null)
         {
             computeMissingColumnWidths(list.getGraphics());
         }

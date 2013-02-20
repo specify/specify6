@@ -46,7 +46,8 @@ import org.hibernate.annotations.Index;
 //@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "institution")
 @org.hibernate.annotations.Table(appliesTo="institution", indexes =
-    {   @Index (name="InstNameIDX", columnNames={"Name"})
+    {   @Index (name="InstNameIDX", columnNames={"Name"}),
+        @Index (name="InstGuidIDX", columnNames={"GUID"})
     })
 public class Institution extends UserGroupScope implements java.io.Serializable 
 {
@@ -83,6 +84,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        currentManagedSchemaVersion;
      
      protected Byte          minimumPwdLength;
+     protected String        guid;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -135,12 +137,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         isReleaseManagedGlobally = false;
         currentManagedRelVersion = null;
         currentManagedSchemaVersion = null;
-        minimumPwdLength   = MIN_PASSWORD_LEN;
+        minimumPwdLength            = MIN_PASSWORD_LEN;
+        guid                        = null;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
         storageTreeDef    = null;
+        
+        setGUID(this);
     }
     
     /**
@@ -443,6 +448,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     *
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid() {
+        return this.guid;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -648,6 +661,13 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setMinimumPwdLength(Byte minimumPwdLength)
     {
         this.minimumPwdLength = minimumPwdLength;
+    }
+
+    /**
+     * @param guid
+     */
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     /**

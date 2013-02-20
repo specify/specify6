@@ -441,8 +441,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             throw new RuntimeException("Couldn't find thumbnailer xml ["+(thumbnailDir != null ? thumbnailDir.getAbsolutePath() : "")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         thumb.setQuality(.5f);
-        thumb.setMaxHeight(128);
-        thumb.setMaxWidth(128);
+        thumb.setMaxHeight(256);
+        thumb.setMaxWidth(256);
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
