@@ -24,20 +24,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.UUID;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
-import edu.ku.brc.specify.datamodel.Journal;
-import edu.ku.brc.specify.datamodel.LithoStrat;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.ReferenceWork;
-import edu.ku.brc.specify.datamodel.Taxon;
-
 /**
  * Base Factory class (not Abstract) for generating GUID for Collection Objects. 
  *
@@ -64,45 +50,11 @@ public class GenericGUIDGeneratorFactory
     }
 
     /**
-     * @return true if the Factory is ready to generate GUIDs. (Default is true).
-     */
-    public boolean isReady()
-    {
-        return true;
-    }
-    
-    /**
      * @return the message when isReady is false.
      */
     public String getErrorMsg()
     {
         return null;
-    }
-    
-    /**
-     * Resets the Factory so it can be checked again with a call to isReady.
-     */
-    public void reset()
-    {
-        
-    }
-    
-    /**
-     * Generic GBIF GUID.
-     * 
-     * @param GUIDAuthority
-     * @param institutionCode
-     * @param collectionCode
-     * @param catalogNumer
-     * @return
-     */
-    public String createGUID(final String GUIDAuthority, 
-                             final String institutionCode, 
-                             final String collectionCode, 
-                             final String catalogNumer)
-    {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
     }
     
     /**
@@ -112,24 +64,10 @@ public class GenericGUIDGeneratorFactory
      * @param id the unique identifier
      * @return the GUID
      */
-    public String createGUID(final CATEGORY_TYPE category, final String id)
+    public String createGUID()
     {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
-    }
-    
-    /**
-     * This sets a GUID on a data object
-     * @param data the data object
-     * @param doVersioning whether to add the versioning to the end
-     * @param formatter the field formatter if it has or needs one.
-     * @return the GUID it assigned
-     */
-    public String setGUIDOnId(final FormDataObjIFace      data,
-                              final boolean               doVersioning,
-                              final UIFieldFormatterIFace formatter)
-    {
-        return null;
     }
     
     /**
@@ -141,19 +79,6 @@ public class GenericGUIDGeneratorFactory
     {
         
     }
-    
-    /**
-     * Default implementation to be overridden for an internal implementation. 
-     * Returns null if not overridden.
-     * @param category the GUID category
-     * @param id the unique identifier
-     * @param version the version
-     * @return the GUID
-     */
-//    public String createGUID(final CATEGORY_TYPE category, final String id, final int version)
-//    {
-//        return null;
-//    }
     
     /**
      * Returns the instance of the CollectionObjGUIDGenFactory.

@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getAction;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
@@ -42,6 +43,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.peer.PanelPeer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,6 +53,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +69,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -119,7 +123,9 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -1883,6 +1889,37 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             }
         }
     }
+    
+    /**
+     * @param tableId
+     * @return
+     */
+    private String getGUIDTitle(final int tableId)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+        if (ti != null)
+        {
+            DBFieldInfo fi = ti.getFieldByColumnName("GUID");
+            if (fi != null)
+            {
+                return String.format("%s %s", ti.getTitle(), fi.getTitle());
+            }
+        }
+        return "GUID";
+    }
+    
+    /**
+     * @param pb
+     * @param label
+     * @param cc
+     * @param items
+     */
+    private void addLabel(final ArrayList<String> items, final PanelBuilder pb, final JLabel label, final CellConstraints cc)
+    {
+        pb.add(label,  cc);
+        
+        items.add(StringUtils.remove(label.getText().trim(), ":"));
+    }
 
     /**
      * Shows the About dialog.
@@ -1892,7 +1929,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
         
-        int baseNumRows = 11;
+        int baseNumRows = 14;
         String serverName = AppPreferences.getLocalPrefs().get("login.servers_selected", null);
         if (serverName != null)
         {
@@ -1908,6 +1945,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         if (hasContext)
         {
+            final ArrayList<String> values = new ArrayList<String>();
+            
             DBTableIdMgr tableMgr = DBTableIdMgr.getInstance();
             boolean      hasReged = !RegisterSpecify.isAnonymous() && RegisterSpecify.hasInstitutionRegistered();
             
@@ -1915,8 +1954,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             infoPB.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
             
             JLabel lbl = UIHelper.createLabel(databaseName);
-            infoPB.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
-            infoPB.add(lbl,   cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
+            addLabel(values, infoPB, lbl,   cc.xy(3, y)); y += 2;
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e)
@@ -1928,8 +1967,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             });
             
-            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Institution.getClassTableId())),  cc.xy(1, y));
-            infoPB.add(lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()), cc.xy(3, y)); y += 2;
+            int instId = Institution.getClassTableId();
+            addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(instId)),  cc.xy(1, y));
+            addLabel(values, infoPB, lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()), cc.xy(3, y)); y += 2;
+            
+            addLabel(values, infoPB, UIHelper.createFormLabel(getGUIDTitle(instId)),  cc.xy(1, y));
+            addLabel(values, infoPB, lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getGuid()), cc.xy(3, y)); y += 2;
+            
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e)
@@ -1940,8 +1984,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                 }
             });
-            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
-            infoPB.add(lbl = UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
+            addLabel(values, infoPB, lbl = UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e)
@@ -1953,34 +1997,37 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             });
 
-            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
             
-            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
             
-            infoPB.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createFormLabel(getGUIDTitle(Collection.getClassTableId())),  cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Collection.class).getGuid()),cc.xy(3, y)); y += 2;
+            
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
             
             UIRegistry.loadAndPushResourceBundle("bld");
-            infoPB.add(UIHelper.createFormLabel("SVN"), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(getResourceString("build")),cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createFormLabel("SVN"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(getResourceString("build")),cc.xy(3, y)); y += 2;
             
-            infoPB.add(UIHelper.createI18NFormLabel("Specify.BLD_TM"), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(getResourceString("buildtime")),cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD_TM"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(getResourceString("buildtime")),cc.xy(3, y)); y += 2;
             UIRegistry.popResourceBundle();
             
-            infoPB.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
-            infoPB.add(UIHelper.createI18NLabel(hasReged ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createI18NLabel(hasReged ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
             
             String isaNumber = RegisterSpecify.getISANumber();
-            infoPB.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
             
             if (serverName != null)
             {
-                infoPB.add(UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
-                infoPB.add(UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
+                addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
+                addLabel(values, infoPB, UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
             }
             
             if (StringUtils.contains(DBConnection.getInstance().getConnectionStr(), "mysql"))
@@ -1988,14 +2035,39 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 Vector<Object[]> list = BasicSQLUtils.query("select version() as ve");
                 if (list != null && list.size() > 0)
                 {
-                    infoPB.add(UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
-                    infoPB.add(UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
+                    addLabel(values, infoPB, UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
+                    addLabel(values, infoPB, UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
                 }
             }
     
+            addLabel(values, infoPB, UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
+            addLabel(values, infoPB, UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
             
-            infoPB.add(UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
-            infoPB.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
+            JButton      copyCBBtn = createIconBtn("ClipboardCopy", IconManager.IconSize.Std24, "Specify.CPY_ABT_TO_TT", null);
+            //copyCBBtn.setBackground(Color.WHITE);
+            //copyCBBtn.setOpaque(true);
+            //copyCBBtn.setBorder(BorderFactory.createEtchedBorder());
+            
+            copyCBBtn.setEnabled(true);
+            
+            PanelBuilder cbPB      = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
+            cbPB.add(copyCBBtn, cc.xy(2, 1));
+            copyCBBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // Copy to Clipboard
+                    StringBuilder sb = new StringBuilder();
+                    for (int i=0;i<values.size();i++)
+                    {
+                        sb.append(String.format("%s = %s\n", values.get(i), values.get(i+1)));
+                        i++;
+                    }
+                    UIHelper.setTextToClipboard(sb.toString());
+                    UIRegistry.displayInfoMsgDlgLocalized("Specify.CPY_ABT_TO_MSG");
+                }
+            });
+            infoPB.add(cbPB.getPanel(), cc.xy(3, y));  y += 2;
         }
         
         String txt = getAboutText(appName, appVersion);
@@ -2508,7 +2580,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 window.setVisible(false);
             }
             
-            // General DB Fxies independent of a release.
+            // General DB Fixes independent of a release.
             if (!AppPreferences.getGlobalPrefs().getBoolean("CollectingEventsAndAttrsMaint1", false))
             {
                 // Temp Code to Fix issues with Release 6.0.9 and below

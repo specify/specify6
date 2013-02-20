@@ -156,7 +156,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         
         institutionNetwork     = null;
         
-        setGUID(this);
+        setGUID();
     }
     // End Initializer
 

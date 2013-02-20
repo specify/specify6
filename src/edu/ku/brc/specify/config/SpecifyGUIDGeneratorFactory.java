@@ -36,8 +36,6 @@ import java.util.UUID;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.lang.StringUtils;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -48,8 +46,6 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -100,15 +96,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#isReady()
-     */
-    @Override
-    public boolean isReady()
-    {
-         return true;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#getErrorMsg()
      */
     @Override
@@ -117,24 +104,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         return super.getErrorMsg();
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#reset()
-     */
-    @Override
-    public void reset()
-    {
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#createGUID(edu.ku.brc.af.core.GenericGUIDGeneratorFactory.CATEGORY_TYPE, java.lang.String)
-     */
-    @Override
-    public String createGUID(final CATEGORY_TYPE category, final String id)
-    {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
-    }
-    
     /**
      * @param tableId the table id
      * @return the Category for a table id or null
@@ -189,8 +158,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         
         if (frame != null) frame.setDesc("Updating GUIDs..."); // I18N
 
-        reset();
-        
         setProgressValue(true, 0, 100); // Sets Overall Progress to 0 -> 100
         
         int count = 1;
@@ -225,53 +192,51 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         pw.close();
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#setGUIDOnId(edu.ku.brc.af.ui.forms.FormDataObjIFace, boolean, edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace)
-     */
-    @Override
-    public String setGUIDOnId(final FormDataObjIFace      data,
-                              final boolean               doVersioning,
-                              final UIFieldFormatterIFace formatter)
-    {
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(data.getTableId());
-        if (tableInfo != null)
-        {
-            String primaryColumn = StringUtils.capitalize(tableInfo.getIdFieldName());
-            
-            String sql = String.format("SELECT Version FROM %s WHERE %s = %d ", tableInfo.getName(), primaryColumn, data.getId());
-            Integer version = BasicSQLUtils.getCount(sql);
-            if (version != null)
-            {
-                Statement stmt    = null;
-                Statement updStmt = null;
-                try
-                {
-                    updStmt = DBConnection.getInstance().getConnection().createStatement();
-                        
-                    UUID   uuid    = UUID.randomUUID();
-                    String uuidStr = uuid.toString();
-                            
-                    sql = String.format("UPDATE %s SET Version=%d,GUID=%d WHERE %s = %d", 
-                                        tableInfo.getName(), version+1, uuidStr, primaryColumn, data.getId());
-                    int rv = updStmt.executeUpdate(sql);
-                    return rv == 1 ? uuidStr : null;
-                    
-                } catch (SQLException ex)
-                {
-                    ex.printStackTrace();
-                    
-                } finally
-                {
-                    try
-                    {
-                        if (stmt != null) stmt.close();
-                        if (updStmt != null) updStmt.close();
-                    } catch (SQLException e) {}
-                }
-            }
-        }
-        return null;
-    }
+//    /* (non-Javadoc)
+//     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#setGUIDOnId(edu.ku.brc.af.ui.forms.FormDataObjIFace, boolean, edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace)
+//     */
+//    @Override
+//    public String setGUIDOnId(final FormDataObjIFace data)
+//    {
+//        if (data == null) return null;
+//        
+//        
+//        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(data.getTableId());
+//        if (tableInfo != null)
+//        {
+//            String primaryColumn = StringUtils.capitalize(tableInfo.getIdFieldName());
+//            
+//            String sql = String.format("SELECT Version FROM %s WHERE %s = %d ", tableInfo.getName(), primaryColumn, data.getId());
+//            Integer version = BasicSQLUtils.getCount(sql);
+//            if (version == null) version = 0;
+//            
+//            Statement updStmt = null;
+//            try
+//            {
+//                updStmt = DBConnection.getInstance().getConnection().createStatement();
+//                    
+//                UUID   uuid    = UUID.randomUUID();
+//                String uuidStr = uuid.toString();
+//                        
+//                sql = String.format("UPDATE %s SET Version=%d,GUID='%s' WHERE %s = %d", 
+//                                    tableInfo.getName(), version+1, uuidStr, primaryColumn, data.getId());
+//                int rv = updStmt.executeUpdate(sql);
+//                return rv == 1 ? uuidStr : null;
+//                
+//            } catch (SQLException ex)
+//            {
+//                ex.printStackTrace();
+//                
+//            } finally
+//            {
+//                try
+//                {
+//                    if (updStmt != null) updStmt.close();
+//                } catch (SQLException e) {}
+//            }
+//        }
+//        return null;
+//    }
     
     /**
      * @param isOverall

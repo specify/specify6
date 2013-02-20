@@ -55,7 +55,6 @@ import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.weblink.WebLinkDataProviderIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -81,8 +80,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     protected int       version;
     
     // Transient
-    protected Integer   parentTblId = null;
-    protected Boolean   hasGUIDField     = null;
+    protected Integer   parentTblId  = null;
+    protected Boolean   hasGUIDField = null;
     
     // Transient Static
     protected static String errMsg = null;
@@ -234,7 +233,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     /**
      * @param data
      */
-    protected void setGUID(final DataModelObjBase data)
+    protected void setGUID()
     {
         if (hasGUIDField == null)
         {
@@ -250,22 +249,15 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             }
         }
         
-        if (data != null && hasGUIDField)
+        if (hasGUIDField)
         {
-            UIFieldFormatterIFace formatter    = null;
-            
-            if (data.getTableId() == 1)
-            {
-                DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
-                formatter = fi != null ? fi.getFormatter() : null;
-            }
             GenericGUIDGeneratorFactory guidFactory = GenericGUIDGeneratorFactory.getInstance();
             if (guidFactory != null)
             {
-                String guid = guidFactory.setGUIDOnId(data, false, formatter);
+                String guid = guidFactory.createGUID();
                 if (guid != null)
                 {
-                    FormHelper.setValue(data, "guid", guid);
+                    FormHelper.setValue(this, "guid", guid);
                 }
             }
         }

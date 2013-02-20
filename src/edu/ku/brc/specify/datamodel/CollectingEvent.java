@@ -147,7 +147,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
         
-        setGUID(this);
+        setGUID();
     }
     // End Initializer
 

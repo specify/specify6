@@ -145,7 +145,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         divisions         = new HashSet<Division>();
         storageTreeDef    = null;
         
-        setGUID(this);
+        setGUID();
     }
     
     /**

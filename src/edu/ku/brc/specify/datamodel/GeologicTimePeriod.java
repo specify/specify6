@@ -138,7 +138,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         acceptedGeologicTimePeriod  = null;
         acceptedChildren    = new HashSet<GeologicTimePeriod>();
         
-        setGUID(this);
+        setGUID();
     }
 
     // End Initializer
