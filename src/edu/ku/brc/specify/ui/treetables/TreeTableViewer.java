@@ -38,6 +38,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -71,6 +72,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -235,6 +237,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected Icon icon_single;
     
     protected boolean doUnlock = true;
+    protected int     prevHorzMax = 0;
 
     
     // tools to help figure the number of "related" records for a node in the background
@@ -1447,25 +1450,48 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
     
-	protected void scrollToShowNode(@SuppressWarnings("unused") final TreeNode node, @SuppressWarnings("unused") final int listIndex)
+	/**
+	 * @param node
+	 * @param listIndex
+	 */
+	protected void scrollToShowNode(final TreeNode node, final int listIndex)
 	{
-//	    int nodeIndex = listModel.indexOf(node);
-//	    if (nodeIndex != -1)
-//	    {
-//	        Rectangle listCellBounds = lists[listIndex].getCellBounds(nodeIndex, nodeIndex);
-//	        Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
-//	        if (textBounds != null)
-//	        {
-//	            Rectangle textRectangle = new Rectangle();
-//	            textRectangle.x = textBounds.first;
-//	            textRectangle.y = listCellBounds.y;
-//	            textRectangle.width = textBounds.second - textBounds.first;
-//	            textRectangle.height = listCellBounds.height;
-//
-//	            scrollers[listIndex].scrollRectToVisible(textRectangle);
-//	            scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
-//	        }
-//	    }
+	    int nodeIndex = listModel.indexOf(node);
+	    if (nodeIndex != -1)
+	    {
+	        System.out.println("NODE: "+node.getFullName());
+	        Rectangle              listCellBounds = lists[listIndex].getCellBounds(nodeIndex, nodeIndex);
+	        Pair<Integer, Integer> textBounds     = listCellRenderer.getTextBoundsForRank(node.getRank());
+	        if (textBounds != null)
+	        {
+	            final Rectangle textRectangle = new Rectangle();
+	            textRectangle.x      = textBounds.first;
+	            textRectangle.y      = listCellBounds.y;
+	            textRectangle.width  = textBounds.second - textBounds.first;
+	            textRectangle.height = listCellBounds.height;
+	            System.out.println("textRect: "+textRectangle);
+
+	            //scrollers[listIndex].scrollRectToVisible(textRectangle);
+	            //scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
+	            
+	            SwingUtilities.invokeLater(new Runnable()
+	            {
+	                @Override
+	                public void run()
+	                {
+	                    JScrollPane scrPane = TreeTableViewer.this.scrollers[listIndex];
+	                    try
+	                    {
+	                        Thread.sleep(100);
+	                    } catch (InterruptedException e) {}
+	                    
+	                    JScrollBar horz = scrPane.getHorizontalScrollBar();
+                        int sizeDiff = horz.getMaximum() - prevHorzMax;
+                        horz.setValue(sizeDiff == 0 ? horz.getMaximum() : (horz.getValue() + (horz.getMaximum() - prevHorzMax)));
+	                }
+	            });
+	        }
+	    }
 	}
 	
 	/* (non-Javadoc)
@@ -3437,6 +3463,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // if the user clicked an expansion handle, expand the child nodes
 		if ( clickIsOnExpansionIcon(e) || (e.getClickCount() == 2 && clickIsOnText(e)) )
 		{
+            JScrollPane scrPane = TreeTableViewer.this.scrollers[(list == lists[0]) ? 0 : 1];
+            prevHorzMax = scrPane.getHorizontalScrollBar().getMaximum();
+
             treeNode.setHasVisualChildren(null);
             if (listModel.showingChildrenOf(treeNode))
             {
