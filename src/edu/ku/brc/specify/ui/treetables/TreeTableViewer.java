@@ -38,7 +38,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1459,38 +1458,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    int nodeIndex = listModel.indexOf(node);
 	    if (nodeIndex != -1)
 	    {
-	        System.out.println("NODE: "+node.getFullName());
-	        Rectangle              listCellBounds = lists[listIndex].getCellBounds(nodeIndex, nodeIndex);
-	        Pair<Integer, Integer> textBounds     = listCellRenderer.getTextBoundsForRank(node.getRank());
-	        if (textBounds != null)
-	        {
-	            final Rectangle textRectangle = new Rectangle();
-	            textRectangle.x      = textBounds.first;
-	            textRectangle.y      = listCellBounds.y;
-	            textRectangle.width  = textBounds.second - textBounds.first;
-	            textRectangle.height = listCellBounds.height;
-	            System.out.println("textRect: "+textRectangle);
-
-	            //scrollers[listIndex].scrollRectToVisible(textRectangle);
-	            //scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
-	            
-	            SwingUtilities.invokeLater(new Runnable()
-	            {
-	                @Override
-	                public void run()
-	                {
-	                    JScrollPane scrPane = TreeTableViewer.this.scrollers[listIndex];
-	                    try
-	                    {
-	                        Thread.sleep(100);
-	                    } catch (InterruptedException e) {}
-	                    
-	                    JScrollBar horz = scrPane.getHorizontalScrollBar();
-                        int sizeDiff = horz.getMaximum() - prevHorzMax;
-                        horz.setValue(sizeDiff == 0 ? horz.getMaximum() : (horz.getValue() + (horz.getMaximum() - prevHorzMax)));
-	                }
-	            });
-	        }
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    JScrollPane scrPane = TreeTableViewer.this.scrollers[listIndex];
+                    try
+                    {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {}
+                    
+                    JScrollBar horz = scrPane.getHorizontalScrollBar();
+                    int sizeDiff = horz.getMaximum() - prevHorzMax;
+                    horz.setValue(sizeDiff == 0 ? horz.getMaximum() : (horz.getValue() + (horz.getMaximum() - prevHorzMax)));
+                }
+            });
 	    }
 	}
 	
