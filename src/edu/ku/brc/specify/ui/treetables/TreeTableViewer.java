@@ -236,7 +236,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected Icon icon_single;
     
     protected boolean doUnlock = true;
-    protected int     prevHorzMax = 0;
 
     
     // tools to help figure the number of "related" records for a node in the background
@@ -1448,7 +1447,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		    setStatusBarText("TTV_FIND_NO_RESULTS", nodeName);
 		}
 	}
-    
+	
 	/**
 	 * @param node
 	 * @param listIndex
@@ -1458,22 +1457,28 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    int nodeIndex = listModel.indexOf(node);
 	    if (nodeIndex != -1)
 	    {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
+	        javax.swing.SwingWorker<Boolean, Boolean> worker = new javax.swing.SwingWorker<Boolean, Boolean>()
                 {
-                    JScrollPane scrPane = TreeTableViewer.this.scrollers[listIndex];
-                    try
+                    @Override
+                    protected Boolean doInBackground() throws Exception
                     {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {}
-                    
-                    JScrollBar horz = scrPane.getHorizontalScrollBar();
-                    int sizeDiff = horz.getMaximum() - prevHorzMax;
-                    horz.setValue(sizeDiff == 0 ? horz.getMaximum() : (horz.getValue() + (horz.getMaximum() - prevHorzMax)));
-                }
-            });
+                        try
+                        {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {}
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void done()
+                    {
+                        JScrollPane scrPane = TreeTableViewer.this.scrollers[listIndex];
+                        JScrollBar  horz    = scrPane.getHorizontalScrollBar();
+                        horz.setValue(horz.getMaximum());
+                    }
+                };
+                worker.execute();
 	    }
 	}
 	
@@ -3446,9 +3451,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // if the user clicked an expansion handle, expand the child nodes
 		if ( clickIsOnExpansionIcon(e) || (e.getClickCount() == 2 && clickIsOnText(e)) )
 		{
-            JScrollPane scrPane = TreeTableViewer.this.scrollers[(list == lists[0]) ? 0 : 1];
-            prevHorzMax = scrPane.getHorizontalScrollBar().getMaximum();
-
             treeNode.setHasVisualChildren(null);
             if (listModel.showingChildrenOf(treeNode))
             {
