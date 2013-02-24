@@ -99,7 +99,7 @@ public class FieldQRI extends BaseQRI
     protected boolean addPartialDateColumn(final boolean forWhereClause, 
     		final boolean forSchemaExport)
     {
-    	return !forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate() && !forSchemaExport;
+    	return !forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate();
     }
     
     /**
