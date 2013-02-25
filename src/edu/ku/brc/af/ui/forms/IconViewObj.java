@@ -524,11 +524,14 @@ public class IconViewObj implements Viewable
                 validator.validateForm();
             }
             
-            MultiView realParent = mvParent.getMultiViewParent();
-            if (realParent != null && realParent.getCurrentValidator() != null)
+            if (mvParent != null)
             {
-                realParent.getCurrentValidator().setHasChanged(true);
-                realParent.getCurrentValidator().validateForm();
+                MultiView realParent = mvParent.getMultiViewParent();
+                if (realParent != null && realParent.getCurrentValidator() != null)
+                {
+                    realParent.getCurrentValidator().setHasChanged(true);
+                    realParent.getCurrentValidator().validateForm();
+                }
             }
         }
     }

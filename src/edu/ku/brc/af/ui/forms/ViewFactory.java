@@ -1201,7 +1201,7 @@ public class ViewFactory
     protected boolean createItem(final DBTableInfo                 parentTableInfo,
                                  final DBTableChildIFace           childInfo,
                                  final MultiView                   parent,
-                                 final FormViewDefIFace            formViewDef,
+                                 final ViewDefIFace                viewDef,
                                  final FormValidator               validator,
                                  final ViewBuilderIFace            viewBldObj,
                                  final AltViewIFace.CreationMode   mode,
@@ -1321,14 +1321,14 @@ public class ViewFactory
             DBFieldInfo        fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
             if (fieldInfo != null && fieldInfo.isHidden())
             {
-                FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_FIELD_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+                FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_FIELD_HIDDEN", cellField.getIdent(), cellField.getName(), viewDef.getName());
             } else
             {
                 
                 relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
                 if (fieldInfo != null && fieldInfo.isHidden())
                 {
-                    FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_REL_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+                    FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_REL_HIDDEN", cellField.getIdent(), cellField.getName(), viewDef.getName());
                 }
             }
             
@@ -1457,7 +1457,7 @@ public class ViewFactory
                     Class<?> tableClass = null;
                     try
                     {
-                        tableClass = Class.forName(formViewDef.getClassName());
+                        tableClass = Class.forName(viewDef.getClassName());
                     } catch (Exception ex){}
                     
                     JComponent tfStart = createFormattedTextField(validator, cellField, tableClass, fieldInfo != null ? fieldInfo.getLength() : 0, uiFormatName, 
@@ -1608,7 +1608,7 @@ public class ViewFactory
                 case textareabrief:
                 {
                     String title = "";
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(viewDef.getClassName());
                     if (ti != null)
                     {
                         DBFieldInfo fi = ti.getFieldByName(cellField.getName());
@@ -1992,13 +1992,15 @@ public class ViewFactory
                     viewBldObj.addSubView(cellSubView, parent, bi.colInx, rowInx, cellSubView.getColspan(), 1); 
                     
                     AltViewIFace     altView        = subView.getDefaultAltView();
-                    FormViewDefIFace subFormViewDef = (FormViewDefIFace)altView.getViewDef();
                     DBTableInfo      sbTableInfo    = DBTableIdMgr.getInstance().getByClassName(subView.getClassName());
+                    ViewDefIFace     altsViewDef    = (ViewDefIFace)altView.getViewDef();
                     
-                    if (subFormViewDef != null)
+                    if (altsViewDef instanceof FormViewDefIFace)
                     {
-                        processRows(sbTableInfo, parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
-                    } else
+                        FormViewDefIFace fvd = (FormViewDefIFace)altsViewDef;
+                        processRows(sbTableInfo, parent, viewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, fvd.getRows());
+                        
+                    } else if (altsViewDef == null)
                     {
                         // This error is bad enough to have it's own dialog
                         String msg = String.format("The Altview '%s' has a null ViewDef!", altView.getName());
@@ -2037,7 +2039,7 @@ public class ViewFactory
             {
                 PanelViewable panelViewable = new PanelViewable(viewBldObj, cellPanel);
 
-                processRows(parentTableInfo, parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
+                processRows(parentTableInfo, parent, viewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
 
                 panelViewable.setVisible(cellPanel.getPropertyAsBoolean("visible", true));
                 
@@ -2080,7 +2082,7 @@ public class ViewFactory
      * Processes the rows in a definition.
      * @param tableInfo table info for current form (may be null)
      * @param parent MultiView parent
-     * @param formViewDef the FormViewDef (Viewdef)
+     * @param viewDef the FormViewDef (Viewdef)
      * @param validator optional validator
      * @param viewBldObj the FormViewObj this row belongs to
      * @param mode the creation mode
@@ -2092,7 +2094,7 @@ public class ViewFactory
      */
     protected void processRows(final DBTableInfo               tableInfo,
                                final MultiView                 parent,
-                               final FormViewDefIFace          formViewDef,
+                               final ViewDefIFace              viewDef,
                                final FormValidator             validator,
                                final ViewBuilderIFace          viewBldObj,
                                final AltViewIFace.CreationMode mode,
@@ -2126,7 +2128,7 @@ public class ViewFactory
                     ((FormCellField)cell).setEditOnCreate(true);
                 }
                 
-                if (!createItem(tableInfo, childInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi))
+                if (!createItem(tableInfo, childInfo, parent, viewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi))
                 {
                     return;
                 }
@@ -2156,12 +2158,12 @@ public class ViewFactory
                     bi2.curMaxRow  = 1;
                     bi2.colInx     = 1;
                     
-                    createItem(tableInfo, childInfo, parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
+                    createItem(tableInfo, childInfo, parent, viewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component editCompReg = bi2.compToReg;
                     Component editCompAdd = bi2.compToAdd;
                     
-                    createItem(tableInfo, childInfo, parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
+                    createItem(tableInfo, childInfo, parent, viewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component viewCompReg = bi2.compToReg;
                     Component viewCompAdd = bi2.compToAdd;

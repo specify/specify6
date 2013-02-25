@@ -2209,8 +2209,11 @@ public class FormViewObj implements Viewable,
         {
             list.add(obj);
             int len = list.size();
-            rsController.setLength(len);
-            rsController.setIndex(len-1, false);
+            if (rsController != null)
+            {
+                rsController.setLength(len);
+                rsController.setIndex(len-1, false);
+            }
             
         } else if (mvParent.getMultiViewParent() != null)
         {

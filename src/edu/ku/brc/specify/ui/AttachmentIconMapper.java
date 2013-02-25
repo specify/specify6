@@ -87,18 +87,26 @@ public class AttachmentIconMapper implements ObjectIconMapper
     {
         if (listener != null)
         {
-            SwingUtilities.invokeLater(new Runnable()
+            SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
             {
                 @Override
-                public void run()
+                protected Boolean doInBackground() throws Exception
                 {
-//                    try
-//                    {
-//                        Thread.sleep(100);
-//                    } catch (Exception ex) {}
+                    try
+                    {
+                        Thread.sleep(100);
+                    } catch (Exception ex) {}
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
                     listener.stateChanged(new ChangeEvent(imgIcon));
                 }
-            });
+        
+            };
+            worker.execute();
         }
         return imgIcon;
     }
