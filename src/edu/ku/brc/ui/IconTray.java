@@ -33,15 +33,20 @@ import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.ui.RepresentativeIconFactory;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
 import edu.ku.brc.util.Orderable;
@@ -53,7 +58,7 @@ import edu.ku.brc.util.Orderable;
  * @author jstewart
  * @code_status Complete
  */
-public class IconTray extends JPanel
+public class IconTray extends JPanel implements ChangeListener
 {
     /** A logger for emitting errors, warnings, etc. */
     protected static final Logger log = Logger.getLogger(IconTray.class);
@@ -61,8 +66,9 @@ public class IconTray extends JPanel
     public static final int SINGLE_ROW = 1;
     public static final int MULTIPLE_ROWS = 2;
     
-    protected int minHeight = 300;
-    protected int maxWidth = 750;
+    protected int minHeight   = 300;
+    protected int maxWidth    = 750;
+    protected int prevHorzMax = 0;
 
     /** A JList used to display the icons representing the items. */
     protected JList iconListWidget;
@@ -80,7 +86,7 @@ public class IconTray extends JPanel
     {
         style = layoutStyle;
         listModel = new DefaultModifiableListModel<Object>();
-        ListCellRenderer renderer = new TrayListCellRenderer();
+        ListCellRenderer renderer = new TrayListCellRenderer(this);
         iconListWidget = new JList(listModel);
         iconListWidget.setCellRenderer(renderer);
         iconListWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -184,15 +190,56 @@ public class IconTray extends JPanel
     }
     
     /**
+     * 
+     */
+    protected void scrollToEnd()
+    {
+        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+        {
+            @Override
+            protected Boolean doInBackground() throws Exception
+            {
+                try
+                {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {}
+
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                JScrollBar horz = listScrollPane.getHorizontalScrollBar();
+                //int sizeDiff = horz.getMaximum() - prevHorzMax;
+                //horz.setValue(sizeDiff == 0 ? horz.getMaximum() : (horz.getValue() + (horz.getMaximum() - prevHorzMax)));
+                horz.setValue(horz.getMaximum());
+            }
+        };
+        worker.execute();
+    }
+    
+    /**
+     * @param item
+     */
+    protected void addItemInternal(final FormDataObjIFace item)
+    {
+        prevHorzMax = listScrollPane.getHorizontalScrollBar().getMaximum();
+        RepresentativeIconFactory.getInstance().getIcon(item, this); // this is very important to do here
+        listModel.add(item);
+    }
+    
+    /**
      * Adds the specified item to the end of this tray. 
      *
      * @param item the item to be added
      * @see DefaultListModel#addElement(Object)
      */
-    public synchronized void addItem(FormDataObjIFace item)
+    public synchronized void addItem(final FormDataObjIFace item)
     {
-        listModel.add(item);
+        addItemInternal(item);
         reorder();
+        scrollToEnd();
     }
     
     /**
@@ -293,5 +340,14 @@ public class IconTray extends JPanel
         }
         Collections.sort(tmpList, new FormDataObjComparator());
         return tmpList;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        scrollToEnd();
     }
 }

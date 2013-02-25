@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
+import javax.swing.event.ChangeListener;
 
 /**
  * An interface defining the basic capabilities of classes that map various objects
@@ -27,7 +28,7 @@ import javax.swing.ImageIcon;
  *
  * @author jstewart
  */
-public interface ObjectIconMapper
+public abstract interface ObjectIconMapper
 {
     /**
      * Returns an ImageIcon representing the given Object.
@@ -35,12 +36,12 @@ public interface ObjectIconMapper
      * @param o any object
      * @return an ImageIcon representing the Object argument
      */
-    public ImageIcon getIcon(Object o);
+    public abstract ImageIcon getIcon(Object o, ChangeListener listener);
     
     /**
      * Returns an array of the classes mapped by this ObjectIconMapper.
      *
      * @return an array containing the mapped classes
      */
-    public Class<?>[] getMappedClasses();
+    public abstract Class<?>[] getMappedClasses();
 }

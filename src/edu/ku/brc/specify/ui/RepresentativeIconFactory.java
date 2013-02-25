@@ -24,6 +24,7 @@ import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 import javax.swing.ListCellRenderer;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.TreeCellRenderer;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -101,15 +102,16 @@ public class RepresentativeIconFactory implements ObjectIconMapper
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object, javax.swing.event.ChangeListener)
      */
-    public synchronized ImageIcon getIcon(Object o)
+    @Override
+    public synchronized ImageIcon getIcon(final Object o, final ChangeListener listener)
     {
     	// first see if a submapper handles this type of object
         ObjectIconMapper subMapper = subMappers.get(o.getClass());
         if (subMapper!=null)
         {
-            return subMapper.getIcon(o);
+            return subMapper.getIcon(o, listener);
         }
 
         // try one more thing in case the submapper handles an interface or superclass
@@ -117,7 +119,7 @@ public class RepresentativeIconFactory implements ObjectIconMapper
         {
             if (clazz.isAssignableFrom(o.getClass()))
             {
-                return subMappers.get(clazz).getIcon(o);
+                return subMappers.get(clazz).getIcon(o, listener);
             }
         }
         
@@ -131,6 +133,7 @@ public class RepresentativeIconFactory implements ObjectIconMapper
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getMappedClasses()
      */
+    @Override
     public Class<?>[] getMappedClasses()
     {
     	// This class maps no classes on its own.  All mappings are through submappers.

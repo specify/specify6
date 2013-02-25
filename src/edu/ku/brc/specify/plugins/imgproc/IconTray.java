@@ -36,6 +36,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
@@ -53,7 +55,7 @@ import edu.ku.brc.util.Orderable;
  * @author jstewart
  * @code_status Complete
  */
-public class IconTray<Trayable> extends JPanel
+public class IconTray<Trayable> extends JPanel implements ChangeListener
 {
     /** A logger for emitting errors, warnings, etc. */
     protected static final Logger log = Logger.getLogger(IconTray.class);
@@ -80,7 +82,7 @@ public class IconTray<Trayable> extends JPanel
     {
         style = layoutStyle;
         listModel = new DefaultModifiableListModel<Object>();
-        ListCellRenderer renderer = new TrayListCellRenderer();
+        ListCellRenderer renderer = new TrayListCellRenderer(this);
         iconListWidget = new JList(listModel);
         iconListWidget.setCellRenderer(renderer);
         iconListWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -294,5 +296,14 @@ public class IconTray<Trayable> extends JPanel
         }
         //Collections.sort(tmpList, new FormDataObjComparator());
         return tmpList;
+    }
+    
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
     }
 }

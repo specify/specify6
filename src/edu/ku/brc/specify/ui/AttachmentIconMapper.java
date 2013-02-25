@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,13 +63,14 @@ public class AttachmentIconMapper implements ObjectIconMapper
      */
     public AttachmentIconMapper()
     {
-        thumbnailCache = new Hashtable<Attachment, ImageIcon>();
+        thumbnailCache  = new Hashtable<Attachment, ImageIcon>();
         thumbGenStarted = new Vector<Attachment>();
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getMappedClasses()
      */
+    @Override
     public Class<?>[] getMappedClasses()
     {
         Class<?>[] mappedClasses = new Class[1];
@@ -73,32 +78,58 @@ public class AttachmentIconMapper implements ObjectIconMapper
         return mappedClasses;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)
+    /**
+     * Sends notification on GUI thread
+     * @param listener
+     * @param imgIcon
      */
-    public ImageIcon getIcon(final Object obj)
+    private ImageIcon notifyListener(final ChangeListener listener, final ImageIcon imgIcon)
+    {
+        if (listener != null)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+//                    try
+//                    {
+//                        Thread.sleep(100);
+//                    } catch (Exception ex) {}
+                    listener.stateChanged(new ChangeEvent(imgIcon));
+                }
+            });
+        }
+        return imgIcon;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object, javax.swing.event.ChangeListener)
+     */
+    @Override
+    public ImageIcon getIcon(final Object obj, final ChangeListener listener)
     {
         final IconSize   size        = IconSize.Std32;
-        final Attachment attatchment = (Attachment)obj;
+        final Attachment attachment = (Attachment)obj;
 
-        ImageIcon cachedIcon = thumbnailCache.get(attatchment);
+        ImageIcon cachedIcon = thumbnailCache.get(attachment);
         if (cachedIcon != null)
         {
-            return cachedIcon;
+            return notifyListener(listener, cachedIcon);
         }
         
         // try to get the thumbnail from the attachment storage location
-        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attatchment);
+        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attachment);
         if (thumb != null)
         {
             if (thumb.exists())
             {
                 ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
-                icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
-                thumbnailCache.put(attatchment, icon);
-                return icon;
+                //icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
+                thumbnailCache.put(attachment, icon);
+                return notifyListener(listener, icon);
             }
-            return IconManager.getIcon("BrokenImage");
+            return notifyListener(listener, IconManager.getIcon("BrokenImage"));
         }
         
         // next, try to make a new thumbnail in a tmp directory
@@ -107,65 +138,33 @@ public class AttachmentIconMapper implements ObjectIconMapper
         boolean doGen = true;
         synchronized (thumbGenStarted)
         {
-            if (thumb != null || thumbGenStarted.contains(attatchment))
+            if (thumb != null || thumbGenStarted.contains(attachment))
             {
                 doGen = false;
             }
         }
 
-        final String origFilename = attatchment.getOrigFilename();
+        final String origFilename = attachment.getOrigFilename();
         if (origFilename != null && doGen)
         {
             // track the fact that we're starting a thumbnail gen thread
             synchronized (thumbGenStarted)
             {
-                thumbGenStarted.add(attatchment);
+                thumbGenStarted.add(attachment);
             }
             
             // start a thumbnail generator thread
-            Runnable r = new Runnable()
-            {
-                @SuppressWarnings("synthetic-access")
-                public void run()
-                {
-                    log.debug("Starting thumb gen thread for " + attatchment.getOrigFilename());
-                    Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
-                    File thumbFile = null;
-                    
-                    try
-                    {
-                        thumbFile = File.createTempFile("sp6_thumb_", null);
-                        thumbFile.deleteOnExit();
-                        log.debug("Generating thumb for " + attatchment.getOrigFilename());
-                        thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath(), false);
-                        log.debug("Done generating thumb for " + attatchment.getOrigFilename());
-                    }
-                    catch (IOException e)
-                    {
-                        // unable to create thumbnail
-                        thumbFile = null;
-                    }
-
-                    if (thumbFile != null)
-                    {
-                        ImageIcon icon = new ImageIcon(thumbFile.getAbsolutePath());
-                        //icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
-                        log.debug("Caching thumb for " + attatchment.getOrigFilename());
-                        thumbnailCache.put(attatchment, icon);
-                    }
-                }
-            };
-            Thread t = new Thread(r);
-            t.start();
+            ImageLoader imgLoader = new ImageLoader(attachment, origFilename, listener);
+            imgLoader.execute();
         }
         
         // based on the MIME type of the attachment, return the appropriate icon
         // TODO: this can easily be configured via an XML file instead of hard coding
-        String mimeType = attatchment.getMimeType();
+        String mimeType = attachment.getMimeType();
         
         if (mimeType == null)
         {
-            return IconManager.getIcon("unknown", size);
+            return notifyListener(listener, IconManager.getIcon("unknown", size));
         }
         
         int inx = mimeType.indexOf('/');
@@ -178,7 +177,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 ImageIcon icon = IconManager.getIcon(mimeStr, size);
                 if (icon != null)
                 {
-                    return icon;
+                    return notifyListener(listener, icon);
                 }
             }
             
@@ -190,7 +189,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                     ImageIcon icon = IconManager.getIcon(mimeStr, size);
                     if (icon != null)
                     {
-                        return icon;
+                        return notifyListener(listener, icon);
                     }
                 }
             }
@@ -204,11 +203,82 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 String imgIconName = Thumbnailer.getIconNameFromExtension(ext);
                 if (imgIconName != null)
                 {
-                    return IconManager.getIcon(imgIconName, size);
+                    return notifyListener(listener, IconManager.getIcon(imgIconName, size));
+
                 }
             }
         }
 
-        return IconManager.getIcon("unknown", size);
+        return notifyListener(listener, IconManager.getIcon("unknown", size));
+    }
+    
+    //-------------------------------------------------------------------------
+    //
+    //-------------------------------------------------------------------------
+    class ImageLoader extends SwingWorker<ImageIcon, ImageIcon>
+    {
+        private Attachment     attachment;
+        private String         origFilename;
+        private ChangeListener listener;
+        private ImageIcon      imgIcon   = null;
+        
+        /**
+         * @param listener
+         */
+        /**
+         * @param attachment
+         * @param origFilename
+         * @param listener
+         */
+        public ImageLoader(final Attachment     attachment, 
+                           final String         origFilename, 
+                           final ChangeListener listener)
+        {
+            super();
+            this.attachment   = attachment;
+            this.origFilename = origFilename;
+            this.listener     = listener;
+        }
+
+        @Override
+        protected ImageIcon doInBackground() throws Exception
+        {
+            log.debug("Starting thumb gen thread for " + attachment.getOrigFilename());
+            Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
+            File thumbFile = null;
+            
+            try
+            {
+                thumbFile = File.createTempFile("sp6_thumb_", null);
+                thumbFile.deleteOnExit();
+                log.debug("Generating thumb for " + attachment.getOrigFilename());
+                thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath(), false);
+                log.debug("Done generating thumb for " + attachment.getOrigFilename());
+                
+            } catch (IOException e)
+            {
+                // unable to create thumbnail
+                thumbFile = null;
+            }
+
+            if (thumbFile != null)
+            {
+                imgIcon = new ImageIcon(thumbFile.getAbsolutePath());
+                //icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
+                log.debug("Caching thumb for " + attachment.getOrigFilename());
+                thumbnailCache.put(attachment, imgIcon);
+            }
+            return null;
+        }
+
+        @Override
+        protected void done()
+        {
+            super.done();
+            if (imgIcon != null && listener != null)
+            {
+                listener.stateChanged(new ChangeEvent(imgIcon));
+            }
+        }
     }
 }

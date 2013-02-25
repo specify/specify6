@@ -66,6 +66,7 @@ public class FileImportProcessor
         {
             Attachment a = (Attachment)record;
             a.setOrigFilename(file.getAbsolutePath());
+            a.setTitle(file.getName());
             a.setTableId(tableId);
             
             a.setFileCreatedDate(ImageMetaDataHelper.getEmbeddedDateOrFileDate(file)); // Checks MimeType
@@ -81,6 +82,7 @@ public class FileImportProcessor
                 return false;
             }
             a.setOrigFilename(file.getAbsolutePath());
+            a.setTitle(file.getName());
             a.setTableId(oa.getTableID());
             return true;
         }

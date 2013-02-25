@@ -297,7 +297,7 @@ public class IconViewObj implements Viewable
         {
             addActionListenerToViewButton();
         }
-
+        
         mainComp = new RestrictablePanel();
         mainComp.setLayout(new BorderLayout());
         if (mvParent == null)
@@ -525,7 +525,7 @@ public class IconViewObj implements Viewable
             }
             
             MultiView realParent = mvParent.getMultiViewParent();
-            if (realParent != null)
+            if (realParent != null && realParent.getCurrentValidator() != null)
             {
                 realParent.getCurrentValidator().setHasChanged(true);
                 realParent.getCurrentValidator().validateForm();
@@ -789,7 +789,7 @@ public class IconViewObj implements Viewable
         
         if (dataObj instanceof Set)
         {
-            dataSet = (Set)dataObj;
+            dataSet = (Set<Object>)dataObj;
             
         } else
         {
@@ -805,7 +805,7 @@ public class IconViewObj implements Viewable
             {
                 if (dataObj instanceof List)
                 {
-                    dataSet.addAll((List)dataObj);
+                    dataSet.addAll((List<Object>)dataObj);
                     
                 } else
                 {

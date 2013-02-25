@@ -679,6 +679,15 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         sendFile(thumbnail,      attachment.getAttachmentLocation(), true);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#setThumbSize(int)
+     */
+    @Override
+    public void setThumbSize(int sizeInPixels)
+    {
+        
+    }
+
     /**
      * @param urlStr
      * @param symbol

@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -46,6 +48,7 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getMappedClasses()
      */
+    @Override
     public Class<?>[] getMappedClasses()
     {
         Class<?>[] mappedClasses = new Class[1];
@@ -56,6 +59,7 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getString(java.lang.Object)
      */
+    @Override
     public String getString(Object o)
     {
         Preparation prep = (Preparation)o;
@@ -68,11 +72,12 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
 
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object, javax.swing.event.ChangeListener)
      */
-    public ImageIcon getIcon(Object o)
+    @Override
+    public ImageIcon getIcon(final Object obj, final ChangeListener listener)
     {
-        Preparation p = (Preparation)o;
+        Preparation p = (Preparation)obj;
         String prepTypeName = p.getPrepType().getName();
         //IconSize size = IconSize.Std32;
         String name = null;
@@ -98,10 +103,14 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
         }
         
         ImageIcon icon = IconManager.getIcon(name);
-        if (icon==null)
+        if (icon != null)
         {
-            return null;
+            icon = IconManager.getScaledIcon(icon, null, IconSize.Std32);
+            if (listener != null)
+            {
+                listener.stateChanged(new ChangeEvent(icon));
+            }
         }
-        return IconManager.getScaledIcon(icon, null, IconSize.Std32);
+        return icon;
     }
 }

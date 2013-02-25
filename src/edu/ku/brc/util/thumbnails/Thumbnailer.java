@@ -165,7 +165,7 @@ public class Thumbnailer
 	 * @param generator the generator
 	 * @return the registered generator
 	 */
-	public ThumbnailGeneratorIFace registerThumbnailGenerator(String mimeType, ThumbnailGeneratorIFace generator)
+	public ThumbnailGeneratorIFace registerThumbnailGenerator(final String mimeType, final ThumbnailGeneratorIFace generator)
 	{
 		generator.setQuality(quality);
 		generator.setMaxHeight(maxHeight);
@@ -195,42 +195,42 @@ public class Thumbnailer
 	                              final String outputFile,
 	                              final boolean doHighQuality) throws IOException
 	{
-            // get the system MIME type mapper
-            MimetypesFileTypeMap mimeMap = AttachmentUtils.getMimeMap();
-            
-            // get the MIME type of the given original file
-    		String mimeType = mimeMap.getContentType(originalFile);
-            
-            // find the appropriate thumbnail generator, if any
-    		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
-    		if (generator != null)
-    		{
-                if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
-                {
-                    UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
-                }
-                return;
-    		}
-    		
-    		String iconName = null;
-    		
-    		String ext = FilenameUtils.getExtension(originalFile);
-    		if (StringUtils.isNotEmpty(ext))
-    		{
-    		    iconName = availableIcons.get(ext);
-    		}
-    		
-    		if (StringUtils.isEmpty(iconName))
-    		{
-    		    iconName = "unknown";
-    		}
-    		
-	        IconEntry entry = IconManager.getIconEntryByName(iconName);
-	        if (entry != null)
-	        {
-	            BufferedImage bi = ImageIO.read(entry.getUrl());
-	            ImageIO.write(bi, "PNG", new FileOutputStream(outputFile));
-	        }
+        // get the system MIME type mapper
+        MimetypesFileTypeMap mimeMap = AttachmentUtils.getMimeMap();
+        
+        // get the MIME type of the given original file
+		String mimeType = mimeMap.getContentType(originalFile);
+        
+        // find the appropriate thumbnail generator, if any
+		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
+		if (generator != null)
+		{
+            if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
+            {
+                UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
+            }
+            return;
+		}
+		
+		String iconName = null;
+		
+		String ext = FilenameUtils.getExtension(originalFile);
+		if (StringUtils.isNotEmpty(ext))
+		{
+		    iconName = availableIcons.get(ext);
+		}
+		
+		if (StringUtils.isEmpty(iconName))
+		{
+		    iconName = "unknown";
+		}
+		
+        IconEntry entry = IconManager.getIconEntryByName(iconName);
+        if (entry != null)
+        {
+            BufferedImage bi = ImageIO.read(entry.getUrl());
+            ImageIO.write(bi, "PNG", new FileOutputStream(outputFile));
+        }
 	}
 	
 	/**
@@ -289,7 +289,7 @@ public class Thumbnailer
 	}
 	
 	/**
-	 * Get cion name for extnsion.
+	 * Get icon name for extension.
 	 * @param ext file extension 
 	 * @return the icon name for a file extension
 	 */

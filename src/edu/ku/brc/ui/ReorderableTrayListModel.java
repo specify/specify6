@@ -22,6 +22,7 @@ package edu.ku.brc.ui;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
+import javax.swing.SwingUtilities;
 
 /**
  * An extension of {@link AbstractListModel} that implements {@link ModifiableListModel}
@@ -48,7 +49,11 @@ public class ReorderableTrayListModel<T> extends AbstractListModel implements Mo
      */
     public T getElementAt(int index)
     {
-        return data.get(index);
+        if (data != null && index > -1 && index < data.size())
+        {
+            return data.get(index);
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -62,10 +67,18 @@ public class ReorderableTrayListModel<T> extends AbstractListModel implements Mo
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.ModifiableListModel#add(java.lang.Object)
      */
-    public synchronized void add(T t)
+    public synchronized void add(final T t)
     {
         data.add(t);
-        this.fireIntervalAdded(this, data.indexOf(t), data.indexOf(t));
+        //this.fireIntervalAdded(this, data.indexOf(t), data.indexOf(t));
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                ReorderableTrayListModel.this.fireIntervalAdded(this, data.indexOf(t), data.indexOf(t));
+            }
+        });
     }
     
     /* (non-Javadoc)

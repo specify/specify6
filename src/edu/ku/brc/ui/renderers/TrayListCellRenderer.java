@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.ui.RepresentativeIconFactory;
@@ -41,18 +42,24 @@ import edu.ku.brc.specify.ui.RepresentativeTextFactory;
  */
 public class TrayListCellRenderer extends DefaultListCellRenderer
 {
+    private ChangeListener listener;
+    
     /**
      * Creates a new instance with default configuration.
      */
-    public TrayListCellRenderer()
+    public TrayListCellRenderer(final ChangeListener listener)
     {
         super();
+        
+        this.listener = listener;
         
         // lookup, DefaultListCellRenderer extends JLabel,
         // so we can set any JLabel properties we want
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
         this.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        //setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 4));
     }
 
     /* (non-Javadoc)
@@ -69,7 +76,7 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
             l.setText(text);
             l.setToolTipText(text);
             // ask for the icon representation of the object
-            ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value);
+            ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value, null);
             l.setIcon(icon);
         }
         return l;

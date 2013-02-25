@@ -26,6 +26,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.Calendar;
 import java.util.Vector;
 
@@ -59,6 +62,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     private static final String ORIGINAL   = "originals";
     private static final String THUMBNAILS = "thumbnails";
     
+    private Calendar releaseDate = Calendar.getInstance();
     
     /** The base directory path of where the files will be stored. */
     protected String baseDirectory;
@@ -68,6 +72,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     
     /** The directory inside the base that will store the thumbnail files. */
     protected File thumbsDir;
+    
+    protected int thumbSize = 256;
     
     /** 
      * A collection of all files created by calls to setStorageLocationIntoAttachment
@@ -82,6 +88,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public FileStoreAttachmentManager(final File baseDirectory) throws IOException
     {
         setDirectory(baseDirectory);
+        
+        releaseDate.set(2013, 1, 22);
     }
 
     /* (non-Javadoc)
@@ -337,9 +345,31 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         if (StringUtils.isNotEmpty(attachmentLoc))
         {
-            File storedFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachmentLoc);
+            String thumbPath  = baseDirectory + File.separator + THUMBNAILS + File.separator + attachmentLoc;
+            File   storedFile = new File(thumbPath);
             if (storedFile.exists())
             {
+                try
+                {
+                    BasicFileAttributes attrs    = Files.readAttributes(storedFile.toPath(), BasicFileAttributes.class);
+                    FileTime            fileTime = attrs.creationTime();
+                    if (fileTime.toMillis() < releaseDate.getTimeInMillis())
+                    {
+                        BufferedImage bi = ImageIO.read(storedFile);
+                        if (bi.getWidth() < thumbSize && bi.getHeight() < thumbSize)
+                        {
+                            String origPath = baseDirectory + File.separator + ORIGINAL + File.separator + attachmentLoc;
+                            File   origFile = new File(origPath);
+                            if (origFile.exists())
+                            {
+                                return regenerateThumbnail(thumbPath, origPath);
+                            }
+                        }
+                    }
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
                 return storedFile;
             }
             
@@ -432,7 +462,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public File regenerateThumbnail(final String attachLoc) throws IOException
     {
         return regenerateThumbnail(attachLoc, null);
-
     }
 
 
@@ -481,6 +510,15 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         replaceFile(thumbFile, newThumbnail);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#setThumbSize(int)
+     */
+    @Override
+    public void setThumbSize(int sizeInPixels)
+    {
+        this.thumbSize = sizeInPixels;
+    }
+
     /**
      * Replace origFile with newFile, attempting to recover from an exception if it occurs.
      * 

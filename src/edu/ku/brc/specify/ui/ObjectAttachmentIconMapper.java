@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
+import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 
@@ -39,21 +40,22 @@ public class ObjectAttachmentIconMapper implements ObjectIconMapper, ObjectTextM
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)
      */
-    public ImageIcon getIcon(Object o)
+    @Override
+    public ImageIcon getIcon(final Object obj, final ChangeListener listener)
     {
-        if (o instanceof ObjectAttachmentIFace<?>)
+        if (obj instanceof ObjectAttachmentIFace<?>)
         {
-            ObjectAttachmentIFace<?> oa = (ObjectAttachmentIFace<?>)o;
-            return attachmentIconMapper.getIcon(oa.getAttachment());
+            ObjectAttachmentIFace<?> oa = (ObjectAttachmentIFace<?>)obj;
+            return attachmentIconMapper.getIcon(oa.getAttachment(), listener);
         }
-        
         return null;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getString(java.lang.Object)
      */
-    public String getString(Object o)
+    @Override
+    public String getString(final Object o)
     {
         if (o instanceof ObjectAttachmentIFace<?>)
         {
@@ -81,6 +83,7 @@ public class ObjectAttachmentIconMapper implements ObjectIconMapper, ObjectTextM
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getMappedClasses()
      */
+    @Override
     public Class<?>[] getMappedClasses()
     {
         Class<?>[] mappedClasses = new Class[1];

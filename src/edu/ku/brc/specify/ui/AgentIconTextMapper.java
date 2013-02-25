@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -105,7 +107,8 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getString(java.lang.Object)
      */
-    public String getString(Object o)
+    @Override
+    public String getString(final Object o)
     {
         Agent agent = getAgent(o);
         if (agent != null)
@@ -116,11 +119,13 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object, javax.swing.event.ChangeListener)
      */
-    public ImageIcon getIcon(Object o)
+    @Override
+    public ImageIcon getIcon(final Object obj, final ChangeListener listener)
     {
-        Agent agent = getAgent(o);
+        ImageIcon imgIcon = null;
+        Agent     agent   = getAgent(obj);
         if (agent != null)
         {
             /*try
@@ -150,26 +155,32 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
                 log.error(ex);
             }*/
             
+            
             switch(agent.getAgentType())
             {
                 case Agent.ORG:
                 {
-                    return IconManager.getIcon("People", IconSize.Std24);
+                    imgIcon = IconManager.getIcon("People", IconSize.Std24);
                 }
                 case Agent.PERSON:
                 {
-                    return IconManager.getIcon("Person", IconSize.Std24);
+                    imgIcon = IconManager.getIcon("Person", IconSize.Std24);
                 }
                 case Agent.OTHER:
                 {
-                    return IconManager.getIcon("People", IconSize.Std24);
+                    imgIcon = IconManager.getIcon("People", IconSize.Std24);
                 }
                 case Agent.GROUP:
                 {
-                    return IconManager.getIcon("People", IconSize.Std24);
+                    imgIcon = IconManager.getIcon("People", IconSize.Std24);
                 }
             }
+            
+            if (imgIcon != null && listener != null)
+            {
+                listener.stateChanged(new ChangeEvent(imgIcon));
+            }
         }
-        return null;
+        return imgIcon;
     }
 }

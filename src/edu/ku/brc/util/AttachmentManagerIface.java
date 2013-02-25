@@ -183,6 +183,11 @@ public interface AttachmentManagerIface
     public abstract String getImageAttachmentURL();
     
     /**
+     * @param sizeInPixels
+     */
+    public void setThumbSize(int sizeInPixels);
+    
+    /**
      * Perform any internal cleanup needed before shutdown.
      */
     public abstract void cleanup();

@@ -20,6 +20,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +29,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -265,13 +269,59 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      * @see edu.ku.brc.ui.IconTray#addItem(edu.ku.brc.ui.forms.FormDataObjIFace)
      */
     @Override
-    public synchronized void addItem(FormDataObjIFace item)
+    public synchronized void addItem(final FormDataObjIFace item)
     {
-        listModel.add(item);
+        addItemInternal(item);
         if (isOrderable)
         {
             setOrderIndices();
         }
+        
+        // This is insane that I have to do the following
+        // just to get it to resize the cell and scroll right.
+        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+        {
+            @Override
+            protected Boolean doInBackground() throws Exception
+            {
+                try
+                {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {}
+
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                final int inx = listModel.getSize()-1;
+                iconListWidget.setSelectedIndex(inx);
+                toEndButton.doClick();
+            }
+        };
+        worker.execute();
+
+        //scrollToEnd();
+
+//        
+//        SwingUtilities.invokeLater(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                try
+//                {
+//                    Thread.sleep(300);
+//                } catch (InterruptedException e) {}
+//                JScrollBar horz = listScrollPane.getHorizontalScrollBar();
+//                System.out.println(horz.getMaximum());
+//                horz.setValue( horz.getMaximum() );
+//                
+//                Dimension dim = listScrollPane.getViewport().getViewSize();
+//                listScrollPane.getViewport().scrollRectToVisible(new Rectangle(dim.width-5, 0, 5, 5));
+//            }
+//        });
     }
 
 
