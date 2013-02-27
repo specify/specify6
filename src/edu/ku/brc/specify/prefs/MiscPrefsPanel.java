@@ -52,7 +52,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         setCheckbox("1", "Interactions.Using.Interactions", true);
         setCheckbox("2", "ExportTask.OnTaskbar", false);
         setCheckbox("3", "StartupTask.OnTaskbar", true);
-        setCheckbox("4", "ImagesTask.OnTaskbar", false, "IMAGES");
+        setCheckbox("4", "ImagesTask.OnTaskbar", false, "ATTACHMENTS");
         setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
     }
     
@@ -66,7 +66,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
                                final boolean defVal,
                                final String taskName)
     {
-        Taskable task = TaskMgr.getInstance().getTask(taskName);
+        Taskable task = TaskMgr.getTask(taskName);
         boolean enable = !AppContextMgr.isSecurityOn() || (task != null && task.getPermissions().canView());
         setCheckbox(id, prefName, defVal, enable);
     }

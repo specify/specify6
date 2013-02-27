@@ -37,7 +37,7 @@
 		
         <plugin name="LMTask" class="edu.ku.brc.specify.tasks.LifeMapperTask" addui="true"/>
         
-        <plugin name="ImagesTask" class="edu.ku.brc.specify.tasks.ImagesTask" addui="true" prefname="imagetask"/>
+        <plugin name="AttachmentsTask" class="edu.ku.brc.specify.tasks.AttachmentsTask" addui="true"/>
         
         <plugin name="CleanupToolsTask" class="edu.ku.brc.specify.tasks.CleanupToolsTask" addui="true"/>
         

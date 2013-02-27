@@ -23,11 +23,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JFileChooser;
 import javax.swing.JToolBar;
 
 import edu.ku.brc.af.core.ContextMgr;
@@ -78,13 +76,13 @@ import edu.ku.brc.ui.UIRegistry;
  * Jan 25, 2012
  *
  */
-public class ImagesTask extends BaseTask
+public class AttachmentsTask extends BaseTask
 {
-    private static final String  ON_TASKBAR        = "ImagesTask.OnTaskbar";
-    private static final String  IMAGES            = "IMAGES";
-    private static final String  IMAGES_SEARCH     = "IMAGES.SEARCH";
-    //private static final String  IMAGES_TITLE     = "IMAGES_TITLE";
-    //private static final String  IMAGES_SECURITY  = "IMAGESEDIT";
+    private static final String  ON_TASKBAR             = "ImagesTask.OnTaskbar";
+    private static final String  ATTACHMENTS            = "ATTACHMENTS";
+    private static final String  ATTACHMENTS_SEARCH     = "ATTACHMENTS.SEARCH";
+    //private static final String  ATTACHMENTS_TITLE     = "ATTACHMENTS_TITLE";
+    //private static final String  ATTACHMENTS_SECURITY  = "ATTACHMENTSEDIT";
     
     // Data Members
     protected ImagesPane              imagesPane       = null;
@@ -98,10 +96,10 @@ public class ImagesTask extends BaseTask
     /**
      * 
      */
-    public ImagesTask()
+    public AttachmentsTask()
     {
-        super(getResourceString(IMAGES), "Images");
-        this.iconName = "image";
+        super(ATTACHMENTS, getResourceString(ATTACHMENTS));
+        this.iconName = "Attach";
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
 
@@ -172,7 +170,7 @@ public class ImagesTask extends BaseTask
             for (int tblId : attachmentTableIDs)
             {
                 DBTableInfo   tblInfo   = DBTableIdMgr.getInstance().getInfoById(1);
-                CommandAction cmdAction = new CommandAction(IMAGES, IMAGES_SEARCH);
+                CommandAction cmdAction = new CommandAction(ATTACHMENTS, ATTACHMENTS_SEARCH);
                 cmdAction.setProperty("id",    Integer.toString(tblId));
                 
                 cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
@@ -216,7 +214,7 @@ public class ImagesTask extends BaseTask
 //                public void actionPerformed(ActionEvent e)
 //                {
 //                    if (starterPane != null) removeSubPaneFromMgr(starterPane);
-//                    starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, false); 
+//                    starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), ImagesTask.this, false); 
 //                    addSubPaneToMgr(starterPane);
 //                }
 //            });
@@ -230,7 +228,7 @@ public class ImagesTask extends BaseTask
                     {
                         removeSubPaneFromMgr(starterPane);
                     }
-                    starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, true); 
+                    starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), AttachmentsTask.this, true); 
                     addSubPaneToMgr(starterPane);
                 }
             });
@@ -247,7 +245,7 @@ public class ImagesTask extends BaseTask
         {
             removeSubPaneFromMgr(starterPane);
         }
-        starterPane = imagesPane = new ImagesPane(getResourceString(IMAGES), ImagesTask.this, rs); 
+        starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), AttachmentsTask.this, rs); 
         addSubPaneToMgr(starterPane);
     }
     
@@ -257,7 +255,7 @@ public class ImagesTask extends BaseTask
     @Override
     public void preInitialize()
     {
-        CommandDispatcher.register(IMAGES, this);
+        CommandDispatcher.register(ATTACHMENTS, this);
 
         // Create and add the Actions NavBox first so it is at the top at the top
         actionNavBox = new NavBox(getResourceString("Actions"));
@@ -322,8 +320,8 @@ public class ImagesTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        String label    = getResourceString(IMAGES);
-        String hint     = getResourceString(IMAGES);
+        String label    = getResourceString(ATTACHMENTS);
+        String hint     = getResourceString(ATTACHMENTS);
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
@@ -346,12 +344,12 @@ public class ImagesTask extends BaseTask
     {
         List<SecurityOptionIFace> list = new ArrayList<SecurityOptionIFace>();
         
-        SecurityOption secOpt = new SecurityOption(IMAGES_SECURITY, 
-                                                    getResourceString("IMAGES_TITLE"), 
+        SecurityOption secOpt = new SecurityOption(ATTACHMENTS_SECURITY, 
+                                                    getResourceString("ATTACHMENTS_TITLE"), 
                                                     securityPrefix,
-                                                    new BasicPermisionPanel(IMAGES_TITLE, 
-                                                                            "IMAGES_VIEW", 
-                                                                            "IMAGES_EDIT"));
+                                                    new BasicPermisionPanel(ATTACHMENTS_TITLE, 
+                                                                            "ATTACHMENTS_VIEW", 
+                                                                            "ATTACHMENTS_EDIT"));
         addPerms(secOpt, new boolean[][] 
                    {{true, true, true, false},
                    {false, false, false, false},
@@ -381,14 +379,14 @@ public class ImagesTask extends BaseTask
         
         MenuItemDesc mid;
         JMenuItem mi;
-        String    menuDesc = getResourceString(IMAGES_MENU);
+        String    menuDesc = getResourceString(ATTACHMENTS_MENU);
 
-        String securityName = buildTaskPermissionName(IMAGES_SECURITY);
+        String securityName = buildTaskPermissionName(ATTACHMENTS_SECURITY);
         if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(securityName) != null && 
              !secMgr.getPermission(securityName).hasNoPerm()))
         {
-            mi       = UIHelper.createLocalizedMenuItem(IMAGES_MENU, IMAGES_MNU, IMAGES_TITLE, true, null); 
+            mi       = UIHelper.createLocalizedMenuItem(ATTACHMENTS_MENU, ATTACHMENTS_MNU, ATTACHMENTS_TITLE, true, null); 
             mi.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -442,7 +440,7 @@ public class ImagesTask extends BaseTask
                 imagesPane.doSearchGenusSpecies(p.first.getFullName(), true);
                 requestContext();
             }*/
-        } if (cmdAction.isAction(IMAGES_SEARCH))
+        } if (cmdAction.isAction(ATTACHMENTS_SEARCH))
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
@@ -495,7 +493,7 @@ public class ImagesTask extends BaseTask
     {
         super.doCommand(cmdAction);
         
-        if (cmdAction.isType(IMAGES))
+        if (cmdAction.isType(ATTACHMENTS))
         {
             processRecordSetCommands(cmdAction);
             
