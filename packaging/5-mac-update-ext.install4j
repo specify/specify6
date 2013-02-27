@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="5.0.5" transformSequenceNumber="3">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../ExtMacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.0.05" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.7" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../ExtMacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.0.05" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.7" javaMaxVersion="1.7" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="./localization_en.utf8" />
       <additionalLanguages>
@@ -71,7 +71,7 @@
           <entry location="libs/commons-validator.jar" fileType="regular" />
           <entry location="libs/itext.jar" fileType="regular" />
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
-          <entry location="wwlib_64" fileType="regular" />
+          <entry location="wwlibs" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
@@ -95,11 +95,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -132,11 +132,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -169,11 +169,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -206,11 +206,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -243,11 +243,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -280,11 +280,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -317,11 +317,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -354,11 +354,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -391,11 +391,11 @@
 		  <scanDirectory location="plugins" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
+          <scanDirectory location="wwlibs" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="wwlib" />
+          <directory name="wwlibs" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -1649,14 +1649,14 @@ if (wizardContext != null) {
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="wwlib/libjogl.so" fileType="regular" />
-        <entry location="wwlib/jogl_awt.dll" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
-        <entry location="wwlib/gluegen-rt.dll" fileType="regular" />
-        <entry location="wwlib/jogl_cg.dll" fileType="regular" />
-        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
-        <entry location="wwlib/jogl.dll" fileType="regular" />
+        <entry location="wwlibs/libjogl.so" fileType="regular" />
+        <entry location="wwlibs/jogl_awt.dll" fileType="regular" />
+        <entry location="wwlibs/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlibs/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlibs/gluegen-rt.dll" fileType="regular" />
+        <entry location="wwlibs/jogl_cg.dll" fileType="regular" />
+        <entry location="wwlibs/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlibs/jogl.dll" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1704,14 +1704,14 @@ if (wizardContext != null) {
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
-        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
-        <entry location="wwlib/libjogl.so" fileType="regular" />
+        <entry location="wwlibs/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlibs/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlibs/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlibs/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlibs/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlibs/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlibs/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlibs/libjogl.so" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
