@@ -21,23 +21,22 @@ package edu.ku.brc.specify.ui;
 
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.util.Pair;
-import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.AnnotationLayer;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.layers.ViewControlsLayer;
+import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.FrameFactory;
@@ -49,6 +48,7 @@ import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.util.StatusBar;
+import gov.nasa.worldwindx.applications.worldwindow.core.Constants;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -59,9 +59,9 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 /**
  * @author rods
@@ -73,11 +73,22 @@ import javax.swing.JPanel;
  */
 public class WorldWindPanel extends JPanel
 {
+    public static final String POSITION_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.PostionProperty";
+    public static final String ORIENTATION_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.OrientationProperty";
+    public static final String SIZE_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.SizeProperty";
+    public static final String OPACITY_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.OpacityProperty";
+
+    public static final String PAN_CONTROLS_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.PanControlS";
+    public static final String ZOOM_CONTROLS_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.ZoomControlS";
+    public static final String TILT_CONTROLS_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.TiltControlS";
+    public static final String HEADING_CONTROLS_PROPERTY = "gov.nasa.worldwindowx.applications.features.Navegacion.HeadingControlS";
+
     private static final int DEFAULT_RADIUS = 3;
     
     protected AnnotationLayer            annoLayer;
     protected MarkerLayer                markerLayer = new MarkerLayer();
     protected RenderableLayer            lineLayer   = new RenderableLayer();
+    protected ViewControlsLayer          viewControlsLayer = null;
     protected WorldWindowGLCanvas        world = null;
     protected StatusBar                  statusBar;
     protected boolean                    includeGazetter;
@@ -88,12 +99,16 @@ public class WorldWindPanel extends JPanel
     protected AnnotationAttributes       annoAttrs   = new AnnotationAttributes();
     protected BasicMarkerAttributes      markerAttrs;
     protected double                     zoomInMeters = 20000.0;
+    
+    protected boolean                    isWWPanelVisible;
+    protected ArrayList<LatLonPlacemarkIFace> pointsCache = new ArrayList<LatLonPlacemarkIFace>();
+    protected Position                   eyePosition = null;
 
     static {
-        Configuration.setValue(AVKey.INITIAL_LATITUDE, 38.9581);
-        Configuration.setValue(AVKey.INITIAL_LONGITUDE, -95.2478);
-        Configuration.setValue(AVKey.INITIAL_ALTITUDE, 60000);
-        Configuration.setValue(AVKey.INITIAL_HEADING, 27);
+//        Configuration.setValue(AVKey.INITIAL_LATITUDE, 38.9581);
+//        Configuration.setValue(AVKey.INITIAL_LONGITUDE, -95.2478);
+//        Configuration.setValue(AVKey.INITIAL_ALTITUDE, 60000);
+//        Configuration.setValue(AVKey.INITIAL_HEADING, 27);
         //Configuration.setValue(AVKey.INITIAL_PITCH
     }
     /**
@@ -208,30 +223,44 @@ public class WorldWindPanel extends JPanel
        LayerList layers = world.getModel().getLayers();
        for (Object layer : layers)
        {
+           System.out.println(layer.getClass().getName());
+           
            if (layer instanceof AnnotationLayer)
            {
                annoLayer = (AnnotationLayer) layer;
-               break;
+           } else  if (layer instanceof ViewControlsLayer)
+           {
+               viewControlsLayer = (ViewControlsLayer) layer;
+               //getLayerPanel().update(getWwd());
            }
        }
        
+       if (viewControlsLayer == null)
+       {
+           viewControlsLayer = createViewControlsLayer();
+       }
        if (annoLayer == null)
        {
            annoLayer = new AnnotationLayer();
        }
 
+       //ViewControlsLayer vcl = new ViewControlsLayer(); 
        insertBeforePlacenames(world, markerLayer);
        insertBeforePlacenames(world, annoLayer);
+       insertBeforePlacenames(world, viewControlsLayer);
        //insertBeforePlacenames(world, lineLayer);
        world.getModel().getLayers().add(this.lineLayer);
        
        setLayout(new BorderLayout());
        
-       statusBar = new StatusBar();
-       add(statusBar, BorderLayout.SOUTH);
-       statusBar.setEventSource(world);
-       
+       if (statusBar == null)
+       {
+           statusBar = new StatusBar();
+           add(statusBar, BorderLayout.SOUTH);
+           statusBar.setEventSource(world);
+       }
        add(world, BorderLayout.CENTER);
+       isWWPanelVisible = true;
        
 // ZZZ       
 //       if (includeGazetter)
@@ -253,6 +282,153 @@ public class WorldWindPanel extends JPanel
 //                e.printStackTrace();
 //            }
 //       }
+    }
+    
+    /**
+     * @return
+     */
+    protected ViewControlsLayer createViewControlsLayer()
+    {
+        ViewControlsLayer layer = new ViewControlsLayer();
+
+        layer.setValue(Constants.SCREEN_LAYER, true);
+        layer.setValue(Constants.INTERNAL_LAYER, true);
+        layer.setLayout(AVKey.VERTICAL);
+
+        ViewControlsSelectListener listener = new ViewControlsSelectListener(world, layer);
+        listener.setRepeatTimerDelay(30);
+        listener.setZoomIncrement(0.5);
+        listener.setPanIncrement(0.5);
+        world.addSelectListener(listener);
+
+        return layer;
+    }
+    
+//    public void doPropertyChange(PropertyChangeEvent event)
+//    {
+//        if (event.getPropertyName().equals(POSITION_PROPERTY))
+//        {
+//            if (event.getNewValue() != null && event.getNewValue() instanceof String)
+//            {
+//                viewControlsLayer.setPosition((String) event.getNewValue());
+//                //this.controller.redraw();
+//            }
+//        }
+//        else if (event.getPropertyName().equals(ORIENTATION_PROPERTY))
+//        {
+//            if (event.getNewValue() != null && event.getNewValue() instanceof String)
+//            {
+//                viewControlsLayer.setLayout((String) event.getNewValue());
+//                //this.controller.redraw();
+//            }
+//        }
+//        else if (event.getPropertyName().equals(PAN_CONTROLS_PROPERTY))
+//        {
+//            if (event.getNewValue() != null && event.getNewValue() instanceof Boolean)
+//            {
+//                viewControlsLayer.setShowPanControls((Boolean) event.getNewValue());
+//                //this.controller.redraw();
+//            }
+//        }
+//        else if (event.getPropertyName().equals(ZOOM_CONTROLS_PROPERTY))
+//        {
+//            if (event.getNewValue() != null && event.getNewValue() instanceof Boolean)
+//            {
+//                viewControlsLayer.setShowZoomControls((Boolean) event.getNewValue());
+//                //this.controller.redraw();
+//            }
+//        }
+//        else if (event.getPropertyName().equals(HEADING_CONTROLS_PROPERTY))
+//        {
+//            if (event.getNewValue() != null && event.getNewValue() instanceof Boolean)
+//            {
+//                viewControlsLayer.setShowHeadingControls((Boolean) event.getNewValue());
+//                //this.controller.redraw();
+//            }
+//        }
+//        else if (event.getPropertyName().equals(TILT_CONTROLS_PROPERTY))
+//        {
+//            if (event.getNewValue() != null && event.getNewValue() instanceof Boolean)
+//            {
+//                viewControlsLayer.setShowPitchControls((Boolean) event.getNewValue());
+//                //this.controller.redraw();
+//            }
+//        }
+//    }
+
+    public void setWWPanelVisible(final boolean isVisible)
+    {
+        if (isVisible && !isWWPanelVisible)
+        {
+            if (world == null)
+            {
+                init();
+            
+                SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+                {
+
+                    /* (non-Javadoc)
+                     * @see javax.swing.SwingWorker#doInBackground()
+                     */
+                    @Override
+                    protected Boolean doInBackground() throws Exception
+                    {
+                        Thread.currentThread().sleep(1000);
+                        return null;
+                    }
+
+                    /* (non-Javadoc)
+                     * @see javax.swing.SwingWorker#done()
+                     */
+                    @Override
+                    protected void done()
+                    {
+                        super.done();
+                        if (pointsCache != null && pointsCache.size() > 0)
+                        {
+                            placeMarkers(pointsCache, 0);
+                        }
+                        if (eyePosition != null)
+                        {
+                            world.getView().setEyePosition(eyePosition);
+                        }
+
+                    }
+                };
+                worker.execute();
+                
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                    }
+                });
+            }
+        } else if (!isVisible && isWWPanelVisible)
+        {
+            eyePosition = world.getView().getCurrentEyePosition();
+            remove(world);
+            
+            annoLayer.clearList();
+            annoLayer.removeAllAnnotations();
+            markerLayer.clearList();
+            lineLayer.clearList();
+            
+            world.getModel().getLayers().remove(lineLayer);
+            
+            markers.clear();
+            annotations.clear();
+
+            world.shutdown();
+            world = null;
+            
+            annoLayer   = null;
+            markerLayer = new MarkerLayer();
+            lineLayer   = new RenderableLayer();
+        }
+        isWWPanelVisible = isVisible;
+
     }
     
     /**
@@ -341,6 +517,12 @@ public class WorldWindPanel extends JPanel
         if (doReset)
         {
             reset();
+        }
+        
+        if (points != pointsCache)
+        {
+            pointsCache.clear();
+            pointsCache.addAll(points);
         }
         
         int i = 1;
@@ -486,7 +668,8 @@ public class WorldWindPanel extends JPanel
      */
     public void shutdown()
     {
-        //world.shutdown();
+        if (world != null) world.shutdown();
+        world = null;
     }
 
     /**
@@ -508,15 +691,21 @@ public class WorldWindPanel extends JPanel
 
     public static void insertBeforePlacenames(final WorldWindow wwd, final Layer layer)
     {
-        // Insert the layer into the layer list just before the placenames.
-        int compassPosition = 0;
-        LayerList layers = wwd.getModel().getLayers();
-        for (Layer l : layers)
+        if (layer != null)
         {
-            if (l instanceof PlaceNameLayer)
-                compassPosition = layers.indexOf(l);
+            // Insert the layer into the layer list just before the placenames.
+            int compassPosition = 0;
+            LayerList layers = wwd.getModel().getLayers();
+            for (Layer l : layers)
+            {
+                if (l instanceof PlaceNameLayer)
+                    compassPosition = layers.indexOf(l);
+            }
+            layers.add(compassPosition, layer);
+        } else
+        {
+            System.err.println("insertBeforePlacenames - layer was null.");
         }
-        layers.add(compassPosition, layer);
     }
 
     /**

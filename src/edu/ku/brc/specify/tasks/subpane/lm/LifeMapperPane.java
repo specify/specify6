@@ -1081,7 +1081,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                         if (hasPnts)
                         {
                             imgDisplay.setImage((Image)null);
-                            wwPanel.placeMarkers(points, false, false, 0, null, false);
+                            wwPanel.placeMarkers(points, false, true, 0, null, false);
                         
                             imgRequestCnt = 0;
                             
@@ -1170,4 +1170,17 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         searchMyDataBtn.setEnabled(enable);
         mySepComp.setEnabled(enable);
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
+     */
+    @Override
+    public void showingPane(boolean show)
+    {
+        super.showingPane(show);
+        wwPanel.setWWPanelVisible(show);
+        //wwPanel.getWorld().setVisible(show);
+        //wwPanel.setLocation(show ? 0 : -1000, 0);
+    }
+    
 }
