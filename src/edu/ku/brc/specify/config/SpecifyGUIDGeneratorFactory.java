@@ -36,6 +36,8 @@ import java.util.UUID;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -290,13 +292,22 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         int count = 0;
         
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(TABLE_IDS[category.ordinal()]);
+        if (CollectionObject.getClassTableId() == TABLE_IDS[category.ordinal()])
+        {
+            System.out.println("");
+        }
         if (tableInfo != null)
         {
-            String scope = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
-            //System.out.println(tableInfo.getTitle()+" -> "+scope);
-            String where = "GUID IS NOT NULL AND " + scope;
+            String origScope = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
+            boolean isScopeNotEmpty = origScope != null;
+            
+            String scope = (isScopeNotEmpty ? ("AND " + origScope) : "");
+            
+            System.out.println(tableInfo.getTitle()+" -> "+scope);
+            String where = "GUID IS NOT NULL " + scope;
             String sql   = String.format("SELECT %s,GUID FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
-
+            System.out.println(sql);
+            
             Statement         stmt    = null;
             PreparedStatement updStmt = null;
             try
@@ -313,7 +324,9 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 pw.flush();
                 
                 // Do all Records
-                sql   = String.format("SELECT %s,GUID FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), scope);
+                where = isScopeNotEmpty ? "WHERE " + origScope : "";
+                
+                sql   = String.format("SELECT COUNT(*) FROM %s %s", tableInfo.getName(), where);
                 count = BasicSQLUtils.getCountAsInt(sql);
                 System.out.println(sql);
                 System.out.println(tableInfo.getName()+" -> "+count);
@@ -324,10 +337,11 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 
                 setProgressValue(false, 0, count);
                 
-                sql = String.format("SELECT %s,Version FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
+                sql = String.format("SELECT %s,Version FROM %s %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
                 System.out.println(sql);
 
-                String updateStr = String.format("UPDATE %s SET GUID=?, VERSION=? WHERE %s AND %s=?", tableInfo.getName(), scope, tableInfo.getIdColumnName());
+                String updateStr = String.format("UPDATE %s SET GUID=?, VERSION=? WHERE %s=?", tableInfo.getName(), tableInfo.getIdColumnName());
+                System.out.println(updateStr);
                 stmt    = connection.createStatement();
                 updStmt = connection.prepareStatement(updateStr);
 
