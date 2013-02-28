@@ -37,7 +37,8 @@ public class GenericGUIDGeneratorFactory
     public static final String factoryName = "edu.ku.brc.af.core.CollectionObjGUIDGenFactory"; //$NON-NLS-1$
     
     public enum CATEGORY_TYPE {Attachment, Specimen, Taxonomy, Geography, CollectingEvent, LithoStrat, 
-                              Locality, Person, ReferenceWork, Journal, GeologicTimePeriod}
+                              Locality, Person, ReferenceWork, Journal, GeologicTimePeriod,
+                              Collection, Institution}
     
     protected static GenericGUIDGeneratorFactory instance = null;
     
