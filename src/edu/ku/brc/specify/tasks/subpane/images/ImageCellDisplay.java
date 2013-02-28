@@ -54,7 +54,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Sep 3, 2012
  *
  */
-public class ImageCellDisplay extends ImageDisplay
+public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListener
 {
     public static final int INFO_BTN        = -1;
     public static final int METADATA_BTN    = -2;
@@ -84,10 +84,13 @@ public class ImageCellDisplay extends ImageDisplay
     /**
      * @param imgWidth
      * @param imgHeight
+     * @param listener
      */
-    public ImageCellDisplay(final int imgWidth, final int imgHeight)
+    public ImageCellDisplay(final int imgWidth, final int imgHeight, final ImageLoaderListener listener)
     {
         super(imgWidth, imgHeight, false, false);
+        
+        this.listener = listener;
         
         setBackground(Color.WHITE);
         setOpaque(true);
@@ -225,20 +228,23 @@ public class ImageCellDisplay extends ImageDisplay
      */
     private void schedRepaint()
     {
-        SwingUtilities.invokeLater(new Runnable()
+        if (!stopLoading.get())
         {
-            @Override
-            public void run()
+            SwingUtilities.invokeLater(new Runnable()
             {
-                //ImageCellDisplay.this.revalidate();
-                ImageCellDisplay.this.repaint();
-                RepaintManager rpm = RepaintManager.currentManager(ImageCellDisplay.this);
-                Rectangle r = getBounds();
-                rpm.addDirtyRegion(ImageCellDisplay.this, r.x, r.y, r.width, r.height);
-                //ImageCellDisplay.this.update();
-                UIRegistry.forceTopFrameRepaint();
-            }
-        });
+                @Override
+                public void run()
+                {
+                    //ImageCellDisplay.this.revalidate();
+                    ImageCellDisplay.this.repaint();
+                    RepaintManager rpm = RepaintManager.currentManager(ImageCellDisplay.this);
+                    Rectangle r = getBounds();
+                    rpm.addDirtyRegion(ImageCellDisplay.this, r.x, r.y, r.width, r.height);
+                    //ImageCellDisplay.this.update();
+                    UIRegistry.forceTopFrameRepaint();
+                }
+            });
+        }
     }
     
     /* (non-Javadoc)
@@ -278,39 +284,8 @@ public class ImageCellDisplay extends ImageDisplay
     {
         if (imageLoader == null)
         {
-            listener = new ImageLoaderListener()
-            {
-                @Override
-                public void imagedLoaded(String    imageName,
-                                         String    mimeType,
-                                         boolean   doLoadFullImage,
-                                         int       scale,
-                                         boolean   isError,
-                                         ImageIcon imgIcon,
-                                         File localFile)
-                {
-                    setLoading(false);
-
-                    //System.out.println(imageName+" -> "+isError);
-                    if (!isError)
-                    {
-                        setImage(imgIcon);
-                        if (doLoadFullImage)
-                        {
-                            imgDataItem.setFullImgIcon(imgIcon);
-                        } else
-                        {
-                            imgDataItem.setImgIcon(imgIcon);
-                        }
-                    } else
-                    {
-                        setImage((ImageIcon)null);
-                    }
-                }
-            };
-            
             int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
-            imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, listener);
+            imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, this);
         } else
         {
             imageLoader.setImageName(imgDataItem.getImgName());
@@ -320,6 +295,42 @@ public class ImageCellDisplay extends ImageDisplay
         ImageLoaderExector.getInstance().loadImage(imageLoader);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
+     */
+    @Override
+    public void imagedLoaded(String imageName,
+                             String mimeType,
+                             boolean doLoadFullImage,
+                             int scale,
+                             boolean isError,
+                             ImageIcon imgIcon,
+                             File localFile)
+    {
+        setLoading(false);
+
+        //System.out.println(imageName+" -> "+isError);
+        if (!isError)
+        {
+            setImage(imgIcon);
+            if (doLoadFullImage)
+            {
+                imgDataItem.setFullImgIcon(imgIcon);
+            } else
+            {
+                imgDataItem.setImgIcon(imgIcon);
+            }
+        } else
+        {
+            setImage((ImageIcon)null);
+        }
+        
+        if (this.listener != null)
+        {
+            this.listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imgIcon, localFile);
+        }
+    }
+
     /**
      * @return the isSelected
      */

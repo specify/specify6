@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 
@@ -46,14 +47,14 @@ public class ImageLoader implements ImageLoaderIFace
     private ImageIcon imageIcon;
     private boolean   isError;
     private ImageLoaderListener listener;
+    private AtomicBoolean contLoading = new AtomicBoolean(true);
     
-    static int cnt = 0;
     /**
      * @param imageName
      * @param mimeType
      * @param doLoadFullImage
      * @param scale
-     * @param cl
+     * @param listener
      */
     public ImageLoader(final String imageName, 
                        final String mimeType, 
@@ -62,11 +63,11 @@ public class ImageLoader implements ImageLoaderIFace
                        final ImageLoaderListener listener)
     {
         super();
-        this.imageName = imageName;
-        this.mimeType = mimeType;
+        this.imageName       = imageName;
+        this.mimeType        = mimeType;
         this.doLoadFullImage = doLoadFullImage;
-        this.scale = scale;
-        this.listener = listener;
+        this.scale           = scale;
+        this.listener        = listener;
     }
 
     /* (non-Javadoc)
@@ -97,7 +98,7 @@ public class ImageLoader implements ImageLoaderIFace
             if (localFile != null)
             {
                 imageIcon = new ImageIcon(localFile.getAbsolutePath());
-                isError = imageIcon == null;
+                isError   = imageIcon == null;
             } else
             {
                 isError = true;
@@ -115,7 +116,7 @@ public class ImageLoader implements ImageLoaderIFace
     @Override
     public void done()
     {
-        if (listener != null)
+        if (listener != null && contLoading.get())
         {
             listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
         }
@@ -209,5 +210,13 @@ public class ImageLoader implements ImageLoaderIFace
     {
         this.mimeType = mimeType;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#stopLoading()
+     */
+    @Override
+    public void stopLoading()
+    {
+        this.contLoading.set(false);
+    }
 }

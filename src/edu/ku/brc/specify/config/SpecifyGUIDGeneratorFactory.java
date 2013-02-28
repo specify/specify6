@@ -292,10 +292,10 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         int count = 0;
         
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(TABLE_IDS[category.ordinal()]);
-        if (CollectionObject.getClassTableId() == TABLE_IDS[category.ordinal()])
-        {
-            System.out.println("");
-        }
+//        if (CollectionObject.getClassTableId() == TABLE_IDS[category.ordinal()])
+//        {
+//            System.out.println("");
+//        }
         if (tableInfo != null)
         {
             String origScope = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);

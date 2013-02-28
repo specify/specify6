@@ -817,7 +817,7 @@ public class ResultSetController implements ValidationListener
      * Sets all the UI Enabled/Disabled
      * @param enabled true/false
      */
-    protected void setUIEnabled(final boolean enabled)
+    public void setUIEnabled(final boolean enabled)
     {
         if (!enabled)
         {

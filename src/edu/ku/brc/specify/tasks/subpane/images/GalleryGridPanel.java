@@ -22,12 +22,15 @@ package edu.ku.brc.specify.tasks.subpane.images;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.io.File;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -45,7 +48,7 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 3, 2012
  *
  */
-public class GalleryGridPanel extends JPanel
+public class GalleryGridPanel extends JPanel implements ImageLoaderListener
 {
     protected static final int CELL_SIZE = 135;
     protected static final int SEP_SIZE  = 8;
@@ -62,6 +65,8 @@ public class GalleryGridPanel extends JPanel
     //protected MouseAdapter                mouseAdapter;
     protected ResultSetController         rsController;
     
+    private AtomicBoolean                 stopLoading = new AtomicBoolean(false);
+    
     private int       gridRows;
     private int       gridCols;
     private Dimension layoutSize = null;
@@ -69,6 +74,7 @@ public class GalleryGridPanel extends JPanel
     private int numOfPages;
     private int pageNum;
     private int pageSize;
+    private int itemsLoaded   = 0;
     private int currOffIndex  = 0;
     private int currCellIndex = -1;
  
@@ -218,6 +224,79 @@ public class GalleryGridPanel extends JPanel
         reload(width, height);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
+     */
+    @Override
+    public void imagedLoaded(String imageName,
+                             String mimeType,
+                             boolean doLoadFullImage,
+                             int scale,
+                             boolean isError,
+                             ImageIcon imgIcon,
+                             File localFile)
+    {
+        itemsLoaded++;
+        if (itemsLoaded == displayList.size())
+        {
+            SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+            {
+                @Override
+                protected Boolean doInBackground() throws Exception
+                {
+                    try
+                    {
+                        Thread.sleep(100);
+                    } catch (Exception ex) {}
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
+                    rsController.setUIEnabled(true);
+                }
+            };
+            worker.execute();
+        }
+        
+    }
+
+    /**
+     * 
+     */
+    public void shutdown()
+    {
+        stopLoading.set(true);
+        
+        synchronized (itemList)
+        {
+            for (ImageDataItem idi : itemList)
+            {
+                idi.shutdown();
+            }
+            
+            for (ImageCellDisplay icd : displayList)
+            {
+                icd.stopLoading();
+            }
+            
+            for (ImageCellDisplay icd : recycleList)
+            {
+                icd.stopLoading();
+            }
+        }
+        
+        itemList.clear();
+        displayList.clear();
+        recycleList.clear();
+        selectionListeners.clear();
+        loadListeners.clear();
+        
+        infoListener = null;
+
+    }
+    
     /**
      * @param width
      * @param height
@@ -225,6 +304,7 @@ public class GalleryGridPanel extends JPanel
     private void reload(int width, int height)
     {
         //System.out.println(String.format("%d, %d", width, height));
+        if (stopLoading.get()) return;
         
         for (ImageCellDisplay imgDsp : displayList)
         {
@@ -266,6 +346,8 @@ public class GalleryGridPanel extends JPanel
             String rowDef = UIHelper.createDuplicateJGoodiesDef("p", actualVSep+"px", gridRows) + ",8px,p";
             String colDef = UIHelper.createDuplicateJGoodiesDef("p", actualHSep+"px", gridCols);
             
+            itemsLoaded = 0;
+            
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout(actualHSep + "px," + colDef, actualVSep + "px," + rowDef), this);
             int             x  = 2;
@@ -279,7 +361,7 @@ public class GalleryGridPanel extends JPanel
                 } else
                 {
                     int selSize = ImageCellDisplay.SELECTION_WIDTH * 2;
-                    imgDsp = new ImageCellDisplay(CELL_SIZE-selSize, CELL_SIZE-selSize);
+                    imgDsp = new ImageCellDisplay(CELL_SIZE-selSize, CELL_SIZE-selSize, this);
                     imgDsp.addListener(infoListener);
                 }
                 
@@ -324,33 +406,45 @@ public class GalleryGridPanel extends JPanel
             this.removeAll();
         }
         invalidate();
-    }
-
-    /* (non-Javadoc)
-     * @see java.awt.Container#doLayout()
-     */
-    @Override
-    public void doLayout()
-    {
-        super.doLayout();
         
-        /*SwingUtilities.invokeLater(new Runnable()
+        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
         {
             @Override
-            public void run()
+            protected Boolean doInBackground() throws Exception
             {
-                GalleryGridPanel.this.repaint();
+                try
+                {
+                    Thread.sleep(100);
+                } catch (Exception ex) {}
+                return null;
             }
-        });*/
+
+            @Override
+            protected void done()
+            {
+                synchronized (displayList)
+                {
+                    for (ImageCellDisplay icd : displayList)
+                    {
+                        if (icd.isLoading())
+                        {
+                            rsController.setUIEnabled(false);
+                        }
+                    }
+                }
+            }
+        };
+        worker.execute();
+        
     }
     
     /**
      * @return the rs
      */
-    public ResultSetController getResultSetController()
-    {
-        return rsController;
-    }
+//    public ResultSetController getResultSetController()
+//    {
+//        return rsController;
+//    }
 
     /**
      * 
@@ -384,7 +478,7 @@ public class GalleryGridPanel extends JPanel
     /**
      * @param itemList the itemList to set
      */
-    public void setItemList(Vector<ImageDataItem> itemList)
+    public void setItemList(final Vector<ImageDataItem> itemList)
     {
         this.itemList.clear();
         this.itemList.addAll(itemList);
@@ -393,7 +487,6 @@ public class GalleryGridPanel extends JPanel
             @Override
             public void run()
             {
-                //GalleryGridPanel.this.doLayout();
                 Rectangle r = getBounds();
                 GalleryGridPanel.this.setBounds(r.x, r.y, r.width, r.height);
             }

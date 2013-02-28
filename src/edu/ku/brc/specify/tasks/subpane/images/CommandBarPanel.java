@@ -114,8 +114,8 @@ public class CommandBarPanel extends JPanel
             }
         }
         
-        String leftP  = leftPB != null ? "p" : "f:p:g";
-        String rightP = rightPB != null ? "p" : "f:p:g";
+        String leftP  = leftPB != null ? "p" : "p";
+        String rightP = rightPB != null ? "p" : "p";
         PanelBuilder pb = new PanelBuilder(new FormLayout(leftP+", f:p:g, p, f:p:g, "+rightP, "f:p:g,p:g,f:p:g"), this);
         
         if (leftPB != null) pb.add(leftPB.getPanel(), cc.xy(1, 2));

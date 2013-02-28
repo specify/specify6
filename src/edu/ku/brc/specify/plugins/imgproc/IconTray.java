@@ -194,7 +194,7 @@ public class IconTray<Trayable> extends JPanel implements ChangeListener
     public synchronized void addItem(final Trayable item)
     {
         listModel.add(item);
-        System.out.println(listModel.getSize());
+        //System.out.println(listModel.getSize());
         reorder();
     }
     

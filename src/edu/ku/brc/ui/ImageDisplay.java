@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -86,13 +87,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	protected boolean      isNoImage       = true;
     protected JFileChooser chooser;
     protected boolean      doShowText      = true;
-    protected boolean      isLoading       = false;
     
     protected ChangeListener changeListener = null;
     protected JComponent     paintComponent = null;
     private   int            status         = kImageOK;
     private   ArrayList<File> fileCache = new ArrayList<File>();
 
+    protected AtomicBoolean isLoading       = new AtomicBoolean(false);
+    protected AtomicBoolean stopLoading     = new AtomicBoolean(false);
 
 	/**
 	 * Constructor.
@@ -165,6 +167,15 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		}
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#stopLoading()
+     */
+    @Override
+    public void stopLoading()
+    {
+        stopLoading.set(true);
+    }
+
 	/**
      * @return the changeListener
      */
@@ -194,7 +205,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
      */
     public boolean isLoading()
     {
-        return isLoading;
+        return isLoading.get();
     }
 
     /**
@@ -202,7 +213,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
      */
     public void setLoading(boolean isLoading)
     {
-        this.isLoading = isLoading;
+        this.isLoading.set(isLoading);
     }
 
     /**
@@ -281,17 +292,6 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     /**
      * 
      */
-    private void notifyChangeListener()
-    {
-        if (changeListener != null)
-        {
-            changeListener.stateChanged(new ChangeEvent(this));
-        }
-    }
-
-    /**
-     * 
-     */
     private void doLoadFromURL()
     {
         try
@@ -336,7 +336,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     @Override
     public void done()
     {
-        if (paintComponent != null)
+        if (paintComponent != null && !stopLoading.get())
         {
             notifyOnUIThread(true, true);
         }
@@ -347,6 +347,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	 */
 	private void startImageLoad()
 	{
+	    if (stopLoading.get())
+	    {
+	        System.err.println("Skipping load..."+url);
+	        status = kError;
+            return;
+	    }
+	    System.err.println("Starting load.... "+url);
+	    
 	    status = kImageOK;
 		if (isNotEmpty(url))
 		{
@@ -419,9 +427,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		int w = getWidth();
 		int h = getHeight();
 
-        Image dspImg = image;
-		boolean doDisplayImage = (image != null && (!isNoImage && status == kImageOK)) || isLoading;
-		if (isLoading)
+        Image   dspImg         = image;
+		boolean doDisplayImage = (image != null && (!isNoImage && status == kImageOK)) || isLoading.get();
+		if (isLoading.get())
 		{
 		    doDisplayImage = true;
 		    dspImg = IconManager.getImage("Loading").getImage();
@@ -478,15 +486,26 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	 */
 	private void notifyOnUIThread(final boolean doRepaint, final boolean notifyChangeListeners)
 	{
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
+	    if (!stopLoading.get())
+	    {
+            SwingUtilities.invokeLater(new Runnable()
             {
-                if (doRepaint) ImageDisplay.this.repaint();
-                if (notifyChangeListeners) notifyChangeListener();
-            }
-        });
+                @Override
+                public void run()
+                {
+                    if (doRepaint)
+                    {
+                        ImageDisplay.this.repaint();
+                    }
+                    
+                    if (notifyChangeListeners && changeListener != null)
+                    {
+                        changeListener.stateChanged(new ChangeEvent(this));
+                    }
+
+                }
+            });
+	    }
 	}
 
 	/**
@@ -603,5 +622,4 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
         }
         return null;
     }
-
 }

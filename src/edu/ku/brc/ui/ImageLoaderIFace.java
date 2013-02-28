@@ -51,4 +51,9 @@ public interface ImageLoaderIFace
      * @return
      */
     public abstract int getStatus();
+    
+    /**
+     * Tells Image Loader to stop
+     */
+    public abstract void stopLoading();
 }

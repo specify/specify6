@@ -366,6 +366,21 @@ public class AttachmentsTask extends BaseTask
     //-------------------------------------------------------
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#shutdown()
+     */
+    @Override
+    public void shutdown()
+    {
+        super.shutdown();
+        
+        if (imagesPane != null)
+        {
+            imagesPane.shutdown();
+        }
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
      */
     @Override

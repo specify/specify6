@@ -326,13 +326,18 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     @Override
     public String getMetaDataAsJSON(int attachmentID)
     {
-        String sql = "SELECT AttachmentLocation, OrigFilename FROM attachment WHERE AttachmentID="+attachmentID;
+        String sql = "SELECT AttachmentLocation, OrigFilename,MimeType FROM attachment WHERE AttachmentID="+attachmentID;
         log.debug(sql);
         
         Object[] columns = BasicSQLUtils.getRow(sql);
-        if (columns != null && columns.length == 2)
+        if (columns != null && columns.length == 3)
         {
-            return ImageMetaDataHelper.getJSONMetaData(getFileFromID(attachmentID)); // for file existence
+            String mimeType = (String)columns[2];
+            File   mdFile   = getFileFromID(attachmentID);
+            if (mdFile != null && StringUtils.isNotEmpty(mimeType) && mimeType.startsWith("image"))
+            {
+                return ImageMetaDataHelper.getJSONMetaData(mdFile); // for file existence
+            }
         }
         return null;
     }
@@ -394,6 +399,13 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public File getThumbnail(final Attachment attachment)
     {
+//        String attchLoc = attachment.getAttachmentLocation();
+//        String origName = attachment.getOrigFilename();;
+//        
+//        if (StringUtils.isEmpty(attchLoc) && StringUtils.isNotEmpty(origName))
+//        {
+//            attchLoc = origName;
+//        }
         return getThumbnail(attachment.getAttachmentLocation(), attachment.getMimeType());
     }
 

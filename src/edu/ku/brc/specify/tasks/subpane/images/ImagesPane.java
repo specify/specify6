@@ -176,8 +176,11 @@ public class ImagesPane extends BaseSubPane
     /**
      * @param name
      * @param task
+     * @param isAllImages
      */
-    public ImagesPane(String name, Taskable task, final boolean isAllImages)
+    public ImagesPane(final String name, 
+                      final Taskable task, 
+                      final boolean isAllImages)
     {
         super(name, task);
         this.isAllImages = isAllImages;
@@ -188,8 +191,10 @@ public class ImagesPane extends BaseSubPane
     /**
      * @param name
      * @param task
+     * @param recordSet
      */
-    public ImagesPane(String name, Taskable task, 
+    public ImagesPane(final String name, 
+                      final Taskable task, 
                       final RecordSetIFace recordSet)
     {
         super(name, task);
@@ -465,6 +470,29 @@ public class ImagesPane extends BaseSubPane
     }
     
     /**
+     * @return
+     */
+    private Comparator<ImageDataItem> createComparator()
+    {
+        return new Comparator<ImageDataItem>() {
+            @Override
+            public int compare(ImageDataItem o1, ImageDataItem o2)
+            {
+                if (o1 != null && o2 != null)
+                {
+                    String t1 = o1.getShortName();
+                    String t2 = o2.getShortName();
+                    if (t1 != null && t2 != null)
+                    {
+                        return t1.compareTo(t2);
+                    }
+                }
+                return 0;
+            }
+        };
+    }
+    
+    /**
      * 
      */
     private void searchForColObjImagesForTable()
@@ -501,13 +529,7 @@ public class ImagesPane extends BaseSubPane
                 }
                 rs.close();
                 
-                Collections.sort(rowsVector, new Comparator<ImageDataItem>() {
-                    @Override
-                    public int compare(ImageDataItem o1, ImageDataItem o2)
-                    {
-                        return o1.getShortName().compareTo(o2.getShortName());
-                    }
-                });
+                Collections.sort(rowsVector, createComparator());
                 
             } catch (Exception e)
             {
@@ -541,13 +563,7 @@ public class ImagesPane extends BaseSubPane
             }
             rs.close();
             
-            Collections.sort(rowsVector, new Comparator<ImageDataItem>() {
-                @Override
-                public int compare(ImageDataItem o1, ImageDataItem o2)
-                {
-                    return o1.getShortName().compareTo(o2.getShortName());
-                }
-            });
+            Collections.sort(rowsVector, createComparator());
             
         } catch (Exception e)
         {
@@ -751,6 +767,16 @@ public class ImagesPane extends BaseSubPane
     }
     
     /**
+     * 
+     */
+    private void clearBubblePane()
+    {
+        ((JFrame)getTopWindow()).setGlassPane(oldGlassPane);
+        bubblePane.setVisible(false);
+        showingGlassPane = false;
+    }
+    
+    /**
      * @param index
      * @param isInfoBtn
      */
@@ -769,9 +795,7 @@ public class ImagesPane extends BaseSubPane
             {
                 if (showingGlassPane)
                 {
-                    ((JFrame)getTopWindow()).setGlassPane(oldGlassPane);
-                    bubblePane.setVisible(false);
-                    showingGlassPane = false;
+                    clearBubblePane();
                     
                     SwingUtilities.invokeLater(new Runnable()
                     {
@@ -832,6 +856,38 @@ public class ImagesPane extends BaseSubPane
     }
     
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
+     */
+    @Override
+    public boolean aboutToShutdown()
+    {
+        if (showingGlassPane)
+        {
+            clearBubblePane();
+        }
+        
+        gridPanel.shutdown();
+        
+        return super.aboutToShutdown();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#shutdown()
+     */
+    @Override
+    public void shutdown()
+    {
+        super.shutdown();
+        
+        if (showingGlassPane)
+        {
+            clearBubblePane();
+        }
+        
+        gridPanel.shutdown();
+    }
+
     /**
      * @param item
      */

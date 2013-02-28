@@ -21,6 +21,7 @@ package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
@@ -51,10 +52,11 @@ public class ImageDataItem
     private ImageIcon imgIcon;
     private ImageIcon fullImgIcon = null;
     private HashMap<String, Object> dataMap = null;
-    //private int       currScale   = 0;
     private boolean   isSelected  = false;
     
     private String shortName = null;
+    
+    private AtomicBoolean stopLoading = new AtomicBoolean(false);
 
     
     private ItemImageLoaderListener itemImgLoadListener;
@@ -70,7 +72,6 @@ public class ImageDataItem
      * @param title
      * @param imgName
      * @param mimeType
-     * @param changeListener
      */
     public ImageDataItem(final Integer attachmentId, 
                          final int     tableId,
@@ -123,18 +124,21 @@ public class ImageDataItem
                            final int                 scale,
                            final ImageLoaderListener imgLoadListener)
     {
-        //System.out.println("loadImage - doLoadFullImage "+doLoadFullImage+"   scale "+scale);
-        if (loadImage == null)
+        if (!stopLoading.get())
         {
-            itemImgLoadListener = new ItemImageLoaderListener();
-            loadImage           = new ImageLoader(imgName, mimeType, doLoadFullImage, scale, itemImgLoadListener);
+            //System.out.println("loadImage - doLoadFullImage "+doLoadFullImage+"   scale "+scale);
+            if (loadImage == null)
+            {
+                itemImgLoadListener = new ItemImageLoaderListener();
+                loadImage           = new ImageLoader(imgName, mimeType, doLoadFullImage, scale, itemImgLoadListener);
+            }
+            
+            itemImgLoadListener.setImgLoadListener(imgLoadListener);
+            loadImage.setScale(scale);
+            loadImage.setDoLoadFullImage(doLoadFullImage);
+            
+            ImageLoaderExector.getInstance().loadImage(loadImage);
         }
-        
-        itemImgLoadListener.setImgLoadListener(imgLoadListener);
-        loadImage.setScale(scale);
-        loadImage.setDoLoadFullImage(doLoadFullImage);
-        
-        ImageLoaderExector.getInstance().loadImage(loadImage);
     }
 
     /**
@@ -273,7 +277,14 @@ public class ImageDataItem
         return shortName;
     }
 
-
+    /**
+     * 
+     */
+    public void shutdown()
+    {
+        stopLoading.set(true);
+    }
+    
     //--------------------------------------------------------------
     class ItemImageLoaderListener implements ImageLoaderListener
     {
@@ -313,7 +324,7 @@ public class ImageDataItem
                 @Override
                 public void run()
                 {
-                    if (imgLoadListener != null)
+                    if (!stopLoading.get() && imgLoadListener != null)
                     {
                         imgLoadListener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
                     }
