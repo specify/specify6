@@ -1469,7 +1469,10 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 {
                     if (e.getID() == 1001/*ComboBoxChanged*/)
                     {
-                        saveBtn.setEnabled(true);
+                        if (saveBtn != null)
+                        {
+                        	saveBtn.setEnabled(true);
+                        }
                     }
                 }
             
