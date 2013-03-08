@@ -3768,12 +3768,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                     }
                                     else
                                     {
-                                       if (isExportMapping && selectedQFP == null)
-                                       {
-                                    	   System.out.println("Skipping");
-                                    	   UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_NO_CONCEPT_SELECTED");
-                                    	   return;
-                                       }
                                     	   // add the field
 										try
 										{
@@ -4406,7 +4400,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
         for (SpExportSchemaItem schemaItem : sis)
         {
-        	
+        	//System.out.println("SchemaItem: " + schemaItem.getFieldName());
         	boolean autoMapped = false;
         	SpQueryField fld = getQueryFieldMapping(schemaMapping, schemaItem);
         	FieldQRI fieldQRI = null;
