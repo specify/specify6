@@ -52,6 +52,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.NonUniqueObjectException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -1445,6 +1446,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     try
                     {
                         session.attach(dataObj);
+                    } catch (NonUniqueObjectException ex)
+                    {
+                        dataObj = (FormDataObjIFace)session.get(dataObj.getDataClass(), dataObj.getId());
+                        
                     } catch (Exception ex)
                     {
                         session.refresh(dataObj);
