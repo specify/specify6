@@ -281,7 +281,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             });
         }
         
-        title = "ImageFrame.CLOSE";
+/*        title = "ImageFrame.CLOSE";
         mneu = "ImageFrame.CloseMneu";
         closeMI = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, null);
         closeMI.addActionListener(new ActionListener()
@@ -290,7 +290,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             {
                 ImageFrame.this.setVisible(false);
             }
-        });
+        });*/
         
         title = "ImageFrame.View";
         mneu = "ImageFrame.ViewMneu";
