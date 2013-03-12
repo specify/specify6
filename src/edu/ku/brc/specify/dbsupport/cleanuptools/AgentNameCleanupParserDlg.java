@@ -48,6 +48,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.CustomDialog;
 
 /**
@@ -183,9 +184,10 @@ public class AgentNameCleanupParserDlg extends CustomDialog
         try
         {
             Statement stmt = conn.createStatement();
-            String sql = "SELECT LastName, AgentID FROM agent WHERE SpecifyUserID IS NULL AND LastName IS NOT NULL AND FirstName IS NULL AND MiddleInitial IS NULL AND DivisionID = DIVID";
+            String sql = String.format("SELECT LastName, AgentID FROM agent WHERE SpecifyUserID IS NULL AND LastName IS NOT NULL AND " +
+            	                       "FirstName IS NULL AND MiddleInitial IS NULL AND DivisionID = DIVID AND AgentType = %d", Agent.PERSON);
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            System.out.println(sql);
+            //System.out.println(sql);
             
             int row = 1;
             ResultSet rs = stmt.executeQuery(sql);
