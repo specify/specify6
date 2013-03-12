@@ -1295,7 +1295,7 @@ public class InteractionsTask extends BaseTask
                     {
                         UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
                         
-                    } else if (shipments.size() > 1)
+                    } else if (shipments != null && shipments.size() > 1)
                     {
                         // XXX Do we allow them to pick a shipment or print all?
                         UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
@@ -1307,21 +1307,21 @@ public class InteractionsTask extends BaseTask
                         // using both a Loan Id and a Shipment ID, and at some point distinguishing between using
                         // the shipped by versus the shipper.
                         Shipment shipment = isGift ? gift.getShipments().iterator().next() : loan.getShipments().iterator().next();
-                        if (shipment.getShippedBy() == null)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
-                            
-                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
-                        } else if (shipment.getShippedTo() == null)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
-                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
-                        } else
-                        {
+//                        if (shipment.getShippedBy() == null)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
+//                            
+//                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
+//                        } else if (shipment.getShippedTo() == null)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
+//                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+//                        } else
+//                        {
                             String  identTitle;
                             int     tableId;
                             Integer id;
@@ -1344,7 +1344,7 @@ public class InteractionsTask extends BaseTask
                             rs.addItem(id);
                             
                             dispatchReport(invoice, rs, "LoanInvoice");
-                        }
+//                        }
                     }
                 } finally
                 {
