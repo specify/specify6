@@ -1306,7 +1306,7 @@ public class InteractionsTask extends BaseTask
                         // but the hard part will be sending the correct info so the report can be printed
                         // using both a Loan Id and a Shipment ID, and at some point distinguishing between using
                         // the shipped by versus the shipper.
-                        Shipment shipment = isGift ? gift.getShipments().iterator().next() : loan.getShipments().iterator().next();
+//                        Shipment shipment = isGift ? gift.getShipments().iterator().next() : loan.getShipments().iterator().next();
 //                        if (shipment.getShippedBy() == null)
 //                        {
 //                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
