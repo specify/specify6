@@ -45,9 +45,9 @@ public class IconTrayResultsPanel extends IconTray implements ESResultsTablePane
     protected PropertyChangeListener        propChangeListener;
     protected FormDataObjIFace              prevSelection;
     
-    public IconTrayResultsPanel()
+    public IconTrayResultsPanel(final int defWidth, final int defHeight)
     {
-        super(IconTray.SINGLE_ROW);
+        super(IconTray.SINGLE_ROW, defWidth, defHeight);
         
         iconListWidget.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {

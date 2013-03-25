@@ -435,7 +435,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
         
         // Attachment related helpers
-        Thumbnailer thumb = new Thumbnailer();
+        Thumbnailer thumb = Thumbnailer.getInstance();
         File thumbnailDir = null;
         try
         {
@@ -447,8 +447,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             throw new RuntimeException("Couldn't find thumbnailer xml ["+(thumbnailDir != null ? thumbnailDir.getAbsolutePath() : "")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         thumb.setQuality(.5f);
-        thumb.setMaxHeight(256);
-        thumb.setMaxWidth(256);
+        thumb.setMaxSize(256, 256);
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -2671,7 +2670,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         final SpecifySchemaUpdateService schemaUpdater = (SpecifySchemaUpdateService)SpecifySchemaUpdateService.getInstance();
         
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
-                                    "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", schemaUpdater.getGUIDPrefNameForCollection()};
+                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", schemaUpdater.getGUIDPrefNameForCollection()};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
         boolean anyNeededToBeFixed = false;

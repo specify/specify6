@@ -103,7 +103,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
             canOpen = permissions.canView();
         }
 
-        Thumbnailer thumb = new Thumbnailer();
+        Thumbnailer thumb = Thumbnailer.getInstance();
         File thumbnailDir = null;
         try
         {
@@ -114,9 +114,9 @@ public class BatchAttachLauncher implements DatabaseLoginListener
         {
             throw new RuntimeException("Couldn't find thumbnailer xml ["+(thumbnailDir != null ? thumbnailDir.getAbsolutePath() : "")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
-        thumb.setQuality(.5f);
-        thumb.setMaxHeight(128);
-        thumb.setMaxWidth(128);
+        thumb.setQuality(0.5f);
+        thumb.setMaxSize(128, 128);
+        
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         AttachmentManagerIface attachMgr          = null;
         File                   attachmentLocation = null;

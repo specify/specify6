@@ -43,15 +43,11 @@ import com.sun.pdfview.PDFPage;
  * Feb 19, 2013
  *
  */
-public class PDFThumbnailGenerator implements ThumbnailGeneratorIFace, ImageObserver
+public class PDFThumbnailGenerator extends BaseThumbnailGenerator implements ImageObserver
 {
     private static final String[] mimetypes = {"application/pdf", "application/x-pdf"};
     
-    private int maxWidth  = 32;
-    private int maxHeight = 32;
-    private int baseLineHeight = 256;//96;
-    
-    //---
+    private int    baseLineHeight  = 256;
     private Insets thumbnailInsets = new Insets(3, 3, 20, 3);
     
     /** 
@@ -61,47 +57,10 @@ public class PDFThumbnailGenerator implements ThumbnailGeneratorIFace, ImageObse
     private int lineheight = baseLineHeight + thumbnailInsets.top + thumbnailInsets.bottom;
     
     /**
-     * Guesstimate of the width of a thumbnail that hasn't been processed
-     * yet.
+     * Guesstimate of the width of a thumbnail that hasn't been processed yet.
      */
-    private int defaultWidth = (int)(baseLineHeight/1.41) + thumbnailInsets.left + thumbnailInsets.right;
+    //private int defaultWidth = (int)(baseLineHeight/1.41) + thumbnailInsets.left + thumbnailInsets.right;
     
-    //---
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxWidth(int)
-     */
-    @Override
-    public void setMaxWidth(int maxWidth)
-    {
-        this.maxWidth = maxWidth;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxHeight(int)
-     */
-    @Override
-    public void setMaxHeight(int maxHeight)
-    {
-        this.maxHeight = maxHeight;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxDuration(int)
-     */
-    @Override
-    public void setMaxDuration(int seconds)
-    {
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setQuality(float)
-     */
-    @Override
-    public void setQuality(float percent)
-    {
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#getSupportedMimeTypes()
      */

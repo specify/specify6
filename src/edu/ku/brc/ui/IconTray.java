@@ -82,11 +82,11 @@ public class IconTray extends JPanel implements ChangeListener
     /**
      * Creates a new IconTray containing zero items.
      */
-    public IconTray(int layoutStyle)
+    public IconTray(final int layoutStyle, final int defWidth, final int defHeight)
     {
         style = layoutStyle;
         listModel = new DefaultModifiableListModel<Object>();
-        ListCellRenderer renderer = new TrayListCellRenderer(this);
+        ListCellRenderer renderer = new TrayListCellRenderer(this, defWidth, defHeight);
         iconListWidget = new JList(listModel);
         iconListWidget.setCellRenderer(renderer);
         iconListWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -113,7 +113,7 @@ public class IconTray extends JPanel implements ChangeListener
      * @see java.awt.Component#addMouseListener(java.awt.event.MouseListener)
      */
     @Override
-    public synchronized void addMouseListener(MouseListener l)
+    public synchronized void addMouseListener(final MouseListener l)
     {
         super.addMouseListener(l);
         iconListWidget.addMouseListener(l);
@@ -149,7 +149,7 @@ public class IconTray extends JPanel implements ChangeListener
      * 
      * @param renderer a cell renderer
      */
-    public void setCellRenderer(ListCellRenderer renderer)
+    public void setCellRenderer(final ListCellRenderer renderer)
     {
         iconListWidget.setCellRenderer(renderer);
     }
@@ -214,6 +214,7 @@ public class IconTray extends JPanel implements ChangeListener
                 //int sizeDiff = horz.getMaximum() - prevHorzMax;
                 //horz.setValue(sizeDiff == 0 ? horz.getMaximum() : (horz.getValue() + (horz.getMaximum() - prevHorzMax)));
                 horz.setValue(horz.getMaximum());
+                repaint();
             }
         };
         worker.execute();
@@ -320,7 +321,7 @@ public class IconTray extends JPanel implements ChangeListener
      */
     public void setSelectedIndex(final int index)
     {
-        iconListWidget.setSelectedIndex(-1);
+        iconListWidget.setSelectedIndex(index);
     }
     
     /**

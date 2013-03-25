@@ -35,61 +35,20 @@ import edu.ku.brc.ui.GraphicsUtils;
  * The exact list can be retrieved by calling {@link ImageIO#getReaderMIMETypes()}.
  * All thumbnail images are JPEG encoded.
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
+ * @author rods
  */
-public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
+public class ImageThumbnailGenerator extends BaseThumbnailGenerator
 {
-    /** The max width of the thumbnail output. */
-	protected int maxWidth;
-	
-    /** The max height of the thumbnail output. */
-	protected int maxHeight;
-	
-    /** The quality factor of the thumbnail output. */
-	protected float quality;
-	
 	/**
-	 * Create an instance with a default max width and max height of 32.
+	 * Create an instance with a default max width and max height of 100.
 	 */
 	public ImageThumbnailGenerator()
 	{
-		maxWidth  = 100;
-		maxHeight = 100;
+	    super();
 	}
 	
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setMaxWidth(int)
-	 */
-	public void setMaxWidth(int maxWidth)
-	{
-		this.maxWidth = maxWidth;
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setMaxHeight(int)
-	 */
-	public void setMaxHeight(int maxHeight)
-	{
-		this.maxHeight = maxHeight;
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setQuality(float)
-	 */
-	public void setQuality(float percent)
-	{
-		this.quality = percent;
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#getSupportedMimeTypes()
-	 */
-	public String[] getSupportedMimeTypes()
-	{
-		return ImageIO.getReaderMIMETypes();
-	}
-    
     /**
      * Creates a thumbnail of the given image bytes.
      * 
@@ -107,32 +66,23 @@ public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
             BufferedImage orig = ImageIO.read(inputStr);
             if (orig != null)
             {
-                if (orig.getHeight() < maxHeight && orig.getWidth() < maxWidth)
+                if (orig.getHeight() < maxSize.getHeight() && orig.getWidth() < maxSize.getWidth())
                 {
                     // there's no need to do anything since the original is already under the max size
                     return originalImageData;
                 }
                 
-                byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxHeight, maxWidth, true, doHighQuality);
+                byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxSize.height, maxSize.width, true, doHighQuality);
                 return scaledImgData;
             }
         }
         return null;
     }
     
-    /**
-     * @param tiffImageFile
-     * @return
-     */
-    public byte[] generateTiffThumbnail(final File tiffImageFile)
-    {
-  
-        return null;
-    }
-	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
+    @Override
 	public boolean generateThumbnail(final String originalFile, 
 	                                 final String thumbnailFile,
 	                                 final boolean doHighQuality) throws IOException
@@ -149,13 +99,5 @@ public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
         }
 	    
         return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setMaxDuration(int)
-	 */
-	public void setMaxDuration(int seconds)
-	{
-		// ignored
 	}
 }

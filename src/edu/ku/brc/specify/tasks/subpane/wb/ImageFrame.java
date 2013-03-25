@@ -227,8 +227,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         statusBar = new JStatusBar();
         
         thumbnailer = new ImageThumbnailGenerator();
-        thumbnailer.setMaxHeight(32);
-        thumbnailer.setMaxWidth(32);
+        thumbnailer.setMaxSize(256, 256);
         thumbnailer.setQuality(1);
         
         tray = new ThumbnailTray();

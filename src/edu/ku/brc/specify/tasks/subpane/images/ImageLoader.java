@@ -116,6 +116,8 @@ public class ImageLoader implements ImageLoaderIFace
     @Override
     public void done()
     {
+        // contLoading is for when something or someone wants to 
+        // prematurely stop the loading.external 
         if (listener != null && contLoading.get())
         {
             listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);

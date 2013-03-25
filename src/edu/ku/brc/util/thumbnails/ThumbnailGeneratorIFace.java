@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.util.thumbnails;
 
+import java.awt.Dimension;
 import java.io.IOException;
 
 /**
@@ -30,26 +31,31 @@ import java.io.IOException;
  */
 public interface ThumbnailGeneratorIFace
 {
-	/**
-	 * Sets the maximum width of any visual thumbnails created.
-	 *
-	 * @param maxWidth the maximum thumbnail width
-	 */
-	public void setMaxWidth(int maxWidth);
-
-	/**
-	 * Sets the maximum height of any visual thumbnails created.
-	 *
-	 * @param maxHeight the maximum thumbnail height
-	 */
-	public void setMaxHeight(int maxHeight);
+    /**
+     * Sets the maximum width / height of any visual thumbnails created.
+     *
+     * @param maxSize the maximum thumbnail size
+     */
+    public abstract void setMaxSize(Dimension maxSize);
+    
+    /**
+     * Sets the maximum width / height of any visual thumbnails created.
+     *
+     * @param maxSize the maximum thumbnail size
+     */
+    public abstract void setMaxSize(int width, int height);
+    
+    /**
+     * @return the maximum width and height
+     */
+    public abstract Dimension getMaxSize();
 	
 	/**
 	 * Sets the maximum duration of any audio or video 'thumbnails' created.
 	 *
 	 * @param seconds the time length of the audio or video thumbnails created
 	 */
-	public void setMaxDuration(int seconds);
+	//public abstract void setMaxDuration(int seconds);
 
 	/**
 	 * Sets the quality factor for any thumbnailers that implement a configurable
@@ -57,14 +63,14 @@ public interface ThumbnailGeneratorIFace
 	 *
 	 * @param percent the quality factor
 	 */
-	public void setQuality(float percent);
+	public abstract void setQuality(float percent);
 
 	/**
 	 * Returns an array of MIME types that are supported by this thumbnail generator.
 	 *
 	 * @return the array of supported MIME types
 	 */
-	public String[] getSupportedMimeTypes();
+	public abstract String[] getSupportedMimeTypes();
 
 	/**
 	 * Create a thumbnail for the given original, placing the output in the given output file.
@@ -75,7 +81,7 @@ public interface ThumbnailGeneratorIFace
      * @return true if thumbnail was create and false it is wasn't
 	 * @throws IOException if any IO errors occur during generation or storing the output
 	 */
-	public boolean generateThumbnail(String originalFile, 
-	                                 String thumbnailFile,
-	                                 boolean doHighQuality) throws IOException;
+	public abstract boolean generateThumbnail(String originalFile, 
+	                                          String thumbnailFile,
+	                                          boolean doHighQuality) throws IOException;
 }

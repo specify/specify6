@@ -52,7 +52,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         setCheckbox("1", "Interactions.Using.Interactions", true);
         setCheckbox("2", "ExportTask.OnTaskbar", false);
         setCheckbox("3", "StartupTask.OnTaskbar", true);
-        setCheckbox("4", "ImagesTask.OnTaskbar", false, "ATTACHMENTS");
+        setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS");
         setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
     }
     

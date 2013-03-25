@@ -7740,12 +7740,11 @@ public class BuildSampleDatabase
                 }
             });
             
-            Thumbnailer thumb = new Thumbnailer();
+            Thumbnailer thumb = Thumbnailer.getInstance();
             File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
             thumb.registerThumbnailers(thumbFile);
-            thumb.setQuality(.5f);
-            thumb.setMaxHeight(128);
-            thumb.setMaxWidth(128);
+            thumb.setQuality(0.5f);
+            thumb.setMaxSize(128, 128);
 
             File attLoc = getAppDataSubDir("AttachmentStorage", true);
             FileUtils.cleanDirectory(attLoc);
@@ -7927,12 +7926,11 @@ public class BuildSampleDatabase
 
                 try
                 {
-                    Thumbnailer thumb = new Thumbnailer();
+                    Thumbnailer thumb = Thumbnailer.getInstance();
                     File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
                     thumb.registerThumbnailers(thumbFile);
-                    thumb.setQuality(.5f);
-                    thumb.setMaxHeight(128);
-                    thumb.setMaxWidth(128);
+                    thumb.setQuality(0.5f);
+                    thumb.setMaxSize(128, 128);
 
                     frame.setDesc("Cleaning Attachment Cache...");
                     frame.setOverall(steps++);

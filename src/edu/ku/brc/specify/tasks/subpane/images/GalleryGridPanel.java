@@ -62,7 +62,6 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
     protected Vector<ImageLoaderListener> loadListeners      = new Vector<ImageLoaderListener>();
     
     protected GalleryGridListener         infoListener;
-    //protected MouseAdapter                mouseAdapter;
     protected ResultSetController         rsController;
     
     private AtomicBoolean                 stopLoading = new AtomicBoolean(false);
@@ -237,7 +236,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                              File localFile)
     {
         itemsLoaded++;
-        if (itemsLoaded == displayList.size())
+        if (itemsLoaded == displayList.size() && itemsLoaded > 0)
         {
             SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
             {

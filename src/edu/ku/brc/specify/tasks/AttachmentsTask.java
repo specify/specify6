@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JToolBar;
 
@@ -78,7 +79,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class AttachmentsTask extends BaseTask
 {
-    private static final String  ON_TASKBAR             = "ImagesTask.OnTaskbar";
+    private static final String  ON_TASKBAR             = "AttachmentsTask.OnTaskbar";
     private static final String  ATTACHMENTS            = "ATTACHMENTS";
     private static final String  ATTACHMENTS_SEARCH     = "ATTACHMENTS.SEARCH";
     //private static final String  ATTACHMENTS_TITLE     = "ATTACHMENTS_TITLE";
@@ -92,6 +93,8 @@ public class AttachmentsTask extends BaseTask
 
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected ToolBarDropDownBtn      toolBarBtn       = null;
+    
+    protected AtomicBoolean           isDoingImageSearching = new AtomicBoolean(false);
     
     /**
      * 
@@ -117,9 +120,9 @@ public class AttachmentsTask extends BaseTask
             extendedNavBoxes.clear();
             
             // Actions
-            RolloverCommand showAllBtn = (RolloverCommand)addNavBoxItem(actionNavBox,      "Show All Images",    "image", null, null);
-            RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Images",      "image", null, null);
-            RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, "Import Image Index", "image", null, null);
+            RolloverCommand showAllBtn      = (RolloverCommand)addNavBoxItem(actionNavBox,  getResourceString("ATTCH_SHOWALL_ATT"),   "image", null, null);
+            RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGS"),    "image", null, null);
+            RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGSMAP"), "image", null, null);
             
             //RolloverCommand uploadOCRBtn    = (RolloverCommand)addNavBoxItem(actionNavBox, "Import OCR Data", "image", null, null);
             //addNavBoxItem(actionNavBox, "Import OCR Data", "network_node_del", null, null);
@@ -245,8 +248,33 @@ public class AttachmentsTask extends BaseTask
         {
             removeSubPaneFromMgr(starterPane);
         }
-        starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), AttachmentsTask.this, rs); 
-        addSubPaneToMgr(starterPane);
+        
+        starterPane = null;
+        imagesPane  = null;
+        
+        //isDoingImageSearching.set(false);
+        
+        if (!isDoingImageSearching.get())
+        {
+            isDoingImageSearching.set(true);
+            new ImagesPane(getResourceString(ATTACHMENTS), this, rs);
+        }
+    }
+    
+    /**
+     * @param imgPane
+     */
+    public void imageSearchDone(final ImagesPane imgPane)
+    {
+        if (isDoingImageSearching.get())
+        {
+            isDoingImageSearching.set(false);
+            if (imgPane != null)
+            {
+                starterPane = imagesPane = imgPane; 
+                addSubPaneToMgr(starterPane);
+            }
+        }
     }
     
     /* (non-Javadoc)
@@ -325,7 +353,7 @@ public class AttachmentsTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        if (AppPreferences.getRemote().getBoolean(ON_TASKBAR, false))
+        if (AppPreferences.getRemote().getBoolean(ON_TASKBAR, true))
         {
             toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }

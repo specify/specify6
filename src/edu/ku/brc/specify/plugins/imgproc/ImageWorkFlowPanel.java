@@ -79,21 +79,21 @@ public class ImageWorkFlowPanel extends JPanel implements ImageProcListener, Wor
     /**
      * 
      */
-    public ImageWorkFlowPanel()
+    public ImageWorkFlowPanel(final int defWidth, final int defHeight)
     {
         super();
-        createUI();
+        createUI(defWidth, defHeight);
     }
 
     /**
      * 
      */
-    public void createUI()
+    public void createUI(final int defWidth, final int defHeight)
     {
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,8px,f:p:g", "p,4px,f:max(150px;p):g,8px,p"), this);
         
-        imageTray = new IconTray<Trayable>(IconTray.SINGLE_ROW);
+        imageTray = new IconTray<Trayable>(IconTray.SINGLE_ROW, defWidth, defHeight);
         imageTray.setCellRenderer(new ImageTrayListCellRenderer());
         //imageTray.setFixedCellHeight(120);
         

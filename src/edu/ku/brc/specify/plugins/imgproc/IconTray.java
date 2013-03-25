@@ -60,7 +60,7 @@ public class IconTray<Trayable> extends JPanel implements ChangeListener
     /** A logger for emitting errors, warnings, etc. */
     protected static final Logger log = Logger.getLogger(IconTray.class);
     
-    public static final int SINGLE_ROW = 1;
+    public static final int SINGLE_ROW    = 1;
     public static final int MULTIPLE_ROWS = 2;
     
     protected int minHeight = 64;
@@ -78,11 +78,11 @@ public class IconTray<Trayable> extends JPanel implements ChangeListener
     /**
      * Creates a new IconTray containing zero items.
      */
-    public IconTray(int layoutStyle)
+    public IconTray(final int layoutStyle, final int defWidth, final int defHeight)
     {
         style = layoutStyle;
         listModel = new DefaultModifiableListModel<Object>();
-        ListCellRenderer renderer = new TrayListCellRenderer(this);
+        ListCellRenderer renderer = new TrayListCellRenderer(this, defWidth, defHeight);
         iconListWidget = new JList(listModel);
         iconListWidget.setCellRenderer(renderer);
         iconListWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -113,7 +113,6 @@ public class IconTray<Trayable> extends JPanel implements ChangeListener
     {
         super.addMouseListener(l);
         iconListWidget.addMouseListener(l);
-        
     }
     
     /**

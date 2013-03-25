@@ -564,10 +564,10 @@ public class SpecifyExplorer extends HttpServlet
         /*
         try
         {
-            Thumbnailer thumb = new Thumbnailer();
+            Thumbnailer thumb = Thumbnailer.getInstance();
             thumb.registerThumbnailers("config/thumbnail_generators.xml");
             thumb.setQuality(.5f);
-            thumb.setMaxHeight(128);
+            thumb.setMaxSize(128);
             thumb.setMaxWidth(128);
     
             AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));

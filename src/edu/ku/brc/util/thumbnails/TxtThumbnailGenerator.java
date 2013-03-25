@@ -24,8 +24,11 @@ package edu.ku.brc.util.thumbnails;
  * @code_status Alpha
  * @author jstewart
  */
-public class TxtThumbnailGenerator implements ThumbnailGeneratorIFace
+public class TxtThumbnailGenerator extends BaseThumbnailGenerator
 {
+	/**
+	 * 
+	 */
 	public TxtThumbnailGenerator()
 	{
 		// do nothing
@@ -34,6 +37,7 @@ public class TxtThumbnailGenerator implements ThumbnailGeneratorIFace
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
+	@Override
 	public boolean generateThumbnail(final String originalFile,
 	                                 final String thumbnailFile, 
 	                                 final boolean doHighQuality)
@@ -52,52 +56,4 @@ public class TxtThumbnailGenerator implements ThumbnailGeneratorIFace
 	{
 		return new String[] {"text/plain"};
 	}
-
-	/**
-	 *
-	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxHeight(int)
-	 * @param maxHeight
-	 */
-	public void setMaxHeight(final int maxHeight)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 *
-	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxWidth(int)
-	 * @param maxWidth
-	 */
-	public void setMaxWidth(final int maxWidth)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 *
-	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setQuality(float)
-	 * @param percent
-	 */
-	public void setQuality(final float percent)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 *
-	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxDuration(int)
-	 * @param seconds
-	 */
-	public void setMaxDuration(final int seconds)
-	{
-		// ignored
-	}
-
 }

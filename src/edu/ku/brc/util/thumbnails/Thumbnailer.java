@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.util.thumbnails;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,28 +64,30 @@ public class Thumbnailer
     /** The quality factor of the thumbnail output. */
 	protected float quality;
 	
-    /** The max width of the thumbnail output. */
-	protected int maxWidth;
+    /** The max size of the thumbnail output. */
+	protected Dimension maxSize;
 	
-    /** The max height of the thumbnail output. */
-	protected int maxHeight;
+	private static Thumbnailer instance = new Thumbnailer();
 	
 	static
 	{
 	    readIconMap();
 	}
 	
+	public static Thumbnailer getInstance()
+	{
+	    return instance;
+	}
+	
 	/**
 	 * 
 	 */
-	public Thumbnailer()
+	private Thumbnailer()
 	{
 		mimeTypeToGeneratorMap = new Hashtable<String, ThumbnailGeneratorIFace>();
 		
-		
-		quality   = 1f;
-		maxWidth  = 100;
-		maxHeight = 100;
+		quality = 1f;
+		maxSize = new Dimension(100, 100);
 	}
 	
 	/**
@@ -104,8 +107,8 @@ public class Thumbnailer
 		NodeList generatorNodes = registry.getElementsByTagName("generator");
 		for(int i = 0; i < generatorNodes.getLength(); ++i )
 		{
-			Node generatorNode = generatorNodes.item(i);
-			Node classNameNode = generatorNode.getAttributes().getNamedItem("class");
+			Node   generatorNode      = generatorNodes.item(i);
+			Node   classNameNode      = generatorNode.getAttributes().getNamedItem("class");
 			String generatorClassName = classNameNode.getNodeValue();
 			ThumbnailGeneratorIFace gen = Class.forName(generatorClassName).asSubclass(ThumbnailGeneratorIFace.class).newInstance();
 			for(String supportedMimeType: gen.getSupportedMimeTypes())
@@ -168,9 +171,8 @@ public class Thumbnailer
 	public ThumbnailGeneratorIFace registerThumbnailGenerator(final String mimeType, final ThumbnailGeneratorIFace generator)
 	{
 		generator.setQuality(quality);
-		generator.setMaxHeight(maxHeight);
-		generator.setMaxWidth(maxWidth);
-		return mimeTypeToGeneratorMap.put(mimeType,generator);
+		generator.setMaxSize(maxSize);
+		return mimeTypeToGeneratorMap.put(mimeType, generator);
 	}
 	
 	/**
@@ -238,35 +240,18 @@ public class Thumbnailer
      * {@link ThumbnailGeneratorIFace#setMaxWidth(int)} is called on all registered
      * generators.
      * 
-	 * @param maxWidth the maximum width
+	 * @param width the maximum width
+	 * @param height the maximum height
 	 */
-	public void setMaxWidth(int maxWidth)
+	public void setMaxSize(final int width, final int height)
 	{
+	    this.maxSize = new Dimension(width, height);
+	    
 		Enumeration<ThumbnailGeneratorIFace> tgs = mimeTypeToGeneratorMap.elements();
 		while(tgs.hasMoreElements())
 		{
-			tgs.nextElement().setMaxWidth(maxWidth);
+			tgs.nextElement().setMaxSize(this.maxSize.width, this.maxSize.height); // forces it to create its own Dimension object
 		}
-		
-		this.maxWidth = maxWidth;
-	}
-
-	/**
-     * Sets the maximum height of any visual thumbnails generated.
-     * {@link ThumbnailGeneratorIFace#setMaxHeight(int)} is called on all registered
-     * generators.
-     * 
-     * @param maxHeight the maximum width
-	 */
-	public void setMaxHeight(int maxHeight)
-	{
-		Enumeration<ThumbnailGeneratorIFace> tgs = mimeTypeToGeneratorMap.elements();
-		while(tgs.hasMoreElements())
-		{
-			tgs.nextElement().setMaxHeight(maxHeight);
-		}
-		
-		this.maxHeight = maxHeight;
 	}
 
 	/**
@@ -279,16 +264,24 @@ public class Thumbnailer
 	 */
 	public void setQuality(float percent)
 	{
+        this.quality = percent;
+        
 		Enumeration<ThumbnailGeneratorIFace> tgs = mimeTypeToGeneratorMap.elements();
 		while(tgs.hasMoreElements())
 		{
 			tgs.nextElement().setQuality(percent);
 		}
-		
-		this.quality = percent;
 	}
 	
 	/**
+     * @return the maxSize
+     */
+    public Dimension getMaxSize()
+    {
+        return new Dimension(maxSize);
+    }
+
+    /**
 	 * Get icon name for extension.
 	 * @param ext file extension 
 	 * @return the icon name for a file extension
@@ -307,10 +300,10 @@ public class Thumbnailer
 	 */
 	/*public static void main(String[] args) throws Exception
 	{
-		Thumbnailer thumb = new Thumbnailer();
+		Thumbnailer thumb = Thumbnailer.getInstance();
 		thumb.registerThumbnailers("config\\thumbnail_generators.xml");
 		thumb.setQuality(.5f);
-		thumb.setMaxHeight(128);
+		thumb.setMaxSize(128);
 		thumb.setMaxWidth(128);
 		
 		String orig      = "C:\\Documents and Settings\\jstewart\\Desktop\\orig.png";

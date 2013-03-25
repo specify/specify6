@@ -20,7 +20,7 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
@@ -50,9 +50,9 @@ public class ImageDataItem
     private String    mimeType;
     private File      localFile;
     private ImageIcon imgIcon;
-    private ImageIcon fullImgIcon = null;
-    private HashMap<String, Object> dataMap = null;
-    private boolean   isSelected  = false;
+    private ImageIcon fullImgIcon       = null;
+    private Map<String, Object> dataMap = null;
+    private boolean   isSelected        = false;
     
     private String shortName = null;
     
@@ -235,7 +235,7 @@ public class ImageDataItem
     /**
      * @return the dataMap
      */
-    public HashMap<String, Object> getDataMap()
+    public Map<String, Object> getDataMap()
     {
         return dataMap;
     }
@@ -244,7 +244,7 @@ public class ImageDataItem
     /**
      * @param dataMap the dataMap to set
      */
-    public void setDataMap(HashMap<String, Object> dataMap)
+    public void setDataMap(Map<String, Object> dataMap)
     {
         this.dataMap = dataMap;
     }

@@ -202,12 +202,11 @@ public class SiteGen
         
         try
         {
-            Thumbnailer thumb = new Thumbnailer();
+            Thumbnailer thumb = Thumbnailer.getInstance();
             File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
             thumb.registerThumbnailers(thumbFile);
             thumb.setQuality(.5f);
-            thumb.setMaxHeight(128);
-            thumb.setMaxWidth(128);
+            thumb.setMaxSize(128, 128);
     
             AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
             AttachmentUtils.setAttachmentManager(attachMgr);

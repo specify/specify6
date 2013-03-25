@@ -19,7 +19,11 @@
 */
 package edu.ku.brc.ui.renderers;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -43,15 +47,27 @@ import edu.ku.brc.specify.ui.RepresentativeTextFactory;
 public class TrayListCellRenderer extends DefaultListCellRenderer
 {
     private ChangeListener listener;
+    private int            defWidth;
+    private int            defHeight;
+    
+    private BufferedImage  defaultImgIcon = null;
+    private Dimension      lastSize       = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
     
     /**
      * Creates a new instance with default configuration.
+     * @param listener
+     * @param width
+     * @param height
      */
-    public TrayListCellRenderer(final ChangeListener listener)
+    public TrayListCellRenderer(final ChangeListener listener, 
+                                final int width, 
+                                final int height)
     {
         super();
         
-        this.listener = listener;
+        this.listener  = listener;
+        this.defWidth  = width;
+        this.defHeight = height;
         
         // lookup, DefaultListCellRenderer extends JLabel,
         // so we can set any JLabel properties we want
@@ -75,9 +91,39 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
             String text = RepresentativeTextFactory.getInstance().getString(value);
             l.setText(text);
             l.setToolTipText(text);
+            
             // ask for the icon representation of the object
             ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value, null);
-            l.setIcon(icon);
+            if (icon != null && icon.getIconWidth() < 256 && icon.getIconHeight() < 256)
+            {
+                Graphics g = defaultImgIcon != null ? defaultImgIcon.createGraphics() : null;
+                
+                // At this point the icon is smaller than the default size
+                // so we create a default size image and write in the smaller image
+                
+                if (icon.getIconWidth() < lastSize.width && icon.getIconHeight() < lastSize.height)
+                {
+                    lastSize.setSize(icon.getIconWidth(), icon.getIconHeight());
+                    
+                    if (defaultImgIcon == null)
+                    {
+                        defaultImgIcon = new BufferedImage(defWidth, defHeight, BufferedImage.TYPE_INT_RGB);
+                        g = defaultImgIcon.createGraphics();
+                    }
+                    g.setColor(Color.WHITE);
+                    g.fillRect(0, 0, defWidth, defHeight);
+                }
+                
+                int x = (defWidth - icon.getIconWidth()) / 2;
+                int y = (defHeight - icon.getIconHeight()) / 2;
+                g.drawImage(icon.getImage(), x, y, null);
+                icon = new ImageIcon(defaultImgIcon);
+                g.dispose();
+                l.setIcon(new ImageIcon(defaultImgIcon));
+            } else
+            {
+                l.setIcon(icon);
+            }
         }
         return l;
     }

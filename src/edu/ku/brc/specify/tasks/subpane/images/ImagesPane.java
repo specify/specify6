@@ -25,6 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.writeSimpleGlassPaneMsg;
+import static edu.ku.brc.ui.UIRegistry.writeTimedSimpleGlassPaneMsg;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,11 +41,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -61,7 +64,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -94,6 +96,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tasks.AttachmentsTask;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.BubbleGlassPane;
@@ -119,60 +122,55 @@ import edu.ku.brc.util.Pair;
  */
 public class ImagesPane extends BaseSubPane
 {
-    protected static final Logger  log = Logger.getLogger(ImagesPane.class);
-    protected static final String  LAST_SEARCH   = "imglastsearch"; 
-    protected static final int     MENU_CLEAR    = 0;
-    protected static final int     MENU_DATE     = 1;
-    protected static final int     MENU_FILENAME = 2;
-    protected static final int     MENU_COMBO    = 3;
+    private static final Logger  log = Logger.getLogger(ImagesPane.class);
+    private static final String  LAST_SEARCH   = "imglastsearch"; 
+    private static final int     MENU_CLEAR    = 0;
+    private static final int     MENU_DATE     = 1;
+    private static final int     MENU_FILENAME = 2;
+    private static final int     MENU_COMBO    = 3;
     
-    protected static final int GLASS_FONT_SIZE = 14;
-    protected static final int MAX_IMAGE_REQUEST_COUNT = 3;
+    private static final int GLASS_FONT_SIZE = 14;
+    private static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
-    protected static ImageIcon infoIcon16 = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
+    private static ImageIcon infoIcon16 = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
 
-    protected static GhostGlassPane oldGlassPane     = null;    
+    private static GhostGlassPane oldGlassPane     = null;    
 
-    protected ViewBasedDisplayPanel coVBP;
-    protected BubbleGlassPane       bubblePane = null;
-    protected boolean               showingGlassPane = false;
+    private ViewBasedDisplayPanel coVBP;
+    private BubbleGlassPane       bubblePane = null;
+    private boolean               showingGlassPane = false;
     
-    protected boolean               isAllImages;
-    protected RecordSetIFace        recordSet;
+    private boolean               isAllImages;
+    private RecordSetIFace        recordSet;
     
-    protected Vector<ImageDataItem> rowsVector = new Vector<ImageDataItem>();
-    protected ImageInfoPanel        infoPanel;
-    protected MetaDataPanel         metaDataPanel;
+    private Vector<ImageDataItem> rowsVector = new Vector<ImageDataItem>();
+    private ImageInfoPanel        infoPanel;
+    private MetaDataPanel         metaDataPanel;
     
-    protected GalleryGridPanel      gridPanel;
-    protected ResultSetController   rsController;
+    private GalleryGridPanel      gridPanel;
+    private ResultSetController   rsController;
 
-    protected JButton               infoBtn;
-    protected JButton               metaDataBtn;
-    protected JButton               helpBtn;
-    protected boolean               isInfoShown = false;
+    private JButton               infoBtn;
+    private JButton               metaDataBtn;
+    private JButton               helpBtn;
+    private boolean               isInfoShown = false;
     
     // Search
-    protected SearchBoxComponent            searchBoxComp;
-    protected SearchBox                     searchBox;
-    protected JTextField                    searchText;
-    protected JButton                       searchBtn;
-    protected Color                         textBGColor      = null;
-    protected Color                         badSearchColor   = new Color(255,235,235);
+    private SearchBoxComponent            searchBoxComp;
+    private SearchBox                     searchBox;
+    private JTextField                    searchText;
+    private JButton                       searchBtn;
+    private Color                         textBGColor      = null;
+    private Color                         badSearchColor   = new Color(255,235,235);
 
     
     // Loading in batches
-    protected List<RecordSetItemIFace> items     = null;
+    private List<RecordSetItemIFace> items     = null;
     
-    protected HashMap<String, String> dataMap = new HashMap<String, String>();
+    private HashMap<String, String> dataMap = new HashMap<String, String>();
     
-    protected CollectionDataFetcher   dataFetcher = new CollectionDataFetcher();
+    private CollectionDataFetcher   dataFetcher = new CollectionDataFetcher();
     
-    protected int   [] colTblIds;
-    protected String[] fieldNames;
-    protected String[] labels;
-    protected UIFieldFormatterIFace[] formatters;
-
     /**
      * @param name
      * @param task
@@ -209,29 +207,8 @@ public class ImagesPane extends BaseSubPane
     private void initImagePane()
     {
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        boolean isEmbeded  = collection.getIsEmbeddedCollectingEvent();
         
-        colTblIds  = new int[]    {41,                1,               10,                   10,             2,             2,          2,          3,          4,     };
-        fieldNames = new String[] {"OrigFilename","CatalogNumber", "StartDate",     "StationFieldNumber","LocalityName","Latitude1","Longitude1","GeoName", "TaxName", };
-        labels     = new String [fieldNames.length];
-        formatters = new UIFieldFormatterIFace[fieldNames.length];
-        if (isEmbeded)
-        {
-            colTblIds[3]  = 1;
-            fieldNames[3] = "FieldNumber";
-        }
-        for (int i=0;i<fieldNames.length-2;i++)
-        {
-            String fldName = fieldNames[i].equals("GeoName") || fieldNames[i].equals("TaxName") ? "FullName" : fieldNames[i];
-            
-            labels[i]      = DBTableIdMgr.getInstance().getTitleForField(colTblIds[i], fldName);
-            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(colTblIds[i]);
-            formatters[i]  = DBTableIdMgr.getFieldFormatterFor(ti.getClassObj(), fldName);
-        }
-        int inx = fieldNames.length-2;
-        labels[inx] = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
-        inx++;
-        labels[inx] = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
+        initColObjDisplayInfo(collection.getIsEmbeddedCollectingEvent());
         
         rsController = new ResultSetController(null, false, false, false, "Image", 0, true);
         gridPanel    = new GalleryGridPanel(rsController);
@@ -241,9 +218,45 @@ public class ImagesPane extends BaseSubPane
     }
     
     /**
+     * @param isEmbeded
+     */
+    private void initColObjDisplayInfo(final boolean isEmbeded)
+    {
+        int[] colTblIds     = new int[]    {41,                1,               10,               10,             2,             2,          2,          3,          4,     };
+        String[] fieldNames = new String[] {"OrigFilename","CatalogNumber", "StartDate", "StationFieldNumber","LocalityName","Latitude1","Longitude1","GeoName", "TaxName", };
+        
+        if (isEmbeded)
+        {
+            colTblIds[3]  = 1;
+            fieldNames[3] = "FieldNumber";
+        }
+        
+        ArrayList<BubbleDisplayInfo> displayColInfos = new ArrayList<BubbleDisplayInfo>();
+        
+        for (int i=0;i<fieldNames.length-2;i++)
+        {
+            String fldName = fieldNames[i].equals("GeoName") || fieldNames[i].equals("TaxName") ? "FullName" : fieldNames[i];
+            
+            DBTableInfo ti   = DBTableIdMgr.getInstance().getInfoById(colTblIds[i]);
+            String     label = DBTableIdMgr.getInstance().getTitleForField(colTblIds[i], fldName);
+            UIFieldFormatterIFace formatter  = DBTableIdMgr.getFieldFormatterFor(ti.getClassObj(), fldName);
+            
+            displayColInfos.add(new BubbleDisplayInfo(colTblIds[i], fieldNames[i], label, formatter, ti));
+        }
+        
+        int inx = fieldNames.length-2;
+        String label = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
+        displayColInfos.add(new BubbleDisplayInfo(colTblIds[inx], fieldNames[inx], label));
+        
+        inx++;
+        label = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
+        displayColInfos.add(new BubbleDisplayInfo(colTblIds[inx], fieldNames[inx], label));
+    }
+    
+    /**
      * @return panel containing search ui
      */
-    protected JPanel createSearchPanel()
+    private JPanel createSearchPanel()
     {
         ActionListener doQuery = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -289,7 +302,7 @@ public class ImagesPane extends BaseSubPane
     /**
      * Creates the UI.
      */
-    protected void createUI()
+    private void createUI()
     {
         infoPanel = new ImageInfoPanel(dataFetcher, this);
         infoPanel.createUI();
@@ -371,7 +384,7 @@ public class ImagesPane extends BaseSubPane
     /**
      * @return a discipline based pref name.
      */
-    protected String getLastSearchKey()
+    private String getLastSearchKey()
     {
         Discipline discp          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         String     disciplineName = discp != null ? ("_" + discp.getType()) : "";
@@ -382,7 +395,7 @@ public class ImagesPane extends BaseSubPane
      * Shows the Reset menu.
      * @param e the mouse event
      */
-    protected void showContextMenu(final MouseEvent e)
+    private void showContextMenu(final MouseEvent e)
     {
         if (e.isPopupTrigger())
         {
@@ -423,7 +436,7 @@ public class ImagesPane extends BaseSubPane
     /**
      * 
      */
-    protected void showInfoPanel(final int index)
+    private void showInfoPanel(final int index)
     {
         //log.debug("infoBtn showInfoPanel - isInfoShown: "+isInfoShown);
         //gridPanel.clearSelection();
@@ -455,7 +468,7 @@ public class ImagesPane extends BaseSubPane
     /**
      * @param index
      */
-    protected void showMetaDataPanel(final int index)
+    private void showMetaDataPanel(final int index)
     {
         //gridPanel.clearSelection();
         if (!metaDataPanel.isExpanded())
@@ -495,54 +508,54 @@ public class ImagesPane extends BaseSubPane
     /**
      * 
      */
-    private void searchForColObjImagesForTable()
-    {
-        String sql = "SELECT a.AttachmentID, a.Title, a.AttachmentLocation, a.MimeType FROM collectionobject co INNER JOIN collectionobjectattachment coa ON co.CollectionObjectID = coa.CollectionObjectID " +
-                           "INNER JOIN attachment a ON coa.AttachmentID = a.AttachmentID %s";
-
-        String whereStr = isAllImages ? "ORDER BY Title" : "WHERE CatalogNumber = '%s' ORDER BY Ordinal";
-        sql = String.format(sql, whereStr);
-        
-        UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
-        if (fmt != null || isAllImages)
-        {
-            String queryStr = sql;
-            if (!isAllImages)
-            {
-                coVBP.getMultiView().getDataFromUI();
-                //System.out.println("["+dataMap.get("CatalogNumber")+"]");
-                String catNum   = (String)fmt.formatFromUI(dataMap.get("CatalogNumber"));
-                queryStr        = String.format(sql, catNum);
-                //System.out.println(queryStr);
-            }
-            Statement stmt  = null;
-            try
-            {
-                rowsVector.clear();
-                stmt = DBConnection.getInstance().getConnection().createStatement();
-                ResultSet rs = stmt.executeQuery(queryStr);
-                while (rs.next())
-                {
-                    ImageDataItem imgDataItem = new ImageDataItem(rs.getInt(1), CollectionObject.getClassTableId(), 
-                                                                  rs.getString(2), rs.getString(3), rs.getString(4));
-                    rowsVector.add(imgDataItem);
-                }
-                rs.close();
-                
-                Collections.sort(rowsVector, createComparator());
-                
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            } finally
-            {
-                try
-                {
-                    if (stmt != null) stmt.close();
-                } catch (Exception e) {}
-            }
-        }
-    }
+//    private void searchForColObjImagesForTable()
+//    {
+//        String sql = "SELECT a.AttachmentID, a.Title, a.AttachmentLocation, a.MimeType FROM collectionobject co INNER JOIN collectionobjectattachment coa ON co.CollectionObjectID = coa.CollectionObjectID " +
+//                           "INNER JOIN attachment a ON coa.AttachmentID = a.AttachmentID %s";
+//
+//        String whereStr = isAllImages ? "ORDER BY Title" : "WHERE CatalogNumber = '%s' ORDER BY Ordinal";
+//        sql = String.format(sql, whereStr);
+//        
+//        UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
+//        if (fmt != null || isAllImages)
+//        {
+//            String queryStr = sql;
+//            if (!isAllImages)
+//            {
+//                coVBP.getMultiView().getDataFromUI();
+//                //System.out.println("["+dataMap.get("CatalogNumber")+"]");
+//                String catNum   = (String)fmt.formatFromUI(dataMap.get("CatalogNumber"));
+//                queryStr        = String.format(sql, catNum);
+//                //System.out.println(queryStr);
+//            }
+//            Statement stmt  = null;
+//            try
+//            {
+//                rowsVector.clear();
+//                stmt = DBConnection.getInstance().getConnection().createStatement();
+//                ResultSet rs = stmt.executeQuery(queryStr);
+//                while (rs.next())
+//                {
+//                    ImageDataItem imgDataItem = new ImageDataItem(rs.getInt(1), CollectionObject.getClassTableId(), 
+//                                                                  rs.getString(2), rs.getString(3), rs.getString(4));
+//                    rowsVector.add(imgDataItem);
+//                }
+//                rs.close();
+//                
+//                Collections.sort(rowsVector, createComparator());
+//                
+//            } catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            } finally
+//            {
+//                try
+//                {
+//                    if (stmt != null) stmt.close();
+//                } catch (Exception e) {}
+//            }
+//        }
+//    }
     
     /**
      * 
@@ -669,21 +682,29 @@ public class ImagesPane extends BaseSubPane
             {
                 super.done();
                 
-                gridPanel.setItemList(rowsVector);
-                JScrollPane sb = new JScrollPane(gridPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                add(sb, BorderLayout.CENTER);
-
                 getStatusBar().setProgressDone(STATUSBAR_NAME);
-
                 clearSimpleGlassPaneMsg();
-
+                
+                if (rowsVector != null && rowsVector.size() > 0)
+                {
+                    gridPanel.setItemList(rowsVector);
+                    JScrollPane sb = new JScrollPane(gridPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    add(sb, BorderLayout.CENTER);
+                    
+                    ((AttachmentsTask)task).imageSearchDone(ImagesPane.this);
+                    
+                } else
+                {
+                    ((AttachmentsTask)task).imageSearchDone(null);
+                    writeTimedSimpleGlassPaneMsg(getResourceString("ATTCH_NO_IMAGES"));
+                }
             }
         };
 
         final JStatusBar statusBar = getStatusBar();
         statusBar.setIndeterminate(STATUSBAR_NAME, true);
         
-        writeSimpleGlassPaneMsg(getResourceString("Searching for Images"), 24);
+        writeSimpleGlassPaneMsg(getResourceString("ATTCH_SEARCH_IMGS"), 24);
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
@@ -721,12 +742,12 @@ public class ImagesPane extends BaseSubPane
      * @param item
      * @return
      */
-    protected HashMap<String, Object> getImageData(final ImageDataItem item)
+    private Map<String, Object> getImageData(final ImageDataItem item)
     {
-        HashMap<String, Object> map = item.getDataMap();
+        Map<String, Object> map = item.getDataMap();
         if (map == null)
         {
-            map = dataFetcher.getData(item.getAttachmentId(), item.getTableId());
+            map = dataFetcher.queryByTableId(item.getAttachmentId(), item.getTableId());
             item.setDataMap(map);
         }
         return map;
@@ -736,31 +757,22 @@ public class ImagesPane extends BaseSubPane
      * @param item
      * @return
      */
-    protected Vector<Pair<String, Object>> getImageDataValueList(final ImageDataItem item)
+    public Vector<Pair<String, Object>> getImageDataValueList(final ImageDataItem item)
     {
-        Vector<Pair<String, Object>> list = new Vector<Pair<String, Object>>();
-        
-        HashMap<String, Object> map = getImageData(item);
+        List<BubbleDisplayInfo>      displayInfos = dataFetcher.getBubbleDisplayInfo(item.getTableId());
+        Vector<Pair<String, Object>> list         = new Vector<Pair<String, Object>>();
+
+        Map<String, Object> map = getImageData(item);
         if (map != null)
         {
-            int i = 0;
-            for (String key : fieldNames)
+            for (BubbleDisplayInfo dci : displayInfos)
             {
-                Object val = map.get(key);
+                Object val = map.get(dci.getColumnName());
                 if (val != null)
                 {
-                    if (key.equals("OrigFilename"))
-                    {
-                        val = FilenameUtils.getName(val.toString());
-                    }
-                    if (formatters[i] != null)
-                    {
-                        val = formatters[i].formatToUI(val);
-                    }
-                    Pair<String, Object> p = new Pair<String, Object>(labels[i]+":", val != null ? val.toString() : "");
+                    Pair<String, Object> p = new Pair<String, Object>(dci.getLabel()+": ", val != null ? val.toString() : "");
                     list.add(p);
                 }
-                i++;
             }
         }
         return list;
@@ -817,6 +829,7 @@ public class ImagesPane extends BaseSubPane
             }
         });
         
+        int linesAdded = 0;
         Vector<Pair<String, Object>> values = null;
         if (whichBtn == ImageCellDisplay.INFO_BTN)
         {
@@ -826,13 +839,14 @@ public class ImagesPane extends BaseSubPane
                 for (Pair<String, Object> p : values)
                 {
                     bubblePane.addLine(p.first, p.second.toString());
+                    linesAdded++;
                 }
             }
         }
         
-        if (values != null)
+        if (linesAdded > 0 && values != null)
         {
-            String btnTitle = String.format("Show %s", DBTableIdMgr.getInstance().getTitleForId(item.getTableId()));
+            String btnTitle = UIRegistry.getLocalizedMessage("ATTCH_SHOW_TBL", DBTableIdMgr.getInstance().getTitleForId(item.getTableId()));
             bubblePane.addBtn(btnTitle, null);
         
             oldGlassPane = getGlassPane();
@@ -852,6 +866,9 @@ public class ImagesPane extends BaseSubPane
                 oldGlassPane     = null;
                 showingGlassPane = false;
             }
+        } else
+        {
+            writeTimedSimpleGlassPaneMsg(getResourceString("ATTCH_NO_INFO_AVAIL"));
         }
     }
     
@@ -1059,7 +1076,7 @@ public class ImagesPane extends BaseSubPane
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    searchForColObjImagesForTable();
+                    //searchForColObjImagesForTable();
                     gridPanel.setItemList(rowsVector);
                     //invalidate();
                     //revalidate();
@@ -1082,7 +1099,7 @@ public class ImagesPane extends BaseSubPane
                     if (e.getKeyCode() == KeyEvent.VK_ENTER &&
                             textFieldFinal.getText().length() > 0)
                     {
-                        searchForColObjImagesForTable();
+                        //searchForColObjImagesForTable();
                     }
                 }
                 
@@ -1127,7 +1144,7 @@ public class ImagesPane extends BaseSubPane
         if (dlg.isCancelled()) return;
         
         String startDate  = valuesHash.get("StartDate");
-        String endDate = valuesHash.get("EndDate");
+        //String endDate = valuesHash.get("EndDate");
         //System.out.println(String.format("[%s][%s]", startDate, endDate));
         
         StringBuilder sb         = new StringBuilder();

@@ -86,7 +86,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     protected JLabel       lastLabel;
     protected JTextField   lastNameText;
     
-    protected String[]     typeTitles;
+    protected static String[] typeTitles = null;
     
     protected ArrayList<Agent> cachedAgents = new ArrayList<Agent>();
     
@@ -97,13 +97,25 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     {
         super(Agent.class);
         
-        String[] typeTitleKeys = {"Agent_ORG", "Agent_PERSON", "Agent_OTHER", "Agent_GROUP"};
-        typeTitles = new String[typeTitleKeys.length];
-        int i = 0;
-        for (String key : typeTitleKeys)
+        getTypeTitle();
+    }
+    
+    /**
+     * @return
+     */
+    public static String[] getTypeTitle()
+    {
+        if (typeTitles == null)
         {
-            typeTitles[i++] = UIRegistry.getResourceString(key);
+            String[] typeTitleKeys = {"Agent_ORG", "Agent_PERSON", "Agent_OTHER", "Agent_GROUP"};
+            typeTitles = new String[typeTitleKeys.length];
+            int i = 0;
+            for (String key : typeTitleKeys)
+            {
+                typeTitles[i++] = UIRegistry.getResourceString(key);
+            }
         }
+        return typeTitles;
     }
     
     /* (non-Javadoc)

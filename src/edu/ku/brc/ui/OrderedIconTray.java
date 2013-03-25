@@ -70,9 +70,9 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      * Creates a new instance containing zero items.
      * 
      */
-    public OrderedIconTray(int layoutStyle)
+    public OrderedIconTray(final int layoutStyle, final int defWidth, final int defHeight)
     {
-        super(layoutStyle);
+        super(layoutStyle, defWidth, defHeight);
         
         listModel = new ReorderableTrayListModel<Object>();
         iconListWidget.setModel(listModel);

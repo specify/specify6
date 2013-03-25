@@ -29,6 +29,7 @@ import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -209,10 +210,10 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         if (imgDataItem != null)
         {
             boolean isPointSet = false;
-            HashMap<String, Object> map = imgDataItem.getDataMap(); 
+            Map<String, Object> map = imgDataItem.getDataMap(); 
             if (map == null)
             {
-                map = dataFetcher.getData(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
+                map = dataFetcher.queryByTableId(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
                 imgDataItem.setDataMap(map);
             }
             if (map != null)

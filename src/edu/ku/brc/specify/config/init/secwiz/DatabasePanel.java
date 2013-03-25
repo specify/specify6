@@ -572,12 +572,11 @@ public class DatabasePanel extends BaseSetupPanel
                                 
                                 firePropertyChange(PROPNAME, 0, 3);
                                 
-                                Thumbnailer thumb = new Thumbnailer();
+                                Thumbnailer thumb = Thumbnailer.getInstance();
                                 File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
                                 thumb.registerThumbnailers(thumbFile);
                                 thumb.setQuality(.5f);
-                                thumb.setMaxHeight(128);
-                                thumb.setMaxWidth(128);
+                                thumb.setMaxSize(128, 128);
 
                                 File attLoc = getAppDataSubDir("AttachmentStorage", true);
                                 FileUtils.cleanDirectory(attLoc);

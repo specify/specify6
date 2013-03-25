@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -77,6 +78,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Orderable;
 import edu.ku.brc.util.OrderableComparator;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * A Viewable that will display a set of FormDataObjIFace objects in a file
@@ -244,7 +246,8 @@ public class IconViewObj implements Viewable
         altViewsList = new Vector<AltViewIFace>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp, cellName, dataClass);
         
-        iconTray = new OrderedIconTray(IconTray.SINGLE_ROW);
+        Dimension maxSize = Thumbnailer.getInstance().getMaxSize();
+        iconTray = new OrderedIconTray(IconTray.SINGLE_ROW, maxSize.width, maxSize.height);
         iconTray.addPropertyChangeListener(new PropertyChangeListener()
         {
             public void propertyChange(PropertyChangeEvent evt)
