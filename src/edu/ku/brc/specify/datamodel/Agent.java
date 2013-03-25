@@ -254,6 +254,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         agentGeographies               = new HashSet<AgentGeography>();
         agentSpecialties               = new HashSet<AgentSpecialty>();
 
+        hasGUIDField = true;
         setGUID();
         
         /*

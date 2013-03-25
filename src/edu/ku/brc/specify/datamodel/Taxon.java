@@ -239,6 +239,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         
         acceptedChildren              = new HashSet<Taxon>();
         
+        hasGUIDField = true;
         setGUID();
 	}
 

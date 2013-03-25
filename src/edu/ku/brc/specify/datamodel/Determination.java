@@ -49,6 +49,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
     {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"}),
         @Index (name="DetMemIDX", columnNames={"CollectionMemberID"}),
         @Index (name="AlterNameIDX", columnNames={"AlternateName"}),
+        @Index (name="DeterminationGuidIDX", columnNames={"GUID"}),
         @Index (name="TypeStatusNameIDX", columnNames={"TypeStatusName"})
     })
 public class Determination extends CollectionMember implements java.io.Serializable, 
@@ -78,6 +79,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected Float               number2;
      protected Boolean             yesNo1;
      protected Boolean             yesNo2;
+     protected String              guid;
      protected Taxon               preferredTaxon; //= taxon.acceptedTaxon or taxon
      protected Taxon               taxon;
      protected CollectionObject    collectionObject;
@@ -134,6 +136,9 @@ public class Determination extends CollectionMember implements java.io.Serializa
         collectionObject = null;
         determinationCitations = new HashSet<DeterminationCitation>();
         determiner = null;
+        
+        hasGUIDField = true;
+        setGUID();
     }
     // End Initializer
 
@@ -491,6 +496,18 @@ public class Determination extends CollectionMember implements java.io.Serializa
         this.yesNo2 = yesNo2;
     }
 
+
+    @Column(name = "GUID", length = 128)
+    public String getGuid()
+    {
+        return this.guid;
+    }
+
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
+    }
+ 
     /**
      * @return the taxon.
      */

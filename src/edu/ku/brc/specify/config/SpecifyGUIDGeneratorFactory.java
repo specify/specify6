@@ -55,6 +55,7 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -83,7 +84,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                                          Geography.getClassTableId(), CollectingEvent.getClassTableId(), LithoStrat.getClassTableId(), 
                                          Locality.getClassTableId(), Agent.getClassTableId(), ReferenceWork.getClassTableId(), 
                                          Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), 
-                                         Collection.getClassTableId(), Institution.getClassTableId(), };
+                                         Collection.getClassTableId(), Institution.getClassTableId(), Determination.getClassTableId(), };
     
     protected String       I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
 

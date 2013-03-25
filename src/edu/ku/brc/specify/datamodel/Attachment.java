@@ -184,6 +184,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         referenceWorkAttachments       = new HashSet<ReferenceWorkAttachment>();
         taxonAttachments               = new HashSet<TaxonAttachment>();
         
+        hasGUIDField = true;
         setGUID();
     }
 

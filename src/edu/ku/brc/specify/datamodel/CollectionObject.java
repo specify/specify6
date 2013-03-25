@@ -222,6 +222,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         exsiccataItems              = new HashSet<ExsiccataItem>();
         
+        hasGUIDField = true;
         setGUID();
     }
     // End Initializer

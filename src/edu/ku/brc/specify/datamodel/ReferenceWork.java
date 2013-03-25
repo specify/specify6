@@ -154,6 +154,7 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
         containedReferenceWorks  = new HashSet<ReferenceWork>();
         referenceWorkAttachments = new HashSet<ReferenceWorkAttachment>();
         
+        hasGUIDField = true;
         setGUID();
     }
     // End Initializer

@@ -38,7 +38,7 @@ public class GenericGUIDGeneratorFactory
     
     public enum CATEGORY_TYPE {Attachment, Specimen, Taxonomy, Geography, CollectingEvent, LithoStrat, 
                               Locality, Person, ReferenceWork, Journal, GeologicTimePeriod,
-                              Collection, Institution}
+                              Collection, Institution, Determination, }
     
     protected static GenericGUIDGeneratorFactory instance = null;
     

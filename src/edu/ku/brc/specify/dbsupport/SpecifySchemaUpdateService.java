@@ -1713,9 +1713,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     public boolean checkAndUpdateGUIDs(final Connection conn, final String databaseName)
     {
         String   guidField = "GUID";
-        int[]    tblIds    = {CollectingEvent.getClassTableId(), Attachment.getClassTableId(), Collection.getClassTableId(), Institution.getClassTableId()};
-        String[] afterName = {"SGRStatus", "ScopeType", "EstimatedSize", "MinimumPwdLength"};
-        String[] indexName = {"CEGuidIDX", "AttchmentGuidIDX", "CollectionGuidIDX", "InstGuidIDX"};
+        int[]    tblIds    = {CollectingEvent.getClassTableId(), Attachment.getClassTableId(), Collection.getClassTableId(), Institution.getClassTableId(), Determination.getClassTableId()};
+        String[] afterName = {"SGRStatus", "ScopeType", "EstimatedSize", "MinimumPwdLength", "YesNo2", };
+        String[] indexName = {"CEGuidIDX", "AttchmentGuidIDX", "CollectionGuidIDX", "InstGuidIDX", "DeterminationGuidIDX"};
         
         for (int i=0;i<tblIds.length;i++)
         {
