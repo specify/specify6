@@ -82,6 +82,7 @@ public class SpecialMsgNotifier
                         String installID = UsageTracker.getInstallId();
                         
                         msg = send(url, installID);
+                        msg = StringUtils.deleteWhitespace(msg);
                         
                     } catch (Exception ex)
                     {
@@ -98,7 +99,9 @@ public class SpecialMsgNotifier
                 
                 if (msg != null)
                 {
-                    if (StringUtils.isNotEmpty(msg) && !msg.equals("NOMSG"))
+                    //System.out.println("["+msg+"]");
+                    
+                    if (StringUtils.isNotEmpty(msg) && !StringUtils.contains(msg, "NOMSG"))
                     {
                         String header = msg.length() > 6 ? msg.substring(0, 7).toUpperCase() : "";
                         if (header.startsWith("<HTML>"))

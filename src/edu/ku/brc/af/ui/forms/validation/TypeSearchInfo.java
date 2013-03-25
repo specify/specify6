@@ -148,7 +148,8 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public void setSqlTemplate(String sqlTemplate)
     {
-        if (StringUtils.isNotBlank(sqlTemplate)) this.sqlTemplate = sqlTemplate;
+        //if (StringUtils.isNotBlank(sqlTemplate)) 
+        this.sqlTemplate = sqlTemplate;
     }
     
     /**

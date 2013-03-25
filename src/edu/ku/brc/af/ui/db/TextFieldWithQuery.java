@@ -1229,7 +1229,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 setText(list.get(inx));
             }
             
-            notifyListenersOfChange(listBox);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    notifyListenersOfChange(listBox);
+                }
+            });
+           
             
         } else
         {

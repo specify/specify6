@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
@@ -251,6 +252,13 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         }
 
         offsetFromStartPnt.setLocation(e.getPoint());
+        
+        if (!(dropComponent instanceof GhostActionable) && 
+            dropComponent instanceof JLabel && 
+            dropComponent.getParent() instanceof GhostActionable)
+        {
+            dropComponent = dropComponent.getParent();
+        }
 
         boolean clearIt = true;
         if (dropComponent == ghostActionable)

@@ -258,7 +258,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             File storageFile = File.createTempFile("sp6", suffix, cacheDir.getAbsoluteFile());
-            System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
+            //System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
             if (storageFile.exists())
             {
                 attachment.setAttachmentLocation(storageFile.getName());
@@ -675,8 +675,13 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     public void storeAttachmentFile(final Attachment attachment, final File attachmentFile, final File thumbnail) throws IOException
     {
         
-        sendFile(attachmentFile, attachment.getAttachmentLocation(), false);
-        sendFile(thumbnail,      attachment.getAttachmentLocation(), true);
+        if (sendFile(attachmentFile, attachment.getAttachmentLocation(), false))
+        {
+            sendFile(thumbnail, attachment.getAttachmentLocation(), true);
+        } else
+        {
+            throw new IOException(String.format("File [%s] was not saved on the server!", attachmentFile.getName()));
+        }
     }
     
     /* (non-Javadoc)
@@ -769,7 +774,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         
         try
         {
-            System.out.println("Uploading " + targetFile.getName() + " to " + targetURL);
+            log.debug("Uploading " + targetFile.getName() + " to " + targetURL);
             
             String sha1Hash = calculateHash(targetFile);
 
@@ -790,7 +795,9 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
 
             int status = client.executeMethod(filePost);
             
-            System.out.println("Response["+filePost.getResponseBodyAsString()+"]");
+            //log.debug("---------------------------------------------------");
+            log.debug(filePost.getResponseBodyAsString());
+            //log.debug("---------------------------------------------------");
 
             if (status == HttpStatus.SC_OK)
             {
@@ -799,7 +806,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             
         } catch (Exception ex)
         {
-            System.out.println("Error:  " + ex.getMessage());
+            log.error("Error:  " + ex.getMessage());
             ex.printStackTrace();
             
         } finally
@@ -859,20 +866,20 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
             GetMethod  getMethod  = new GetMethod(targetURL);
 
-            System.out.println("Deleting " + fileName + " from " + targetURL );
+            //System.out.println("Deleting " + fileName + " from " + targetURL );
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
             int status = client.executeMethod(getMethod);
             
-            System.out.println(getMethod.getResponseBodyAsString());
+            //System.out.println(getMethod.getResponseBodyAsString());
 
             return status == HttpStatus.SC_OK;
             
         } catch (Exception ex)
         {
-            System.out.println("Error: " + ex.getMessage());
+            //System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
         }
         return false;
