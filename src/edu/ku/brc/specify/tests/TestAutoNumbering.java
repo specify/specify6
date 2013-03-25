@@ -186,12 +186,11 @@ public class TestAutoNumbering extends TestCase
         
         try
         {
-            Thumbnailer thumb = new Thumbnailer();
+            Thumbnailer thumb = Thumbnailer.getInstance();
             File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
             thumb.registerThumbnailers(thumbFile);
             thumb.setQuality(.5f);
-            thumb.setMaxHeight(128);
-            thumb.setMaxWidth(128);
+            thumb.setMaxSize(256, 256);
     
             AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
             AttachmentUtils.setAttachmentManager(attachMgr);
