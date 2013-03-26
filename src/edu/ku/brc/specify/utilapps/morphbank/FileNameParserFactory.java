@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.tasks.subpane.images.CollectionDataFetcher;
@@ -40,28 +43,48 @@ import edu.ku.brc.specify.tasks.subpane.images.CollectionDataFetcher;
  */
 public class FileNameParserFactory
 {
-    private static final Class<?>[] classes = {CollectionObject.class, CollectingEvent.class};
-    private static final String[]   fields  = {"catalogNumber", "stationFieldNumber"};
+    private static final Class<?>[] classes = {CollectionObject.class, CollectionObject.class, CollectionObject.class, CollectingEvent.class};
+    private static final String[]   fields  = {"catalogNumber", 
+                                               "fieldNumber",
+                                               "altCatalogNumber",
+                                               "stationFieldNumber"};
     
-    private static final HashMap<Class<?>, FileNameParserIFace> map        = new HashMap<Class<?>, FileNameParserIFace>();
-    private static final ArrayList<FileNameParserIFace>         parserList = new ArrayList<FileNameParserIFace>();
+    private static final FileNameParserFactory instance = new FileNameParserFactory();
     
+    private static final HashMap<FileNameParserIFace, Integer> indexMap   = new HashMap<FileNameParserIFace, Integer>();
+    private static final ArrayList<FileNameParserIFace>        parserList = new ArrayList<FileNameParserIFace>();
     
     /**
      * 
      */
-    private static void ensureParsers()
+    public FileNameParserFactory()
     {
-        if (map.size() == 0)
+        super();
+    }
+
+    /**
+     * @return the instance
+     */
+    public static FileNameParserFactory getInstance()
+    {
+        return instance;
+    }
+
+    /**
+     * 
+     */
+    private void ensureParsers()
+    {
+        if (indexMap.size() == 0)
         {
             int i = 0;
             for (Class<?> cls : classes)
             {
-                Class<?>            joinCls = CollectionDataFetcher.getAttachmentClassMap().get(cls);
-                FileNameParserIFace parser  = new BaseFileNameParser(cls, joinCls, fields[i]);
+                Class<?>           joinCls = CollectionDataFetcher.getAttachmentClassMap().get(cls);
+                BaseFileNameParser parser  = new BaseFileNameParser(cls, joinCls, fields[i]);
                 if (parser != null)
                 {
-                    map.put(cls,  parser);
+                    indexMap.put(parser, i);
                     parserList.add(parser);
                 }
                 i++;
@@ -70,20 +93,9 @@ public class FileNameParserFactory
     }
     
     /**
-     * @param cls the destination class of the attachment
-     * @return 
-     */
-    public static FileNameParserIFace getFileNameParserForClass(final Class<?> cls)
-    {
-        ensureParsers();
-        
-        return map.get(cls);
-    }
-    
-    /**
      * @return list of available parsers
      */
-    public static List<FileNameParserIFace> getList()
+    public List<FileNameParserIFace> getList()
     {
         ensureParsers();
         return new ArrayList<FileNameParserIFace>(parserList);

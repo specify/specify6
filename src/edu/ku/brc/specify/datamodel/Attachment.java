@@ -424,27 +424,31 @@ public class Attachment extends DataModelObjBase implements Serializable
         }
     }
     
+    /**
+     * @return
+     */
     private static HashMap<Integer, Byte>  createTblScoprMapping()
     {
         int[] ids = {
-            CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
+            Accession.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            Agent.getClassTableId(), Attachment.DIVISION_SCOPE,
             Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
+            CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
+            CollectingEvent.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            ConservDescription.getClassTableId(), Attachment.DIVISION_SCOPE,
+            ConservEvent.getClassTableId(), Attachment.COLLECTION_SCOPE,
             DNASequence.getClassTableId(), Attachment.COLLECTION_SCOPE,
             DNASequencingRun.getClassTableId(), Attachment.COLLECTION_SCOPE,
-            Preparation.getClassTableId(), Attachment.COLLECTION_SCOPE,
-            Agent.getClassTableId(), Attachment.DIVISION_SCOPE,
-            ConservDescription.getClassTableId(), Attachment.DIVISION_SCOPE,
-            Gift.getClassTableId(), Attachment.DIVISION_SCOPE,
-            Loan.getClassTableId(), Attachment.DIVISION_SCOPE,
-            RepositoryAgreement.getClassTableId(), Attachment.DIVISION_SCOPE,
-            Locality.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
             FieldNotebook.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
-            ConservEvent.getClassTableId(), Attachment.COLLECTION_SCOPE,
             FieldNotebookPage.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
             FieldNotebookPageSet.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
+            Gift.getClassTableId(), Attachment.DIVISION_SCOPE,
+            Loan.getClassTableId(), Attachment.DIVISION_SCOPE,
+            Locality.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
             Permit.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            Preparation.getClassTableId(), Attachment.COLLECTION_SCOPE,
             ReferenceWork.getClassTableId(), Attachment.GLOBAL_SCOPE,
-            Accession.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            RepositoryAgreement.getClassTableId(), Attachment.DIVISION_SCOPE,
             Taxon.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
         };
         HashMap<Integer, Byte> map = new HashMap<Integer, Byte>();

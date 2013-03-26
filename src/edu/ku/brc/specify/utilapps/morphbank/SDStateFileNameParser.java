@@ -141,149 +141,149 @@ public class SDStateFileNameParser implements FileNameParserIFace
 	 */
 	public static void main(String[] args) 
 	{
-		String picDirName = "/media/Terror/ConversionsAndFixes/sdstate/SpSub31OCT10/PictureFiles/SpecimenPics";
-		String[] exts = {"jpg", "JPG"};
-		try
-		{
-		    BatchAttachFiles      batchAttachFiles = new BatchAttachFiles();
-			File                  picDir           = new File(picDirName);
-			Vector<File>          files            = batchAttachFiles.bldFilesFromDir(picDir, exts);
-			SDStateFileNameParser p                = new SDStateFileNameParser();
-			
-			String connStr = "jdbc:mysql://localhost/sdstate6202?characterEncoding=UTF-8&autoReconnect=true"; 
-			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
-			p.setTestConnection(conn);
-			p.setPicType(SpecPic);
-			int fileCount = 0;
-			int filesOfTypeCount = 0;
-			int idCount = 0;
-			for (File f : files)
-			{
-				System.out.print(f.getName() + " - ");
-				if (p.looksLikePicOfCurrentType(f.getName()))
-				{
-					filesOfTypeCount++;
-				}
-				List<Integer> ids = p.getRecordIds(f.getName());
-				for (Integer id : ids)
-				{
-					System.out.print(id + ", ");
-					idCount++;
-				}
-				System.out.println();
-				fileCount++;
-			}
-			System.out.println("files: " + fileCount + ", files of type: " + filesOfTypeCount + ", ids: " + idCount);
-			
-			//Now see how many files are missing
-			
-			//Spec files
-			String sql = "select distinct text3 from collectionobjectattribute "
-				+ "where text3 is not null order by 1";
-			Vector<Object> fileNamesFromDB = BasicSQLUtils.querySingleCol(conn, sql);
-			Vector<String> missingFiles = new Vector<String>();
-			for (Object dbFileNameObj : fileNamesFromDB)
-			{
-				String fileName = ((String )dbFileNameObj).replace("Picture Files/Specimen Pics/", "");
-				boolean fileExists = false;
-				for (File f : files)
-				{
-					if (f.getName().equalsIgnoreCase(fileName))
-					{
-						fileExists = true;
-						break;
-					}
-				}
-				if (!fileExists)
-				{
-					missingFiles.add(fileName);
-				}				
-			}
-			
-			//Dorsal files
-			sql = "select distinct text1 from collectionobjectattribute "
-				+ "where text1 is not null order by 1";
-			fileNamesFromDB = BasicSQLUtils.querySingleCol(conn, sql);
-			for (Object dbFileNameObj : fileNamesFromDB)
-			{
-				String fileName = ((String )dbFileNameObj).replace("Picture Files/Specimen Pics/", "");
-				boolean fileExists = false;
-				for (File f : files)
-				{
-					if (f.getName().equalsIgnoreCase(fileName))
-					{
-						fileExists = true;
-						break;
-					}
-				}
-				if (!fileExists)
-				{
-					missingFiles.add(fileName);
-				}				
-			}
-
-			//Ventral files
-			sql = "select distinct text2 from collectionobjectattribute "
-				+ "where text2 is not null order by 1";
-			fileNamesFromDB = BasicSQLUtils.querySingleCol(conn, sql);
-			for (Object dbFileNameObj : fileNamesFromDB)
-			{
-				String fileName = ((String )dbFileNameObj).replace("Picture Files/Specimen Pics/", "");
-				boolean fileExists = false;
-				for (File f : files)
-				{
-					if (f.getName().equalsIgnoreCase(fileName))
-					{
-						fileExists = true;
-						break;
-					}
-				}
-				if (!fileExists)
-				{
-					missingFiles.add(fileName);
-				}				
-			}
-			
-			System.out.println("There are " + missingFiles.size() + " missing files: ");
-			for (String mf : missingFiles)
-			{
-				System.out.println(mf);
-			}
-			FileUtils.writeLines(new File("/media/Terror/ConversionsAndFixes/sdstate/MissingFiles.txt"), missingFiles);
-			
-			
-			//Now a check - after batch attach - to see what files were not attached to any records.
-			sql = "select distinct Title from attachment order by 1";
-			Vector<Object> filesAttached = BasicSQLUtils.querySingleCol(conn, sql);
-			Vector<String> filesNotAttached = new Vector<String>();
-			for (File f : files)
-			{
-				String fName = f.getName();
-				boolean fileWasAttached = false;
-				for (Object obj : filesAttached)
-				{
-					if (fName.equalsIgnoreCase(obj.toString()))
-					{
-						fileWasAttached = true;
-						break;
-					}
-				}
-				if (!fileWasAttached)
-				{
-					filesNotAttached.add(fName);
-				}
-			}
-			System.out.println("Files that were not attached:");
-			for (String fna : filesNotAttached)
-			{
-				System.out.println(fna);
-			}
-			FileUtils.writeLines(new File("/media/Terror/ConversionsAndFixes/sdstate/UnattachedFiles.txt"), filesNotAttached);
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-			System.exit(-1);
-		}
+//		String picDirName = "/media/Terror/ConversionsAndFixes/sdstate/SpSub31OCT10/PictureFiles/SpecimenPics";
+//		String[] exts = {"jpg", "JPG"};
+//		try
+//		{
+//		    BatchAttachFiles      batchAttachFiles = new BatchAttachFiles();
+//			File                  picDir           = new File(picDirName);
+//			Vector<File>          files            = batchAttachFiles.bldFilesFromDir(picDir, exts);
+//			SDStateFileNameParser p                = new SDStateFileNameParser();
+//			
+//			String connStr = "jdbc:mysql://localhost/sdstate6202?characterEncoding=UTF-8&autoReconnect=true"; 
+//			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
+//			p.setTestConnection(conn);
+//			p.setPicType(SpecPic);
+//			int fileCount = 0;
+//			int filesOfTypeCount = 0;
+//			int idCount = 0;
+//			for (File f : files)
+//			{
+//				System.out.print(f.getName() + " - ");
+//				if (p.looksLikePicOfCurrentType(f.getName()))
+//				{
+//					filesOfTypeCount++;
+//				}
+//				List<Integer> ids = p.getRecordIds(f.getName());
+//				for (Integer id : ids)
+//				{
+//					System.out.print(id + ", ");
+//					idCount++;
+//				}
+//				System.out.println();
+//				fileCount++;
+//			}
+//			System.out.println("files: " + fileCount + ", files of type: " + filesOfTypeCount + ", ids: " + idCount);
+//			
+//			//Now see how many files are missing
+//			
+//			//Spec files
+//			String sql = "select distinct text3 from collectionobjectattribute "
+//				+ "where text3 is not null order by 1";
+//			Vector<Object> fileNamesFromDB = BasicSQLUtils.querySingleCol(conn, sql);
+//			Vector<String> missingFiles = new Vector<String>();
+//			for (Object dbFileNameObj : fileNamesFromDB)
+//			{
+//				String fileName = ((String )dbFileNameObj).replace("Picture Files/Specimen Pics/", "");
+//				boolean fileExists = false;
+//				for (File f : files)
+//				{
+//					if (f.getName().equalsIgnoreCase(fileName))
+//					{
+//						fileExists = true;
+//						break;
+//					}
+//				}
+//				if (!fileExists)
+//				{
+//					missingFiles.add(fileName);
+//				}				
+//			}
+//			
+//			//Dorsal files
+//			sql = "select distinct text1 from collectionobjectattribute "
+//				+ "where text1 is not null order by 1";
+//			fileNamesFromDB = BasicSQLUtils.querySingleCol(conn, sql);
+//			for (Object dbFileNameObj : fileNamesFromDB)
+//			{
+//				String fileName = ((String )dbFileNameObj).replace("Picture Files/Specimen Pics/", "");
+//				boolean fileExists = false;
+//				for (File f : files)
+//				{
+//					if (f.getName().equalsIgnoreCase(fileName))
+//					{
+//						fileExists = true;
+//						break;
+//					}
+//				}
+//				if (!fileExists)
+//				{
+//					missingFiles.add(fileName);
+//				}				
+//			}
+//
+//			//Ventral files
+//			sql = "select distinct text2 from collectionobjectattribute "
+//				+ "where text2 is not null order by 1";
+//			fileNamesFromDB = BasicSQLUtils.querySingleCol(conn, sql);
+//			for (Object dbFileNameObj : fileNamesFromDB)
+//			{
+//				String fileName = ((String )dbFileNameObj).replace("Picture Files/Specimen Pics/", "");
+//				boolean fileExists = false;
+//				for (File f : files)
+//				{
+//					if (f.getName().equalsIgnoreCase(fileName))
+//					{
+//						fileExists = true;
+//						break;
+//					}
+//				}
+//				if (!fileExists)
+//				{
+//					missingFiles.add(fileName);
+//				}				
+//			}
+//			
+//			System.out.println("There are " + missingFiles.size() + " missing files: ");
+//			for (String mf : missingFiles)
+//			{
+//				System.out.println(mf);
+//			}
+//			FileUtils.writeLines(new File("/media/Terror/ConversionsAndFixes/sdstate/MissingFiles.txt"), missingFiles);
+//			
+//			
+//			//Now a check - after batch attach - to see what files were not attached to any records.
+//			sql = "select distinct Title from attachment order by 1";
+//			Vector<Object> filesAttached = BasicSQLUtils.querySingleCol(conn, sql);
+//			Vector<String> filesNotAttached = new Vector<String>();
+//			for (File f : files)
+//			{
+//				String fName = f.getName();
+//				boolean fileWasAttached = false;
+//				for (Object obj : filesAttached)
+//				{
+//					if (fName.equalsIgnoreCase(obj.toString()))
+//					{
+//						fileWasAttached = true;
+//						break;
+//					}
+//				}
+//				if (!fileWasAttached)
+//				{
+//					filesNotAttached.add(fName);
+//				}
+//			}
+//			System.out.println("Files that were not attached:");
+//			for (String fna : filesNotAttached)
+//			{
+//				System.out.println(fna);
+//			}
+//			FileUtils.writeLines(new File("/media/Terror/ConversionsAndFixes/sdstate/UnattachedFiles.txt"), filesNotAttached);
+//		} catch (Exception ex)
+//		{
+//			ex.printStackTrace();
+//			System.exit(-1);
+//		}
 
 	}
 

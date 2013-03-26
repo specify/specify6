@@ -187,8 +187,7 @@ public class AttachmentsTask extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    BatchAttachFiles batchAttachFiles = new BatchAttachFiles();
-                    batchAttachFiles.uploadImagesByFileName();
+                    BatchAttachFiles.uploadImagesByFileName();
                 }
             });
             
@@ -197,8 +196,7 @@ public class AttachmentsTask extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    BatchAttachFiles batchAttachFiles = new BatchAttachFiles();
-                    batchAttachFiles.uploadImagesByFileName();
+                    BatchAttachFiles.attachFileFromIndexFile();
                 }
             });
             
