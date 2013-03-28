@@ -35,7 +35,6 @@ import java.util.Vector;
 
 import javax.swing.JMenuItem;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -627,33 +626,7 @@ public class PluginsTask extends BaseTask
      */
     protected void prefsChanged(final CommandAction cmdAction)
     {
-        AppPreferences appPrefs = (AppPreferences)cmdAction.getData();
-        
-        if (appPrefs == AppPreferences.getRemote())
-        {
-            // Note: The event send with the name of pref from the form
-            // not the name that was saved. So we don't need to append the discipline name on the end
-            Object value = cmdAction.getProperties().get(ON_TASKBAR);
-            if (value != null && value instanceof Boolean)
-            {
-                /*
-                 * This doesn't work because it isn't added to the Toolbar correctly
-                 * */
-                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
-                
-                Boolean isChecked = (Boolean)value;
-                if (isChecked)
-                {
-                    TaskMgr.addToolbarBtn(toolBarBtn, toolBar.getComponentCount()-1);
-                } else
-                {
-                    TaskMgr.removeToolbarBtn(toolBarBtn);
-                }
-                toolBar.validate();
-                toolBar.repaint();
-                 
-            }
-        }
+        reAddToolBarItem(cmdAction, toolBarBtn, ON_TASKBAR);
     }
     
     /* (non-Javadoc)

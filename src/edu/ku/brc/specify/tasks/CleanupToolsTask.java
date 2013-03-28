@@ -34,7 +34,6 @@ import java.util.Vector;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -49,7 +48,6 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -66,12 +64,12 @@ import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg;
+import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataItem;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyAssignISOs;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyMerging;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityGeoBoundsChecker2;
-import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataItem;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -603,34 +601,7 @@ public class CleanupToolsTask extends BaseTask
      */
     protected void prefsChanged(final CommandAction cmdAction)
     {
-        AppPreferences appPrefs = (AppPreferences) cmdAction.getData();
-
-        if (appPrefs == AppPreferences.getRemote())
-        {
-            // Note: The event send with the name of pref from the form
-            // not the name that was saved. So we don't need to append the discipline name on the
-            // end
-            Object value = cmdAction.getProperties().get(ON_TASKBAR);
-            if (value != null && value instanceof Boolean)
-            {
-                /*
-                 * This doesn't work because it isn't added to the Toolbar correctly
-                 */
-                JToolBar toolBar = (JToolBar) UIRegistry.get(UIRegistry.TOOLBAR);
-
-                Boolean isChecked = (Boolean) value;
-                if (isChecked)
-                {
-                    TaskMgr.addToolbarBtn(toolBarBtn, toolBar.getComponentCount() - 1);
-                } else
-                {
-                    TaskMgr.removeToolbarBtn(toolBarBtn);
-                }
-                toolBar.validate();
-                toolBar.repaint();
-
-            }
-        }
+        reAddToolBarItem(cmdAction, toolBarBtn, ON_TASKBAR);
     }
 
     /*

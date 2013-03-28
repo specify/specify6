@@ -62,7 +62,7 @@ public class ImageImportFrame extends CustomFrame
     public ImageImportFrame(final WorkbenchPaneSS wbPane, 
                             final Workbench workbench)
     {
-        super("Import Images", CustomFrame.OK_BTN, null);
+        super(getResourceString("ATTCH_IMPORT_IMGS"), CustomFrame.OK_BTN, null);
         
         setOkLabel(getResourceString("CLOSE"));
         

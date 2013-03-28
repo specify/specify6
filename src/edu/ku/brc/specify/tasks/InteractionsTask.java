@@ -1978,32 +1978,12 @@ public class InteractionsTask extends BaseTask
      */
     protected void prefsChanged(final CommandAction cmdAction)
     {
-        AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
-        
+        AppPreferences remotePrefs = (AppPreferences) cmdAction.getData();
         if (remotePrefs == AppPreferences.getRemote())
         {
             String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
-            
-            JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
-            if (!isUsingInteractions)
-            {
-                indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
-                TaskMgr.removeToolbarBtn(toolBarBtn);
-                toolBar.validate();
-                toolBar.repaint();
-                
-            } else
-            {
-                int curInx = toolBar.getComponentIndex(toolBarBtn);
-                if (curInx == -1)
-                {
-                    int inx = indexOfTBB != -1 ? indexOfTBB : 4;
-                    TaskMgr.addToolbarBtn(toolBarBtn, inx);
-                    toolBar.validate();
-                    toolBar.repaint();
-                }
-            }
+            String prefName = IS_USING_INTERACTIONS_PREFNAME + ds;
+            reAddToolBarItem(cmdAction, toolBarBtn, prefName);
         }
     }
     

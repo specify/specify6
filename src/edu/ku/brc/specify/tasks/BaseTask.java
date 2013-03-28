@@ -19,11 +19,14 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.Collection;
 import java.util.Hashtable;
+
+import javax.swing.JToolBar;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -36,6 +39,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.SpecifyUserTypes;
@@ -60,6 +65,9 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     protected static final Logger  baseLog = Logger.getLogger(BaseTask.class);
     
     protected static SoftReference<Hashtable<String, PermissionOptionPersist>> taskPermsListSR = null;
+    
+    protected boolean isShowingToolbarBtn = false;
+    protected int     toolbarBtnIndex     = -1;
     
     /**
      * @param name the name of the task and should have an icon of the same name
@@ -246,6 +254,46 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         {
             boolean[] p = perms[i++];
             secOpt.addDefaultPerm(userType.toString(), new PermissionSettings(p[0], p[1], p[2], p[3]));
+        }
+    }
+    
+    /**
+     * @param cmdAction
+     */
+    protected void reAddToolBarItem(final CommandAction cmdAction,
+                                    final Component     toolBarBtn,
+                                    final String        prefName)
+    {
+        AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
+        if (remotePrefs == AppPreferences.getRemote())
+        {
+            JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+            Object value = cmdAction.getProperties().get(prefName);
+            if (value != null && value instanceof Boolean)
+            {
+            //if (!remotePrefs.getBoolean(prefName, true))
+            //{
+                Boolean isChecked = (Boolean) value;
+                if (!isChecked)
+                {
+                    toolbarBtnIndex = toolBar.getComponentIndex(toolBarBtn);
+                    TaskMgr.removeToolbarBtn(toolBarBtn);
+                    toolBar.validate();
+                    toolBar.repaint();
+                    
+                } else
+                {
+                    int curInx = toolBar.getComponentIndex(toolBarBtn);
+                    if (curInx == -1)
+                    {
+                        int lastInx = toolBar.getComponentCount()-2;
+                        int inx     = toolbarBtnIndex != -1 && toolbarBtnIndex <= lastInx ? toolbarBtnIndex : lastInx;
+                        TaskMgr.addToolbarBtn(toolBarBtn, inx);
+                        toolBar.validate();
+                        toolBar.repaint();
+                    }
+                }
+            }
         }
     }
 }

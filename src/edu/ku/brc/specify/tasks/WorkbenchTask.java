@@ -3251,9 +3251,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
     }
     
+    /**
+     * @param wbTemplate
+     * @param deletedItems
+     * @param newItems
+     */
     protected void updateGeoRefInfoAfterTemplateEdit(final WorkbenchTemplate wbTemplate,
-    		final Collection<WorkbenchTemplateMappingItem> deletedItems,
-    		final Collection<WorkbenchTemplateMappingItem> newItems)
+                                                     final Collection<WorkbenchTemplateMappingItem> deletedItems,
+                                                     final Collection<WorkbenchTemplateMappingItem> newItems)
     {
     	final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getResourceString("WB_SAVING_TEMPLATE_CHANGES"), GLASSPANE_FONT_SIZE);
     	javax.swing.SwingWorker<Object, Object> sw = new javax.swing.SwingWorker<Object, Object>()

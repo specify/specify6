@@ -20,7 +20,7 @@ import static edu.ku.brc.ui.UIRegistry.setMobile;
 import static edu.ku.brc.ui.UIRegistry.setRelease;
 import static edu.ku.brc.ui.UIRegistry.setResourceLocale;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
-import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
+import static edu.ku.brc.ui.UIRegistry.*;
 import static edu.ku.brc.ui.UIRegistry.writeSimpleGlassPaneMsg;
 
 import java.awt.FileDialog;
@@ -295,7 +295,7 @@ public class BatchAttachFiles
                 if (rv == JOptionPane.YES_OPTION)
                 {
                     JFileChooser chooser = new JFileChooser("BatchAttachFiles.CH_FILE_MSG");
-                    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             
                     File indexFile      = null;
                     int    returnVal = chooser.showOpenDialog(getTopWindow());
@@ -304,8 +304,7 @@ public class BatchAttachFiles
                         indexFile = chooser.getSelectedFile();
                         try
                         {
-                            String path = FilenameUtils.getFullPath(indexFile.getAbsolutePath());
-                            BatchAttachFiles batchFile = new BatchAttachFiles(fnParser, new File(path));
+                            BatchAttachFiles batchFile = new BatchAttachFiles(fnParser, indexFile);
                             batchFile.attachFiles();
                             
                         } catch (Exception ex)
@@ -357,6 +356,7 @@ public class BatchAttachFiles
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
         {
             int    attachedCnt = 0;
+            int    totNumFiles = 0;
             
             @Override
             protected Integer doInBackground() throws Exception
@@ -364,9 +364,9 @@ public class BatchAttachFiles
                 try
                 {
                     double percentThreshold = 10.0;
-                    int    totNumFiles = files.size();
-                    int    cnt         = 0;
-                    int    incr        = (int)((double)totNumFiles / percentThreshold);
+                    int    cnt              = 0;
+                    
+                    totNumFiles = files.size();
                     
                     if (mapFileNameToCatNum != null)
                     {
@@ -385,7 +385,8 @@ public class BatchAttachFiles
                             }
                         }
                     }
-                    
+                    int incr = (int)((double)totNumFiles / percentThreshold);
+
                     String path = getAppDataDir() + File.separator + "fileupload.html";
                     TableWriter tw = new TableWriter(path, "File upload issues");
                     tw.startTable();
@@ -412,6 +413,9 @@ public class BatchAttachFiles
                             {
                                 fieldValueList.addAll(catNumList);
                             }
+                        } else
+                        {
+                            fieldValueList.add(FilenameUtils.getBaseName(file.getName()));
                         }
 
                         for (String fieldValue : fieldValueList)
@@ -478,7 +482,7 @@ public class BatchAttachFiles
                 
                 if (attachedCnt > 0)
                 {
-                    showLocalizedMsg("BatchAttachFiles.NO_FILES_ATTACHED_TT", "BatchAttachFiles.NUM_FILES_ATTACHED", attachedCnt);
+                    showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "BatchAttachFiles.NO_FILES_ATTACHED_TT", "BatchAttachFiles.NUM_FILES_ATTACHED", attachedCnt, totNumFiles);
                 } else
                 {
                     showLocalizedError("BatchAttachFiles.NO_FILES_ATTACHED");

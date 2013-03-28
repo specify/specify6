@@ -23,11 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.images.CollectionDataFetcher;
 
 /**
@@ -43,11 +41,17 @@ import edu.ku.brc.specify.tasks.subpane.images.CollectionDataFetcher;
  */
 public class FileNameParserFactory
 {
-    private static final Class<?>[] classes = {CollectionObject.class, CollectionObject.class, CollectionObject.class, CollectingEvent.class};
+    private static final Class<?>[] classes = {CollectionObject.class, 
+                                               CollectionObject.class, 
+                                               CollectionObject.class, 
+                                               CollectingEvent.class,
+                                               Taxon.class};
+    
     private static final String[]   fields  = {"catalogNumber", 
                                                "fieldNumber",
                                                "altCatalogNumber",
-                                               "stationFieldNumber"};
+                                               "stationFieldNumber",
+                                               "fullName"};
     
     private static final FileNameParserFactory instance = new FileNameParserFactory();
     

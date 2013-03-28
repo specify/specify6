@@ -42,25 +42,47 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.AttachmentImageAttribute;
 import edu.ku.brc.specify.datamodel.Borrow;
+import edu.ku.brc.specify.datamodel.BorrowAttachment;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescription;
+import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequence;
+import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.Gift;
+import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
+import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
+import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane;
 import edu.ku.brc.specify.utilapps.morphbank.BatchAttachFiles;
 import edu.ku.brc.ui.CommandAction;
@@ -102,7 +124,7 @@ public class AttachmentsTask extends BaseTask
     public AttachmentsTask()
     {
         super(ATTACHMENTS, getResourceString(ATTACHMENTS));
-        this.iconName = "Attach";
+        this.iconName = "AttachmentPrefs";
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
 
@@ -151,8 +173,10 @@ public class AttachmentsTask extends BaseTask
             navBoxes.add(actionNavBox);
             //navBoxes.add(viewsNavBox);
             //navBoxes.add(adminNavBox);
-            
-            int[] attachmentTableIDs = {AttachmentImageAttribute.getClassTableId(),
+
+            int[] attachmentTableIDs = {
+                    AttachmentImageAttribute.getClassTableId(),
+                    Accession.getClassTableId(),
                     Borrow.getClassTableId(),
                     CollectingEvent.getClassTableId(),
                     CollectionObject.getClassTableId(),
@@ -169,16 +193,17 @@ public class AttachmentsTask extends BaseTask
                     Permit.getClassTableId(),
                     Preparation.getClassTableId(),
                     ReferenceWork.getClassTableId(),
-                    RepositoryAgreement.getClassTableId()};
+                    RepositoryAgreement.getClassTableId(),
+                    Taxon.getClassTableId()};
             for (int tblId : attachmentTableIDs)
             {
-                DBTableInfo   tblInfo   = DBTableIdMgr.getInstance().getInfoById(1);
+                DBTableInfo   tblInfo   = DBTableIdMgr.getInstance().getInfoById(tblId);
                 CommandAction cmdAction = new CommandAction(ATTACHMENTS, ATTACHMENTS_SEARCH);
                 cmdAction.setProperty("id",    Integer.toString(tblId));
                 
                 cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
                 String serviceName = String.format("Image Search %s", tblInfo.getTitle());
-                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "image", tblInfo.getTitle(), true); // the Name gets Hashed
+                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "AttachmentPrefs", tblInfo.getTitle(), true); // the Name gets Hashed
             }
 
             
@@ -496,34 +521,7 @@ public class AttachmentsTask extends BaseTask
      */
     protected void prefsChanged(final CommandAction cmdAction)
     {
-        AppPreferences appPrefs = (AppPreferences) cmdAction.getData();
-
-        if (appPrefs == AppPreferences.getRemote())
-        {
-            // Note: The event send with the name of pref from the form
-            // not the name that was saved. So we don't need to append the discipline name on the
-            // end
-            Object value = cmdAction.getProperties().get(ON_TASKBAR);
-            if (value != null && value instanceof Boolean)
-            {
-                /*
-                 * This doesn't work because it isn't added to the Toolbar correctly
-                 */
-                JToolBar toolBar = (JToolBar) UIRegistry.get(UIRegistry.TOOLBAR);
-
-                Boolean isChecked = (Boolean) value;
-                if (isChecked)
-                {
-                    TaskMgr.addToolbarBtn(toolBarBtn, toolBar.getComponentCount() - 1);
-                } else
-                {
-                    TaskMgr.removeToolbarBtn(toolBarBtn);
-                }
-                toolBar.validate();
-                toolBar.repaint();
-
-            }
-        }
+        reAddToolBarItem(cmdAction, toolBarBtn, ON_TASKBAR);
     }
 
     /* (non-Javadoc)
