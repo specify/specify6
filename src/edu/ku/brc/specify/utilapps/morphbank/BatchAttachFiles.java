@@ -20,7 +20,7 @@ import static edu.ku.brc.ui.UIRegistry.setMobile;
 import static edu.ku.brc.ui.UIRegistry.setRelease;
 import static edu.ku.brc.ui.UIRegistry.setResourceLocale;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 import static edu.ku.brc.ui.UIRegistry.writeSimpleGlassPaneMsg;
 
 import java.awt.FileDialog;
@@ -101,12 +101,15 @@ import edu.ku.brc.util.Pair;
  */
 public class BatchAttachFiles
 {
-    protected static final String PROGRESS = "PROGRESS";
+    protected static final String PROGRESS     = "PROGRESS";
+    protected static final String RESTR_PREFIX = "BatchAttachFiles.";
     
     protected static final Logger log = Logger.getLogger(BatchAttachFiles.class);
     protected static final int CN_ERROR_NONE      = 0;
     protected static final int CN_ERROR_INVALID   = 0;
     protected static final int CN_ERROR_NOT_IN_DB = 0;
+    
+    private enum FileErrorType { eMisingFile, eDuplicateCombo}
     
 	protected static final String[] exts = {"TIF", "JPG", "PNG", "jpg", "png", "tif", "TIFF", "tiff"};
 	
@@ -119,7 +122,7 @@ public class BatchAttachFiles
 	protected DataProviderSessionIFace   session;
 	protected String                     errLogName = "errors";
 	
-    protected ArrayList<String> errFiles = new ArrayList<String>();
+    protected ArrayList<Pair<String, FileErrorType>> errFiles = new ArrayList<Pair<String, FileErrorType>>();
     
     protected HashMap<String, ArrayList<String>> mapFileNameToCatNum = null;
     
@@ -192,22 +195,29 @@ public class BatchAttachFiles
                 String[] cols = StringUtils.split(lineObj.toString(), delim);
                 if (cols.length == 2)
                 {
-                    String fileName = cols[1];
+                    String fileName = cols[1].trim();
                     File upFile = new File(directory.getAbsolutePath() + File.separator + fileName);
                     if (upFile.exists())
                     {
+                        String mappingValue = cols[0].trim();
                         ArrayList<String> catNumList = mapFileNameToCatNum.get(fileName);
                         if (catNumList == null)
                         {
                             catNumList = new ArrayList<String>();
-                            mapFileNameToCatNum.put(fileName, catNumList);    
+                            mapFileNameToCatNum.put(fileName, catNumList);
+                            dirFiles.add(upFile);
+                            
+                        } else if (catNumList.contains(mappingValue))
+                        {
+                            errFiles.add(new Pair<String, FileErrorType>(fileName, FileErrorType.eDuplicateCombo));
+                            continue;
                         }
-                        catNumList.add(cols[0]);
-                        //System.out.println(String.format("%s %s", cols[0], fileName));
-                        dirFiles.add(upFile);
+                        System.out.println(String.format("%s -> %s",mappingValue, fileName));
+                        catNumList.add(mappingValue);
+                        
                     } else
                     {
-                        errFiles.add(fileName);
+                        errFiles.add(new Pair<String, FileErrorType>(fileName, FileErrorType.eMisingFile));
                     }
                 }
             }
@@ -343,9 +353,26 @@ public class BatchAttachFiles
                 "BatchAttachFiles.DO_DIRS", "BatchAttachFiles.DO_FILES", "Cancel", JOptionPane.QUESTION_MESSAGE);
     }
 
+    /**
+     * @param tw
+     * @param file
+     * @param fieldTitle
+     * @param mappingFieldVal
+     * @param resKey
+     */
+    private void writeError(final TableWriter tw, 
+                            final File   file, 
+                            final String fieldTitle, 
+                            final String mappingFieldVal, 
+                            final String resKey)
+    {
+        String msgFmt = getResourceString(RESTR_PREFIX + resKey);
+        String msg    = String.format(msgFmt, fieldTitle, mappingFieldVal);
+        tw.logErrors(file.getName(), msg);
+    }
     
     /**
-     * @param fileList
+     * 
      */
     public void attachFiles()
     {
@@ -388,13 +415,13 @@ public class BatchAttachFiles
                     int incr = (int)((double)totNumFiles / percentThreshold);
 
                     String path = getAppDataDir() + File.separator + "fileupload.html";
-                    TableWriter tw = new TableWriter(path, "File upload issues");
+                    TableWriter tw = new TableWriter(path, getResourceString("BatchAttachFiles.REPORT_TITLE"));
                     tw.startTable();
-                    tw.logHdr("File", "Reason");
+                    tw.logHdr(getResourceString("BatchAttachFiles.REPORT_FILE"), getResourceString("BatchAttachFiles.REPORT_REASON"));
                     
-                    for (String fileName : errFiles)
+                    for (Pair<String, FileErrorType> p : errFiles)
                     {
-                        tw.logErrors(fileName, " This file name was referenced in the mapping file, did not exist.");
+                        tw.logErrors(p.first, getResourceString(RESTR_PREFIX+(p.second == FileErrorType.eMisingFile ? "FILE_MISSING" : "DUP_COMBO_MISSING")));
                     }
 
                     ArrayList<String> fieldValueList = new ArrayList<String>(); 
@@ -431,15 +458,15 @@ public class BatchAttachFiles
                                         attachedCnt++;
                                     } else
                                     {
-                                        tw.logErrors(file.getName(), String.format("There was error saving the Attachment %s["+fieldValue.toString()+"] File["+file.getName()+"]", fieldTitle));
+                                        writeError(tw, file, fieldTitle, fieldValue, "ERR_SAVING");
                                     }
                                 } else
                                 {
-                                    tw.logErrors(file.getName(), String.format("The %s ["+fieldValue.toString()+"] was not in the database. File["+file.getName()+"]", fieldTitle));
+                                    writeError(tw, file, fieldTitle, fieldValue, "VAL_NOT_IN_DB");
                                 }
                             } else
                             {
-                                tw.logErrors(file.getName(), String.format("The %s ["+fieldValue.toString()+"] was not in the database. File["+file.getName()+"]", fieldTitle));
+                                writeError(tw, file, fieldTitle, fieldValue, "VAL_NOT_VALID");
                             }
                             
                             cnt++;

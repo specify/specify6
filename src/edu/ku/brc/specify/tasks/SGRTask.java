@@ -129,7 +129,6 @@ public class SGRTask extends BaseTask
         super(SGR, getResourceString("SGR"));
         
         CommandDispatcher.register(SGR, this);
-        CommandDispatcher.register("App", this);
     }
     
     private void loadDefaultMatchers()
