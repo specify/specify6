@@ -48,7 +48,6 @@ public class WorkbenchRecordSetCleanupTask extends BaseTask
 	public WorkbenchRecordSetCleanupTask()
 	{
 		super(WORKBENCHRECORDSETCLEANUP, WORKBENCHRECORDSETCLEANUP);
-		CommandDispatcher.register(APP_CMD_TYPE, this);        
 	}
 
 	

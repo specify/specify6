@@ -481,6 +481,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	}
 	
 	/**
+     * @param noImageStr the noImageStr to set
+     */
+    public void setNoImageStr(String noImageStr)
+    {
+        this.noImageStr = noImageStr;
+    }
+
+    /**
 	 * @param doRepaint
 	 * @param notifyChangeListeners
 	 */

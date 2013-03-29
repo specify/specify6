@@ -19,7 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
-import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
@@ -31,44 +31,26 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
  * Mar 12, 2013
  *
  */
-public class BubbleDisplayInfo
+public class BubbleDisplayInfo implements Comparable<BubbleDisplayInfo>
 {
-    protected int    colTblId;
-    protected String columnName;
-    protected String label;
-    protected UIFieldFormatterIFace formatter;
+    private static int idCnt = 0;
+    
+    protected Integer     id;
+    protected int         colTblId;
     protected DBTableInfo tableInfo;
-    
-    
-    /**
-     * @param colTblId
-     * @param columnName
-     * @param label
-     * @param formatter
-     */
-    public BubbleDisplayInfo(int    colTblId, 
-                            String columnName, 
-                            String label,
-                            UIFieldFormatterIFace formatter,
-                            DBTableInfo tableInfo)
-    {
-        super();
-        this.colTblId  = colTblId;
-        this.columnName = columnName;
-        this.label     = label;
-        this.formatter = formatter;
-        this.tableInfo = tableInfo;
-    }
+    protected DBFieldInfo fieldInfo;
     
     /**
-     * @param colTblId
-     * @param columnName
-     * @param label
+     * @param ti
+     * @param fi
      */
-    public BubbleDisplayInfo(int colTblId, String columnName, String label)
+    public BubbleDisplayInfo(final DBTableInfo ti, 
+                             final DBFieldInfo fi)
     {
-        this(colTblId, columnName, label, null, null);
-        this.tableInfo = DBTableIdMgr.getInstance().getInfoById(colTblId);
+        this.id        = idCnt++;
+        this.tableInfo = ti;
+        this.fieldInfo = fi;
+        this.colTblId  = ti.getTableId();
     }
 
     /**
@@ -85,54 +67,62 @@ public class BubbleDisplayInfo
     {
         this.colTblId = colTblId;
     }
+    
     /**
      * @return the columnName
      */
     public String getColumnName()
     {
-        return columnName;
+        return fieldInfo.getColumn();
     }
+    
     /**
-     * @param columnName the columnName to set
+     * @return the columnName
      */
-    public void setColumnName(String columnName)
+    public String getTitle()
     {
-        this.columnName = columnName;
+        return fieldInfo.getTitle();
     }
-    /**
-     * @return the label
-     */
-    public String getLabel()
-    {
-        return label;
-    }
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
-    /**
-     * @return the formatter
-     */
-    public UIFieldFormatterIFace getFormatter()
-    {
-        return formatter;
-    }
-    /**
-     * @param formatter the formatter to set
-     */
-    public void setFormatter(UIFieldFormatterIFace formatter)
-    {
-        this.formatter = formatter;
-    }
-
+    
     /**
      * @return the tableInfo
      */
     public DBTableInfo getTableInfo()
     {
         return tableInfo;
+    }
+
+    /**
+     * @return the fieldInfo
+     */
+    public DBFieldInfo getFieldInfo()
+    {
+        return fieldInfo;
+    }
+    
+    /**
+     * @return the formatter
+     */
+    public UIFieldFormatterIFace getFormatter()
+    {
+        return fieldInfo.getFormatter();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return id.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(BubbleDisplayInfo o)
+    {
+        return id.compareTo(o.id);
     }
 }

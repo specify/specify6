@@ -41,16 +41,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -64,6 +61,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -85,7 +83,6 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ResultSetController;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -129,10 +126,10 @@ public class ImagesPane extends BaseSubPane
     private static final int     MENU_FILENAME = 2;
     private static final int     MENU_COMBO    = 3;
     
-    private static final int GLASS_FONT_SIZE = 14;
-    private static final int MAX_IMAGE_REQUEST_COUNT = 3;
+    //private static final int GLASS_FONT_SIZE = 14;
+    //private static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
-    private static ImageIcon infoIcon16 = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
+    //private static ImageIcon infoIcon16 = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
 
     private static GhostGlassPane oldGlassPane     = null;    
 
@@ -206,9 +203,8 @@ public class ImagesPane extends BaseSubPane
      */
     private void initImagePane()
     {
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        
-        initColObjDisplayInfo(collection.getIsEmbeddedCollectingEvent());
+        //Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        //initColObjDisplayInfo(collection.getIsEmbeddedCollectingEvent());
         
         rsController = new ResultSetController(null, false, false, false, "Image", 0, true);
         gridPanel    = new GalleryGridPanel(rsController);
@@ -220,38 +216,38 @@ public class ImagesPane extends BaseSubPane
     /**
      * @param isEmbeded
      */
-    private void initColObjDisplayInfo(final boolean isEmbeded)
-    {
-        int[] colTblIds     = new int[]    {41,                1,               10,               10,             2,             2,          2,          3,          4,     };
-        String[] fieldNames = new String[] {"OrigFilename","CatalogNumber", "StartDate", "StationFieldNumber","LocalityName","Latitude1","Longitude1","GeoName", "TaxName", };
-        
-        if (isEmbeded)
-        {
-            colTblIds[3]  = 1;
-            fieldNames[3] = "FieldNumber";
-        }
-        
-        ArrayList<BubbleDisplayInfo> displayColInfos = new ArrayList<BubbleDisplayInfo>();
-        
-        for (int i=0;i<fieldNames.length-2;i++)
-        {
-            String fldName = fieldNames[i].equals("GeoName") || fieldNames[i].equals("TaxName") ? "FullName" : fieldNames[i];
-            
-            DBTableInfo ti   = DBTableIdMgr.getInstance().getInfoById(colTblIds[i]);
-            String     label = DBTableIdMgr.getInstance().getTitleForField(colTblIds[i], fldName);
-            UIFieldFormatterIFace formatter  = DBTableIdMgr.getFieldFormatterFor(ti.getClassObj(), fldName);
-            
-            displayColInfos.add(new BubbleDisplayInfo(colTblIds[i], fieldNames[i], label, formatter, ti));
-        }
-        
-        int inx = fieldNames.length-2;
-        String label = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
-        displayColInfos.add(new BubbleDisplayInfo(colTblIds[inx], fieldNames[inx], label));
-        
-        inx++;
-        label = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
-        displayColInfos.add(new BubbleDisplayInfo(colTblIds[inx], fieldNames[inx], label));
-    }
+//    private void initColObjDisplayInfo(final boolean isEmbeded)
+//    {
+//        int[] colTblIds     = new int[]    {41,                1,               10,               10,             2,             2,          2,          3,          4,     };
+//        String[] fieldNames = new String[] {"OrigFilename","CatalogNumber", "StartDate", "StationFieldNumber","LocalityName","Latitude1","Longitude1","GeoName", "TaxName", };
+//        
+//        if (isEmbeded)
+//        {
+//            colTblIds[3]  = 1;
+//            fieldNames[3] = "FieldNumber";
+//        }
+//        
+//        ArrayList<BubbleDisplayInfo> displayColInfos = new ArrayList<BubbleDisplayInfo>();
+//        
+//        for (int i=0;i<fieldNames.length-2;i++)
+//        {
+//            String fldName = fieldNames[i].equals("GeoName") || fieldNames[i].equals("TaxName") ? "FullName" : fieldNames[i];
+//            
+//            DBTableInfo ti   = DBTableIdMgr.getInstance().getInfoById(colTblIds[i]);
+//            String     label = DBTableIdMgr.getInstance().getTitleForField(colTblIds[i], fldName);
+//            UIFieldFormatterIFace formatter  = DBTableIdMgr.getFieldFormatterFor(ti.getClassObj(), fldName);
+//            
+//            displayColInfos.add(new BubbleDisplayInfo(colTblIds[i], fieldNames[i], label, formatter, ti));
+//        }
+//        
+//        int inx = fieldNames.length-2;
+//        String label = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
+//        displayColInfos.add(new BubbleDisplayInfo(colTblIds[inx], fieldNames[inx], label));
+//        
+//        inx++;
+//        label = DBTableIdMgr.getInstance().getTitleForId(colTblIds[inx]);
+//        displayColInfos.add(new BubbleDisplayInfo(colTblIds[inx], fieldNames[inx], label));
+//    }
     
     /**
      * @return panel containing search ui
@@ -338,7 +334,7 @@ public class ImagesPane extends BaseSubPane
             
         } else if (recordSet != null)
         {
-            searchForRecordSetImages();
+            searchForRecordSetAttachments();
         }
         
         add(infoPanel, BorderLayout.EAST);
@@ -560,10 +556,12 @@ public class ImagesPane extends BaseSubPane
     /**
      * 
      */
-    private void searchForAllImages()
+    private void searchForAllAttachments()
     {
-        String    sql  = "SELECT AttachmentID, TableID, Title, AttachmentLocation, MimeType FROM attachment WHERE MimeType LIKE 'image/%' ORDER BY Title";
-        Statement stmt = null;
+        String filter   = getFilterString();
+        String whereStr = StringUtils.isNotEmpty(filter) ? (" WHERE " + filter) : ""; 
+        String    sql   = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a %s ORDER BY a.Title", whereStr);
+        Statement stmt  = null;
         try
         {
             rowsVector.clear();
@@ -593,7 +591,17 @@ public class ImagesPane extends BaseSubPane
     /**
      * 
      */
-    private void searchForRecordSetImages()
+    private String getFilterString()
+    {
+        //return "a.MimeType = 'application/pdf'";
+        //return String.format("NOT (a.MimeType LIKE 'image/%s')", "%");
+        return "";
+    }
+    
+    /**
+     * 
+     */
+    private void searchForRecordSetAttachments()
     {
         final String MEGS = "MEGS";
         final String STATUSBAR_NAME = "ImageSearchStatusBar";
@@ -612,7 +620,7 @@ public class ImagesPane extends BaseSubPane
                 
                 String sql = "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
                 		     "INNER JOIN %sattachment coa ON a.AttachmentID = coa.AttachmentID "+
-                             "WHERE coa.%s IN (%s) AND a.MimeType LIKE 'image/%s' ORDER BY a.Title";
+                             "WHERE coa.%s IN (%s) %s ORDER BY a.Title";
 
                 int batchSize  = 500;
                 int attchIndex = 0;
@@ -640,7 +648,7 @@ public class ImagesPane extends BaseSubPane
                             sb.append(rsi.getRecordId().toString());
                         }
 
-                        String fullSQL = String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), "%");
+                        String fullSQL = String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), getFilterString());
                         ResultSet rs = stmt.executeQuery(fullSQL);
                         while (rs.next())
                         {
@@ -691,11 +699,11 @@ public class ImagesPane extends BaseSubPane
                     JScrollPane sb = new JScrollPane(gridPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     add(sb, BorderLayout.CENTER);
                     
-                    ((AttachmentsTask)task).imageSearchDone(ImagesPane.this);
+                    ((AttachmentsTask)task).attachmentSearchDone(ImagesPane.this);
                     
                 } else
                 {
-                    ((AttachmentsTask)task).imageSearchDone(null);
+                    ((AttachmentsTask)task).attachmentSearchDone(null);
                     writeTimedSimpleGlassPaneMsg(getResourceString("ATTCH_NO_IMAGES"));
                 }
             }
@@ -742,40 +750,15 @@ public class ImagesPane extends BaseSubPane
      * @param item
      * @return
      */
-    private Map<String, Object> getImageData(final ImageDataItem item)
+    protected List<Pair<String, Object>> getImageData(final ImageDataItem item)
     {
-        Map<String, Object> map = item.getDataMap();
+        List<Pair<String, Object>> map = item.getDataMap();
         if (map == null)
         {
             map = dataFetcher.queryByTableId(item.getAttachmentId(), item.getTableId());
             item.setDataMap(map);
         }
         return map;
-    }
-    
-    /**
-     * @param item
-     * @return
-     */
-    public Vector<Pair<String, Object>> getImageDataValueList(final ImageDataItem item)
-    {
-        List<BubbleDisplayInfo>      displayInfos = dataFetcher.getBubbleDisplayInfo(item.getTableId());
-        Vector<Pair<String, Object>> list         = new Vector<Pair<String, Object>>();
-
-        Map<String, Object> map = getImageData(item);
-        if (map != null)
-        {
-            for (BubbleDisplayInfo dci : displayInfos)
-            {
-                Object val = map.get(dci.getColumnName());
-                if (val != null)
-                {
-                    Pair<String, Object> p = new Pair<String, Object>(dci.getLabel()+": ", val != null ? val.toString() : "");
-                    list.add(p);
-                }
-            }
-        }
-        return list;
     }
     
     /**
@@ -830,10 +813,10 @@ public class ImagesPane extends BaseSubPane
         });
         
         int linesAdded = 0;
-        Vector<Pair<String, Object>> values = null;
+        List<Pair<String, Object>> values = null;
         if (whichBtn == ImageCellDisplay.INFO_BTN)
         {
-            values = getImageDataValueList(item);
+            values = getImageData(item);
             if (values != null)
             {
                 for (Pair<String, Object> p : values)
@@ -914,7 +897,7 @@ public class ImagesPane extends BaseSubPane
         
         if (item != null && item.getDataMap() != null)
         {
-            Integer recId = (Integer)item.getDataMap().get("Id");
+            Integer recId = (Integer)ImageDataItem.getValue(item.getDataMap(), 0, "Id");
             if (recId != null)
             {
                 RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet("", item.getTableId(), RecordSet.GLOBAL);
@@ -1037,7 +1020,7 @@ public class ImagesPane extends BaseSubPane
         
         if (isAllImages)
         {
-            searchForAllImages();
+            searchForAllAttachments();
             gridPanel.setItemList(rowsVector);
             JScrollPane sb = new JScrollPane(gridPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             add(sb, BorderLayout.CENTER);
@@ -1189,8 +1172,10 @@ public class ImagesPane extends BaseSubPane
         }
         whereSB.append( String.format("(ScopeID IS NULL AND ScopeType = %d)", Attachment.GLOBAL_SCOPE));     
 
-        String sql = String.format("SELECT AttachmentID, TableID, Title, AttachmentLocation, MimeType " +
-        		                   "FROM attachment WHERE (%s) AND %s AND MimeType LIKE 'image/%c' ORDER BY Title", whereSB.toString(), sb.toString(), '%');
+        String filter   = getFilterString();
+        String whereStr = StringUtils.isNotEmpty(filter) ? (" AND " + filter) : ""; 
+        String sql      = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType " +
+        		                        "FROM attachment a WHERE (%s) AND %s %s a.Title", whereSB.toString(), sb.toString(), whereStr);
         log.debug(sql);
         
         Statement stmt = null;

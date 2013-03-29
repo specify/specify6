@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -44,6 +45,8 @@ import edu.ku.brc.helpers.ImageMetaDataHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.IconEntry;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
@@ -217,7 +220,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         String attachLoc = attachment.getAttachmentLocation();
         String origLoc   = attachment.getOrigFilename();
-        return getFile(attachLoc, origLoc, false, null);
+        return getFile(attachLoc, origLoc, false, attachment.getMimeType(), null);
     }
 
     /* (non-Javadoc)
@@ -226,62 +229,105 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     @Override
     public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType)
     {
-        return getFile(attachLoc, originalLoc, false, null);
+        return getFile(attachLoc, originalLoc, false, mimeType, null);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginalScaled(java.lang.String, java.lang.String, java.lang.String, int)
      */
     @Override
-    public File getOriginalScaled(String attachLoc,
-                                  String originalLoc,
-                                  String mimeType,
-                                  int maxSideInPixels)
+    public File getOriginalScaled(final String attachLoc,
+                                  final String originalLoc,
+                                  final String mimeType,
+                                  final int maxSideInPixels)
     {
-        return getFile(attachLoc, originalLoc, false, maxSideInPixels);
+        return getFile(attachLoc, originalLoc, false, mimeType, maxSideInPixels);
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
+    /**
+     * @param attachLoc
+     * @param originalLoc
+     * @param isThumb
+     * @param mimeType
+     * @param scale
+     * @return
      */
-    private File getFile(String attachLoc, String originalLoc, final boolean isThumb, final Integer scale)
+    private File getFile(final String  attachLoc, 
+                         final String  originalLoc, 
+                         final boolean isThumb,
+                         final String  mimeType,
+                         final Integer scale)
     {
         boolean skip = true;
         
         if (StringUtils.isNotEmpty(attachLoc))
         {
-            String base = baseDirectory + File.separator + (isThumb ? THUMBNAILS : ORIGINAL);
-            File storedFile = new File(base + File.separator + attachLoc);
+            String base       = baseDirectory + File.separator + (isThumb ? THUMBNAILS : ORIGINAL);
+            File   storedFile = new File(base + File.separator + attachLoc);
             if (storedFile.exists())
             {
                 if (scale != null)
                 {
+                    Boolean isNotImage = mimeType == null || !mimeType.startsWith("image/");
+                    
                     String pth     = storedFile.getAbsolutePath();
                     String newPath = FilenameUtils.removeExtension(pth);
-                    String ext     = FilenameUtils.getExtension(pth);
+                    String ext     = isNotImage ? "png" : FilenameUtils.getExtension(pth);
                     newPath = String.format("%s_%d%s%s", newPath, scale, FilenameUtils.EXTENSION_SEPARATOR_STR, ext);
+                    
                     File scaledFile = new File(newPath);
                     if (!skip && scaledFile.exists())
                     {
                         return scaledFile;
                     }
                     
-                    try
+                    if (isNotImage)
                     {
-                        Image scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(storedFile.getAbsolutePath()), scale, scale, true);
-                        BufferedImage bi = new BufferedImage (scaledImg.getWidth(null), scaledImg.getHeight(null),BufferedImage.TYPE_INT_RGB);
-                        Graphics bg = bi.getGraphics();
-                        bg.drawImage(scaledImg, 0, 0, null);
-                        bg.dispose();
-                        ImageIO.write(bi, ext.toUpperCase(), new FileOutputStream(scaledFile));
-                        return scaledFile;
+                        Thumbnailer tn   = Thumbnailer.getInstance();
+                        try
+                        {
+                            tn.generateThumbnail(pth, newPath, false);
+                            return scaledFile;
+                            
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
                         
-                    } catch (FileNotFoundException e)
+                        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(scaledFile.getName().toLowerCase()));
+                        IconEntry entry = IconManager.getIconEntryByName(iconName);
+                        if (entry != null)
+                        {
+                            try
+                            {
+                                return new File(entry.getUrl().toURI());
+                            } catch (URISyntaxException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        return null;
+                        
+                    } else
                     {
-                        e.printStackTrace();
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
+                        try
+                        {
+                            Image         scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(storedFile.getAbsolutePath()), scale, scale, true);
+                            BufferedImage bi        = new BufferedImage (scaledImg.getWidth(null), scaledImg.getHeight(null),BufferedImage.TYPE_INT_RGB);
+                            Graphics bg = bi.getGraphics();
+                            bg.drawImage(scaledImg, 0, 0, null);
+                            bg.dispose();
+                            ImageIO.write(bi, ext.toUpperCase(), new FileOutputStream(scaledFile));
+                            return scaledFile;
+                            
+                        } catch (FileNotFoundException e)
+                        {
+                            e.printStackTrace();
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        return null;
                     }
                 }
                 return storedFile;
@@ -299,13 +345,13 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     private File getFileFromID(final int attachmentID)
     {
-        String sql = "SELECT AttachmentLocation, OrigFilename FROM attachment WHERE AttachmentID="+attachmentID;
+        String sql = "SELECT AttachmentLocation, OrigFilename, MimeType FROM attachment WHERE AttachmentID="+attachmentID;
         log.debug(sql);
         
         Object[] columns = BasicSQLUtils.getRow(sql);
         if (columns != null && columns.length == 2)
         {
-            return getFile((String)columns[0], (String)columns[1], false, null);
+            return getFile((String)columns[0], (String)columns[1], false, (String)columns[2], null);
         }
         return null;
  

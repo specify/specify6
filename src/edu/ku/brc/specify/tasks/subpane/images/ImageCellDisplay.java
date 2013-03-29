@@ -205,7 +205,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
 //            g2.setFont(g2.getFont().deriveFont(10.0f));
 //            FontMetrics fm = g2.getFontMetrics();
 //            
-//            int txtW =  w-infoIcon16.getIconWidth();
+//            int    txtW      =  w - infoIcon16.getIconWidth();
 //            String shortName = imgDataItem.getShortName();
 //            shortName = GraphicsUtils.clipString(fm, shortName, txtW);
 //            

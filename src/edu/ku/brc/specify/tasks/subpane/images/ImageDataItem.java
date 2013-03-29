@@ -20,15 +20,21 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.ImageLoaderExector;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -51,8 +57,14 @@ public class ImageDataItem
     private File      localFile;
     private ImageIcon imgIcon;
     private ImageIcon fullImgIcon       = null;
-    private Map<String, Object> dataMap = null;
+    private List<Pair<String, Object>> dataList = null;
     private boolean   isSelected        = false;
+    
+    private double    lat;
+    private double    lon;
+    private Boolean   hasLatLon = null; 
+    
+
     
     private String shortName = null;
     
@@ -235,18 +247,18 @@ public class ImageDataItem
     /**
      * @return the dataMap
      */
-    public Map<String, Object> getDataMap()
+    public List<Pair<String, Object>> getDataMap()
     {
-        return dataMap;
+        return dataList;
     }
 
 
     /**
      * @param dataMap the dataMap to set
      */
-    public void setDataMap(Map<String, Object> dataMap)
+    public void setDataMap(List<Pair<String, Object>> dataMap)
     {
-        this.dataMap = dataMap;
+        this.dataList = dataMap;
     }
     
     /**
@@ -276,6 +288,73 @@ public class ImageDataItem
         }
         return shortName;
     }
+    
+    /**
+     * @param bd
+     * @return
+     */
+    private String convert(final BigDecimal bd)
+    {
+        if (bd != null)
+        {
+            String str = StringUtils.stripEnd(bd.toString(), "0");
+            return str.endsWith(".") ? str + "0" : str;
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     */
+    private void ensureLatLon()
+    {
+        if (hasLatLon == null)
+        {
+            hasLatLon = false;
+            BigDecimal latBD = getValue(dataList, 2, "Latitude1");
+            BigDecimal lonBD = getValue(dataList, 2, "Longitude1");
+            if (latBD != null && lonBD != null)
+            {
+                String latStr = convert(latBD);
+                String lonStr = convert(lonBD);
+                hasLatLon = lonStr != null && latStr != null;
+                if (hasLatLon)
+                {
+                    lat = latBD.doubleValue();
+                    lon = lonBD.doubleValue();
+                    setValue(dataList, 2, "Latitude1",  latStr);
+                    setValue(dataList, 2, "Longitude1", lonStr);
+                }
+            }
+        }
+    }
+    
+    /**
+     * @return the lat
+     */
+    public double getLat()
+    {
+        ensureLatLon();
+        return lat;
+    }
+
+    /**
+     * @return the lon
+     */
+    public double getLon()
+    {
+        ensureLatLon();
+        return lon;
+    }
+
+    /**
+     * @return the hasLatLon
+     */
+    public Boolean hasLatLon()
+    {
+        ensureLatLon();
+        return hasLatLon;
+    }
 
     /**
      * 
@@ -283,6 +362,60 @@ public class ImageDataItem
     public void shutdown()
     {
         stopLoading.set(true);
+    }
+    
+    
+    /**
+     * @param dataList
+     * @param tableId
+     * @param columnName
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected static <T> T getValue(List<Pair<String, Object>> dataList, final int tableId, final String columnName)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+        if (ti != null)
+        {
+            DBFieldInfo fi = ti.getFieldByColumnName(columnName);
+            if (fi != null)
+            {
+                for (Pair<String, Object> p : dataList)
+                {
+                    if (p.first.equals(fi.getTitle()))
+                    {
+                        return (T)p.second;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param dataList
+     * @param tableId
+     * @param columnName
+     * @param data
+     */
+    @SuppressWarnings("unchecked")
+    protected static void setValue(List<Pair<String, Object>> dataList, final int tableId, final String columnName, final Object data)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+        if (ti != null)
+        {
+            DBFieldInfo fi = ti.getFieldByColumnName(columnName);
+            if (fi != null)
+            {
+                for (Pair<String, Object> p : dataList)
+                {
+                    if (p.first.equals(fi.getTitle()))
+                    {
+                        p.second = data;
+                    }
+                }
+            }
+        }
     }
     
     //--------------------------------------------------------------

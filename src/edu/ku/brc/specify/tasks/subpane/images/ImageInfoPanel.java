@@ -27,9 +27,7 @@ import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.File;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -108,15 +106,17 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         model = new ImgInfoModel(null);
         table = new JTable(model);
         JScrollPane sp = UIHelper.createScrollPane(table, true);
-        UIHelper.setVisibleRowCount(table, 8);
+        UIHelper.setVisibleRowCount(table, 10);
         table.getColumnModel().getColumn(0).setCellRenderer(new RightTableCellRenderer());
         table.setTableHeader(null);
         UIHelper.calcColumnWidths(table);
         
         blueMarbleDisplay = new ImageDisplay(IMG_SIZE, IMG_SIZE/2, false, false);
+        blueMarbleDisplay.setNoImageStr("");
+
         CellConstraints cc = new CellConstraints();
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,8px,f:p:g,4px,p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,8px,f:p,4px,p"));
         
         imgDisplay = new ImageDisplay(IMG_SIZE, IMG_SIZE, false, false);
         Dimension s = new Dimension(IMG_SIZE, IMG_SIZE);
@@ -140,7 +140,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
                 if (image != null)
                 {
                     blueMarble = image;
-                    blueMarbleDisplay.setImage(blueMarble);
+                    //blueMarbleDisplay.setImage(blueMarble);
                     
                     ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
                     colorConvert.filter(blueMarble, blueMarble);
@@ -173,7 +173,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         this.imgDataItem = imgDataItem;
         if (imgDataItem != null)
         {
-            model.setItems(imagesPane.getImageDataValueList(imgDataItem));
+            model.setItems(imagesPane.getImageData(imgDataItem));
             
             ImageIcon img = imgDataItem.getImgIcon();
             //System.out.println(String.format("%d,%d", img.getIconWidth(), ImageDataItem.STD_ICON_SIZE));
@@ -204,33 +204,26 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         {
             imgDisplay.setImage((ImageIcon)null);
             model.setItems(null);
-            blueMarbleDisplay.setImage(blueMarbleFetcher.getBlueMarbleImage());
+            blueMarbleDisplay.setImage((Image)null);//blueMarbleFetcher.getBlueMarbleImage());
         }
         
         if (imgDataItem != null)
         {
-            boolean isPointSet = false;
-            Map<String, Object> map = imgDataItem.getDataMap(); 
-            if (map == null)
+            List<Pair<String, Object>> dataList = imgDataItem.getDataMap(); 
+            if (dataList == null)
             {
-                map = dataFetcher.queryByTableId(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
-                imgDataItem.setDataMap(map);
+                dataList = dataFetcher.queryByTableId(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
+                imgDataItem.setDataMap(dataList);
             }
-            if (map != null)
+            if (dataList != null)
             {
-                BigDecimal lat = (BigDecimal)map.get("Latitude1");
-                BigDecimal lon = (BigDecimal)map.get("Longitude1");
-                if (lat != null && lon != null)
+                blueMarbleDisplay.setImage((Image)null);  
+                
+                if (imgDataItem.hasLatLon())
                 {
-                    BufferedImage bi = blueMarbleFetcher.plotPoint(lat.doubleValue(), lon.doubleValue());
-                    blueMarbleDisplay.setImage((Image)null);  
-                    blueMarbleDisplay.setImage(bi);  
-                    isPointSet = true;
+                    BufferedImage bi = blueMarbleFetcher.plotPoint(imgDataItem.getLat(), imgDataItem.getLon());
+                    blueMarbleDisplay.setImage(bi);
                 }
-            }
-            if (!isPointSet)
-            {
-                blueMarbleDisplay.setImage(blueMarble);                
             }
         }
     }
@@ -246,7 +239,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
     
     class ImgInfoModel extends DefaultTableModel
     {
-        private Vector<Pair<String, Object>> items = null;
+        private List<Pair<String, Object>> items = null;
         
         public ImgInfoModel(final Vector<Pair<String, Object>> items)
         {
@@ -257,7 +250,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         /**
          * @return the items
          */
-        public Vector<Pair<String, Object>> getItems()
+        public List<Pair<String, Object>> getItems()
         {
             return items;
         }
@@ -265,7 +258,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         /**
          * @param items the items to set
          */
-        public void setItems(Vector<Pair<String, Object>> items)
+        public void setItems(List<Pair<String, Object>> items)
         {
             this.items = items;
             fireTableDataChanged();
@@ -277,7 +270,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         @Override
         public int getRowCount()
         {
-            return items == null ? 0 : items.size();
+            return items == null ? 0 : items.size()-1;
         }
 
         /* (non-Javadoc)
@@ -305,7 +298,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         public Object getValueAt(int row, int column)
         {
             Pair<String, Object> item = items.get(row);
-            return column == 0 ? item.first + " " : item.second;
+            return column == 0 ? item.first + ": " : item.second;
         }
 
         /* (non-Javadoc)
