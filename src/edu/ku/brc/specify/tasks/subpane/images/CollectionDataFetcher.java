@@ -287,7 +287,7 @@ public class CollectionDataFetcher
                         val = bdi.getFormatter().formatToUI(val);
                     }
                     String title = getColumnTitle(bdi, tableId);
-                    dataList.add(new Pair<String, Object>(title, val));
+                    dataList.add(new Pair<String, Object>(title + ": ", val));
                 }
                 //System.out.println(rs.getObject(rsmd.getColumnCount()));
                 dataList.add(new Pair<String, Object>("Id", rs.getObject(rsmd.getColumnCount())));

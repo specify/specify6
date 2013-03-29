@@ -240,14 +240,16 @@
     <icon name="TTV_SingleViewMode" file="SingleView32x32.png"  sizes="all"/>
     
     <!-- MIME type icons -->
-    <icon name="audio"              file="audio.png"    sizes="all"/>
+    <icon name="audio"              file="audio.png"         sizes="all"/>
     <icon name="video"              file="Video32x32.png"    sizes="all"/>
     <icon name="image"              file="Image-Window-B-32x32.png"    sizes="all"/>
-    <icon name="unknown"            file="binary.png"    sizes="all"/>
-    <icon name="text"               file="text.png"        sizes="all"/>
-    <icon name="pdf"                file="pdf.png"        sizes="all"/>
-    <icon name="html"               file="html.png"        sizes="all"/>
-    
+    <icon name="unknown"            file="binary.png"        sizes="all"/>
+    <icon name="text"               file="text.png"          sizes="all"/>
+    <icon name="pdf"                file="pdf.png"           sizes="all"/>
+    <icon name="html"               file="html.png"          sizes="all"/>
+    <icon name="MSExcel"            file="msexcel64x64.png"  sizes="NonStd"/>
+    <icon name="MSWord"             file="msword64x64.png"   sizes="NonStd"/>
+    <icon name="MSPowerPoint"       file="msppt64x64.png"    sizes="NonStd"/>
     
     <!-- sorting button icons -->
     <icon name="move_to_start"      file="start.png"        sizes="all"/>

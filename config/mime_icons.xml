@@ -1,14 +1,5 @@
 <mimetypes>
-    <mimetype icon="pdf">
-        <ext>pdf</ext>
-    </mimetype>
     <mimetype icon="unknown">
-        <ext>doc</ext>
-        <ext>ppt</ext>
-        <ext>xls</ext>
-        <ext>docx</ext>
-        <ext>pptx</ext>
-        <ext>xlsx</ext>
         <ext>bin</ext>
     </mimetype>
     <mimetype icon="audio">
@@ -102,13 +93,27 @@
         <ext>xpm</ext>
         <ext>xwd</ext>
     </mimetype>
-    <mimetype icon="Spreadsheet">
+    <mimetype icon="MSExcel">
         <ext>xls</ext>
         <ext>xlsx</ext>
         <ext>excel</ext>
         <ext>csv</ext>
         <ext>vnd.ms-excel</ext>
         <ext>vnd.msexcel</ext>
+        <ext>csv</ext>
+    </mimetype>
+    <mimetype icon="MSWord">
+        <ext>doc</ext>
+        <ext>docx</ext>
+        <ext>vnd.ms-word</ext>
+        <ext>vnd.msword</ext>
+        <ext>csv</ext>
+    </mimetype>
+    <mimetype icon="MSPowerPoint">
+        <ext>ppt</ext>
+        <ext>pptx</ext>
+        <ext>vnd.ms-powerpoint</ext>
+        <ext>vnd.mspowerpoint</ext>
         <ext>csv</ext>
     </mimetype>
 </mimetypes>

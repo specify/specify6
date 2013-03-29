@@ -92,6 +92,16 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
             l.setText(text);
             l.setToolTipText(text);
             
+            if (defaultImgIcon != null)
+            {
+                defaultImgIcon = new BufferedImage(defWidth, defHeight, BufferedImage.TYPE_INT_RGB);
+                Graphics g = defaultImgIcon.createGraphics();
+                g.setColor(Color.WHITE);
+                g.fillRect(0, 0, defWidth, defHeight);
+                g.dispose();
+            }
+
+            
             // ask for the icon representation of the object
             ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value, null);
             if (icon != null && icon.getIconWidth() < 256 && icon.getIconHeight() < 256)
@@ -110,8 +120,8 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
                         defaultImgIcon = new BufferedImage(defWidth, defHeight, BufferedImage.TYPE_INT_RGB);
                         g = defaultImgIcon.createGraphics();
                     }
-                    g.setColor(Color.WHITE);
-                    g.fillRect(0, 0, defWidth, defHeight);
+                    //g.setColor(Color.WHITE);
+                    //g.fillRect(0, 0, defWidth, defHeight);
                 }
                 
                 int x = (defWidth - icon.getIconWidth()) / 2;
