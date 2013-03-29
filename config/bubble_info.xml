@@ -56,12 +56,11 @@
             <field col="Longitude1" tableid="2"/>
             <field col="FullName" tableid="3"/>
             <field col="OrigFilename" tableid="41"/>
+        </fields>
         <joins><![CDATA[
-            LEFT JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID 
             LEFT JOIN locality loc ON ce.LocalityID = loc.LocalityID
             LEFT JOIN geography geo ON loc.GeographyID = geo.GeographyID
         ]]></joins>
-        </fields>
     </bubble>
     <bubble tableid="103">
         <fields>

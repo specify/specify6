@@ -156,6 +156,14 @@ public class ImageDataItem
     /**
      * @return the fullImgIcon
      */
+    public Integer getOwnerRecId()
+    {
+        return dataList != null && dataList.size() > 0 ? (Integer)dataList.get(dataList.size()-1).second : null;
+    }
+
+    /**
+     * @return the fullImgIcon
+     */
     public ImageIcon getFullImgIcon()
     {
         return fullImgIcon;

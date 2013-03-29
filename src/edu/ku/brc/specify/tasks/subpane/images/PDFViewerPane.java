@@ -19,15 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
-import java.awt.BorderLayout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import ch.randelshofer.pdf.JPDFFilePanel;
 
@@ -38,9 +33,6 @@ import com.sun.pdfview.PDFFile;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ImageDisplay;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods

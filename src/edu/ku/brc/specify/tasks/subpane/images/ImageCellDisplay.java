@@ -41,6 +41,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.ImageLoaderExector;
@@ -70,9 +72,11 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     //private RoundRectangle2D.Double rr2 = null;  // Text Background
     
     private ImageIcon   infoIcon16      = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
+    private ImageIcon   dataObjIcon     = null;
     //private ImageIcon   metaDataIcon    = IconManager.getIcon("MetaData", IconManager.STD_ICON_SIZE.Std16);
     
     private Rectangle   infoHitRect     = new Rectangle();
+    private Rectangle   dataHitRect     = new Rectangle();
     private Rectangle   mdHitRect       = new Rectangle(); // metadat icon
     
     private Vector<GalleryGridListener> listeners = new Vector<GalleryGridListener>();
@@ -86,7 +90,9 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @param imgHeight
      * @param listener
      */
-    public ImageCellDisplay(final int imgWidth, final int imgHeight, final ImageLoaderListener listener)
+    public ImageCellDisplay(final int imgWidth, 
+                            final int imgHeight, 
+                            final ImageLoaderListener listener)
     {
         super(imgWidth, imgHeight, false, false);
         
@@ -105,6 +111,12 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
                     for (GalleryGridListener l : listeners)
                     {
                         l.infoSelected(ImageCellDisplay.this, Integer.MIN_VALUE, true, INFO_BTN);
+                    }
+                } else if (dataHitRect != null && dataHitRect.contains(e.getPoint()))
+                {
+                    for (GalleryGridListener l : listeners)
+                    {
+                        l.dataSelected(ImageCellDisplay.this, Integer.MIN_VALUE, true, INFO_BTN);
                     }
                 } else if (mdHitRect != null && mdHitRect.contains(e.getPoint()))
                 {
@@ -174,7 +186,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
                 rr.setRoundRect(x, y, w, h, 10, 10);
                 g2.draw(rr);
             }
-
+            
             int imgX = x + w - infoIcon16.getIconWidth();
             int imgY = y + h - infoIcon16.getIconHeight();
             g2.drawImage(infoIcon16.getImage(), imgX, imgY, null);
@@ -184,6 +196,15 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
             infoHitRect.width  = infoIcon16.getIconWidth();
             infoHitRect.height = infoIcon16.getIconHeight();
             
+            imgX = x;
+            imgY = y + h - dataObjIcon.getIconHeight();
+            g2.drawImage(dataObjIcon.getImage(), imgX, imgY, null);
+
+            dataHitRect.x      = imgX;
+            dataHitRect.y      = imgY;
+            dataHitRect.width  = infoIcon16.getIconWidth();
+            dataHitRect.height = infoIcon16.getIconHeight();
+
             /*imgX = x;
             imgY = y + h - metaDataIcon.getIconHeight();
             g2.drawImage(metaDataIcon.getImage(), imgX, imgY, null);
@@ -276,7 +297,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
         super.setNoImage(isNoImage);
         schedRepaint();
     }
-
+    
     /**
      * 
      */
@@ -364,6 +385,12 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     public void setImageDataItem(ImageDataItem imgDataItem)
     {
         this.imgDataItem = imgDataItem;
+        
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(imgDataItem.getTableId());
+        if (ti != null)
+        {
+            dataObjIcon = ti.getIcon(IconManager.STD_ICON_SIZE.Std16);
+        }
     }
 
     /**

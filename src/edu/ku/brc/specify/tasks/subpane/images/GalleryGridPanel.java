@@ -166,6 +166,30 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                     notifyInfoSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
                 }
             }
+
+            @Override
+            public void dataSelected(ImageCellDisplay imgCellDsp,
+                                     int index,
+                                     boolean isSelected,
+                                     int whichBtn)
+            {
+                currCellIndex = -1;
+                if (imgCellDsp != null)
+                {
+                    int i   = 0;
+                    for (ImageCellDisplay icd : displayList)
+                    {
+                        if (icd == imgCellDsp)
+                        {
+                            currCellIndex = i;
+                            break;
+                        }
+                        i++;
+                    }
+    
+                    notifyDataSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
+                }
+            }
         };
     }
     
@@ -543,6 +567,14 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
         for (GalleryGridListener lsl : selectionListeners)
         {
             lsl.infoSelected(item, index, isSelected, whichBtn);
+        }
+    }
+    
+    private void notifyDataSelected(ImageCellDisplay item, int index, boolean isSelected, final int whichBtn)
+    {
+        for (GalleryGridListener lsl : selectionListeners)
+        {
+            lsl.dataSelected(item, index, isSelected, whichBtn);
         }
     }
     

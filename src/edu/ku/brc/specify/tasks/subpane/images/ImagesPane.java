@@ -752,13 +752,13 @@ public class ImagesPane extends BaseSubPane
      */
     protected List<Pair<String, Object>> getImageData(final ImageDataItem item)
     {
-        List<Pair<String, Object>> map = item.getDataMap();
-        if (map == null)
+        List<Pair<String, Object>> list = item.getDataMap();
+        if (list == null)
         {
-            map = dataFetcher.queryByTableId(item.getAttachmentId(), item.getTableId());
-            item.setDataMap(map);
+            list = dataFetcher.queryByTableId(item.getAttachmentId(), item.getTableId());
+            item.setDataMap(list);
         }
-        return map;
+        return list;
     }
     
     /**
@@ -819,9 +819,10 @@ public class ImagesPane extends BaseSubPane
             values = getImageData(item);
             if (values != null)
             {
-                for (Pair<String, Object> p : values)
+                for (int i=0;i<values.size()-1;i++) // Minus 1, Do not want to show the 'Id' field
                 {
-                    bubblePane.addLine(p.first, p.second.toString());
+                    Pair<String, Object> p = values.get(i);
+                    bubblePane.addLine(p.first, p.second != null ? p.second.toString() : "");
                     linesAdded++;
                 }
             }
@@ -897,7 +898,7 @@ public class ImagesPane extends BaseSubPane
         
         if (item != null && item.getDataMap() != null)
         {
-            Integer recId = (Integer)ImageDataItem.getValue(item.getDataMap(), 0, "Id");
+            Integer recId = item.getOwnerRecId();
             if (recId != null)
             {
                 RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet("", item.getTableId(), RecordSet.GLOBAL);
@@ -1003,6 +1004,20 @@ public class ImagesPane extends BaseSubPane
                 } else
                 {
                     infoPanel.setImgDataItem(null);
+                }
+            }
+            
+            @Override
+            public void dataSelected(ImageCellDisplay icd,
+                                     int index,
+                                     boolean isSelected,
+                                     int whichBtn)
+            {
+                final ImageDataItem item = index > -1 && index < rowsVector.size() ? rowsVector.get(index) : null;
+                if (item != null)
+                {
+                    getImageData(item); // ensure the dataList is loaded.
+                    showItemsInForm(item);
                 }
             }
         });
