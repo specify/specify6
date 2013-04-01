@@ -353,7 +353,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             {
                 if (!term.isSingleChar())
                 {
-                    String termStr = term.getTerm();
+                    String termStr = term.getTermLowerCase();
                     String abbrev  = tableInfo.getAbbrev(); 
     
                     for (SearchFieldConfig searchField : searchFields)
@@ -382,7 +382,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                 if (formatter.isLengthOK(termStr.length()))
                                 {
                                     isFormatted = true;
-                                    if (!formatter.isValid(termStr))
+                                    if (!formatter.isValid(term.getTerm()))
                                     {
                                         continue;
                                     }

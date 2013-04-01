@@ -224,9 +224,9 @@ public class ESTermParser implements SearchTermParserIFace
         boolean endWildCard   = term.isOn(SearchTermField.ENDS_WILDCARD);
         if (startWildCard || endWildCard)
         {
-            return "LOWER(" + abbrev + fieldName + ") LIKE " + (startWildCard ? "'%" : "'") + term.getTerm() + (endWildCard ? "%'" : "'");
+            return "LOWER(" + abbrev + fieldName + ") LIKE " + (startWildCard ? "'%" : "'") + term.getTermLowerCase() + (endWildCard ? "%'" : "'");
         }
-        return "LOWER(" + abbrev + fieldName + ") = " + "'" + term.getTerm() + "'";
+        return "LOWER(" + abbrev + fieldName + ") = " + "'" + term.getTermLowerCase() + "'";
     }
     
 }

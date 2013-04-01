@@ -1316,7 +1316,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         if (parser.parse(newEntryStrArg, true))
         {
-            String newEntryStr = parser.getFields().get(0).getTerm();
+            String newEntryStr = parser.getFields().get(0).getTermLowerCase();
             prevEnteredText = newEntryStr;
     
             if (!isDoingQuery.get())

@@ -42,6 +42,7 @@ public class SearchTermField
     public static final int ENDS_WILDCARD   = 64; // ends with wild card
 
     protected String term;
+    protected String termLowerCase;
     protected int    options = NO_OPTIONS;
     
     /**
@@ -51,8 +52,9 @@ public class SearchTermField
     public SearchTermField(final String term)
     {
         super();
-        this.term = StringUtils.replace(term, "'", "''");
-        this.options = NO_OPTIONS;
+        this.term          = StringUtils.replace(term, "'", "''");
+        this.termLowerCase = this.term.toLowerCase();
+        this.options       = NO_OPTIONS;
     }
     
     public boolean isSingleChar()
@@ -66,6 +68,11 @@ public class SearchTermField
     }
 
     public String getTerm()
+    {
+        return term;
+    }
+
+    public String getTermLowerCase()
     {
         return term;
     }

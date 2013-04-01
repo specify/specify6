@@ -499,7 +499,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                                 }
                                                 if (clause == null)
                                                 {
-                                                    firstTerm.setTerm(firstTerm.getTerm());
+                                                    firstTerm.setTerm(firstTerm.getTermLowerCase());
                                                     firstTerm.setOption(SearchTermField.ENDS_WILDCARD);
                                                 }
                                             }
@@ -565,7 +565,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     private String getDateClause(final SearchTermField term, final String columnName)
     {
-        String termStr = term.getTerm();
+        String termStr = term.getTermLowerCase();
         if (termStr.length() >= 4)
         {
             try
