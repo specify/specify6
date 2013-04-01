@@ -66,7 +66,6 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.AppContextMgr.CONTEXT_STATUS;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -1691,9 +1690,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             // Now load the Schema, but make sure the Discipline has a localization.
             // for the current locale.
+            //
+            // Bug Fix 9167 - 04/01/2013 - Must always redo the Schema because any formatters at the collection level
+            // otherwise will not get set
+            //
             int disciplineId = getClassObject(Discipline.class).getDisciplineId();
-            if (disciplineId != prevDisciplineId)
-            {
+            //if (disciplineId != prevDisciplineId)
+            //{
                 Locale       engLocale  = null;
                 Locale       fndLocale  = null;
                 Locale       currLocale = SchemaI18NService.getCurrentLocale();
@@ -1737,7 +1740,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     UIRegistry.displayErrorDlgLocalized(L10N + "NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
                 }
                 SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
-            }
+            //}
             
             //setUpCatNumAccessionFormatters(getClassObject(Institution.class), collection);
             

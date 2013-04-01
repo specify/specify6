@@ -2744,6 +2744,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
                 inx++;
                 
+                globalPrefs.flush();
+                
                 return true;
             }
             @Override
