@@ -210,7 +210,6 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     if (type.equals("read"))
                     {
                         readURLStr = urlStr;
-                        readURLStr = StringUtils.replace(readURLStr, "fileget.", "fileget2.");
                         
                     } else if (type.equals("write"))
                     {
