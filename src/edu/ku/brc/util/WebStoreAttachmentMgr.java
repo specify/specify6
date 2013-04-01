@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -59,6 +60,8 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.ui.IconEntry;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
@@ -207,6 +210,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     if (type.equals("read"))
                     {
                         readURLStr = urlStr;
+                        readURLStr = StringUtils.replace(readURLStr, "fileget.", "fileget2.");
                         
                     } else if (type.equals("write"))
                     {
@@ -324,7 +328,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     } while(true);
                     in.close();
                 
-                    System.out.println(dataStr.toString());
+                    //System.out.println(dataStr.toString());
                     return dataStr.toString();
                 }
             }
@@ -385,7 +389,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             String urlStr  = subAllExtraData(metaDataURLStr, fileName, false, null, "json");
             String jsonStr = getURLDataAsString(urlStr);
         
-            System.out.println(jsonStr);
+            //System.out.println(jsonStr);
             return jsonStr;
         }
         return null;
@@ -468,6 +472,26 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     {
         return getFile(a.getAttachmentLocation(), a.getOrigFilename(), a.getMimeType(), nameHash, isThumb, null);
     }
+    
+    /**
+     * @param iconName
+     * @return
+     */
+    private File getFileForIconName(final String iconName)
+    {
+        IconEntry entry = IconManager.getIconEntryByName(iconName);
+        if (entry != null)
+        {
+            try
+            {
+                return new File(entry.getUrl().toURI());
+            } catch (URISyntaxException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     /**
      * @param attachLocation
@@ -485,6 +509,8 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                                       final boolean isThumb,
                                       final Integer scale)
     {
+        shortTermCache.clear();
+        
         String nmExt = isThumb ? ".THB" : "";
         
         String attachLoc = attachLocation;
@@ -530,8 +556,45 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                 return cachedFile;
             }
             
+            Boolean isNotImage = mimeType == null || !mimeType.startsWith("image/");
+            if (isNotImage)
+            {
+                if (Thumbnailer.getInstance().hasGeneratorForMimeType(mimeType))
+                {
+                    Thumbnailer tn = Thumbnailer.getInstance();
+                    try
+                    {
+                        File localFile = getFileFromWeb(attachLocation, mimeType, false, null);
+                        String path    = localFile.getAbsolutePath();
+                        tn.generateThumbnail(path, path, false);
+                        return localFile;
+                        
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                
+                String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(attachLocation.toLowerCase()));
+                if (iconName != null)
+                {
+                    File iconFile = getFileForIconName(iconName);
+                    if (iconFile != null)
+                    {
+                        return iconFile;
+                    }
+                } else
+                {
+                    //System.out.println("Unknown handled mime type: "+mimeType);
+                }
+                return getFileForIconName("unknown");
+            }
+
             // Not in the cache by either name, so go get the file form the server
+            //System.out.println(String.format("[%s]  Mime: %s,  isThmb: %s, Scale: %d", attachLocation, mimeType, isThumb?"Y":"N", scale != null?scale:-1));
             File thmbFile = getFileFromWeb(attachLocation, mimeType, isThumb, scale);
+            //System.out.println(thmbFile.getAbsolutePath());
+            
             if (thmbFile != null && thmbFile.exists())
             {
                 try
@@ -539,10 +602,10 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     // cache it
                     String nm = thmbFile.getName();
                     shortTermCache.cacheFile(thmbFile);
-                    nameHash.put(attachLoc+nmExt, nm);
-                    thmbFile.delete();
+                    nameHash.put(attachLoc + nmExt, nm);
+                    //thmbFile.delete();
                     
-                    thmbFile = shortTermCache.getCacheFile(nm);
+                    //thmbFile = shortTermCache.getCacheFile(nm);
                     
                 } catch (IOException e)
                 {

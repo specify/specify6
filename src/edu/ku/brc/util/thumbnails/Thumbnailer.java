@@ -175,17 +175,27 @@ public class Thumbnailer
 		return mimeTypeToGeneratorMap.put(mimeType, generator);
 	}
 	
-	/**
+    /**
      * Unregisters the {@link ThumbnailGeneratorIFace} that handles the given MIME type.
      * 
-	 * @param mimeType the MIME type to unregister
-	 * @return the unregistered generator, null if one was not registered
-	 */
-	public ThumbnailGeneratorIFace removeGenerator(String mimeType)
-	{
-		return mimeTypeToGeneratorMap.remove(mimeType);
-	}
-	
+     * @param mimeType the MIME type to unregister
+     * @return the unregistered generator, null if one was not registered
+     */
+    public ThumbnailGeneratorIFace removeGenerator(String mimeType)
+    {
+        return mimeTypeToGeneratorMap.remove(mimeType);
+    }
+    
+    /**
+     * 
+     * @param mimeType the MIME type to unregister
+     * @return true is there is a generator for the mime type, false when there isn't one.
+     */
+    public boolean hasGeneratorForMimeType(final String mimeType)
+    {
+        return mimeTypeToGeneratorMap.get(mimeType) != null;
+    }
+    
 	/**
      * Generates a thumbnail for the given original.
      * 
