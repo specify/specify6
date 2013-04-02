@@ -508,8 +508,6 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                                       final boolean isThumb,
                                       final Integer scale)
     {
-        shortTermCache.clear();
-        
         String nmExt = isThumb ? ".THB" : "";
         
         String attachLoc = attachLocation;
