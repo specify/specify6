@@ -325,7 +325,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 }
                 
                 log.debug("currentText: "+currentText);
-                doQuery(currentText);
+                doQuery(currentText, currentText);
             }
         });
     }
@@ -360,7 +360,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             if (len > 0)
             {
                 tabOutSearch = true;
-                doQuery(currentText);
+                doQuery(currentText, currentText);
             } else
             {
                 
@@ -581,14 +581,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
             ev.getKeyCode() == KeyEvent.VK_DOWN)
         {
-            String text = textField.getText();
+            String origText = textField.getText();
+            String text     = origText;
             if (uiFieldFormatter != null && !uiFieldFormatter.isNumeric())
             {
                 text = uiFieldFormatter.formatFromUI(text).toString();
             }
             text = StringUtils.replace(text, "'", "\'");
             text = StringUtils.replace(text, "\"", "\\\"");
-            doQuery(text);
+            doQuery(text, origText);
         }
     }
     
@@ -1304,7 +1305,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * Fill the the drop down with the list from the query
      */
-    protected void doQuery(final String newEntryStrArg)
+    protected void doQuery(final String newEntryStrArg, final String origTextStr)
     {
         UIRegistry.getStatusBar().setText("");
         if (StringUtils.isEmpty(newEntryStrArg))
@@ -1317,7 +1318,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (parser.parse(newEntryStrArg, true))
         {
             String newEntryStr = parser.getFields().get(0).getTermLowerCase();
-            prevEnteredText = newEntryStr;
+            prevEnteredText = origTextStr;
     
             if (!isDoingQuery.get())
             {
