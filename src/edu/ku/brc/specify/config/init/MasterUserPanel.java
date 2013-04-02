@@ -320,8 +320,7 @@ public class MasterUserPanel extends GenericFormPanel
     protected void createMasterUser()
     {
         String saUsrNm = ((JTextField)comps.get("saUserName")).getText();
-        if (!DBConnection.getInstance().isEmbedded() && 
-            StringUtils.isNotEmpty(saUsrNm) && saUsrNm.equalsIgnoreCase("root"))
+        if (StringUtils.isNotEmpty(saUsrNm) && saUsrNm.equalsIgnoreCase("root"))
         {
             UIRegistry.showLocalizedError("MASTER_NO_ROOT");
             ((JTextField)comps.get("saUserName")).setText("");
