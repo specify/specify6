@@ -153,6 +153,14 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     }
 
     /**
+     * @param doPainting the doPainting to set
+     */
+    public void setDoPainting(boolean doPainting)
+    {
+        this.doPainting = doPainting;
+    }
+
+    /**
      * Hooks up a Password field to the Strength UI
      * @param pwdTF the password text field to be be hooked up to this
      * @param btn optional button that will be enabled when the PasswordText is not empty

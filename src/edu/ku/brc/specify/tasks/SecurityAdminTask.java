@@ -140,7 +140,7 @@ public class SecurityAdminTask extends BaseTask
     /**
      * Enables the User to change password.
      */
-    private void changePassword()
+    public static void changePassword(final boolean isStartingEmpty)
     {
         final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 "SystemSetup",
@@ -163,6 +163,11 @@ public class SecurityAdminTask extends BaseTask
                 final ValPasswordField   newPwdVTF    = fvo.getCompById("2");
                 final ValPasswordField   verPwdVTF    = fvo.getCompById("3");
                 final PasswordStrengthUI pwdStrenthUI = fvo.getCompById("4");
+                
+                if (isStartingEmpty && pwdStrenthUI != null)
+                {
+                    pwdStrenthUI.setDoPainting(true);
+                }
                 
                 Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
                 int minPwdLen = (int)institution.getMinimumPwdLength();
@@ -198,8 +203,8 @@ public class SecurityAdminTask extends BaseTask
                 verPwdVTF.getDocument().addDocumentListener(da);
                 newPwdVTF.getDocument().addDocumentListener(da);
             }
-        
         });
+        
         Hashtable<String, String> valuesHash = new Hashtable<String, String>();
         dlg.setData(valuesHash);
         UIHelper.centerAndShow(dlg);
@@ -245,7 +250,7 @@ public class SecurityAdminTask extends BaseTask
                         {
                             AppPreferences.getLocalPrefs().put(UserAndMasterPasswordMgr.getInstance().getMasterPrefPath(true), encryptedMasterUP);
                             UIHelper.setTextToClipboard(encryptedMasterUP);
-                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "INFORMATION", "SPUSR_KEYGEN");
+                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "INFORMATION", "SPUSR_NEWPWD");
                             
                         } else
                         {
@@ -271,7 +276,7 @@ public class SecurityAdminTask extends BaseTask
      * @param key
      * @return
      */
-    private String getKey(final String key)
+    private static String getKey(final String key)
     {
         return "SecurityAdminTask." + key;
     }
@@ -355,7 +360,7 @@ public class SecurityAdminTask extends BaseTask
         {
             public void actionPerformed(ActionEvent ae)
             {
-                changePassword();
+                changePassword(false);
             }
         });
         

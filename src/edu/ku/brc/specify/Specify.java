@@ -207,6 +207,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.prefs.SystemPrefs;
+import edu.ku.brc.specify.tasks.SecurityAdminTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
@@ -1453,6 +1454,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             }
         });
                 
+        ttle = "SecurityAdminTask.CHANGE_PWD_MENU"; //$NON-NLS-1$
+        mneu = "SecurityAdminTask.CHANGE_PWD_MNEU"; //$NON-NLS-1$
+        desc = "SecurityAdminTask.CHANGE_PWD_DESC"; //$NON-NLS-1$
+        mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent ae)
+            {
+                SecurityAdminTask.changePassword(true);
+            }
+        });
+        
         ttle = "Specify.CHECK_UPDATE";//$NON-NLS-1$ 
         mneu = "Specify.CHECK_UPDATE_MNEU";//$NON-NLS-1$ 
         desc = "Specify.CHECK_UPDATE_DESC";//$NON-NLS-1$      
@@ -1505,11 +1519,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 feedBackDlg.sendFeedback();
             }
         });
-        helpMenu.addSeparator();
         
-                
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
+            helpMenu.addSeparator();
+            
             ttle = "Specify.ABOUT";//$NON-NLS-1$ 
             mneu = "Specify.ABOUTMNEU";//$NON-NLS-1$ 
             desc = "Specify.ABOUT";//$NON-NLS-1$ 
