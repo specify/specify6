@@ -178,7 +178,7 @@ public class AttachmentsTask extends BaseTask
                 
                 cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
                 String serviceName = String.format("Image Search %s", tblInfo.getTitle());
-                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "AttachmentPrefs", tblInfo.getTitle(), true); // the Name gets Hashed
+                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "AttachmentPrefs", tblInfo.getTitle(), false); // the Name gets Hashed
             }
 
             
