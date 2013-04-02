@@ -331,7 +331,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         if (savedPickList != null)
         {
             ((DefaultListModel)list.getModel()).addElement(savedPickList);
-            newPickLists.add(pickList);
+            newPickLists.add(savedPickList);
         }
     }
     
