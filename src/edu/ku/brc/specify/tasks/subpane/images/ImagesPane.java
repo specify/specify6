@@ -438,7 +438,7 @@ public class ImagesPane extends BaseSubPane
         //gridPanel.clearSelection();
         
         // Current State of the Info Panel
-        if (!infoPanel.isExpanded())
+        //if (!infoPanel.isExpanded())
         {
             fillInfoPanel(index);
         }

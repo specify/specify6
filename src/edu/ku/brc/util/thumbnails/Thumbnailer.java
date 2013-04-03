@@ -216,7 +216,7 @@ public class Thumbnailer
         String iconName = null;
 
         String ext = FilenameUtils.getExtension(originalFile);
-        if (StringUtils.isNotEmpty(ext))
+        if (!mimeType.startsWith("image/") && StringUtils.isNotEmpty(ext))
         {
             iconName = availableIcons.get(ext);
         }

@@ -261,7 +261,8 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         public void setItems(List<Pair<String, Object>> items)
         {
             this.items = items;
-            fireTableDataChanged();
+            //fireTableDataChanged();
+            fireTableStructureChanged();
         }
 
         /* (non-Javadoc)

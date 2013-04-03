@@ -70,12 +70,14 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
     private int       gridCols;
     private Dimension layoutSize = null;
     
-    private int numOfPages;
-    private int pageNum;
-    private int pageSize;
-    private int itemsLoaded   = 0;
-    private int currOffIndex  = 0;
-    private int currCellIndex = -1;
+    private int       numOfPages;
+    private int       pageNum;
+    private int       pageSize;
+    private int       itemsLoaded   = 0;
+    private int       currOffIndex  = 0;
+    private int       currCellIndex = -1;
+    private Dimension prevSize      = new Dimension(0, 0);
+    private boolean   firstTime     = true;
  
     /**
      * @param rs
@@ -94,6 +96,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
             public void indexChanged(int newIndex)
             {
                 clearSelection();
+                prevSize.setSize(0 ,0);
                 
                 if (pageNum != newIndex)
                 {
@@ -114,13 +117,10 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
         
         infoListener = new GalleryGridListener()
         {
-            @Override
-            public void itemSelected(final ImageCellDisplay imgCellDsp, 
-                                     final int              index, 
-                                     final boolean          isSelected, 
-                                     final int              clickCount)
+            
+            private void calcNewIndex(final ImageCellDisplay imgCellDsp, 
+                                      final int              clickCount)
             {
-                currCellIndex = -1;
                 int i   = 0;
                 for (ImageCellDisplay icd : displayList)
                 {
@@ -136,13 +136,26 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                     }
                     i++;
                 }
-                
-                if (isSelected && currCellIndex > -1)
+            }
+            
+            @Override
+            public void itemSelected(final ImageCellDisplay imgCellDsp, 
+                                     final int              index, 
+                                     final boolean          isSelected, 
+                                     final int              clickCount)
+            {
+                currCellIndex = -1;
+                if (imgCellDsp != null)
                 {
-                    imgCellDsp.setSelected(true);
-                    imgCellDsp.repaint();
-                    int adjustedIndex = currCellIndex + (pageNum * pageSize);
-                    notifyItemSelected(imgCellDsp, adjustedIndex, true, clickCount);
+                    calcNewIndex(imgCellDsp, clickCount);
+                    
+                    if (isSelected && currCellIndex > -1)
+                    {
+                        imgCellDsp.setSelected(true);
+                        imgCellDsp.repaint();
+                        int adjustedIndex = currCellIndex + (pageNum * pageSize);
+                        notifyItemSelected(imgCellDsp, adjustedIndex, true, clickCount);
+                    }
                 }
             }
             
@@ -152,17 +165,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                 currCellIndex = -1;
                 if (imgCellDsp != null)
                 {
-                    int i   = 0;
-                    for (ImageCellDisplay icd : displayList)
-                    {
-                        if (icd == imgCellDsp)
-                        {
-                            currCellIndex = i;
-                            break;
-                        }
-                        i++;
-                    }
-    
+                    calcNewIndex(imgCellDsp, 1);
                     notifyInfoSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
                 }
             }
@@ -176,17 +179,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                 currCellIndex = -1;
                 if (imgCellDsp != null)
                 {
-                    int i   = 0;
-                    for (ImageCellDisplay icd : displayList)
-                    {
-                        if (icd == imgCellDsp)
-                        {
-                            currCellIndex = i;
-                            break;
-                        }
-                        i++;
-                    }
-    
+                    calcNewIndex(imgCellDsp, 1);
                     notifyDataSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
                 }
             }
@@ -237,12 +230,14 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
     @Override
     public void setBounds(int xc, int yc, int width, int height)
     {
+        super.setBounds(xc, yc, width, height);
+        
         Rectangle r = getBounds();
-        if (r.x == xc && r.y == yc && r.width == width && r.height == height)
+        if (!firstTime && r.width == width && r.height == height)
         {
             return;
         }
-        super.setBounds(xc, yc, width, height);
+        firstTime = false;
         
         reload(width, height);
     }
@@ -326,6 +321,12 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
      */
     private void reload(int width, int height)
     {
+        if (prevSize.width == width && prevSize.height == height)
+        {
+            return;
+        }
+        prevSize.setSize(width, height);
+        
         //System.out.println(String.format("%d, %d", width, height));
         if (stopLoading.get()) return;
         
@@ -525,11 +526,11 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
     }
     
     /**
-     * @return the currIndex
+     * @return the currIndex + the currOffIndex
      */
     public int getSelectedCellIndex()
     {
-        return currCellIndex;
+        return currCellIndex + currOffIndex;
     }
     
     /**

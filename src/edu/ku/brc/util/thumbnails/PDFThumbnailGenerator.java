@@ -120,7 +120,8 @@ public class PDFThumbnailGenerator extends BaseThumbnailGenerator implements Ima
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.err.println(e.getMessage());
 
             //int size = lineheight - thumbnailInsets.top - thumbnailInsets.bottom;
             //images[workingon] = new BufferedImage(size, size, BufferedImage.TYPE_BYTE_BINARY);
