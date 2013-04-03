@@ -43,7 +43,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.peer.PanelPeer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -2693,14 +2692,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             isFixed[i] = globalPrefs.getBoolean(prefNames[i], false);
             if (!isFixed[i]) anyNeededToBeFixed = true;
         }
-        
-        final ProgressFrame frame = anyNeededToBeFixed ? new ProgressFrame("Updating database for release...") : null;
+
+        String msg = "Updating database for release...";
+        UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
+
+        final ProgressFrame frame = anyNeededToBeFixed ? new ProgressFrame(msg) : null;
         if (frame != null)
         {
             frame.adjustProgressFrame();
             frame.getCloseBtn().setVisible(false);
             UIHelper.centerAndShow(frame);
             frame.toFront();
+            frame.setAlwaysOnTop(true);
         }
         
         javax.swing.SwingWorker<Boolean, Boolean> worker = new javax.swing.SwingWorker<Boolean, Boolean>()
@@ -2708,64 +2711,72 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             @Override
             protected Boolean doInBackground() throws Exception
             {
-                int inx = 0;
-                if (!isFixed[inx])
+                try
                 {
-                    FixDBAfterLogin fixer = new FixDBAfterLogin();
-                    fixer.fixUploaderRecordsets();
-                    globalPrefs.putBoolean(prefNames[inx], true);
-                }
-                inx++;
-                
-                if (!isFixed[inx])
-                {
-                    FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
-                    globalPrefs.putBoolean(prefNames[inx], true);
-                }
-                inx++;
-                
-                if (!isFixed[inx])
-                {
-                    FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
-                    globalPrefs.putBoolean(prefNames[inx], true);
-                }
-                inx++;
-                
-                if (!isFixed[inx])
-                {
-                    if (FixDBAfterLogin.fixQueryOperators())
+                    int inx = 0;
+                    if (!isFixed[inx])
                     {
+                        FixDBAfterLogin fixer = new FixDBAfterLogin();
+                        fixer.fixUploaderRecordsets();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
-                }
-                inx++;
-                
-                if (!isFixed[inx])
+                    inx++;
+                    
+                    if (!isFixed[inx])
+                    {
+                        FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
+                        globalPrefs.putBoolean(prefNames[inx], true);
+                    }
+                    inx++;
+                    
+                    if (!isFixed[inx])
+                    {
+                        FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
+                        globalPrefs.putBoolean(prefNames[inx], true);
+                    }
+                    inx++;
+                    
+                    if (!isFixed[inx])
+                    {
+                        if (FixDBAfterLogin.fixQueryOperators())
+                        {
+                            globalPrefs.putBoolean(prefNames[inx], true);
+                        }
+                    }
+                    inx++;
+                    
+                    if (!isFixed[inx])
+                    {
+                        FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
+                        globalPrefs.putBoolean(prefNames[inx], true);
+                    }
+                    inx++;
+                    
+                    FixDBAfterLogin fixer = new FixDBAfterLogin();
+                    fixer.checkMultipleLocalities();
+                            
+                    if (!isFixed[inx])
+                    {
+                        // Check and update GUIDS
+                        schemaUpdater.checkForGUIDs(frame);
+                        globalPrefs.putBoolean(prefNames[inx], true);
+                    }
+                    inx++;
+                } catch (Exception ex)
                 {
-                    FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
-                    globalPrefs.putBoolean(prefNames[inx], true);
-                }
-                inx++;
-                
-                FixDBAfterLogin fixer = new FixDBAfterLogin();
-                fixer.checkMultipleLocalities();
-                        
-                if (!isFixed[inx])
+                    ex.printStackTrace();
+                } finally
                 {
-                    // Check and update GUIDS
-                    schemaUpdater.checkForGUIDs(frame);
-                    globalPrefs.putBoolean(prefNames[inx], true);
+                    globalPrefs.flush();
                 }
-                inx++;
-                
-                globalPrefs.flush();
-                
                 return true;
             }
             @Override
             protected void done()
             {
                 super.done();
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
                 
                 if (frame != null)
                 {
