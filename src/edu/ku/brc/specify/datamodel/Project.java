@@ -139,6 +139,7 @@ public class Project extends CollectionMember implements java.io.Serializable {
         // loads the Project's CollectionObjects and then each ColObj's Project
         for (CollectionObject co : collectionObjects)
         {
+            co.getCollection().getCollectionId();
             co.getProjects().size();
         }
     }
