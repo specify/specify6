@@ -39,7 +39,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Jan 15, 2008
  *
  */
-public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase implements GeoCoordProviderListenerIFace
+public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase
 {
     /**
      * Constructor.

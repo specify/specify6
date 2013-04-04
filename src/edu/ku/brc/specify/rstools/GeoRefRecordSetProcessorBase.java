@@ -412,6 +412,10 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                 
                                 try
                                 {
+                                    gcDetail.setErrorPolygon(item.getErrorPolygon());
+                                    gcDetail.setMaxUncertaintyEst(item.getErrorEstimate());
+                                    gcDetail.setMaxUncertaintyEstUnit("m");
+                                    
                                     gcDetail.setGeoRefDetBy(Agent.getUserAgent());
                                     gcDetail.setGeoRefDetDate(Calendar.getInstance());
                                     gcDetail.setGeoRefDetRef(getGeoRefProviderName());

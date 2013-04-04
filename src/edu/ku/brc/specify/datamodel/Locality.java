@@ -1171,6 +1171,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
             gcd = createGeoCoordDetail();
         }
         gcd.setMaxUncertaintyEst(errEst);
+        gcd.setMaxUncertaintyEstUnit("m");
     }
 
     /**

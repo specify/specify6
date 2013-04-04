@@ -146,8 +146,9 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace, 
         					try 
         	                {
         						final Georef_Result_Set glResultSet = port.georef2(country, state, county, localityNameStr, 
-        								hwyX, findWaterbody, restrictToLowestAdm, doUncert, doPoly, displacePoly, 
-        								polyAsLinkID, languageKey);
+        								                                           hwyX, findWaterbody, restrictToLowestAdm, 
+        								                                           doUncert, doPoly, displacePoly, 
+        								                                           polyAsLinkID, languageKey);
         						glResults.add(new Pair<GeoCoordDataIFace, Georef_Result_Set>(grItem, glResultSet));
         					} 
         	                

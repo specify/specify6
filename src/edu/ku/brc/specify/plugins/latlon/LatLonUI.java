@@ -39,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -69,13 +70,15 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanel.CompType;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.UIPluginBase;
+import edu.ku.brc.specify.rstools.GeoLocateRecordSetProcessor;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -83,9 +86,9 @@ import edu.ku.brc.ui.MacBtnBorder;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
-import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
 import edu.ku.brc.util.LatLonConverter.LATLON;
+import edu.ku.brc.util.Pair;
 
 
 
@@ -771,6 +774,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             } else 
             {
                 geoCoordDetail.setMaxUncertaintyEst(errorEstimate);
+                geoCoordDetail.setMaxUncertaintyEstUnit("m");
             }
             
             if (errPolyFieldInfo != null)
@@ -781,6 +785,11 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             {
                 geoCoordDetail.setErrorPolygon(errorPoly);
             }
+            
+            geoCoordDetail.setGeoRefDetBy(Agent.getUserAgent());
+            geoCoordDetail.setGeoRefDetDate(Calendar.getInstance());
+            geoCoordDetail.setGeoRefDetRef((new GeoLocateRecordSetProcessor()).getGeoRefProviderName());
+
         }
     }
     
