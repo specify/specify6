@@ -650,6 +650,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         UIRegistry.loadAndPushResourceBundle("backuprestore");
         dbLoginPanel = UIHelper.doLogin(null, false, false, false, this, getIconName(), getTitle(), null, Specify.getOpaqueIconName(), "Backup_Restore"); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel.doAutoExpand();
         UIRegistry.popResourceBundle();
         
         localPrefs.load();

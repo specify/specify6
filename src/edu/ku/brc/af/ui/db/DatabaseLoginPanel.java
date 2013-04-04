@@ -768,6 +768,21 @@ public class DatabaseLoginPanel extends JTiledPanel
     }
     
     /**
+     * 
+     */
+    public void doAutoExpand()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                moreBtn.doClick();
+            }
+        });
+    }
+    
+    /**
      * @return the String of the database name from the edit combobox
      */
     private String getSelectedDatabase()

@@ -536,6 +536,8 @@ public class SpecifyDBSetupWizard extends JPanel
                         boolean isCnvUpload   = StringUtils.isNotEmpty(isCnvUploadVal) ? isCnvUploadVal.equals("true") : false;
                         if (isCnvUpload)
                         {
+                            setupLoginPrefs();
+                            
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                     getResourceString("CONVUPLD_DONE"),
                                     getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);
