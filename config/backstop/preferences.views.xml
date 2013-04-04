@@ -368,9 +368,9 @@
                 <row>
                     <cell type="field" id="4" name="AttachmentsTask.OnTaskbar" uitype="checkbox" label="ADD_ATTACHMENTS" colspan="4"/>
                 </row>
-                <row>
+                <!-- <row>
                     <cell type="field" id="5" name="CleanupToolsTask.OnTaskbar" uitype="checkbox" label="ADD_CLEANUP" colspan="4"/>
-                </row>
+                </row>  -->
             </rows>
             
         </viewdef>
