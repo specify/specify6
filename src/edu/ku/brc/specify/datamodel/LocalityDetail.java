@@ -569,7 +569,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the utmEasting
      */
-    @Column(name = "UtmEasting", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "UtmEasting", unique = false, nullable = true, updatable = true, insertable = true, precision = 19, scale = 2)
     public BigDecimal getUtmEasting()
     {
         return utmEasting;
@@ -586,7 +586,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the utmNorthing
      */
-    @Column(name = "UtmNorthing", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "UtmNorthing", unique = false, nullable = true, updatable = true, insertable = true, precision = 19, scale = 2)
     public BigDecimal getUtmNorthing()
     {
         return utmNorthing;
@@ -671,7 +671,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the utmOrigLatitude
      */
-    @Column(name = "UtmOrigLatitude", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "UtmOrigLatitude", unique = false, nullable = true, updatable = true, insertable = true, precision = 19, scale = 2)
     public BigDecimal getUtmOrigLatitude()
     {
         return utmOrigLatitude;
@@ -688,7 +688,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the utmOrigLongitude
      */
-    @Column(name = "UtmOrigLongitude", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "UtmOrigLongitude", unique = false, nullable = true, updatable = true, insertable = true, precision = 19, scale = 2)
     public BigDecimal getUtmOrigLongitude()
     {
         return utmOrigLongitude;
@@ -705,7 +705,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the utmScale
      */
-    @Column(name = "UtmScale", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "UtmScale", unique = false, nullable = true, updatable = true, insertable = true, precision = 20, scale = 10)
     public BigDecimal getUtmScale()
     {
         return utmScale;

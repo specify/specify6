@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -1303,11 +1304,32 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
                         return false;
                     }
-                    if (!columnType.trim().equalsIgnoreCase("DECIMAL(20,10)"))
+                    if (!columnType.trim().equalsIgnoreCase("DECIMAL(19,2)"))
                     {
+                        count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName + " where UtmEasting is not null" +
+                        		" or UtmNorthing is not null");
+                        if (count > 0)
+                        {
+                            File outFile = new File(UIRegistry.getAppDataDir() + File.separator + "localityDetailUtm.txt");
+                            try {
+                            	PrintWriter pw = new PrintWriter(outFile);
+                            	String q = "select localitydetailid, UtmEasting, UtmNorthing from localitydetail "
+										+ " where UtmEasting is not null or UtmNorthing is not null";
+                            	ResultSet rs = stmt.executeQuery(q);
+                            	while (rs.next()) {
+                            		pw.write(String.format("%d\t%f\t%f\n",
+										rs.getInt(1), rs.getFloat(2),
+										rs.getFloat(3)));
+                            	}
+                            	rs.close();
+                            	pw.flush();
+                            } catch (IOException ex) {
+                            	ex.printStackTrace();
+                            }
+                        }
                         count = getCount(tblName);
-                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(20,10) NULL DEFAULT NULL, " +
-                        		                        "CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(20,10) NULL DEFAULT NULL, " +
+                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(19,2) NULL DEFAULT NULL, " +
+                        		                        "CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(19,2) NULL DEFAULT NULL, " +
                         		                        "CHANGE COLUMN `UtmScale` `UtmScale` DECIMAL(20,10) NULL DEFAULT NULL");
                         if (rv != count)
                         {

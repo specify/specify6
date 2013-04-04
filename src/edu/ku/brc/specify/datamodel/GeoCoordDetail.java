@@ -132,7 +132,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     /**
      * @return the namedPlaceExtent
      */
-    @Column(name = "NamedPlaceExtent", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "NamedPlaceExtent", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
     public BigDecimal getNamedPlaceExtent()
     {
         return namedPlaceExtent;
@@ -271,7 +271,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     /**
      * @return the maxUncertaintyEst
      */
-    @Column(name = "MaxUncertaintyEst", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "MaxUncertaintyEst", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
     public BigDecimal getMaxUncertaintyEst()
     {
         return maxUncertaintyEst;
