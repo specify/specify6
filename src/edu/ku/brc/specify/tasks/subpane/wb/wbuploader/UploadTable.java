@@ -1869,13 +1869,17 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
-                    	if (!ufld.checkPrecisionAndScale(fldStr)) {
+                    if (!isLatLongFld(ufld))
+                    {
+                    	if (!ufld.checkPrecisionAndScale(fldStr)) 
+                    	{
                     		//System.out.println("bam");
                     		throw new UploaderException(String.format(getResourceString("WB_UPLOAD_INVALID_PREC_SCALE"), 
                     				ufld.getPrecision() - ufld.getScale(), ufld.getScale()),
                     				UploaderException.INVALID_DATA);
                     	}
-                	if (isLatLongFld(ufld))
+                    }
+                    else
                     {
                     	boolean gotANumber = UIHelper.parseDoubleToBigDecimal(fldStr) != null;
                     	if (!gotANumber)
