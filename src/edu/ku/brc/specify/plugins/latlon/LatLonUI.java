@@ -40,6 +40,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -69,6 +70,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanel.CompType;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -122,7 +125,10 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected final static String[] typeToolTipKeys         = {"PointTT", "LineTT", "RectTT"};
     protected final static LatLonUIIFace.LatLonType[] types = {LatLonUIIFace.LatLonType.LLPoint, LatLonUIIFace.LatLonType.LLLine, LatLonUIIFace.LatLonType.LLRect};
     protected final static String[] typeStrs                = {"Point",                          "Line",                          "Rectangle"};
-    
+
+    protected final static String[] fieldInfoNames          = {"errorPolygon","maxUncertaintyEst","maxUncertaintyEstUnit",
+                                                               "geoRefDetBy","geoRefDetDate","geoRefDetRef",};
+
     protected String[]              errorMessages;
     
     protected CellConstraints cc = new CellConstraints();
@@ -174,9 +180,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     
     // GeoCoorddetail
     protected MultiView          gcdMV = null;
-    protected FVOFieldInfo       errPolyFieldInfo = null;
-    protected FVOFieldInfo       errEstFieldInfo  = null;
     protected boolean            didGCDFieldCheck = false;
+    protected HashMap<String, FVOFieldInfo> fldInfoMap = new HashMap<String, FVOFieldInfo>();
     
     /**
      * Constructs the UI for entering in Lat/Lon data for a Locality Object.
@@ -709,6 +714,23 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     }
     
     /**
+     * @param fieldName
+     * @param dataObj
+     * @param value
+     */
+    private void setFVOFieldValue(final String fieldName, FormDataObjIFace dataObj, final Object value)
+    {
+        FVOFieldInfo fvi = fldInfoMap.get(fieldName);
+        if (fvi != null && fvi.getComp() instanceof GetSetValueIFace)
+        {
+            ((GetSetValueIFace)fvi.getComp()).setValue(value, null);
+        } else
+        {
+            FormHelper.setValue(dataObj, fieldName, value);
+        }
+    }
+    
+    /**
      * @param errorPoly
      * @param errorEstimate
      */
@@ -759,37 +781,25 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                     if (view.isSubform() && view instanceof FormViewObj)
                     {
                         FormViewObj kidFVO = (FormViewObj)view;
-                        //kidFVO.getFormViewObjForControlName(name)
-                        errEstFieldInfo = kidFVO.getFieldInfoForName("maxUncertaintyEst");
-                        errPolyFieldInfo = kidFVO.getFieldInfoForName("errorPolygon");
+                        for (String fiNm : fieldInfoNames)
+                        {
+                            FVOFieldInfo fvi = kidFVO.getFieldInfoForName(fiNm);
+                            if (fvi != null)
+                            {
+                                fldInfoMap.put(fiNm, fvi);
+                            }
+                        }
                     }
                 }
                 didGCDFieldCheck = true;
             }
             
-            if (errEstFieldInfo != null)
+            Object[] vals = {errorPoly, errorEstimate, "m", // 'm' means meters 
+                             Agent.getUserAgent(), Calendar.getInstance(), (new GeoLocateRecordSetProcessor()).getGeoRefProviderName()};
+            for (int i=0;i<fieldInfoNames.length;i++)
             {
-                ((GetSetValueIFace)errEstFieldInfo.getComp()).setValue(errorEstimate, null);
-                
-            } else 
-            {
-                geoCoordDetail.setMaxUncertaintyEst(errorEstimate);
-                geoCoordDetail.setMaxUncertaintyEstUnit("m");
+                setFVOFieldValue(fieldInfoNames[i], geoCoordDetail, vals[i]);
             }
-            
-            if (errPolyFieldInfo != null)
-            {
-                ((GetSetValueIFace)errPolyFieldInfo.getComp()).setValue(errorPoly, null);
-                
-            } else 
-            {
-                geoCoordDetail.setErrorPolygon(errorPoly);
-            }
-            
-            geoCoordDetail.setGeoRefDetBy(Agent.getUserAgent());
-            geoCoordDetail.setGeoRefDetDate(Calendar.getInstance());
-            geoCoordDetail.setGeoRefDetRef((new GeoLocateRecordSetProcessor()).getGeoRefProviderName());
-
         }
     }
     
