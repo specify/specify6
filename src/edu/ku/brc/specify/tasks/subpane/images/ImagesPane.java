@@ -560,7 +560,8 @@ public class ImagesPane extends BaseSubPane
     {
         String filter   = getFilterString();
         String whereStr = StringUtils.isNotEmpty(filter) ? (" WHERE " + filter) : ""; 
-        String    sql   = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a %s ORDER BY a.Title", whereStr);
+        String    sql   = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a %s ORDER BY TimestampCreated DESC", whereStr);
+        log.debug(sql);
         Statement stmt  = null;
         try
         {
@@ -574,7 +575,7 @@ public class ImagesPane extends BaseSubPane
             }
             rs.close();
             
-            Collections.sort(rowsVector, createComparator());
+            //Collections.sort(rowsVector, createComparator());
             
         } catch (Exception e)
         {
