@@ -1178,7 +1178,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 
                 if (option == CustomDialog.CANCEL_BTN)
                 {
-                    return null;
+                    return new Pair<SpAppResource, String>(null, null);
                 }
                 
                 if (option == CustomDialog.OK_BTN)
@@ -1375,7 +1375,10 @@ public class ResourceImportExportDlg extends CustomDialog
                                     }
     
                                     Pair<SpAppResource, String> retValues = checkForOverwriteOrNewName(dir, isSpReportRes ? repResourceName : fileName, isSpReportRes);
-                                    if (retValues == null) return; // Dialog was Cancelled
+                                    if (retValues != null && retValues.first == null && retValues.second == null)
+                                    {
+                                        return; // Dialog was Cancelled
+                                    }
                                     
                                     SpAppResource fndAppRes  = retValues != null && retValues.first != null ? retValues.first : null;
                                     String        newResName = retValues != null && retValues.second != null ? retValues.second : null;
