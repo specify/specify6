@@ -691,7 +691,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             srcLatLon2.second = lonStr2;
             
             // Correct the format if it is wrong
-            FORMAT checkFmt = geoRefCnv.getLatLonFormat(latStr1);
+            FORMAT checkFmt = latStr1 != null ? geoRefCnv.getLatLonFormat(latStr1) : panels[currentInx].getDefaultFormat();
             //log.debug("srcFormat: "+srcFormat+" <-  checkFmt: "+checkFmt);
             if (checkFmt != srcFormat)
             {
