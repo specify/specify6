@@ -20,16 +20,23 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.lang.reflect.Method;
+import java.text.DecimalFormatSymbols;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -48,6 +55,8 @@ import edu.ku.brc.specify.ui.db.PickListTableAdapter;
  */
 public class UploadField
 {
+    protected static DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+    
     protected static final Logger                       log = Logger.getLogger(UploadField.class);
     /**
      * The Field in the database being uploaded to.
@@ -85,12 +94,86 @@ public class UploadField
     protected Method                     setter;
     protected Method                     getter = null;
     
+    protected Integer				     precision = null; //BigDecimal fields
+    protected Integer                    scale = null; //BigDecimal
+    protected boolean                    precisionAndScaleDetermined = false; //Big Decimal
+    
     /**
+	 * @return the precisionAndScaleDetermined
+	 */
+	public boolean isPrecisionAndScaleDetermined() {
+		return precisionAndScaleDetermined;
+	}
+
+	/**
      * A set of valid values for fields with associated pick lists.
      */
     protected Map<String, PickListItemIFace> validValues        = null;
 
     /**
+	 * @return the precision
+	 */
+	public Integer getPrecision() {
+        if (!isPrecisionAndScaleDetermined()) {
+        	determinePrecisionAndScale();
+        }
+		return precision;
+	}
+
+	/**
+	 * @param input
+	 * @return
+	 */
+	public boolean checkPrecisionAndScale(String input)
+	{
+		if (getPrecision() != null) 
+		{
+			int l = input.length();
+			int sepIdx = input.indexOf(formatSymbols.getDecimalSeparator());
+			int rightOfDecimal = (sepIdx > -1) ? l - sepIdx - 1 : 0;
+			if (sepIdx > -1) 
+			{
+				l--;
+			}
+			int leftOfDecimal = l - rightOfDecimal;
+			return leftOfDecimal <= precision - scale && rightOfDecimal <= scale;
+		}
+		return true;
+	}
+	
+	/**
+	 * @return the scale
+	 */
+	public Integer getScale() {
+		return scale;
+	}
+
+	public void determinePrecisionAndScale() {
+		if (field != null && field.getFieldInfo() != null && field.getFieldInfo().getType().equals("java.math.BigDecimal")) {
+		    String dbName = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getDatabaseName();
+		    String tblName = field.getFieldInfo().getTableInfo().getName();
+		    String fldName = field.getFieldInfo().getName();
+			String colType = null;
+		    Vector<Object[]> rows = BasicSQLUtils.query(DBConnection.getInstance().getConnection(), 
+					"SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+		                dbName + "' and TABLE_NAME = '" + tblName + "' and COLUMN_NAME = '" + fldName + "'");                    
+		    if (rows.size() == 1)
+		    {
+		        colType = rows.get(0)[0].toString().toLowerCase().trim();
+		    }
+			if (colType != null && colType.startsWith("decimal")) {
+				//"DECIMAL(19,2)"
+				String psStr = colType.substring(8).replace(")", "");
+				String[] ps = psStr.split(",");
+				if (ps.length == 2)
+				this.precision = Integer.valueOf(ps[0]);
+				this.scale = Integer.valueOf(ps[1]);
+			}
+		}
+		this.precisionAndScaleDetermined = true;
+	}
+	
+	/**
      * True if field has a read-only picklist
      */
     protected boolean readOnlyValidValues = false;
