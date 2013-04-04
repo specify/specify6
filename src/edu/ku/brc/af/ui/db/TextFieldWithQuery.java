@@ -867,6 +867,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
             
             //log.debug(sql);
+            System.err.println(sql);
             
             return sql;
         }
@@ -926,14 +927,17 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 }
                 
                 whereSB.append(" ORDER BY "); //$NON-NLS-1$
-                cnt = 0;
-                for (String keyCol : keyColumns)
-                {
-                    if (cnt > 0) whereSB.append(", "); //$NON-NLS-1$
-                    whereSB.append(keyCol);
-                    whereSB.append(" ASC"); //$NON-NLS-1$
-                    cnt++;
-                }
+                whereSB.append(displayColumns); //$NON-NLS-1$
+                whereSB.append(" ASC"); //$NON-NLS-1$
+                
+//                cnt = 0;
+//                for (String keyCol : keyColumns)
+//                {
+//                    if (cnt > 0) whereSB.append(", "); //$NON-NLS-1$
+//                    whereSB.append(keyCol);
+//                    whereSB.append(" ASC"); //$NON-NLS-1$
+//                    cnt++;
+//                }
 
                 sb.append(whereSB.toString());
                 

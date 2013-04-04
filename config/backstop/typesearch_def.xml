@@ -11,10 +11,10 @@
         SELECT %s1 FROM Accession ac JOIN ac.division as dv WHERE dv.divisionId = DIVID AND %s2 ORDER BY accessionNumber
     </typesearch>
     <typesearch tableid="5"   name="Agent"                  searchfield="lastName"        displaycols="lastName,firstName" format="%s, %s" dataobjformatter="Agent">
-        SELECT %s1 FROM Agent ag WHERE ag.division.id = DIVID AND %s2 ORDER BY ag.lastName
+        SELECT %s1 FROM Agent ag WHERE ag.division.id = DIVID AND %s2 ORDER BY ag.lastName,ag.firstName
     </typesearch>
     <typesearch tableid="5"   name="AgentSSPU"              searchfield="lastName"        displaycols="lastName,firstName" format="%s, %s" dataobjformatter="Agent">
-        SELECT %s1 FROM Agent ag LEFT JOIN ag.specifyUser s WHERE s = null AND %s2 ORDER BY ag.lastName
+        SELECT %s1 FROM Agent ag LEFT JOIN ag.specifyUser s WHERE s = null AND %s2 ORDER BY ag.lastName,ag.firstName
     </typesearch>
     <typesearch tableid="67"  name="Appraisal"              searchfield="appraisalNumber" displaycols="appraisalNumber"    format="%s"     dataobjformatter=""/>
     <typesearch tableid="97"  name="AutoNumberingScheme"    searchfield="schemeName"      displaycols="schemeName"         format="%s"     dataobjformatter=""/>
