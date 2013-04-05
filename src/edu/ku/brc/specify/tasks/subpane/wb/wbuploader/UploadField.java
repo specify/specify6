@@ -148,8 +148,13 @@ public class UploadField
 		return scale;
 	}
 
-	public void determinePrecisionAndScale() {
-		if (field != null && field.getFieldInfo() != null && field.getFieldInfo().getType().equals("java.math.BigDecimal")) {
+	/**
+	 * 
+	 */
+	public void determinePrecisionAndScale() 
+	{
+		if (field != null && field.getFieldInfo() != null && field.getFieldInfo().getType().equals("java.math.BigDecimal")) 
+		{
 		    String dbName = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getDatabaseName();
 		    String tblName = field.getFieldInfo().getTableInfo().getName();
 		    String fldName = field.getFieldInfo().getName();
@@ -161,13 +166,16 @@ public class UploadField
 		    {
 		        colType = rows.get(0)[0].toString().toLowerCase().trim();
 		    }
-			if (colType != null && colType.startsWith("decimal")) {
+			if (colType != null && colType.startsWith("decimal")) 
+			{
 				//"DECIMAL(19,2)"
 				String psStr = colType.substring(8).replace(")", "");
 				String[] ps = psStr.split(",");
-				if (ps.length == 2)
-				this.precision = Integer.valueOf(ps[0]);
-				this.scale = Integer.valueOf(ps[1]);
+				if (ps.length == 2) 
+				{
+					this.precision = Integer.valueOf(ps[0]);
+					this.scale = Integer.valueOf(ps[1]);
+				}
 			}
 		}
 		this.precisionAndScaleDetermined = true;
