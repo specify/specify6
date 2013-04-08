@@ -86,16 +86,20 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                                          Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), 
                                          Collection.getClassTableId(), Institution.getClassTableId(), Determination.getClassTableId(), };
     
-    protected String       I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
+    protected String              I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
 
-    protected StringBuilder errMsg   = new StringBuilder();
-    
-    protected String        lsidAuthority = null;
-    protected String        instCode = null;
-    protected String        colCode  = null;
+    protected StringBuilder       errMsg        = new StringBuilder();
+    protected String              lsidAuthority = null;
+    protected String              instCode      = null;
+    protected String              colCode       = null;
     
     protected ProgressFrame       frame;
-    protected PrintWriter         pw      = null;
+    protected PrintWriter         pw            = null;
+    
+    // For estimating time
+    protected int                 totalCnt      = 0;
+    protected int                 currCnt       = 0;
+    protected long                startTime     = 0;
     
 
     /* (non-Javadoc)
@@ -163,6 +167,17 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
 
         setProgressValue(true, 0, 100); // Sets Overall Progress to 0 -> 100
         
+        Connection conn = DBConnection.getInstance().getConnection();
+        
+        totalCnt = 0;
+        for (CATEGORY_TYPE cat : CATEGORY_TYPE.values())
+        {
+            totalCnt += getRecordCount(conn, cat);
+        }
+        System.out.println(String.format("Total Records: %d", totalCnt));
+        
+        startTime = System.currentTimeMillis();
+        
         int count = 1;
         double tot = CATEGORY_TYPE.values().length;
         for (CATEGORY_TYPE cat : CATEGORY_TYPE.values())
@@ -174,7 +189,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
             
             try
             {
-                buildGUIDs(DBConnection.getInstance().getConnection(), cat);
+                buildGUIDs(conn, cat);
                 
             } catch (Exception ex)
             {
@@ -241,6 +256,26 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
 //        return null;
 //    }
     
+    
+    /**
+     * @param isOverall
+     * @param values
+     */
+    private void setProgressDesc(final String msg)
+    {
+        if (frame != null)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    frame.setDesc(msg);
+                }
+            });
+        }
+    }
+    
     /**
      * @param isOverall
      * @param values
@@ -280,6 +315,32 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         }
     }
     
+    /**
+     * @param connection
+     * @param category
+     * @return
+     */
+    private int getRecordCount(final Connection    connection,
+                               final CATEGORY_TYPE category)
+    {
+        int count = 0;
+        
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(TABLE_IDS[category.ordinal()]);
+        if (tableInfo != null)
+        {
+            String origScope = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
+            
+            // Do all Records
+            String where =  origScope != null ? "WHERE " + origScope : "";
+            
+            String sql   = String.format("SELECT COUNT(*) FROM %s %s", tableInfo.getName(), where);
+            count = BasicSQLUtils.getCountAsInt(sql);
+            System.out.println(sql);
+            System.out.println(tableInfo.getName()+" -> "+count);
+        }
+        return count;
+    }
+        
     /**
      * @param connection
      * @param category
@@ -333,10 +394,10 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 System.out.println(tableInfo.getName()+" -> "+count);
                 
                 // Set all GUIDs
-                int percentage = count / 10;
+                int percentage = count / 50;
                 if (percentage == 0) percentage = 1;
                 
-                setProgressValue(false, 0, count);
+                setProgressValue(false, 0, 100);
                 
                 sql = String.format("SELECT %s,Version FROM %s %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
                 System.out.println(sql);
@@ -364,7 +425,19 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                         System.err.println(msg);
                     }
                     cnt++;
-                    if (frame != null && cnt % percentage == 0) setProgressValue(false, cnt);
+                    currCnt++;
+                    
+                    if (frame != null && cnt % percentage == 0)
+                    {
+                        int percnt = (int)(((double)cnt / count)*100.0);
+                        setProgressValue(false, percnt);
+                        
+                        double elapsedTime   = System.currentTimeMillis() - startTime;
+                        double timePerRecord = elapsedTime / (double)currCnt;
+                        double remainingTime = (((totalCnt - currCnt) * timePerRecord) / 60000.0); // result in minutes
+                        int    seconds       = (int)((remainingTime - ((int)remainingTime)) * 60.0);
+                        setProgressDesc(String.format("Updating GUIDs - Minutes remaining: %d:%02d", (int)remainingTime, seconds));
+                    }
                 }
                 rs.close();
                 if (frame != null) frame.setProcess(count);
