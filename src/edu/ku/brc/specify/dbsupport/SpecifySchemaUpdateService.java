@@ -1998,20 +1998,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             String post = " FROM (SELECT ce.CollectingEventID ID, COUNT(c.OrderNumber) CNT, MAX(c.OrderNumber) MX, MIN(c.OrderNumber) MN " +
                             "FROM collectingevent ce " +
                             "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID " +
-                            "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 1 OR MX <> CNT ";
+                            "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 0 OR MX <> CNT ";
        
             int totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*)"+post);
-            //int percent = totalCnt / 5;
+            if (totalCnt == 0) return;
+            
             frame.setProcess(totalCnt / 100, totalCnt);
             
             PreparedStatement pStmt  = conn.prepareStatement("SELECT CollectorID FROM collector WHERE CollectingEventID = ? ORDER BY OrderNumber");
             PreparedStatement pStmt2 = conn.prepareStatement("UPDATE collector SET OrderNumber = ? WHERE CollectorID = ?");
             Statement         stmt   = conn.createStatement();
             ResultSet         rs     = stmt.executeQuery("SELECT ID"+post);
-            //int               cnt    = 0;
             while (rs.next())
             {
-                int order = 1;
+                int order = 0;
                 pStmt.setInt(1, rs.getInt(1));
                 ResultSet rs2 = pStmt.executeQuery();
                 while (rs2.next())
@@ -2024,8 +2024,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                 }
                 rs2.close();
-                //cnt++;
-                //if (cnt % 10 == 0) log.debug("Fixing Collector Ordering: " + cnt);
             }
             frame.setProcess(totalCnt);
             rs.close();
