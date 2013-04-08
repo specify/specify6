@@ -166,7 +166,8 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                 if (imgCellDsp != null)
                 {
                     calcNewIndex(imgCellDsp, 1);
-                    notifyInfoSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
+                    int adjustedIndex = currCellIndex + (pageNum * pageSize);
+                    notifyInfoSelected(imgCellDsp, adjustedIndex, isSelected, whichBtn);
                 }
             }
 
@@ -180,7 +181,8 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                 if (imgCellDsp != null)
                 {
                     calcNewIndex(imgCellDsp, 1);
-                    notifyDataSelected(imgCellDsp, currCellIndex, isSelected, whichBtn);
+                    int adjustedIndex = currCellIndex + (pageNum * pageSize);
+                    notifyDataSelected(imgCellDsp, adjustedIndex, isSelected, whichBtn);
                 }
             }
         };
