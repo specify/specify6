@@ -195,7 +195,6 @@
     <target name="installer-linux" depends="">
         <antcall target="installer-base"/>
         <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
-        <copy file="./system_dep_libs/ipad.jar" todir="${installer.dir}/libs" />
         <!--
         <antcall target="build-help-index"/>
         <antcall target="build-help-fulltext-linux"/>
@@ -203,7 +202,6 @@
     </target>
     
     <target name="installer-mac" depends="">
-        <copy file="./system_dep_libs/mac/ipad.jar" todir="${installer.dir}/libs" />
         <antcall target="installer-base"/>
         <!--
         <antcall target="build-help-index"/>
