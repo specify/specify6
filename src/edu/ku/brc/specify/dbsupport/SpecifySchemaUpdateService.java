@@ -1977,6 +1977,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 update(conn, "CREATE INDEX AttchScopeTypeIDX ON attachment(ScopeType)");
             }
             
+            String updateStr = "UPDATE attachment SET MimeType='application/pdf' WHERE MimeType = 'application/octet-stream' AND LOWER(SubStr(AttachmentLocation, LENGTH(AttachmentLocation) - 2, LENGTH(AttachmentLocation))) = 'pdf'";
+            update(conn, updateStr);
+            
             return true;
             
         } catch (Exception ex)
