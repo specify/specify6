@@ -88,7 +88,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected Integer            taxonomicUnitTypeID;
     protected int                kingdomId;
     
-    protected TaxonTreeDef       taxonTreeDef = null;
+    //protected TaxonTreeDef       taxonTreeDef = null;
     
     protected Integer            taxonNameId;  // root node of the tree
     protected String             taxonName;
@@ -107,13 +107,10 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected String             determinationTaxonType = null;
     protected ArrayList<Integer> detTaxonTypeIdList     = new ArrayList<Integer>();
     
-    protected HashMap<Integer, Taxon>            placeHolderTreeHash = new HashMap<Integer, Taxon>();
-    protected List<TaxonTreeDefItem>             treeDefItems        = null;
-    protected HashMap<Integer, TaxonTreeDefItem> treeDefItemHash     = new HashMap<Integer, TaxonTreeDefItem>();
-    protected HashMap<Integer, Integer>          rankParentHash      = new HashMap<Integer, Integer>();
-    protected Integer                            taxonRootId         = null;
+    protected Integer            taxonRootId            = null;
+    protected PlaceholderHelper  placeholderHelper      = null;
     
-    protected Connection   oldDBConn;
+    protected Connection         oldDBConn;
     
     
     /**
@@ -131,7 +128,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
      */
     public HashMap<Integer, Taxon> getPlaceHolderTreeHash()
     {
-        return placeHolderTreeHash;
+        assert(placeholderHelper == null);
+        return placeholderHelper.getPlaceHolderTreeHash();
     }
 
     /**
@@ -139,9 +137,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
      */
     public List<TaxonTreeDefItem> getTreeDefItems()
     {
-        buildPlaceHolderInfo();
-        
-        return treeDefItems;
+        assert(placeholderHelper == null);
+        return placeholderHelper.getTreeDefItems();
     }
     
     /**
@@ -161,119 +158,12 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     }
 
     /**
-     * 
-     */
-    private void buildPlaceHolderInfo()
-    {
-        if (treeDefItems == null)
-        {
-            try
-            {
-                treeDefItems = new Vector<TaxonTreeDefItem>(taxonTreeDef.getTreeDefItems());
-                Collections.sort(treeDefItems);
-                
-                int i = 0;
-                for (TaxonTreeDefItem item : treeDefItems)
-                {
-                    if (i > 0)
-                    {
-                        rankParentHash.put(item.getRankId(), treeDefItems.get(i-1).getRankId());
-                    }
-                    i++;
-                    treeDefItemHash.put(item.getRankId(), item);
-                }
-                buildPlaceHolders();
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    /**
-     * 
-     */
-    private void buildPlaceHolders()
-    {
-        if (placeHolderTreeHash.size() == 0)
-        {
-            
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                
-                taxonTreeDef = session.get(TaxonTreeDef.class, taxonTreeDef.getId());
-                
-                String msg = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
-                log.debug(msg);
-                Integer taxonId = BasicSQLUtils.getCount(msg);
-                if (taxonId != null)
-                {
-                    Taxon  txRoot = (Taxon)session.getData("FROM Taxon WHERE id = " + taxonId);
-                    Taxon  parent = txRoot;
-                    
-                    for (TaxonTreeDefItem item : treeDefItems)
-                    {
-                        if (item.getRankId() > 0)
-                        {
-                            Taxon taxon = new Taxon();
-                            taxon.initialize();
-                            taxon.setRankId(item.getRankId());
-                            taxon.setName("Placeholder");
-                            taxon.setFullName(taxon.getName());
-                            
-                            taxon.setDefinition(taxonTreeDef);
-                            taxon.setDefinitionItem(item);
-                            taxon.setParent(parent);
-                            
-                            parent = taxon;
-                            
-                            Transaction trans = null;
-                            try
-                            {
-                                session.beginTransaction();
-                                session.save(taxon);
-                                session.commit();
-                                
-                                placeHolderTreeHash.put(item.getRankId(), taxon);
-                                
-                            } catch (Exception ex)
-                            {
-                                if (trans != null) trans.rollback();
-                            }
-                        }
-                    }
-                } else
-                {
-                    log.error("Couldn't find the Root Taxon Node");
-                }
-                
-            } catch(Exception ex)
-            {
-                //session.rollback();
-                ex.printStackTrace();
-                
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
-
-        }
-    }
-    
-    
-    /**
      * @return the treeDefItemHash
      */
     public HashMap<Integer, TaxonTreeDefItem> getTreeDefItemHash()
     {
-        buildPlaceHolderInfo();
-        return treeDefItemHash;
+        assert(placeholderHelper == null);
+        return placeholderHelper.getTreeDefItemHash();
     }
 
     /**
@@ -281,8 +171,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
      */
     public HashMap<Integer, Integer> getRankParentHash()
     {
-        buildPlaceHolderInfo();
-        return rankParentHash;
+        assert(placeholderHelper == null);
+        return placeholderHelper.getRankParentHash();
     }
 
     /**
@@ -293,7 +183,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         int            max     = 0;
         CollectionInfo colInfo = null;
-        int inx = 0;
         for (CollectionInfo ci : getCollectionInfoList(oldDBConn, true))
         {
             if (ci.getColObjCnt() > max || DOING_ACCESSSION)
@@ -301,7 +190,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                 max = ci.getColObjCnt();
                 colInfo = ci;
             }
-            inx++;
         }
         
         if (colInfo != null)
@@ -985,7 +873,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
      */
     public TaxonTreeDef getTaxonTreeDef()
     {
-        return taxonTreeDef;
+        assert(placeholderHelper == null);
+        return placeholderHelper.getTaxonTreeDef();
     }
 
     /**
@@ -1183,9 +1072,21 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @param taxonTreeDef the taxonTreeDef to set
      */
-    public void setTaxonTreeDef(TaxonTreeDef taxonTreeDef)
+    public void setTaxonTreeDef(final TaxonTreeDef taxonTreeDef)
     {
-        this.taxonTreeDef = taxonTreeDef;
+        if (placeholderHelper != null)
+        {
+            if (taxonTreeDef != null)
+            {
+                if (!placeholderHelper.getTaxonTreeDef().getId().equals(taxonTreeDef.getId()))
+                {
+                    assert(placeholderHelper != null);
+                }
+            }
+        } else
+        {
+            placeholderHelper = new PlaceholderHelper(taxonTreeDef);
+        }
     }
 
 
