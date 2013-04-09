@@ -30,7 +30,6 @@ import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
-import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -1145,7 +1144,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             dlg.setVisible(true);
             if (dlg.hasChanged())
             {
-                showLocalizedMsg("Specify.ABT_EXIT");
+                String fullMsg = dlg.getCompleteMsg() +"\n" + getResourceString("Specify.ABT_EXIT");
+                displayInfoMsgDlgLocalized(fullMsg);
                 CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
                 
             } else

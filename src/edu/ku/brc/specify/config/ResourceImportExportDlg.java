@@ -159,6 +159,7 @@ public class ResourceImportExportDlg extends CustomDialog
     protected List<SpAppResourceDir> dirs      = new Vector<SpAppResourceDir>();
     
     protected boolean                hasChanged = false;
+    protected String                 completeMsg = null;
 
     /**
      * @throws HeadlessException
@@ -627,7 +628,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
             if (exportedName != null)
             {
-                getStatusBar().setText(getLocalizedMessage("RIE_RES_REVERTED", exportedName));
+                completeMsg = getLocalizedMessage("RIE_RES_REVERTED", exportedName);
             }
             
             enableUI();
@@ -1077,6 +1078,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 	session.saveOrUpdate(report);
                 	
                 	session.commit();
+                    completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", file.getName());
                 	
                 } catch (Exception ex)
                 {
@@ -1307,7 +1309,8 @@ public class ResourceImportExportDlg extends CustomDialog
                                 session.flush();
     
                                 setHasChanged(true);
-                                isOK = true;
+                                isOK        = true;
+                                completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
     
                             } catch (Exception ex)
                             {
@@ -1450,6 +1453,7 @@ public class ResourceImportExportDlg extends CustomDialog
     
                                         appRes.setDataAsString(data);
                                         contextMgr.saveResource(appRes);
+                                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
                                     }
                                     setHasChanged(true);
     
@@ -1490,6 +1494,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                     {
                                         fndAppRes.setDataAsString(data);
                                         contextMgr.saveResource(fndAppRes);
+                                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
                                     }
                                 } else
                                 {
@@ -1501,7 +1506,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     
                     if (importedName != null)
                     {
-                        getStatusBar().setText(getLocalizedMessage("RIE_RES_IMPORTED", importedName));
+                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
                     }
         
                     if (hasChanged())
@@ -1526,6 +1531,14 @@ public class ResourceImportExportDlg extends CustomDialog
         }
     }
     
+    /**
+     * @return the completeMsg
+     */
+    public String getCompleteMsg()
+    {
+        return completeMsg;
+    }
+
     /**
      * @param appRes
      * @param fileName
