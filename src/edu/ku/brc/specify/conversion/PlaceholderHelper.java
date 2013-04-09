@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -41,15 +43,20 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 public class PlaceholderHelper
 {
     protected static final Logger           log         = Logger.getLogger(PlaceholderHelper.class);
+    protected static final String                PLACEHOLDER         = "Placeholder"; 
+    protected static final String                SYN_PLACEHOLDER     = "Synonym Placeholder"; 
     
-    protected TaxonTreeDef                       taxonTreeDef = null;
+    protected TaxonTreeDef                       taxonTreeDef        = null;
     protected HashMap<Integer, Taxon>            placeHolderTreeHash = new HashMap<Integer, Taxon>();
     protected List<TaxonTreeDefItem>             treeDefItems        = null;
     protected HashMap<Integer, TaxonTreeDefItem> treeDefItemHash     = new HashMap<Integer, TaxonTreeDefItem>();
     protected HashMap<Integer, Integer>          rankParentHash      = new HashMap<Integer, Integer>();
     protected Integer                            taxonRootId         = null;
-    
     protected Integer                            taxonTreeDefId      = null; 
+    protected Connection                         conn;
+    
+    protected String                             taxonTitle          = PLACEHOLDER;
+    protected boolean                            isSynonymBranch     = false;
     
     /**
      * @param conn
@@ -58,14 +65,26 @@ public class PlaceholderHelper
     public PlaceholderHelper(final TaxonTreeDef taxonTreeDef)
     {
         super();
+        
+        this.conn = DBConnection.getInstance().getConnection();
+        
         if (taxonTreeDef != null)
         {
             this.taxonTreeDef   = taxonTreeDef;
             this.taxonTreeDefId = taxonTreeDef.getId();
         }
     }
-
     
+    /**
+     * @param isSynonymBranch the isSynonymBranch to set
+     */
+    public void setSynonymBranch(boolean isSynonymBranch)
+    {
+        this.isSynonymBranch = isSynonymBranch;
+        this.taxonTitle      = isSynonymBranch ? SYN_PLACEHOLDER : PLACEHOLDER;
+    }
+
+
     /**
      * @return the placeHolderTreeHash
      */
@@ -158,13 +177,51 @@ public class PlaceholderHelper
     }
     
     /**
+     * @param item
+     * @param parentTaxon
+     * @return
+     */
+    private Taxon createTaxon(final TaxonTreeDefItem item, 
+                              final Taxon parentTaxon)
+    {
+        Taxon taxon = new Taxon();
+        taxon.initialize();
+        taxon.setRankId(item.getRankId());
+        taxon.setName(taxonTitle);
+        taxon.setFullName(taxon.getName());
+        
+        taxon.setDefinition(taxonTreeDef);
+        taxon.setDefinitionItem(item);
+        taxon.setParent(parentTaxon);
+        return taxon;
+    }
+    
+    /**
      * 
      */
     private void buildPlaceHolders()
     {
         if (placeHolderTreeHash.size() == 0)
         {
-            
+//            String sql = String.format("SELECT tx.TaxonID, tx.RankID FROM taxon tx INNER JOIN taxontreedefitem ttdi ON tx.TaxonTreeDefItemID = ttdi.TaxonTreeDefItemID WHERE tx.RankID > 0 && tx.Name = 'Placeholder' AND tx.TaxonTreeDefID = %d ORDER BY tx.RankID ASC", taxonTreeDef.getId());
+//            log.debug(sql);
+//            Vector<Object[]> rows = BasicSQLUtils.query(conn, sql);
+//            if (rows.size() > 0)
+//            {
+//                for (int i=0;i<rows.size();i++)
+//                {
+//                    Object[] row     = rows.get(i);
+//                    int      taxonId = (Integer)row[0];
+//                    int      rankId  = (Integer)row[1];
+//                    
+//                    TaxonTreeDefItem tdi = treeDefItems.get(i);
+//                    if (tdi.getRankId() != rankId)
+//                    {
+//                        
+//                    }
+//                }
+//            }
+
             DataProviderSessionIFace session = null;
             try
             {
@@ -184,16 +241,7 @@ public class PlaceholderHelper
                     {
                         if (item.getRankId() > 0)
                         {
-                            Taxon taxon = new Taxon();
-                            taxon.initialize();
-                            taxon.setRankId(item.getRankId());
-                            taxon.setName("Placeholder");
-                            taxon.setFullName(taxon.getName());
-                            
-                            taxon.setDefinition(taxonTreeDef);
-                            taxon.setDefinitionItem(item);
-                            taxon.setParent(parent);
-                            
+                            Taxon taxon = createTaxon(item, parent);
                             parent = taxon;
                             
                             try
