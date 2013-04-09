@@ -80,11 +80,11 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
 {
     protected static String PREF_NAME_PREFIX = "Prefs.GUID.";
-    protected static int[]  TABLE_IDS = {Attachment.getClassTableId(), CollectionObject.getClassTableId(), Taxon.getClassTableId(), 
-                                         Geography.getClassTableId(), CollectingEvent.getClassTableId(), LithoStrat.getClassTableId(), 
-                                         Locality.getClassTableId(), Agent.getClassTableId(), ReferenceWork.getClassTableId(), 
-                                         Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), 
+    protected static int[]  TABLE_IDS = {Attachment.getClassTableId(), CollectionObject.getClassTableId(), CollectingEvent.getClassTableId(), 
+                                         LithoStrat.getClassTableId(), Locality.getClassTableId(), Agent.getClassTableId(),  
+                                         ReferenceWork.getClassTableId(), Journal.getClassTableId(), GeologicTimePeriod.getClassTableId(), 
                                          Collection.getClassTableId(), Institution.getClassTableId(), Determination.getClassTableId(), };
+    // Not including Taxon.getClassTableId(), Geography.getClassTableId(), 
     
     protected String              I18NPre   = SpecifyGUIDGeneratorFactory.class.getSimpleName();
 

@@ -144,8 +144,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         acceptedGeography   = null;
         acceptedChildren    = new HashSet<Geography>();
         
-        hasGUIDField = true;
-        setGUID();
+        // Not using Geography GUIDs at the time 04/09/13 - Database Schema 1.8
+        hasGUIDField = false;
+        //setGUID();
 	}
 
 	// End Initializer
