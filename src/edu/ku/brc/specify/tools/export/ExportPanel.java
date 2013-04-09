@@ -28,6 +28,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -969,6 +971,17 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         return result;
 	}
 	
+	protected String adjustPathForWindows(String path)
+	{
+		String result = path;
+		if (UIHelper.isWindows()) 
+		{
+			//result = result.replaceAll("\", "\\");
+			result = Pattern.compile("\\\\").matcher(result).replaceAll(Matcher.quoteReplacement("\\\\"));
+		}
+		return result;
+	}
+	
     protected javax.swing.SwingWorker<Object, Object> exportToTable(final SpExportSchemaMapping theMapping, final boolean rebuildExistingTbl)
     {
         UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
@@ -1085,8 +1098,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         				{
         					//XXX if this fails, there's no need to roll back right?
             				bulkLoadStmt.executeUpdate("set character_set_database='utf8'");
-        					bulkLoadStmt.executeUpdate("load data local infile '" + bulkFilePath + 
-        							"'into table " + actualTblName + " fields terminated by '\\t' optionally enclosed by '\\''");
+            				String bulkFileSql = "load data local infile '" + adjustPathForWindows(bulkFilePath) + 
+        							"'into table " + actualTblName + " fields terminated by '\\t' optionally enclosed by '\\''"; 
+        					bulkLoadStmt.executeUpdate(bulkFileSql);
         					FileUtils.delete(new File(bulkFilePath));
         					//fileLoaded = true;
         				} finally
