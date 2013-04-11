@@ -264,6 +264,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
 			
 		});
+		mapsDisplay.getTableHeader().setReorderingAllowed(false);
 		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
 		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
