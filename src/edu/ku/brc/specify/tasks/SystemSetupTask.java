@@ -21,6 +21,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.tasks.services.PickListUtils.getI18n;
+import static edu.ku.brc.specify.tasks.services.PickListUtils.getI18nRS;
 import static edu.ku.brc.ui.UIRegistry.askYesNoLocalized;
 import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
 import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlgLocalized;
@@ -59,6 +60,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -110,6 +112,7 @@ import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.SynonymCleanup;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -260,6 +263,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     }
                 }
             })); 
+            
+            
+            btnTitle = getI18nRS("SYN_CLEANUP");
+            collNavBox.add(NavBox.createBtnWithTT(btnTitle, "Taxon", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    synonymCleanup();
+                }
+            })); 
+
 
             SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
             String sql = String.format("SELECT COUNT(*) FROM specifyuser su INNER JOIN specifyuser_spprincipal sup ON su.SpecifyUserID = sup.SpecifyUserID " +
@@ -312,6 +325,31 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             navBoxes.add(collNavBox);
         }
         isShowDefault = true;
+    }
+    
+    /**
+     * 
+     */
+    private void synonymCleanup()
+    {
+        JTextPane   tp = new JTextPane();
+        JScrollPane js = new JScrollPane();
+        js.getViewport().add(tp);
+        
+        tp.setContentType("text/html");
+        tp.setText("");
+        CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), getI18nRS("SYN_CLEANUP"), true, CustomDialog.OKCANCELAPPLY, js);
+        dlg.setOkLabel(getI18nRS("SYN_CLEANUP"));
+        dlg.setCancelLabel(getI18nRS("Report"));
+        dlg.setApplyLabel(getResourceString("CANCEL"));
+        dlg.setCloseOnApplyClk(true);
+        dlg.setVisible(true);
+        if (dlg.getBtnPressed() != CustomDialog.APPLY_BTN)
+        {
+            boolean        doCleanup      = dlg.getBtnPressed() == CustomDialog.OK_BTN;
+            SynonymCleanup synonymCleanup = new SynonymCleanup(doCleanup);
+            synonymCleanup.execute(); // start the background task
+        }
     }
     
     /**

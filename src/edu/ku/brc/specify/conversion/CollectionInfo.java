@@ -142,6 +142,14 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     }
     
     /**
+     * @return the placeholderHelper
+     */
+    public PlaceholderHelper getPlaceholderHelper()
+    {
+        return placeholderHelper;
+    }
+
+    /**
      * @return the taxonRootId
      */
     public Integer getTaxonRootId()

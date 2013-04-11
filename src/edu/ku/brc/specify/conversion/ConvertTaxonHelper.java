@@ -39,10 +39,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -55,11 +51,11 @@ import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.Triple;
 
 public class ConvertTaxonHelper
 {
     protected static final Logger            log         = Logger.getLogger(ConvertTaxonHelper.class);
+    private static ProgressFrame             prgFrame    = null;    
     
     protected static SimpleDateFormat        dateTimeFormatter      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static SimpleDateFormat        dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
@@ -124,7 +120,6 @@ public class ConvertTaxonHelper
     protected int modifiedByAgentInx;
     protected int rankIdOldDBInx;
 
-    
     
     
     /**
@@ -1508,260 +1503,4 @@ public class ConvertTaxonHelper
         
         return true;
     }
-    
-    static int tooManyCnt  = 0;
-    static int notFoundCnt = 0;
-    static int totalFixed  = 0;
-    static int totalCount  = 0;
-    static int totalParentNotFound  = 0;
-    
-    /**
-     * @param pStmt
-     * @param name
-     * @return
-     * @throws SQLException
-     */
-    private static Integer getTaxonNode(final PreparedStatement pStmt, 
-                                        final String name, 
-                                        final int rankId) throws SQLException
-    {
-        Integer id = null;
-        pStmt.setString(1, name);
-        pStmt.setInt(2, rankId);
-        ResultSet rs2 = pStmt.executeQuery();
-        int cnt = 0;
-        while (rs2.next())
-        {
-            id = rs2.getInt(1);
-            cnt++;
-        }
-        rs2.close();
-        
-        if (cnt > 1)
-        {
-            tooManyCnt++;
-            return null;
-        }
-        
-        if (cnt == 0)
-        {
-            notFoundCnt++;
-        }
-        
-        return id;
-    }
-    
-    /**
-     * @param pStmt
-     * @param name
-     * @return
-     * @throws SQLException
-     */
-//    private static Integer getTaxonNodeFromNames(final PreparedStatement pStmt, 
-//                                                 final ArrayList<String> names,
-//                                                 int level) throws SQLException
-//    {
-//        if (level == names.size()-1)
-//        {
-//            return null;
-//        }
-//        //BasicSQLUtils.query("SELECT );
-//        
-//        Integer id = null;
-//        pStmt.setString(1, names.get(level));
-//        pStmt.setInt(2, rankId);
-//        ResultSet rs2 = pStmt.executeQuery();
-//        int cnt = 0;
-//        while (rs2.next())
-//        {
-//            id = rs2.getInt(1);
-//            cnt++;
-//        }
-//        rs2.close();
-//        
-//        if (cnt > 1)
-//        {
-//            tooManyCnt++;
-//            return null;
-//        }
-//        
-//        if (cnt == 0)
-//        {
-//            notFoundCnt++;
-//        }
-//        
-//        return id;
-//    }
-    
-    /**
-     * @param fullName
-     * @return
-     */
-    private static ArrayList<String> parseFullName(final String fullName)
-    {
-        ArrayList<String>  names     = new ArrayList<String>();
-        String[] toks = StringUtils.split(fullName, ' ');
-        for (String t : toks)
-        {
-            if (!t.endsWith("."))
-            {
-                names.add(t);
-            }
-        }
-        return names;
-    }
-    
-    /**
-     * @param newDBConn
-     */
-    public static void fixMisparentedSynonyms(final Connection newDBConn)
-    {
-        try
-        {
-            TableWriter tblWriter = new TableWriter("orphan_synonym_report.html", "Orphan Synonyms", true);
-            
-            DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
-            String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
-            String      cntStr   = String.format("SELECT COUNT(*) FROM taxon WHERE IsAccepted = 0 AND %s", whereStr);
-            
-            Discipline        discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            PlaceholderHelper phHelper   = new PlaceholderHelper(discipline.getTaxonTreeDef());
-            phHelper.setSynonymBranch(true);
-            phHelper.buildPlaceHolderInfo();
-    
-            totalFixed = 0;
-            totalCount = BasicSQLUtils.getCountAsInt(newDBConn, cntStr);
-            
-            //int[] parents = {180, 200, 180, 200, 220, 180, 200, 220, 230, };
-            //int[] kids    = {220, 220, 230, 230, 230, 240, 240, 240, 240, };
-            int[] parents = {180, };
-            int[] kids    = {220, };
-            for (int i=0;i<parents.length;i++)
-            {
-               fixMisparentedSynonymsLevel(newDBConn, tblWriter,phHelper, parents[i], kids[i]);
-            }
-            System.out.println(String.format("\n\nTotal                  %6d", totalCount));
-            System.out.println(String.format("Total Fixed            %6d  (%5.2f%c)", totalFixed, ((double)totalFixed * 100.0 / (double)totalCount), '%'));
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * @param newDBConn
-     * @param parentLevel
-     * @param childLevel
-     */
-    public static void fixMisparentedSynonymsLevel(final Connection newDBConn, 
-                                                   final TableWriter tblWriter,
-                                                   final PlaceholderHelper phHelper,
-                                                   final int parentLevel, 
-                                                   final int childLevel)
-    {
-        
-        
-        DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
-        String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
-        
-        String whereStr2  = whereStr;//QueryAdjusterForDomain.getInstance().getSpecialColumns(DBTableIdMgr.getInstance().getInfoById(TaxonTreeDefItem.getClassTableId()), false);
-        String parentName = BasicSQLUtils.querySingleObj(String.format("SELECT Name FROM taxontreedefitem WHERE %s AND RankID = %d", whereStr2, parentLevel));
-        String childName  = BasicSQLUtils.querySingleObj(String.format("SELECT Name FROM taxontreedefitem WHERE %s AND RankID = %d", whereStr2, childLevel));
-        
-        int numFixed = BasicSQLUtils.update(newDBConn, "UPDATE taxon SET IsAccepted=1 WHERE IsAccepted = 0 AND AcceptedID IS NULL AND " + whereStr);
-        log.debug("Number of IsAccepted Fixed: " + numFixed);
-        
-        System.out.println(String.format("\nParent: %s (%d)    Child: %s (%d)", parentName, parentLevel, childName, childLevel));
-        
-        String postfix = " FROM taxon WHERE IsAccepted = 0 AND AcceptedID IS NOT NULL AND RankID = " + childLevel + " AND " + whereStr;
-        int totalCnt   = BasicSQLUtils.getCountAsInt("SELECT COUNT(TaxonID) " + postfix);
-        System.out.println("SELECT COUNT(TaxonID) " + postfix);
-        
-        int cnt = 0;
-        PreparedStatement pStmt = null;
-        try
-        {
-            HashMap<Integer, Taxon> rankToPlaceHolderHash = phHelper.getPlaceHolderTreeHash();
-            
-            tooManyCnt  = 0;
-            notFoundCnt = 0;
-            
-            int isOKCnt = 0;
-            int phCnt   = 0;
-            int err     = 0;
-            int correct = 0;
-            
-            //pStmt = newDBConn.prepareStatement("SELECT TaxonID, FullName, CONCAT(Name, RankID, ParentID) CC FROM taxon WHERE IsAccepted <> 0 AND Name = ? COLLATE latin1_bin");
-            String searchStr = String.format("SELECT TaxonID, FullName, Name FROM taxon WHERE IsAccepted <> 0 AND Name = ? AND RankID = ? AND %s COLLATE latin1_bin", whereStr);
-            pStmt = newDBConn.prepareStatement(searchStr);
-                    
-            Statement st = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = st.executeQuery("SELECT TaxonID, AcceptedID, RankID, FullName, ParentID " + postfix);
-            while (rs.next())
-            {
-                cnt++;
-                int    taxonId     = rs.getInt(1);
-                int    acceptedId  = rs.getInt(2);
-                int    rankId      = rs.getInt(3);
-                String fullName    = rs.getString(4);
-                int    oldParentId = rs.getInt(5);
-                
-                //System.err.println("-------["+fullName+"]-------");
-                
-                ArrayList<String> names = parseFullName(fullName);
-                String            genus = names.get(0);
-                Integer id = getTaxonNode(pStmt, genus, parentLevel);
-                if (id != null)
-                {
-                    if (id != oldParentId)
-                    {
-                        String oldName= BasicSQLUtils.querySingleObj("SELECT Name FROM taxon WHERE TaxonID = " + acceptedId);
-                        tblWriter.log(oldName, genus);
-                        isOKCnt++;
-                    } else
-                    {
-                        correct++;
-                    }
-                } else 
-                {
-                    Taxon placeHolder = rankToPlaceHolderHash.get(rankId);
-                    if (placeHolder != null)
-                    {
-                        tblWriter.log(placeHolder.getName(), genus);
-                        phCnt++;
-                    } else
-                    {
-                        tblWriter.logErrors(String.format("Bad RankID %s",  rankId), "&nbsp;");
-                       err++;
-                    }
-                }
-            }
-            rs.close();
-            
-            System.out.println(String.format("cnt:                     %6d", cnt));
-            System.out.println(String.format("isOKCnt:                 %6d", isOKCnt));
-            System.out.println(String.format("phCnt:                   %6d", phCnt));
-            System.out.println(String.format("err:                     %6d", err));
-            System.out.println(String.format("correct:                 %6d", correct));
-            
-            //System.out.println(String.format("Too Many Parents:  %6d", tooManyCnt));
-            //System.out.println(String.format("No ParentId Found: %6d", notFoundCnt));
-//            System.out.println(String.format("Parent Found:          %6d", cnt));
-//            System.out.println(String.format("Parent Already Set:    %6d", isOKCnt));
-//            System.out.println(String.format("Total                  %6d  (%5.2f%c)", cnt, ((double)(cnt) * 100.0 / (double)(totalCnt)), '%'));
-            System.out.println(String.format("Parent Already Set     %6d  (%5.2f%c)", isOKCnt + cnt, ((double)(isOKCnt + cnt) * 100.0 / (double)(totalCnt)), '%'));
-
-            
-            totalFixed += cnt;
-            
-            pStmt.close();
-            st.close();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
 }

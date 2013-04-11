@@ -488,4 +488,9 @@ public class PickListUtils
     {
         return "SystemSetupTask." + s;
     }
+    
+    public static String getI18nRS(final String s)
+    {
+        return getResourceString(getI18n(s));
+    }
 }

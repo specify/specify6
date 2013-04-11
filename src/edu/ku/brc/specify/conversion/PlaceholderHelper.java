@@ -164,7 +164,11 @@ public class PlaceholderHelper
                     i++;
                     treeDefItemHash.put(item.getRankId(), item);
                 }
-                buildPlaceHolders();
+                
+                if (!readPlaceHolders())
+                {
+                    buildPlaceHolders();
+                }
                 
                 return true;
                 
@@ -196,6 +200,58 @@ public class PlaceholderHelper
         return taxon;
     }
     
+    private void recurse(final Taxon parentTaxon)
+    {
+        for (Taxon taxon : parentTaxon.getChildren())
+        {
+            if (taxon.getName().equals(taxonTitle))
+            {
+                placeHolderTreeHash.put(taxon.getRankId(), taxon);
+                recurse(taxon);
+            }
+        }
+    }
+    
+    /**
+     * @return
+     */
+    private boolean readPlaceHolders()
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            taxonTreeDef = session.get(TaxonTreeDef.class, taxonTreeDef.getId());
+            
+            String sql = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
+            log.debug(sql);
+            Integer taxonId = BasicSQLUtils.getCount(sql);
+            if (taxonId != null)
+            {
+                Taxon txRoot = (Taxon)session.getData("FROM Taxon WHERE id = " + taxonId);
+                
+                recurse(txRoot);
+
+            } else
+            {
+                log.error("Couldn't find the Root Taxon Node");
+            }
+            
+        } catch(Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return placeHolderTreeHash.size() > 0;
+    }
+    
     /**
      * 
      */
@@ -203,25 +259,6 @@ public class PlaceholderHelper
     {
         if (placeHolderTreeHash.size() == 0)
         {
-//            String sql = String.format("SELECT tx.TaxonID, tx.RankID FROM taxon tx INNER JOIN taxontreedefitem ttdi ON tx.TaxonTreeDefItemID = ttdi.TaxonTreeDefItemID WHERE tx.RankID > 0 && tx.Name = 'Placeholder' AND tx.TaxonTreeDefID = %d ORDER BY tx.RankID ASC", taxonTreeDef.getId());
-//            log.debug(sql);
-//            Vector<Object[]> rows = BasicSQLUtils.query(conn, sql);
-//            if (rows.size() > 0)
-//            {
-//                for (int i=0;i<rows.size();i++)
-//                {
-//                    Object[] row     = rows.get(i);
-//                    int      taxonId = (Integer)row[0];
-//                    int      rankId  = (Integer)row[1];
-//                    
-//                    TaxonTreeDefItem tdi = treeDefItems.get(i);
-//                    if (tdi.getRankId() != rankId)
-//                    {
-//                        
-//                    }
-//                }
-//            }
-
             DataProviderSessionIFace session = null;
             try
             {
@@ -229,8 +266,7 @@ public class PlaceholderHelper
                 
                 taxonTreeDef = session.get(TaxonTreeDef.class, taxonTreeDef.getId());
                 
-                String msg = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
-                log.debug(msg);
+                String  msg     = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
                 Integer taxonId = BasicSQLUtils.getCount(msg);
                 if (taxonId != null)
                 {

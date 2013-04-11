@@ -2006,8 +2006,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             int totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*)"+post);
             if (totalCnt == 0) return;
             
-            frame.setProcess(totalCnt / 100, totalCnt);
+            int percent = totalCnt / 50;
+            percent = Math.max(percent,  1);
+            frame.setProcess(0, 100);
             
+            int cnt = 0;
             PreparedStatement pStmt  = conn.prepareStatement("SELECT CollectorID FROM collector WHERE CollectingEventID = ? ORDER BY OrderNumber");
             PreparedStatement pStmt2 = conn.prepareStatement("UPDATE collector SET OrderNumber = ? WHERE CollectorID = ?");
             Statement         stmt   = conn.createStatement();
@@ -2027,12 +2030,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                 }
                 rs2.close();
+                cnt++;
+                if (cnt % percent == 0)
+                {
+                    frame.setProcess(cnt * 100 / totalCnt);
+                }
             }
-            frame.setProcess(totalCnt);
             rs.close();
             stmt.close();
             pStmt.close();
             pStmt2.close();
+            
+            frame.processDone();
 
         } catch (Exception ex)
         {
