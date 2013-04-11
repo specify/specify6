@@ -233,18 +233,26 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      */
     protected synchronized void setOrderIndices()
     {
+        boolean changed = false;
         for(int i = 0; i < listModel.getSize(); ++i )
         {
             Object o = listModel.getElementAt(i);
             if (o instanceof Orderable)
             {
                 Orderable orderable = (Orderable)o;
-                orderable.setOrderIndex(i);
+                if (i != orderable.getOrderIndex())
+                {
+                    orderable.setOrderIndex(i);
+                    changed = true;
+                }
             }
             
-            // The values from this event should not be used for anything.
-            // However, if they are the same, the PropertyChange framework quietly drops this event.
-            firePropertyChange("item order", true, false);
+            if (changed)
+            {
+                // The values from this event should not be used for anything.
+                // However, if they are the same, the PropertyChange framework quietly drops this event.
+                firePropertyChange("item order", true, false);
+            }
         }
     }
     
