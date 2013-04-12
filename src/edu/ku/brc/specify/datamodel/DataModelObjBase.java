@@ -933,18 +933,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
      */
     public static boolean save(final Object...dataObjs)
     {
-        return saveWithError(false, false, dataObjs);
-    }
-    
-    /**
-     * Saves the data object with optional merge.
-     * @param doMerge
-     * @param dataObjs
-     * @return  true is ok, false if not
-     */
-    public static boolean save(final boolean doMerge, final Object...dataObjs)
-    {
-        return saveWithError(false, doMerge, dataObjs);
+        return saveWithError(false, dataObjs);
     }
     
     /**
@@ -953,17 +942,6 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
      * @return true is ok, false if not
      */
     public static boolean saveWithError(final boolean doShowError, final Object...dataObjs)
-    {
-    	return saveWithError(doShowError, false, dataObjs);
-    }
-    
-    /**
-     * Saves the data object.
-     * @param doShowError whether to show the an error dialog
-     * @param doMerge whether to to perform a session merge before saving.
-     * @return true is ok, false if not
-     */
-    public static boolean saveWithError(final boolean doShowError, final boolean doMerge, final Object...dataObjs)
     {
         errMsg = null;
         
@@ -984,10 +962,6 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                     {
                         for (Object dObj : (Collection<?>)obj)
                         {
-                        	if (doMerge)
-                        	{
-                        		dObj = session.merge(dObj);
-                        	}
                             session.saveOrUpdate(dObj);
                         }
                         doSave = false;
