@@ -3324,8 +3324,7 @@ public class DataBuilder
 //            localSession.flush();
             
             //ExportMappingTask imports don't update the schemaLocale tables
-            ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("darwinCoreVertNet.xsd")), "VertNetDarwinCore", "1.21");
-            ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("tdwg_dw_core.xsd")), "DarwinCoreTDWG", "1.4");
+            ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("tdwg_dwcterms.xsd")), "DarwinCoreTDWG", "1.4");
             
         } catch (Exception ex)
         {
