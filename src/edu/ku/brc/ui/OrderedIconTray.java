@@ -20,6 +20,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.IconManager.IconSize;
@@ -117,7 +122,15 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         southPanel.add(toEndButton);
         southPanel.add(Box.createHorizontalGlue());
         
-        this.add(southPanel,BorderLayout.SOUTH);
+        //this.add(southPanel,BorderLayout.SOUTH);
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder pb2 = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,4px,p"), this);
+        pb2.add(listScrollPane, cc.xyw(1,2,3));
+        pb2.add(southPanel, cc.xy(2,4));
+        
+        pb2.getPanel().setBackground(Color.GREEN);//iconListWidget.getBackground());
+
     }
     
     /**

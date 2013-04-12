@@ -498,6 +498,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     return SchemaUpdateType.Error;
                                 }
                                 
+                                frame.setProcess(0, 100);
                                 frame.setDesc("Updating Schema...");
                                 ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first, itUserNamePassword.second);
                                 if (!ok)
@@ -1473,6 +1474,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }                       
                     
                     frame.incOverall(); // #29
+                    frame.setProcess(0, 100);
                     //-----------------------------------------------------------------------------
                     //-- Determination fix
                     //-----------------------------------------------------------------------------
@@ -1502,6 +1504,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     String updateStr = "UPDATE picklistitem SET Value = 'exisotype' WHERE Title = 'Ex Isotype' AND Value = 'isotype'";
                     BasicSQLUtils.update(updateStr);
                     
+                    frame.setProcess(0, 100);
                     frame.incOverall(); // #30
                     
                     //-----------------------------------------------------------------------------
@@ -1517,10 +1520,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.setProcess(0, 100);
                     frame.incOverall(); // #31
                     
                     updateDNAAttachments(conn);
                     
+                    frame.setProcess(0, 100);
                     frame.incOverall(); // #32
                     
                     // Fix indexes
@@ -1538,6 +1543,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall(); // #33
 
+                    frame.setProcess(0, 100);
                     fixCollectorOrder(conn); // fixes the Ordinal number of Collectors
                     
                     frame.incOverall(); // #34

@@ -20,7 +20,9 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,11 +47,16 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.ui.RepresentativeIconFactory;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
 import edu.ku.brc.util.Orderable;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * A GUI component for use in displaying a collection of associated objects.  The related
@@ -96,17 +103,17 @@ public class IconTray extends JPanel implements ChangeListener
         }
         iconListWidget.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
-        JPanel listPanel = new JPanel();
-        listPanel.setBackground(iconListWidget.getBackground());
-        listPanel.setLayout(new BoxLayout(listPanel,BoxLayout.LINE_AXIS));
-        listPanel.add(Box.createHorizontalGlue());
-        listPanel.add(iconListWidget);
-        listPanel.add(Box.createHorizontalGlue());
+        int width   = (int)(Thumbnailer.getInstance().getMaxSize().width * 1.25);
+        int height  = (int)(Thumbnailer.getInstance().getMaxSize().height * 1.25);
+        int maxSize = Math.max(Math.max(width, height), 350);
         
-        listScrollPane = new JScrollPane(listPanel,ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        CellConstraints cc = new CellConstraints();
+        listScrollPane = new JScrollPane(iconListWidget, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        listScrollPane.setPreferredSize(new Dimension(maxSize, maxSize));
         
-        this.setLayout(new BorderLayout());
-        this.add(listScrollPane,BorderLayout.CENTER);
+        PanelBuilder pb2 = new PanelBuilder(new FormLayout("p", "f:p:g,p,f:p:g"), this);
+        pb2.add(listScrollPane, cc.xy(1,2));
+        pb2.getPanel().setBackground(Color.GREEN);//iconListWidget.getBackground());
     }
     
     /* (non-Javadoc)
@@ -230,6 +237,14 @@ public class IconTray extends JPanel implements ChangeListener
         listModel.add(item);
     }
     
+    /**
+     * @return the listModel
+     */
+    public ModifiableListModel<Object> getListModel()
+    {
+        return listModel;
+    }
+
     /**
      * Adds the specified item to the end of this tray. 
      *
