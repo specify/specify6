@@ -109,7 +109,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         
         progressFrame = new ProgressFrame(msg);
         progressFrame.turnOffOverAll();
-        progressFrame.setDesc("Cleaning up Synonyms...");
+        progressFrame.setDesc(doCleanup ? "Cleaning up Synonyms..." : "Creating Synonym Report...");
         progressFrame.adjustProgressFrame();
         progressFrame.getProcessProgress().setIndeterminate(true);
         progressFrame.getCloseBtn().setVisible(false);
@@ -271,13 +271,16 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             tblWriter.flush();
             tblWriter.close();
             
-            try
+            if (doCleanup)
             {
-                phHelper.getTaxonTreeDef().updateAllNodes(null, true, true);
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
+                try
+                {
+                    phHelper.getTaxonTreeDef().updateAllNodes(null, true, true);
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
+                }
             }
             
             PrintWriter    pw = new PrintWriter(reportName);
@@ -524,20 +527,29 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 
                 //System.err.println("-------["+fullName+"]-------");
                 
-                String oldName;
+                String  oldGenusName;
+                Integer parentRankID = null;
                 if (oldParentIdNull)
                 {
-                    oldName = NBSP;
+                    oldGenusName = NBSP;
                 } else
                 {
-                    oldName = BasicSQLUtils.querySingleObj("SELECT FullName FROM taxon WHERE TaxonID = " + oldParentId);
+                    Object[] row = BasicSQLUtils.queryForRow("SELECT FullName,RankID FROM taxon WHERE TaxonID = " + oldParentId);
+                    oldGenusName = (String)row[0];
+                    parentRankID = (Integer)row[1];
                 }
                 
-                ArrayList<String> names      = parseFullName(fullName);
-                String            genus      = names.get(0);
-                Integer           newGenusID = getTaxonNode(genus, parentLevelRankID);
-                String            oldFamily  = !oldParentIdNull ? getFamilyName(oldParentId) : NBSP;
-                String            catNums    = getCatNumsForTaxon(taxonID, catNumFmt);
+                boolean           parentRankOK = parentRankID != null && parentRankID == parentLevelRankID;
+                ArrayList<String> names        = parseFullName(fullName);
+                String            genus        = names.get(0);
+                Integer           newGenusID   = parentRankOK ? getTaxonNode(genus, parentLevelRankID) : null;
+                String            oldFamily    = !oldParentIdNull && parentRankOK ? getFamilyName(oldParentId) : NBSP;
+                String            catNums      = getCatNumsForTaxon(taxonID, catNumFmt);
+                
+                if (!parentRankOK)
+                {
+                    oldGenusName =  NBSP;
+                }
                 
                 if (!catNums.equals(NBSP))
                 {
@@ -550,7 +562,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                     {
                         cnt++;
                         String newFamily = getFamilyName(newGenusID);
-                        tblWriter.logWithSpaces(Integer.toString(cnt), fullName, oldName, oldFamily, genus, newFamily, catNums);
+                        tblWriter.logWithSpaces(Integer.toString(cnt), fullName, oldGenusName, oldFamily, genus, newFamily, catNums);
                         if (doCleanup)
                         {
                             if (update(newGenusID, taxonID))
@@ -569,7 +581,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                     if (placeHolder != null)
                     {
                         cnt++;
-                        tblWriter.logWithSpaces(Integer.toString(cnt), fullName, oldName, oldFamily, placeHolder.getName(), NBSP, catNums);
+                        tblWriter.logWithSpaces(Integer.toString(cnt), fullName, oldGenusName, oldFamily, placeHolder.getName(), NBSP, catNums);
                         phCnt++;
                         if (doCleanup)
                         {

@@ -188,7 +188,7 @@ public class RegisterSpecify
     private <T> T update(final Class<?> cls, final Object dataObjArg)
     {
         Object dataObj = dataObjArg;
-        DataModelObjBase.save(true, dataObj); // truee means do a merge first.
+        DataModelObjBase.save(dataObj);
         
         ((DataModelObjBase)dataObj).forceLoad();
         
