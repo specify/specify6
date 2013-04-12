@@ -19,18 +19,13 @@
 */
 package edu.ku.brc.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -105,7 +100,7 @@ public class IconTray extends JPanel implements ChangeListener
         
         int width   = (int)(Thumbnailer.getInstance().getMaxSize().width * 1.25);
         int height  = (int)(Thumbnailer.getInstance().getMaxSize().height * 1.25);
-        int maxSize = Math.max(Math.max(width, height), 350);
+        int maxSize = Math.max(width, height);
         
         CellConstraints cc = new CellConstraints();
         listScrollPane = new JScrollPane(iconListWidget, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -113,7 +108,6 @@ public class IconTray extends JPanel implements ChangeListener
         
         PanelBuilder pb2 = new PanelBuilder(new FormLayout("p", "f:p:g,p,f:p:g"), this);
         pb2.add(listScrollPane, cc.xy(1,2));
-        pb2.getPanel().setBackground(Color.GREEN);//iconListWidget.getBackground());
     }
     
     /* (non-Javadoc)

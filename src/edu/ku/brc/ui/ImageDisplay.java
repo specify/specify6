@@ -54,6 +54,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -82,9 +84,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	protected String       url;
 	protected boolean      isEditMode      = true;
 	protected JButton      editBtn;
-	protected String       noImageStr      = getResourceString("noimage");
-	protected String       loadingImageStr = getResourceString("loadingimage");
-	protected boolean      isNoImage       = true;
+	protected String[]     noAttachmentStr      = StringUtils.split(getResourceString("noattachment"), ' ');
+	protected String[]     loadingAttachmentStr = StringUtils.split(getResourceString("loadingattachment"), ' ');
+	protected boolean      isNoAttachment       = true;
     protected JFileChooser chooser;
     protected boolean      doShowText      = true;
     
@@ -428,7 +430,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		int h = getHeight();
 
         Image   dspImg         = image;
-		boolean doDisplayImage = (image != null && (!isNoImage && status == kImageOK)) || isLoading.get();
+		boolean doDisplayImage = (image != null && (!isNoAttachment && status == kImageOK)) || isLoading.get();
 		if (isLoading.get())
 		{
 		    doDisplayImage = true;
@@ -474,18 +476,27 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 			
 		} else if (doShowText)
 		{
-			String label = this.isNoImage ? noImageStr : loadingImageStr;
-			FontMetrics fm = g.getFontMetrics();
-			g.drawString(label, (w - fm.stringWidth(label)) / 2, (h - fm.getAscent()) / 2);
+		    GraphicsUtils.turnOnAntialiasedDrawing(g);
+			String[]    label   = this.isNoAttachment ? noAttachmentStr : loadingAttachmentStr;
+			FontMetrics fm      = g.getFontMetrics();
+			int         spacing = 2;
+			int         yOffset = (h - (fm.getHeight() + spacing) * label.length) / 2;
+			if (yOffset < 0) yOffset = 0;
+			int y = yOffset + fm.getHeight();
+			for (String str : label)
+			{
+			    g.drawString(str, (w - fm.stringWidth(str)) / 2, y);
+			    y += fm.getHeight() + 2;
+			}
 		}
 	}
 	
 	/**
      * @param noImageStr the noImageStr to set
      */
-    public void setNoImageStr(String noImageStr)
+    public void setNoImageStr(final String noImageStr)
     {
-        this.noImageStr = noImageStr;
+        this.noAttachmentStr = StringUtils.isNotEmpty(noImageStr) ? StringUtils.split(noImageStr, ' ') : new String[] {};
     }
 
     /**
@@ -521,7 +532,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	 */
 	public void setNoImage(boolean isNoImage)
 	{
-		this.isNoImage = isNoImage;
+		this.isNoAttachment = isNoImage;
 
 	}
 

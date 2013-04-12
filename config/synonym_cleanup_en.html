@@ -1,49 +1,27 @@
 <html>
 <font face="verdana">
-<p>Some databases converted from Specify 5 to Specify 6 have an issue with the placement of synonymized names in the Taxon Tree.  
-This function creates a report which identifies species-level synonyms which may need attention depending on whether you actively 
-curate species synonyms in your Taxon Tree.  If your collection data were not migrated from Specify 5 to 6, this situation does not 
-apply to you there is no need to run this report.
+<p>Some databases converted from Specify 5 to Specify 6 have an issue with the placement of synonymized names in the Taxon Tree.  This function creates a report which identifies species-level synonyms which may need attention depending on whether you actively curate species synonyms in your Taxon Tree.  If your collection data were not migrated from Specify 5 to 6, this situation does not apply to you—there is no need to run this report.
 </p>
 <p>
-The analysis produces a report about the names of any species used as synonyms, i.e. placed in synonymy in your Taxon Tree, 
-which as a result of a Specify 5-to-6 conversion may have been parented incorrectly or incompletely.  
-This analysis only applies to species-level names and only to synonyms.  The conversion did not change any Specify 5 determinations of collection objects, 
-or modify any previously made synonymization actions in Specify 5. This is a relatively minor placement issue of where a species-level 
-synonym displays in the Taxon tree, i.e. which genus is the parent of a synonymized species.  For most collections this display issue 
-with synonyms will be of little consequence, but we describe it below in case you actively manage synonym entries using your Taxon Tree 
-as a classification/authority file resource for all names, accepted and synonymized.
+The analysis produces a report about the names of any species used as synonyms, i.e. placed in synonymy in your Taxon Tree, which as a result of a Specify 5-to-6 conversion may have been parented incorrectly or incompletely.  This analysis only applies to species-level names and only to synonyms.  The conversion did not change any Specify 5 determinations of collection objects, or modify any previously made synonymization actions in Specify 5. This is a relatively minor placement issue of where a species-level synonym displays in the Taxon tree, i.e. which genus is the parent of a synonymized species.  For most collections this display issue will be of little consequence, but we describe it below in case you actively manage synonym entries using your Taxon Tree as a classification/authority file resource for all names, accepted and synonymized.
 </p>
 <p>
-Currently in Specify 6, when species are synonymized, they appear where they should be located under the original genus entry.  
-The names appear in blue text indicating they have been synonymized to some other taxon.  Moving a mouse pointer over them will 
-pop-up the name of that accepted taxon.  As the result of a Specify 5-6 conversion some synonyms will appear to be parented by the 
-genus belonging to the accepted species name.  In some cases species-level synonyms will not have a parent at the genus level in the 
-Specify 6 tree, such as if the original genus was deleted in Specify 5.
+Currently in Specify 6, when species are synonymized, they appear where they should be located – under the original genus entry.  The names appear in blue text indicating they have been synonymized to some other taxon.  Moving a mouse pointer over them will pop-up the name of the accepted taxon.  As the result of a Specify 5-to-6 conversion some synonyms will appear to be parented by the genus belonging to the accepted species name.  In other cases species-level synonyms will not have a parent at the genus level in the Specify 6 tree, such as if the original genus was deleted in Specify 5 before the conversion.
 </p>
 <p>
-Because Specify 5 stored synonyms differently than Specify 6, there was no unambiguous way to migrate some species synonym names from 
-5 to 6 so that they would be parented and displayed correctly. This does not cause any problems for searches or queries, or for the 
-integrity of accepted Taxon Names or Collection Object determinations all of those all migrated from 5-to-6 correctly and remain accurate.
+Because Specify 5 stored synonyms differently than Specify 6, there was no unambiguous way to migrate some species synonym names from 5 to 6 so that they would be parented and displayed correctly. This does not cause any problems for searches or queries, or for the integrity of accepted Taxon Names or Collection Object determinations – all of those all migrated from 5-to-6 correctly and remain accurate.
 </p>
 <p>
-The report produced by this analysis shows the full name of any species-level "orphaned" synonyms which are not correctly parented 
-in the Specify 6 Taxon tree (under the original genus).  It shows the name of the "Orphan Synonym" and its current parent genus and 
-the family of the current genus.  It then shows the name of the "Proposed Genus" and "Proposed Family" for the re-parenting of the 
-synonymized species binomial.  Note, if the proposed genus no longer exists in the Specify 6 Taxon Tree (likely it was deleted by a 
-user in Specify 5) the report indicates "Synonym Placeholder" for the Proposed Genus and Family.  
+The report produced by this analysis shows the full name of any species-level “orphaned” synonyms which are not correctly parented in the Specify 6 Taxon tree (under the original genus).  It shows the name of the “Orphan Synonym” and its current parent genus in Specify 6 and the family of the current genus.  It then shows the name of the “Proposed Genus” and “Proposed Family” for the re-parenting of the synonymized species binomial.  Note, if the proposed genus no longer exists in the Specify 6 Taxon Tree (likely it was deleted by a user in Specify 5) the report indicates ‘Synonym Placeholder’ for the Proposed Genus and Family.  
 </p>
 <p>
-If the batch repair function is run after viewing this report, all the names indicated in the report will be moved to the Proposed parent.  
-The repair function does not insert genera into families where they may belong.  If a single genera matiching the original parent is found in 
-your taxon tree already, Specify will move the orphan synonym to that genera.  Where a matching genera was found, the proposed parent and family 
-will say the matching genus and family.  Where a matching original parent was not found or multiple were found, the Proposed Parent is "Synonym Placeholder".  
-The orphan synonym will be moved to a new, "placeholder" branch rooted at the base of your tree with "Synonym Placeholder" shown as taxon 
-names all the way down the tree to the family level. For these species, the repair function makes an entry for the Proposed Genus, in the Synonym Placeholder 
-branch of the tree.  When complete, the repair function adds the proposed genera from orphaned synonyms (without proposed parents or 
-Families indicated in the report) in your database in that single branch of your Taxon Tree.  It is left to the user to decide which generic names, 
-if any, are worth saving and re-parenting (through drag-and-drop moves) to actual families in the Taxon tree.  This report also indicates which 
-orphaned synonyms, if any, in your Taxon Tree have been determined to a collection object.
+If the batch repair function is run after viewing this report, if an "Orphan Synonym" name in the report has a generic name in the column "Proposed Genus" AND if that genus still exists in the Taxon Tree, then the synonym will be re-parented to that genus. This only affects the parent displayed in the tree - it does not change the synonymic relationship to the accepted species, or any determinations, it simply places the synonym in the tree in the genus under which it originally existed.
+</p>
+<p>
+For a row in the report of "Orphan Synonyms" with the text "Synonym Placeholder" in the Proposed Genus column (because the genus it belongs to could not be found in  your current Taxon Tree or there were multiple matches found), the repair function does not put the species level synonym in your existing tree but creates a new, seperate branch rooted at the base of your Taxon Tree with “Synonym Placeholder” shown as the taxon name at each rank down to the family level.  
+</p>
+<p>
+When complete, the repair function adds all of the proposed genera from orphaned synonyms which do not have generic names in the 'Proposed Genus" column in that single placeholder tree branch. It is left to the user to decide which names, if any, are worth re-parenting (through drag-and-drop moves) to the Taxon tree. This report also indicates which orphaned synonyms, if any, in your Taxon Tree have been used in a determination to a collection object. Those synonyms cannot be deleted but can be manually reparented to the correct family.
 </p>
 </font>
 <br>
