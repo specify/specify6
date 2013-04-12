@@ -225,7 +225,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             TableWriter tblWriter  = new TableWriter(tmpReportName, "Orphan Synonyms for " + collectionName, true);
             tblWriter.println(TOKEN);
             tblWriter.startTable();
-            tblWriter.logHdr(NBSP, "Orphan Synonym", "Original Genus", "Original Family", "New Genus", "New Family", "Catalog Numbers<BR>Determined to Synonym");
+            tblWriter.logHdr(NBSP, "Orphan Synonym", "Current Genus", "Current Family", "Proposed Genus", "Proposed Family", "Catalog Numbers<BR>Determined to Synonym");
             
             DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
             String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
@@ -502,7 +502,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             int withCatNumCnt = 0;
             int updateErr     = 0;
             
-            String searchStr = String.format("SELECT TaxonID, FullName, Name FROM taxon WHERE IsAccepted <> 0 AND Name = ? AND RankID = ? AND %s COLLATE latin1_bin", whereStr);
+            String searchStr = String.format("SELECT TaxonID, FullName, Name FROM taxon WHERE IsAccepted <> 0 AND BINARY Name = ? AND RankID = ? AND %s", whereStr);
             pTaxNodeStmt = newDBConn.prepareStatement(searchStr);
             
             pCatNumStmt = newDBConn.prepareStatement("SELECT co.CatalogNumber FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID " +

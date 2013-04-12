@@ -259,7 +259,7 @@ public class BaseFileNameParser implements FileNameParserIFace
         if (pStmt == null)
         {
             String whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(this.tblInfo, false);
-            String sql      = String.format("SELECT %s FROM %s WHERE %s=? %s", 
+            String sql      = String.format("SELECT %s FROM %s WHERE BINARY %s=? %s ", 
                                             tblInfo.getIdColumnName(),
                                             tblInfo.getName(),
                                             StringUtils.capitalize(this.fieldName),

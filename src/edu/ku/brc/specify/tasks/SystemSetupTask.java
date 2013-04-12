@@ -35,6 +35,7 @@ import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -64,6 +65,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -336,19 +338,46 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         JScrollPane js = new JScrollPane();
         js.getViewport().add(tp);
         
+        String text = "";
+        try
+        {
+            String template = "synonym_cleanup_%s.html";
+            String fileName = String.format(template,  Locale.getDefault().getLanguage());
+            File file = XMLHelper.getConfigDir(fileName);
+            if (!file.exists())
+            {
+                fileName = String.format(template,  "en");
+                file = XMLHelper.getConfigDir(fileName);
+            }
+            text = FileUtils.readFileToString(file);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        p.add(js, BorderLayout.CENTER);
+        
         tp.setContentType("text/html");
-        tp.setText("");
-        CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), getI18nRS("SYN_CLEANUP"), true, CustomDialog.OKCANCELAPPLY, js);
+        tp.setText(text);
+        tp.setCaretPosition(0);
+        tp.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+        
+        CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), getI18nRS("SYN_CLEANUP"), true, CustomDialog.OKCANCELAPPLY, p);
         dlg.setOkLabel(getI18nRS("SYN_CLEANUP"));
         dlg.setCancelLabel(getI18nRS("Report"));
         dlg.setApplyLabel(getResourceString("CANCEL"));
         dlg.setCloseOnApplyClk(true);
-        dlg.setVisible(true);
+        dlg.createUI();
+        dlg.setSize(800, 600);
+        UIHelper.centerAndShow(dlg);
         if (dlg.getBtnPressed() != CustomDialog.APPLY_BTN)
         {
             boolean        doCleanup      = dlg.getBtnPressed() == CustomDialog.OK_BTN;
-            SynonymCleanup synonymCleanup = new SynonymCleanup(doCleanup);
-            synonymCleanup.execute(); // start the background task
+            //SynonymCleanup synonymCleanup = new SynonymCleanup(doCleanup);
+            //synonymCleanup.execute(); // start the background task
         }
     }
     
