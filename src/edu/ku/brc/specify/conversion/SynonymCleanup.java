@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -97,9 +99,10 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         
         this.collectionName = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName();
         
-        String colNm = StringUtils.replaceChars(this.collectionName, ' ', '_');
-        tmpReportName = String.format(tmpReportName, colNm);
-        reportName    = String.format(reportName, colNm);
+        String dirPath = getAppDataDir() + File.separator;
+        String colNm   = StringUtils.replaceChars(this.collectionName, ' ', '_');
+        tmpReportName  = dirPath + String.format(tmpReportName, colNm);
+        reportName     = dirPath + String.format(reportName, colNm);
         
         String msg = String.format("Synonym Cleanup for %s", collectionName);
         UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
