@@ -101,7 +101,6 @@ import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
-import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -2347,8 +2346,10 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
     		{
-    			if (attachmentsSupported(ut.getTblClass()))
+        		System.out.println(ut.getTblTitle());
+    			if (attachmentsSupported(ut))
     			{
+    	    		System.out.println("   attachable: " + ut.getTblTitle());
     				result.add(ut);
     			}
     		}
@@ -2363,8 +2364,10 @@ public class Uploader implements ActionListener, KeyListener
      * Lots of UI work needs to be done before we can support attachments
      * for 1-many situations (collectors, determiners, preps, determinations)
      */
-    protected boolean attachmentsSupported(Class<?> tblClass)
+    protected boolean attachmentsSupported(UploadTable uploadTable)
     {
+    	//Only allow attachments to agent for agent-only dataset
+    	Class<?> tblClass = uploadTable.getTblClass();
     	if (tblClass.equals(Agent.class))
     	{
     		for (UploadTable ut : uploadTables)
@@ -2377,6 +2380,7 @@ public class Uploader implements ActionListener, KeyListener
     		return true;
     	} 
     	
+    	//Only allow attachments to taxon for taxon-only dataset
     	if (tblClass.equals(Taxon.class))
     	{
     		for (UploadTable ut : uploadTables)
@@ -2389,9 +2393,17 @@ public class Uploader implements ActionListener, KeyListener
     		return true;
     	}
     	
-    	if (tblClass.equals(Preparation.class))
+    	
+    	//Exclude tables that can have multiple records per row in a dataset 
+    	for (List<ParentTableEntry> ptes : uploadTable.getParentTables())
     	{
-    		return false;
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			if (pte.getImportTable().needToMatchChild(tblClass)  && uploadTable.getUploadFields().size() > 1)
+    			{
+    				return false;
+    			}
+    		}
     	}
     	
     	
