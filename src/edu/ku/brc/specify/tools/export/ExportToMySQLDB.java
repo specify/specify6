@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,10 +14,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.util.StrUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -26,6 +27,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.FieldMetaData;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -33,6 +35,8 @@ import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -54,6 +58,38 @@ public class ExportToMySQLDB
 													// intended for web searches
 													//it seems acceptable to impose a limit
 	
+	
+	public static String getBigDecimalSpec(DBFieldInfo fldInfo) 
+	{
+		String dbName = ((SpecifyAppContextMgr) AppContextMgr.getInstance())
+				.getDatabaseName();
+		String tblName = fldInfo.getTableInfo().getName();
+		String fldName = fldInfo.getName();
+		String colType = null;
+		Vector<Object[]> rows = BasicSQLUtils.query(DBConnection.getInstance()
+				.getConnection(),
+				"SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '"
+						+ dbName + "' and TABLE_NAME = '" + tblName
+						+ "' and COLUMN_NAME = '" + fldName + "'");
+		if (rows.size() == 1) 
+		{
+			colType = rows.get(0)[0].toString().toLowerCase().trim();
+		}
+		if (colType != null && colType.startsWith("decimal")) 
+		{
+			// "DECIMAL(19,2)"
+			String psStr = colType.substring(8).replace(")", "");
+			String[] ps = psStr.split(",");
+			if (ps.length == 2) 
+			{
+				Integer precision = Integer.valueOf(ps[0]);
+				Integer scale = Integer.valueOf(ps[1]);
+				return "decimal(" + precision + "," + scale + ")";
+			}
+		}
+		return "";
+	}
+
 	/**
 	 * @param fld
 	 * @return mysql field type declaration.
@@ -95,7 +131,14 @@ public class ExportToMySQLDB
 		if (dataType.equals(BigDecimal.class))
 		{
 			//XXX too much for everything but longitude, but is it really a problem?
-			return "decimal(13,10)"; 
+			String decSpec = getBigDecimalSpec(fld);
+			if (decSpec.equals("")) 
+			{
+				return "decimal(13,10)";
+			} else
+			{
+				return decSpec;
+			}
 		}
 		if (dataType.equals(Boolean.class))
 		{
@@ -737,7 +780,7 @@ public class ExportToMySQLDB
 				{
 					//System.out.println(getTabDelimLine(rows));
 					//FileUtils.writeStringToFile(file, getTabDelimLine(rows));
-					String line = getTabDelimLine(rows);
+					String line = getTabDelimLine(rows, conn);
 					//lines.add(getTabDelimLine(rows));
 					fw.write(line + "\n");
 					if (lines++ == 10000)
@@ -766,14 +809,120 @@ public class ExportToMySQLDB
 		}
 	}
 	
+	protected static String convertToSignedNumberFormat(String latLng)
+	{
+		String result = null;
+		if (latLng != null)
+		{
+			String sign = "";
+			if (latLng.endsWith(LatLonConverter.northSouth[1]) || latLng.endsWith(LatLonConverter.eastWest[1]))
+			{
+				sign = "-";
+			}
+			result = sign;
+			for (int c = 0; c < latLng.length(); c++)
+			{
+				String current = latLng.substring(c, c+1);
+				if ("-0123456789.".contains(current))
+				{
+					result += current;
+				}
+			}
+		}
+		return result;
+	}
+	
+	protected static String formatLatLng(String fldName, BigDecimal latLng, Integer rowId, List<String> srcInfo) throws SQLException
+	{
+		String result = null;
+		if (srcInfo != null)
+		{
+			LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.values()[Integer.valueOf(srcInfo.get(0))];
+			String txt = srcInfo.get(getLatLonSrcTextIdx(fldName));
+			LatLonConverter.LATLON llType = getLatLngType(fldName);
+			if (LatLonConverter.FORMAT.DDDDDD.equals(fmt) && StringUtils.isNotBlank(txt))
+			{
+				result = txt;
+			} 
+			else if (StringUtils.isNotBlank(txt))
+			{
+				result =  LatLonConverter.convert(txt, fmt, LatLonConverter.FORMAT.DDDDDD, llType);				
+			} else
+			{
+				result =  LatLonConverter.convertToSignedDDDDDD(latLng, 7, LatLonConverter.DEGREES_FORMAT.None);
+			}
+		}
+		return convertToSignedNumberFormat(result);
+	}
+	
+	protected static LatLonConverter.LATLON getLatLngType(String fldName) throws SQLException
+	{
+		if (fldName.toLowerCase().contains("latitude"))
+		{
+			return LatLonConverter.LATLON.Latitude;
+		} 
+		if (fldName.toLowerCase().contains("longitude"))
+		{
+			return LatLonConverter.LATLON.Longitude;
+		} 
+		throw new SQLException("Invalid lat/lng field name: " + fldName);
+		
+	}
+	protected static int getLatLonSrcTextIdx(String fldName) throws SQLException
+	{
+		if ("latitude1".equalsIgnoreCase(fldName) || "decimallatitude".equalsIgnoreCase(fldName))
+		{
+			return 1;//"Lat1Text";
+		}
+		if ("latitude2".equalsIgnoreCase(fldName))
+		{
+			return 2;//"Lat2Text";
+		}
+		if ("longitude1".equalsIgnoreCase(fldName) || "decimallongitude".equalsIgnoreCase(fldName))
+		{
+			return 3;//"Long1Text";
+		}
+		if ("longitude2".equalsIgnoreCase(fldName))
+		{
+			return 4;//"Long2Text";
+		}
+	    throw new SQLException("invalid lat/lng field name: " + fldName);
+	}
+	
+	protected static Pair<Integer, List<String>> getSrcInfo(Integer rowId, Connection conn) throws SQLException
+	{
+		Statement stmt = conn.createStatement();
+		try
+		{
+			ResultSet rs = stmt.executeQuery("select SrcLatLongUnit, Lat1Text, Long1Text, Long1Text, Long2Text from "
+					+ "collectionobject co inner join collectingevent ce on ce.collectingeventid = co.collectingeventid "
+					+ "inner join locality l on l.localityid = ce.localityid where co.CollectionObjectID = " + rowId);
+			if (rs.next())
+			{
+				List<String> vals = new ArrayList<String>(5);
+				vals.add(rs.getString(1));
+				vals.add(rs.getString(2)); 
+				vals.add(rs.getString(3)); 
+				vals.add(rs.getString(4)); 
+				vals.add(rs.getString(5)); 
+				return new Pair<Integer, List<String>>(rowId, vals);
+			}
+		} finally
+		{
+			stmt.close();
+		}
+		return null;
+	}
+	
 	/**
 	 * @param rows
 	 * @return
 	 * @throws SQLException
 	 */
-	protected static String getTabDelimLine(ResultSet rows) throws SQLException
+	protected static String getTabDelimLine(ResultSet rows, Connection conn) throws SQLException
 	{
 		StringBuilder result = new StringBuilder();
+		Pair<Integer, List<String>> latLngInfo = null;
 		for (int c = 1; c <= rows.getMetaData().getColumnCount(); c++)
 		{
 			if (c > 1)
@@ -783,6 +932,18 @@ public class ExportToMySQLDB
 			String val = rows.getString(c);
 			if (val != null)
 			{
+				String fldName = rows.getMetaData().getColumnName(c);
+				if ("latitude1".equalsIgnoreCase(fldName) || "latitude2".equalsIgnoreCase(fldName)  ||
+						"longitude1".equalsIgnoreCase(fldName) || "longitude2".equalsIgnoreCase(fldName) ||
+						"decimallatitude".equalsIgnoreCase(fldName) || "decimallongitude".equalsIgnoreCase(fldName))
+				{
+					Integer id = rows.getInt(1);
+					if (latLngInfo == null || !latLngInfo.getFirst().equals(id)) 
+					{
+						latLngInfo = getSrcInfo(id, conn);
+					}
+					val = formatLatLng(fldName, rows.getBigDecimal(c), id, latLngInfo.getSecond());
+				}
 				int type = rows.getMetaData().getColumnType(c);
 				// remove tabs and line returns
 				// If link to original specify db model field was available
@@ -811,7 +972,7 @@ public class ExportToMySQLDB
 		String fldStr = "";
 		for (FieldMetaData fld : flds)
 		{
-			System.out.println(fld.getName() + ": " + fld.getType());
+			//System.out.println(fld.getName() + ": " + fld.getType());
 			if (fldStr.length() > 0)
 			{
 				fldStr += ", ";
@@ -902,7 +1063,7 @@ public class ExportToMySQLDB
 						long lines = 0;
 						while (rows.next())
 						{
-							fw.write(getTabDelimLine(rows) + "\n");
+							fw.write(getTabDelimLine(rows, conn) + "\n");
 							if (lines++ % 1000 == 0)
 							{
 								fw.flush();
