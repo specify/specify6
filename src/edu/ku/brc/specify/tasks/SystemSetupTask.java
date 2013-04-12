@@ -376,8 +376,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         if (dlg.getBtnPressed() != CustomDialog.APPLY_BTN)
         {
             boolean        doCleanup      = dlg.getBtnPressed() == CustomDialog.OK_BTN;
-            //SynonymCleanup synonymCleanup = new SynonymCleanup(doCleanup);
-            //synonymCleanup.execute(); // start the background task
+            SynonymCleanup synonymCleanup = new SynonymCleanup(doCleanup);
+            synonymCleanup.execute(); // start the background task
         }
     }
     
