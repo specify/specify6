@@ -188,7 +188,7 @@ public class RegisterSpecify
     private <T> T update(final Class<?> cls, final Object dataObjArg)
     {
         Object dataObj = dataObjArg;
-        DataModelObjBase.save(dataObj);
+        DataModelObjBase.save(true, dataObj); // truee means do a merge first.
         
         ((DataModelObjBase)dataObj).forceLoad();
         
@@ -278,6 +278,8 @@ public class RegisterSpecify
     private void setCollectionHasRegistered(final String regNumber, final boolean isAnonymous)
     {
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        collection = DataModelObjBase.getDataObj(Collection.class, collection.getId());
+        
         collection.setRegNumber(regNumber);
         update(Collection.class, collection);
         
