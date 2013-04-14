@@ -1547,10 +1547,13 @@ public final class UIHelper
      */
     public static Object[] getFieldValues(final FormCellIFace formCell, final Object dataObj, final DataObjectGettable getter)
     {
-        String[] fieldNames = formCell.getFieldNames();
-        if( fieldNames != null && fieldNames.length != 0 )
+        if (dataObj != null && getter != null)
         {
-            return getFieldValues(fieldNames, dataObj, getter);
+            String[] fieldNames = formCell.getFieldNames();
+            if( fieldNames != null && fieldNames.length != 0 )
+            {
+                return getFieldValues(fieldNames, dataObj, getter);
+            }
         }
         // else
         return null;
