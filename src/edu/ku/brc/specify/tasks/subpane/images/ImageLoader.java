@@ -56,10 +56,10 @@ public class ImageLoader implements ImageLoaderIFace
      * @param scale
      * @param listener
      */
-    public ImageLoader(final String imageName, 
-                       final String mimeType, 
+    public ImageLoader(final String  imageName, 
+                       final String  mimeType, 
                        final boolean doLoadFullImage, 
-                       final int scale,
+                       final int     scale,
                        final ImageLoaderListener listener)
     {
         super();

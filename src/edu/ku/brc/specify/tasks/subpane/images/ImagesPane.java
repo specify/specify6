@@ -39,6 +39,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -107,6 +109,7 @@ import edu.ku.brc.ui.SearchBoxComponent;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -163,10 +166,11 @@ public class ImagesPane extends BaseSubPane
     
     // Loading in batches
     private List<RecordSetItemIFace> items     = null;
+    private HashMap<String, String>  dataMap = new HashMap<String, String>();
+    private CollectionDataFetcher    dataFetcher = new CollectionDataFetcher();
     
-    private HashMap<String, String> dataMap = new HashMap<String, String>();
-    
-    private CollectionDataFetcher   dataFetcher = new CollectionDataFetcher();
+    // Listener for when it is an unknown mimetype
+    private ImageLoaderListener      imgLoadListenerExtern;
     
     /**
      * @param name
@@ -203,8 +207,29 @@ public class ImagesPane extends BaseSubPane
      */
     private void initImagePane()
     {
-        //Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        //initColObjDisplayInfo(collection.getIsEmbeddedCollectingEvent());
+        imgLoadListenerExtern = new ImageLoaderListener()
+        {
+            @Override
+            public void imagedLoaded(final String imageName,
+                                     final String mimeType,
+                                     final boolean doLoadFullImage,
+                                     final int scale,
+                                     final boolean isError, 
+                                     final ImageIcon imgIcon,
+                                     final File localFile)
+            {
+                if (!isError && localFile != null && localFile.exists())
+                {
+                    try
+                    {
+                        AttachmentUtils.openFile(localFile);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
         
         rsController = new ResultSetController(null, false, false, false, "Image", 0, true);
         gridPanel    = new GalleryGridPanel(rsController);
@@ -734,15 +759,19 @@ public class ImagesPane extends BaseSubPane
      */
     private void showFullImage(final int index)
     {
-        //log.debug("infoBtn showFullImage - index: "+index);
-
         if (index > -1 && index < rowsVector.size())
         {
             ImageDataItem item = rowsVector.get(index);
             if (item != null)
             {
-                FullImagePane pane = new FullImagePane(item.getTitle(), getTask(), item);
-                SubPaneMgr.getInstance().addPane(pane);
+                if (item.getMimeType().startsWith("image"))
+                {
+                    FullImagePane pane = new FullImagePane(item.getTitle(), getTask(), item);
+                    SubPaneMgr.getInstance().addPane(pane);
+                } else
+                {
+                    item.loadScaledImage(-1, imgLoadListenerExtern);
+                }
             }
         }
     }
