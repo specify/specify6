@@ -21,11 +21,23 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -39,6 +51,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AttachmentImageAttribute;
 import edu.ku.brc.specify.datamodel.Borrow;
@@ -59,12 +72,15 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tasks.subpane.images.ImageDataItem;
+import edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane;
 import edu.ku.brc.specify.utilapps.morphbank.BatchAttachFiles;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -74,13 +90,13 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
  * Jan 25, 2012
  *
  */
-public class AttachmentsTask extends BaseTask
+public class AttachmentsTask extends BaseTask implements ImageLoaderListener
 {
     private static final String  ON_TASKBAR             = "AttachmentsTask.OnTaskbar";
-    private static final String  ATTACHMENTS            = "ATTACHMENTS";
     private static final String  ATTACHMENTS_SEARCH     = "ATTACHMENTS.SEARCH";
-    //private static final String  ATTACHMENTS_TITLE     = "ATTACHMENTS_TITLE";
-    //private static final String  ATTACHMENTS_SECURITY  = "ATTACHMENTSEDIT";
+    public static final String  ATTACHMENTS             = "ATTACHMENTS";
+    public static final String  EXPORT_CMD              = "ATTACHMENTS.EXPORT_CMD";
+    
     
     // Data Members
     protected ImagesPane              imagesPane       = null;
@@ -92,6 +108,7 @@ public class AttachmentsTask extends BaseTask
     protected ToolBarDropDownBtn      toolBarBtn       = null;
     
     protected AtomicBoolean           isDoingImageSearching = new AtomicBoolean(false);
+    private   File                    exportFile = null;
     
     /**
      * 
@@ -275,6 +292,87 @@ public class AttachmentsTask extends BaseTask
         }
     }
     
+    /**
+     * 
+     */
+    private void exportAttachment(final CommandAction cmdAction)
+    {
+        exportFile = null;
+        Object data = cmdAction.getData();
+        if (data instanceof ImageDataItem)
+        {
+            ImageDataItem idi = (ImageDataItem)data;
+            System.out.println(idi.getImgName());
+            
+            String origFilePath = BasicSQLUtils.querySingleObj("SELECT OrigFilename FROM attachment WHERE AttachmentID = " + idi.getAttachmentId());
+            if (StringUtils.isEmpty(origFilePath))
+            {
+                origFilePath = FilenameUtils.getName(origFilePath);
+            } else
+            {
+                origFilePath = idi.getTitle();
+            }
+            String       usrHome = System.getProperty("user.home");
+            JFileChooser dlg     = new JFileChooser(usrHome);
+            dlg.setSelectedFile(new File(origFilePath));
+            int rv = dlg.showSaveDialog((Frame)UIRegistry.getTopWindow());
+            if (rv == JFileChooser.APPROVE_OPTION)
+            {
+                File file = dlg.getSelectedFile();
+                if (file != null)
+                {
+                    String fullPath = file.getAbsolutePath();
+                    String oldExt   = FilenameUtils.getExtension(origFilePath);
+                    String newExt   = FilenameUtils.getExtension(fullPath);
+                    if (StringUtils.isEmpty(newExt) && StringUtils.isNotEmpty(oldExt))
+                    {
+                        fullPath += "." + oldExt;
+                        exportFile = new File(fullPath);
+                    } else
+                    {
+                        exportFile = file;
+                    }
+                    boolean isOK = true;
+                    if (exportFile.exists())
+                    {
+                        isOK = UIRegistry.displayConfirmLocalized("ATTCH.FILE_EXISTS", "ATTCH.REPLACE_MSG", "ATTCH.REPLACE", "CANCEL", JOptionPane.QUESTION_MESSAGE);
+                    }
+                    if (isOK)
+                    {
+                        idi.loadScaledImage(-1, this);
+                    }
+                }
+                System.out.println(file.toPath());
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
+     */
+    @Override
+    public void imagedLoaded(final String    imageName,
+                             final String    mimeType,
+                             final boolean   doLoadFullImage,
+                             final int       scale,
+                             final boolean   isError,
+                             final ImageIcon imgIcon,
+                             final File      localFile)
+    {
+        if (!isError && localFile.exists())
+        {
+            try
+            {
+                FileUtils.copyFile(localFile, exportFile);
+                UIRegistry.writeTimedSimpleGlassPaneMsg("File exported");
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#preInitialize()
      */
@@ -509,7 +607,13 @@ public class AttachmentsTask extends BaseTask
         
         if (cmdAction.isType(ATTACHMENTS))
         {
-            processRecordSetCommands(cmdAction);
+            if (cmdAction.isAction(EXPORT_CMD))
+            {
+                exportAttachment(cmdAction);
+            } else
+            {
+                processRecordSetCommands(cmdAction);
+            }
             
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
         {

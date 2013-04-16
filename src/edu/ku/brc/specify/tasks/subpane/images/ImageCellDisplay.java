@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
+import static edu.ku.brc.ui.UIRegistry.getAction;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -28,24 +31,38 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.plugins.sgr.BatchResultPropertyEditor;
+import edu.ku.brc.specify.plugins.sgr.BatchResultsMgr;
+import edu.ku.brc.specify.tasks.AttachmentsTask;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.ImageLoaderExector;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -144,7 +161,63 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
         super.createUI();
         setBorder(nonSelBorder);
         //setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+        
+        MouseListener mouseListener = new MouseAdapter() 
+        {
+              private boolean showIfPopupTrigger(MouseEvent mouseEvent) 
+              {
+                  if (mouseEvent.isPopupTrigger())
+                  {
+                      JPopupMenu popupMenu = createContextMenu();
+                      if (popupMenu != null && popupMenu.getComponentCount() > 0) 
+                      {
+                          popupMenu.show(mouseEvent.getComponent(),
+                                  mouseEvent.getX(),
+                                  mouseEvent.getY());
+                          return true;
+                      }
+                  }
+                  return false;
+              }
+              @Override
+              public void mousePressed(MouseEvent mouseEvent) 
+              {
+                  showIfPopupTrigger(mouseEvent);
+              }
+              @Override
+              public void mouseReleased(MouseEvent mouseEvent) 
+              {
+                  showIfPopupTrigger(mouseEvent);
+              }
+        };
+        addMouseListener(mouseListener);
     }
+    
+    /**
+     * @param pane
+     */
+    protected JPopupMenu createContextMenu()
+    {
+        JPopupMenu popupMenu = new JPopupMenu();
+        
+        String ttl = getResourceString("ATTCH.EXPORT_ATTACHMENT"); 
+        String mnu = getResourceString("ATTCH.EXPORT_ATTACHMENT_MNEU"); 
+        UIHelper.createLocalizedMenuItem(popupMenu, ttl, mnu, ttl, true, new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        CommandDispatcher.dispatch(new CommandAction(AttachmentsTask.ATTACHMENTS, AttachmentsTask.EXPORT_CMD, imgDataItem));
+                    }
+                });
+            }
+        });
+        return popupMenu;
+    }
+
 
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
