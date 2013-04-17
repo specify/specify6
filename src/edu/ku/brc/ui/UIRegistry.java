@@ -41,6 +41,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.util.Enumeration;
@@ -317,6 +318,41 @@ public class UIRegistry
         return instance.platformLocale;
     }
 
+    
+    
+    /*
+     * If, to handle I18N issues with java loading of properties files, we load the properties files 'manually',
+     * the following 2 methods could be used.
+    */
+    /**
+     * 
+     * @param name
+     * @param locale
+     * @return
+     */
+    /*private static String getResourcePropertiesFileName(final String name, final Locale locale)
+    {
+    	return "C:\\workspace\\XSpTrnk\\src\\" + name + "_" + locale.getLanguage() + ".properties";
+    }*/
+    
+    /**
+     * @param name
+     * @param locale
+     * @return
+     */
+    /*public static ResourceBundle getPropertyResourceBundleFromFileinConfigDir(final String name, final Locale locale)
+    {
+    	try
+    	{
+    		String resFileName = getResourcePropertiesFileName(name, locale);
+    		return new PropertyResourceBundle(new InputStreamReader(new FileInputStream(new File(resFileName)), "UTF-8"));
+    	} catch (Exception ex)
+    	{
+    		ex.printStackTrace();
+    		return ResourceBundle.getBundle(name);
+    	}
+    }*/
+    
     /**
      * Loads and returns a resource Bundle.
      * @param name the name of the Bundle
@@ -333,17 +369,23 @@ public class UIRegistry
             if (instance == null || instance.resourceLocale == null)
             {
                 resBundle = ResourceBundle.getBundle(name);
+            	/* If properties files are stored in config dir and not loaded as resources:
+            	resBundle =  getPropertyResourceBundleFromFileinConfigDir(name, Locale.getDefault());         	
+            	 }*/
             } else
             {
                 try
                 {
                     resBundle = ResourceBundle.getBundle(name, instance.resourceLocale);
+                    /* if properties are stored in config dir and not loaded as resources:
+                	resBundle =  getPropertyResourceBundleFromFileinConfigDir(name, instance.resourceLocale);
+                	*/         	
                 } catch (MissingResourceException ex) 
                 {
-                    resBundle = ResourceBundle.getBundle(name, Locale.ENGLISH);
-                }
+                    ex.printStackTrace();
+                	resBundle = ResourceBundle.getBundle(name, Locale.ENGLISH);
+                }            
             }
-
         } catch (MissingResourceException ex) 
         {
             log.error("Couldn't find Resource Bundle Name["+name+"]", ex);
@@ -529,7 +571,19 @@ public class UIRegistry
      */
     public static String getResourceString(final String key)
     {
-        return instance.getResourceStringInternal(key);
+        try 
+        {
+        	/*
+        	 * unicode characters in the properties files are being mangled by Java's loader which assumes ISO-8859-1 encoding.
+        	 * To avoid the conversion below, we would have to either rewrite the properties files using Unicode Escapes 
+        	 * as defined in section 3.3 of the Java Language Specification for non ISO-8859-1 characters, 
+        	 * or load the properties files 'manually' see comments for commented out method getResourcePropertiesFileName()
+        	 */
+        	return new String(instance.getResourceStringInternal(key).getBytes("ISO-8859-1"), "UTF-8");
+        } catch (UnsupportedEncodingException ex)
+        {
+        	return instance.getResourceStringInternal(key);
+        }
     } 
     
     /**
@@ -628,19 +682,20 @@ public class UIRegistry
      */
     public static String getDefaultWorkingPath()
     {
+    	
         if (instance.defaultWorkingPath == null)
         {
-            File file = new File(".");
-            instance.defaultWorkingPath = UIHelper.stripSubDirs(file.getAbsolutePath(), 1);
-            log.debug("Working Path not set, setting it to["+instance.defaultWorkingPath+"]");
+        	File file = new File(".");
+        	instance.defaultWorkingPath = UIHelper.stripSubDirs(file.getAbsolutePath(), 1);
+        	log.debug("Working Path not set, setting it to["+instance.defaultWorkingPath+"]");
         }
         //log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
         
         if (debugPaths)
         {
-            try {
-                log.debug("************************ getDefaultWorkingPath: Canonical["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
-            } catch (Exception ex) {}
+        	try {
+        		log.debug("************************ getDefaultWorkingPath: Canonical["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
+        	} catch (Exception ex) {}
         }
         return instance.defaultWorkingPath;
     }
@@ -2319,8 +2374,7 @@ public class UIRegistry
      * @param acceleratorKey
      * @return
      */
-    @SuppressWarnings("unchecked")
-    public Action makeAction(Class<?> actionClass,
+     public Action makeAction(Class<?> actionClass,
                              Object owner,
                              String name,
                              ImageIcon icon,
