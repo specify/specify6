@@ -382,7 +382,6 @@ public class UIRegistry
                 	*/         	
                 } catch (MissingResourceException ex) 
                 {
-                    ex.printStackTrace();
                 	resBundle = ResourceBundle.getBundle(name, Locale.ENGLISH);
                 }            
             }
