@@ -231,7 +231,7 @@
     <icon name="CollectingEvent"        alias="collectingevent"/>
     <icon name="CollectingTrip"         alias="collectingtrip"/>
     <icon name="Collection"             alias="collection"/>
-    <icon name="CollectionRelationship" alias="collectionrelationsip"/>
+    <icon name="CollectionRelationship" alias="collectionrelationship"/>
     <icon name="CollectionRelType"      alias="collectionreltype"/>
     <icon name="Collector"              alias="collector"/>
     <icon name="CollectionName"         alias="collectionname"/>
