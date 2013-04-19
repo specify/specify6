@@ -767,7 +767,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                         }
                     });
             // only enable it if the workbench has the proper columns in it
-            String[] missingColumnsForBG = getMissingButRequiredColumnsForBioGeomancer();
+            String[] missingColumnsForBG = getMissingButRequiredColumnsForGeoRefTool(tool);
             if (missingColumnsForBG.length > 0)
             {
                 geoRefToolBtn.setEnabled(false);
@@ -3142,14 +3142,20 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param checkAllFields true checks all fields, false checks just Lat, Lon
      * @return
      */
-    protected String[] getMissingButRequiredColumnsForBioGeomancer(final boolean checkAllFields)
+    protected String[] getMissingButRequiredColumnsForGeoRefTool(final boolean checkAllFields, final String tool)
     {
         List<String> missingCols = new Vector<String>();
         
         if (checkAllFields)
         {
             checkForGeoFields(missingCols, Locality.getClassTableId(),  "localityName", "latitude1", "longitude1");
-            checkForGeoFields(missingCols, Geography.getClassTableId(), "country", "state", "county");
+            if ("geolocate".equalsIgnoreCase(tool))
+            {
+            	checkForGeoFields(missingCols, Geography.getClassTableId(), "country", "state");
+            } else
+            {
+            	checkForGeoFields(missingCols, Geography.getClassTableId(), "country", "state", "county");
+            }
         } else
         {
             checkForGeoFields(missingCols, Locality.getClassTableId(),  "latitude1", "longitude1");
@@ -3168,9 +3174,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @return
      */
-    protected String[] getMissingButRequiredColumnsForBioGeomancer()
+    protected String[] getMissingButRequiredColumnsForGeoRefTool(final String tool)
     {
-        return getMissingButRequiredColumnsForBioGeomancer(true);
+        return getMissingButRequiredColumnsForGeoRefTool(true, tool);
     }
     
     /**
@@ -3181,7 +3187,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected String[] getMissingGeoRefLatLonFields()
     {
-        return getMissingButRequiredColumnsForBioGeomancer(false);
+        return getMissingButRequiredColumnsForGeoRefTool(false, "");
     }
     
     /**
