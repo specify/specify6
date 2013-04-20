@@ -50,6 +50,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.common.util.FileUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -561,10 +562,19 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     Thumbnailer tn = Thumbnailer.getInstance();
                     try
                     {
-                        File localFile = getFileFromWeb(attachLocation, mimeType, false, null);
-                        String path    = localFile.getAbsolutePath();
-                        tn.generateThumbnail(path, path, false);
-                        return localFile;
+                        File   localFile      = getFileFromWeb(attachLocation, mimeType, false, null);
+                        String origAttachPath = FilenameUtils.getPrefix(localFile.getAbsolutePath()) + FilenameUtils.getPath(localFile.getAbsolutePath()) + FilenameUtils.getName(originalLoc);
+                        File   origFile       = new File(origAttachPath);
+                        FileUtils.copyFile(localFile, origFile);
+                        origFile.deleteOnExit();
+                        
+                        if (isThumb)
+                        {
+                            String path    = localFile.getAbsolutePath();
+                            tn.generateThumbnail(path, path, false);
+                            return localFile;
+                        }
+                        return origFile;
                         
                     } catch (IOException e)
                     {
@@ -675,6 +685,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                 BufferedInputStream  in  = new BufferedInputStream(inpStream);
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
                 
+                long totBytes = 0;
                 do
                 {
                     int numBytes = in.read(bytes);
@@ -682,10 +693,13 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     {
                         break;
                     }
+                    totBytes += numBytes;
                     bos.write(bytes, 0, numBytes);
                     
                 } while(true);
+                //log.debug(String.format("Total Bytes for file: %d %d", totBytes, totBytes / 1024));
                 in.close();
+                bos.flush();
                 bos.close();
             
                 return true;
@@ -1092,4 +1106,38 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
     {
         // no op
     }
+
+    /**
+     * @return the readURLStr
+     */
+    public String getReadURLStr()
+    {
+        return readURLStr;
+    }
+
+    /**
+     * @return the delURLStr
+     */
+    public String getDelURLStr()
+    {
+        return delURLStr;
+    }
+
+    /**
+     * @return the fileGetURLStr
+     */
+    public String getFileGetURLStr()
+    {
+        return fileGetURLStr;
+    }
+
+    /**
+     * @return the fileGetMetaDataURLStr
+     */
+    public String getFileGetMetaDataURLStr()
+    {
+        return fileGetMetaDataURLStr;
+    }
+    
+    
 }
