@@ -3965,7 +3965,14 @@ public class UploadTable implements Comparable<UploadTable>
     {
         if ("latlongtype".equalsIgnoreCase(fld.getField().getName())) return false;
 
-     	boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+     	boolean isRequired = fld.isRequired();
+     	//Special case for PrepType
+     	DBFieldInfo fldInfo = fld.getField().getFieldInfo();
+     	if (fldInfo != null && fldInfo.getTableInfo().getTableId() == PrepType.getClassTableId() && fldInfo.getName().equals("name"))
+     	{
+     		isRequired = true;
+     	}
+        boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
         if (blankButRequired && tblClass.equals(Locality.class) && fld.getField().getName().equalsIgnoreCase("LatLongType"))
         {
         	boolean geoDataPresent = false;
@@ -4152,7 +4159,8 @@ public class UploadTable implements Comparable<UploadTable>
     	//then there is no need to enforce not-null constraints.
     	if (tblClass.equals(PrepType.class)) 
     	{
-    		return !uploader.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
+    		UploadTable prepTbl = uploader.getUploadTableByName("Preparation");
+    		return !prepTbl.isBlankRow(row, uploadData, seq) || prepTbl.parentTableIsNonBlank(row, uploadData, true, seq);
     	}
     	    	
     	if (!isBlankRow(row, uploadData, seq))
