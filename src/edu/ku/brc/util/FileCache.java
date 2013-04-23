@@ -42,12 +42,13 @@ import org.apache.log4j.Logger;
  */
 public class FileCache implements DataCacheIFace
 {
-	private static final Logger log = Logger.getLogger(FileCache.class);
-	private static String mappingFileComment = "edu.ku.brc.util.FileCache Name Mapping File";
+	private static final Logger log             = Logger.getLogger(FileCache.class);
+	private static String mappingFileComment    = "edu.ku.brc.util.FileCache Name Mapping File";
 	private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
-	private static String defaultPrefix = "brc-";
-	private static String defaultSuffix = ".cache";
-    private static String defaultPath   = System.getProperty("java.io.tmpdir");
+	private static String defaultPrefix         = "brc-";
+	private static String defaultSuffix         = ".cache";
+    private static String defaultPath           = System.getProperty("java.io.tmpdir");
+    private static long   ONE_DAY_MILLSEC       = 86400000;
 
 	/** Directory to use for cached files and the mapping files. */
 	protected File cacheDir;
@@ -71,16 +72,19 @@ public class FileCache implements DataCacheIFace
 	protected Properties handleToAccessTimeHash;
 	
 	/**
-	 * Maximum size of the file cache in kilobytes (using 1 kilobyte = 1000 bytes).
+	 * Maximum size of the file cache in kilobytes (using 1 kilobyte = 1024 bytes).
 	 * This value is only enforced if enforceMaxSize is set to true.
 	 */
 	protected int maxCacheKb;
 	
 	/** A boolean determining whether or not to enforce the cache size limit. */
 	protected boolean enforceMaxSize;
-	
-	/** The current total size of the cache, in bytes. */
-	protected long totalCacheSize;
+    
+    /** The current total size of the cache, in bytes. */
+    protected long totalCacheSize;
+    
+    /** How long to keep a file in the cache in days */
+    protected long maxRententionDays; 
 
 	/**
 	 * Creates a FileCache using the default path and mapping file name.
@@ -127,7 +131,7 @@ public class FileCache implements DataCacheIFace
 	protected void init(final String dir) throws IOException
 	{
 		cacheDir = new File(dir);
-		if( !cacheDir.exists() )
+		if (!cacheDir.exists())
 		{
             FileUtils.forceMkdir(cacheDir);
 		}
@@ -135,7 +139,7 @@ public class FileCache implements DataCacheIFace
 
 		handleToFilenameHash = new Properties();
 		handleToAccessTimeHash = new Properties();
-		if( mappingFilename != null )
+		if (mappingFilename != null)
 		{
 			loadCacheMappingFile();
 			loadCacheAccessTimesFile();
@@ -144,8 +148,11 @@ public class FileCache implements DataCacheIFace
 		prefix = defaultPrefix;
 		suffix = defaultSuffix;
 
-		enforceMaxSize = false;
-		maxCacheKb = Integer.MAX_VALUE;
+		enforceMaxSize    = true;
+		maxCacheKb        = 1024 * 30; // 30MB
+		maxRententionDays = 5;         // days
+		
+		purgeOldFiles();
 	}
 
     /**
@@ -160,6 +167,35 @@ public class FileCache implements DataCacheIFace
         }
     }
     
+    /**
+     * Removes all the files that are past the maximum retention time.
+     */
+    protected synchronized void purgeOldFiles()
+    {
+        long maxMilliSeconds = ONE_DAY_MILLSEC * maxRententionDays;
+        long currMilliSecs   = System.currentTimeMillis();
+        while (true)
+        {
+            Pair<String, Long> p = findOldestKeyLRU();
+            //log.debug("Oldest is: "+(p != null ? p.first : "None"));
+            
+            if (p == null) break;
+            
+            boolean isOld = currMilliSecs - p.second > maxMilliSeconds;
+            //log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld);
+            if (isOld)
+            {
+                purgeCacheFile(p.first);
+            } else
+            {
+                break;
+            }
+        }
+    }
+    
+    /**
+     * @param key
+     */
     public synchronized void clearItem(final String key)
     {
         String filename = (String)handleToFilenameHash.get(key);
@@ -189,6 +225,14 @@ public class FileCache implements DataCacheIFace
 	}
 
 	/**
+     * @param maxRententionDays the maxRententionDays to set
+     */
+    public void setMaxRententionDays(long maxRententionDays)
+    {
+        this.maxRententionDays = maxRententionDays;
+    }
+
+    /**
 	 * Returns the suffix appended to all cache files.
 	 * 
 	 * @see #setSuffix(String)
@@ -231,7 +275,7 @@ public class FileCache implements DataCacheIFace
 	 * <code>enforceMaxSize</code> is set to true.
 	 * 
 	 * @see #setMaxCacheSize(int)
-	 * @return the cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
+	 * @return the cache size limit, in kilobytes (using 1 kilobyte = 1024 bytes)
 	 */
 	public int getMaxCacheSize()
 	{
@@ -243,7 +287,7 @@ public class FileCache implements DataCacheIFace
      * cache size limit.
 	 * 
 	 * @see #getMaxCacheSize()
-	 * @param kilobytes the new cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
+	 * @param kilobytes the new cache size limit, in kilobytes (using 1 kilobyte = 1024 bytes)
 	 */
 	public void setMaxCacheSize(int kilobytes)
 	{
@@ -258,7 +302,7 @@ public class FileCache implements DataCacheIFace
 	 * @see #getEnforceMaxCacheSize()
 	 * @param value the flag value
 	 */
-	public void setEnforceMaxCacheSize( boolean value )
+	public void setEnforceMaxCacheSize( boolean value)
 	{
 		enforceMaxSize = value;
 	}
@@ -297,7 +341,7 @@ public class FileCache implements DataCacheIFace
             cacheDir.mkdirs();
         }
         
-		if( mappingFile.exists() )
+		if (mappingFile.exists())
 		{
 			try
 			{
@@ -305,7 +349,7 @@ public class FileCache implements DataCacheIFace
 				handleToFilenameHash.loadFromXML(fis);
 				fis.close();
 			}
-			catch( IOException e )
+			catch( IOException e)
 			{
 				log.warn("Exception while loading old cache mapping data from disk.  Starting with empty cache.",e);
 			}
@@ -324,7 +368,7 @@ public class FileCache implements DataCacheIFace
 		String accessTimeFilename = getAccessTimeFilename();
 		//log.debug("Loading old cache access times from " + accessTimeFilename);
 		File accessTimesFile = new File(cacheDir,accessTimeFilename);
-		if( accessTimesFile.exists() )
+		if (accessTimesFile.exists())
 		{
 			try
 			{
@@ -332,7 +376,7 @@ public class FileCache implements DataCacheIFace
 				handleToAccessTimeHash.loadFromXML(fis);
 				fis.close();
 			}
-			catch( IOException e )
+			catch( IOException e)
 			{
 				log.warn("Exception while loading old cache access times from disk.",e);
 			}
@@ -348,7 +392,7 @@ public class FileCache implements DataCacheIFace
 	{
 		String accessTimeFilename = mappingFilename;
 		int index = mappingFilename.lastIndexOf(".");
-		if( index != -1 )
+		if (index != -1)
 		{
 			accessTimeFilename = mappingFilename.substring(0, mappingFilename.lastIndexOf("."));			
 		}
@@ -357,27 +401,26 @@ public class FileCache implements DataCacheIFace
 	}
 
 	/**
-	 * Find the key in the cache that corresponds to the least recently used
-	 * cache file.
+	 * Find the 'oldest' file key in the cache file.
 	 *
-	 * @return the least recently used key
+	 * @return the least recently used key and it last access time
 	 */
-	protected String findKeyLRU()
+	protected Pair<String, Long> findOldestKeyLRU()
 	{
-		String lruKey = null;
-		long lruAccessTime = Long.MAX_VALUE;
-		for( Object k: handleToFilenameHash.keySet() )
+		String lruKey        = null;
+		long   lruAccessTime = Long.MAX_VALUE;
+		for( Object k: handleToFilenameHash.keySet())
 		{
 			String key = (String)k;
-            long time = getLastAccessTime(key);
-			if( time < lruAccessTime )
+            long   time = getLastAccessTime(key);
+			if (time < lruAccessTime)
 			{
 				lruKey = key;
-				lruAccessTime = time;
 			}
+            lruAccessTime = time;
 		}
 
-		return lruKey;
+		return lruKey != null ? new Pair<String, Long>(lruKey, lruAccessTime) : null;
 	}
 
 	/**
@@ -389,7 +432,7 @@ public class FileCache implements DataCacheIFace
 	 */
 	public synchronized void saveCacheMapping() throws IOException
 	{
-		if( mappingFilename == null )
+		if (mappingFilename == null)
 		{
 			throw new RuntimeException("Cache map filename must be set before calling saveCacheMapping()");
 		}
@@ -399,7 +442,7 @@ public class FileCache implements DataCacheIFace
 		{
 			handleToFilenameHash.storeToXML(new FileOutputStream(mappingFile), mappingFileComment);
 		}
-		catch( IOException e )
+		catch( IOException e)
 		{
 			log.warn("Exception while saving cache mapping data to disk.  All cache data will be lost.",e);
 			throw e;
@@ -426,7 +469,7 @@ public class FileCache implements DataCacheIFace
 		{
 			handleToAccessTimeHash.storeToXML(new FileOutputStream(accessTimesFile), accessTimeFileComment);
 		}
-		catch( IOException e )
+		catch( IOException e)
 		{
 			log.warn("Exception while saving cache access times to disk.",e);
 			throw e;
@@ -451,11 +494,11 @@ public class FileCache implements DataCacheIFace
 	protected synchronized void calculateTotalCacheSize()
 	{
 		totalCacheSize = 0L;
-		for( Object k: handleToFilenameHash.keySet() )
+		for( Object k: handleToFilenameHash.keySet())
 		{
 			String key = (String)k;
 			String filename = handleToFilenameHash.getProperty(key);
-			if( filename != null )
+			if (filename != null)
 			{
 				File f = new File(filename);
 				totalCacheSize += f.length();
@@ -471,12 +514,12 @@ public class FileCache implements DataCacheIFace
      */
     protected synchronized boolean purgeCacheFile(final String key)
     {
-        if (key==null)
+        if (key == null)
         {
             return false;
         }
         String filename = handleToFilenameHash.getProperty(key);
-        if( filename == null )
+        if (filename == null)
         {
             return false;
         }
@@ -484,7 +527,7 @@ public class FileCache implements DataCacheIFace
         //log.debug("Purging " + filename + " from cache");
         File f = new File(filename);
         long filesize = f.length();
-        if( !f.delete() )
+        if (!f.delete())
         {
             log.warn("Failed to delete cache file: "+f.getAbsolutePath());
         }
@@ -502,8 +545,12 @@ public class FileCache implements DataCacheIFace
 	 */
 	protected synchronized boolean purgeLruCacheFile()
 	{
-		String oldKey = findKeyLRU();
-        return purgeCacheFile(oldKey);
+	    Pair<String, Long> p = findOldestKeyLRU();
+	    if (p != null)
+	    {
+	        return purgeCacheFile(p.first);
+	    }
+	    return false;
  	}
 
 	/**
@@ -512,20 +559,21 @@ public class FileCache implements DataCacheIFace
 	 * @param key the "handle" used to retrieve this cached data item in the future
 	 * @param item the File to be cached
 	 */
-	protected synchronized void cacheNewItem(final String key, final File item )
+	protected synchronized void cacheNewItem(final String key, final File item)
 	{
         long currentTime = System.currentTimeMillis();
 		handleToAccessTimeHash.setProperty(key, Long.toString(currentTime));
         //log.debug("Caching " + key + " at " + currentTime);
 		Object oldValue = handleToFilenameHash.setProperty(key, item.getAbsolutePath());
-		if( oldValue != null )
+		if (oldValue != null)
 		{
 			removeCacheItem((String)oldValue);
 		}
 
 		totalCacheSize += item.length();
 
-		while( enforceMaxSize && (totalCacheSize > maxCacheKb*1000) )
+		int maxSizeMegs = maxCacheKb * 1024;
+		while (enforceMaxSize && (totalCacheSize > maxSizeMegs))
 		{
 			purgeLruCacheFile();
 		}
@@ -536,11 +584,11 @@ public class FileCache implements DataCacheIFace
 	 * 
 	 * @param filename the name of the cache file to be deleted
 	 */
-	protected synchronized void removeCacheItem(final String filename )
+	protected synchronized void removeCacheItem(final String filename)
 	{
 		File f = new File(filename);
 		long size = f.length();
-		if( !f.delete() )
+		if (!f.delete())
 		{
 			log.warn("Failed to delete old cache file: "+f.getAbsolutePath());
 		}
@@ -554,7 +602,7 @@ public class FileCache implements DataCacheIFace
 	 * @return a "handle" used to retrieve the cached data in the future
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public String cacheData(final byte[] data ) throws IOException
+	public String cacheData(final byte[] data) throws IOException
 	{
 		String key = UUID.randomUUID().toString();
 		cacheData(key, data);
@@ -568,7 +616,7 @@ public class FileCache implements DataCacheIFace
 	 * @param data the data to be cached
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public void cacheData(final String key, final byte[] data ) throws IOException
+	public void cacheData(final String key, final byte[] data) throws IOException
 	{
 		File f = createCacheFile(null);
 		FileOutputStream fos = new FileOutputStream(f);
@@ -586,10 +634,28 @@ public class FileCache implements DataCacheIFace
 	 * @return a handle used to retrieve the cached data in the future
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public String cacheFile(final File f ) throws IOException
+	public String cacheFile(final File f) throws IOException
 	{
-		cacheFile(f.getName(),f);
+		cacheFile(f.getName(), f);
 		return f.getName();
+	}
+	
+	/**
+	 * 
+	 */
+	protected void showFiles()
+	{
+        log.debug(" ");
+        log.debug("Start --------------------------------------");
+	    for (File f : cacheDir.listFiles())
+	    {
+	        //System.out.println(f.getName());
+	        if (f.getName().startsWith(prefix))
+	        {
+	            log.debug(f.getName()+" = "+handleToAccessTimeHash.get(f.getName()));
+	        }
+	    }
+        log.debug("Done ---------------------------------------");
 	}
 
 	/**
@@ -599,13 +665,16 @@ public class FileCache implements DataCacheIFace
 	 * @param f the file to cache
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public void cacheFile(final String key, final File f ) throws IOException
+	public void cacheFile(final String key, final File f) throws IOException
 	{
 	    String extension = isUsingExtensions ? ("." + FilenameUtils.getExtension(f.getName())) : null;
 		File cachedFile = createCacheFile(extension);
 		log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
 		FileUtils.copyFile(f, cachedFile);
-		cacheNewItem(key,cachedFile);
+		cacheNewItem(key, cachedFile);
+		
+		log.debug("Caching["+cachedFile.getAbsolutePath()+"]");
+		
 	}
 
 	/**
@@ -617,13 +686,13 @@ public class FileCache implements DataCacheIFace
 	 * @throws HttpException a network error occurred while grabbing the web resource
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
-	public String cacheWebResource(final String url ) throws HttpException, IOException
+	public String cacheWebResource(final String url) throws HttpException, IOException
 	{
         HttpClient httpClient = new HttpClient();
 		GetMethod get = new GetMethod(url);
 		get.setFollowRedirects(true);
 		int result = httpClient.executeMethod(get);
-		if( result != 200 )
+		if (result != 200)
 		{
 			log.debug("Retrieving "+url+" resulted in unexpected code: "+result);
 			throw new HttpException("Unexpected HTTP code received: " + result);
@@ -647,7 +716,7 @@ public class FileCache implements DataCacheIFace
 	 * @throws HttpException a network error occurred while grabbing the web resource
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
-	public void refreshCachedWebResource(final String key ) throws HttpException, IOException
+	public void refreshCachedWebResource(final String key) throws HttpException, IOException
 	{
 		cacheWebResource(key);
 	}
@@ -658,18 +727,18 @@ public class FileCache implements DataCacheIFace
 	 * @param key the handle to the cached file
 	 * @return the cached File, or null if no such file exists
 	 */
-	public File getCacheFile(final String key )
+	public File getCacheFile(final String key)
 	{
-	    log.debug(String.format("Get [%s]", key));
+	    //log.debug(String.format("Get [%s]", key));
 
 		String filename = handleToFilenameHash.getProperty(key);
-		if( filename == null )
+		if (filename == null)
 		{
 			return null;
 		}
 		
 		File f = new File(filename);
-		if( f.exists() )
+		if (f.exists())
 		{
 			handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
 			return f;
@@ -691,7 +760,7 @@ public class FileCache implements DataCacheIFace
      * @param key the key for the cached item
      * @return the last time the item was accessed
      */
-    public long getLastAccessTime(final String key )
+    public long getLastAccessTime(final String key)
     {
         String accessTimeString = handleToAccessTimeHash.getProperty(key);
         if (accessTimeString == null)
@@ -737,13 +806,47 @@ public class FileCache implements DataCacheIFace
     // Implementation of DataCacheIFace
     /////////////////////////////////
     
+    
+//    public static void main(String[] args) throws IOException
+//    {
+//        FileCache fc = new FileCache();
+//        fc.setPrefix("XXX");
+//        // set max size to 10 KB
+//        fc.setMaxCacheSize(2048);
+//        fc.setEnforceMaxCacheSize(true);
+//        fc.setMaxRententionDays(1);
+//        
+//        SimpleDateFormat sf = new SimpleDateFormat("hh:mm:ss");
+//        
+//        Calendar cal = Calendar.getInstance();
+//        System.out.println(sf.format(cal.getTime()));
+//
+//        log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//        
+//        String[] files = {"IMG_0123.jpg", "IMG_9781.jpg", "DSCF0029.jpg", "DSCF0023.jpg", "DSCF0024.jpg", };
+//        for (String fName : files)
+//        {
+//            System.out.println("Caching: "+fName);
+//            fc.cacheFile(new File("/Users/rods/Desktop/" + fName));
+//            try
+//            {
+//                Thread.currentThread().sleep(1500);
+//            } catch (Exception ex){}
+//            
+//            cal = Calendar.getInstance();
+//            System.out.println(sf.format(cal.getTime()));
+//            fc.purgeOldFiles();
+//            fc.showFiles();
+//        }
+//        log.debug("All Done - Current cache size: " + fc.getCurrentCacheSize());
+//    }
 
 //	public static void main(String[] args) throws IOException
 //	{
 //		FileCache fc = new FileCache("AAAATEST-cache-map.xml");
 //		fc.setPrefix("AAAATEST");
 //		// set max size to 10 KB
-//		fc.setMaxCacheSize(1000);
+//		fc.setMaxCacheSize(1024);
 //		fc.setEnforceMaxCacheSize(true);
 //
 //		log.debug("Current cache size: " + fc.getCurrentCacheSize());
@@ -752,7 +855,7 @@ public class FileCache implements DataCacheIFace
 //        String filename = "/home/jstewart/Desktop/jds.asc";
 //		File fileFile = fc.getCacheFile(filename);
 //        String fileKey = null;
-//		if( fileFile == null )
+//		if (fileFile == null)
 //		{
 //			log.debug("Cached file not found.");
 //			fileKey = fc.cacheFile(new File(filename));
@@ -769,7 +872,7 @@ public class FileCache implements DataCacheIFace
 //        String httpUrl = "http://www.google.com/";
 //		File urlFile = fc.getCacheFile(httpUrl);
 //        String urlKey = null;
-//		if( urlFile == null )
+//		if (urlFile == null)
 //		{
 //			log.debug("Cached web resource not found.");
 //			urlKey = fc.cacheWebResource("http://www.google.com/");
@@ -785,13 +888,13 @@ public class FileCache implements DataCacheIFace
 //		// a little data caching test
 //		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
 //        String dataKey = null;
-//		if( dataFile == null )
+//		if (dataFile == null)
 //		{
 //			log.debug("Cached data not found.");
 //			Random r = new Random();
 //			int count = r.nextInt(100000);
 //			StringBuilder sb = new StringBuilder();
-//			for( int i = 0; i < count; ++i )
+//			for( int i = 0; i < count; ++i)
 //			{
 //				sb.append("X");
 //			}
