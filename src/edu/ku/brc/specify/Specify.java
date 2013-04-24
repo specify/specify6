@@ -1928,9 +1928,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     private void addLabel(final ArrayList<String> items, final PanelBuilder pb, final JLabel label, final CellConstraints cc)
     {
-        pb.add(label,  cc);
-        
-        items.add(StringUtils.remove(label.getText().trim(), ":"));
+        if (label != null && items != null && pb != null && cc != null)
+        {
+            pb.add(label,  cc);
+            String text = label.getText();
+            items.add(StringUtils.remove(text != null ? text.trim() : "", ":"));
+        } else
+        {
+            log.error("Error adding label.");
+        }
     }
 
     /**
@@ -1984,7 +1990,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             addLabel(values, infoPB, lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()), cc.xy(3, y)); y += 2;
             
             addLabel(values, infoPB, UIHelper.createFormLabel(getGUIDTitle(instId)),  cc.xy(1, y));
-            addLabel(values, infoPB, lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getGuid()), cc.xy(3, y)); y += 2;
+            
+            String noGUID = "<No GUID>";
+            String guidStr = acm.getClassObject(Institution.class).getGuid();
+            addLabel(values, infoPB, lbl = UIHelper.createLabel(guidStr != null ? guidStr : noGUID), cc.xy(3, y)); y += 2;
             
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
@@ -2016,7 +2025,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
             
             addLabel(values, infoPB, UIHelper.createFormLabel(getGUIDTitle(Collection.getClassTableId())),  cc.xy(1, y));
-            addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Collection.class).getGuid()),cc.xy(3, y)); y += 2;
+            
+            guidStr = acm.getClassObject(Collection.class).getGuid();
+            addLabel(values, infoPB, UIHelper.createLabel(guidStr != null ? guidStr : noGUID),cc.xy(3, y)); y += 2;
             
             addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
             addLabel(values, infoPB, UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
