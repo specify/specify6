@@ -111,7 +111,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
         {
-            yearVal = extractIntegerValue(yearPos, value);
+            yearVal = extractIntegerValue(yearPos, value).intValue();
         }
 
         StringBuilder sb = new StringBuilder("SELECT a.accessionNumber FROM Accession a Join a.division dv Join dv.numberingSchemes ans WHERE ans.id = ");

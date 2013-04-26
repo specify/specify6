@@ -78,7 +78,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
         {
-            yearVal = extractIntegerValue(yearPos, value);
+            yearVal = extractIntegerValue(yearPos, value).intValue();
         }
 
         StringBuilder sb = new StringBuilder("SELECT c.catalogNumber From CollectionObject c Join c.collection col Join col.numberingSchemes cns WHERE cns.autoNumberingSchemeId = ");

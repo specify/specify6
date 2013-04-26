@@ -23,6 +23,7 @@ import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
@@ -139,7 +140,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
         {
-            yearVal = extractIntegerValue(yearPos, value);
+            yearVal = extractIntegerValue(yearPos, value).intValue();
             
             yearLen = yearPos.second - yearPos.first;
         }
@@ -202,7 +203,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param value the string value to be extracted from
      * @return the new integer value or null
      */
-    protected Integer extractIntegerValue(final Pair<Integer, Integer> pos, final String value)
+    protected BigInteger extractIntegerValue(final Pair<Integer, Integer> pos, final String value)
     {
         if (StringUtils.isNotEmpty(value))
         {
@@ -213,7 +214,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 {
                     try
                     {
-                        return Integer.parseInt(str);
+                        return new BigInteger(str);
                         
                     } catch (Exception ex) 
                     {
@@ -240,7 +241,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
         UIFieldFormatterField  yearField = formatter.getYear();
         if (yearField != null)
         {
-            return extractIntegerValue(formatter.getYearPosition(), value);
+            return extractIntegerValue(formatter.getYearPosition(), value).intValue();
         }
         return null;
     }
@@ -252,7 +253,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param formValue value from the form
      * @return the integer portion for the incrementer part
      */
-    protected Pair<Integer, Integer> getYearAndIncVal(final UIFieldFormatterIFace formatter, 
+    protected Pair<Integer, BigInteger> getYearAndIncVal(final UIFieldFormatterIFace formatter, 
                                                       final String                highestValue, 
                                                       final String                formValue)
     {
@@ -260,7 +261,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
         UIFieldFormatterField yearField = formatter.getYear();
         boolean               isByYear  = yearField != null && yearField.isByYear();
         
-        Integer valToBeInc     = null;
+        BigInteger valToBeInc     = null;
         Integer yearToUse      = null;
         String  strToUseForInc = highestValue;   // This is the string where the incrementer value will be extracted from
 
@@ -316,14 +317,14 @@ public class AutoNumberGeneric implements AutoNumberIFace
             {
                 if (strToUseForInc == null)
                 {
-                    valToBeInc = 0;
+                    valToBeInc = BigInteger.ZERO;
                 } else
                 {
                     valToBeInc = extractIntegerValue(formatter.getIncPosition(), strToUseForInc);
                 }
             } else
             {
-                valToBeInc = 0;
+                valToBeInc = BigInteger.ZERO;
             }
         } else
         {
@@ -337,11 +338,11 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 valToBeInc = extractIntegerValue(formatter.getIncPosition(), strToUseForInc);
             } else
             {
-                valToBeInc = 0;
+                valToBeInc = BigInteger.ZERO;
             }
         }
            
-        return new Pair<Integer, Integer>(yearToUse, valToBeInc);
+        return new Pair<Integer, BigInteger>(yearToUse, valToBeInc);
     }
 
     /**
@@ -353,7 +354,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      */
     protected String buildNewNumber(final UIFieldFormatterIFace  formatter, 
                                     final String                 value, 
-                                    final Pair<Integer, Integer> yearAndIncVal)
+                                    final Pair<Integer, BigInteger> yearAndIncVal)
     {
         String trimmedValue = StringUtils.deleteWhitespace(value);
         int    fmtLen       = formatter.getLength();
@@ -364,7 +365,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
             {
                 if (pos.second != null)
                 {
-                    int incVal = yearAndIncVal.second + 1;
+                    BigInteger incVal = yearAndIncVal.second.add(BigInteger.ONE);
                     
                     StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
                     String        formatStr = "%0" + (pos.second - pos.first) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -422,7 +423,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 String valueToIncrement  = incrementValue ? formValue
                 		: getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
                 
-                Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, valueToIncrement, formValue);
+                Pair<Integer, BigInteger> yearAndIncVal = getYearAndIncVal(formatter, valueToIncrement, formValue);
                 
                 // Should NEVER be null
                 if (yearAndIncVal != null)
