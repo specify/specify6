@@ -318,6 +318,14 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
             y += 2;
         }
         
+        if (numErrorList.isEmpty() && 
+            numMissingList.isEmpty() && 
+            dataObjsIds.isEmpty())
+        {
+            UIRegistry.showLocalizedError("BT_NO_NUMS_ERROR");
+            return false;
+        }
+        
         
         if (!isOK)
         {
