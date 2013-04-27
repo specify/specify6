@@ -62,6 +62,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -91,6 +94,7 @@ import edu.ku.brc.ui.VerticalSeparator;
  */
 public class UIFormatterEditorDlg extends CustomDialog
 {
+    private static final char[]         INVALID_CHARS  = {'-', '.', '/', ' ', '_', ',', '/', '#', '!', '+', '=', '[', ']', '\'', '"'};
 	protected DBFieldInfo               fieldInfo      = null;
 	protected UIFieldFormatterIFace     selectedFormat = null;
     
@@ -268,6 +272,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         fieldsPanel.getAddBtn().setEnabled(true);
         fieldsPanel.getEditBtn().setIcon(IconManager.getIcon("Green Arrow Up", IconManager.IconSize.Std16));
         UIHelper.makeTableHeadersCentered(fieldsTbl, true);
+        
+        fieldTxt.setDocument(new FieldDocument());
         
         fieldsTbl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
@@ -469,11 +475,9 @@ public class UIFormatterEditorDlg extends CustomDialog
         {
             if (fld != currentField && fld.isIncrementer())
             {
-                System.out.println("TRUE");
                 return true;
             }
         }
-        System.out.println("FALSE");
         return false;
     }
     
@@ -1121,6 +1125,22 @@ public class UIFormatterEditorDlg extends CustomDialog
     public UIFieldFormatterIFace getSelectedFormat()
     {
         return selectedFormat;
+    }
+
+    //-------------------------------------------------
+    class FieldDocument extends PlainDocument
+    {
+        /* (non-Javadoc)
+         * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
+         */
+        @Override
+        public void insertString(final int offset, final String strArg, final AttributeSet attr) throws BadLocationException
+        {
+            if (strArg != null && strArg.length() > 0 && StringUtils.containsNone(strArg, INVALID_CHARS))
+            {
+                super.insertString(offset, strArg, attr);
+            }
+        }
     }
     
     //-------------------------------------------------
