@@ -3125,7 +3125,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (query.getSpQueryId() != null && saveAs)
                 {
                     query = cloneTheQuery();
-                    schemaMapping = cloneTheSchemaMapping(query);
+                    if (schemaMapping != null)
+                    {
+                    	schemaMapping = cloneTheSchemaMapping(query);
+                    }
                     queryNavBtn.setEnabled(true);
                 }
                 
