@@ -356,14 +356,20 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
     	if (fieldQRI != null && fieldQRI.getTableInfo() != null && fieldQRI.getFieldInfo() != null) 
         {
-            //XXX unfortunately this doesn't work because currently picklist defs are only setup via form view defs
+            
+    		PickListDBAdapterIFace typeCodeList = RecordTypeCodeBuilder.getTypeCode(fieldQRI.getFieldInfo());
+    		if (typeCodeList != null)
+    		{
+    			return typeCodeList;
+    		}
+    		//XXX unfortunately this doesn't work because currently picklist defs are only setup via form view defs
             if (StringUtils.isNotEmpty(fieldQRI.getFieldInfo().getPickListName()))
             {
                 //pickList = ((edu.ku.brc.specify.ui.db.PickListDBAdapterFactory)PickListDBAdapterFactory.getInstance()).create(fieldQRI.getFieldInfo().getPickListName(), false);
                 return PickListDBAdapterFactory.getInstance().create(fieldQRI.getFieldInfo().getPickListName(), false);
             }
             //else
-            return RecordTypeCodeBuilder.getTypeCode(fieldQRI.getFieldInfo());
+            //return RecordTypeCodeBuilder.getTypeCode(fieldQRI.getFieldInfo());
         }
         return null;
     }
