@@ -19,10 +19,6 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import java.sql.Timestamp;
-import java.util.GregorianCalendar;
-
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 
 /**
@@ -49,7 +45,7 @@ public class CollectionObjectRecFinalizer implements UploadedRecFinalizerIFace
     @Override
     public void finalizeForWrite(DataModelObjBase rec, int recNum, final Uploader uploader)
     {
-        CollectionObject co = (CollectionObject )rec;
+        /*CollectionObject co = (CollectionObject )rec;
         if (co.getCatalogedDate() == null)
         {
             Timestamp ts = co.getTimestampCreated();
@@ -58,7 +54,7 @@ public class CollectionObjectRecFinalizer implements UploadedRecFinalizerIFace
         if (co.getCataloger() == null)
         {
             co.setCataloger(co.getCreatedByAgent());
-        }
+        }*/
 
     }
 
