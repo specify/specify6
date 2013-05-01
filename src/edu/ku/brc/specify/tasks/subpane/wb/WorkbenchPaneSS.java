@@ -1800,6 +1800,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         }
         */
+    	if (getIncremental())
+    	{
+    		validateAll(null);
+    	}
         adjustSelectionAfterAdd(model.getRowCount()-1);
     }
     
