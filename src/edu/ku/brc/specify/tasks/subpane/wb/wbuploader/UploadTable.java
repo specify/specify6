@@ -105,6 +105,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
@@ -4371,6 +4372,26 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     	return result;
     }
+   
+   /**
+ * @param uploadData
+ * @param row
+ * @return
+ */
+   protected boolean attachmentsPresent(UploadData uploadData, int row)
+   {
+	   List<WorkbenchRowImage> imgs = new ArrayList<WorkbenchRowImage>();
+	   imgs.addAll(uploadData.getWbRow(row).getWorkbenchRowImages());
+       for (WorkbenchRowImage wri : uploadData.getWbRow(row).getWorkbenchRowImages())
+       {
+       		if (uploader.getAttachToTable(wri) == this)
+       		{
+       			return true;
+       		}
+       }
+       return false;
+   }
+   
     /**
      * @param row
      * @param uploadData
@@ -4623,7 +4644,29 @@ public class UploadTable implements Comparable<UploadTable>
 													.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
 					}				
 				}	
-				
+	
+				if (isBlank)
+				{
+					if (attachmentsPresent(uploadData, row))
+					{
+						UploadField fldToMark = null;
+						for (UploadField fld : flds)
+						{
+							if (fldToMark == null || (fld.getIndex() > -1 && fld.getIndex() < fldToMark.getIndex()))
+							{
+								fldToMark = fld;
+							}
+						}
+						invalidValues.add(new UploadTableInvalidValue(
+								null,
+								this,
+								fldToMark,
+								row,
+								new Exception(
+										String.format(getResourceString("UploadTable.AttachmentPresentButNoData"), getTable().getTableInfo().getTitle()))));
+					}
+					
+				}
 				isBlank = isBlankSequence(isBlank, uploadData, row, seq/*
 																		 * ,
 																		 * getSequedParentClasses

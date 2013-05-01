@@ -814,6 +814,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                 UIRegistry.clearGlassPaneMsg();
                 setEnabled(true);
                 allowCloseWindow = true;
+                if (wbPane.getIncremental())
+                {
+                	wbPane.updateRowValidationStatus(wbRow.getRowNumber(), -1, null);
+                }
                 wbPane.repaint();
             }
         };
@@ -838,6 +842,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         {
             row.setImage(imageIndex, imageFile);
             wbPane.setChanged(true);
+            if (wbPane.getIncremental())
+            {
+            	wbPane.updateRowValidationStatus(row.getRowNumber(), -1, null);
+            }
             
             WorkbenchRowImage rowImage = row.getRowImage(imageIndex);
             Vector<WorkbenchRowImage> needNewThumbs = new Vector<WorkbenchRowImage>();
@@ -867,6 +875,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         showImage();
         
         wbPane.setChanged(true);
+        if (wbPane.getIncremental())
+        {
+        	wbPane.updateRowValidationStatus(row.getRowNumber(), -1, null);
+        }
         wbPane.repaint();
     }
     
