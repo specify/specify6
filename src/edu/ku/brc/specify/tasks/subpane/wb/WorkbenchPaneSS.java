@@ -138,6 +138,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
@@ -330,6 +331,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
     private TableColumnExt          sgrColExt;
     
+    
+
     /**
      * Constructs the pane for the spreadsheet.
      * 
@@ -345,6 +348,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                            final boolean isReadOnly) throws Exception
     {
         super(name, task);
+
         
         removeAll();
         
@@ -383,13 +387,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
         Short[] errs = {WorkbenchDataItem.VAL_ERROR, WorkbenchDataItem.VAL_ERROR_EDIT};
         ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs), 
-        		cellRenderAtts.errorBackground, null);
+        		CellRenderingAttributes.errorBackground, null);
         Short[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
         ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata), 
-        		cellRenderAtts.newDataBackground, null);
+        		CellRenderingAttributes.newDataBackground, null);
         Short[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
         ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch), 
-        		cellRenderAtts.multipleMatchBackground, null);
+        		CellRenderingAttributes.multipleMatchBackground, null);
 
         spreadSheet.setHighlighters(simpleStriping, hl, errColorHighlighter, noDataHighlighter, multiMatchHighlighter);
         
@@ -2391,7 +2395,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 if (unconverted.size() != 0 )
                 {
                 	UIRegistry.displayLocalizedStatusBarError("WB_UNCONVERTED_GEOREFS", unconverted.size());
-                	final JList unconvertedcells = UIHelper.createList(unconverted);
+                	final JList<?> unconvertedcells = UIHelper.createList(unconverted);
                 	unconvertedcells.addListSelectionListener(new ListSelectionListener() {
 
 						@Override
@@ -3395,7 +3399,6 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbtmi
      * @return
      */
-    @SuppressWarnings("static-access")
     protected GridCellEditor getCellEditor(WorkbenchTemplateMappingItem wbtmi, int fieldWidth, JButton theSaveBtn, Element uploadDefs)
     {
     	PickListDBAdapterIFace pickList = null;
@@ -3441,7 +3444,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	{
     		return new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);	
     	}
-    	JComboBox comboBox = new JComboBox(pickList.getList());
+    	JComboBox<PickListItemIFace> comboBox = new JComboBox<PickListItemIFace>(pickList.getList());
     	comboBox.setEditable(true);
     	return new GridCellListEditor(comboBox, wbtmi.getCaption(), fieldWidth, theSaveBtn); 
     }
@@ -3898,6 +3901,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     @Override
     public void showingPane(boolean show)
     {
+    	//System.out.println("WBPane.showingPane(" + show + ") " + isVisible());
         if (formPane != null)
         {
             formPane.showingPane(show);
@@ -3922,7 +3926,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 });
             }
         }
-        else
+        else if (isVisible() == show /*fix for #9182*/)
         {
             checkCurrentEditState();
             
@@ -5299,7 +5303,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             init(textField, caption, length, gcSaveBtn);
          }
         
-        public GridCellEditor(final JComboBox combo, final String caption, final int length, final JButton gcSaveBtn)
+        public GridCellEditor(final JComboBox<?> combo, final String caption, final int length, final JButton gcSaveBtn)
         {
         	super(combo);
         	init(combo, caption, length, gcSaveBtn);
@@ -5518,7 +5522,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	 * @param length
     	 * @param gcSaveBtn
     	 */
-    	public GridCellListEditor(final JComboBox combo, final String caption, final int length, final JButton gcSaveBtn)
+    	public GridCellListEditor(final JComboBox<?> combo, final String caption, final int length, final JButton gcSaveBtn)
         {
     		super(combo, caption, length, gcSaveBtn);
     		//model = new DefaultComboBoxModel(pickList.getList());
@@ -5537,7 +5541,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             editCol = column;
             editRow = row;
-            ((JComboBox )uiComponent).setSelectedItem(value);
+            ((JComboBox<?> )uiComponent).setSelectedItem(value);
             return uiComponent;
         }
    	        
@@ -5547,7 +5551,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public Object getCellEditorValue() 
         {
-            return ((JComboBox )uiComponent).getSelectedItem().toString();
+            return ((JComboBox<?> )uiComponent).getSelectedItem().toString();
         }
 
 		/* (non-Javadoc)
@@ -5562,9 +5566,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         /**
          * @return the model
          */
-        public ComboBoxModel getList()
+        public ComboBoxModel<?> getList()
         {
-        	return ((JComboBox )uiComponent).getModel();
+        	return ((JComboBox<?> )uiComponent).getModel();
         }
         
     }
