@@ -32,6 +32,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.UTF8Control;
 
 
 /**
@@ -201,7 +202,7 @@ public class ExpressSearchConfigCache
             Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
             Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
             
-            ResourceBundle resBundle = ResourceBundle.getBundle("expresssearch"); //$NON-NLS-1$
+            ResourceBundle resBundle = ResourceBundle.getBundle("expresssearch", new UTF8Control()); //$NON-NLS-1$
 
             try
             {

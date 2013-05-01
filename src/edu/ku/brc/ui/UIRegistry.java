@@ -368,7 +368,7 @@ public class UIRegistry
             // this was the only way.
             if (instance == null || instance.resourceLocale == null)
             {
-                resBundle = ResourceBundle.getBundle(name);
+                resBundle = ResourceBundle.getBundle(name, new UTF8Control());
             	/* If properties files are stored in config dir and not loaded as resources:
             	resBundle =  getPropertyResourceBundleFromFileinConfigDir(name, Locale.getDefault());         	
             	 }*/
@@ -376,13 +376,13 @@ public class UIRegistry
             {
                 try
                 {
-                    resBundle = ResourceBundle.getBundle(name, instance.resourceLocale);
+                    resBundle = ResourceBundle.getBundle(name, instance.resourceLocale, new UTF8Control());
                     /* if properties are stored in config dir and not loaded as resources:
                 	resBundle =  getPropertyResourceBundleFromFileinConfigDir(name, instance.resourceLocale);
                 	*/         	
                 } catch (MissingResourceException ex) 
                 {
-                	resBundle = ResourceBundle.getBundle(name, Locale.ENGLISH);
+                	resBundle = ResourceBundle.getBundle(name, Locale.ENGLISH, new UTF8Control());
                 }            
             }
         } catch (MissingResourceException ex) 
@@ -570,19 +570,7 @@ public class UIRegistry
      */
     public static String getResourceString(final String key)
     {
-        try 
-        {
-        	/*
-        	 * unicode characters in the properties files are being mangled by Java's loader which assumes ISO-8859-1 encoding.
-        	 * To avoid the conversion below, we would have to either rewrite the properties files using Unicode Escapes 
-        	 * as defined in section 3.3 of the Java Language Specification for non ISO-8859-1 characters, 
-        	 * or load the properties files 'manually' see comments for commented out method getResourcePropertiesFileName()
-        	 */
-        	return new String(instance.getResourceStringInternal(key).getBytes("ISO-8859-1"), "UTF-8");
-        } catch (UnsupportedEncodingException ex)
-        {
-        	return instance.getResourceStringInternal(key);
-        }
+        return instance.getResourceStringInternal(key);
     } 
     
     /**
