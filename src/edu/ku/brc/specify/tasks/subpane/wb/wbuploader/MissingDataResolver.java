@@ -455,7 +455,7 @@ public class MissingDataResolver implements ActionListener
                 return true;
             }
         }
-        if (CollectionMember.class.isAssignableFrom(dfe.getUploadTbl().getTblClass()))
+        if (CollectionMember.class.isAssignableFrom(dfe.getUploadTbl().getTblClass()) && ("CollectionMemberID".equalsIgnoreCase(dfe.getFldName()) || "CollectionID".equalsIgnoreCase(dfe.getFldName())))
         {
             if (AppContextMgr.getInstance().getClassObject(Collection.class) != null)
             {
