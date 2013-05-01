@@ -4405,6 +4405,16 @@ public class UploadTable implements Comparable<UploadTable>
         
     	if (uploadData.isEmptyRow(row))
     	{
+			if (attachmentsPresent(uploadData, row))
+			{
+				invalidValues.add(new UploadTableInvalidValue(
+						null,
+						this,
+						this.uploadFields.get(0),
+						row,
+						new Exception(
+								String.format(getResourceString("UploadTable.AttachmentPresentButNoData"), getTable().getTableInfo().getTitle()))));
+			}
     		return;
     	}
     	
@@ -4649,18 +4659,10 @@ public class UploadTable implements Comparable<UploadTable>
 				{
 					if (attachmentsPresent(uploadData, row))
 					{
-						UploadField fldToMark = null;
-						for (UploadField fld : flds)
-						{
-							if (fldToMark == null || (fld.getIndex() > -1 && fld.getIndex() < fldToMark.getIndex()))
-							{
-								fldToMark = fld;
-							}
-						}
 						invalidValues.add(new UploadTableInvalidValue(
 								null,
 								this,
-								fldToMark,
+								flds,
 								row,
 								new Exception(
 										String.format(getResourceString("UploadTable.AttachmentPresentButNoData"), getTable().getTableInfo().getTitle()))));
