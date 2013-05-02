@@ -135,11 +135,11 @@ public class SpecifyDBSetupWizard extends JPanel
     protected JProgressBar           progressBar;
     protected ProgressFrame          progressFrame;
     
-    
     /**
-     * @param specify
+     * @param wizardType
+     * @param listener
      */
-    public SpecifyDBSetupWizard(final WizardType wizardType,
+    public SpecifyDBSetupWizard(final WizardType     wizardType,
                                 final WizardListener listener)
     {
         super();
@@ -837,6 +837,9 @@ public class SpecifyDBSetupWizard extends JPanel
         String password   = props.getProperty("usrPassword");
         String saUserName = props.getProperty("saUserName");
         String saPassword = props.getProperty("saPassword");
+        String hostName   = props.getProperty("hostName");
+        
+        hostName = hostName != null ? hostName : "";
         
         String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(saUserName, saPassword, password);
 
@@ -845,11 +848,11 @@ public class SpecifyDBSetupWizard extends JPanel
         ap.put(userName+"_master.islocal",  "true");
         ap.put(userName+"_master.path",     encryptedMasterUP);
         ap.put("login.dbdriver_selected",  driverInfo.getName());
-        ap.put("login.username",           props.getProperty("usrUsername"));
+        ap.put("login.username",           userName != null ? userName : "");
         ap.put("login.databases_selected", dbPanel.getDbName());
         ap.put("login.databases",          dbPanel.getDbName());
-        ap.put("login.servers",            props.getProperty("hostName"));
-        ap.put("login.servers_selected",   props.getProperty("hostName"));
+        ap.put("login.servers",            hostName);
+        ap.put("login.servers_selected",   hostName);
         ap.put("login.rememberuser",       "true");
         ap.put("extra.check",              "true");
         ap.put("version_check.auto",       "true");
