@@ -9259,8 +9259,11 @@ public class BuildSampleDatabase
                 counter++;
             }
             
-            stmt.executeUpdate("UPDATE taxon SET IsAccepted = true WHERE IsAccepted IS NULL and AcceptedID IS NULL");
+            stmt.executeUpdate("UPDATE taxon SET IsAccepted = true WHERE IsAccepted IS NULL and AcceptedID IS NULL AND TaxonTReeDefID = "+treeDef.getId());
             
+            // Clear all GUIDs in Taxon.
+            stmt.executeUpdate("UPDATE taxon SET GUID = NULL WHERE TaxonTreeDefID = "+treeDef.getId());
+                    
             conn.close();
             
             input.close();
