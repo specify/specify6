@@ -350,4 +350,11 @@ public abstract class AppContextMgr
      */
     public abstract boolean setSecurity(final boolean secVal);
 
+    /**
+     * 
+     */
+    public static void reset()
+    {
+        instance = null;
+    }
 }

@@ -1694,9 +1694,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // Bug Fix 9167 - 04/01/2013 - Must always redo the Schema because any formatters at the collection level
             // otherwise will not get set
             //
+            if (UIFieldFormatterMgr.isInitialized())
+            {
+                UIFieldFormatterMgr.getInstance().shutdown();
+                UIFieldFormatterMgr.getInstance().reset();
+            }
+            
             int disciplineId = getClassObject(Discipline.class).getDisciplineId();
-            //if (disciplineId != prevDisciplineId)
-            //{
+            if (disciplineId != prevDisciplineId)
+            {
                 Locale       engLocale  = null;
                 Locale       fndLocale  = null;
                 Locale       currLocale = SchemaI18NService.getCurrentLocale();
@@ -1740,7 +1746,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     UIRegistry.displayErrorDlgLocalized(L10N + "NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
                 }
                 SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
-            //}
+            }
             
             //setUpCatNumAccessionFormatters(getClassObject(Institution.class), collection);
             
@@ -2428,7 +2434,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             try
             {
                 session = openSession();
-                
+                log.debug("getResourceAsXML: "+appRes.getSpAppResourceId());
                 if (appRes.getSpAppResourceId() != null)
                 {
                     // This needs to be looked into, hack for 6.2.04

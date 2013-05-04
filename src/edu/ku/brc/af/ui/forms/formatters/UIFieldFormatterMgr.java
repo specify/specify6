@@ -87,6 +87,14 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         }
         return appContextMgr;
     }
+    
+    /**
+     * @return
+     */
+    public static boolean isInitialized()
+    {
+        return instance != null && instance.appContextMgr != null;
+    }
 
     /**
      * @param contextMgr the contextMgr to set
