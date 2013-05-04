@@ -349,7 +349,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         log.debug(sql);
         
         Object[] columns = BasicSQLUtils.getRow(sql);
-        if (columns != null && columns.length == 2)
+        if (columns != null && columns.length == 3)
         {
             return getFile((String)columns[0], (String)columns[1], false, (String)columns[2], null);
         }
