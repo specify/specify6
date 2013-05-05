@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -127,7 +126,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
         }
         
         // try to get the thumbnail from the attachment storage location
-        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attachment);
+        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attachment, size.size());
         if (thumb != null)
         {
             if (thumb.exists())

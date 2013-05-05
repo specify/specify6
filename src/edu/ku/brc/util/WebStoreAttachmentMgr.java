@@ -74,11 +74,12 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * Nov 1, 2011
  *
  */
-public final class WebStoreAttachmentMgr implements AttachmentManagerIface
+public class WebStoreAttachmentMgr implements AttachmentManagerIface
 {
     private static final Logger  log   = Logger.getLogger(WebStoreAttachmentMgr.class);
     private static final String DEFAULT_URL    = "http://specifyassets.nhm.ku.edu/Informatics/getmetadata.php?dt=<dt>&type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>";
     private static final String ATTACHMENT_URL = "SELECT AttachmentLocation FROM attachment WHERE AttachmentID = ";
+    private static final String UNKNOWN        = "unknown";
     private static MessageDigest sha1 = null;
 
     
@@ -328,7 +329,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     } while(true);
                     in.close();
                 
-                    //System.out.println(dataStr.toString());
+                    //log.debug(dataStr.toString());
                     return dataStr.toString();
                 }
             }
@@ -346,7 +347,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getFileEmbddedDate(int)
      */
     @Override
-    public Calendar getFileEmbddedDate(int attachmentID)
+    public Calendar getFileEmbddedDate(final int attachmentID)
     {
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
         if (StringUtils.isNotEmpty(fileName))
@@ -379,7 +380,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getMetaDataAsJSON(int)
      */
     @Override
-    public String getMetaDataAsJSON(int attachmentID)
+    public String getMetaDataAsJSON(final int attachmentID)
     {
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
         if (StringUtils.isNotEmpty(fileName))
@@ -389,7 +390,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             String urlStr  = subAllExtraData(metaDataURLStr, fileName, false, null, "json");
             String jsonStr = getURLDataAsString(urlStr);
         
-            //System.out.println(jsonStr);
+            //log.debug(jsonStr);
             return jsonStr;
         }
         return null;
@@ -399,54 +400,45 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(edu.ku.brc.specify.datamodel.Attachment)
      */
     @Override
-    public synchronized File getOriginal(Attachment attachment)
+    public synchronized File getOriginal(final Attachment attachment)
     {
-        return getFile(attachment, attachNameOrigMap, false);
+        return getOriginal(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType());
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public File getOriginal(String attachLoc, String originalLoc, String mimeType)
+    public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType)
     {
-        return getFile(attachLoc, originalLoc, mimeType, attachNameOrigMap, false, null);
+        return getFile(attachLoc, originalLoc, mimeType, null);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginalScaled(java.lang.String, java.lang.String, java.lang.String, int)
      */
     @Override
-    public File getOriginalScaled(String attachLoc,
-                                  String originalLoc,
-                                  String mimeType,
-                                  int maxSideInPixels)
+    public File getOriginalScaled(final String attachLoc,
+                                  final String originalLoc,
+                                  final String mimeType,
+                                  final int maxSideInPixels)
     {
-        return getFile(attachLoc, originalLoc, mimeType, attachNameOrigMap, false, maxSideInPixels);
+        return getFile(attachLoc, originalLoc, mimeType, maxSideInPixels);
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment, int)
      */
     @Override
-    public synchronized File getThumbnail(final Attachment attachment)
+    public synchronized File getThumbnail(final Attachment attachment, final int maxSideInPixels)
     {
-        return getFile(attachment, attachNameThumbMap, true);
+        return getOriginalScaled(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), maxSideInPixels);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
-     */
-    @Override
-    public synchronized File getThumbnail(final String attachLoc, final String mimeType)
-    {
-        return getFile(attachLoc, null, mimeType, attachNameThumbMap, true, null);
-    }
-    
+
     /**
      * @param fileName
      * @param doDelOnExit
-     * @return
+     * @return a file that is in the cache directory but will be deleted on exit
      * @throws IOException 
      */
     private File createTempFile(final String fileName, final boolean doDelOnExit) throws IOException
@@ -460,19 +452,6 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         return file;
     }
 
-    /**
-     * @param attachment
-     * @param nameHash
-     * @param isThumb
-     * @return
-     */
-    private synchronized File getFile(final Attachment a, 
-                                      final HashMap<String, String> nameHash, 
-                                      final boolean isThumb)
-    {
-        return getFile(a.getAttachmentLocation(), a.getOrigFilename(), a.getMimeType(), nameHash, isThumb, null);
-    }
-    
     /**
      * @param iconName
      * @return
@@ -492,180 +471,188 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         return null;
     }
+    
+    /**
+     * @param srcFile
+     * @param destFileName
+     * @param mimeType
+     * @param scale
+     * @return
+     */
+    private File getThumnailFromFile(final File    srcFile,
+                                     final String  destFileName,
+                                     final String  mimeType,
+                                     final Integer scale)
+    {
+        try
+        {
+            //String fileExt   = FilenameUtils.getExtension(srcFile.getName());
+            //File   tmpFile = createTempFile(fileExt, false); // gets deleted automatically
+
+            String absPath     = srcFile.getAbsolutePath();
+            String newDestPath = FilenameUtils.getPrefix(absPath) + FilenameUtils.getPath(absPath) + FilenameUtils.getName(destFileName);
+
+            // Now generate the thumbnail 
+            Thumbnailer thumbnailGen  = AttachmentUtils.getThumbnailer();
+            thumbnailGen.generateThumbnail(srcFile.getAbsolutePath(), 
+                                           newDestPath,
+                                           false);
+            
+            File destFile = new File(newDestPath);
+            if (!destFile.exists())
+            {
+                return getFileForIconName(UNKNOWN);
+            }
+            
+            // Put thumbail into cache with thumbnail name
+            shortTermCache.cacheFile(destFile);
+            
+            return destFile;
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return getFileForIconName(UNKNOWN);
+    }
+    
+    /**
+     * @param fileName
+     * @return
+     */
+    private File getIconFromFileName(final String fileName)
+    {
+        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(fileName.toLowerCase()));
+        if (iconName != null)
+        {
+            File iconFile = getFileForIconName(iconName);
+            if (iconFile != null) 
+            { 
+                return iconFile;
+            }
+        }
+        // No thumbnail, no icon, use the 'unknown' icon
+        return getFileForIconName(UNKNOWN);
+    }
 
     /**
      * @param attachLocation
      * @param originalLoc
-     * @param mimeType
-     * @param nameHash
-     * @param isThumb
+     * @param mimeTypeArg
      * @param scale
      * @return
      */
-    private synchronized File getFile(final String attachLocation,
-                                      final String originalLoc,
-                                      final String mimeType,
-                                      final HashMap<String, String> nameHash, 
-                                      final boolean isThumb,
+    private synchronized File getFile(final String  attachLocation,
+                                      final String  originalLoc,
+                                      final String  mimeTypeArg,
                                       final Integer scale)
     {
-        String nmExt = isThumb ? ".THB" : "";
+        // Check to see what locations were passed in
+        boolean hasAttachmentLoc = StringUtils.isNotEmpty(attachLocation);
+        boolean hasOrigFileName  = StringUtils.isNotEmpty(originalLoc);
+        boolean hasScaleSize     = scale != null;
         
-        String attachLoc = attachLocation;
-        if (StringUtils.isNotEmpty(attachLoc) && scale != null)
+        if (!hasAttachmentLoc && !hasOrigFileName) return getFileForIconName(UNKNOWN);
+        
+        String  mimeType = mimeTypeArg != null ? mimeTypeArg : AttachmentUtils.getMimeType(hasAttachmentLoc ? attachLocation : originalLoc);
+        boolean isImage  = mimeType.startsWith("image/");
+        
+        String fileNameToGet = attachLocation;
+        if (hasAttachmentLoc)
         {
-            attachLoc = getScaledFileName(attachLocation, scale);
-        }
-        
-        boolean isSaved = StringUtils.isNotEmpty(attachLoc);
-        boolean hasOrig = StringUtils.isNotEmpty(originalLoc);
-        
-        // Check to see if it is cached by original name
-        if (!isSaved && hasOrig)
-        {
-            String localThumbName = nameHash.get(originalLoc+nmExt);
-            if (StringUtils.isNotEmpty(localThumbName))
-            {
-                File cachedFile = shortTermCache.getCacheFile(localThumbName);
-                if (cachedFile != null && cachedFile.exists())
-                {
-                    return cachedFile;
-                }
-            }
-        }
-        
-        // Now check to see if it is cached by the saved name.
-        String origFilePath = attachLoc;
-        if (isSaved)
-        {
-            String fileName = nameHash.get(origFilePath+nmExt);
-            if (StringUtils.isNotEmpty(fileName))
-            {
-                File cachedFile = shortTermCache.getCacheFile(fileName);
-                if (cachedFile != null && cachedFile.exists())
-                {
-                    return cachedFile;
-                }
+            //////////////////////////////////////////////////////////
+            // If scale is not null, then it contains the scale size
+            // so change the name to a scale name
+            //////////////////////////////////////////////////////////
+            if (hasScaleSize)
+            {   
+                fileNameToGet = getScaledFileName(attachLocation, scale);
             }
             
-            File cachedFile = shortTermCache.getCacheFile(origFilePath);
+            // Is the filename in the cache?
+            File cachedFile = shortTermCache.getCacheFile(fileNameToGet);
             if (cachedFile != null && cachedFile.exists())
             {
                 return cachedFile;
             }
             
-            Boolean isNotImage = mimeType == null || !mimeType.startsWith("image/");
-            if (isNotImage)
-            {
-                if (Thumbnailer.getInstance().hasGeneratorForMimeType(mimeType))
-                {
-                    Thumbnailer tn = Thumbnailer.getInstance();
-                    try
-                    {
-                        File   localFile      = getFileFromWeb(attachLocation, mimeType, false, null);
-                        String origAttachPath = FilenameUtils.getPrefix(localFile.getAbsolutePath()) + FilenameUtils.getPath(localFile.getAbsolutePath()) + FilenameUtils.getName(originalLoc);
-                        File   origFile       = new File(origAttachPath);
-                        FileUtils.copyFile(localFile, origFile);
-                        origFile.deleteOnExit();
-                        
-                        if (isThumb)
-                        {
-                            String path    = localFile.getAbsolutePath();
-                            tn.generateThumbnail(path, path, false);
-                            return localFile;
-                        }
-                        return origFile;
-                        
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                
-                String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(attachLocation.toLowerCase()));
-                if (iconName != null)
-                {
-                    File iconFile = getFileForIconName(iconName);
-                    if (iconFile != null)
-                    {
-                        return iconFile;
-                    }
-                } else
-                {
-                    //System.out.println("Unknown handled mime type: "+mimeType);
-                }
-                return getFileForIconName("unknown");
-            }
-
-            // Not in the cache by either name, so go get the file form the server
-            //System.out.println(String.format("[%s]  Mime: %s,  isThmb: %s, Scale: %d", attachLocation, mimeType, isThumb?"Y":"N", scale != null?scale:-1));
-            File thmbFile = getFileFromWeb(attachLocation, mimeType, isThumb, scale);
-            //System.out.println(thmbFile.getAbsolutePath());
-            
-            if (thmbFile != null && thmbFile.exists())
-            {
-                try
-                {
-                    // cache it
-                    String nm = thmbFile.getName();
-                    shortTermCache.cacheFile(thmbFile);
-                    nameHash.put(attachLoc + nmExt, nm);
-                    //thmbFile.delete();
-                    
-                    //thmbFile = shortTermCache.getCacheFile(nm);
-                    
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            return thmbFile;
-            
-        } 
-        
-        // ok, it isn't saved yet, make sure original isn't null
-        
-        if (!hasOrig)
+        } else if (hasOrigFileName && !hasScaleSize)
         {
-            return null;
+            //////////////////////////////////////////////////////////////////
+            // Check to see if it is cached by original name (Full Sized)
+            //////////////////////////////////////////////////////////////////
+            File cachedFile = shortTermCache.getCacheFile(originalLoc);
+            if (cachedFile != null && cachedFile.exists())
+            {
+                return cachedFile;
+            }
         }
-        origFilePath = originalLoc;
         
-        // Now make a thumb from the original
-        File origFile  = new File(origFilePath);
-        File thumbFile = null;
+        //////////////////////////////////////////////////////////////////////
+        // If we are here then the server side filename is not in the cache
+        // for the full file or scaled file and the original file is not
+        // not in the cache.
+        //
+        // If the 'hasAttachmentLoc' is null then it isn't saved on the Server 
+        // yet and we need to either get the full file from disk or generate 
+        // a thumbnail.
+        //////////////////////////////////////////////////////////////////////
+        
+        // Now let's get the full file, it's a local file
+        // hopefully it is still there
+        if (!hasAttachmentLoc)
+        {
+            File fullFile = new File(originalLoc);
+            
+            // Ok, it isn't on the server yet.
+            if (fullFile.exists())
+            {
+                return hasScaleSize ? getThumnailFromFile(fullFile, fileNameToGet, mimeType, scale) : fullFile;
+            }
+            return getFileForIconName(UNKNOWN);
+        }
         
         try
         {
-            String fileExt = FilenameUtils.getExtension(origFilePath);
-            thumbFile = createTempFile(fileExt, false);
+            // The File is on the server.
+            //
+            // Now if we need a scaled version of the file we need to make
+            // sure we have a thumbnailer that can make the scaled image,
+            // if we don't then just get an icon.
             
-            // Now generate the thumbnail 
-            Thumbnailer thumbnailGen   = AttachmentUtils.getThumbnailer();
-            thumbnailGen.generateThumbnail(origFile.getAbsolutePath(), 
-                                           thumbFile.getAbsolutePath(),
-                                           false);
-            if (!thumbFile.exists())
+            String fullPath = shortTermCache.createCachFileName(fileNameToGet);
+            File   destFile = new File(fullPath);
+            
+            if (hasScaleSize && isImage) // Images get scaled on the server
             {
-                return null;
+                File tmpFile = getFileFromWeb(attachLocation, mimeType, scale); // ask server for scaled image
+                FileUtils.copyFile(tmpFile, destFile);
+                return shortTermCache.cacheFile(destFile);
+            }  
+            
+            // Get the Full Image
+            // It's not an image, so we need to get the whole file
+            File tmpFile = getFileFromWeb(attachLocation, mimeType, null);
+            
+            FileUtils.copyFile(tmpFile, destFile);
+            File localFileFromCache = shortTermCache.cacheFile(destFile);
+            
+            if (hasScaleSize)
+            {
+                if (Thumbnailer.getInstance().hasGeneratorForMimeType(mimeType))
+                {
+                    return getThumnailFromFile(localFileFromCache, fileNameToGet, mimeType, scale);
+                }
+                return getIconFromFileName(fileNameToGet);
             }
-            
-            // Put mapping cache
-            nameHash.put(origFilePath+nmExt, thumbFile.getName());
-            
-            // Put into cache with original name
-            shortTermCache.cacheFile(thumbFile);
-            
-            thumbFile.delete();
-            
-            return thumbFile;
+            return localFileFromCache;
             
         } catch (IOException ex)
         {
             ex.printStackTrace();
         }
         
-        return null;
+        return getFileForIconName(UNKNOWN); // I know, it shouldn't be an icon
     }
     
     /**
@@ -685,7 +672,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                 BufferedInputStream  in  = new BufferedInputStream(inpStream);
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
                 
-                long totBytes = 0;
+                //long totBytes = 0;
                 do
                 {
                     int numBytes = in.read(bytes);
@@ -693,7 +680,7 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
                     {
                         break;
                     }
-                    totBytes += numBytes;
+                    //totBytes += numBytes;
                     bos.write(bytes, 0, numBytes);
                     
                 } while(true);
@@ -718,10 +705,42 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @param fileName
      * @param mimeType
      * @param isThumb
+     * @param scale
      * @return
      */
-    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final boolean isThumb, final Integer scale)
+    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final Integer scale)
     {
+        boolean NO_INTERNET = false;
+        if (NO_INTERNET)
+        {
+            File tmpFile = null;
+            try
+            {
+                tmpFile = createTempFile(fileName, false);
+                
+                if (fileName.endsWith("pdf"))
+                {
+                    FileUtils.copyFile(new File("/Users/rods/Downloads/PaymentConfirmation.pdf"), tmpFile);
+                    
+                } else if (fileName.endsWith("pdf"))
+                {
+                    FileUtils.copyFile(new File("/Users/rods/Downloads/IA.png"), tmpFile);
+                    
+                } else if (fileName.endsWith("docx"))
+                {
+                    FileUtils.copyFile(new File("/Users/rods/Downloads/Image.docx"), tmpFile);
+                    
+                } else if (fileName.endsWith("txt"))
+                {
+                    FileUtils.copyFile(new File("/Users/rods/Downloads/ich.txt"), tmpFile);
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            return tmpFile;
+        }
+        
         try
         {
             File tmpFile = createTempFile(fileName, false);
@@ -730,9 +749,9 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             //                  isThumb ? "thumbs" : "originals", fileName, StringUtils.isNotEmpty(mimeType) ? mimeType : "",
             //                  discipline.getName());
             
-            String urlStr = subAllExtraData(readURLStr, fileName, isThumb, scale, null);
+            String urlStr = subAllExtraData(readURLStr, fileName, scale != null, scale, null);
             
-            log.debug("["+urlStr+"]");
+            //log.debug("["+urlStr+"]");
             return fillFileFromWeb(urlStr, tmpFile) ? tmpFile : null;
             
         } catch (Exception ex)
@@ -940,20 +959,20 @@ public final class WebStoreAttachmentMgr implements AttachmentManagerIface
             String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
             GetMethod  getMethod  = new GetMethod(targetURL);
 
-            //System.out.println("Deleting " + fileName + " from " + targetURL );
+            //log.debug("Deleting " + fileName + " from " + targetURL );
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
             int status = client.executeMethod(getMethod);
             
-            //System.out.println(getMethod.getResponseBodyAsString());
+            //log.debug(getMethod.getResponseBodyAsString());
 
             return status == HttpStatus.SC_OK;
             
         } catch (Exception ex)
         {
-            //System.out.println("Error: " + ex.getMessage());
+            //log.debug("Error: " + ex.getMessage());
             ex.printStackTrace();
         }
         return false;

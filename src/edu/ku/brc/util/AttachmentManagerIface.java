@@ -99,19 +99,10 @@ public interface AttachmentManagerIface
      * Get a file handle to the attachment thumbnail.
      * 
      * @param attachment the attachment record
+     * @param maxSize the max size of width and/or height
      * @return a java.io.File handle to the attachment thumbnail
      */
-    public abstract File getThumbnail(Attachment attachment);
-    
-    
-    /**
-     * Get a file handle to the attachment thumbnail.
-     * 
-     * @param attachmentLoc contents of the 'AttachmentLocation' column in the database.
-     * @param mimeType the mimeType of the file.
-     * @return File handle if there is one
-     */
-    public abstract File getThumbnail(String attachmentLoc, String mimeType);
+    public abstract File getThumbnail(Attachment attachment, int maxSize);
     
     /**
      * Store a new attachment file (and thumbnail) in the manager's storage area.  A call

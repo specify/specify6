@@ -19,22 +19,12 @@
 */
 package edu.ku.brc.util;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.Calendar;
 import java.util.Vector;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -44,7 +34,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.helpers.ImageMetaDataHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
@@ -64,7 +53,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     
     private static final String ORIGINAL   = "originals";
     private static final String THUMBNAILS = "thumbnails";
-    
+    private static final String UNKNOWN    = "unknown";
+
     private Calendar releaseDate = Calendar.getInstance();
     
     /** The base directory path of where the files will be stored. */
@@ -220,7 +210,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         String attachLoc = attachment.getAttachmentLocation();
         String origLoc   = attachment.getOrigFilename();
-        return getFile(attachLoc, origLoc, false, attachment.getMimeType(), null);
+        return getFile(attachLoc, origLoc, attachment.getMimeType(), null);
     }
 
     /* (non-Javadoc)
@@ -229,7 +219,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     @Override
     public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType)
     {
-        return getFile(attachLoc, originalLoc, false, mimeType, null);
+        return getFile(attachLoc, originalLoc, mimeType, null);
     }
 
     /* (non-Javadoc)
@@ -241,7 +231,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
                                   final String mimeType,
                                   final int maxSideInPixels)
     {
-        return getFile(attachLoc, originalLoc, false, mimeType, maxSideInPixels);
+        return getFile(attachLoc, originalLoc, mimeType, maxSideInPixels);
     }
 
     /**
@@ -252,91 +242,268 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      * @param scale
      * @return
      */
-    private File getFile(final String  attachLoc, 
-                         final String  originalLoc, 
-                         final boolean isThumb,
-                         final String  mimeType,
-                         final Integer scale)
+//    private File getFile(final String  attachLoc, 
+//                         final String  originalLoc, 
+//                         final boolean isThumb,
+//                         final String  mimeType,
+//                         final Integer scale)
+//    {
+//        boolean skip = true;
+//        
+//        if (StringUtils.isNotEmpty(attachLoc))
+//        {
+//            String base       = baseDirectory + File.separator + (isThumb ? THUMBNAILS : ORIGINAL);
+//            File   storedFile = new File(base + File.separator + attachLoc);
+//            if (storedFile.exists())
+//            {
+//                if (scale != null)
+//                {
+//                    Boolean isNotImage = mimeType == null || !mimeType.startsWith("image/");
+//                    
+//                    String pth     = storedFile.getAbsolutePath();
+//                    String newPath = FilenameUtils.removeExtension(pth);
+//                    String ext     = isNotImage ? "png" : FilenameUtils.getExtension(pth);
+//                    newPath = String.format("%s_%d%s%s", newPath, scale, FilenameUtils.EXTENSION_SEPARATOR_STR, ext);
+//                    
+//                    File scaledFile = new File(newPath);
+//                    if (!skip && scaledFile.exists())
+//                    {
+//                        return scaledFile;
+//                    }
+//                    
+//                    if (isNotImage)
+//                    {
+//                        Thumbnailer tn = Thumbnailer.getInstance();
+//                        try
+//                        {
+//                            tn.generateThumbnail(pth, newPath, false);
+//                            return scaledFile;
+//                            
+//                        } catch (IOException e)
+//                        {
+//                            e.printStackTrace();
+//                        }
+//                        
+//                        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(scaledFile.getName().toLowerCase()));
+//                        IconEntry entry = IconManager.getIconEntryByName(iconName);
+//                        if (entry != null)
+//                        {
+//                            try
+//                            {
+//                                return new File(entry.getUrl().toURI());
+//                            } catch (URISyntaxException e)
+//                            {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        return null;
+//                        
+//                    } else
+//                    {
+//                        try
+//                        {
+//                            Image         scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(storedFile.getAbsolutePath()), scale, scale, true);
+//                            BufferedImage bi        = new BufferedImage (scaledImg.getWidth(null), scaledImg.getHeight(null),BufferedImage.TYPE_INT_RGB);
+//                            Graphics bg = bi.getGraphics();
+//                            bg.drawImage(scaledImg, 0, 0, null);
+//                            bg.dispose();
+//                            ImageIO.write(bi, ext.toUpperCase(), new FileOutputStream(scaledFile));
+//                            return scaledFile;
+//                            
+//                        } catch (FileNotFoundException e)
+//                        {
+//                            e.printStackTrace();
+//                        } catch (IOException e)
+//                        {
+//                            e.printStackTrace();
+//                        }
+//                        return null;
+//                    }
+//                }
+//                return storedFile;
+//            }
+//        } else
+//        {
+//            log.error("AttachmentLocation is null for originalLoc["+originalLoc+"]");
+//        }
+//        return null;
+//    }
+
+    /**
+     * @param srcFile
+     * @param destFileName
+     * @param mimeType
+     * @param scale
+     * @return
+     */
+    private File getThumnailFromFile(final File    srcFile,
+                                     final String  destFileName,
+                                     final String  mimeType,
+                                     final Integer scale)
     {
-        boolean skip = true;
-        
-        if (StringUtils.isNotEmpty(attachLoc))
+        try
         {
-            String base       = baseDirectory + File.separator + (isThumb ? THUMBNAILS : ORIGINAL);
-            File   storedFile = new File(base + File.separator + attachLoc);
-            if (storedFile.exists())
+            //String fileExt   = FilenameUtils.getExtension(srcFile.getName());
+            //File   tmpFile = createTempFile(fileExt, false); // gets deleted automatically
+
+            String absPath     = srcFile.getAbsolutePath();
+            String newDestPath = FilenameUtils.getPrefix(absPath) + FilenameUtils.getPath(absPath) + FilenameUtils.getName(destFileName);
+            File   destFile    = new File(newDestPath);
+            if (destFile.exists())
             {
-                if (scale != null)
-                {
-                    Boolean isNotImage = mimeType == null || !mimeType.startsWith("image/");
-                    
-                    String pth     = storedFile.getAbsolutePath();
-                    String newPath = FilenameUtils.removeExtension(pth);
-                    String ext     = isNotImage ? "png" : FilenameUtils.getExtension(pth);
-                    newPath = String.format("%s_%d%s%s", newPath, scale, FilenameUtils.EXTENSION_SEPARATOR_STR, ext);
-                    
-                    File scaledFile = new File(newPath);
-                    if (!skip && scaledFile.exists())
-                    {
-                        return scaledFile;
-                    }
-                    
-                    if (isNotImage)
-                    {
-                        Thumbnailer tn   = Thumbnailer.getInstance();
-                        try
-                        {
-                            tn.generateThumbnail(pth, newPath, false);
-                            return scaledFile;
-                            
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        
-                        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(scaledFile.getName().toLowerCase()));
-                        IconEntry entry = IconManager.getIconEntryByName(iconName);
-                        if (entry != null)
-                        {
-                            try
-                            {
-                                return new File(entry.getUrl().toURI());
-                            } catch (URISyntaxException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                        return null;
-                        
-                    } else
-                    {
-                        try
-                        {
-                            Image         scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(storedFile.getAbsolutePath()), scale, scale, true);
-                            BufferedImage bi        = new BufferedImage (scaledImg.getWidth(null), scaledImg.getHeight(null),BufferedImage.TYPE_INT_RGB);
-                            Graphics bg = bi.getGraphics();
-                            bg.drawImage(scaledImg, 0, 0, null);
-                            bg.dispose();
-                            ImageIO.write(bi, ext.toUpperCase(), new FileOutputStream(scaledFile));
-                            return scaledFile;
-                            
-                        } catch (FileNotFoundException e)
-                        {
-                            e.printStackTrace();
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                }
-                return storedFile;
+                return destFile;
             }
-        } else
+
+            // Now generate the thumbnail 
+            Thumbnailer thumbnailGen  = AttachmentUtils.getThumbnailer();
+            thumbnailGen.generateThumbnail(srcFile.getAbsolutePath(), 
+                                           newDestPath,
+                                           false);
+            
+            if (!destFile.exists())
+            {
+                return getFileForIconName(UNKNOWN);
+            }
+            
+            return destFile;
+            
+        } catch (IOException ex)
         {
-            log.error("AttachmentLocation is null for originalLoc["+originalLoc+"]");
+            ex.printStackTrace();
+        }
+        return getFileForIconName(UNKNOWN);
+    }
+    
+    /**
+     * @param fileName
+     * @return
+     */
+    private File getIconFromFileName(final String fileName)
+    {
+        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(fileName.toLowerCase()));
+        if (iconName != null)
+        {
+            File iconFile = getFileForIconName(iconName);
+            if (iconFile != null) 
+            { 
+                return iconFile;
+            }
+        }
+        // No thumbnail, no icon, use the 'unknown' icon
+        return getFileForIconName(UNKNOWN);
+    }
+    
+
+    /**
+     * @param iconName
+     * @return
+     */
+    private File getFileForIconName(final String iconName)
+    {
+        IconEntry entry = IconManager.getIconEntryByName(iconName);
+        if (entry != null)
+        {
+            try
+            {
+                return new File(entry.getUrl().toURI());
+            } catch (URISyntaxException e)
+            {
+                e.printStackTrace();
+            }
         }
         return null;
+    }
+    
+    /**
+     * @param fileName
+     * @param scale
+     * @return
+     */
+    private String getScaledFileName(final String fileName, final Integer scale)
+    {
+        String newPath = baseDirectory + File.separator + THUMBNAILS + File.separator + FilenameUtils.getBaseName(fileName);
+        String ext     = FilenameUtils.getExtension(fileName);
+        String newFileName = String.format("%s_%d%s%s", newPath, scale, FilenameUtils.EXTENSION_SEPARATOR_STR, ext);
+        
+      return newFileName;
+    }
+    
+    /**
+     * @param attachLocation
+     * @param originalLoc
+     * @param mimeTypeArg
+     * @param scale
+     * @return
+     */
+    private synchronized File getFile(final String  attachLocation,
+                                      final String  originalLoc,
+                                      final String  mimeTypeArg,
+                                      final Integer scale)
+    {
+        // Check to see what locations were passed in
+        boolean hasAttachmentLoc = StringUtils.isNotEmpty(attachLocation);
+        boolean hasOrigFileName  = StringUtils.isNotEmpty(originalLoc);
+        boolean hasScaleSize     = scale != null;
+        
+        if (!hasAttachmentLoc && !hasOrigFileName) return getFileForIconName(UNKNOWN);
+        
+        String  mimeType = mimeTypeArg != null ? mimeTypeArg : AttachmentUtils.getMimeType(hasAttachmentLoc ? attachLocation : originalLoc);
+        //boolean isImage  = mimeType.startsWith("image/");
+        
+        String fileNameToGet = attachLocation;
+        if (hasAttachmentLoc)
+        {
+            //////////////////////////////////////////////////////////
+            // If scale is not null, then it contains the scale size
+            // so change the name to a scale name
+            //////////////////////////////////////////////////////////
+            if (hasScaleSize)
+            {   
+                fileNameToGet = getScaledFileName(attachLocation, scale);
+            }
+        }
+        
+        //////////////////////////////////////////////////////////////////////
+        // If we are here then the server side filename is not in the cache
+        // for the full file or scaled file and the original file is not
+        // not in the cache.
+        //
+        // If the 'hasAttachmentLoc' is null then it isn't saved on the Server 
+        // yet and we need to either get the full file from disk or generate 
+        // a thumbnail.
+        //////////////////////////////////////////////////////////////////////
+        
+        // Now let's get the full file, it's a local file
+        // hopefully it is still there
+        if (!hasAttachmentLoc)
+        {
+            File fullFile = new File(originalLoc);
+            
+            // Ok, it isn't on the server yet.
+            if (fullFile.exists())
+            {
+                return hasScaleSize ? getThumnailFromFile(fullFile, fileNameToGet, mimeType, scale) : fullFile;
+            }
+            return getFileForIconName(UNKNOWN);
+        }
+        
+        String fileName           = hasAttachmentLoc ? attachLocation : FilenameUtils.getName(originalLoc);
+        String path               = baseDirectory + File.separator + ORIGINAL + File.separator + FilenameUtils.getName(fileName);
+        File   localFileFromCache = new File(path);
+        
+        if (hasScaleSize)
+        {
+            if (Thumbnailer.getInstance().hasGeneratorForMimeType(mimeType))
+            {
+                return getThumnailFromFile(localFileFromCache, fileNameToGet, mimeType, scale);
+            }
+            return getIconFromFileName(fileName);
+        }
+        
+        return localFileFromCache;
+            
+        
+        //return getFileForIconName(UNKNOWN); // I know, it shouldn't be an icon
     }
     
     /**
@@ -351,7 +518,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         Object[] columns = BasicSQLUtils.getRow(sql);
         if (columns != null && columns.length == 3)
         {
-            return getFile((String)columns[0], (String)columns[1], false, (String)columns[2], null);
+            return getFile((String)columns[0], (String)columns[1], (String)columns[2], null);
         }
         return null;
  
@@ -387,72 +554,13 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         }
         return null;
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
-     */
-    @Override
-    public File getThumbnail(final String attachmentLoc, final String mimeType)
-    {
-        if (StringUtils.isNotEmpty(attachmentLoc))
-        {
-            String thumbPath  = baseDirectory + File.separator + THUMBNAILS + File.separator + attachmentLoc;
-            File   storedFile = new File(thumbPath);
-            if (storedFile.exists())
-            {
-                try
-                {
-                    BasicFileAttributes attrs    = Files.readAttributes(storedFile.toPath(), BasicFileAttributes.class);
-                    FileTime            fileTime = attrs.creationTime();
-                    if (fileTime.toMillis() < releaseDate.getTimeInMillis())
-                    {
-                        BufferedImage bi = ImageIO.read(storedFile);
-                        if (bi.getWidth() < thumbSize && bi.getHeight() < thumbSize)
-                        {
-                            String origPath = baseDirectory + File.separator + ORIGINAL + File.separator + attachmentLoc;
-                            File   origFile = new File(origPath);
-                            if (origFile.exists())
-                            {
-                                return regenerateThumbnail(thumbPath, origPath);
-                            }
-                        }
-                    }
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-                return storedFile;
-            }
-            
-            try
-            {
-                return regenerateThumbnail(attachmentLoc);
-                
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            
-        } else
-        {
-            log.error("AttachmentLocation is null for attachmentLoc["+attachmentLoc+"]");
-        }
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
      */
-    public File getThumbnail(final Attachment attachment)
+    public File getThumbnail(final Attachment attachment, final int maxSideInPixels)
     {
-//        String attchLoc = attachment.getAttachmentLocation();
-//        String origName = attachment.getOrigFilename();;
-//        
-//        if (StringUtils.isEmpty(attchLoc) && StringUtils.isNotEmpty(origName))
-//        {
-//            attchLoc = origName;
-//        }
-        return getThumbnail(attachment.getAttachmentLocation(), attachment.getMimeType());
+        return getOriginalScaled(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), maxSideInPixels);
     }
 
 

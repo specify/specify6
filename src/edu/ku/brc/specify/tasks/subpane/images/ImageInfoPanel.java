@@ -49,6 +49,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * @author rods
@@ -91,6 +92,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         
         this.dataFetcher = dataFetcher;
         this.imagesPane  = imagesPane;
+        IMG_SIZE         = Thumbnailer.getInstance().getMaxSize().height;
     }
     
     /* (non-Javadoc)

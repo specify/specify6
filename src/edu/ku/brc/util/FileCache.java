@@ -578,6 +578,15 @@ public class FileCache implements DataCacheIFace
 			purgeLruCacheFile();
 		}
 	}
+	
+	/**
+	 * @param fileName
+	 * @return
+	 */
+	public String createCachFileName(final String fileName)
+	{
+	    return cacheDir.getAbsolutePath() + File.separator + FilenameUtils.getName(fileName);
+	}
 
 	/**
 	 * Purge the cached item with the given filename.
@@ -634,10 +643,10 @@ public class FileCache implements DataCacheIFace
 	 * @return a handle used to retrieve the cached data in the future
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public String cacheFile(final File f) throws IOException
+	public File cacheFile(final File f) throws IOException
 	{
-		cacheFile(f.getName(), f);
-		return f.getName();
+		File cachedFile = cacheFile(f.getName(), f);
+		return cachedFile != null && cachedFile.exists() ? cachedFile : f;
 	}
 	
 	/**
@@ -665,16 +674,17 @@ public class FileCache implements DataCacheIFace
 	 * @param f the file to cache
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public void cacheFile(final String key, final File f) throws IOException
+	public File cacheFile(final String key, final File f) throws IOException
 	{
 	    String extension = isUsingExtensions ? ("." + FilenameUtils.getExtension(f.getName())) : null;
-		File cachedFile = createCacheFile(extension);
+		File  cachedFile = createCacheFile(extension);
 		log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
+		
 		FileUtils.copyFile(f, cachedFile);
 		cacheNewItem(key, cachedFile);
 		
 		log.debug("Caching["+cachedFile.getAbsolutePath()+"]");
-		
+		return cachedFile;
 	}
 
 	/**

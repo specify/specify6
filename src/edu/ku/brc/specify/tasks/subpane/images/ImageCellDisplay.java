@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
-import static edu.ku.brc.ui.UIRegistry.getAction;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BasicStroke;
@@ -42,21 +41,15 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.plugins.sgr.BatchResultPropertyEditor;
-import edu.ku.brc.specify.plugins.sgr.BatchResultsMgr;
 import edu.ku.brc.specify.tasks.AttachmentsTask;
-import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -78,19 +71,15 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     public static final int INFO_BTN        = -1;
     public static final int METADATA_BTN    = -2;
     public static final int SELECTION_WIDTH = 3;
-    
     private final int   margin              = 6;
 
     private Border      nonSelBorder    = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-    //private boolean     isSelected     = false;
     private BasicStroke stdLineStroke   = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private Color       selectColor     = UIManager.getColor("Table.selectionBackground");
     private RoundRectangle2D.Double rr  = new RoundRectangle2D.Double(0, 0, 0, 0, 10, 10); // Selection Rect
-    //private RoundRectangle2D.Double rr2 = null;  // Text Background
     
     private ImageIcon   infoIcon16      = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
     private ImageIcon   dataObjIcon     = null;
-    //private ImageIcon   metaDataIcon    = IconManager.getIcon("MetaData", IconManager.STD_ICON_SIZE.Std16);
     
     private Rectangle   infoHitRect     = new Rectangle();
     private Rectangle   dataHitRect     = new Rectangle();
@@ -223,7 +212,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override
-    protected void paintComponent(Graphics gr)
+    protected void paintComponent(final Graphics gr)
     {
         super.paintComponent(gr);
         
@@ -345,7 +334,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @see edu.ku.brc.ui.ImageDisplay#setImage(java.awt.Image)
      */
     @Override
-    public synchronized void setImage(Image newImage)
+    public synchronized void setImage(final Image newImage)
     {
         super.setImage(newImage);
         schedRepaint();
@@ -355,7 +344,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @see edu.ku.brc.ui.ImageDisplay#setImage(javax.swing.ImageIcon)
      */
     @Override
-    public synchronized void setImage(ImageIcon newImageIcon)
+    public synchronized void setImage(final ImageIcon newImageIcon)
     {
         super.setImage(newImageIcon);
         schedRepaint();
@@ -365,7 +354,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @see edu.ku.brc.ui.ImageDisplay#setNoImage(boolean)
      */
     @Override
-    public void setNoImage(boolean isNoImage)
+    public void setNoImage(final boolean isNoImage)
     {
         super.setNoImage(isNoImage);
         schedRepaint();

@@ -59,7 +59,8 @@ public class Thumbnailer
     private static HashMap<String, String> availableIcons;
 
 	/** A map of registered ThumbnailGenerators. */
-	protected Hashtable<String, ThumbnailGeneratorIFace> mimeTypeToGeneratorMap;
+    protected Hashtable<String, ThumbnailGeneratorIFace> mimeTypeToGeneratorMap;
+    protected Hashtable<String, String>                  extToMimeType; // File Extension to MimeType
 	
     /** The quality factor of the thumbnail output. */
 	protected float quality;
