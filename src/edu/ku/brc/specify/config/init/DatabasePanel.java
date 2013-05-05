@@ -45,6 +45,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+
+import jogamp.opengl.glu.nurbs.PwlArc;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -61,6 +64,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
@@ -95,7 +99,7 @@ public class DatabasePanel extends BaseSetupPanel
     protected JTextField              dbNameTxt;
     protected JTextField              hostNameTxt;
     protected JComboBox               drivers;
-    protected JCheckBox               isConvUploadChkBx;
+    protected JCheckBox               isStructureOnly;
     
     protected Vector<DatabaseDriverInfo> driverList;
     protected boolean                    doSetDefaultValues;
@@ -154,8 +158,9 @@ public class DatabasePanel extends BaseSetupPanel
         builder.add(createLabel(" "),     cc.xy(1, row)); // spacer
         row += 2;
         
-        isConvUploadChkBx = createCheckBox(builder, "CONVUPLD_CHKBX", row);
-        isConvUploadChkBx.setToolTipText(getResourceString("CONVUPLD_CHKBX_TT"));
+        isStructureOnly = createCheckBox(builder, "CONVUPLD_CHKBX", row);
+        isStructureOnly.setToolTipText(getResourceString("CONVUPLD_CHKBX_TT"));
+        isStructureOnly.setVisible(!UIRegistry.isMobile() && !UIRegistry.isEmbedded());
         row += 2;
         
         label       = UIHelper.createLabel("", SwingConstants.CENTER);
@@ -211,6 +216,19 @@ public class DatabasePanel extends BaseSetupPanel
         }
         
         progressBar.setVisible(false);
+        
+        DocumentAdaptor docAdp = new DocumentAdaptor()
+        {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                updateBtnUI();
+            }
+        };
+        usernameTxt.getDocument().addDocumentListener(docAdp);
+        passwordTxt.getDocument().addDocumentListener(docAdp);
+        dbNameTxt.getDocument().addDocumentListener(docAdp);
+        hostNameTxt.getDocument().addDocumentListener(docAdp);
 
         updateBtnUI();
     }
@@ -227,7 +245,7 @@ public class DatabasePanel extends BaseSetupPanel
         props.put(HOSTNAME,     hostNameTxt.getText());
         props.put("driver",     drivers.getSelectedItem().toString());
         props.put("driverObj",  drivers.getSelectedItem());
-        props.put(DB_STRUCT_ONLY, isConvUploadChkBx.isSelected() ? "true" : "false");
+        props.put(DB_STRUCT_ONLY, isStructureOnly.isSelected() ? "true" : "false");
         
     }
     
@@ -259,7 +277,7 @@ public class DatabasePanel extends BaseSetupPanel
         drivers.setEnabled(enable);
         createDBBtn.setEnabled(enable);
         skipStepBtn.setEnabled(enable);
-        isConvUploadChkBx.setEnabled(enable);
+        isStructureOnly.setEnabled(enable);
     }
 
     /* (non-Javadoc)
@@ -276,7 +294,7 @@ public class DatabasePanel extends BaseSetupPanel
         hostNameTxt.setText(values.getProperty(HOSTNAME));
         
         String isCvnVal = values.getProperty(DB_STRUCT_ONLY);
-        isConvUploadChkBx.setSelected(StringUtils.isNotEmpty(isCvnVal) ? isCvnVal.equals("true") : false);
+        isStructureOnly.setSelected(StringUtils.isNotEmpty(isCvnVal) ? isCvnVal.equals("true") : false);
         
         if (doSetDefaultValues)
         {
@@ -611,6 +629,14 @@ public class DatabasePanel extends BaseSetupPanel
         }
     }
     
+    /**
+     * @param label
+     * @param text
+     * @param badKeyArg
+     * @param errKeyArg
+     * @param isPwd
+     * @return
+     */
     public static  boolean checkForValidText(final JLabel label,
                                              final String text, 
                                              final String badKeyArg, 
@@ -660,10 +686,22 @@ public class DatabasePanel extends BaseSetupPanel
         
         if (!checkForValidText(label, dbNameTxt.getText(),   "ERR_BAD_DBNAME",  "NO_SPC_DBNAME", false) ||
             !checkForValidText(label, usernameTxt.getText(), "ERR_BAD_USRNAME", "NO_SPC_USRNAME", false) ||
-            !checkForValidText(label, passwordTxt.getText(),  null,             "NO_SPC_PWDNAME", false))
+            !checkForValidText(label, passwordTxt.getText(),  null,             "NO_SPC_PWDNAME", true))
         {
             isOK             = false;
             isOKForCreateBtn = false;
+        }
+        
+        if (isOKForCreateBtn && 
+           UIRegistry.isEmbedded() && 
+           usernameTxt.getText().toLowerCase().equals("root"))
+        {
+            isOK             = false;
+            isOKForCreateBtn = false;
+            
+            label.setForeground(Color.RED);
+            label.setText(getResourceString("ERR_NO_ROOT_EMBEDDED"));
+            label.setVisible(true);
         }
         
         return (isOK != null && isOK) || manualLoginOK;
