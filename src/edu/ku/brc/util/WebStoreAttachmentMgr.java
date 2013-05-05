@@ -36,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -87,8 +86,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     private byte[]                  bytes              = new byte[100*1024];
     private File                    cacheDir; 
     private FileCache               shortTermCache;
-    private HashMap<String, String> attachNameThumbMap = new HashMap<String, String>();
-    private HashMap<String, String> attachNameOrigMap  = new HashMap<String, String>();
     private SimpleDateFormat        dateFormat         = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
     
     // URLs
@@ -710,36 +707,37 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      */
     private synchronized File getFileFromWeb(final String fileName, final String mimeType, final Integer scale)
     {
-        boolean NO_INTERNET = false;
-        if (NO_INTERNET)
-        {
-            File tmpFile = null;
-            try
-            {
-                tmpFile = createTempFile(fileName, false);
-                
-                if (fileName.endsWith("pdf"))
-                {
-                    FileUtils.copyFile(new File("/Users/rods/Downloads/PaymentConfirmation.pdf"), tmpFile);
-                    
-                } else if (fileName.endsWith("pdf"))
-                {
-                    FileUtils.copyFile(new File("/Users/rods/Downloads/IA.png"), tmpFile);
-                    
-                } else if (fileName.endsWith("docx"))
-                {
-                    FileUtils.copyFile(new File("/Users/rods/Downloads/Image.docx"), tmpFile);
-                    
-                } else if (fileName.endsWith("txt"))
-                {
-                    FileUtils.copyFile(new File("/Users/rods/Downloads/ich.txt"), tmpFile);
-                }
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            return tmpFile;
-        }
+// For testing
+//        boolean NO_INTERNET = false;
+//        if (NO_INTERNET)
+//        {
+//            File tmpFile = null;
+//            try
+//            {
+//                tmpFile = createTempFile(fileName, false);
+//                
+//                if (fileName.endsWith("pdf"))
+//                {
+//                    FileUtils.copyFile(new File("/Users/rods/Downloads/PaymentConfirmation.pdf"), tmpFile);
+//                    
+//                } else if (fileName.endsWith("pdf"))
+//                {
+//                    FileUtils.copyFile(new File("/Users/rods/Downloads/IA.png"), tmpFile);
+//                    
+//                } else if (fileName.endsWith("docx"))
+//                {
+//                    FileUtils.copyFile(new File("/Users/rods/Downloads/Image.docx"), tmpFile);
+//                    
+//                } else if (fileName.endsWith("txt"))
+//                {
+//                    FileUtils.copyFile(new File("/Users/rods/Downloads/ich.txt"), tmpFile);
+//                }
+//            } catch (Exception ex)
+//            {
+//                ex.printStackTrace();
+//            }
+//            return tmpFile;
+//        }
         
         try
         {
