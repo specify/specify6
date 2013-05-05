@@ -465,11 +465,11 @@
             </altviews>
         </view>
         
-		<view name="ObjectAttachment"
-			class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
-			busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
-			resourcelabels="false">
-			<desc><![CDATA[The Object-Attachment View.]]></desc>
+        <view name="ObjectAttachment"
+            class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Object-Attachment View.]]></desc>
             <altviews>
                 <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" mode="view"/>
                 <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" mode="edit"/>
@@ -477,6 +477,17 @@
                 <altview name="ObjectAttachment Table Edit" viewdef="ObjectAttachment Table"    mode="edit"/>
                 <altview name="ObjectAttachment Form View"  viewdef="ObjectAttachment Form"     label="Form" mode="view" default="true"/>
                 <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form" mode="edit"/>
+            </altviews>
+        </view>
+
+        <view name="ObjectAttachmentIconOnly"
+            class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Object-Attachment View.]]></desc>
+            <altviews>
+                <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" label="Thumb" mode="view" default="true"/>
+                <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" label="Thumb" mode="edit"/>
             </altviews>
         </view>
 
