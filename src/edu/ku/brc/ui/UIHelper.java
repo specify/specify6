@@ -863,6 +863,10 @@ public final class UIHelper
             {
                 return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
                 
+            }  else if (cls == String.class)
+            {
+                return dataStr;
+                
             } else
             {
                 log.error("Unsupported type for conversion["+cls.getSimpleName()+"]");

@@ -116,7 +116,8 @@ public class AttachmentIconMapper implements ObjectIconMapper
     @Override
     public ImageIcon getIcon(final Object obj, final ChangeListener listener)
     {
-        final IconSize   size        = IconSize.Std32;
+        final IconSize   iconSize   = IconSize.Std32;
+        final int        size       = edu.ku.brc.util.thumbnails.Thumbnailer.getInstance().getMaxSize().width;
         final Attachment attachment = (Attachment)obj;
 
         ImageIcon cachedIcon = thumbnailCache.get(attachment);
@@ -126,7 +127,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
         }
         
         // try to get the thumbnail from the attachment storage location
-        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attachment, size.size());
+        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attachment, size);
         if (thumb != null)
         {
             if (thumb.exists())
@@ -171,7 +172,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
         
         if (mimeType == null)
         {
-            return notifyListener(listener, IconManager.getIcon("unknown", size));
+            return notifyListener(listener, IconManager.getIcon("unknown", iconSize));
         }
         
         int inx = mimeType.indexOf('/');
@@ -181,7 +182,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
             String mimeStr    = Thumbnailer.getIconNameFromExtension(mimePrefix);
             if (mimeStr != null)
             {
-                ImageIcon icon = IconManager.getIcon(mimeStr, size);
+                ImageIcon icon = IconManager.getIcon(mimeStr, iconSize);
                 if (icon != null)
                 {
                     return notifyListener(listener, icon);
@@ -193,7 +194,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 mimeStr = mimeType.substring(inx+1, mimeType.length());
                 if (!mimeStr.equals("octet-stream"))
                 {
-                    ImageIcon icon = IconManager.getIcon(mimeStr, size);
+                    ImageIcon icon = IconManager.getIcon(mimeStr, iconSize);
                     if (icon != null)
                     {
                         return notifyListener(listener, icon);
@@ -210,13 +211,13 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 String imgIconName = Thumbnailer.getIconNameFromExtension(ext);
                 if (imgIconName != null)
                 {
-                    return notifyListener(listener, IconManager.getIcon(imgIconName, size));
+                    return notifyListener(listener, IconManager.getIcon(imgIconName, iconSize));
 
                 }
             }
         }
 
-        return notifyListener(listener, IconManager.getIcon("unknown", size));
+        return notifyListener(listener, IconManager.getIcon("unknown", iconSize));
     }
     
     //-------------------------------------------------------------------------

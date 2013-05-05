@@ -343,9 +343,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         try
         {
-            //String fileExt   = FilenameUtils.getExtension(srcFile.getName());
-            //File   tmpFile = createTempFile(fileExt, false); // gets deleted automatically
-
             String absPath     = srcFile.getAbsolutePath();
             String newDestPath = FilenameUtils.getPrefix(absPath) + FilenameUtils.getPath(absPath) + FilenameUtils.getName(destFileName);
             File   destFile    = new File(newDestPath);
@@ -450,17 +447,14 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         String  mimeType = mimeTypeArg != null ? mimeTypeArg : AttachmentUtils.getMimeType(hasAttachmentLoc ? attachLocation : originalLoc);
         //boolean isImage  = mimeType.startsWith("image/");
         
-        String fileNameToGet = attachLocation;
-        if (hasAttachmentLoc)
-        {
-            //////////////////////////////////////////////////////////
-            // If scale is not null, then it contains the scale size
-            // so change the name to a scale name
-            //////////////////////////////////////////////////////////
-            if (hasScaleSize)
-            {   
-                fileNameToGet = getScaledFileName(attachLocation, scale);
-            }
+        String fileNameToGet = hasAttachmentLoc ? attachLocation : FilenameUtils.getName(originalLoc);
+        //////////////////////////////////////////////////////////
+        // If scale is not null, then it contains the scale size
+        // so change the name to a scale name
+        //////////////////////////////////////////////////////////
+        if (hasScaleSize)
+        {   
+            fileNameToGet = getScaledFileName(fileNameToGet, scale);
         }
         
         //////////////////////////////////////////////////////////////////////
@@ -734,6 +728,16 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             if (thumbFile.exists())
             {
                 thumbFile.delete();
+            }
+            
+            String prefix  = FilenameUtils.getBaseName(attachment.getAttachmentLocation()) + "_";
+            File   baseDir = new File(baseDirectory + File.separator + ORIGINAL);
+            for (File file : baseDir.listFiles())
+            {
+                if (file.getName().startsWith(prefix))
+                {
+                    file.delete();
+                }
             }
             
         } else
