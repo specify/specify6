@@ -374,7 +374,7 @@
         >
         <switch single="true">
             <fields>
-                <field>name</field>
+                <field>fullName</field>
             </fields>
         </switch>
     </format>
