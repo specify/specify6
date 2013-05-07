@@ -1256,8 +1256,8 @@ public class ConvertVerifier extends AppBase
 
          
          oldSQL = "SELECT cc.CollectionObjectCatalogID, co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
-                  "INNER JOIN collectionobjectcatalog cc ON co.DerivedFromID = cc.CollectionObjectCatalogID " + 
-                  "WHERE cc.SubNumber IS NOT NULL AND cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.TimestampCreated";
+                  "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " + 
+                  "WHERE cc.SubNumber > 0 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.TimestampCreated";
          
          
          /*oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co WHERE CollectionObjectID IN " +
@@ -2514,8 +2514,8 @@ public class ConvertVerifier extends AppBase
     
         oldSQL = "SELECT s.ShipmentNumber,s.ShipmentDate, s.ShipmentMethod, s.NumberOfPackages, s.Weight, s.InsuredForAmount, ato.FirstName, ato.LastName, ato.Name, aby.FirstName, aby.LastName, aby.Name " +
                  "FROM shipment AS s " +
-                 "Inner Join agent AS ato ON s.ShippedToID = ato.AgentID " +
-                 "Inner Join agent AS aby ON s.ShippedByID = aby.AgentID " +
+                 "Inner Join agentaddress aato ON s.ShippedToID = aato.AgentAddressID inner join agent ato on ato.AgentID = aato.AgentID " +
+                 "Inner Join agentaddress AS aaby ON s.ShippedByID = aaby.AgentAddressID inner join agent aby on aby.AgentID = aaby.AgentID " +
                  "ORDER BY s.ShipmentNumber ASC";
     
         log.info(newSQL);
