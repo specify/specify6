@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.config;
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCount;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
@@ -60,7 +61,14 @@ import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.init.BldrPickList;
+import edu.ku.brc.specify.config.init.BldrPickListItem;
+import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -788,5 +796,71 @@ public class FixDBAfterLogin
             }
         }
    }
+  
     
+    /**
+     * @param discipline
+     * @return
+     */
+    public static void addPickListByName(final String pickListName)
+    {
+        DataProviderSessionIFace localSession = null;
+        try
+        {
+            localSession = DataProviderFactory.getInstance().createSession();
+            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            
+            collection = localSession.get(Collection.class, collection.getId());
+            for (PickList pl : collection.getPickLists())
+            {
+                if (pl.getName().equals(pickListName))
+                {
+                    return;
+                }
+            }
+            
+            localSession.beginTransaction();
+            
+            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists("common");
+            if (pickLists != null)
+            {
+                for (BldrPickList pl : pickLists)
+                {
+                    if (!pl.getName().equals(pickListName)) continue;
+                    
+                    log.info("Creating PickList["+pl.getName()+"]");
+                    PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                                                       pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
+                                                       pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType(), collection);
+                    pickList.setIsSystem(true);
+                    pickList.setCollection(collection);
+                    collection.getPickLists().add(pickList);
+                    
+                    for (BldrPickListItem item : pl.getItems())
+                    {
+                        pickList.addItem(item.getTitle(), item.getValue(), item.getOrdinal());
+                    }
+                    localSession.saveOrUpdate(pickList);
+                }
+                if (localSession != null)
+                {
+                    localSession.saveOrUpdate(collection);
+                }
+            } else
+            {
+                log.error("No PickList XML");
+            }
+            localSession.commit();
+            
+            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (localSession != null) localSession.close();
+        }
+    }
+
 }

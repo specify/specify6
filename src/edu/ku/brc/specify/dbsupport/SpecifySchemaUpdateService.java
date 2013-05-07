@@ -53,14 +53,21 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
@@ -147,6 +154,7 @@ import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
@@ -154,6 +162,7 @@ import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -710,7 +719,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //---------------------------------------------------------------------------
                     //-- LocalityDetail
                     //---------------------------------------------------------------------------
-                    String  tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+                    String  tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
                     Integer len     = getFieldLength(conn, databaseName, tblName, "UtmDatum");
                     if (len == null)
                     {
@@ -739,7 +748,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //---------------------------------------------------------------------------
                     //-- SpecifyUser
                     //---------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(SpecifyUser.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(SpecifyUser.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, "Password");
                     if (len == null)
                     {
@@ -761,7 +770,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //---------------------------------------------------------------------------
                     //-- SpExportSchemaItem
                     //---------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(SpExportSchemaItem.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(SpExportSchemaItem.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, "FieldName");
                     if (len == null)
                     {
@@ -783,7 +792,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //---------------------------------------------------------------------------
                     //-- Agent
                     //---------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(Agent.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Agent.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, "LastName");
                     if (len == null)
                     {
@@ -805,7 +814,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //---------------------------------------------------------------------------
                     //-- SpExportSchema
                     //---------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(SpExportSchema.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(SpExportSchema.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, "SchemaName");
                     if (len == null)
                     {
@@ -1152,7 +1161,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- Agent
                     //-----------------------------------------------------------------------------
                     // Add New Fields to Address
-                    tblName = getTableTitleForFrame(Agent.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Agent.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "DateType"))
                     {
                         String[] addrCols = {"DateType", TINYINT4, "Title", 
@@ -1168,7 +1177,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- Address
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(Address.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Address.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "Address3"))
                     {
                         frame.setDesc("Updating Address Fields...");
@@ -1183,7 +1192,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- LocalityDetail
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "StartDepth"))
                     {
                         String[] locDetCols = {"StartDepth",         "Double",      "Drainage", 
@@ -1202,7 +1211,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- Locality
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(Locality.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Locality.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "Text1"))
                     {
                         String[] locCols = {"Text1", "VARCHAR(255)", "SrcLatLongUnit", 
@@ -1217,7 +1226,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- CollectionObjectAttribute
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(CollectionObjectAttribute.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(CollectionObjectAttribute.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "Text15"))
                     {
                         if (!addColumn(conn, databaseName, tblName, "Text15",  "VARCHAR(64)", "Text14"))
@@ -1230,7 +1239,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- PaleoContext
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(PaleoContext.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(PaleoContext.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "ChronosStratEndID"))
                     {
                         if (!addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "INT", "ChronosStratID"))
@@ -1243,7 +1252,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- Institution
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(Institution.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Institution.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "IsSingleGeographyTree"))
                     {
                         String[] instCols = {"IsSingleGeographyTree",  "BIT(1)", "IsServerBased", 
@@ -1261,7 +1270,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- GeologicTimePeriod
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(GeologicTimePeriod.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(GeologicTimePeriod.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "Text1"))
                     {
                         String[] gtpCols = {"Text1", "VARCHAR(64)", "EndUncertainty", 
@@ -1277,7 +1286,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- PreparationAttribute
                     //-----------------------------------------------------------------------------
                     // Fix Field Length
-                    tblName = getTableTitleForFrame(PreparationAttribute.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(PreparationAttribute.getClassTableId());
                     String prepAttrFld = "Text22";
                     len = getFieldLength(conn, databaseName, tblName, prepAttrFld);
                     if (len != null && len == 10)
@@ -1298,7 +1307,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- LocalityDetail
                     //-----------------------------------------------------------------------------
                     // Change column types for UTMEasting, UTMNorthing and UTMScale
-                    tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
                     String columnType = getFieldColumnType(conn, databaseName, tblName, "UTMEasting");
                     if (columnType == null)
                     {
@@ -1344,7 +1353,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- GeoCoordDetail
                     //-----------------------------------------------------------------------------
                     // Change column types for MaxUncertaintityEst and NamedPlaceExtent
-                    tblName    = getTableTitleForFrame(GeoCoordDetail.getClassTableId());
+                    tblName    = getTableNameAndTitleForFrame(GeoCoordDetail.getClassTableId());
                     columnType = getFieldColumnType(conn, databaseName, tblName, "MaxUncertaintyEst");
                     if (columnType == null)
                     {
@@ -1376,7 +1385,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- LoanPreparation
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(LoanPreparation.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(LoanPreparation.getClassTableId());
                     columnType = getFieldColumnType(conn, databaseName, tblName, "DescriptionOfMaterial");
                     if (columnType == null)
                     {
@@ -1398,7 +1407,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- ConservEvent
                     //-----------------------------------------------------------------------------
-                    tblName = getTableTitleForFrame(ConservEvent.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(ConservEvent.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, "Text1"))
                     {
                         String[] consrvEvCols = {"Text1",  "VARCHAR(64)", "Remarks",
@@ -1418,7 +1427,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- DNASequencingRun
                     //-----------------------------------------------------------------------------
                     String runByAgentID = "RunByAgentID";
-                    tblName = getTableTitleForFrame(DNASequencingRun.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(DNASequencingRun.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, runByAgentID))
                     {
                         if (addColumn(conn, databaseName, tblName, runByAgentID,  "INT(11)", "DNASequenceID"))
@@ -1439,6 +1448,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    
+                    String pwdMinLen = "MinimumPwdLength";
+                    tblName = getTableNameAndTitleForFrame(Institution.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, pwdMinLen))
+                    {
+                        if (!addColumn(conn, databaseName, tblName, pwdMinLen,  TINYINT4, "LsidAuthority"))
+                        {
+                            return false;
+                        }
+                    }
+                    
                     frame.incOverall(); // #24
                     
 
@@ -1463,7 +1483,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    tblName = getTableTitleForFrame(SpQuery.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(SpQuery.getClassTableId());
                     len = getFieldLength(conn, databaseName, tblName, "SqlStr");
                     if (len == 64)
                     {
@@ -1481,7 +1501,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     String varQualNameBad  = "VarQualifer";
                     String varQualNameGood = "VarQualifier";
                     
-                    tblName = getTableTitleForFrame(Determination.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Determination.getClassTableId());
                     if (doesColumnExist(databaseName, tblName, varQualNameBad) &&
                         !doesColumnExist(databaseName, tblName, varQualNameGood))
                     {
@@ -1512,7 +1532,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     frame.setDesc("Adding OCR field to Collection Object"); // I18N
                     String ocrField = "OCR";
-                    tblName = getTableTitleForFrame(CollectionObject.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(CollectionObject.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, ocrField))
                     {
                         if (!addColumn(conn, databaseName, tblName, ocrField,  "TEXT", "TotalValue"))
@@ -1553,10 +1573,30 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     // Schema Changes 1.8                                                                                           //
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    
+                    Integer[] sgrTblIds = new Integer[] {CollectionObject.getClassTableId(), CollectingEvent.getClassTableId(), 
+                                                         Locality.getClassTableId(), WorkbenchRow.getClassTableId()};
+                    String[]  sgrAfter  = new String[] {"TotalValue", "Remarks", "Text2", "UploadStatus"};
+                    String sgrStatusField = "SGRStatus";
+                    int i = 0;
+                    for (Integer tblId : sgrTblIds)
+                    {
+                        tblName = getTableNameAndTitleForFrame(tblId);
+                        if (!doesColumnExist(databaseName, tblName, ocrField))
+                        {
+                            if (!addColumn(conn, databaseName, tblName, sgrStatusField,  TINYINT4, sgrAfter[i]))
+                            {
+                                return false;
+                            }
+                        }
+                        i++;
+                    }
+
+                    addNewAttachmentTables(conn);
 
                     frame.setDesc("Adding ISO Code field to Geography"); // I18N
                     String geoCode = "GeographyCode";
-                    tblName = getTableTitleForFrame(Geography.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(Geography.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, geoCode);
                     if (len != null && len == 8)
                     {
@@ -1577,7 +1617,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     // Setting new Field Length for QueryFields
                     String startValue = "StartValue";
-                    tblName = getTableTitleForFrame(SpQueryField.getClassTableId());
+                    tblName = getTableNameAndTitleForFrame(SpQueryField.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, startValue);
                     if (len != null && len == 64)
                     {
@@ -1617,6 +1657,35 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         return false;
     }
+    
+    /**
+     * 
+     */
+    public static void addNewAttachmentTables(final Connection conn)
+    {
+        File sqlFile = XMLHelper.getConfigDir("new_attch_tables.sql");
+        try
+        {
+            String str = FileUtils.readFileToString(sqlFile);
+            String[] stmts = StringUtils.splitPreserveAllTokens(str, ';');
+            for (String sql : stmts)
+            {
+                String[] toks = StringUtils.splitPreserveAllTokens(sql, '`');
+                if (toks.length == 73)
+                {
+                    if (!BasicSQLUtils.doesTableExist(conn, toks[1]))
+                    {
+                        int rv = BasicSQLUtils.update(conn, sql);
+                        System.out.println("rv = "+rv);
+                    }
+                }
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
                                   
     /**
      * @param conn
@@ -1749,7 +1818,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         {
             DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tblIds[i]);
             //frame.setDesc(String.format("Adding GUID field to %s", ti.getTitle())); // I18N
-            String tblName = getTableTitleForFrame(tblIds[i]);
+            String tblName = getTableNameAndTitleForFrame(tblIds[i]);
             if (!doesColumnExist(databaseName, tblName, guidField))
             {
                 if (!addColumn(conn, databaseName, tblName, guidField,  "VARCHAR(128)", afterName[i]))
@@ -1772,7 +1841,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         frame.setDesc("Updating Attachments...");
 
         String tableID = "TableID";
-        String tblName = getTableTitleForFrame(Attachment.getClassTableId());
+        String tblName = getTableNameAndTitleForFrame(Attachment.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, tableID))
         {
             if (!addColumn(conn, databaseName, tblName, tableID,  "TINYINT", "Title"))
@@ -2064,7 +2133,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         //-----------------------------------------------------------------------------
         //-- SpVersion
         //-----------------------------------------------------------------------------
-        String tblName = getTableTitleForFrame(SpVersion.getClassTableId());
+        String tblName = getTableNameAndTitleForFrame(SpVersion.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, "IsDBClosed"))
         {
             String[] instCols = {"IsDBClosed", "BIT(1)", "SchemaVersion", 
@@ -2079,7 +2148,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         //-----------------------------------------------------------------------------
         //-- GeoCoordDetail
         //-----------------------------------------------------------------------------
-        tblName = getTableTitleForFrame(GeoCoordDetail.getClassTableId());
+        tblName = getTableNameAndTitleForFrame(GeoCoordDetail.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, "UncertaintyPolygon"))
         {
             String[] instCols = {"UncertaintyPolygon", "TEXT", "MaxUncertaintyEstUnit", 
@@ -2221,11 +2290,50 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
         DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
         dbMgr.setConnection(conn);
+        
+        String dnasequenceattachment = "dnasequenceattachment";
+        
+        boolean isDnaSeqInError = dbMgr.doesDBHaveTable(dnasequenceattachment) &&
+                                  dbMgr.doesFieldExistInTable(dnasequenceattachment, "DnaSequencingRunAttachmentId");
+        
+        int recCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM dnasequenceattachment");
+        log.debug("Number of dnasequenceattachment records: "+recCnt);
+        
+        boolean isDNASeqTableFixed = false;
+        if (isDnaSeqInError)
+        {
+            if (recCnt ==  0)
+            {
+                int rv = BasicSQLUtils.update(conn, "DROP TABLE dnasequenceattachment");
+                log.debug("Dropped Old table dnasequenceattachment: "+rv);
+                if (rv != 0)
+                {
+                    log.info("Failed dropping dnasequenceattachment: "+rv);
+                    return false;
+                }
+                
+                rv = BasicSQLUtils.update(conn, dnaSeqAttSQL);
+                log.debug("Created New table dnasequenceattachment: "+rv);
+                if (rv != 0)
+                {
+                    log.info("Failed creating dnasequenceattachment: "+rv);
+                    return false;
+                }
+                isDNASeqTableFixed = true;
+                
+            } else
+            {
+                UIRegistry.showError("The is a problem with the DNASequenceAttachment table that can not be fixed automatically.\nPlease contact the Specify Help Desk.");
+                return false;
+            }
+        }
+        
         if (dbMgr.doesDBHaveTable("dnasequencerunattachment"))
         {
             log.error("dnasequencerunattachment already exists");
             return false;
         }
+        
         int rv;
         
         rv = BasicSQLUtils.update(conn, dnaSeqRunAttSQL);
@@ -2236,8 +2344,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             return false;
         }
         
-        int recCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM dnasequenceattachment");
-        log.debug("Number of dnasequenceattachment records: "+recCnt);
         if (recCnt > 0)
         {
             rv = BasicSQLUtils.update(conn, insert);
@@ -2249,20 +2355,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         }
         
-        rv = BasicSQLUtils.update(conn, "DROP TABLE dnasequenceattachment");
-        log.debug("Dropped Old table dnasequenceattachment: "+rv);
-        if (rv != 0)
+        if (!isDNASeqTableFixed)
         {
-            log.info("Failed dropping dnasequenceattachment: "+rv);
-            return false;
-        }
-        
-        rv = BasicSQLUtils.update(conn, dnaSeqAttSQL);
-        log.debug("Created New table dnasequenceattachment: "+rv);
-        if (rv != 0)
-        {
-            log.info("Failed creating dnasequenceattachment: "+rv);
-            return false;
+            rv = BasicSQLUtils.update(conn, "DROP TABLE dnasequenceattachment");
+            log.debug("Dropped Old table dnasequenceattachment: "+rv);
+            if (rv != 0)
+            {
+                log.info("Failed dropping dnasequenceattachment: "+rv);
+                return false;
+            }
+            
+            rv = BasicSQLUtils.update(conn, dnaSeqAttSQL);
+            log.debug("Created New table dnasequenceattachment: "+rv);
+            if (rv != 0)
+            {
+                log.info("Failed creating dnasequenceattachment: "+rv);
+                return false;
+            }
         }
         
         return true;
@@ -2948,9 +3057,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         for (Integer id : ids)
         {
             String sql = String.format("DELETE FROM %s WHERE AgentID = %d", tableName, id);
-            if (update(conn, sql) != 1)
+            int rv = update(conn, sql);
+            if (rv != 1)
             {
-                errMsgList.add(String.format("Error deleting Agent %d Table %s\n", id, tableName));
+                errMsgList.add(String.format("Error deleting Agent %d Table %s rv: %d\n", id, tableName, rv));
             }
         }
     }
@@ -3237,7 +3347,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // PaleoContext
         /////////////////////////////
-        getTableTitleForFrame(PaleoContext.getClassTableId());
+        getTableNameAndTitleForFrame(PaleoContext.getClassTableId());
         Integer len = getFieldLength(conn, databaseName, "paleocontext", "Text1");
         alterFieldLength(conn, databaseName, "paleocontext", "Text1", 32, 64);
         alterFieldLength(conn, databaseName, "paleocontext", "Text2", 32, 64);
@@ -3260,7 +3370,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // FieldNotebookPage
         /////////////////////////////
-        getTableTitleForFrame(FieldNotebookPage.getClassTableId());
+        getTableNameAndTitleForFrame(FieldNotebookPage.getClassTableId());
         len = getFieldLength(conn, databaseName, "fieldnotebookpage", "PageNumber");
         if (len != null && len == 16)
         {
@@ -3289,7 +3399,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         // LocalityDetail
         /////////////////////////////
         
-        String tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+        String tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
         
         boolean statusOK = true;
         String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'localitydetail' AND COLUMN_NAME = 'UtmScale' AND DATA_TYPE = 'varchar'", dbc.getDatabaseName());
@@ -3401,7 +3511,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             try
             {
                 // Add New Fields to Determination
-                tblName = getTableTitleForFrame(Determination.getClassTableId());
+                tblName = getTableNameAndTitleForFrame(Determination.getClassTableId());
                 addColumn(conn, databaseName, tblName, "VarQualifier",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
                 addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifier");
                 frame.incOverall();
@@ -3434,7 +3544,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     Statement stmt = null;
                     try
                     {
-                        getTableTitleForFrame(CollectingEventAttribute.getClassTableId());
+                        getTableNameAndTitleForFrame(CollectingEventAttribute.getClassTableId());
                         
                         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                         update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
@@ -3519,7 +3629,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     mapper.setFrame(frame);
                     mapper.mapAllIdsNoIncrement(count > 0 ? count : null);
                     
-                    getTableTitleForFrame(Collector.getClassTableId());
+                    getTableNameAndTitleForFrame(Collector.getClassTableId());
                     Statement stmt = null;
                     try
                     {
@@ -3596,7 +3706,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 
                 if (!status)
                 {
-                    UIRegistry.showLocalizedError("SCHEMA_UPDATE_ERROR", errMsgStr);
+                    //UIRegistry.showLocalizedError("SCHEMA_UPDATE_ERROR", errMsgStr);
+                    JTextArea ta = UIHelper.createTextArea();
+                    ta.setText(errMsgStr);
+                    CellConstraints cc  = new CellConstraints();
+                    PanelBuilder    pb  = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+                    pb.add(new JScrollPane(ta, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xy(1, 1));
+                    pb.setDefaultDialogBorder();
+                    
+                    CustomDialog    dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("SCHEMA_UPDATE_ERROR"), true, pb.getPanel());
+                    UIHelper.centerAndShow(dlg);
                 }
                 
                 dbmsMgr.close();
@@ -3705,7 +3824,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param tableId the id of the table
      * @return the db table name
      */
-    private String getTableTitleForFrame(final int tableId)
+    private String getTableNameAndTitleForFrame(final int tableId)
     {
         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
         if (ti != null)
@@ -3917,7 +4036,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
 	protected void fixSchemaMappingScope(final Connection conn, final String databaseName) throws Exception 
 	{
-	    String tblName = getTableTitleForFrame(SpExportSchemaMapping.getClassTableId());
+	    String tblName = getTableNameAndTitleForFrame(SpExportSchemaMapping.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, "CollectionMemberID"))
         {
             String[] instCols = {"CollectionMemberID", "INT(11)", "TimestampExported"};

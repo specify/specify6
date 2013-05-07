@@ -2774,6 +2774,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;
+                    
+                    FixDBAfterLogin.addPickListByName("ContainerType");
+
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
