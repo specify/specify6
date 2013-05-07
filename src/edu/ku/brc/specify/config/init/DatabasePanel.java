@@ -508,7 +508,6 @@ public class DatabasePanel extends BaseSetupPanel
                                 thumb.setMaxSize(128, 128);
 
                                 File attLoc = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
-                                FileUtils.cleanDirectory(attLoc);
                                 AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
                                 AttachmentUtils.setAttachmentManager(attachMgr);
                                 AttachmentUtils.setThumbnailer(thumb);
