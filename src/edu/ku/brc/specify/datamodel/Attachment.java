@@ -400,7 +400,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         if (tableIDArg == Accession.getClassTableId())
         {
             Institution inst = acm.getClassObject(Institution.class);
-            scopeType = inst.getIsAccessionsGlobal() ? INSTITUTION_SCOPE : COLLECTION_SCOPE;
+            scopeType = inst.getIsAccessionsGlobal() ? INSTITUTION_SCOPE : DIVISION_SCOPE;
         } else
         {
             scopeType = tblIdToScopeType.get(tableIDArg);

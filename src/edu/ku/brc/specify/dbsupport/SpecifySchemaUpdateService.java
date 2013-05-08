@@ -1686,7 +1686,51 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
     }
 
-                                  
+    /**
+     * @param conn
+     * @param stmt
+     * @return
+     * @throws SQLException
+     */
+    private boolean fixTablesAccessionAttachmentsColumnID(final Connection conn, 
+                                                          final Statement stmt) throws SQLException
+     {
+         int     instID        = BasicSQLUtils.getCountAsInt("SELECT InstitutionID FROM institution");
+         boolean isMgrGlobally = BasicSQLUtils.getCountAsInt("SELECT IsAccessionsGlobal FROM institution") != 0;
+         String  pSQL          = isMgrGlobally ? String.format("UPDATE attachment SET ScopeID=%d,ScopeType=%d WHERE AttachmentID = ?", instID, Attachment.INSTITUTION_SCOPE) :
+                                                 String.format("UPDATE attachment SET ScopeID=?,ScopeType=%d WHERE AttachmentID = ?", Attachment.DIVISION_SCOPE);
+         PreparedStatement pStmt = conn.prepareStatement(pSQL);
+         
+         String sql = "SELECT a.AttachmentID, ac.AccessionID, ac.DivisionID FROM attachment a " +
+         		      "INNER JOIN accessionattachment aa ON a.AttachmentID = aa.AttachmentID " +
+                      "INNER JOIN accession ac ON aa.AccessionID = ac.AccessionID ";
+         
+         int cnt = 0;
+         ResultSet rs  = stmt.executeQuery(sql);
+         while (rs.next())
+         {
+             if (isMgrGlobally)
+             {
+                 pStmt.setInt(1, rs.getInt(1)); // AccessionID
+             } else
+             {
+                 pStmt.setInt(2, rs.getInt(1)); // AccessionID
+                 pStmt.setInt(1, rs.getInt(3)); // ScopeID (DivisionID)
+             }
+             
+             if (pStmt.executeUpdate() != 1)
+             {
+                 log.error("Error updating AttachmentID "+rs.getInt(1));
+                 return false;
+             }
+             cnt++;
+         }
+         rs.close();
+         log.debug(String.format("Updated %d Accession Attachments", cnt));
+         pStmt.close();
+         return true;
+     }
+                                 
     /**
      * @param conn
      * @param stmt
@@ -1697,12 +1741,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      * @throws SQLException
      */
-    private boolean fixTablesAttachmentsColMemID(final Connection conn, 
-                                               final Statement stmt,
-                                               final Class<?>[] classes, 
-                                               final String[] sqls, 
-                                               final String colName,
-                                               final byte[] scopeType) throws SQLException
+    private boolean fixTablesAttachmentsColumnID(final Connection conn, 
+                                                 final Statement stmt,
+                                                 final Class<?>[] classes, 
+                                                 final String[] sqls, 
+                                                 final String colName,
+                                                 final byte[] scopeType) throws SQLException
      {
          PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET ScopeID=?,ScopeType=? WHERE AttachmentID = ?");
          int i = 0;
@@ -1777,7 +1821,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         byte[] scopes = new byte[classes.length];
         for (int i=0;i<scopes.length;i++) scopes[i] = scopeType;
-        return fixTablesAttachmentsColMemID(conn, stmt, classes, sqls, colName, scopes);
+        return fixTablesAttachmentsColumnID(conn, stmt, classes, sqls, colName, scopes);
     }
     
     /**
@@ -1949,6 +1993,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             int step = 1;
             frame.setProcess(0, 4);
             
+            if (!fixTablesAccessionAttachmentsColumnID(conn, stmt))
+            {
+                return false;
+            }
+            
             Class<?>[] attachOwnerClasses = {
                     CollectionObject.class,  
                     Borrow.class,  // Borrow -> BorrowMaterial.ColMemID
@@ -2015,9 +2064,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     "SELECT a.AttachmentID FROM attachment a INNER JOIN referenceworkattachment rwa ON a.AttachmentID = rwa.AttachmentID " +
                     "INNER JOIN referencework rw ON rwa.ReferenceWorkID = rw.ReferenceWorkID",
                     
-                    "SELECT a.AttachmentID FROM attachment a INNER JOIN accessionattachment aa ON a.AttachmentID = aa.AttachmentID " +
-                    "INNER JOIN accession ac ON aa.AccessionID = ac.AccessionID",
-                    
                     "SELECT a.AttachmentID, d.UserGroupScopeId FROM attachment a INNER JOIN taxonattachment ta ON a.AttachmentID = ta.AttachmentID " +
                     "INNER JOIN taxon t ON ta.TaxonID = t.TaxonID " +
                     "INNER JOIN discipline d ON t.TaxonTreeDefID = d.TaxonTreeDefID",
@@ -2029,13 +2075,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 FieldNotebookPageSet.class, // FieldNotebookPageSet -> FieldNotebookPage -> FieldNotebook.CollectionID 
                 Permit.class, 
                 ReferenceWork.class, 
-                Accession.class, 
                 Taxon.class,
             };
             byte[] scopes = {Attachment.COLLECTION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
                              Attachment.GLOBAL_SCOPE, Attachment.GLOBAL_SCOPE, Attachment.GLOBAL_SCOPE, Attachment.DISCIPLINE_SCOPE};
             
-            if (!fixTablesAttachmentsColMemID(conn, stmt, extraAttachOwnerClasses, sqls, null, scopes))
+            if (!fixTablesAttachmentsColumnID(conn, stmt, extraAttachOwnerClasses, sqls, null, scopes))
             {
                 return false;
             }
