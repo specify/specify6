@@ -1252,12 +1252,12 @@ public class ConvertVerifier extends AppBase
          newSQL = "SELECT co.CollectionObjectID, p.CountAmt, preptype.Name, p.Text1, p.Text2 " +
                   "FROM collectionobject co INNER JOIN preparation p ON co.CollectionObjectID = p.CollectionObjectID " +
                   "INNER JOIN preptype ON p.PrepTypeID = preptype.PrepTypeID " +
-                  "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY preptype.Name, p.TimestampCreated";
+                  "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY preptype.Name, p.CountAmt, p.TimestampCreated";
 
          
          oldSQL = "SELECT cc.CollectionObjectCatalogID, co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
                   "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " + 
-                  "WHERE cc.SubNumber > 0 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.TimestampCreated";
+                  "WHERE cc.SubNumber > 0 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.Count, co.TimestampCreated";
          
          
          /*oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co WHERE CollectionObjectID IN " +
@@ -1426,7 +1426,8 @@ public class ConvertVerifier extends AppBase
         
         try
         {
-            boolean hasOldRec = oldDBRS.next();
+
+        	boolean hasOldRec = oldDBRS.next();
             boolean hasNewRec = newDBRS.next();
             
             if (!hasOldRec && !hasNewRec)
@@ -1450,6 +1451,20 @@ public class ConvertVerifier extends AppBase
                 tblWriter.logErrors(newCatNum, "No New Record");
                 return StatusType.NO_NEW_REC;
             }
+   	
+        	//check number of rows, if not equal don't try to compare
+        	oldDBRS.last();
+        	newDBRS.last();
+        	if (oldDBRS.getRow() != newDBRS.getRow())
+        	{
+        		String msg = desc + " Cat Num [" + oldCatNum + "]: Sp5 DB has " + oldDBRS.getRow() + " related records. Sp6 DB has " + newDBRS.getRow();
+        		log.error(msg);
+                tblWriter.logErrors(newCatNum, msg);
+                return  oldDBRS.getRow() < newDBRS.getRow() ? StatusType.NO_NEW_REC : StatusType.NO_OLD_REC;
+        	}
+        	oldDBRS.first();
+        	newDBRS.first();
+        	
             
             String oldNewIdStr = oldCatNum + " / "+newCatNum;
             
