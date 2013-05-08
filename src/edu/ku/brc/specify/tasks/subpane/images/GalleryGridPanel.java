@@ -78,6 +78,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
     private int       currCellIndex = -1;
     private Dimension prevSize      = new Dimension(0, 0);
     private boolean   firstTime     = true;
+    private boolean   forceReload   = false;
  
     /**
      * @param rs
@@ -285,9 +286,22 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
     /**
      * 
      */
+    public void reset()
+    {
+        forceReload = true;
+        
+        stopLoading.set(true);
+        
+        itemList.clear();
+        reloadGallery();
+    }
+
+    /**
+     * 
+     */
     public void shutdown()
     {
-        stopLoading.set(true);
+       stopLoading.set(true);
         
         synchronized (itemList)
         {
@@ -305,16 +319,14 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
             {
                 icd.stopLoading();
             }
+            
+            itemList.clear();
+            displayList.clear();
+            loadListeners.clear();
+            recycleList.clear();
+            selectionListeners.clear();
+            infoListener = null;
         }
-        
-        itemList.clear();
-        displayList.clear();
-        recycleList.clear();
-        selectionListeners.clear();
-        loadListeners.clear();
-        
-        infoListener = null;
-
     }
     
     /**
@@ -323,14 +335,16 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
      */
     private void reload(int width, int height)
     {
-        if (prevSize.width == width && prevSize.height == height)
+        if (!forceReload && (prevSize.width == width && prevSize.height == height))
         {
             return;
         }
         prevSize.setSize(width, height);
         
         //System.out.println(String.format("%d, %d", width, height));
-        if (stopLoading.get()) return;
+        if (!forceReload && stopLoading.get()) return;
+        
+        forceReload = false;
         
         for (ImageCellDisplay imgDsp : displayList)
         {
@@ -471,6 +485,14 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
 //    {
 //        return rsController;
 //    }
+
+    /**
+     * @param forceReload the forceReload to set
+     */
+    public void setForceReload(boolean forceReload)
+    {
+        this.forceReload = forceReload;
+    }
 
     /**
      * 

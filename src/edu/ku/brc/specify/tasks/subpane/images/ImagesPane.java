@@ -152,6 +152,7 @@ public class ImagesPane extends BaseSubPane
 
     private JButton               infoBtn;
     private JButton               metaDataBtn;
+    private JButton               reloadBtn;
     private JButton               helpBtn;
     private boolean               isInfoShown = false;
     
@@ -337,6 +338,9 @@ public class ImagesPane extends BaseSubPane
         metaDataBtn = UIHelper.createIconBtn("MetaData", IconManager.STD_ICON_SIZE, null, null);
         metaDataBtn.setEnabled(true);
         
+        reloadBtn = UIHelper.createIconBtn("Loading", IconManager.STD_ICON_SIZE, null, null);
+        reloadBtn.setEnabled(true);
+        
         helpBtn = UIHelper.createHelpIconButton("ImageBrowser");
         
         //filterBtn = UIHelper.createIconBtn("Filter20", IconManager.STD_ICON_SIZE, null, null);
@@ -345,7 +349,7 @@ public class ImagesPane extends BaseSubPane
         rsController.getPanel().setOpaque(true);
         CommandBarPanel  cbp = new CommandBarPanel(rsController);
         //cbp.setLeftComps(createSearchPanel());                      // temporarily disabled (work in progress)
-        cbp.setRightComps(metaDataBtn, infoBtn, helpBtn);
+        cbp.setRightComps(reloadBtn, metaDataBtn, infoBtn, helpBtn);
         cbp.createUI();
         
         JPanel botPanel = new JPanel(new BorderLayout());
@@ -386,6 +390,28 @@ public class ImagesPane extends BaseSubPane
         });
         
         metaDataPanel.setVisible(false);
+        
+        reloadBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                reloadAttachments();
+            }
+        });
+    }
+    
+    /**
+     * 
+     */
+    private void reloadAttachments()
+    {
+        gridPanel.reset();
+        searchForAllAttachments();
+        gridPanel.setItemList(rowsVector);
+        gridPanel.setForceReload(true);
+        gridPanel.reloadGallery();
+
     }
     
     /* (non-Javadoc)
@@ -506,25 +532,25 @@ public class ImagesPane extends BaseSubPane
     /**
      * @return
      */
-    private Comparator<ImageDataItem> createComparator()
-    {
-        return new Comparator<ImageDataItem>() {
-            @Override
-            public int compare(ImageDataItem o1, ImageDataItem o2)
-            {
-                if (o1 != null && o2 != null)
-                {
-                    String t1 = o1.getShortName();
-                    String t2 = o2.getShortName();
-                    if (t1 != null && t2 != null)
-                    {
-                        return t1.compareTo(t2);
-                    }
-                }
-                return 0;
-            }
-        };
-    }
+//    private Comparator<ImageDataItem> createComparator()
+//    {
+//        return new Comparator<ImageDataItem>() {
+//            @Override
+//            public int compare(ImageDataItem o1, ImageDataItem o2)
+//            {
+//                if (o1 != null && o2 != null)
+//                {
+//                    String t1 = o1.getShortName();
+//                    String t2 = o2.getShortName();
+//                    if (t1 != null && t2 != null)
+//                    {
+//                        return t1.compareTo(t2);
+//                    }
+//                }
+//                return 0;
+//            }
+//        };
+//    }
     
     /**
      * 
@@ -581,16 +607,32 @@ public class ImagesPane extends BaseSubPane
     /**
      * 
      */
+    private void clearData()
+    {
+        for (ImageDataItem idi : rowsVector)
+        {
+            idi.shutdown();
+        }
+        rowsVector.clear();
+        
+        //gridPanel.reset();
+    }
+    
+    /**
+     * 
+     */
     private void searchForAllAttachments()
     {
         String filter   = getFilterString();
         String whereStr = StringUtils.isNotEmpty(filter) ? (" WHERE " + filter) : ""; 
-        String    sql   = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a %s ORDER BY TimestampCreated DESC", whereStr);
+        String    sql   = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType " +
+        		                        "FROM attachment a %s ORDER BY TimestampCreated DESC", whereStr);
         log.debug(sql);
         Statement stmt  = null;
         try
         {
-            rowsVector.clear();
+            clearData();
+            //rowsVector.clear();
             stmt = DBConnection.getInstance().getConnection().createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
@@ -619,9 +661,18 @@ public class ImagesPane extends BaseSubPane
      */
     private String getFilterString()
     {
+        AppContextMgr acm = AppContextMgr.getInstance();
+        int colId = acm.getClassObject(Collection.class).getId();
+        int dspId = acm.getClassObject(Discipline.class).getId();
+        int divId = acm.getClassObject(Division.class).getId();
+
+        String sql = String.format(" ((ScopeType = 0 AND ScopeID = %d) OR " +
+        		                    "(ScopeType = 1 AND ScopeID = %d) OR " +
+        		                    "(ScopeType = 2 AND ScopeID = %d)) ", colId, dspId, divId);
+        
         //return "a.MimeType = 'application/pdf'";
         //return String.format("NOT (a.MimeType LIKE 'image/%s')", "%");
-        return "";
+        return sql;
     }
     
     /**

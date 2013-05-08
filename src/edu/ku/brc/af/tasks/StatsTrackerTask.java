@@ -36,6 +36,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
@@ -296,6 +297,9 @@ public class StatsTrackerTask extends BaseTask
                                  final Vector<NameValuePair> postParams, 
                                  final String userAgentName) throws Exception
     {
+        // If the user changes collection before it gets a chance to send the stats
+        if (!AppContextMgr.getInstance().hasContext()) return;
+        
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
