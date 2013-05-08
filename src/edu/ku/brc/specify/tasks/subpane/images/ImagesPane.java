@@ -662,13 +662,16 @@ public class ImagesPane extends BaseSubPane
     private String getFilterString()
     {
         AppContextMgr acm = AppContextMgr.getInstance();
-        int colId = acm.getClassObject(Collection.class).getId();
-        int dspId = acm.getClassObject(Discipline.class).getId();
-        int divId = acm.getClassObject(Division.class).getId();
+        int colId  = acm.getClassObject(Collection.class).getId();
+        int dspId  = acm.getClassObject(Discipline.class).getId();
+        int divId  = acm.getClassObject(Division.class).getId();
+        int instId = acm.getClassObject(Division.class).getId();
 
         String sql = String.format(" ((ScopeType = 0 AND ScopeID = %d) OR " +
-        		                    "(ScopeType = 1 AND ScopeID = %d) OR " +
-        		                    "(ScopeType = 2 AND ScopeID = %d)) ", colId, dspId, divId);
+        		                     "(ScopeType = 1 AND ScopeID = %d) OR " +
+        		                     "(ScopeType = 2 AND ScopeID = %d) OR " +
+        		                     "(ScopeType = 3 AND ScopeID = %d)) ", 
+        		                        colId, dspId, divId, instId);
         
         //return "a.MimeType = 'application/pdf'";
         //return String.format("NOT (a.MimeType LIKE 'image/%s')", "%");

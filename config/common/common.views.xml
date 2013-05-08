@@ -1047,7 +1047,7 @@
                     <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="13" initialize="addsearch=true;btn=true;icon=AccessionAttachment;hc=xxx"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="13" initialize="btn=true;icon=AccessionAttachment;hc=xxx"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="13"/>

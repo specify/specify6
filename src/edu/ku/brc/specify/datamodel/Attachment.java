@@ -26,7 +26,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -71,10 +70,11 @@ public class Attachment extends DataModelObjBase implements Serializable
 {
     private static final HashMap<Integer, Byte> tblIdToScopeType = createTblScoprMapping();
     
-    public static final byte COLLECTION_SCOPE = 0;
-    public static final byte DISCIPLINE_SCOPE = 1;
-    public static final byte DIVISION_SCOPE   = 2;
-    public static final byte GLOBAL_SCOPE     = 3;
+    public static final byte COLLECTION_SCOPE  = 0;
+    public static final byte DISCIPLINE_SCOPE  = 1;
+    public static final byte DIVISION_SCOPE    = 2;
+    public static final byte INSTITUTION_SCOPE = 3;
+    public static final byte GLOBAL_SCOPE      = 10;
     
     protected Integer                 attachmentId;
     protected String                  mimeType;
@@ -391,18 +391,27 @@ public class Attachment extends DataModelObjBase implements Serializable
     /**
      * @param tableID the tableID to set
      */
-    public void setTableId(int tableIDArg)
+    public void setTableId(final int tableIDArg)
     {
+        AppContextMgr acm = AppContextMgr.getInstance();
+
         this.tableID = (byte)tableIDArg;
         
-        scopeType = tblIdToScopeType.get(tableIDArg);
+        if (tableIDArg == Accession.getClassTableId())
+        {
+            Institution inst = acm.getClassObject(Institution.class);
+            scopeType = inst.getIsAccessionsGlobal() ? INSTITUTION_SCOPE : COLLECTION_SCOPE;
+        } else
+        {
+            scopeType = tblIdToScopeType.get(tableIDArg);
+        }
+        
         if (scopeType == null)
         {
             UIRegistry.showError(String.format("Attachment TableID was set to %d, an unknown attachment Owner!", tableIDArg));
             scopeType = GLOBAL_SCOPE;
         } else
         {
-            AppContextMgr acm = AppContextMgr.getInstance();
             switch (scopeType)
             {
                 case COLLECTION_SCOPE:
@@ -415,6 +424,10 @@ public class Attachment extends DataModelObjBase implements Serializable
                     
                 case DIVISION_SCOPE:
                     scopeID = acm.getClassObject(Division.class).getId();
+                    break;
+                    
+                case INSTITUTION_SCOPE:
+                    scopeID = acm.getClassObject(Institution.class).getId();
                     break;
                     
                 default:
