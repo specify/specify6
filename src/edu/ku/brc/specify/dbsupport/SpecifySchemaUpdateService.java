@@ -1303,58 +1303,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     BasicSQLUtils.update(conn, "UPDATE agent SET Title='mr' WHERE AgentType = 1 AND Title is NULL OR Title = ''");
                     
-                    //-----------------------------------------------------------------------------
-                    //-- LocalityDetail
-                    //-----------------------------------------------------------------------------
-                    // Change column types for UTMEasting, UTMNorthing and UTMScale
-                    tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
-                    String columnType = getFieldColumnType(conn, databaseName, tblName, "UTMEasting");
-                    if (columnType == null)
-                    {
-                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
-                        return false;
-                    }
-                    if (!columnType.trim().equalsIgnoreCase("DECIMAL(19,2)"))
-                    {
-                        count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName + " where UtmEasting is not null" +
-                        		" or UtmNorthing is not null");
-                        if (count > 0)
-                        {
-                            File outFile = new File(UIRegistry.getAppDataDir() + File.separator + "localityDetailUtm.txt");
-                            try {
-                            	PrintWriter pw = new PrintWriter(outFile);
-                            	String q = "select localitydetailid, UtmEasting, UtmNorthing from localitydetail "
-										+ " where UtmEasting is not null or UtmNorthing is not null";
-                            	ResultSet rs = stmt.executeQuery(q);
-                            	while (rs.next()) {
-                            		pw.write(String.format("%d\t%f\t%f\n",
-										rs.getInt(1), rs.getFloat(2),
-										rs.getFloat(3)));
-                            	}
-                            	rs.close();
-                            	pw.flush();
-                            } catch (IOException ex) {
-                            	ex.printStackTrace();
-                            }
-                        }
-                        count = getCount(tblName);
-                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(19,2) NULL DEFAULT NULL, " +
-                        		                        "CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(19,2) NULL DEFAULT NULL, " +
-                        		                        "CHANGE COLUMN `UtmScale` `UtmScale` DECIMAL(20,10) NULL DEFAULT NULL");
-                        if (rv != count)
-                        {
-                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
-                            return false;
-                        }
-                    }
-                    frame.incOverall();
 
                     //-----------------------------------------------------------------------------
                     //-- GeoCoordDetail
                     //-----------------------------------------------------------------------------
                     // Change column types for MaxUncertaintityEst and NamedPlaceExtent
                     tblName    = getTableNameAndTitleForFrame(GeoCoordDetail.getClassTableId());
-                    columnType = getFieldColumnType(conn, databaseName, tblName, "MaxUncertaintyEst");
+                    String columnType = getFieldColumnType(conn, databaseName, tblName, "MaxUncertaintyEst");
                     if (columnType == null)
                     {
                         errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
@@ -1573,6 +1528,124 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     // Schema Changes 1.8                                                                                           //
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    
+                    //-----------------------------------------------------------------------------
+                    //-- LocalityDetail
+                    //-----------------------------------------------------------------------------
+                    // Change column types for UTMEasting, UTMNorthing and UTMScale
+                    tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
+                    String eastingColumnType = getFieldColumnType(conn, databaseName, tblName, "UTMEasting");
+                    if (eastingColumnType == null)
+                    {
+                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
+                        return false;
+                    }
+                    if (!eastingColumnType.trim().equalsIgnoreCase("DECIMAL(19,2)"))
+                    {
+                        count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName + " where UtmEasting is not null");
+                        if (count > 0)
+                        {
+                            File outFile = new File(UIRegistry.getAppDataDir() + File.separator + "localityDetailUtmEasting.txt");
+                            try {
+                            	PrintWriter pw = new PrintWriter(outFile);
+                            	String q = "select localitydetailid, UtmEasting from localitydetail "
+										+ " where UtmEasting is not null";
+                            	ResultSet rs = stmt.executeQuery(q);
+                            	while (rs.next()) {
+                            		pw.write(String.format("%d\t%f\n",
+										rs.getInt(1), rs.getFloat(2)));
+                            	}
+                            	rs.close();
+                            	pw.flush();
+                            	pw.close();
+                            } catch (IOException ex) {
+                            	ex.printStackTrace();
+                            }
+                        }
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(19,2) NULL DEFAULT NULL");
+                        if (rv != count)
+                        {
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                            return false;
+                        }
+                    }
+                    String northingColumnType = getFieldColumnType(conn, databaseName, tblName, "UTMNorthing");
+                    if (northingColumnType == null)
+                    {
+                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
+                        return false;
+                    }
+                    if (!northingColumnType.trim().equalsIgnoreCase("DECIMAL(19,2)"))
+                    {
+                        count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName + " where utmNorthing is not null");
+                        if (count > 0)
+                        {
+                            File outFile = new File(UIRegistry.getAppDataDir() + File.separator + "localityDetailUtm.txt");
+                            try {
+                            	PrintWriter pw = new PrintWriter(outFile);
+                            	String q = "select localitydetailid, UtmNorthing from localitydetail "
+										+ " where UtmNorthing is not null";
+                            	ResultSet rs = stmt.executeQuery(q);
+                            	while (rs.next()) {
+                            		pw.write(String.format("%d\t%f\n",
+										rs.getInt(1), rs.getFloat(2)));
+                            	}
+                            	rs.close();
+                            	pw.flush();
+                            	pw.close();
+                            } catch (IOException ex) {
+                            	ex.printStackTrace();
+                            }
+                        }
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(19,2) NULL DEFAULT NULL");
+                        if (rv != count)
+                        {
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                            return false;
+                        }
+                    }
+                    String scaleColumnType = getFieldColumnType(conn, databaseName, tblName, "UTMScale");
+                    if (scaleColumnType == null)
+                    {
+                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
+                        return false;
+                    }
+                    if (!scaleColumnType.trim().equalsIgnoreCase("DECIMAL(20,10)"))
+                    {
+                        count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName + " where UTMScale is not null");
+                        if (count > 0)
+                        {
+                            File outFile = new File(UIRegistry.getAppDataDir() + File.separator + "localityDetailUtm.txt");
+                            try {
+                            	PrintWriter pw = new PrintWriter(outFile);
+                            	String q = "select localitydetailid, UtmScale from localitydetail "
+										+ " where UtmScale is not null";
+                            	ResultSet rs = stmt.executeQuery(q);
+                            	while (rs.next()) {
+                            		pw.write(String.format("%d\t%f\n",
+										rs.getInt(1), rs.getFloat(2)));
+                            	}
+                            	rs.close();
+                            	pw.flush();
+                            	pw.close();
+                            } catch (IOException ex) {
+                            	ex.printStackTrace();
+                            }
+                        }
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmScale` `UtmScale` DECIMAL(20,10) NULL DEFAULT NULL");
+                        if (rv != count)
+                        {
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+                    
+                    //End LocalityDetail changes
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
                     Integer[] sgrTblIds = new Integer[] {CollectionObject.getClassTableId(), CollectingEvent.getClassTableId(), 
                                                          Locality.getClassTableId(), WorkbenchRow.getClassTableId()};
