@@ -241,7 +241,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
         UIFieldFormatterField  yearField = formatter.getYear();
         if (yearField != null)
         {
-            return extractIntegerValue(formatter.getYearPosition(), value).intValue();
+            BigInteger yr = extractIntegerValue(formatter.getYearPosition(), value);
+            return yr != null ? yr.intValue() : null;
         }
         return null;
     }
