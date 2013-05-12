@@ -27,6 +27,7 @@ import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
@@ -37,6 +38,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -424,15 +426,38 @@ public class SpecifyDBSecurityWizard extends JPanel
         String saPassword = props.getProperty("saPassword");
         
         String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(saUserName, saPassword, password);
-
+        
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();
+        
+        String loginDBPrefName = "login.databases";
+        String loginDBs        = ap.get(loginDBPrefName, null);
+        if (StringUtils.isNotEmpty(loginDBs))
+        {
+            TreeSet<String> dbNames = new TreeSet<String>();
+            for (String dbNm : StringUtils.splitPreserveAllTokens(loginDBs))
+            {
+                dbNames.add(dbNm);
+            }
+            StringBuilder sb = new StringBuilder();
+            for (String dbNm : dbNames)
+            {
+                if (sb.length() > 0) sb.append(',');
+                sb.append(dbNm);
+            }
+            if (sb.length() > 0) sb.append(',');
+            sb.append(dbPanel.getDbName());
+            loginDBs = sb.toString();
+        } else
+        {
+            loginDBs = dbPanel.getDbName();
+        }
         ap.put(userName+"_master.islocal",  "true");
         ap.put(userName+"_master.path",     encryptedMasterUP);
         ap.put("login.dbdriver_selected",  driverInfo.getName());
         ap.put("login.username",           props.getProperty("usrUsername"));
         ap.put("login.databases_selected", dbPanel.getDbName());
-        ap.put("login.databases",          dbPanel.getDbName());
+        ap.put(loginDBPrefName,            loginDBs);
         ap.put("login.servers",            props.getProperty("hostName"));
         ap.put("login.servers_selected",   props.getProperty("hostName"));
         ap.put("login.rememberuser",       "true");

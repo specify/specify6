@@ -41,6 +41,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.specify.dbsupport.TypeCode;
@@ -98,6 +99,7 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     protected Set<TaxonCitation>            taxonCitations;
     protected Set<DeterminationCitation>    determinationCitations;
     protected Journal                       journal;
+    protected Institution                   institution;
     protected Set<Author>                   authors;
     protected Set<Exsiccata>                exsiccatae;
     
@@ -147,6 +149,7 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
         taxonCitations = new HashSet<TaxonCitation>();
         determinationCitations = new HashSet<DeterminationCitation>();
         journal = null;
+        institution    = AppContextMgr.getInstance().getClassObject(Institution.class);
         authors = new HashSet<Author>();
         exsiccatae = new HashSet<Exsiccata>();
         
@@ -547,6 +550,19 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     
     public void setJournal(Journal journal) {
         this.journal = journal;
+    }
+
+    /**
+     * Link to Institution 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstitutionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Institution getInstitution() {
+        return institution;
+    }
+    
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
     }
 
     /**

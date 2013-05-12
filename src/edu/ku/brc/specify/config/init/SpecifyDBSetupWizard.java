@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
@@ -845,12 +846,35 @@ public class SpecifyDBSetupWizard extends JPanel
 
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();
+        
+        String loginDBPrefName = "login.databases";
+        String loginDBs        = ap.get(loginDBPrefName, null);
+        if (StringUtils.isNotEmpty(loginDBs))
+        {
+            TreeSet<String> dbNames = new TreeSet<String>();
+            for (String dbNm : StringUtils.splitPreserveAllTokens(loginDBs))
+            {
+                dbNames.add(dbNm);
+            }
+            StringBuilder sb = new StringBuilder();
+            for (String dbNm : dbNames)
+            {
+                if (sb.length() > 0) sb.append(',');
+                sb.append(dbNm);
+            }
+            if (sb.length() > 0) sb.append(',');
+            sb.append(dbPanel.getDbName());
+            loginDBs = sb.toString();
+        } else
+        {
+            loginDBs = dbPanel.getDbName();
+        }
         ap.put(userName+"_master.islocal",  "true");
         ap.put(userName+"_master.path",     encryptedMasterUP);
         ap.put("login.dbdriver_selected",  driverInfo.getName());
         ap.put("login.username",           userName != null ? userName : "");
         ap.put("login.databases_selected", dbPanel.getDbName());
-        ap.put("login.databases",          dbPanel.getDbName());
+        ap.put("login.databases",          loginDBs);
         ap.put("login.servers",            hostName);
         ap.put("login.servers_selected",   hostName);
         ap.put("login.rememberuser",       "true");

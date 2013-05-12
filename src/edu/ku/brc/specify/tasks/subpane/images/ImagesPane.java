@@ -93,6 +93,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.AttachmentsTask;
@@ -338,7 +339,7 @@ public class ImagesPane extends BaseSubPane
         metaDataBtn = UIHelper.createIconBtn("MetaData", IconManager.STD_ICON_SIZE, null, null);
         metaDataBtn.setEnabled(true);
         
-        reloadBtn = UIHelper.createIconBtn("Loading", IconManager.STD_ICON_SIZE, null, null);
+        reloadBtn = UIHelper.createIconBtn("Reload", IconManager.STD_ICON_SIZE, null, null);
         reloadBtn.setEnabled(true);
         
         helpBtn = UIHelper.createHelpIconButton("ImageBrowser");
@@ -665,12 +666,12 @@ public class ImagesPane extends BaseSubPane
         int colId  = acm.getClassObject(Collection.class).getId();
         int dspId  = acm.getClassObject(Discipline.class).getId();
         int divId  = acm.getClassObject(Division.class).getId();
-        int instId = acm.getClassObject(Division.class).getId();
+        int instId = acm.getClassObject(Institution.class).getId();
 
         String sql = String.format(" ((ScopeType = 0 AND ScopeID = %d) OR " +
         		                     "(ScopeType = 1 AND ScopeID = %d) OR " +
         		                     "(ScopeType = 2 AND ScopeID = %d) OR " +
-        		                     "(ScopeType = 3 AND ScopeID = %d)) ", 
+        		                     "(ScopeType = 3 AND ScopeID = %d)) ", // INSTITUTION_SCOPE
         		                        colId, dspId, divId, instId);
         
         //return "a.MimeType = 'application/pdf'";
@@ -728,7 +729,14 @@ public class ImagesPane extends BaseSubPane
                             sb.append(rsi.getRecordId().toString());
                         }
 
-                        String fullSQL = String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), getFilterString());
+                        String filter = getFilterString();
+                        if (StringUtils.isNotEmpty(filter))
+                        {
+                            filter = " AND " + filter;
+                        }
+                        
+                        String fullSQL = String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), filter);
+                        log.debug(fullSQL);
                         ResultSet rs = stmt.executeQuery(fullSQL);
                         while (rs.next())
                         {

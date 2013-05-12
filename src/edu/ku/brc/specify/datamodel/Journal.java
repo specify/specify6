@@ -27,7 +27,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -35,6 +37,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.af.core.AppContextMgr;
 
 /**
 
@@ -59,6 +63,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
      protected String  text1;
      protected String  guid;
      protected String  remarks;
+     protected Institution institution;
      protected Set<ReferenceWork> referenceWorks;
 
 
@@ -90,6 +95,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
         issn        = null;
         text1       = null;
         remarks     = null;
+        institution    = AppContextMgr.getInstance().getClassObject(Institution.class);
         referenceWorks = new HashSet<ReferenceWork>();
         
         hasGUIDField = true;
@@ -236,7 +242,19 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     {
         this.referenceWorks = referenceWorks;
     }
-
+    
+    /**
+     * Link to Institution 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstitutionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Institution getInstitution() {
+        return institution;
+    }
+    
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

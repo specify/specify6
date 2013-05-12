@@ -84,6 +84,10 @@ public class DataSetterForObj implements DataObjectSettable
                         return;
                     }
                 }*/
+                if (dataVal instanceof String && ((String)dataVal).isEmpty())
+                {
+                    dataVal = null;
+                }
                 Method setter = PropertyUtils.getWriteMethod(descr);
                 if (setter != null && dataObj != null)
                 {

@@ -127,6 +127,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -182,9 +183,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 35;
+    private final int OVERALL_TOTAL = 37;
     
     private static final String TINYINT4 = "TINYINT(4)";
+    private static final String INT11    = "INT(11)";
+    
     
     private static final String APP                     = "App";
     private static final String APP_REQ_EXIT            = "AppReqExit";
@@ -1367,8 +1370,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         String[] consrvEvCols = {"Text1",  "VARCHAR(64)", "Remarks",
                                                  "Text2",  "VARCHAR(64)", "Text1",
-                                                 "Number1",  "INT(11)",   "Text2",
-                                                 "Number2",  "INT(11)",   "Number1",
+                                                 "Number1",  INT11,       "Text2",
+                                                 "Number2",  INT11,       "Number1",
                                                  "YesNo1", "BIT(1)",      "Number2",
                                                  "YesNo2", "BIT(1)",      "YesNo1",};
                         if (!checkAndAddColumns(conn, databaseName, tblName, consrvEvCols))
@@ -1385,12 +1388,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     tblName = getTableNameAndTitleForFrame(DNASequencingRun.getClassTableId());
                     if (!doesColumnExist(databaseName, tblName, runByAgentID))
                     {
-                        if (addColumn(conn, databaseName, tblName, runByAgentID,  "INT(11)", "DNASequenceID"))
+                        if (addColumn(conn, databaseName, tblName, runByAgentID,  INT11, "DNASequenceID"))
                         {
                             update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNRUNBYAGT` (`RunByAgentID`)");
                             update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNRUNBYAGT` FOREIGN KEY (`RunByAgentID`) REFERENCES `agent` (`AgentID`)");
                             
-                            if (addColumn(conn, databaseName, tblName, "PreparedByAgentID",  "INT(11)", "RunByAgentID"))
+                            if (addColumn(conn, databaseName, tblName, "PreparedByAgentID",  INT11, "RunByAgentID"))
                             {
                                 update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNPREPBYAGT` (`PreparedByAgentID`)");
                                 update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNPREPBYAGT` FOREIGN KEY (`PreparedByAgentID`) REFERENCES `agent` (`AgentID`)");
@@ -1529,9 +1532,47 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
+                    int instID = BasicSQLUtils.getCountAsInt("SELECT InstitutionID FROM institution");
+                    
+                    frame.setDesc("Updating Reference Work..."); // I18N
+                    String instName = "InstitutionID";
+                    tblName = getTableNameAndTitleForFrame(ReferenceWork.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, instName))
+                    {
+                        String updateSQL = "ALTER TABLE %s ADD COLUMN %s INT(11) NOT NULL AFTER JournalID";
+                        if (addColumn(conn, databaseName, tblName, instName,  updateSQL))
+                        {
+                            update(conn, "ALTER TABLE referencework ADD KEY `FK5F7C68DC81223908` (`InstitutionID`)");
+                            update(conn, String.format("UPDATE referencework SET InstitutionID=%d", instID));
+                            update(conn, "ALTER TABLE referencework ADD CONSTRAINT `FK5F7C68DC81223908` FOREIGN KEY (`InstitutionID`) REFERENCES `institution` (`UserGroupScopeId`)");
+                        } else {
+                            return false;
+                        }
+                    }
+                    frame.setProcess(0, 100);
+
+                    frame.setDesc("Updating Journals..."); // I18N
+                    tblName = getTableNameAndTitleForFrame(Journal.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, instName))
+                    {
+                        String updateSQL = "ALTER TABLE %s ADD COLUMN %s INT(11) NOT NULL AFTER Text1";
+                        if (addColumn(conn, databaseName, tblName, instName,  updateSQL))
+                        {
+                            update(conn, "ALTER TABLE journal ADD KEY `FKAB64AF3781223908` (`InstitutionID`)");
+                            update(conn, String.format("UPDATE journal SET InstitutionID=%d", instID));
+                            update(conn, "ALTER TABLE journal ADD CONSTRAINT `FKAB64AF3781223908` FOREIGN KEY (`InstitutionID`) REFERENCES `institution` (`UserGroupScopeId`)");
+                        } else {
+                            return false;
+                        }
+                    }
+                    frame.setProcess(0, 100);
+                    frame.incOverall(); // #35
+
                     //-----------------------------------------------------------------------------
                     //-- LocalityDetail
                     //-----------------------------------------------------------------------------
+                    frame.setDesc("Updating Locality Detail..."); // I18N
+                    
                     // Change column types for UTMEasting, UTMNorthing and UTMScale
                     tblName = getTableNameAndTitleForFrame(LocalityDetail.getClassTableId());
                     String eastingColumnType = getFieldColumnType(conn, databaseName, tblName, "UTMEasting");
@@ -1647,6 +1688,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //End LocalityDetail changes
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
+                    frame.setProcess(0, 100);
+                    frame.incOverall(); // #36
+                    
                     Integer[] sgrTblIds = new Integer[] {CollectionObject.getClassTableId(), CollectingEvent.getClassTableId(), 
                                                          Locality.getClassTableId(), WorkbenchRow.getClassTableId()};
                     String[]  sgrAfter  = new String[] {"TotalValue", "Remarks", "Text2", "UploadStatus"};
@@ -1678,7 +1722,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     // Adding fields to the 'attachment' table and fill them in
                     frame.setDesc("Updating the Attachments"); // I18N
-                    if (!addTableIDToAttchmentTable(conn, databaseName))
+                    if (!addTableIDToAttachmentTable(conn, databaseName))
                     {
                         return false;
                     }
@@ -1703,7 +1747,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         alterFieldLength(conn, databaseName, tblName, endValue, 64, 255);
                     }
 
-                    frame.incOverall(); // #35
+                    frame.incOverall(); // #37
                     
                     return true;
                     
@@ -1765,6 +1809,41 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      * @throws SQLException
      */
+    private boolean fixTablesRefWorksAttachmentsColumnID(final Connection conn, 
+                                                          final Statement stmt) throws SQLException
+     {
+         int      instID = BasicSQLUtils.getCountAsInt("SELECT InstitutionID FROM institution");
+         String  pSQL   = String.format("UPDATE attachment SET ScopeID=%d,ScopeType=%d WHERE AttachmentID = ?", instID, Attachment.INSTITUTION_SCOPE);
+         PreparedStatement pStmt = conn.prepareStatement(pSQL);
+         
+         String sql = "SELECT a.AttachmentID FROM attachment a " +
+         		      "INNER JOIN referenceworkattachment rwa ON a.AttachmentID = rwa.AttachmentID " +
+                      "INNER JOIN referencework rw ON rwa.ReferenceWorkID = rw.ReferenceWorkID ";
+         System.out.println(sql);
+         int cnt = 0;
+         ResultSet rs  = stmt.executeQuery(sql);
+         while (rs.next())
+         {
+             pStmt.setInt(1, rs.getInt(1)); // AttachmentID
+             if (pStmt.executeUpdate() != 1)
+             {
+                 log.error("Error updating AttachmentID "+rs.getInt(1));
+                 return false;
+             }
+             cnt++;
+         }
+         rs.close();
+         log.debug(String.format("Updated %d RefWorks Attachments", cnt));
+         pStmt.close();
+         return true;
+     }
+                                 
+    /**
+     * @param conn
+     * @param stmt
+     * @return
+     * @throws SQLException
+     */
     private boolean fixTablesAccessionAttachmentsColumnID(final Connection conn, 
                                                           final Statement stmt) throws SQLException
      {
@@ -1775,20 +1854,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
          PreparedStatement pStmt = conn.prepareStatement(pSQL);
          
          String sql = "SELECT a.AttachmentID, ac.AccessionID, ac.DivisionID FROM attachment a " +
-         		      "INNER JOIN accessionattachment aa ON a.AttachmentID = aa.AttachmentID " +
+                      "INNER JOIN accessionattachment aa ON a.AttachmentID = aa.AttachmentID " +
                       "INNER JOIN accession ac ON aa.AccessionID = ac.AccessionID ";
-         
+         System.out.println(sql);
          int cnt = 0;
          ResultSet rs  = stmt.executeQuery(sql);
          while (rs.next())
          {
              if (isMgrGlobally)
              {
-                 pStmt.setInt(1, rs.getInt(1)); // AccessionID
+                 pStmt.setInt(1, rs.getInt(1)); // AttachmentID
              } else
              {
-                 pStmt.setInt(2, rs.getInt(1)); // AccessionID
                  pStmt.setInt(1, rs.getInt(3)); // ScopeID (DivisionID)
+                 pStmt.setInt(2, rs.getInt(1)); // AttachmentID
              }
              
              if (pStmt.executeUpdate() != 1)
@@ -1953,7 +2032,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     /**
      * @param conn
      */
-    public boolean addTableIDToAttchmentTable(final Connection conn, final String databaseName)
+    public boolean addTableIDToAttachmentTable(final Connection conn, final String databaseName)
     {
         frame.setDesc("Updating Attachments...");
 
@@ -1969,7 +2048,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         String scopeId = "ScopeID";
         if (!doesColumnExist(databaseName, tblName, scopeId))
         {
-            if (!addColumn(conn, databaseName, tblName, scopeId,  "INT(11)", "TableID"))
+            if (!addColumn(conn, databaseName, tblName, scopeId,  INT11, "TableID"))
             {
                 return false;
             }
@@ -2071,6 +2150,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 return false;
             }
             
+            if (!fixTablesRefWorksAttachmentsColumnID(conn, stmt))
+            {
+                return false;
+            }
+            
+            
             Class<?>[] attachOwnerClasses = {
                     CollectionObject.class,  
                     Borrow.class,  // Borrow -> BorrowMaterial.ColMemID
@@ -2107,6 +2192,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             frame.setProcess(step++);
             
             Class<?>[] dispOwnerClasses = {
+                    CollectingEvent.class,
                     Locality.class,
                     FieldNotebook.class,  
             };
@@ -2134,9 +2220,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     "SELECT a.AttachmentID FROM attachment a INNER JOIN permitattachment pa ON a.AttachmentID = pa.AttachmentID " +
                     "INNER JOIN permit p ON pa.PermitID = p.PermitID",
                     
-                    "SELECT a.AttachmentID FROM attachment a INNER JOIN referenceworkattachment rwa ON a.AttachmentID = rwa.AttachmentID " +
-                    "INNER JOIN referencework rw ON rwa.ReferenceWorkID = rw.ReferenceWorkID",
-                    
                     "SELECT a.AttachmentID, d.UserGroupScopeId FROM attachment a INNER JOIN taxonattachment ta ON a.AttachmentID = ta.AttachmentID " +
                     "INNER JOIN taxon t ON ta.TaxonID = t.TaxonID " +
                     "INNER JOIN discipline d ON t.TaxonTreeDefID = d.TaxonTreeDefID",
@@ -2147,7 +2230,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 FieldNotebookPage.class, // FieldNotebookPage -> FieldNotebook.CollectionID 
                 FieldNotebookPageSet.class, // FieldNotebookPageSet -> FieldNotebookPage -> FieldNotebook.CollectionID 
                 Permit.class, 
-                ReferenceWork.class, 
                 Taxon.class,
             };
             byte[] scopes = {Attachment.COLLECTION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
@@ -2196,7 +2278,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID " +
                             "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 0 OR MX <> CNT ";
        
-            int totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*)"+post);
+            String sql = "SELECT COUNT(*)"+post;
+            log.debug(sql);
+            
+            int totalCnt = BasicSQLUtils.getCountAsInt(conn, sql);
             if (totalCnt == 0) return;
             
             int percent = totalCnt / 50;
@@ -4157,7 +4242,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 	    String tblName = getTableNameAndTitleForFrame(SpExportSchemaMapping.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, "CollectionMemberID"))
         {
-            String[] instCols = {"CollectionMemberID", "INT(11)", "TimestampExported"};
+            String[] instCols = {"CollectionMemberID", INT11, "TimestampExported"};
             if (!checkAndAddColumns(conn, databaseName, tblName, instCols))
             {
                 return;
