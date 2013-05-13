@@ -1455,6 +1455,9 @@
                 <row>
                     <cell type="subview" viewname="BorrowMaterial" id="10" name="borrowMaterials" defaulttype="table" colspan="15"/>
                 </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="borrowAttachments" colspan="13" initialize="btn=true;icon=BorrowAttachment"/>
+                </row>
                 <!--<row>
                 	<cell type="label" labelfor="29"/>
                 	<cell type="field" id="29" name="number1" uitype="text"/>
@@ -3425,6 +3428,9 @@
                             </row>
                         </rows>
                     </cell>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="giftAttachments" colspan="15" initialize="btn=true;icon=GiftAttachment"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="2"/>
