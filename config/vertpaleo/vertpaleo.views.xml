@@ -190,15 +190,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="5" initialize="btn=true;icon=CollectionObjectAttachment"/>
-                    <cell type="panel" id="116" name="outerPanel" coldef="p,6px,p,f:p:g" rowdef="p,4px,p" colspan="5">
-                        <rows>
-                            <row>
-                                <cell type="field" id="113" uitype="checkbox" name="generateLabelChk" label="Generate Label on Save" ignore="true" default="true" initialize="visible=false"/>
-                                <cell type="command" id="114" name="generateLabelBtn" label="Generate Label" ignore="true" default="true" initialize="visible=false"/>
-                            </row>
-                        </rows>
-                    </cell>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="5" initialize="icon=CollectionObjectAttachment" defaulttype="icon"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -208,6 +200,14 @@
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="panel" id="116" name="outerPanel" coldef="p,6px,p,f:p:g" rowdef="p,4px,p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="field" id="113" uitype="checkbox" name="generateLabelChk" label="Generate Label on Save" ignore="true" default="true" initialize="visible=false"/>
+                                <cell type="command" id="114" name="generateLabelBtn" label="Generate Label" ignore="true" default="true" initialize="visible=false;align=right"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <!--<row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
@@ -790,7 +790,7 @@
               <columnDef os="mac">130px,2px,130px,5px,118px,2px,130px,5px,121px,2px,130px,5px,120px,2px,130px,p:g</columnDef>
               <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2)</columnDef>
               <rowDef auto="true" cell="p" sep="2px"/>
-          
+		  
               <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -829,7 +829,7 @@
               <columnDef os="mac">130px,2px,150px,5px,127px,2px,121px,5px,120px,2px,121px,5px,119px,2px,121px,p:g</columnDef>
               <columnDef os="exp">p,2px,min(p;150px),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2)</columnDef>
               <rowDef auto="true" cell="p" sep="2px"/>
-          
+		  
               <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
