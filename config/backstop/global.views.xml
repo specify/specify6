@@ -2607,7 +2607,7 @@
                 </row> -->
                 <row>
                     <cell type="label" labelfor="dateImaged" label="DATE_IMAGED"/>
-                    <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
+                    <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="fileCreatedDate" label="FILE_CREATED_DATE"/>
@@ -2619,7 +2619,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="copyrightDate" label="COPYRIGHT_DATE"/>
-                    <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="attachmentLocation" label="ATTACHMENT_LOCATION"/>
