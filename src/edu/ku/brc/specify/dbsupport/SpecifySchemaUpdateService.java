@@ -1568,6 +1568,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.setProcess(0, 100);
                     frame.incOverall(); // #35
 
+                    frame.setDesc("Updating Permits..."); // I18N
+                    tblName = getTableNameAndTitleForFrame(Permit.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, instName))
+                    {
+                        String updateSQL = "ALTER TABLE %s ADD COLUMN %s INT(11) NOT NULL AFTER IssuedToID";
+                        if (addColumn(conn, databaseName, tblName, instName,  updateSQL))
+                        {
+                            update(conn, "ALTER TABLE permit ADD KEY `FKC4E3841B81223908` (`InstitutionID`)");
+                            update(conn, String.format("UPDATE permit SET InstitutionID=%d", instID));
+                            update(conn, "ALTER TABLE permit ADD CONSTRAINT `FKC4E3841B81223908` FOREIGN KEY (`InstitutionID`) REFERENCES `institution` (`UserGroupScopeId`)");
+                        } else {
+                            return false;
+                        }
+                    }
+                    frame.setProcess(0, 100);
+                    frame.incOverall(); // #35
+
                     //-----------------------------------------------------------------------------
                     //-- LocalityDetail
                     //-----------------------------------------------------------------------------
@@ -2217,8 +2234,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     "INNER JOIN fieldnotebookpageset fbps ON fbp.FieldNotebookPageSetID = fbps.FieldNotebookPageSetID " +
                     "INNER JOIN fieldnotebook fb ON fbps.FieldNotebookID = fb.FieldNotebookID",
                     
-                    "SELECT a.AttachmentID FROM attachment a INNER JOIN permitattachment pa ON a.AttachmentID = pa.AttachmentID " +
-                    "INNER JOIN permit p ON pa.PermitID = p.PermitID",
+                    "SELECT a.AttachmentID, i.UserGroupScopeId FROM attachment a " +
+                    "INNER JOIN permitattachment pa ON a.AttachmentID = pa.AttachmentID " +
+                    "INNER JOIN permit p ON pa.PermitID = p.PermitID " + 
+                    "INNER JOIN institution i ON p.InstitutionID = i.UserGroupScopeId",
                     
                     "SELECT a.AttachmentID, d.UserGroupScopeId FROM attachment a INNER JOIN taxonattachment ta ON a.AttachmentID = ta.AttachmentID " +
                     "INNER JOIN taxon t ON ta.TaxonID = t.TaxonID " +
@@ -2233,7 +2252,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Taxon.class,
             };
             byte[] scopes = {Attachment.COLLECTION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
-                             Attachment.GLOBAL_SCOPE, Attachment.GLOBAL_SCOPE, Attachment.GLOBAL_SCOPE, Attachment.DISCIPLINE_SCOPE};
+                             Attachment.INSTITUTION_SCOPE, Attachment.DISCIPLINE_SCOPE, };
             
             if (!fixTablesAttachmentsColumnID(conn, stmt, extraAttachOwnerClasses, sqls, null, scopes))
             {

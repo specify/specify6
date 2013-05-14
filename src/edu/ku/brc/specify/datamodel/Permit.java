@@ -43,6 +43,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
@@ -78,6 +79,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     protected Agent                       issuedTo;
     protected Agent                       issuedBy;
     protected Set<PermitAttachment>       permitAttachments;
+    protected Institution                 institution;
 
 
     // Constructors
@@ -116,6 +118,7 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         issuedTo = null;
         issuedBy = null;
         permitAttachments = new HashSet<PermitAttachment>();
+        institution       = AppContextMgr.getInstance().getClassObject(Institution.class);
     }
     // End Initializer
 
@@ -378,6 +381,19 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     public void setPermitAttachments(Set<PermitAttachment> permitAttachments)
     {
         this.permitAttachments = permitAttachments;
+    }
+
+    /**
+     * Link to Institution 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstitutionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Institution getInstitution() {
+        return institution;
+    }
+    
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
     }
 
     //---------------------------------------------------------------------------

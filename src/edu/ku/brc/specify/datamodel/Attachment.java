@@ -68,7 +68,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
     })
 public class Attachment extends DataModelObjBase implements Serializable
 {
-    private static final HashMap<Integer, Byte> tblIdToScopeType = createTblScoprMapping();
+    private static final HashMap<Integer, Byte> tblIdToScopeType = createTblScopeMapping();
     
     public static final byte COLLECTION_SCOPE  = 0;
     public static final byte DISCIPLINE_SCOPE  = 1;
@@ -440,10 +440,10 @@ public class Attachment extends DataModelObjBase implements Serializable
     /**
      * @return
      */
-    private static HashMap<Integer, Byte>  createTblScoprMapping()
+    private static HashMap<Integer, Byte>  createTblScopeMapping()
     {
         int[] ids = {
-            Accession.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            Accession.getClassTableId(), Attachment.GLOBAL_SCOPE, // Is Both Division and Institution (special case)
             Agent.getClassTableId(), Attachment.DIVISION_SCOPE,
             Borrow.getClassTableId(),  Attachment.COLLECTION_SCOPE,
             CollectionObject.getClassTableId(),  Attachment.COLLECTION_SCOPE,
@@ -458,9 +458,9 @@ public class Attachment extends DataModelObjBase implements Serializable
             Gift.getClassTableId(), Attachment.DIVISION_SCOPE,
             Loan.getClassTableId(), Attachment.DIVISION_SCOPE,
             Locality.getClassTableId(),  Attachment.DISCIPLINE_SCOPE,
-            Permit.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            Permit.getClassTableId(), Attachment.INSTITUTION_SCOPE,
             Preparation.getClassTableId(), Attachment.COLLECTION_SCOPE,
-            ReferenceWork.getClassTableId(), Attachment.GLOBAL_SCOPE,
+            ReferenceWork.getClassTableId(), Attachment.INSTITUTION_SCOPE,
             RepositoryAgreement.getClassTableId(), Attachment.DIVISION_SCOPE,
             Taxon.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
         };

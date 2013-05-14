@@ -1157,7 +1157,7 @@
                     <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="13" initialize="addsearch=true;btn=true;icon=AccessionAttachment;hc=xxx"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="13" initialize=";btn=true;icon=AccessionAttachment;hc=xxx"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="13"/>
@@ -1445,6 +1445,9 @@
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="borrowAttachments" colspan="15" initialize="btn=true;icon=BorrowAttachment"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="BorrowAgent" id="6" name="borrowAgents" rows="2" desc="Agents" colspan="15"/>
@@ -2071,7 +2074,7 @@
                     <cell type="separator" label="Attachments" colspan="17"/>
                 </row>
                 <row>
-                    <cell type="subview" id="17" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment;addsearch=true"/>
+                    <cell type="subview" id="17" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="com"/>
@@ -2138,7 +2141,7 @@
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="curatorApprovalDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" label=""/>
-                    <cell type="subview" id="4" name="conservEventAttachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=ConservEventAttachment;addsearch=true"/>
+                    <cell type="subview" id="4" name="conservEventAttachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=ConservEventAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="13"/>
@@ -2236,7 +2239,7 @@
                     <cell type="field" id="7" name="description" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" id="13" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment;addsearch=true"/>
+                    <cell type="subview" id="13" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment"/>
                 </row>
             </rows>
         </viewdef>
@@ -2266,7 +2269,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent"/>
-                    <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch;" colspan="10"/>                
+                    <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch" colspan="10"/>                
                 </row>
                 <row>
                     <cell type="label" label="COLOBJ"  initialize="align=right"/>
@@ -2321,7 +2324,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent"/>
-                    <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch;" colspan="10"/>                
+                    <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch" colspan="10"/>                
                 </row>
                 <row>
                     <cell type="label" label="COLOBJ"  initialize="align=right"/>
@@ -3181,7 +3184,7 @@
                     <cell type="separator" label="Attachments" colspan="17"/>
                 </row>
                 <row>
-                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookAttachment;addsearch=true"/>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookAttachment"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="9"/>
@@ -3218,7 +3221,7 @@
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="endDate" uitype="formattedtext" uifieldformatter="Date"  initialize="align=right"/>
-                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
+                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageSetAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -3277,7 +3280,7 @@
                     <cell type="field" id="2" name="pageNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -3410,6 +3413,9 @@
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="giftAttachments" initialize="btn=true;icon=GiftAttachment"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="GiftAgent" id="8" name="giftAgents" desc="Agents" colspan="15" rows="2"/>
@@ -4872,7 +4878,7 @@
                     <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="repositoryAgreementAttachments" colspan="13" initialize="addsearch=true;btn=true;icon=RepositoryAgreementAttachment;hc=xxx"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="repositoryAgreementAttachments" colspan="13" initialize=";btn=true;icon=RepositoryAgreementAttachment;hc=xxx"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="13"/>
@@ -5598,7 +5604,7 @@
                     <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" colspan="5"/> 
                 </row>
                 <row>
-                    <cell type="label" label="Numbering Scheme:" initialize="align=right;"/>
+                    <cell type="label" label="Numbering Scheme:" initialize="align=right"/>
                     <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true"/>
                 </row>
                  <row>
@@ -5739,7 +5745,7 @@
                     <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" colspan="5"/> 
                 </row>
                 <row>
-                    <cell type="label" label="Numbering Scheme:" initialize="align=right;"/>
+                    <cell type="label" label="Numbering Scheme:" initialize="align=right"/>
                     <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true"/>
                 </row>
                  <row>

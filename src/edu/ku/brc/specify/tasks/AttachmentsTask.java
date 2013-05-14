@@ -53,6 +53,7 @@ import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttachmentImageAttribute;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -169,6 +170,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             int[] attachmentTableIDs = {
                     AttachmentImageAttribute.getClassTableId(),
                     Accession.getClassTableId(),
+                    Agent.getClassTableId(),
                     Borrow.getClassTableId(),
                     CollectingEvent.getClassTableId(),
                     CollectionObject.getClassTableId(),
