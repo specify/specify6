@@ -304,8 +304,8 @@ public class Scriptlet extends JRDefaultScriptlet
                                    LatLonConverter.DEGREES_FORMAT.Symbol, 
                                    LatLonConverter.DECIMAL_SIZES[originalLatLongUnit]);
         }
-        //return "";
-        return null;
+        return "";
+        //return null;
     }
 
     /**
