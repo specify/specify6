@@ -49,6 +49,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -533,6 +534,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         tmpSession.close();
         
+        defItem.setDisplayText(defItem.getDisplayText());
         // keep track of what these values are before the edits happen
         final I beforeItem = (I)TreeFactory.createNewTreeDefItem(defItem.getClass(),null,null);
         log.info("created beforeItem"); //$NON-NLS-1$
@@ -932,6 +934,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         if (stdLevel.getRank() != -1 )
         {
             newItem.setName(stdLevel.getTitle());
+            newItem.setDisplayText(stdLevel.getTitle());
         }
         // we can only set the pointers from the newItem side right now
         // otherwise, if the user cancels, we end up with 'dirty' collections in the other objects
