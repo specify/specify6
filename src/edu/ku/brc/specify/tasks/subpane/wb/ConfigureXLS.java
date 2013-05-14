@@ -335,6 +335,38 @@ public class ConfigureXLS extends ConfigureExternalDataBase
     }
     
     /**
+     * @param props
+     * @param cols
+     * @return
+     */
+    protected boolean doReadMappings(CustomProperties props, List<ImportColumnInfo> cols)
+    {
+    	boolean usesViewOrder = usesViewOrderKey(props);
+        if (props != null && ((usesViewOrder && props.size() == cols.size()) || !usesViewOrder))
+        {
+        	if (usesViewOrder)
+        	{
+            	for (ImportColumnInfo col : cols)
+                {
+                    String key = getKeyForCol(col, usesViewOrder);
+                    if (key != null)
+                    {
+                    	String[] mapping = ((String) props.get(key)).split("\t");
+                    	if (!mapping[0].equals(col.getColTitle()))
+                    	{
+                    		return false;
+                    	}
+                    }
+                }
+        	} 
+        	return true;
+        } else 
+        {
+        	return false;
+        }
+    }
+    
+    /**
      * @param poifs
      * 
      * Reads workbench mappings from the XLS file.
@@ -345,13 +377,13 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         if (dsi != null)
         {
             CustomProperties props = dsi.getCustomProperties();
-            if (props != null && props.size() == colInfo.size())
+        	List<ImportColumnInfo> sortedCols = new ArrayList<ImportColumnInfo>(colInfo);
+            Collections.sort(sortedCols); 
+            if (doReadMappings(props, sortedCols))
             {
             	//Just in case colInfo is not sorted by column index...
             	boolean usesViewOrder = usesViewOrderKey(props);
             	int mapIdxOffset = usesViewOrder ? 1 : 0;
-            	List<ImportColumnInfo> sortedCols = new ArrayList<ImportColumnInfo>(colInfo);
-                Collections.sort(sortedCols); 
                 Set<String> dupedCols = usesViewOrder ? new HashSet<String>() : getDuplicatedColTitles(sortedCols);
             	for (ImportColumnInfo col : sortedCols)
                 {
@@ -380,6 +412,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             }
         }
     }
+    
     /* (non-Javadoc)
      * Sets up colInfo for externalFile.
      * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace#getConfig(java.lang.String)
