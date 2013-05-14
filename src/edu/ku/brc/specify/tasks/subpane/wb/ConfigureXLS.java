@@ -26,10 +26,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -69,6 +73,8 @@ public class ConfigureXLS extends ConfigureExternalDataBase
 {
     private static final Logger log = Logger.getLogger(ConfigureXLS.class);
 
+    public static final String POIFS_COL_KEY_PREFIX = "wbmiViewOrder@@";
+    
     protected int numRows = 0;
     protected int numCols = 0;
 
@@ -273,6 +279,61 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         return result;
     }
     
+    
+    /**
+     * @param col
+     * @param byTitle
+     * @return
+     */
+    protected String getKeyForCol(ImportColumnInfo col, boolean byViewOrder)
+    {
+    	if (!byViewOrder)
+    	{
+    		return col.getColTitle();
+    	} else
+    	{
+    		return POIFS_COL_KEY_PREFIX + col.getColInx();
+    	}
+    }
+    
+    /**
+     * @param props
+     * @return
+     */
+    protected boolean usesViewOrderKey(CustomProperties props)
+    {
+    	Set<?> keys = props.keySet();
+    	if (keys.size() > 0)
+    	{
+    		String key = props.keySet().iterator().next().toString();
+    		return key.startsWith(POIFS_COL_KEY_PREFIX);
+    	} else
+    	{
+    		return false;
+    	}
+    }
+    
+    /**
+     * @param cols
+     * @return
+     */
+    protected Set<String> getDuplicatedColTitles(List<ImportColumnInfo> cols)
+    {
+    	Set<String> titles = new HashSet<String>();
+    	Set<String> result = new HashSet<String>();
+    	for (ImportColumnInfo col : cols)
+    	{
+    		if (titles.contains(col.getColTitle()))
+    		{
+    			result.add(col.getColTitle());
+    		} else
+    		{
+    			titles.add(col.getColTitle());
+    		}
+    	}
+    	return result;
+    }
+    
     /**
      * @param poifs
      * 
@@ -284,26 +345,36 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         if (dsi != null)
         {
             CustomProperties props = dsi.getCustomProperties();
-            if (props != null)
+            if (props != null && props.size() == colInfo.size())
             {
-                for (ImportColumnInfo col : colInfo)
+            	//Just in case colInfo is not sorted by column index...
+            	boolean usesViewOrder = usesViewOrderKey(props);
+            	int mapIdxOffset = usesViewOrder ? 1 : 0;
+            	List<ImportColumnInfo> sortedCols = new ArrayList<ImportColumnInfo>(colInfo);
+                Collections.sort(sortedCols); 
+                Set<String> dupedCols = usesViewOrder ? new HashSet<String>() : getDuplicatedColTitles(sortedCols);
+            	for (ImportColumnInfo col : sortedCols)
                 {
-                    if (props.get(col.getColTitle()) != null)
+                    if (!dupedCols.contains(col.getColTitle()))
                     {
-                        String[] mapping = ((String) props.get(col.getColTitle())).split("\t");
-                        col.setMapToTbl(mapping[0]);
-                        col.setMapToFld(mapping[1]);
-                        if (mapping.length == 7)
-                        {
-                        	col.setFormXCoord(Integer.valueOf(mapping[2]));
-                        	col.setFormYCoord(Integer.valueOf(mapping[3]));
-                    		if (StringUtils.isNotBlank(mapping[4]))
+                    	String key = getKeyForCol(col, usesViewOrder);
+                    	if (key != null)
+                    	{
+                    		String[] mapping = ((String) props.get(key)).split("\t");
+                    		col.setMapToTbl(mapping[mapIdxOffset + 0]);
+                    		col.setMapToFld(mapping[mapIdxOffset + 1]);
+                    		if (mapping.length == 7 + mapIdxOffset)
                     		{
-                    			col.setCaption(mapping[4]);
+                    			col.setFormXCoord(Integer.valueOf(mapping[mapIdxOffset + 2]));
+                    			col.setFormYCoord(Integer.valueOf(mapping[mapIdxOffset + 3]));
+                    			if (StringUtils.isNotBlank(mapping[mapIdxOffset + 4]))
+                    			{
+                    				col.setCaption(mapping[mapIdxOffset + 4]);
+                    			}
+                    			col.setFrmFieldType(Integer.valueOf(mapping[mapIdxOffset + 5]));
+                    			col.setFrmMetaData(mapping[mapIdxOffset + 6]);
                     		}
-                    		col.setFrmFieldType(Integer.valueOf(mapping[5]));
-                    		col.setFrmMetaData(mapping[6]);
-                       }
+                    	}
                     }
                 }
             }

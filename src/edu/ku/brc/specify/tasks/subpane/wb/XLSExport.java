@@ -23,6 +23,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -187,9 +190,27 @@ public class XLSExport implements DataExport
     {
         DocumentSummaryInformation dsi = PropertySetFactory.newDocumentSummaryInformation();
         CustomProperties cps = new CustomProperties();
-        for (WorkbenchTemplateMappingItem wbmi : wbt.getWorkbenchTemplateMappingItems())
+        List<WorkbenchTemplateMappingItem> wbmis = new ArrayList<WorkbenchTemplateMappingItem>(wbt.getWorkbenchTemplateMappingItems());
+        Collections.sort(wbmis, new Comparator<WorkbenchTemplateMappingItem>() {
+
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(WorkbenchTemplateMappingItem arg0,
+					WorkbenchTemplateMappingItem arg1) {
+				// TODO Auto-generated method stub
+				return arg0.getViewOrder().compareTo(arg1.getViewOrder());
+			}
+        	
+        });
+        for (WorkbenchTemplateMappingItem wbmi : wbmis)
         {
-            cps.put(wbmi.getCaption(), wbmi.getTableName() 
+            //cps.put(wbmi.getCaption(), 
+        	//cps.put(wbmi.getTableName() + "." + wbmi.getFieldName(), 
+        	cps.put(ConfigureXLS.POIFS_COL_KEY_PREFIX + wbmi.getViewOrder(),
+        			wbmi.getCaption()
+        			+ "\t" + wbmi.getTableName() 
             		+ "\t" + wbmi.getFieldName()
             		+ "\t" + wbmi.getXCoord() 
             		+ "\t" + wbmi.getYCoord()
