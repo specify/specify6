@@ -302,8 +302,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
      */
     protected boolean usesViewOrderKey(CustomProperties props)
     {
-    	Set<?> keys = props.keySet();
-    	if (keys.size() > 0)
+    	if (props != null && props.keySet().size() > 0)
     	{
     		String key = props.keySet().iterator().next().toString();
     		return key.startsWith(POIFS_COL_KEY_PREFIX);
