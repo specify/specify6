@@ -107,6 +107,8 @@ public class GiftBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
     {
+        super.beforeMerge(dataObj, session);
+
          Gift gift = (Gift)dataObj;
         
         //System.out.println("beforeSaveCommit giftNum: "+gift.getGiftNumber());
