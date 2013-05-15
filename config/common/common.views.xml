@@ -3415,9 +3415,6 @@
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="giftAttachments" initialize="btn=true;icon=GiftAttachment"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="GiftAgent" id="8" name="giftAgents" desc="Agents" colspan="15" rows="2"/>
                 </row>
                 <row>

@@ -539,10 +539,22 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     @Override
     public void forceLoad()
     {
-        getGiftAgents().size();
-        getShipments().size();
-        getGiftPreparations().size();
-        giftAttachments.size();
+        for (GiftAgent a : giftAgents)
+        {
+            a.forceLoad();
+        }
+        for (Shipment s : shipments)
+        {
+            s.forceLoad();
+        }
+        for (GiftPreparation giftPrep : giftPreparations)
+        {
+            giftPrep.forceLoad();
+        }
+        for (GiftAttachment giftAtt : giftAttachments)
+        {
+            giftAtt.forceLoad();
+        }
     }
 
     /* (non-Javadoc)

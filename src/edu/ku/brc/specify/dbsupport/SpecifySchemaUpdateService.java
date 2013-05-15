@@ -2057,11 +2057,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         String tblName = getTableNameAndTitleForFrame(Attachment.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, tableID))
         {
-            if (!addColumn(conn, databaseName, tblName, tableID,  "TINYINT", "Title"))
+            if (!addColumn(conn, databaseName, tblName, tableID,  "SMALLINT", "Title"))
             {
                 return false;
             }
-        } 
+        } else
+        {
+            String colType = getFieldColumnType(conn, databaseName, tblName, tableID);
+            if (!colType.toLowerCase().startsWith("small"))
+            {
+                int rv = update(conn, "ALTER TABLE attachment MODIFY TableID SMALLINT");
+                log.debug("rv = "+rv);
+            }
+        }
+        
         String scopeId = "ScopeID";
         if (!doesColumnExist(databaseName, tblName, scopeId))
         {
@@ -2143,6 +2152,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 ResultSet rs  = stmt.executeQuery(sql);
                 while (rs.next())
                 {
+                    System.out.println(String.format("%d / %d", ownerTI.getTableId(), rs.getInt(1)));
                     pStmt.setInt(1, ownerTI.getTableId());
                     pStmt.setInt(2, rs.getInt(1));
                     if (pStmt.executeUpdate() != 1)

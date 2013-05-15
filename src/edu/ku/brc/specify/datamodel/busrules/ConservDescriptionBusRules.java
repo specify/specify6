@@ -19,7 +19,12 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.ConservDescription;
+import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.Preparation;
 
 /**
  * @author rod
@@ -31,9 +36,28 @@ import edu.ku.brc.specify.datamodel.ConservDescription;
  */
 public class ConservDescriptionBusRules extends AttachmentOwnerBaseBusRules
 {
+    /**
+     * 
+     */
     public ConservDescriptionBusRules()
     {
         super(ConservDescription.class);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#addExtraObjectForProcessing(java.lang.Object)
+     */
+    @Override
+    protected void addExtraObjectForProcessing(final Object dObjAtt)
+    {
+        super.addExtraObjectForProcessing(dObjAtt);
+        
+        ConservDescription conservDesc = (ConservDescription)dObjAtt;
+        
+        for (ConservEvent cnev : conservDesc.getEvents())
+        {
+            super.addExtraObjectForProcessing(cnev);
+        }
     }
 
 }

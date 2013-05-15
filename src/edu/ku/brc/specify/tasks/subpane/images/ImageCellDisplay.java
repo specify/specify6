@@ -258,15 +258,17 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
             infoHitRect.width  = infoIcon16.getIconWidth();
             infoHitRect.height = infoIcon16.getIconHeight();
             
-            imgX = x;
-            imgY = y + h - dataObjIcon.getIconHeight();
-            g2.drawImage(dataObjIcon.getImage(), imgX, imgY, null);
-
-            dataHitRect.x      = imgX;
-            dataHitRect.y      = imgY;
-            dataHitRect.width  = infoIcon16.getIconWidth();
-            dataHitRect.height = infoIcon16.getIconHeight();
-
+            if (dataObjIcon != null)
+            {
+                imgX = x;
+                imgY = y + h - dataObjIcon.getIconHeight();
+                g2.drawImage(dataObjIcon.getImage(), imgX, imgY, null);
+    
+                dataHitRect.x      = imgX;
+                dataHitRect.y      = imgY;
+                dataHitRect.width  = infoIcon16.getIconWidth();
+                dataHitRect.height = infoIcon16.getIconHeight();
+            }
             /*imgX = x;
             imgY = y + h - metaDataIcon.getIconHeight();
             g2.drawImage(metaDataIcon.getImage(), imgX, imgY, null);

@@ -90,7 +90,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected String                  remarks;
     protected String                  attachmentLocation;
     protected String                  guid;
-    protected Byte                    tableID;
+    protected Short                   tableID;
     protected Byte                    visibility;
     protected SpecifyUser             visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
@@ -375,7 +375,7 @@ public class Attachment extends DataModelObjBase implements Serializable
      * @return the tableID
      */
     @Column(name = "TableID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Byte getTableID()
+    public Short getTableID()
     {
         return tableID;
     }
@@ -383,7 +383,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     /**
      * @param tableID the tableID to set
      */
-    public void setTableID(Byte tableID)
+    public void setTableID(Short tableID)
     {
         this.tableID = tableID;
     }
@@ -395,7 +395,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     {
         AppContextMgr acm = AppContextMgr.getInstance();
 
-        this.tableID = (byte)tableIDArg;
+        this.tableID = (short)tableIDArg;
         
         if (tableIDArg == Accession.getClassTableId())
         {
