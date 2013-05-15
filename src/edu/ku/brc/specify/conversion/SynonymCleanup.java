@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -45,10 +46,13 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -74,8 +78,8 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
     
     private ProgressFrame progressFrame;
     private Connection    conn;
-    private int           tooManyCnt   = 0;
-    private int           notFoundCnt  = 0;
+    private int           tooManyCnt = 0;
+    private int           notFoundCnt = 0;
     private boolean       doCleanup;
     private boolean       isSuccessful = false;
     private boolean       hasStarted   = false;
@@ -212,11 +216,35 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         return names;
     }
     
+    
+    /**
+     * @param rank
+     * @return
+     */
+    private String getRankText(int rank)
+    {
+        TreeDefIface<?,?,?> treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass(Taxon.class);
+    	TreeDefItemIface<?,?,?> defItem = treeDef.getDefItemByRank(rank);
+    	return defItem.getDisplayText();
+    }
+    
+    /**
+     * 
+     */
+    private void fixMisparentedSynonyms()
+    {
+        TreeDefIface<?,?,?> treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass(Taxon.class);
+        String sql = "select distinct p.rankid, t.rankid from taxon t inner join " 
+        		+ "taxon p on p.taxonid = t.parentid where t.rankid >= 180 and t.acceptedid is not null and t.TaxonTreeDefID = " + treeDef.getTreeDefId();
+    	List<Object[]> synConfigs = BasicSQLUtils.query(sql);
+    	fixMisparentedSynonyms(synConfigs);
+    }
+    
     /**
      * @param doCleanup true does clean and report, false does report only
      * @param frame progress frame
      */
-    private void fixMisparentedSynonyms()
+    private void fixMisparentedSynonyms(List<Object[]> synConfigs)
     {
         Connection newDBConn = DBConnection.getInstance().getConnection();
         final String TOKEN = "<!-- STATISTICS -->";
@@ -224,8 +252,9 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         {
             TableWriter tblWriter  = new TableWriter(tmpReportName, "Orphan Synonyms for " + collectionName, true);
             tblWriter.println(TOKEN);
-            tblWriter.startTable();
-            tblWriter.logHdr(NBSP, "Orphan Synonym", "Current Genus", "Current Family", "Proposed Genus", "Proposed Family", "Catalog Numbers<BR>Determined to Synonym");
+            //tblWriter.startTable();
+            //String parentRankText = "Parent";//getRankText(parentRank);
+            //tblWriter.logHdr(NBSP, "Orphan Synonym", "Current " + parentRankText, "Current Family", "Proposed " + parentRankText, "Proposed Family", "Catalog Numbers<BR>Determined to Synonym");
             
             DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
             String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
@@ -266,7 +295,28 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 if (stmt != null) stmt.close();
             }
     
-            String statsStr = fixMisparentedSynonymsLevel(newDBConn, tblWriter, phHelper, 180, 220);
+            //String [] statsStr = new String[synConfigs.size()];
+            //int s = 0;
+            
+            //String statsStr = "";
+            tblWriter.startTable();
+            String parentRankText = "Parent";//getRankText((Integer)config[0]);
+            tblWriter.logHdr(NBSP, UIRegistry.getResourceString("SynonymCleanup.OrphanSynonym"), 
+            		String.format(UIRegistry.getResourceString("SynonymCleanup.Current"), parentRankText), 
+            		UIRegistry.getResourceString("SynonymCleanup.CurrentFamily"), 
+            		String.format(UIRegistry.getResourceString("SynonymCleanup.Proposed"), parentRankText), 
+            		UIRegistry.getResourceString("SynonymCleanup.ProposedFamily"), 
+            		UIRegistry.getResourceString("SynonymCleanup.CatalogNumsDetermined"));
+            int[] stats = {0, 0, 0, 0, 0, 0, 0, 0};
+            for (Object[] config : synConfigs)
+            {
+                //tblWriter.startTable();
+                //String parentRankText = getRankText((Integer)config[0]);
+                //tblWriter.logHdr(NBSP, "Orphan Synonym", "Current " + parentRankText, "Current Family", "Proposed " + parentRankText, "Proposed Family", "Catalog Numbers<BR>Determined to Synonym");
+            	//statsStr[s++] = fixMisparentedSynonymsLevel(newDBConn, tblWriter, phHelper, (Integer)config[0], (Integer)config[1]);
+                fixMisparentedSynonymsLevel(newDBConn, tblWriter, phHelper, (Integer)config[0], (Integer)config[1], stats);
+            	//tblWriter.endTable();
+            }
             tblWriter.endTable();
             tblWriter.flush();
             tblWriter.close();
@@ -282,6 +332,23 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
                 }
             }
+            StringBuilder statsSB = new StringBuilder();
+            statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
+            String[] descs  = {UIRegistry.getResourceString("SynonymCleanup.TotalRecsProcessed"), 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsInReport"),//"Number of Records in Report", 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsWithNewGenus"),//"Number Records with new Genus", 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsParentedToPlaceHolder"),//"Number of Records parented to Place Holder", 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberSynsDetermined"),//"Number of Synonyms used in Determinations", 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberSynsCorrectlyParented"),//"Number of Synonyms correctly parented",  
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecordsInError"),//"Number of Records in Error", 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberOfUpdateErrors")};//"Number of Update Errors"};
+            //int[]    values = {processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};
+            for (int i=0;i<descs.length;i++)
+            {
+                statsSB.append(createRow(descs[i], stats[i], stats[0]));
+            }
+            statsSB.append("</TABLE><BR/><BR/><BR/>"); 
+
             
             PrintWriter    pw = new PrintWriter(reportName);
             File           tf  = new File(tmpReportName);
@@ -289,13 +356,14 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             try
             {
                 String line = br.readLine();
-
+                //s = 0;
                 while (line != null)
                 {
                     if (line.startsWith(TOKEN))
                     {
-                        pw.println(statsStr);
-                        
+                        //pw.println(statsStr[s++]);
+                        //pw.println(statsStr);
+                    	pw.println(statsSB.toString());
                     } else
                     {
                         pw.println(line);
@@ -448,6 +516,16 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         return pUpdateStmt.executeUpdate() != 1;
     }
 
+    private String getParentFullName(final List<String> names)
+    {
+    	String result = "";
+    	for (int n = 0; n < names.size() - 1; n++ )
+    	{
+    		result += names.get(n) + " ";
+    	}
+    	return result.trim();
+    }
+    
     /**
      * @param newDBConn
      * @param tblWriter
@@ -455,13 +533,14 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
      * @param parentLevelRankID
      * @param childLevelRankID
      */
-    public String fixMisparentedSynonymsLevel(final Connection        newDBConn, 
+    public void fixMisparentedSynonymsLevel(final Connection        newDBConn, 
                                               final TableWriter       tblWriter,
                                               final PlaceholderHelper phHelper,
                                               final int               parentLevelRankID, 
-                                              final int               childLevelRankID)
+                                              final int               childLevelRankID,
+                                              final int[]             stats)
     {
-        StringBuilder statsSB = new StringBuilder();
+        //StringBuilder statsSB = new StringBuilder();
         
         DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
         String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
@@ -478,7 +557,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         int totalCnt   = BasicSQLUtils.getCountAsInt("SELECT COUNT(TaxonID) " + postfix);
         if (totalCnt == 0)
         {
-            return "";
+            return;
         }
         
         setProgress(0, 100);
@@ -489,7 +568,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         int percent = totalCnt / 50;
         percent = Math.max(percent, 1);
         
-        int cnt = 0;
+        int cnt = stats[1];
         try
         {
             HashMap<Integer, Taxon> rankToPlaceHolderHash = phHelper.getPlaceHolderTreeHash();
@@ -497,15 +576,24 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             tooManyCnt  = 0;
             notFoundCnt = 0;
             
-            int fndCnt        = 0;
-            int phCnt         = 0;
-            int err           = 0;
-            int correct       = 0;
-            int processCnt    = 0;
-            int withCatNumCnt = 0;
-            int updateErr     = 0;
-            
-            String searchStr = String.format("SELECT TaxonID, FullName, Name FROM taxon WHERE IsAccepted <> 0 AND BINARY Name = ? AND RankID = ? AND %s", whereStr);
+//            int fndCnt        = 0;
+//            int phCnt         = 0;
+//            int err           = 0;
+//            int correct       = 0;
+//            int processCnt    = 0;
+//            int withCatNumCnt = 0;
+//            int updateErr     = 0;
+ 
+            //processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};            
+            int processCnt    = stats[0]; //
+            int fndCnt        = stats[2]; //
+            int phCnt         = stats[3]; //
+            int withCatNumCnt = stats[4]; //
+            int correct       = stats[5]; //
+            int err           = stats[6]; //
+            int updateErr     = stats[7]; //
+
+            String searchStr = String.format("SELECT TaxonID, FullName, Name FROM taxon WHERE IsAccepted <> 0 AND BINARY FullName = ? AND RankID = ? AND %s", whereStr);
             pTaxNodeStmt = newDBConn.prepareStatement(searchStr);
             
             pCatNumStmt = newDBConn.prepareStatement("SELECT co.CatalogNumber FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
@@ -541,7 +629,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 
                 boolean           parentRankOK = parentRankID != null && parentRankID == parentLevelRankID;
                 ArrayList<String> names        = parseFullName(fullName);
-                String            genus        = names.get(0);
+                String            genus        = parentLevelRankID == 180 ? names.get(0) : getParentFullName(names); //names.get(0);
                 Integer           newGenusID   = parentRankOK ? getTaxonNode(genus, parentLevelRankID) : null;
                 String            oldFamily    = !oldParentIdNull && parentRankOK ? getFamilyName(oldParentId) : NBSP;
                 String            catNums      = getCatNumsForTaxon(taxonID, catNumFmt);
@@ -607,22 +695,31 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             }
             rs.close();
             
-            statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
-            String[] descs  = {"Total Records Processed", "Number of Records in Report", "Number Records with new Genus", 
-                               "Number of Records parented to Place Holder", "Number of Synonyms used in Determinations", 
-                               "Number of Synonyms correctly parented",  "Number of Records in Error", "Number of Update Errors"};
-            int[]    values = {processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};
-            for (int i=0;i<descs.length;i++)
-            {
-                statsSB.append(createRow(descs[i], values[i], processCnt));
-            }
-            statsSB.append("</TABLE><BR/><BR/><BR/>"); 
+//            statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
+//            String[] descs  = {"Total Records Processed", "Number of Records in Report", "Number Records with new Genus", 
+//                               "Number of Records parented to Place Holder", "Number of Synonyms used in Determinations", 
+//                               "Number of Synonyms correctly parented",  "Number of Records in Error", "Number of Update Errors"};
+//            int[]    values = {processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};
+//            for (int i=0;i<descs.length;i++)
+//            {
+//                statsSB.append(createRow(descs[i], values[i], processCnt));
+//            }
+//            statsSB.append("</TABLE><BR/><BR/><BR/>"); 
             
 //            log.debug(String.format("cnt:                     %6d", cnt));
 //            log.debug(String.format("fndCnt:                  %6d", fndCnt));
 //            log.debug(String.format("phCnt:                   %6d", phCnt));
 //            log.debug(String.format("err:                     %6d", err));
 //            log.debug(String.format("correct:                 %6d", correct));
+
+            stats[0] = processCnt;
+            stats[1] = cnt;
+            stats[2] = fndCnt;
+            stats[3] = phCnt;
+            stats[4] = withCatNumCnt;
+            stats[5] = correct;
+            stats[6] = err;
+            stats[7] = updateErr;
             
             pTaxNodeStmt.close();
             pCatNumStmt.close();
@@ -635,7 +732,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             ex.printStackTrace();
         }
         
-        return statsSB.toString();
+        //return statsSB.toString();
     }
     
     /**
