@@ -81,29 +81,46 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
                                       final Pair<Integer, Integer> pos) throws Exception
     {
         Division    currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
-        //Institution institution  = AppContextMgr.getInstance().getClassObject(Institution.class);
         
-        //boolean doingGlobalAccessions = institution.getIsAccessionsGlobal();
-        
-        String ansSQL = "SELECT ans.AutonumberingSchemeID, ans.FormatName, ans.IsNumericOnly, ans.SchemeName, dv.Name, dv.DivisionID FROM autonumberingscheme ans Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE dv.UserGroupScopeId = %d AND FormatName = '%s'";
+        String ansSQL = "SELECT ans.AutonumberingSchemeID, ans.FormatName, ans.IsNumericOnly, ans.SchemeName, dv.Name, dv.DivisionID " +
+        		        "FROM autonumberingscheme ans " +
+        		        "Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID " +
+        		        "Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE dv.UserGroupScopeId = %d AND FormatName = '%s'";
         String sql = String.format(ansSQL, currDivision.getId(), formatter.getName());
-        //log.debug(sql);
+        log.debug(sql);
+        
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         Integer ansID = null;
         if (rows.size() == 1)
         {
             ansID = (Integer)rows.get(0)[0];
+            
+        } else if (rows.size() == 0)
+        {
+            errorMsg = "There are NO formatters named ["+formatter.getName()+"]";
         } else
         {
-            log.debug("Too many Formatters named ["+formatter.getName()+"]");
+            errorMsg = "Too many Formatters named ["+formatter.getName()+"]";
+        }
+        
+        if (ansID == null)
+        {
+            log.debug(errorMsg);
+            return null;
         }
         
         //String sql          = "SELECT autonumberingscheme.FormatName, autonumberingscheme.SchemeName, autonumberingscheme.IsNumericOnly, collection.CollectionName, discipline.Name, division.Name, accession.AccessionNumber FROM autonumberingscheme Inner Join autonumsch_coll ON autonumberingscheme.AutoNumberingSchemeID = autonumsch_coll.AutoNumberingSchemeID Inner Join collection ON autonumsch_coll.CollectionID = collection.UserGroupScopeId Inner Join discipline ON collection.DisciplineID = discipline.UserGroupScopeId Inner Join division ON discipline.DivisionID = division.UserGroupScopeId Inner Join accession ON division.UserGroupScopeId = accession.DivisionID ";
         //String ansToDivLong = "SELECT ans.FormatName, ans.SchemeName, ans.IsNumericOnly, c.CollectionName, ds.Name, dv.Name FROM autonumberingscheme ans Inner Join autonumsch_coll ac ON ans.AutoNumberingSchemeID = ac.AutoNumberingSchemeID Inner Join collection c ON ac.CollectionID = c.UserGroupScopeId Inner Join discipline ds ON c.DisciplineID = ds.UserGroupScopeId Inner Join division dv ON ds.DivisionID = dv.UserGroupScopeId ";
-        String ansToDivSQL  = "SELECT dv.UserGroupScopeId DivID FROM autonumberingscheme ans Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE ans.AutoNumberingSchemeID = %d";
+        String ansToDivSQL  = "SELECT dv.UserGroupScopeId DivID FROM autonumberingscheme ans " +
+                        		"Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID " +
+                        		"Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId " +
+                        		"WHERE ans.AutoNumberingSchemeID = %d";
+        
+        ansToDivSQL = String.format(ansToDivSQL, ansID);
+        log.debug(ansToDivSQL);
         
         Vector<Integer> divIds = new Vector<Integer>();
-        for (Object[] row : BasicSQLUtils.query(String.format(ansToDivSQL, ansID)))
+        for (Object[] row : BasicSQLUtils.query(ansToDivSQL))
         {
             divIds.add((Integer)row[0]);
         }

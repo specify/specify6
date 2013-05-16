@@ -424,6 +424,11 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 String valueToIncrement  = incrementValue ? formValue
                 		: getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
                 
+                if (valueToIncrement == null)
+                {
+                    return null;
+                }
+                
                 Pair<Integer, BigInteger> yearAndIncVal = getYearAndIncVal(formatter, valueToIncrement, formValue);
                 
                 // Should NEVER be null
