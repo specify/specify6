@@ -583,6 +583,22 @@ public class IconViewObj implements Viewable
             mvParent.registerDisplayFrame(dialog);
         }
         
+        if (newDataObj instanceof Orderable)
+        {
+            // They really should all be Orderable, 
+            // but just in case we check each one.
+            int maxOrder = -1;
+            for (Object listObj : dataSet)
+            {
+                if (listObj instanceof Orderable)
+                {
+                    maxOrder = Math.max(((Orderable)listObj).getOrderIndex(), maxOrder);
+                }
+            }
+            ((Orderable)newDataObj).setOrderIndex(maxOrder+1);
+        }
+
+        
         dialog.setData(newDataObj);
         dialog.showDisplay(true);
         
