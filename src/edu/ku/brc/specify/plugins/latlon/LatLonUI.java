@@ -507,6 +507,12 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 latLon1.first  = convert(latLon1.first, fromFmt, toFmt, LATLON.Latitude);
                 latLon1.second = convert(latLon1.second, fromFmt, toFmt, LATLON.Longitude);
                 
+                if (latLon1.first == null || latLon1.second == null)
+                {
+                    UIRegistry.showError("There was a problem converting the lat/lon value.");
+                    return;
+                }
+                
                 if (prevPanel2 != null && latLon2 != null)
                 {
                     latLon2.first  = convert(prevPanel2.getLatitudeStr(), fromFmt, toFmt, LATLON.Latitude);

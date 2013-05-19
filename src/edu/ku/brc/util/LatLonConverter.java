@@ -359,6 +359,11 @@ public class LatLonConverter
         }
      
         LatLonValueInfo latLonVal = adjustLatLonStr(strArg, fromFmt, false, true, latOrLon);
+        if (latLonVal == null)
+        {
+            System.err.println("Unable to convert ["+strArg+"]  from: "+fromFmt+ " with: "+latOrLon);
+            return null;
+        }
         
         String str = latLonVal.getStrVal(false);
         
