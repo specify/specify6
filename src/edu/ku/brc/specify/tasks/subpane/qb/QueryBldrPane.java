@@ -126,10 +126,14 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
@@ -1481,13 +1485,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //Assuming that this not necessary when keysToRetrieve is non-null because
             //the keys will already been filtered properly. (???)
             
-        	// Add extra where's for system fields for each table in the from clause...
+        	// Add extra where's for system fields for root table only, see notes below at end of for block
             boolean isRootTbl = true;
             for (Pair<DBTableInfo, String> fromTbl : fromTbls)
             {
-                String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
-                        fromTbl.getFirst(), true,
-                        !isRootTbl && true/* XXX should only use left join when necessary */, fromTbl.getSecond());
+                String specialColumnWhere = null;                
+                if (fromTbl.getFirst().getTableId() == Attachment.getClassTableId())
+                {
+                	String prefix = fromTbl.getSecond() + ".";
+                	specialColumnWhere = "((" + prefix + "scopeType = 0 and " + prefix + "scopeID = " + AppContextMgr.getInstance().getClassObject(edu.ku.brc.specify.datamodel.Collection.class).getCollectionId() + ") or"
+                			+ "(" + prefix + "scopeType = 1 and " + prefix + "scopeID = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId() + ") or"
+                			+ "(" + prefix + "scopeType = 2 and " + prefix + "scopeID = " + AppContextMgr.getInstance().getClassObject(Division.class).getDivisionId() + ") or"
+        					+ "(" + prefix + "scopeType = 3 and " + prefix + "scopeID = " + AppContextMgr.getInstance().getClassObject(Institution.class).getInstitutionId() + "))";
+                } else 
+                {
+                	specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
+                            fromTbl.getFirst(), true,
+                            !isRootTbl && true/* XXX should only use left join when necessary */, fromTbl.getSecond());                	
+                }
                 isRootTbl = false;
                 if (StringUtils.isNotEmpty(specialColumnWhere))
                 {

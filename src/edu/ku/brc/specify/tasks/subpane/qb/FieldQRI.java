@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -36,6 +39,15 @@ public class FieldQRI extends BaseQRI
     protected TableQRI    table = null;
     protected DBFieldInfo fi;
     
+    protected final static String[] forbiddenFieldTexts = {"attachment.scopetype", "attachment.scopeid", "attachment.tableid"};
+    protected final static Set<String> forbiddenFields = new HashSet<String>(forbiddenFieldTexts.length);
+    static {
+    	for (int f = 0; f < forbiddenFieldTexts.length; f++)
+    	{
+    		forbiddenFields.add(forbiddenFieldTexts[f]);
+    	}
+    }
+    	
     /**
      * @param table
      * @param fi
@@ -50,6 +62,10 @@ public class FieldQRI extends BaseQRI
         if (fi != null)
         {
             title    = fi.getTitle();
+            if (forbiddenFields.contains((fi.getTableInfo().getName() + "." + fi.getName()).toLowerCase()))
+            {
+            	fi.setHidden(true);
+            }
             //buildValues();
         }
         iconName = "BlankIcon";
