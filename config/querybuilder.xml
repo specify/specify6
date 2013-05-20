@@ -28,9 +28,16 @@
 	<table name="DNASequence">
 		<alias name="CollectionObject"/>
 		<alias name="Agent" field="sequencer"/>
-		<table name="DNASequencingRun" field="dnaSequencingRuns"/>
+		<table name="DNASequencingRun" field="dnaSequencingRuns">
+			<table name="DNASequencingRunAttachment" field="dnaSequencingRunAttachments">
+				<alias name="Attachment"/>
+			</table>
+		</table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
+        <table name="DNASequenceAttachment" field="dnaSequenceAttachments">
+            <alias name="Attachment"/>
+        </table>
 	</table>
 	
     <table name="Agent">
@@ -131,10 +138,11 @@
       	<alias name="ConservDescription" field="conservDescriptions" /> 
       	<!-- table name="Container" field="container" /-->
       	<!-- table name="Container" field="containerOwner" /-->
-      	<table name="DNASequence" field="dnaSequences">
+      	<!--table name="DNASequence" field="dnaSequences">
       			<alias name="Agent" field="sequencer" /> 
-      	</table>
-      	
+      	</table-->
+      	<alias name="DNASequence" field="DnaSequences"/>
+ 
       	<alias name="Container" field="container"/>
       	<alias name="Container" field="containerOwner"/>
       	
@@ -171,7 +179,11 @@
         <table name="ConservDescriptionAttachment" field="conservDescriptionAttachments">
         	<alias name="Attachment"/>
         </table>
-    	<table name="ConservEvent" field="events" />
+    	<table name="ConservEvent" field="events" >
+        	<table name="ConservEventAttachment" field="conservEventAttachments">
+        		<alias name="Attachment"/>
+        	</table>
+    	</table>
     </table>
     
     <table name="Container" >
