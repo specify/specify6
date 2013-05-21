@@ -1812,7 +1812,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Attachments</text>
+            <text>Field Notebook Attachments</text>
           </str>
           <str language="pt">
             <version>1</version>
@@ -3318,7 +3318,7 @@
           </str>
           <str language="en">
             <version>0</version>
-            <text>Attachments</text>
+            <text>DNA Sequencing Run Attachments</text>
           </str>
         </names>
         <descs/>
@@ -10856,7 +10856,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
           <str language="en">
             <version>0</version>
-            <text>Attachments</text>
+            <text>Field Notebook Page Attachments</text>
           </str>
         </names>
         <descs/>
@@ -15119,7 +15119,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="en">
             <version>0</version>
-            <text>Attachments</text>
+            <text>DNA Sequence Attachments</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -17425,7 +17425,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
           <str language="en">
             <version>0</version>
-            <text>Attachments</text>
+            <text>Field Notebook Page Set Attachments</text>
           </str>
         </names>
         <descs/>
