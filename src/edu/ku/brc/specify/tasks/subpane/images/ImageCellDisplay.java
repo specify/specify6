@@ -72,6 +72,8 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     public static final int METADATA_BTN    = -2;
     public static final int SELECTION_WIDTH = 3;
     private final int   margin              = 6;
+    
+    private static final Color lightBorderColor = new Color(248, 248, 248);
 
     private Border      nonSelBorder    = BorderFactory.createEmptyBorder(2, 2, 2, 2);
     private BasicStroke stdLineStroke   = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -240,14 +242,10 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
             
             //System.out.println(imgDataItem.getShortName()+"  "+imgDataItem.isSelected());
             
-            if (imgDataItem != null && imgDataItem.isSelected())
-            {
-                g2.setStroke(stdLineStroke);
-                g2.setColor(selectColor);
-                
-                rr.setRoundRect(x, y, w, h, 10, 10);
-                g2.draw(rr);
-            }
+            g2.setColor(imgDataItem != null && imgDataItem.isSelected() ? selectColor : lightBorderColor);
+            g2.setStroke(stdLineStroke);
+            rr.setRoundRect(x, y, w, h, 10, 10);
+            g2.draw(rr);
             
             int imgX = x + w - infoIcon16.getIconWidth();
             int imgY = y + h - infoIcon16.getIconHeight();
