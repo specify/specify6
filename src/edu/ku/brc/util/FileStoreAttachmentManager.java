@@ -343,9 +343,10 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         try
         {
-            String absPath     = srcFile.getAbsolutePath();
-            String newDestPath = FilenameUtils.getPrefix(absPath) + FilenameUtils.getPath(absPath) + FilenameUtils.getName(destFileName);
-            File   destFile    = new File(newDestPath);
+//            String absPath     = srcFile.getAbsolutePath();
+//            String newDestPath = FilenameUtils.getPrefix(absPath) + FilenameUtils.getPath(absPath) + FilenameUtils.getName(destFileName);
+//            File   destFile    = new File(newDestPath);
+            File   destFile    = new File(destFileName);
             if (destFile.exists())
             {
                 return destFile;
@@ -353,9 +354,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
 
             // Now generate the thumbnail 
             Thumbnailer thumbnailGen  = AttachmentUtils.getThumbnailer();
-            thumbnailGen.generateThumbnail(srcFile.getAbsolutePath(), 
-                                           newDestPath,
-                                           false);
+            thumbnailGen.generateThumbnail(srcFile.getAbsolutePath(), destFileName, false);
             
             if (!destFile.exists())
             {
