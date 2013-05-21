@@ -350,7 +350,7 @@ public class ImagesPane extends BaseSubPane
         rsController.getPanel().setOpaque(true);
         CommandBarPanel  cbp = new CommandBarPanel(rsController);
         //cbp.setLeftComps(createSearchPanel());                      // temporarily disabled (work in progress)
-        cbp.setRightComps(reloadBtn, metaDataBtn, infoBtn, helpBtn);
+        cbp.setRightComps(metaDataBtn, infoBtn, helpBtn);
         cbp.createUI();
         
         JPanel botPanel = new JPanel(new BorderLayout());
