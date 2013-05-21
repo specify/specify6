@@ -302,9 +302,9 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             tblWriter.startTable();
             String parentRankText = "Parent";//getRankText((Integer)config[0]);
             tblWriter.logHdr(NBSP, UIRegistry.getResourceString("SynonymCleanup.OrphanSynonym"), 
-            		String.format(UIRegistry.getResourceString("SynonymCleanup.Current"), parentRankText), 
+            		String.format(UIRegistry.getResourceString("SynonymCleanup.CurrentParent"), parentRankText), 
             		UIRegistry.getResourceString("SynonymCleanup.CurrentFamily"), 
-            		String.format(UIRegistry.getResourceString("SynonymCleanup.Proposed"), parentRankText), 
+            		String.format(UIRegistry.getResourceString("SynonymCleanup.ProposedParent"), parentRankText), 
             		UIRegistry.getResourceString("SynonymCleanup.ProposedFamily"), 
             		UIRegistry.getResourceString("SynonymCleanup.CatalogNumsDetermined"));
             int[] stats = {0, 0, 0, 0, 0, 0, 0, 0};
