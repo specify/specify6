@@ -264,7 +264,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             //String      cntStr   = String.format("SELECT COUNT(*) FROM taxon WHERE IsAccepted = 0 AND %s", whereStr);
             
             Discipline        discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            PlaceholderHelper phHelper   = new PlaceholderHelper(discipline.getTaxonTreeDef());
+            PlaceholderHelper phHelper   = new PlaceholderHelper(doCleanup, discipline.getTaxonTreeDef());
             phHelper.setSynonymBranch(true);
             phHelper.buildPlaceHolderInfo();
             
