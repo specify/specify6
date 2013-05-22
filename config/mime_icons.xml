@@ -2,6 +2,9 @@
     <mimetype icon="unknown">
         <ext>bin</ext>
     </mimetype>
+    <mimetype icon="pdf" fallback="true">
+        <ext>pdf</ext>
+    </mimetype>
     <mimetype icon="audio">
         <ext>audio</ext>
         <ext>mpeg</ext>

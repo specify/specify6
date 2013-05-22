@@ -57,6 +57,7 @@ import edu.ku.brc.util.AttachmentUtils;
 public class Thumbnailer
 {
     private static HashMap<String, String> availableIcons;
+    private static HashMap<String, String> fallbackIcons;  // use these if thumbnail fails
 
 	/** A map of registered ThumbnailGenerators. */
     protected Hashtable<String, ThumbnailGeneratorIFace> mimeTypeToGeneratorMap;
@@ -124,7 +125,8 @@ public class Thumbnailer
 	 */
 	private static void readIconMap()
 	{
-	    availableIcons = new HashMap<String, String>();
+        availableIcons = new HashMap<String, String>();
+        fallbackIcons  = new HashMap<String, String>();
 	    
 	    File mimeTypeFile = XMLHelper.getConfigDir("mime_icons.xml");
 	    if (mimeTypeFile.exists())
@@ -137,7 +139,10 @@ public class Thumbnailer
                 {
                     Node     mimeNode     = mimeNodes.item(i);
                     Node     iconNameNode = mimeNode.getAttributes().getNamedItem("icon");
+                    Node     fallbackNode = mimeNode.getAttributes().getNamedItem("fallback");
                     String   iconName     = iconNameNode.getNodeValue();
+                    String   fbStr        = fallbackNode != null ? fallbackNode.getNodeValue() : null;
+                    boolean  isFallBack   = StringUtils.isNotEmpty(fbStr) && fbStr.equals("true");
                     NodeList extNodes     = mimeNode.getChildNodes();
                     for(int j = 0; j < extNodes.getLength(); ++j )
                     {
@@ -145,7 +150,13 @@ public class Thumbnailer
                         String ext     = extNode.getTextContent().trim();
                         if (StringUtils.isNotEmpty(ext))
                         {
-                            availableIcons.put(ext, iconName);
+                            if (isFallBack)
+                            {
+                                fallbackIcons.put(ext, iconName);
+                            } else
+                            {
+                                availableIcons.put(ext, iconName);
+                            }
                         }
                     }
                 }
@@ -228,11 +239,12 @@ public class Thumbnailer
     		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
     		if (generator != null)
     		{
-                if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
+                if (generator.generateThumbnail(originalFile, outputFile, doHighQuality))
                 {
-                    UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
+                    return;
                 }
-                return;
+                UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
+                iconName = fallbackIcons.get(ext);
     		}
         }
 		
