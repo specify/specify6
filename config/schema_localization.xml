@@ -26080,7 +26080,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
       </str>
     </descs>
   </container>
-  <container name="taxoncitation" isHidden="true" format="TaxonCitation">
+  <container name="taxoncitation" isHidden="false" format="TaxonCitation">
     <version>2</version>
     <items>
       <desc name="yesNo1" type="java.lang.Boolean" isHidden="true" isRequired="false">
@@ -26240,7 +26240,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
           </str>
         </descs>
       </desc>
-      <desc name="remarks" type="text" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
