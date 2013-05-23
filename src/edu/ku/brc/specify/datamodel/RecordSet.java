@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -671,8 +672,23 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     public Object clone() throws CloneNotSupportedException
     {
         RecordSet obj = (RecordSet)super.clone();
+        obj.initialize();
         
         obj.recordSetId          = null;
+        obj.allPermissionLevel   = allPermissionLevel;
+        obj.dbTableId            = dbTableId;
+        obj.dataSpecificIcon     = dataSpecificIcon;
+        obj.group                = group;
+        obj.groupPermissionLevel = groupPermissionLevel;
+        obj.name                 = name;
+        obj.ownerPermissionLevel = ownerPermissionLevel;
+        obj.remarks              = remarks;
+        obj.specifyUser          = specifyUser;
+        obj.type                 = type;
+        
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
         obj.items                = null;
         
         return obj;
