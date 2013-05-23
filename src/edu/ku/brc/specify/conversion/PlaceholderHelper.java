@@ -57,14 +57,16 @@ public class PlaceholderHelper
     
     protected String                             taxonTitle          = PLACEHOLDER;
     protected boolean                            isSynonymBranch     = false;
-    
+    protected boolean							 doCleanup           = false;
     /**
      * @param conn
      * @param taxonTreeDefId
      */
-    public PlaceholderHelper(final TaxonTreeDef taxonTreeDef)
+    public PlaceholderHelper(final boolean doCleanup, final TaxonTreeDef taxonTreeDef)
     {
         super();
+        
+        this.doCleanup = doCleanup;
         
         this.conn = DBConnection.getInstance().getConnection();
         
@@ -280,18 +282,22 @@ public class PlaceholderHelper
                             Taxon taxon = createTaxon(item, parent);
                             parent = taxon;
                             
-                            try
+                            if (doCleanup)
                             {
-                                session.beginTransaction();
-                                session.save(taxon);
-                                session.commit();
+                            	try
+                            	{
+                            		session.beginTransaction();
+                            		session.save(taxon);
+                            		session.commit();
                                 
-                                placeHolderTreeHash.put(item.getRankId(), taxon);
                                 
-                            } catch (Exception ex)
-                            {
-                                session.rollback();
+                            	} catch (Exception ex)
+                            	{
+                            		session.rollback();
+                            	}
                             }
+                    		placeHolderTreeHash.put(item.getRankId(), taxon);
+                            
                         }
                     }
                 } else
