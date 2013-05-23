@@ -61,7 +61,7 @@ itext									2.1.7 (updated for fix for bug #8555 [pdf export of jasper reports
 javacsv									2.0
 jh										2.0_02
 swingx									1.6.1
-swingx-beaninfo								1.6.1
+swingx-beaninfo							1.6.1
 swingx-ws								1.0
 jtds.jar								1.2.2
 
@@ -79,7 +79,7 @@ jazzy-core                              0.5.2
 lucene-core.jar                         3.6.1
 lucene-queryparser.jar                  3.6.1
 
-metadata-extractor.jar                  2.6.2
+metadata-extractor.jar                  2.6.4
 
 Missing information:
 --------------------
