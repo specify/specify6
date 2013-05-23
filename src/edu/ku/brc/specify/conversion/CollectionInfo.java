@@ -1094,7 +1094,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             }
         } else
         {
-            placeholderHelper = new PlaceholderHelper(taxonTreeDef);
+            placeholderHelper = new PlaceholderHelper(true, taxonTreeDef);
         }
     }
 
