@@ -317,9 +317,17 @@ public class MySQLBackupService extends BackupServiceFactory
                     String port   = DatabaseDriverInfo.getDriver(DBConnection.getInstance().getDriverName()).getPort();
                     String server = DBConnection.getInstance().getServerName();
                     
-                    String cmdLine  = String.format("%s -u %s --password=%s --host=%s %s %s", mysqldumpLoc, userName, password, server, (port != null ? ("--port="+port) : ""), databaseName);
-                    String[] args   = StringUtils.split(cmdLine, ' ');
-                    Process process = Runtime.getRuntime().exec(args);
+                    Vector<String> args = new Vector<String>();
+                    args.add(mysqldumpLoc);
+                    args.add("--user=" + userName);
+                    args.add("--password=" + password);
+                    args.add("--host=" + server);
+                    if (port != null)
+                    {
+                        args.add("--port=" + port);
+                    }
+                    args.add(databaseName);
+                    Process process = Runtime.getRuntime().exec(args.toArray(new String[0]));
                     
                     InputStream input = process.getInputStream();
                     byte[] bytes = new byte[8192*2];
@@ -612,8 +620,17 @@ public class MySQLBackupService extends BackupServiceFactory
                     String server    = DBConnection.getInstance().getServerName();
                     
                     String cmdLine  = String.format("%s -u %s --password=%s --host=%s %s %s", mysqlLoc, userName, password, server, (port != null ? ("--port="+port) : ""), databaseName);
-                    String[] args    = StringUtils.split(cmdLine, ' ');
-                    Process  process = Runtime.getRuntime().exec(args); 
+                    Vector<String> args = new Vector<String>();
+                    args.add(mysqlLoc);
+                    args.add("--user=" + userName);
+                    args.add("--password=" + password);
+                    args.add("--host=" + server);
+                    if (port != null) {
+                        args.add("--port=" + port);
+                    }
+                    args.add(databaseName);
+                    
+                    Process  process = Runtime.getRuntime().exec(args.toArray(new String[0])); 
                     
                     Thread.sleep(100);
                     
@@ -797,9 +814,12 @@ public class MySQLBackupService extends BackupServiceFactory
         FileInputStream input = null;
         try
         {
-            String   cmdLine = mysqlLoc+" -u "+userName+" --password="+password+" " + databaseName; 
-            String[] args    = StringUtils.split(cmdLine, ' ');
-            Process  process = Runtime.getRuntime().exec(args); 
+            Vector<String> args = new Vector<String>();
+            args.add(mysqlLoc);
+            args.add("--user=" + userName);
+            args.add("--password=" + password);
+            args.add(databaseName);
+            Process  process = Runtime.getRuntime().exec(args.toArray(new String[0])); 
             
             //Thread.sleep(100);
             
