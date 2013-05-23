@@ -42,7 +42,7 @@
     <icon name="discipline"           file="discipline.png" sizes="all"/>
     <icon name="division"             file="division.png" sizes="all"/>
     <icon name="dnasequence"          file="dna.png" sizes="all"/>
-    <icon name="dnasequencingrun"     file="dna.png" sizes="all"/>
+    <icon name="dnasequencingrun"     file="dna_seq_run.png" sizes="all"/>
     <icon name="exsiccata"            file="exsiccata.png" sizes="all"/>
     <icon name="exsiccataitem"        file="exsiccata_item.png" sizes="all"/>
     <icon name="exchangein"           file="exchange_in.png" sizes="all"/>
@@ -95,7 +95,7 @@
 	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="NonStd"/>
 	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="NonStd"/>
     <icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="NonStd"/>
-    <icon name="DNASequencingRunAttachment"      file="dna_attachment.png" sizes="NonStd"/>
+    <icon name="DNASequencingRunAttachment"      file="dna_seq_run_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookAttachment"         file="field_notebook_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookPageAttachment"     file="field_notebook_page_attachment.png" sizes="NonStd"/>
 	<icon name="FieldNotebookPageSetAttachment"  file="field_notebook_page_set_attachment.png" sizes="NonStd"/>
