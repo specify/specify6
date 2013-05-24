@@ -58,6 +58,8 @@ public class PlaceholderHelper
     protected String                             taxonTitle          = PLACEHOLDER;
     protected boolean                            isSynonymBranch     = false;
     protected boolean							 doCleanup           = false;
+    protected Taxon								 highestPlaceHolder  = null;
+    
     /**
      * @param conn
      * @param taxonTreeDefId
@@ -212,6 +214,28 @@ public class PlaceholderHelper
                 recurse(taxon);
             }
         }
+    }
+    
+    /**
+     * @return highest placeholder (with lowest RankID value).
+     * 
+     * Assumes placeholders have already been created.
+     */
+    public Taxon getHighestPlaceHolder()
+    {
+    	if (highestPlaceHolder == null)
+    	{
+    		int low = 25000;
+    		for (Integer  e : getPlaceHolderTreeHash().keySet())
+    		{
+    			if (e < low)
+    			{
+    				low = e;
+    			}
+    		}
+    		highestPlaceHolder = getPlaceHolderTreeHash().get(low);
+    	}
+    	return highestPlaceHolder;
     }
     
     /**

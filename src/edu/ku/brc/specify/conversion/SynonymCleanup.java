@@ -77,6 +77,10 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
     private String tmpReportName = "orphan_synonym_report_%s.tmp";
     private String reportName    = "orphan_synonym_report_%s.html";
 
+    private int maxSynRankToReparent = 230; //Ranks 'below' this rank are just moved to a placeholder
+    private boolean moveAllSynsOfLowerRanksToPlaceHolder = true; //if a synonym's preferred taxon has a lower rank than the synonym 
+    										//(and thus the synonym's parent has the same or lower rank than the synonym)
+    										//move it to a placeholder
     
     private ProgressFrame progressFrame;
     private Connection    conn;
@@ -261,7 +265,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             
             DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
             String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
-            //String      cntStr   = String.format("SELECT COUNT(*) FROM taxon WHERE IsAccepted = 0 AND %s", whereStr);
+            String      cntStr   = String.format("SELECT COUNT(*) FROM taxon WHERE IsAccepted = 0 AND %s", whereStr);
             
             Discipline        discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             PlaceholderHelper phHelper   = new PlaceholderHelper(doCleanup, discipline.getTaxonTreeDef());
@@ -314,6 +318,21 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
 
             boolean needKeys = false;
             int currRank = (Integer)synConfigs.get(0)[1];
+            int totalSynCount = BasicSQLUtils.getCount(cntStr);
+            boolean doPercent = totalSynCount < 5000;
+            int progressInterval = totalSynCount  / (!doPercent ? 500 : (totalSynCount > 1200 ? 100 : 50));
+            if (!doPercent)
+            {
+                progressFrame.getProcessProgress().setIndeterminate(true);
+            	setProgress(0, totalSynCount);
+            } else
+            {
+            	setProgress(0, 100);
+            }
+            
+            progressInterval = Math.max(progressInterval, 1);
+            progressFrame.setDesc(doCleanup ? "Cleaning up Synonyms..." : "Creating Synonym Report...");
+            
             for (int c = 1; c < synConfigs.size(); c++)
             {
             	if (currRank == (Integer)synConfigs.get(c)[1])
@@ -335,12 +354,13 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 Integer parentRank = (Integer)config[0];
                 Integer childRank = (Integer)config[1];		
                 boolean skipBads = needKeys && c < synConfigs.size() - 1 && childRank.equals(synConfigs.get(c+1)[1]);                
-            	fixMisparentedSynonymsLevel(newDBConn, tblWriter, phHelper, parentRank, childRank, skipBads, stats, processedKeys);
+            	fixMisparentedSynonymsLevel(newDBConn, tblWriter, phHelper, parentRank, childRank, skipBads, stats, processedKeys, progressInterval, doPercent);
             	//tblWriter.endTable();
             }
             tblWriter.endTable();
             tblWriter.flush();
             tblWriter.close();
+            progressFrame.processDone();
             
             if (doCleanup)
             {
@@ -378,6 +398,19 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             {
                 String line = br.readLine();
                 //s = 0;
+                doPercent = stats[0] < 5000;
+                progressInterval = stats[0]  / (!doPercent ? 500 : (stats[0] > 1200 ? 100 : 50));
+                if (!doPercent)
+                {
+                    progressFrame.getProcessProgress().setIndeterminate(true);
+                	setProgress(0, stats[0]);
+                } else
+                {
+                	setProgress(0, 100);
+                }
+                
+                progressInterval = Math.max(progressInterval, 1);
+                int processCnt = 0;
                 while (line != null)
                 {
                     if (line.startsWith(TOKEN))
@@ -390,6 +423,12 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                         pw.println(line);
                     }
                     line = br.readLine();
+                    processCnt++;
+                    if (processCnt % progressInterval == 0)
+                    {
+                    	int p = (int)(((processCnt * 100) / (double)stats[0]) + 0.5);
+                        setProgress(doPercent ? p : processCnt, null);
+                    }
                 }
                 isSuccessful = true;
                 
@@ -548,6 +587,21 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
     }
     
     /**
+     * @param phHelper
+     * @param parentLevelRankID
+     * @return
+     */
+    Taxon getPlaceHolder(PlaceholderHelper phHelper, int parentLevelRankID)
+    {
+    	Taxon placeHolder = phHelper.getPlaceHolderTreeHash().get(parentLevelRankID);
+    	if (placeHolder == null && parentLevelRankID== 0)
+    	{
+    		placeHolder = phHelper.getHighestPlaceHolder();
+    	}
+    	return placeHolder;
+    }
+    
+    /**
      * @param newDBConn
      * @param tblWriter
      * @param phHelper
@@ -561,11 +615,12 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                                               final int               childLevelRankID,
                                               final boolean 		  skipBadParentRanks,
                                               final int[]             stats,
-                                              final Set<Integer>      processedKeys)
+                                              final Set<Integer>      processedKeys,
+                                              int                     progressInterval,
+                                              boolean                 doPercent)
     {
-        //StringBuilder statsSB = new StringBuilder();
-        
-        DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
+
+    	DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
         String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
         
         String parentName = BasicSQLUtils.querySingleObj(String.format("SELECT Name FROM taxontreedefitem WHERE %s AND RankID = %d", whereStr, parentLevelRankID));
@@ -578,34 +633,25 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         
         String postfix = " FROM taxon WHERE IsAccepted = 0 AND AcceptedID IS NOT NULL AND RankID = " + childLevelRankID + " AND " + whereStr;
         int totalCnt   = BasicSQLUtils.getCountAsInt("SELECT COUNT(TaxonID) " + postfix);
+ 
+    	System.out.println("fixMisparentedSynonymsLevel: " + parentLevelRankID + " > " + childLevelRankID + " (" + totalCnt + ")");
+
         if (totalCnt == 0)
         {
             return;
         }
-        
-        setProgress(0, 100);
-        
+                
         UIFieldFormatterIFace catNumFmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
         
         log.debug("SELECT COUNT(TaxonID) " + postfix);
-        int percent = totalCnt / 50;
-        percent = Math.max(percent, 1);
         
         int cnt = stats[1];
         try
         {
-            HashMap<Integer, Taxon> rankToPlaceHolderHash = phHelper.getPlaceHolderTreeHash();
             
             tooManyCnt  = 0;
             notFoundCnt = 0;
             
-//            int fndCnt        = 0;
-//            int phCnt         = 0;
-//            int err           = 0;
-//            int correct       = 0;
-//            int processCnt    = 0;
-//            int withCatNumCnt = 0;
-//            int updateErr     = 0;
  
             //processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};            
             int processCnt    = stats[0]; //
@@ -640,114 +686,104 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 int     oldParentId     = rs.getInt(4);
                 boolean oldParentIdNull = rs.wasNull();
                 
+                
                 //System.err.println("-------["+fullName+"]-------");
                 
-                String  oldGenusName;
+                String  oldParentName = "";
                 Integer parentRankID = null;
-                if (oldParentIdNull)
-                {
-                    oldGenusName = NBSP;
-                } else
-                {
-                    Object[] row = BasicSQLUtils.queryForRow("SELECT FullName,RankID FROM taxon WHERE TaxonID = " + oldParentId);
-                    oldGenusName = (String)row[0];
-                    parentRankID = (Integer)row[1];
-                }
+				if (oldParentIdNull) 
+				{
+					oldParentName = NBSP;
+				} else 
+				{
+					Object[] row = BasicSQLUtils
+							.queryForRow("SELECT FullName,RankID FROM taxon WHERE TaxonID = "
+									+ oldParentId);
+
+					oldParentName = (String) row[0];
+					parentRankID = (Integer) row[1];
+				}
+				
+                boolean parentRankOK = parentRankID != null && parentRankID == parentLevelRankID;
                 
-                boolean           parentRankOK = parentRankID != null && parentRankID == parentLevelRankID;
                 if (!parentRankOK && parentRankID != null && skipBadParentRanks)
                 {
                 	continue;
                 }
                 
-                if (processedKeys != null)
-                {
-                	processedKeys.add(taxonID);
-                }
-                
-                ArrayList<String> names        = parseFullName(fullName);
-                String            genus        = parentLevelRankID == 180 ? names.get(0) : getParentFullName(names); //names.get(0);
-                Integer           newGenusID   = parentRankOK ? getTaxonNode(genus, parentLevelRankID) : null;
-                String            oldFamily    = !oldParentIdNull && parentRankOK ? getFamilyName(oldParentId) : NBSP;
-                String            catNums      = getCatNumsForTaxon(taxonID, catNumFmt);
-                
-                if (!parentRankOK)
-                {
-                    oldGenusName =  NBSP;
-                }
-                
-                if (!catNums.equals(NBSP))
-                {
-                    withCatNumCnt++;
-                }
+				if (processedKeys != null) {
+					processedKeys.add(taxonID);
+				}
 
-                if (newGenusID != null)
-                {
-                    if (newGenusID != oldParentId) // Search for new Parent and found one
-                    {
-                        cnt++;
-                        String newFamily = getFamilyName(newGenusID);
-                        tblWriter.logWithSpaces(Integer.toString(cnt), fullName, oldGenusName, oldFamily, genus, newFamily, catNums);
-                        if (doCleanup)
-                        {
-                            if (update(newGenusID, taxonID))
-                            {
-                                updateErr++;
-                            }
-                        }
-                        fndCnt++;
-                    } else
-                    {
-                        correct++;
-                    }
-                } else 
-                {
-                    Taxon placeHolder = rankToPlaceHolderHash.get(parentLevelRankID);
-                    if (placeHolder != null)
-                    {
-                        cnt++;
-                        tblWriter.logWithSpaces(Integer.toString(cnt), fullName, oldGenusName, oldFamily, placeHolder.getName(), NBSP, catNums);
-                        phCnt++;
-                        if (doCleanup)
-                        {
-                            if (update(placeHolder.getId(), taxonID))
-                            {
-                                updateErr++;
-                            }
-                        }
-                    } else
-                    {
-                        cnt++;
-                        tblWriter.logErrors(Integer.toString(cnt), fullName, String.format("Bad RankID %s",  rankId), oldFamily, NBSP, catNums);
-                       err++;
-                    }
-                }
-                processCnt++;
-                if (processCnt % percent == 0)
-                {
-                    int p = (int)(((processCnt * 100) / (double)totalCnt) + 0.5);
-                    setProgress(p, null);
-                    //if (p > 5) break;
-                }
+				boolean getParent = !((moveAllSynsOfLowerRanksToPlaceHolder && (parentRankID != null && parentRankID >= childLevelRankID)) 
+						|| childLevelRankID > maxSynRankToReparent);
+						
+				ArrayList<String> names = parseFullName(fullName);
+				String parent = parentLevelRankID == 180 ? names.get(0)
+						: getParentFullName(names); // names.get(0);
+				Integer newParentID = parentRankOK && getParent ? getTaxonNode(parent,
+							parentLevelRankID) : null;
+				String oldFamily = !oldParentIdNull && parentRankOK ? getFamilyName(oldParentId)
+							: NBSP;
+				String catNums = getCatNumsForTaxon(taxonID, catNumFmt);
+
+				if (!parentRankOK) {
+					oldParentName = NBSP;
+				}
+
+				if (!catNums.equals(NBSP)) {
+					withCatNumCnt++;
+				}
+				
+				if (newParentID != null) {
+					if (newParentID != oldParentId) // Search for new Parent and
+													// found one
+					{
+						cnt++;
+						String newFamily = getFamilyName(newParentID);
+						tblWriter.logWithSpaces(Integer.toString(cnt),
+								fullName, oldParentName, oldFamily, parent,
+								newFamily, catNums);
+						if (doCleanup) {
+							if (update(newParentID, taxonID)) {
+								updateErr++;
+							}
+						}
+						fndCnt++;
+					} else {
+						correct++;
+					}
+				} else {
+					Taxon placeHolder = getPlaceHolder(phHelper,
+							parentLevelRankID);
+					if (placeHolder != null) {
+						cnt++;
+						tblWriter.logWithSpaces(Integer.toString(cnt),
+								fullName, oldParentName, oldFamily,
+								placeHolder.getName(), NBSP, catNums);
+						phCnt++;
+						if (doCleanup) {
+							if (update(placeHolder.getId(), taxonID)) {
+								updateErr++;
+							}
+						}
+					} else {
+						cnt++;
+						tblWriter.logErrors(Integer.toString(cnt), fullName,
+								String.format("Bad RankID %s", rankId),
+								oldFamily, parent, NBSP, catNums);
+						err++;
+					}
+				}
+				processCnt++;
+	
+				if (processCnt % progressInterval == 0) {
+					int p = (int) (((processCnt * 100) / (double) totalCnt) + 0.5);
+					setProgress(doPercent ? p : processCnt, null);
+				}
             }
             rs.close();
             
-//            statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
-//            String[] descs  = {"Total Records Processed", "Number of Records in Report", "Number Records with new Genus", 
-//                               "Number of Records parented to Place Holder", "Number of Synonyms used in Determinations", 
-//                               "Number of Synonyms correctly parented",  "Number of Records in Error", "Number of Update Errors"};
-//            int[]    values = {processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};
-//            for (int i=0;i<descs.length;i++)
-//            {
-//                statsSB.append(createRow(descs[i], values[i], processCnt));
-//            }
-//            statsSB.append("</TABLE><BR/><BR/><BR/>"); 
-            
-//            log.debug(String.format("cnt:                     %6d", cnt));
-//            log.debug(String.format("fndCnt:                  %6d", fndCnt));
-//            log.debug(String.format("phCnt:                   %6d", phCnt));
-//            log.debug(String.format("err:                     %6d", err));
-//            log.debug(String.format("correct:                 %6d", correct));
 
             stats[0] = processCnt;
             stats[1] = cnt;
@@ -768,8 +804,6 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         {
             ex.printStackTrace();
         }
-        
-        //return statsSB.toString();
     }
     
     /**
