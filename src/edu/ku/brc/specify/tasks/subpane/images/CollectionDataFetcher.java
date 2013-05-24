@@ -37,6 +37,9 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -285,6 +288,21 @@ public class CollectionDataFetcher
                     if (bdi.getFormatter() != null)
                     {
                         val = bdi.getFormatter().formatToUI(val);
+                        
+                    } else if (bdi.getFieldInfo().getPickListName() != null)
+                    {
+                        PickListIFace pl = PickListDBAdapterFactory.getInstance().getPickList(bdi.getFieldInfo().getPickListName());
+                        if (pl != null)
+                        {
+                            for (PickListItemIFace pli : pl.getItems())
+                            {
+                                if (pli.getValue() != null && pli.getValue().equals(val))
+                                {
+                                    val = pli.getTitle();
+                                    break;
+                                }
+                            }
+                        }
                     }
                     String title = getColumnTitle(bdi, tableId);
                     dataList.add(new Pair<String, Object>(title + ": ", val));
