@@ -397,7 +397,7 @@ public class Attachment extends DataModelObjBase implements Serializable
 
         this.tableID = (short)tableIDArg;
         
-        if (tableIDArg == Accession.getClassTableId())
+        if (tableIDArg == Accession.getClassTableId() || tableIDArg == RepositoryAgreement.getClassTableId())
         {
             Institution inst = acm.getClassObject(Institution.class);
             scopeType = inst.getIsAccessionsGlobal() ? INSTITUTION_SCOPE : DIVISION_SCOPE;
