@@ -81,6 +81,19 @@
     </format>
 
     <format
+        name="Attachment"
+        title="Attachment"
+        class="edu.ku.brc.specify.datamodel.Attachment"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>title</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="AutoNumberingScheme"
         title="AutoNumberingScheme"
         class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"
