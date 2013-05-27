@@ -22,6 +22,8 @@ package edu.ku.brc.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Vector;
@@ -401,7 +403,47 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         {
             try
             {
-                return new File(entry.getUrl().toURI());
+                //System.err.println("****** entry.getUrl(): "+entry.getUrl().toExternalForm());
+
+                String fullPath = entry.getUrl().toExternalForm();
+                if (fullPath.startsWith("jar:"))
+                {
+                    String[] segs = StringUtils.split(fullPath, "!");
+                    if (segs.length != 2) return null;
+                    
+                    String jarPath  = segs[1];
+                    InputStream stream = IconManager.class.getResourceAsStream(jarPath);
+                    if (stream == null) {
+                        //send your exception or warning
+                        return null;
+                    }
+                    
+                    String fileName = FilenameUtils.getName(jarPath);
+                    String path     = baseDirectory + File.separator + THUMBNAILS + File.separator + fileName;
+                    File   outfile  = new File(path);
+                    //System.err.println("Path: "+ path+"|"+jarPath+"|"+fileName);
+                    OutputStream resStreamOut;
+                    int          readBytes;
+                    byte[] buffer =  new byte[10240];
+                    try {
+                        resStreamOut = new FileOutputStream(outfile);
+                        while ((readBytes = stream.read(buffer)) > 0) 
+                        {
+                            resStreamOut.write(buffer, 0, readBytes);
+                        }
+                        resStreamOut.close();
+                        stream.close();
+                        
+                        return outfile;
+                        
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                        return null;
+                    }
+                } else {
+                    
+                    return new File(entry.getUrl().toURI());
+                }
             } catch (URISyntaxException e)
             {
                 e.printStackTrace();

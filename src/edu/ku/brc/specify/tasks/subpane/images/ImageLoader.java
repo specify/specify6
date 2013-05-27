@@ -103,7 +103,8 @@ public class ImageLoader implements ImageLoaderIFace
             {
                 isError = true;
             }
-            //System.out.println(id+" Done Load: "+imageName);
+            //System.out.println(" Done Load: "+imageName);
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();

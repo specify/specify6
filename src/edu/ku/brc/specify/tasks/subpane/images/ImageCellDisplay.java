@@ -57,6 +57,7 @@ import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.ImageLoaderExector;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * @author rods
@@ -83,6 +84,8 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     private ImageIcon   infoIcon16      = IconManager.getIcon("InfoIcon", IconManager.STD_ICON_SIZE.Std16);
     private ImageIcon   dataObjIcon     = null;
     
+    private Dimension   defaultImgSize  = Thumbnailer.getInstance().getMaxSize();
+    private Dimension   imgSize         = new Dimension();
     private Rectangle   infoHitRect     = new Rectangle();
     private Rectangle   dataHitRect     = new Rectangle();
     private Rectangle   mdHitRect       = new Rectangle(); // metadat icon
@@ -226,61 +229,52 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
         int         w = 0;
         int         h = 0;
         
-        if (image != null)
+        if (image == null)
         {
-            Dimension s    = getSize();
-            int       imgW = image.getWidth(null);
-            h = s.height - (margin*2);
-            if (imgW < h)
-            {
-                imgW = h;
-            }
-            Stroke     cacheStroke = g2.getStroke();
-            
-            w       = getSize().width  - SELECTION_WIDTH;
-            h       = getSize().height - SELECTION_WIDTH;
-            
-            //System.out.println(imgDataItem.getShortName()+"  "+imgDataItem.isSelected());
-            
-            g2.setColor(imgDataItem != null && imgDataItem.isSelected() ? selectColor : lightBorderColor);
-            g2.setStroke(stdLineStroke);
-            rr.setRoundRect(x, y, w, h, 10, 10);
-            g2.draw(rr);
-            
-            int imgX = x + w - infoIcon16.getIconWidth();
-            int imgY = y + h - infoIcon16.getIconHeight();
-            g2.drawImage(infoIcon16.getImage(), imgX, imgY, null);
-            
-            infoHitRect.x      = imgX;
-            infoHitRect.y      = imgY;
-            infoHitRect.width  = infoIcon16.getIconWidth();
-            infoHitRect.height = infoIcon16.getIconHeight();
-            
-            if (dataObjIcon != null)
-            {
-                imgX = x;
-                imgY = y + h - dataObjIcon.getIconHeight();
-                g2.drawImage(dataObjIcon.getImage(), imgX, imgY, null);
-    
-                dataHitRect.x      = imgX;
-                dataHitRect.y      = imgY;
-                dataHitRect.width  = infoIcon16.getIconWidth();
-                dataHitRect.height = infoIcon16.getIconHeight();
-            }
-            /*imgX = x;
-            imgY = y + h - metaDataIcon.getIconHeight();
-            g2.drawImage(metaDataIcon.getImage(), imgX, imgY, null);
-            
-            mdHitRect.x      = imgX;
-            mdHitRect.y      = imgY;
-            mdHitRect.width  = metaDataIcon.getIconWidth();
-            mdHitRect.height = metaDataIcon.getIconHeight();*/
-            
-            //System.out.println(String.format("r: %d,%d,%d,%d", x,y,w,h));
-            //System.out.println("HR: "+hotRect);
-            
-            g2.setStroke(cacheStroke);
+            imgSize.setSize(defaultImgSize);
+        } else
+        {
+            imgSize.setSize(image.getWidth(null), image.getHeight(null));
         }
+        
+        Dimension s    = getSize();
+        int       imgW = imgSize.width;
+        h = s.height - (margin*2);
+        if (imgW < h)
+        {
+            imgW = h;
+        }
+        Stroke cacheStroke = g2.getStroke();
+        
+        w = getSize().width  - SELECTION_WIDTH;
+        h = getSize().height - SELECTION_WIDTH;
+        
+        g2.setColor(imgDataItem != null && imgDataItem.isSelected() ? selectColor : lightBorderColor);
+        g2.setStroke(stdLineStroke);
+        rr.setRoundRect(x, y, w, h, 10, 10);
+        g2.draw(rr);
+        
+        int imgX = x + w - infoIcon16.getIconWidth();
+        int imgY = y + h - infoIcon16.getIconHeight();
+        g2.drawImage(infoIcon16.getImage(), imgX, imgY, null);
+        
+        infoHitRect.x      = imgX;
+        infoHitRect.y      = imgY;
+        infoHitRect.width  = infoIcon16.getIconWidth();
+        infoHitRect.height = infoIcon16.getIconHeight();
+        
+        if (dataObjIcon != null)
+        {
+            imgX = x;
+            imgY = y + h - dataObjIcon.getIconHeight();
+            g2.drawImage(dataObjIcon.getImage(), imgX, imgY, null);
+
+            dataHitRect.x      = imgX;
+            dataHitRect.y      = imgY;
+            dataHitRect.width  = infoIcon16.getIconWidth();
+            dataHitRect.height = infoIcon16.getIconHeight();
+        }
+        g2.setStroke(cacheStroke);
         
         // Disabling display any text below the image thumbnail
 //        if (imgDataItem != null)

@@ -84,7 +84,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	protected String       url;
 	protected boolean      isEditMode      = true;
 	protected JButton      editBtn;
-	protected String[]     noAttachmentStr      = StringUtils.split(getResourceString("noattachment"), ' ');
+	protected String[]     noAttachmentStr      = StringUtils.split(getResourceString("nothumbnail"), ' ');
 	protected String[]     loadingAttachmentStr = StringUtils.split(getResourceString("loadingattachment"), ' ');
 	protected boolean      isNoAttachment       = true;
     protected JFileChooser chooser;
