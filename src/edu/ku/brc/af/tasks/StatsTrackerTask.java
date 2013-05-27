@@ -297,8 +297,14 @@ public class StatsTrackerTask extends BaseTask
                                  final Vector<NameValuePair> postParams, 
                                  final String userAgentName) throws Exception
     {
+//        System.out.println("--------------------");
+//        for (NameValuePair nvp : postParams)
+//        {
+//            System.out.println(String.format("[%s][%s]", nvp.getName(), nvp.getValue()));
+//        }
+//        System.out.println("--------------------");
         // If the user changes collection before it gets a chance to send the stats
-        if (!AppContextMgr.getInstance().hasContext()) return;
+        //if (!AppContextMgr.getInstance().hasContext()) return;
         
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
@@ -355,6 +361,16 @@ public class StatsTrackerTask extends BaseTask
     protected static String fixParam(final String value)
     {
         return value == null ? "" : value;
+    }
+    
+    /**
+     * Adds the string value or an empty string.
+     * @param value the value to be added.
+     * @return the new string
+     */
+    protected static String fixParam(final Object value)
+    {
+        return value == null ? "" : value.toString();
     }
     
     /**

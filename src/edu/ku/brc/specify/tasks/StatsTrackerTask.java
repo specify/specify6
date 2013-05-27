@@ -49,6 +49,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -79,10 +80,13 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     private JProgressBar                 progress;
     private Hashtable<Class<?>, Boolean> tablesHash          = new Hashtable<Class<?>, Boolean>();
     private Vector<Pair<String, String>> queries             = new Vector<Pair<String,String>>();
-    private Collection                   collection          = null;  
-    private Discipline                   discipline          = null;  
-    private Division                     division            = null;  
-    private Institution                  institution         = null;  
+    
+    private Integer                   specifyUserId          = null;  
+    private Integer                   collectionId           = null;  
+    private Integer                   disciplineId           = null;  
+    private Integer                   divisionId             = null;  
+    private Integer                   institutionId          = null;  
+    private Element                   rootElement            = null;
     
     /**
      * Constructor.
@@ -102,7 +106,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     {
         super.initialize();
         
-        Element rootElement = AppContextMgr.getInstance().getResourceAsDOM(resourceName);
+        rootElement = AppContextMgr.getInstance().getResourceAsDOM(resourceName);
         if (rootElement != null)
         {
             List<?> rows = rootElement.selectNodes("/statistics/tables/table"); //$NON-NLS-1$
@@ -169,11 +173,33 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     @Override
     protected void completed()
     {
-        collection  = null;
-        discipline  = null;
-        division    = null;
-        institution = null;
+        collectionId  = null;
+        disciplineId  = null;
+        divisionId    = null;
+        institutionId = null;
         queries.clear();
+    }
+    
+    /**
+     * 
+     */
+    private void getIds()
+    {
+        AppContextMgr acm = AppContextMgr.getInstance();
+        if (((SpecifyAppContextMgr)acm).hasContext())
+        {
+            specifyUserId = acm.getClassObject(SpecifyUser.class).getId();
+            collectionId  = acm.getClassObject(Collection.class).getId();
+            disciplineId  = acm.getClassObject(Discipline.class).getId();
+            divisionId    = acm.getClassObject(Division.class).getId();
+            institutionId = acm.getClassObject(Institution.class).getId();
+            
+            rootElement   = acm.getResourceAsDOM(resourceName);
+        } else
+        {
+            rootElement = null;
+            completed();
+        }
     }
 
     /* (non-Javadoc)
@@ -182,18 +208,14 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     @Override
     protected boolean starting()
     {
-        if (collection == null)
+        if (collectionId == null)
         {
-            collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-            discipline  = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            division    = AppContextMgr.getInstance().getClassObject(Division.class);
-            institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+            getIds();
             
             queries.clear();
             
             // Need to do this now before all the Cached Objects change
             // that the QueryAdjusterForDomain uses.
-            Element rootElement = AppContextMgr.getInstance().getResourceAsDOM(resourceName);
             if (rootElement != null)
             {
                 List<?> rows = rootElement.selectNodes("/statistics/stats/stat"); //$NON-NLS-1$
@@ -208,10 +230,10 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
                     }
                 }
             }
-            return true;
+            //return true;
         }
         
-        return false;
+        return true;
     }
 
     /* (non-Javadoc)
@@ -229,8 +251,6 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             }
         };
     }
-    
-    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.StatsTrackerTask#sendStats()
@@ -250,9 +270,9 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     protected Vector<NameValuePair> collectSecondaryStats(final boolean doSendSecondaryStats)
     {
         boolean isAnon = false;
-        if (institution != null)
+        if (institutionId != null)
         {
-            isAnon = institution.isSendStatsAnonymous();
+            isAnon = BasicSQLUtils.getCountAsInt("SELECT IsAnonymous FROM institution WHERE InstitutionID = "+institutionId) != 0;
         }
         
         if (doSendSecondaryStats || !isAnon)
@@ -297,41 +317,51 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
      */
     protected void appendBasicCollStats(final Vector<NameValuePair> stats)
     {
-        SpecifyUser su = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        if (su != null)
+        if (collectionId == null)
         {
-            stats.add(new NameValuePair("specifyuser",  fixParam(su.getName()))); //$NON-NLS-1$
+            getIds();
+        }
+        
+        if (specifyUserId != null)
+        {
+            String userName = BasicSQLUtils.querySingleObj("SELECT Name FROM specifyuser WHERE SpecifyUSerID = "+specifyUserId);
+            stats.add(new NameValuePair("specifyuser",  fixParam(userName))); //$NON-NLS-1$
         }
 
         // Gather Collection Counts;
-        if (collection != null)
+        if (collectionId != null)
         {
-            Integer estSize = collection.getEstimatedSize();
+            Object[] row = BasicSQLUtils.getRow("SELECT EstimatedSize, RegNumber, WebSiteURI, WebPortalURI, CollectionName FROM collection WHERE CollectionID = "+collectionId);
+            Integer estSize = (Integer)row[0];
             String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
             
             stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Collection_name",    fixParam(collection.getCollectionName()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_number",  fixParam(row[1]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_website", fixParam(row[2]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_portal",  fixParam(row[3]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_name",    fixParam(row[4]))); //$NON-NLS-1$
         }
 
-        if (discipline != null)
+        String fmt = "SELECT RegNumber, Name FROM %s WHERE %s = %d";
+        if (disciplineId != null)
         {
-            stats.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Discipline_name",    fixParam(discipline.getName()))); //$NON-NLS-1$
+            Object[] row = BasicSQLUtils.getRow(String.format(fmt, "discipline", "DisciplineID", disciplineId));
+            stats.add(new NameValuePair("Discipline_number",  fixParam(row[0]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Discipline_name",    fixParam(row[1]))); //$NON-NLS-1$
         }
 
-        if (division != null)
+        if (divisionId != null)
         {
-            stats.add(new NameValuePair("Division_number",  fixParam(division.getRegNumber()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Division_name",    fixParam(division.getName()))); //$NON-NLS-1$
+            Object[] row = BasicSQLUtils.getRow(String.format(fmt, "division", "DivisionID", divisionId));
+            stats.add(new NameValuePair("Division_number",  fixParam(row[0]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Division_name",    fixParam(row[1]))); //$NON-NLS-1$
         }
 
-        if (institution != null)
+        if (institutionId != null)
         {
-            stats.add(new NameValuePair("Institution_number",  fixParam(institution.getRegNumber()))); //$NON-NLS-1$
-            stats.add(new NameValuePair("Institution_name",    fixParam(institution.getName()))); //$NON-NLS-1$
+            Object[] row = BasicSQLUtils.getRow(String.format(fmt, "institution", "InstitutionID", institutionId));
+            stats.add(new NameValuePair("Institution_number",  fixParam(row[0]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Institution_name",    fixParam(row[1]))); //$NON-NLS-1$
         }
     }
     
@@ -503,6 +533,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     protected void doProcessAppCommands(CommandAction cmdAction)
     {
         super.doProcessAppCommands(cmdAction);
+        
+        System.err.println("************************ Type: "+cmdAction.getType()+"  Action: "+cmdAction.getAction());
         
         if (cmdAction.isAction(APP_RESTART_ACT) ||
             cmdAction.isAction(APP_START_ACT))
