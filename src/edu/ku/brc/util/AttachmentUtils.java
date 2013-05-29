@@ -248,8 +248,8 @@ public class AttachmentUtils
                         
                     } catch (java.io.IOException ex)
                     {
-                        errMsg = ex.getMessage();
-                        ex.printStackTrace();
+                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                        
                     } catch (Exception ex)
                     {
                         errMsg = ex.getMessage();
