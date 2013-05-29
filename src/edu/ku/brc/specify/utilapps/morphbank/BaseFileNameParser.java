@@ -253,7 +253,7 @@ public class BaseFileNameParser implements FileNameParserIFace
      * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#getRecordId(java.lang.String)
      */
     @Override
-    public Integer getRecordId(final String fileName)
+    public Integer getRecordId(final String baseName)
     {
         Integer recId = null;
         if (pStmt == null)
@@ -279,7 +279,7 @@ public class BaseFileNameParser implements FileNameParserIFace
         {
             try
             {
-                String baseName       = FilenameUtils.getBaseName(fileName);
+                //String baseName       = FilenameUtils.getBaseName(fileName);
                 String fieldNameValue = fldInfo.getFormatter() == null ? baseName : getTrimmedFileName(baseName);
                 pStmt.setString(1, fieldNameValue);
                 ResultSet rs = pStmt.executeQuery();
