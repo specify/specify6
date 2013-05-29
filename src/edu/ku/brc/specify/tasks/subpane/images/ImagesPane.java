@@ -826,7 +826,8 @@ public class ImagesPane extends BaseSubPane
             ImageDataItem item = rowsVector.get(index);
             if (item != null)
             {
-                if (item.getMimeType().startsWith("image"))
+                String mimeType = item.getMimeType().toLowerCase();
+                if (mimeType.startsWith("image") && !mimeType.startsWith("image/tif"))
                 {
                     FullImagePane pane = new FullImagePane(item.getTitle(), getTask(), item);
                     SubPaneMgr.getInstance().addPane(pane);
