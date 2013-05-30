@@ -1012,6 +1012,10 @@ public class IconViewObj implements Viewable
         if (!show)
         {
             iconTray.setSelectedIndex(-1);
+            if (mvParent != null)
+            {
+                mvParent.shutdownDisplayFrames();
+            }
         }
         
         // Moving this to the MultiView
