@@ -161,6 +161,7 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected boolean                    isAutoClose    = false;
     protected boolean                    doLoginWithDB  = true;
     protected boolean                    engageUPPrefs  = false;
+    protected boolean                    shouldCheckForSchemaUpdate = true;
 
     protected DatabaseLoginListener      dbListener;
     protected JaasContext                jaasContext;
@@ -324,6 +325,14 @@ public class DatabaseLoginPanel extends JTiledPanel
         {
             skinItem.setupPanel(this);
         }
+    }
+
+    /**
+     * @param shouldCheckForSchemaUpdate the shouldCheckForSchemaUpdate to set
+     */
+    public void setShouldCheckForSchemaUpdate(boolean shouldCheckForSchemaUpdate)
+    {
+        this.shouldCheckForSchemaUpdate = shouldCheckForSchemaUpdate;
     }
 
     /**
@@ -1293,25 +1302,28 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setDriverName(((DatabaseDriverInfo)dbDriverCBX.getSelectedItem()).getName());
                         DBConnection.getInstance().setConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName()));
                         
-                        // This needs to be done before Hibernate starts up
-                        SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIRegistry.getAppVersion(), getUserName());
-                        if (status == SchemaUpdateType.Error)
+                        if (shouldCheckForSchemaUpdate)
                         {
-                            StringBuilder sb = new StringBuilder();
-                            for (String s : SchemaUpdateService.getInstance().getErrMsgList())
+                            // This needs to be done before Hibernate starts up
+                            SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIRegistry.getAppVersion(), getUserName());
+                            if (status == SchemaUpdateType.Error)
                             {
-                                sb.append(s);
-                                sb.append("\n");
+                                StringBuilder sb = new StringBuilder();
+                                for (String s : SchemaUpdateService.getInstance().getErrMsgList())
+                                {
+                                    sb.append(s);
+                                    sb.append("\n");
+                                }
+                                sb.append(getResourceString("APP_EXIT")); // 18N
+                                UIRegistry.showError(sb.toString());
+                                
+                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                
+                            } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
+                            {
+                                String arg = status == SchemaUpdateType.SuccessAppVer ? UIRegistry.getAppVersion() : "";
+                                UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
                             }
-                            sb.append(getResourceString("APP_EXIT")); // 18N
-                            UIRegistry.showError(sb.toString());
-                            
-                            CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                            
-                        } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
-                        {
-                            String arg = status == SchemaUpdateType.SuccessAppVer ? UIRegistry.getAppVersion() : "";
-                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
                         }
                     }
                 }
