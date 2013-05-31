@@ -446,10 +446,38 @@ public class IconViewObj implements Viewable
             viewBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    doDoubleClick();
+                    editItem();
                 }
             });
         }
+    }
+    
+    /**
+     * 
+     */
+    private void editItem()
+    {
+        FormDataObjIFace selection = iconTray.getSelection();
+        if (selection == null)
+        {
+            return;
+        }
+        
+        ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
+        if (dialog != null)
+        {
+            dialog.setData(selection);
+            dialog.showDisplay(true);
+            if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+            {
+                dialog.getMultiView().getDataFromUI();
+                rootHasChanged();
+                iconTray.validate();
+                iconTray.repaint();
+            }
+            dialog.dispose();
+        }
+
     }
     
     /**
@@ -461,26 +489,7 @@ public class IconViewObj implements Viewable
         {
             public void actionPerformed(ActionEvent ae)
             {
-                FormDataObjIFace selection = iconTray.getSelection();
-                if (selection==null)
-                {
-                    return;
-                }
-                
-                ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
-                if (dialog != null)
-                {
-                    dialog.setData(selection);
-                    dialog.showDisplay(true);
-                    if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
-                    {
-                        dialog.getMultiView().getDataFromUI();
-                        rootHasChanged();
-                        iconTray.validate();
-                        iconTray.repaint();
-                    }
-                    dialog.dispose();
-                }
+                editItem();
             }
         });
     }
