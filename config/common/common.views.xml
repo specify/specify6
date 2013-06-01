@@ -2055,7 +2055,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="shortDesc" uitype="text" colspan="7"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" colspan="3"/>
+                    <cell type="field" id="3" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" isrequired="true" colspan="3"/>
                 </row>
                 <row> 
                     <cell type="label" labelfor="5"/>
