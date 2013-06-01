@@ -53,6 +53,7 @@ import org.apache.solr.common.util.FileUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -140,6 +141,13 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             try
             {
                 shortTermCache = new FileCache(cacheDir.getAbsolutePath(), "cache.map");
+                
+                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                Integer maxCacheMB = localPrefs.getInt("ATTACH_CACHE_SIZE", null);
+                if (maxCacheMB != null)
+                {
+                    shortTermCache.setMaxCacheSize(maxCacheMB);
+                }
                 shortTermCache.setSuffix("");
                 shortTermCache.setUsingExtensions(true);
                 
@@ -1121,7 +1129,13 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     @Override
     public void cleanup()
     {
-        // no op
+        try
+        {
+            shortTermCache.saveCacheMapping();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**

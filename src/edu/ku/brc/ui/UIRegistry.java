@@ -1544,13 +1544,13 @@ public class UIRegistry
                     instance.longTermCache = new FileCache("longTerm.Cache");
                     
                     // set the cache size to 20 MB
-                    instance.longTermCache.setMaxCacheSize(20000);
+                    instance.longTermCache.setMaxCacheSize(20); // 20 megabytes
                     
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
-                    ex.printStackTrace();
                     log.error(ex);
                 }
             }

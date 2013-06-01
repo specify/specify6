@@ -23,6 +23,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -32,6 +40,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.af.prefs.AppPreferences;
 
 /**
  * Provides for a local file cache of <code>File</code>s, binary data
@@ -49,6 +59,7 @@ public class FileCache implements DataCacheIFace
 	private static String defaultSuffix         = ".cache";
     private static String defaultPath           = System.getProperty("java.io.tmpdir");
     private static long   ONE_DAY_MILLSEC       = 86400000;
+    private static long   ONE_MEG               = 1024 * 1024;
 
 	/** Directory to use for cached files and the mapping files. */
 	protected File cacheDir;
@@ -75,7 +86,7 @@ public class FileCache implements DataCacheIFace
 	 * Maximum size of the file cache in kilobytes (using 1 kilobyte = 1024 bytes).
 	 * This value is only enforced if enforceMaxSize is set to true.
 	 */
-	protected int maxCacheKb;
+	protected int maxCacheMB;
 	
 	/** A boolean determining whether or not to enforce the cache size limit. */
 	protected boolean enforceMaxSize;
@@ -135,7 +146,7 @@ public class FileCache implements DataCacheIFace
 		{
             FileUtils.forceMkdir(cacheDir);
 		}
-		//log.debug("Creating FileCache using " + dir + " directory");
+		log.debug("Creating FileCache using [" + dir + "] directory");
 
 		handleToFilenameHash = new Properties();
 		handleToAccessTimeHash = new Properties();
@@ -149,8 +160,8 @@ public class FileCache implements DataCacheIFace
 		suffix = defaultSuffix;
 
 		enforceMaxSize    = true;
-		maxCacheKb        = 1024 * 30; // 30MB
-		maxRententionDays = 5;         // days
+		maxCacheMB        = 30; // 30MB
+		maxRententionDays = 5;  // days
 		
 		purgeOldFiles();
 	}
@@ -182,10 +193,14 @@ public class FileCache implements DataCacheIFace
             if (p == null) break;
             
             boolean isOld = currMilliSecs - p.second > maxMilliSeconds;
-            //log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld);
+            double  days  = (double)(currMilliSecs - p.second) / (double)ONE_DAY_MILLSEC;
+            log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld+"  Days:"+String.format("%8.4f", days));
             if (isOld)
             {
-                purgeCacheFile(p.first);
+                if (!purgeCacheFile(p.first))
+                {
+                    break;
+                }
             } else
             {
                 break;
@@ -275,11 +290,11 @@ public class FileCache implements DataCacheIFace
 	 * <code>enforceMaxSize</code> is set to true.
 	 * 
 	 * @see #setMaxCacheSize(int)
-	 * @return the cache size limit, in kilobytes (using 1 kilobyte = 1024 bytes)
+	 * @return the cache size limit, in megabytes
 	 */
 	public int getMaxCacheSize()
 	{
-		return maxCacheKb;
+		return maxCacheMB;
 	}
 
 	/**
@@ -287,11 +302,11 @@ public class FileCache implements DataCacheIFace
      * cache size limit.
 	 * 
 	 * @see #getMaxCacheSize()
-	 * @param kilobytes the new cache size limit, in kilobytes (using 1 kilobyte = 1024 bytes)
+	 * @param kilobytes the new cache size limit, in megabytes
 	 */
-	public void setMaxCacheSize(int kilobytes)
+	public void setMaxCacheSize(int megaBytes)
 	{
-		maxCacheKb = kilobytes;
+		maxCacheMB          = megaBytes;
         this.enforceMaxSize = true;
 	}
 
@@ -348,6 +363,38 @@ public class FileCache implements DataCacheIFace
 				FileInputStream fis = new FileInputStream(mappingFile);
 				handleToFilenameHash.loadFromXML(fis);
 				fis.close();
+				
+				File[] files = cacheDir.listFiles();
+				if (handleToFilenameHash.size() < files.length-2)
+				{
+                    HashMap<String, File> fileNames = new HashMap<String, File>();
+    				for (File f : files)
+    				{
+    				    String nm = f.getName();
+    				    if (handleToFilenameHash.get(nm) == null && 
+                                !nm.endsWith("-times.xml") && 
+                                !nm.toLowerCase().endsWith("cache") && 
+    				            !nm.equals(mappingFilename))
+    				    {
+    				        fileNames.put(f.getName(), f);
+    				    }
+    				    
+    				    for (String key : fileNames.keySet())
+    				    {
+    				        File file = fileNames.get(key);
+    				        handleToFilenameHash.setProperty(key, file.getAbsolutePath());
+    				        Path p = Paths.get(file.getAbsoluteFile().toURI());
+    				        BasicFileAttributes view = Files.getFileAttributeView(p, BasicFileAttributeView.class).readAttributes();
+    				        FileTime fTime = view.creationTime();
+    				        
+    				        System.out.println(view.creationTime()+" is the same as "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
+    				      
+    				        handleToAccessTimeHash.setProperty(key, Long.toString(fTime.toMillis()));
+    				    }
+    				}
+				}
+				
+				//showFiles();
 			}
 			catch( IOException e)
 			{
@@ -419,7 +466,7 @@ public class FileCache implements DataCacheIFace
 			}
             lruAccessTime = time;
 		}
-
+		if (lruKey != null) System.out.println("Oldest: "+lruKey+"  "+handleToFilenameHash.get(lruKey)+"  "+Calendar.getInstance().getTimeInMillis());
 		return lruKey != null ? new Pair<String, Long>(lruKey, lruAccessTime) : null;
 	}
 
@@ -440,6 +487,10 @@ public class FileCache implements DataCacheIFace
 		File mappingFile = new File(cacheDir,mappingFilename);
 		try
 		{
+		    for (Object k : handleToFilenameHash.keySet())
+		    {
+		        System.err.println("["+k+"]["+handleToFilenameHash.getProperty(k.toString())+"]");
+		    }
 			handleToFilenameHash.storeToXML(new FileOutputStream(mappingFile), mappingFileComment);
 		}
 		catch( IOException e)
@@ -571,11 +622,12 @@ public class FileCache implements DataCacheIFace
 		}
 
 		totalCacheSize += item.length();
-
-		int maxSizeMegs = maxCacheKb * 1024;
-		while (enforceMaxSize && (totalCacheSize > maxSizeMegs))
+		
+		long totSize = totalCacheSize / ONE_MEG;
+		while (enforceMaxSize && (totSize > maxCacheMB))
 		{
-			purgeLruCacheFile();
+			if (!purgeLruCacheFile()) break;
+		    totSize = totalCacheSize / ONE_MEG;
 		}
 	}
 	
@@ -659,7 +711,7 @@ public class FileCache implements DataCacheIFace
 	    for (File f : cacheDir.listFiles())
 	    {
 	        //System.out.println(f.getName());
-	        if (f.getName().startsWith(prefix))
+	        //if (prefix != null && f.getName().startsWith(prefix))
 	        {
 	            log.debug(f.getName()+" = "+handleToAccessTimeHash.get(f.getName()));
 	        }
@@ -772,25 +824,40 @@ public class FileCache implements DataCacheIFace
      */
     public long getLastAccessTime(final String key)
     {
-        String accessTimeString = handleToAccessTimeHash.getProperty(key);
-        if (accessTimeString == null)
-        {
-            return Long.MIN_VALUE;
-        }
-        
-        long accessTimeMillis;
+//        String accessTimeString = handleToAccessTimeHash.getProperty(key);
+//        if (accessTimeString == null)
+//        {
+//            return Long.MIN_VALUE;
+//        }
+//        
+//        long accessTimeMillis;
+//        try
+//        {
+//            accessTimeMillis = Long.parseLong(accessTimeString);
+//        }
+//        catch (NumberFormatException nfe)
+//        {
+//            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileCache.class, nfe);
+//            log.error("Unable to parse access time for cache item: " + key, nfe);
+//            accessTimeMillis = Long.MIN_VALUE;
+//        }
+//        return accessTimeMillis;
         try
         {
-            accessTimeMillis = Long.parseLong(accessTimeString);
-        }
-        catch (NumberFormatException nfe)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileCache.class, nfe);
-            log.error("Unable to parse access time for cache item: " + key, nfe);
-            accessTimeMillis = Long.MIN_VALUE;
-        }
-        return accessTimeMillis;
+            String filename = (String)handleToFilenameHash.get(key);
+            File   file     = new File(filename);
+            if (file != null)
+            {
+                Path p = Paths.get(file.getAbsoluteFile().toURI());
+                BasicFileAttributes view = Files.getFileAttributeView(p, BasicFileAttributeView.class).readAttributes();
+                System.err.println(key+" -> "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
+                //System.out.println(view.creationTime()+" is the same as "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
+
+                return view.lastAccessTime().toMillis();
+            }
+        } catch (IOException ex) {}
+        return Calendar.getInstance().getTimeInMillis();
     }
 
 	/**
