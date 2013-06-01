@@ -225,9 +225,13 @@ public class ImagesPane extends BaseSubPane
                     try
                     {
                         AttachmentUtils.openFile(localFile);
-                    } catch (Exception e)
+                    } catch (java.io.IOException ex)
                     {
-                        e.printStackTrace();
+                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
                     }
                 }
             }
