@@ -41,8 +41,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.AppPreferences;
-
 /**
  * Provides for a local file cache of <code>File</code>s, binary data
  * in the form of <code>byte[]</code>s, and web resources or URLs.
@@ -386,9 +384,7 @@ public class FileCache implements DataCacheIFace
     				        Path p = Paths.get(file.getAbsoluteFile().toURI());
     				        BasicFileAttributes view = Files.getFileAttributeView(p, BasicFileAttributeView.class).readAttributes();
     				        FileTime fTime = view.creationTime();
-    				        
-    				        System.out.println(view.creationTime()+" is the same as "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
-    				      
+    				        //System.out.println(view.creationTime()+" is the same as "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
     				        handleToAccessTimeHash.setProperty(key, Long.toString(fTime.toMillis()));
     				    }
     				}
@@ -466,7 +462,6 @@ public class FileCache implements DataCacheIFace
 			}
             lruAccessTime = time;
 		}
-		if (lruKey != null) System.out.println("Oldest: "+lruKey+"  "+handleToFilenameHash.get(lruKey)+"  "+Calendar.getInstance().getTimeInMillis());
 		return lruKey != null ? new Pair<String, Long>(lruKey, lruAccessTime) : null;
 	}
 
@@ -487,10 +482,10 @@ public class FileCache implements DataCacheIFace
 		File mappingFile = new File(cacheDir,mappingFilename);
 		try
 		{
-		    for (Object k : handleToFilenameHash.keySet())
-		    {
-		        System.err.println("["+k+"]["+handleToFilenameHash.getProperty(k.toString())+"]");
-		    }
+//		    for (Object k : handleToFilenameHash.keySet())
+//		    {
+//		        System.err.println("["+k+"]["+handleToFilenameHash.getProperty(k.toString())+"]");
+//		    }
 			handleToFilenameHash.storeToXML(new FileOutputStream(mappingFile), mappingFileComment);
 		}
 		catch( IOException e)
@@ -730,12 +725,12 @@ public class FileCache implements DataCacheIFace
 	{
 	    String extension = isUsingExtensions ? ("." + FilenameUtils.getExtension(f.getName())) : null;
 		File  cachedFile = createCacheFile(extension);
-		log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
+		//log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
 		
 		FileUtils.copyFile(f, cachedFile);
 		cacheNewItem(key, cachedFile);
 		
-		log.debug("Caching["+cachedFile.getAbsolutePath()+"]");
+		//log.debug("Caching["+cachedFile.getAbsolutePath()+"]");
 		return cachedFile;
 	}
 
@@ -808,7 +803,7 @@ public class FileCache implements DataCacheIFace
 		
 		// the resource was previously cached, but the cache file is missing
 		// cleanup the cache mapping
-		log.debug("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
+		//log.debug("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
 		handleToFilenameHash.remove(key);
 		return null;
 	}
@@ -851,7 +846,7 @@ public class FileCache implements DataCacheIFace
             {
                 Path p = Paths.get(file.getAbsoluteFile().toURI());
                 BasicFileAttributes view = Files.getFileAttributeView(p, BasicFileAttributeView.class).readAttributes();
-                System.err.println(key+" -> "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
+                //System.err.println(key+" -> "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
                 //System.out.println(view.creationTime()+" is the same as "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
 
                 return view.lastAccessTime().toMillis();
