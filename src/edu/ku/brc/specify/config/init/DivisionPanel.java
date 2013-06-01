@@ -63,20 +63,23 @@ public class DivisionPanel extends GenericFormPanel
     @Override
     public boolean isUIValid()
     {
-        JTextField tf = (JTextField)comps.get("divName");
-        if (tf != null)
+        if (super.isUIValid())
         {
-            String name = tf.getText();
-            if (DBConnection.getInstance().getConnection() != null && StringUtils.isNotEmpty(name))
+            JTextField tf = (JTextField)comps.get("divName");
+            if (tf != null)
             {
-                int cnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM division WHERE Name = '%s'", name));
-                if (cnt > 0)
+                String name = tf.getText();
+                if (DBConnection.getInstance().getConnection() != null && StringUtils.isNotEmpty(name))
                 {
-                    UIRegistry.showLocalizedError("DIVNAME_DUP", name);
-                    return false;
-                }
-                return true;
-            } 
+                    int cnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM division WHERE Name = '%s'", name));
+                    if (cnt > 0)
+                    {
+                        UIRegistry.showLocalizedError("DIVNAME_DUP", name);
+                        return false;
+                    }
+                    return true;
+                } 
+            }
         }
         return false;
     }
