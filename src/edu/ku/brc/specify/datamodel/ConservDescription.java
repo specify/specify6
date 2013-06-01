@@ -37,6 +37,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
  * 
  * 
@@ -113,7 +115,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         displayRecommendations = null;
         otherRecommendations   = null;
         collectionObject     = null;
-        division             = null;
+        division             = AppContextMgr.getInstance().getClassObject(Division.class);
         events               = new HashSet<ConservEvent>();
         conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
 

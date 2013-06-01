@@ -766,6 +766,17 @@
                 orderfieldname="ordinal"
                />
 
+    <aggregator name="Author"
+                title="Author"
+                class="edu.ku.brc.specify.datamodel.Author"
+                default="true"
+                separator="; "
+                ending=""
+                count=""
+                format="Author"
+                orderfieldname="orderNumber"
+               />
+
     <aggregator name="BorrowAttachment"
                 title="BorrowAttachment"
                 class="edu.ku.brc.specify.datamodel.BorrowAttachment"

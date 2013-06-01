@@ -1550,6 +1550,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.setProcess(0, 100);
+                    
+                    fixConservDescriptions(conn);
 
                     frame.setDesc("Updating Journals..."); // I18N
                     tblName = getTableNameAndTitleForFrame(Journal.getClassTableId());
@@ -1790,6 +1792,33 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+    
+    /**
+     * @param conn
+     */
+    protected void fixConservDescriptions(final Connection conn)
+    {
+        String sql = "SELECT cd.ConservDescriptionID, d.DivisionID, a.DivisionID FROM conservdescription cd " +
+            		 "LEFT JOIN collectionobject co ON cd.CollectionObjectID = co.CollectionObjectID " +
+            		 "LEFT JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
+            		 "LEFT JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId " +
+            		 "LEFT JOIN agent a ON cd.CreatedByAgentID = a.AgentID WHERE cd.DivisionID IS NULL";
+        
+        for (Object[] row : BasicSQLUtils.query(conn, sql))
+        {
+            Integer csId = (Integer)row[0];
+            Integer dv1Id = (Integer)row[1]; // ColObj Div
+            Integer dv2Id = (Integer)row[2]; // Agent Div
+            
+            Integer divId = dv2Id != null ? dv2Id : dv1Id;
+            if (divId != null)
+            {
+                sql = "UPDATE conservdescription SET DivisionID = "+divId + " WHERE ConservDescriptionID="+csId;
+                int rv = BasicSQLUtils.update(sql);
+                //System.out.println("rv= "+rv+"  "+sql);
+            }
+        }
     }
     
     /**
@@ -2208,8 +2237,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             Class<?>[] divOwnerClasses = {
                     Agent.class,
                     ConservDescription.class,
-                    Gift.class,
-                    Loan.class,
                     RepositoryAgreement.class,
             };
             if (!fixTablesAttachmentsColMemID(conn, stmt, divOwnerClasses, null, "DivisionID", Attachment.DIVISION_SCOPE))
@@ -2220,6 +2247,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
             Class<?>[] dispOwnerClasses = {
                     CollectingEvent.class,
+                    Gift.class,
+                    Loan.class,
                     Locality.class,
                     FieldNotebook.class,  
             };
@@ -2230,10 +2259,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             frame.setProcess(step++);
             
             String[] sqls = { 
-                    "SELECT a.AttachmentID, co.CollectionID FROM attachment a INNER JOIN conserveventattachment cea ON a.AttachmentID = cea.AttachmentID " +
+                    "SELECT a.AttachmentID, cd.DivisionID FROM attachment a INNER JOIN conserveventattachment cea ON a.AttachmentID = cea.AttachmentID " +
                     "INNER JOIN conservevent ce ON cea.ConservEventID = ce.ConservEventID " +
-                    "INNER JOIN conservdescription cd ON ce.ConservDescriptionID = cd.ConservDescriptionID " +
-                    "INNER JOIN collectionobject co ON cd.CollectionObjectID = co.CollectionObjectID",
+                    "INNER JOIN conservdescription cd ON ce.ConservDescriptionID = cd.ConservDescriptionID",
             
                     "SELECT a.AttachmentID, fb.DisciplineID FROM attachment a INNER JOIN fieldnotebookpagesetattachment fbpsa ON a.AttachmentID = fbpsa.AttachmentID " +
                     "INNER JOIN fieldnotebookpageset fbps ON fbpsa.FieldNotebookPageSetID = fbps.FieldNotebookPageSetID " +
@@ -2261,7 +2289,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Permit.class, 
                 Taxon.class,
             };
-            byte[] scopes = {Attachment.COLLECTION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
+            byte[] scopes = {Attachment.DIVISION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
                              Attachment.INSTITUTION_SCOPE, Attachment.DISCIPLINE_SCOPE, };
             
             if (!fixTablesAttachmentsColumnID(conn, stmt, extraAttachOwnerClasses, sqls, null, scopes))
