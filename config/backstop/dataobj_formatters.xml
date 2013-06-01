@@ -107,6 +107,19 @@
     </format>
 
     <format
+        name="Author"
+        title="Author"
+        class="edu.ku.brc.specify.datamodel.Author"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="Borrow"
         title="Borrow"
         class="edu.ku.brc.specify.datamodel.Borrow"
