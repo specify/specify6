@@ -184,6 +184,10 @@
                         </rows>
                     </cell>
                 </row>
+                <row>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3"/>
+                </row>
                 <!--<row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
                     <cell type="field" id="colrel" uitype="plugin" name="this" initialize="name=CollectionRelOneToManyPlugin;relname=xxxx;" colspan="9"/>
@@ -237,8 +241,6 @@
                     <cell type="field" id="desc" name="description" uitype="text"/>
                     <cell type="label" labelfor="fn"/>
                     <cell type="field" id="fn" name="fieldNumber" uitype="text"/>
-                    <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="id"/>
