@@ -33292,7 +33292,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="taxonCitations" type="OneToMany" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="taxonCitations" type="OneToMany" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
