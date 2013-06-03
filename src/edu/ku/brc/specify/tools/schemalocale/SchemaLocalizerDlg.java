@@ -362,7 +362,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             while (rs.next())
             {
                 String  tblName      = rs.getString(2);
-                boolean isAttachment = (tblName.startsWith(ATTACHMENT) || tblName.endsWith(ATTACHMENT)) && !tblName.equals(ATTACHMENT);
+                boolean isAttachment = false;//(tblName.startsWith(ATTACHMENT) || tblName.endsWith(ATTACHMENT)) && !tblName.equals(ATTACHMENT);
                 
                 System.out.println(tblName+" "+isAttachment);
                 
