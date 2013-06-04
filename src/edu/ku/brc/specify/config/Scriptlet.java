@@ -811,7 +811,7 @@ public class Scriptlet extends JRDefaultScriptlet
                 monthCount++;
             }
 
-            loanLength = String.format(UIRegistry.getResourceString("SCRPLT_MON_LEN"), monthCount);
+            loanLength = String.format(UIRegistry.getResourceString(monthCount == 1 ? "SCRPLT_1_MON_LEN" : "SCRPLT_MON_LEN"), monthCount);
         }
         return loanLength;
     }
@@ -822,11 +822,12 @@ public class Scriptlet extends JRDefaultScriptlet
     	{
     		return dateDifference(new java.sql.Date(dateConverter.convert(startDate).getTimeInMillis()),
     			new java.sql.Date(dateConverter.convert(endDate).getTimeInMillis()));
-    	} catch (ParseException pex)
+    	} catch (Exception pex)
     	{
     		return UIRegistry.getResourceString("NA");
     	}
     }
+    
     
     /**
      * @param date
