@@ -128,7 +128,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         
         setIconImage(IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconManager.IconSize.NonStd).getImage());
         
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         SpecifyDBSetupWizard wizPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Institution, 
                 new SpecifyDBSetupWizard.WizardListener() {
