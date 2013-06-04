@@ -2474,7 +2474,11 @@ public class QueryTask extends BaseTask
     				|| RecordTypeCodeBuilder.getTypeCode(fld) != null);
     		SpQueryField.OperatorType[] ops = QueryFieldPanel.getComparatorList(isTreeLevel, isPickList, fld, 
     				fld != null ? fld.getDataClass() : null);
-    		op = ops[qFld.getOperStart()];
+    		Byte opStart = qFld.getOperStart();
+    		if (opStart != null && opStart >= 0 && opStart < ops.length)
+    		{
+        		op = ops[opStart];
+    		}
     		//qFld.setTimestampModified(new Timestamp(System.currentTimeMillis()));
     	}     	
     	qFld.setOperStart(op.getOrdinal());
