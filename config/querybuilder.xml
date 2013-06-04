@@ -29,13 +29,13 @@
 		<alias name="CollectionObject"/>
 		<alias name="Agent" field="sequencer"/>
 		<table name="DNASequencingRun" field="dnaSequencingRuns">
-			<table name="DNASequencingRunAttachment" field="dnaSequencingRunAttachments">
+			<table name="DNASequencingRunAttachment" field="attachments">
 				<alias name="Attachment"/>
 			</table>
 		</table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
-        <table name="DNASequenceAttachment" field="dnaSequenceAttachments">
+        <table name="DNASequenceAttachment" field="attachments">
             <alias name="Attachment"/>
         </table>
 	</table>
