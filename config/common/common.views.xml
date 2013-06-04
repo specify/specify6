@@ -4081,7 +4081,9 @@
                     <cell type="separator" label="Attachments" colspan="17"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="17" initialize="btn=true;icon=LocalityAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="3" initialize="btn=true;icon=LocalityAttachment"/>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5"/>
                 </row>
                 <!--<row>
                     <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
@@ -4089,8 +4091,6 @@
                 <row>
                     <cell type="label" labelfor="gml"/>
                     <cell type="field" id="gml" name="gml" uitype="text"/>
-                    <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text"/>
                     <cell type="label" labelfor="lla"/>
                     <cell type="field" id="lla" name="latLongAccuracy" uitype="text"/>
                 </row>
