@@ -197,8 +197,8 @@
         <fields>
             <field col="FullName"/>
             <field col="CommonName"/>
-            <field col="EsaStatus"/>
-            <field col="CitesStatus"/>
+            <field col="Author"/>
+            <field col="Source"/>
             <field col="OrigFilename" tableid="41"/>
         </fields>
     </bubble>
