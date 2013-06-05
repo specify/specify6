@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -143,8 +145,16 @@ public class MetaDataPanel extends ExpandShrinkPanel
                 System.out.println(ex.getMessage());
             }
         }
-        if (sectionMap != null && sectionMap.size() > 0)
+        if (sectionMap != null)
         {
+            if (sectionMap.size() == 0)
+            {
+                String tab = getResourceString("ATTCH.NO_METADATA_TAB"); 
+                String msg = getResourceString("ATTCH.NO_METADATA_MSG"); 
+                HashMap<String, Object> subMap = new HashMap<String, Object>();
+                subMap.put(msg, " ");
+                sectionMap.put(tab, subMap);
+            }
             updateMetaDataUI();
         }
     }
