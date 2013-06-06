@@ -347,7 +347,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     {
         CellConstraints cc = new CellConstraints();
         
-        if (isViewOnly || (!formatter.isUserInputNeeded() && fields.size() == 1))
+        if (isViewOnly || (!isPartialOK && !formatter.isUserInputNeeded() && fields.size() == 1))
         {
             viewtextField = new JTextField();
             setControlSize(viewtextField);
