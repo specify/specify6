@@ -1310,7 +1310,7 @@ public class ResourceImportExportDlg extends CustomDialog
     
                                 setHasChanged(true);
                                 isOK        = true;
-                                completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
+                                completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName == null ? fileName : importedName);
     
                             } catch (Exception ex)
                             {
@@ -1453,7 +1453,7 @@ public class ResourceImportExportDlg extends CustomDialog
     
                                         appRes.setDataAsString(data);
                                         contextMgr.saveResource(appRes);
-                                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
+                                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName == null ? fileName : importedName);
                                     }
                                     setHasChanged(true);
     
@@ -1494,7 +1494,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                     {
                                         fndAppRes.setDataAsString(data);
                                         contextMgr.saveResource(fndAppRes);
-                                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
+                                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName == null ? fileName : importedName);
                                     }
                                 } else
                                 {
@@ -1506,7 +1506,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     
                     if (importedName != null)
                     {
-                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName);
+                        completeMsg = getLocalizedMessage("RIE_RES_IMPORTED", importedName == null ? fileName : importedName);
                     }
         
                     if (hasChanged())
