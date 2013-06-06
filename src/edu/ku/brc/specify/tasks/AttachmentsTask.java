@@ -45,6 +45,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -54,6 +55,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentImageAttribute;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -68,11 +70,13 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tasks.subpane.images.FullImagePane;
 import edu.ku.brc.specify.tasks.subpane.images.ImageDataItem;
 import edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane;
@@ -82,6 +86,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rods
@@ -374,6 +379,39 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
         }
     }
 
+    /**
+     * @param cmdAction
+     */
+    private void displayAttachment(final CommandAction cmdAction)
+    {
+        Object dataObj = cmdAction.getData();
+        if (!(dataObj instanceof Attachment) && !(dataObj instanceof ObjectAttachmentIFace<?>))
+        {
+            throw new IllegalArgumentException("Passed object must be an Attachment or ObjectAttachmentIFace");
+        }
+        Attachment attachment = (dataObj instanceof Attachment) ? (Attachment)dataObj : ((ObjectAttachmentIFace<?>)dataObj).getAttachment();
+
+        File original = AttachmentUtils.getAttachmentFile(dataObj);
+        if (original != null)
+        {
+            String mimeType = AttachmentUtils.getMimeType(original.getName());
+            if (mimeType.startsWith("image") && !mimeType.startsWith("image/tif"))
+            {
+                // Here we are 
+                FullImagePane pane = new FullImagePane(attachment.getTitle(), this, original);
+                SubPaneMgr.getInstance().addPane(pane);
+                return;
+            }
+        }
+        
+        try
+        {
+            AttachmentUtils.openFile(original);
+        } catch (Exception ex)
+        {
+            UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#preInitialize()
@@ -612,11 +650,14 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             if (cmdAction.isAction(EXPORT_CMD))
             {
                 exportAttachment(cmdAction);
+                
+            } else if (cmdAction.isAction("DisplayAttachment"))
+            {
+                displayAttachment(cmdAction);
             } else
             {
                 processRecordSetCommands(cmdAction);
             }
-            
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
         {
             prefsChanged(cmdAction);

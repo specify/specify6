@@ -207,6 +207,34 @@ public class AttachmentUtils
     }
     
     /**
+     * @param source
+     * @return
+     */
+    public static File getAttachmentFile(final Object source)
+    {
+        if (!(source instanceof Attachment) && !(source instanceof ObjectAttachmentIFace<?>))
+        {
+            throw new IllegalArgumentException("Passed object must be an Attachment or ObjectAttachmentIFace");
+        }
+        
+        Attachment attachment = (source instanceof Attachment) ? (Attachment)source : ((ObjectAttachmentIFace<?>)source).getAttachment();
+        File original = null;
+        if (attachment.getId() != null)
+        {
+            if (isAttachLocOK())
+            {
+                original = attachMgr.getOriginal(attachment);
+            }
+        }
+        else
+        {
+            String origFile = attachment.getOrigFilename();
+            original = new File(origFile);
+        }
+        return original;
+    }
+    
+    /**
      * @return the actionlistener for when things need to be displayed
      */
     public static ActionListener getAttachmentDisplayer()
@@ -215,30 +243,7 @@ public class AttachmentUtils
         {
             public void actionPerformed(ActionEvent e)
             {
-                Object source = e.getSource();
-                if (!(source instanceof Attachment) && !(source instanceof ObjectAttachmentIFace<?>))
-                {
-                    throw new IllegalArgumentException("Passed object must be an Attachment or ObjectAttachmentIFace");
-                }
-                
-                Attachment attachment = (source instanceof Attachment) ? (Attachment)source : ((ObjectAttachmentIFace<?>)source).getAttachment();
-                File original = null;
-                if (attachment.getId() != null)
-                {
-                    if (isAttachLocOK())
-                    {
-                        original = attachMgr.getOriginal(attachment);
-                    } else
-                    {
-                        return;
-                    }
-                }
-                else
-                {
-                    String origFile = attachment.getOrigFilename();
-                    original = new File(origFile);
-                }
-
+                File original = getAttachmentFile(e.getSource());
                 String errMsg = null;
                 if (original != null && original.exists())
                 {
@@ -246,14 +251,9 @@ public class AttachmentUtils
                     {
                     	openFile(original);
                         
-                    } catch (java.io.IOException ex)
-                    {
-                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
-                        
                     } catch (Exception ex)
                     {
-                        errMsg = ex.getMessage();
-                        ex.printStackTrace();
+                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
                     }
                 } else
                 {

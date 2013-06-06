@@ -48,6 +48,7 @@ public class FullImagePane extends BaseSubPane
     private ImageDisplay  imgDisp;
     private ImageDataItem imgDataItem;
     
+    private File          imageFile = null;
     /**
      * @param name
      * @param task
@@ -57,6 +58,14 @@ public class FullImagePane extends BaseSubPane
     {
         super(name, task);
         this.imgDataItem = idi;
+        
+        createUI();
+    }
+    
+    public FullImagePane(final String name, final Taskable task, final File imageFile)
+    {
+        super(name, task);
+        this.imageFile   = imageFile;
         
         createUI();
     }
@@ -75,23 +84,32 @@ public class FullImagePane extends BaseSubPane
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"), this);
         pb.add(sp, cc.xy(1, 1));
         
-        imgDataItem.loadScaledImage(-1, new ImageLoaderListener()
+        if (imageFile != null && imageFile.exists())
         {
-            @Override
-            public void imagedLoaded(String imageName,
-                                     String mimeType,
-                                     boolean doLoadFullImage,
-                                     int scale,
-                                     boolean isError,
-                                     ImageIcon imageIcon, 
-                                     File localFile)
+            imgIcon = new ImageIcon(imageFile.getAbsolutePath());
+            imgDisp.setImage(imgIcon);
+            FullImagePane.this.repaint();
+            
+        } else
+        {
+            imgDataItem.loadScaledImage(-1, new ImageLoaderListener()
             {
-                imgIcon = !isError ? imageIcon : null;
-                imgDisp.setImage(imgIcon);
-                FullImagePane.this.repaint();
-            }
-        }); 
-        imgDisp.setImage(IconManager.getImage("Loading"));
+                @Override
+                public void imagedLoaded(String imageName,
+                                         String mimeType,
+                                         boolean doLoadFullImage,
+                                         int scale,
+                                         boolean isError,
+                                         ImageIcon imageIcon, 
+                                         File localFile)
+                {
+                    imgIcon = !isError ? imageIcon : null;
+                    imgDisp.setImage(imgIcon);
+                    FullImagePane.this.repaint();
+                }
+            }); 
+            imgDisp.setImage(IconManager.getImage("Loading"));
+        }
     }
 
     /* (non-Javadoc)
