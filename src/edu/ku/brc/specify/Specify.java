@@ -1543,7 +1543,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     private static String[] getProxySettings()
     {
-        String[] proxySettings = null;
+        String[] proxySettings = new String[] {"-DproxySet=false"};
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         String prxHost = localPrefs.get("PROXY_HOST", null);
         String prxPort = localPrefs.get("PROXY_PORT", null);
