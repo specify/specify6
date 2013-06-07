@@ -271,7 +271,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
         
         createUI();
         
-        if (valTextColor == null || requiredFieldColor == null || viewFieldColor == null)
+        if (!isPartialOK && (valTextColor == null || requiredFieldColor == null ||viewFieldColor == null))
         {
             valTextColor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
@@ -347,7 +347,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     {
         CellConstraints cc = new CellConstraints();
         
-        if (isViewOnly || (!isPartialOK && !formatter.isUserInputNeeded() && fields.size() == 1))
+        if (isViewOnly || (!formatter.isUserInputNeeded() && fields.size() == 1))
         {
             viewtextField = new JTextField();
             setControlSize(viewtextField);
@@ -934,7 +934,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     public void setRequired(boolean isRequired)
     {
         this.isRequired = isRequired;
-        setBGColor(isRequired && isEnabled() && !isViewOnly? requiredFieldColor.getColor() : bgColor);
+        setBGColor(!isPartialOK && isRequired && isEnabled() && !isViewOnly? requiredFieldColor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)
