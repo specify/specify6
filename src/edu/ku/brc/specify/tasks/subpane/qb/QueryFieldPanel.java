@@ -132,7 +132,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected ImageIcon						icon;
 	protected IconManager.IconSize			iconSize = IconManager.IconSize.Std24;
 	protected JCheckBox						isNotCheckbox;
-	protected JComboBox						operatorCBX;
+	protected JComboBox		                operatorCBX;
 	protected JComponent					criteria;
 	protected MultiStateIconButon			sortCheckbox;
 	protected JCheckBox						isDisplayedCkbx;
@@ -1093,8 +1093,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         
         char quoteStr = quote ? '\'' : ' ';
         String result = quoteStr + escape(criteriaObjs[0], quoteStr).toString() + quoteStr;
-        if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.LIKE.getOrdinal()
-                || SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.CONTAINS.getOrdinal())
+        if (SpQueryField.OperatorType.getOrdForOp(operatorStr) == SpQueryField.OperatorType.LIKE.getOrdinal()
+                || SpQueryField.OperatorType.getOrdForOp(operatorStr) == SpQueryField.OperatorType.CONTAINS.getOrdinal())
         {
             //for Specify 5 compatibility...?
             //replaced unescaped '*' with '%'
@@ -1146,18 +1146,18 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 s++;
             }
             
-            if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.CONTAINS.getOrdinal())
+            if (SpQueryField.OperatorType.getOrdForOp(operatorStr) == SpQueryField.OperatorType.CONTAINS.getOrdinal())
             {
                 //if user didn't purposely include a wildcard then add them
                 result = quoteStr + "%" + result.substring(1, result.length()-1) + "%" + quoteStr;
             }
 
         }
-        else if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+        else if (SpQueryField.OperatorType.getOrdForOp(operatorStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
         {
             result += " and " + quoteStr + escape(criteriaObjs[1], quoteStr) + quoteStr;
         }
-        else if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.IN.getOrdinal())
+        else if (SpQueryField.OperatorType.getOrdForOp(operatorStr) == SpQueryField.OperatorType.IN.getOrdinal())
         {
             for (int p = 1; p < criteriaObjs.length; p++)
             {
@@ -1199,6 +1199,16 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     }
     
     /**
+     * @param op
+     * @return
+     */
+    protected String getOperatorQLText()
+    {
+    	return SpQueryField.OperatorType.getOp(((SpQueryField.OperatorType)operatorCBX.getSelectedItem()).getOrdinal());
+    }
+
+    
+    /**
      * @return
      */
     public String getCriteriaFormula(final TableAbbreviator ta,
@@ -1221,7 +1231,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             boolean nullPick = criteria instanceof PickListCriteriaCombo && ((PickListCriteriaCombo)criteria).nullItemIsPicked();
         	Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
             String criteriaFormula = "";
-            String operStr = operatorCBX.getSelectedItem().toString();
+            //String operStr = operatorCBX.getSelectedItem().toString();
+            String operStr = getOperatorQLText();
             if (!(criteriaStrs[0] instanceof String))
             {
                 //XXX - If the field has a formatter and it returned non-String data
@@ -1235,9 +1246,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 if (fieldQRI.getDataClass().equals(Boolean.class))
                 {
                     if (operStr.equals(SpQueryField.OperatorType
-                            .getString(SpQueryField.OperatorType.TRUE.getOrdinal())) ||
+                            .getOp(SpQueryField.OperatorType.TRUE.getOrdinal())) ||
                             operStr.equals(SpQueryField.OperatorType
-                                    .getString(SpQueryField.OperatorType.TRUEORNULL.getOrdinal())) )
+                                    .getOp(SpQueryField.OperatorType.TRUEORNULL.getOrdinal())) )
                     {
                         criteriaFormula = "true";
                     }
@@ -1246,9 +1257,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         criteriaFormula = "false";
                     }
                     addNullConjunction = operStr.equals(SpQueryField.OperatorType
-                                    .getString(SpQueryField.OperatorType.FALSEORNULL.getOrdinal())) ||
+                                    .getOp(SpQueryField.OperatorType.FALSEORNULL.getOrdinal())) ||
                             operStr.equals(SpQueryField.OperatorType
-                                    .getString(SpQueryField.OperatorType.TRUEORNULL.getOrdinal()));
+                                    .getOp(SpQueryField.OperatorType.TRUEORNULL.getOrdinal()));
                     operStr = "=";
                 }
                 else if (fieldQRI.getDataClass().equals(String.class) && !isNumericCatalogNumber())
@@ -1303,7 +1314,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         	criteriaFormula += ":" + paramName;
                         }
                     }
-                    if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.IN
+                    if (SpQueryField.OperatorType.getOrdForOp(operStr) == SpQueryField.OperatorType.IN
                             .getOrdinal())
                     {
                         criteriaFormula = "(" + criteriaFormula + ")";
@@ -1385,7 +1396,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 }
             }
             if (operStr.equals(SpQueryField.OperatorType
-                            .getString(SpQueryField.OperatorType.CONTAINS.getOrdinal())))
+                            .getOp(SpQueryField.OperatorType.CONTAINS.getOrdinal())))
             {
                 operStr = "Like";
             }
@@ -1426,7 +1437,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 if (isNotCheckbox.isSelected()) 
                 {
                     if (!operStr.equals(SpQueryField.OperatorType
-                            .getString(SpQueryField.OperatorType.EMPTY.getOrdinal())))
+                            .getOp(SpQueryField.OperatorType.EMPTY.getOrdinal())))
                     {
                         str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " is null");
                     }

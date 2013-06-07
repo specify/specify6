@@ -123,6 +123,17 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
             UIRegistry.getResourceString("QB_TRUEORNULL"),
             UIRegistry.getResourceString("QB_FALSEORNULL")};
 
+        private static final String[] qlOps = {"Like", "=", ">", "<", ">=", "<=", 
+            "true", 
+            "false",
+            " ", 
+            "BETWEEN",
+            "IN",
+            "CONTAINS",
+            "EMPTY",
+            "TRUEORNULL",
+            "FALSEORNULL"};
+
         public  byte getOrdinal()         { return ord; }
         public  void set(final byte  ord) { this.ord = ord; }
         public  static String getString(final byte ord)
@@ -130,7 +141,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
             return names[ord];
         }
         public static OperatorType valueOf(Byte ord) { return OperatorType.valueOf(ord.toString()); }
-        public static byte getOrdForName(final String name)
+        /*public static byte getOrdForName(final String name)
         {
             for (byte o = 0; o < names.length; o++)
             {
@@ -140,6 +151,32 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
                 }
             }
             return -1;
+        }*/
+        
+        /**
+         * @param ord
+         * @return
+         */
+        public static String getOp(byte ord)
+        {
+        	return qlOps[ord];
+        }
+        
+        /**
+         * @param op
+         * @return
+         */
+        public static byte getOrdForOp(final String op)
+        {
+            for (byte o = 0; o < qlOps.length; o++)
+            {
+                if (qlOps[o].equals(op))
+                {
+                    return o;
+                }
+            }
+            return -1;
+        	
         }
         @Override
         public String toString()
