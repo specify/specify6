@@ -141,7 +141,7 @@ public class FileCache implements DataCacheIFace
 		{
             FileUtils.forceMkdir(cacheDir);
 		}
-		log.debug("Creating FileCache using [" + dir + "] directory");
+		//log.debug("Creating FileCache using [" + dir + "] directory");
 
 		handleToFilenameHash = new Properties();
 		if (mappingFilename != null)
@@ -181,13 +181,13 @@ public class FileCache implements DataCacheIFace
         while (true)
         {
             Pair<String, Long> p = findOldestKeyLRU();
-            log.debug("Oldest is: "+(p != null ? p.first : "None"));
+            //log.debug("Oldest is: "+(p != null ? p.first : "None"));
             
             if (p == null) break;
             
             boolean isOld = currMilliSecs - p.second > maxMilliSeconds;
             double  days  = (double)(currMilliSecs - p.second) / (double)ONE_DAY_MILLSEC;
-            log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld+"  Days:"+String.format("%8.4f", days));
+            //log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld+"  Days:"+String.format("%8.4f", days));
             if (isOld)
             {
                 if (!purgeCacheFile(p.first))
@@ -342,7 +342,7 @@ public class FileCache implements DataCacheIFace
      */
     protected synchronized void loadCacheMappingFile()
 	{
-		log.debug("Loading old cache mapping data from " + mappingFilename);
+		//log.debug("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir, mappingFilename);
         if (!cacheDir.exists())
         {
@@ -511,7 +511,7 @@ public class FileCache implements DataCacheIFace
             return false;
         }
 
-        log.debug("Purging " + filename + " from cache");
+        //log.debug("Purging " + filename + " from cache");
         File file     = new File(filename);
         long filesize = file.length();
         if (!file.delete())
@@ -520,7 +520,7 @@ public class FileCache implements DataCacheIFace
         }
         handleToFilenameHash.remove(key);
         totalCacheSize -= filesize;
-        log.debug("2 - Reducing cach size: "+totalCacheSize+ " by "+filesize);
+        //log.debug("2 - Reducing cach size: "+totalCacheSize+ " by "+filesize);
         return true;
     }
     
@@ -549,7 +549,7 @@ public class FileCache implements DataCacheIFace
 	protected synchronized void cacheNewItem(final String key, final File item)
 	{
         long currentTime = System.currentTimeMillis();
-        log.debug("Caching " + key + " at " + currentTime);
+        //log.debug("Caching " + key + " at " + currentTime);
 		Object oldValue = handleToFilenameHash.setProperty(key, item.getAbsolutePath());
 		if (oldValue != null)
 		{
@@ -559,13 +559,13 @@ public class FileCache implements DataCacheIFace
 		totalCacheSize += item.length();
 		
 		long totSize = totalCacheSize / ONE_MEG;
-        log.debug("Just Added New File totSize: "+totSize +" > maxCacheMB: "+maxCacheMB+"   enforceMaxSize: "+enforceMaxSize+"   Bytes to be added:"+item.length());
+        //log.debug("Just Added New File totSize: "+totSize +" > maxCacheMB: "+maxCacheMB+"   enforceMaxSize: "+enforceMaxSize+"   Bytes to be added:"+item.length());
         
 		while (enforceMaxSize && (totSize > maxCacheMB))
 		{
 			if (!purgeLruCacheFile()) break;
 		    totSize = totalCacheSize / ONE_MEG;
-		    log.debug("totSize: "+totSize +"  maxCacheMB: "+maxCacheMB);
+		    //log.debug("totSize: "+totSize +"  maxCacheMB: "+maxCacheMB);
 		}
 	}
 	
@@ -592,7 +592,7 @@ public class FileCache implements DataCacheIFace
 			log.warn("Failed to delete old cache file: "+f.getAbsolutePath());
 		}
 		totalCacheSize -= size;
-		log.debug("1 - Reducing cach size: "+totalCacheSize+ " by "+size);
+		//log.debug("1 - Reducing cach size: "+totalCacheSize+ " by "+size);
 	}
 
 	/**
@@ -645,17 +645,17 @@ public class FileCache implements DataCacheIFace
 	 */
 //	protected void showFiles()
 //	{
-//        log.debug(" ");
-//        log.debug("Start --------------------------------------");
+//        //log.debug(" ");
+//        //log.debug("Start --------------------------------------");
 //	    for (File f : cacheDir.listFiles())
 //	    {
 //	        //System.out.println(f.getName());
 //	        //if (prefix != null && f.getName().startsWith(prefix))
 //	        {
-//	            log.debug(f.getName()+" = "+handleToAccessTimeHash.get(f.getName()));
+//	            //log.debug(f.getName()+" = "+handleToAccessTimeHash.get(f.getName()));
 //	        }
 //	    }
-//        log.debug("Done ---------------------------------------");
+//        //log.debug("Done ---------------------------------------");
 //	}
 
 	/**
@@ -669,12 +669,12 @@ public class FileCache implements DataCacheIFace
 	{
 	    String extension = isUsingExtensions ? ("." + FilenameUtils.getExtension(f.getName())) : null;
 		File  cachedFile = createCacheFile(extension);
-		log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
+		//log.debug(String.format("Caching Key[%s]  file[%s] -> [%s]", key, f.getName(), cachedFile.getName()));
 		
 		FileUtils.copyFile(f, cachedFile);
 		cacheNewItem(key, cachedFile);
 		
-		log.debug("Caching["+cachedFile.getAbsolutePath()+"]");
+		//log.debug("Caching["+cachedFile.getAbsolutePath()+"]");
 		return cachedFile;
 	}
 
@@ -695,7 +695,7 @@ public class FileCache implements DataCacheIFace
 		int result = httpClient.executeMethod(get);
 		if (result != 200)
 		{
-			log.debug("Retrieving "+url+" resulted in unexpected code: "+result);
+			//log.debug("Retrieving "+url+" resulted in unexpected code: "+result);
 			throw new HttpException("Unexpected HTTP code received: " + result);
 		}
 
@@ -730,7 +730,7 @@ public class FileCache implements DataCacheIFace
 	 */
 	public File getCacheFile(final String key)
 	{
-	    log.debug(String.format("Get [%s]", key));
+	    //log.debug(String.format("Get [%s]", key));
 
 		String filename = handleToFilenameHash.getProperty(key);
 		if (filename == null)
@@ -746,7 +746,7 @@ public class FileCache implements DataCacheIFace
 		
 		// the resource was previously cached, but the cache file is missing
 		// cleanup the cache mapping
-		log.debug("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
+		//log.debug("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
 		handleToFilenameHash.remove(key);
 		return null;
 	}
@@ -770,7 +770,7 @@ public class FileCache implements DataCacheIFace
             {
                 Path p = Paths.get(file.getAbsoluteFile().toURI());
                 BasicFileAttributes view = Files.getFileAttributeView(p, BasicFileAttributeView.class).readAttributes();
-                log.debug(key+" -> "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
+                //log.debug(key+" -> "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
                 //System.out.println(view.creationTime()+" is the same as "+view.lastAccessTime()+"  "+view.lastAccessTime().toMillis());
 
                 return view.lastAccessTime().toMillis();
@@ -817,7 +817,7 @@ public class FileCache implements DataCacheIFace
 //        Calendar cal = Calendar.getInstance();
 //        System.out.println(sf.format(cal.getTime()));
 //
-//        log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//        //log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //        
 //        String[] files = {"IMG_0123.jpg", "IMG_9781.jpg", "DSCF0029.jpg", "DSCF0023.jpg", "DSCF0024.jpg", };
 //        for (String fName : files)
@@ -834,7 +834,7 @@ public class FileCache implements DataCacheIFace
 //            fc.purgeOldFiles();
 //            fc.showFiles();
 //        }
-//        log.debug("All Done - Current cache size: " + fc.getCurrentCacheSize());
+//        //log.debug("All Done - Current cache size: " + fc.getCurrentCacheSize());
 //    }
 
 //	public static void main(String[] args) throws IOException
@@ -845,7 +845,7 @@ public class FileCache implements DataCacheIFace
 //		fc.setMaxCacheSize(1024);
 //		fc.setEnforceMaxCacheSize(true);
 //
-//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//		//log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little File caching test
 //        String filename = "/home/jstewart/Desktop/jds.asc";
@@ -853,16 +853,16 @@ public class FileCache implements DataCacheIFace
 //        String fileKey = null;
 //		if (fileFile == null)
 //		{
-//			log.debug("Cached file not found.");
+//			//log.debug("Cached file not found.");
 //			fileKey = fc.cacheFile(new File(filename));
-//			log.debug("Cached " + filename + " under key value " + fileKey);
+//			//log.debug("Cached " + filename + " under key value " + fileKey);
 //		}
 //		else
 //		{
-//			log.debug("Found cached file under " + fileFile.getAbsolutePath());
+//			//log.debug("Found cached file under " + fileFile.getAbsolutePath());
 //		}
 //
-//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//		//log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little web resource caching test
 //        String httpUrl = "http://www.google.com/";
@@ -870,23 +870,23 @@ public class FileCache implements DataCacheIFace
 //        String urlKey = null;
 //		if (urlFile == null)
 //		{
-//			log.debug("Cached web resource not found.");
+//			//log.debug("Cached web resource not found.");
 //			urlKey = fc.cacheWebResource("http://www.google.com/");
-//			log.debug("Cached http://www.google.com/ under key value " + urlKey);
+//			//log.debug("Cached http://www.google.com/ under key value " + urlKey);
 //		}
 //		else
 //		{
-//			log.debug("Found cached web resource under " + urlFile.getAbsolutePath());
+//			//log.debug("Found cached web resource under " + urlFile.getAbsolutePath());
 //		}
 //
-//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//		//log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little data caching test
 //		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
 //        String dataKey = null;
 //		if (dataFile == null)
 //		{
-//			log.debug("Cached data not found.");
+//			//log.debug("Cached data not found.");
 //			Random r = new Random();
 //			int count = r.nextInt(100000);
 //			StringBuilder sb = new StringBuilder();
@@ -895,24 +895,24 @@ public class FileCache implements DataCacheIFace
 //				sb.append("X");
 //			}
 //			dataKey = fc.cacheData(sb.toString().getBytes());
-//			log.debug("Cached data bytes under key value " + dataKey);
+//			//log.debug("Cached data bytes under key value " + dataKey);
 //		}
 //		else
 //		{
-//			log.debug("Found cached data under " + dataFile.getAbsolutePath());
+//			//log.debug("Found cached data under " + dataFile.getAbsolutePath());
 //		}
 //
-//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//		//log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //        
 //        long fileTime = fc.getLastAccessTime(fileKey);
 //        long urlTime  = fc.getLastAccessTime(urlKey);
 //        long dataTime = fc.getLastAccessTime(dataKey);
 //        
-//        log.debug("File was last accessed at " + fileTime);
-//        log.debug("URL was last accessed at " + urlTime);
-//        log.debug("Data was last accessed at " + dataTime);
+//        //log.debug("File was last accessed at " + fileTime);
+//        //log.debug("URL was last accessed at " + urlTime);
+//        //log.debug("Data was last accessed at " + dataTime);
 //
-//        log.debug("Requesting cached web resource: " + urlKey);
+//        //log.debug("Requesting cached web resource: " + urlKey);
 //        
 //        fc.getCacheFile(urlKey);
 //
@@ -920,13 +920,13 @@ public class FileCache implements DataCacheIFace
 //        urlTime  = fc.getLastAccessTime(urlKey);
 //        dataTime = fc.getLastAccessTime(dataKey);
 //        
-//        log.debug("File was last accessed at " + fileTime);
-//        log.debug("URL was last accessed at " + urlTime);
-//        log.debug("Data was last accessed at " + dataTime);
+//        //log.debug("File was last accessed at " + fileTime);
+//        //log.debug("URL was last accessed at " + urlTime);
+//        //log.debug("Data was last accessed at " + dataTime);
 //
 //        fc.clear();
 //        
-//        log.debug("Current cache size: " + fc.getCurrentCacheSize());
+//        //log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		fc.saveCacheMapping();
 //	}
