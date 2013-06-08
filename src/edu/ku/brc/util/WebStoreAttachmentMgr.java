@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -46,10 +48,10 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.solr.common.util.FileUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -85,7 +87,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     private Boolean                 isInitialized      = null;
     private byte[]                  bytes              = new byte[100*1024];
-    private File                    cacheDir; 
+    private File                    downloadCacheDir; 
+    private File                    shortTermCacheDir; 
     private FileCache               shortTermCache;
     private SimpleDateFormat        dateFormat         = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
     
@@ -128,19 +131,36 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             isInitialized = false;
             
-            cacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "attach_cache");
-            if (!cacheDir.exists())
+            shortTermCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "attach_cache");
+            if (!shortTermCacheDir.exists())
             {
-                if (!cacheDir.mkdir())
+                if (!shortTermCacheDir.mkdir())
                 {
-                    cacheDir = null;
+                    shortTermCacheDir = null;
                     return isInitialized;
                 }
             }
                 
+            downloadCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "download_cache");
+            if (!downloadCacheDir.exists())
+            {
+                if (!downloadCacheDir.mkdir())
+                {
+                    downloadCacheDir = null;
+                    return isInitialized;
+                }
+
+            } else
+            {
+                try
+                {
+                    FileUtils.cleanDirectory(downloadCacheDir);
+                } catch (IOException e) {}
+            }
+                
             try
             {
-                shortTermCache = new FileCache(cacheDir.getAbsolutePath(), "cache.map");
+                shortTermCache = new FileCache(shortTermCacheDir.getAbsolutePath(), "cache.map");
                 
                 AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                 Integer maxCacheMB = localPrefs.getInt("ATTACH_CACHE_SIZE", null);
@@ -178,7 +198,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             if (StringUtils.isNotEmpty(urlStr))
             {
-                File tmpFile = File.createTempFile("sp6", ".xml", cacheDir.getAbsoluteFile());
+                File tmpFile = File.createTempFile("sp6", ".xml", downloadCacheDir.getAbsoluteFile());
                 if (fillFileFromWeb(urlStr, tmpFile))
                 {
                     if (getURLSFromFile(tmpFile))
@@ -267,7 +287,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         String storageFilename = "";
         try
         {
-            File storageFile = File.createTempFile("sp6", suffix, cacheDir.getAbsoluteFile());
+            File storageFile = File.createTempFile("sp6", suffix, downloadCacheDir.getAbsoluteFile());
             //System.err.println("["+storageFile.getAbsolutePath()+"] "+storageFile.canWrite());
             if (storageFile.exists())
             {
@@ -449,7 +469,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     private File createTempFile(final String fileName, final boolean doDelOnExit) throws IOException
     {
         String fileExt = FilenameUtils.getExtension(fileName);
-        File file = File.createTempFile("sp6", '.' + fileExt, cacheDir.getAbsoluteFile());
+        File file = File.createTempFile("sp6", '.' + fileExt, downloadCacheDir.getAbsoluteFile());
         if (doDelOnExit)
         {
             file.deleteOnExit();
@@ -510,9 +530,10 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             }
             
             // Put thumbail into cache with thumbnail name
-            shortTermCache.cacheFile(destFile);
+            File cachedFileHandle = shortTermCache.cacheFile(destFile);
+            if (destFile.exists()) destFile.delete();
             
-            return destFile;
+            return cachedFileHandle;
             
         } catch (IOException ex)
         {
@@ -639,8 +660,16 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             // It's not an image, so we need to get the whole file
             File tmpFile = getFileFromWeb(attachLocation, mimeType, null);
             
-            FileUtils.copyFile(tmpFile, destFile);
-            File localFileFromCache = shortTermCache.cacheFile(destFile);
+            // Rename file to cache
+            String path  = FilenameUtils.getPrefix(tmpFile.getAbsolutePath()) + FilenameUtils.getPath(tmpFile.getAbsolutePath()) + destFile.getName();
+            File   dFile = new File(path);
+            
+            Path src = Paths.get(tmpFile.getAbsoluteFile().toURI());
+            Path dst = Paths.get(dFile.getAbsoluteFile().toURI());
+            java.nio.file.Files.move(src, dst, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+            File localFileFromCache = shortTermCache.cacheFile(dFile);
+            if (dFile.exists()) dFile.delete();
+            if (tmpFile.exists()) tmpFile.delete();
             
             if (hasScaleSize)
             {
@@ -1032,7 +1061,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 
                 try
                 {
-                    shortTermCache.cacheFile(thumbFile.getName(), thumbFile);
+                    thumbFile = shortTermCache.cacheFile(thumbFile.getName(), thumbFile);
                     
                 } catch (IOException e)
                 {
