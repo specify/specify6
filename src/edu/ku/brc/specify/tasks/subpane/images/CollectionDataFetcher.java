@@ -19,17 +19,24 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -37,11 +44,17 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
@@ -63,6 +76,7 @@ import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
@@ -83,9 +97,14 @@ import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
+import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -100,8 +119,14 @@ public class CollectionDataFetcher
 {
     private static final Logger log = Logger.getLogger(CollectionDataFetcher.class);
 
-    private Connection conn = DBConnection.getInstance().getConnection();
-    private static HashMap<Class<?>, Class<?>> clsHashMap = new HashMap<Class<?>, Class<?>>();
+    private static final String BUBBLE_INFO   = "BubbleInfo";
+    private static final String DISKLOC       = "common/bubble_info.xml";
+    
+    protected static boolean    doingLocal = false;
+    
+    protected DateWrapper                      scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+    private Connection                         conn          = DBConnection.getInstance().getConnection();
+    private static HashMap<Class<?>, Class<?>> clsHashMap    = new HashMap<Class<?>, Class<?>>();
     private static Class<?>[]                  attachmentClassesForMap;
     private static Class<?>[]                  attachmentClasses;
     
@@ -178,11 +203,98 @@ public class CollectionDataFetcher
     }
     
     /**
+     * @return
+     */
+    protected org.dom4j.Element readXMLFromResources()
+    {
+        String xml = null;
+        if (doingLocal)
+        {
+            File file = XMLHelper.getConfigDir(DISKLOC);
+            try
+            {
+                xml = FileUtils.readFileToString(file);
+                
+            } catch (IOException ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyWebLinkMgr.class, ex);
+                ex.printStackTrace();
+            }
+        } else
+        {
+            SpecifyAppContextMgr acMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                SpecifyUser user       = acMgr.getClassObject(SpecifyUser.class);
+                Discipline  discipline = acMgr.getClassObject(Discipline.class);
+                
+                SpAppResourceDir appResDir = acMgr.getAppResDir(session, user, discipline, null, null, false, BUBBLE_INFO, false);
+                if (appResDir != null)
+                {
+                    SpAppResource appRes = appResDir.getResourceByName(BUBBLE_INFO);
+                    if (appRes != null)
+                    {
+                        session.close();
+                        session = null;
+                        
+                        xml = AppContextMgr.getInstance().getResourceAsXML(appRes);
+                    }
+                } else
+                {
+                    File file = XMLHelper.getConfigDir(DISKLOC);
+                    try
+                    {
+                        xml = FileUtils.readFileToString(file);
+                        
+                    } catch (IOException ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyWebLinkMgr.class, ex);
+                        ex.printStackTrace();
+                    }
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+        
+        try
+        {
+            return XMLHelper.readStrToDOM4J(xml);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    
+    /**
      * 
      */
     private void loadBubbleInfo()
     {
-        Element root = XMLHelper.readDOMFromConfigDir("bubble_info.xml");
+        Element root = null;//readXMLFromResources();
+        if (root == null)
+        {
+            root = XMLHelper.readDOMFromConfigDir("bubble_info.xml");
+        }
+        
         for (Object bubObj : root.selectNodes("/bubbles/bubble")) 
         {
             Element bi    = (Element)bubObj;
@@ -215,7 +327,7 @@ public class CollectionDataFetcher
             bciHash.put(tblId, bcis);
         }
     }
-
+    
     /**
      * @param ti
      * @return
@@ -288,6 +400,18 @@ public class CollectionDataFetcher
                     if (bdi.getFormatter() != null)
                     {
                         val = bdi.getFormatter().formatToUI(val);
+                        
+                    } else if (val instanceof Calendar)
+                    {
+                        val = scrDateFormat.format((Calendar)val);
+                        
+                    } else if (val instanceof Date)
+                    {
+                        val = scrDateFormat.format((Date)val);
+                        
+                    } else if (val instanceof BigDecimal)
+                    {
+                        val = StringUtils.stripEnd(val.toString(), "0");
                         
                     } else if (bdi.getFieldInfo().getPickListName() != null)
                     {
