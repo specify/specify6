@@ -1267,7 +1267,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
                 if (cnt >= RESULTS_THRESHOLD)
                 {
-                    String reason = String.format("%d hits returned of %d maximum allowed. ", RESULTS_THRESHOLD, cnt); // I18N
+                    //String reason = String.format("%d hits returned of %d maximum allowed. ", RESULTS_THRESHOLD, cnt); // I18N
+                    //String reason = String.format(getResourceString("QB_HITS_MAX_ALLOWED"), RESULTS_THRESHOLD, cnt); // I18N
+                    String reason = UIRegistry.getFormattedResStr("QB_HITS_MAX_ALLOWED", RESULTS_THRESHOLD, cnt);
                     if (searchWarningsResults == null)
                     {
                         searchWarningsResults = new SIQueryForIdResults();
