@@ -347,7 +347,7 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     {
         CellConstraints cc = new CellConstraints();
         
-        if (isViewOnly || (!formatter.isUserInputNeeded() && fields.size() == 1))
+        if (isViewOnly || (formatter != null && !formatter.isUserInputNeeded() && fields != null && fields.size() == 1))
         {
             viewtextField = new JTextField();
             setControlSize(viewtextField);
@@ -386,7 +386,6 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
     
             
             StringBuilder sb = new StringBuilder("1px");
-            int i = 0;
             for (UIFieldFormatterField f : fields)
             {
                 sb.append(",");
@@ -397,7 +396,6 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
                 {
                     sb.append(((fm.getMaxAdvance() * f.getSize()) + baseWidth) + "px");
                 }
-                i++;
             }
             sb.append(",1px");
             PanelBuilder builder = new PanelBuilder(new FormLayout(sb.toString(), "1px,P:G,1px"), this);
@@ -1149,8 +1147,17 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
             origValue = value;
         }
         
+        // Bug 9297 - Without the fix below popup forms with Auto-Incrementing 
+        // formatted number that have one segment will not work. 
+        boolean isPartialOkay = isPartialOK;
+        if (formatter != null && isPartialOK) 
+        {
+            isPartialOkay = formatter.isIncrementer() && formatter.getFields().size() > 1;
+        }
+        // Done Bug 9297
+        
         String fmtVal;
-        if (formatter != null && !isPartialOK)
+        if (formatter != null && !isPartialOkay)
         {
             if (formatter.isInBoundFormatter())
             {
