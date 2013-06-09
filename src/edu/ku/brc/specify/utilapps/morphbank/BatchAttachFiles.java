@@ -222,7 +222,7 @@ public class BatchAttachFiles
                 }
             }
             
-            if (errCnt == records.size())
+            if (errCnt == records.size() && errCnt > 0)
             {
                 showLocalizedError(isTabDelim? "IMPORT_IMG_BAD_DELIM_TAB" : "IMPORT_IMG_BAD_DELIM_COMMA");
                 return false;
@@ -635,6 +635,11 @@ public class BatchAttachFiles
     		for (Object f : srcFileList)
     		{
 		        files.add((File)f);
+    		}
+    		
+    		if (files.size() == 0)
+    		{
+    		    showLocalizedError(JOptionPane.WARNING_MESSAGE, "IMPORT_NO_FILES_SEL");
     		}
     		
 		} catch (Exception ex)
