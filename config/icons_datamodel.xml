@@ -82,9 +82,9 @@
     <icon name="treatmentevent"       file="treatment_event.png" sizes="all"/>
 
     <!--  Attribute Icons -->
-    <icon name="CollectionObjectAttribute"      file="collection_object_attr.png" sizes="NonStd"/>
-    <icon name="CollectingEventAttribute"       file="collecting_event_attr.png" sizes="NonStd"/>
-    <icon name="PreparationAttribute"           file="preparation_attr.png" sizes="NonStd"/>
+    <icon name="CollectionObjectAttribute"      file="collection_object_attr.png" sizes="all"/>
+    <icon name="CollectingEventAttribute"       file="collecting_event_attr.png" sizes="all"/>
+    <icon name="PreparationAttribute"           file="preparation_attr.png" sizes="all"/>
     
     <!--  Attachment Icons -->
     <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="NonStd"/>
