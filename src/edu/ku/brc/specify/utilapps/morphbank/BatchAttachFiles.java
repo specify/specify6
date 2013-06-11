@@ -90,6 +90,7 @@ import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
@@ -173,7 +174,41 @@ public class BatchAttachFiles
     {
         if (files != null) files = null;
         
-        boolean isTabDelim = FilenameUtils.getExtension(indexFile.getName().toLowerCase()).equals("tab");
+        String  ext          = FilenameUtils.getExtension(indexFile.getName().toLowerCase());
+        boolean isTabDelim   = ext.equals("tab");
+        boolean isCommaDelim = ext.equals("csv");
+        if (ext.equals("txt"))
+        {
+            try
+            {
+                int tabCnt   = 0;
+                int commaCnt = 0;
+                int cnt      = 0;
+                for (String line : FileUtils.readLines(indexFile))
+                {
+                    if (line.indexOf('\t') > 0) tabCnt++;
+                    if (line.indexOf(',') > 0) tabCnt++;
+                    cnt++;
+                }
+                if (tabCnt == cnt) 
+                {
+                    isTabDelim = true;
+                } else
+                {
+                    if (commaCnt == cnt) isCommaDelim = true;
+                }
+                
+                if (!isCommaDelim && !isTabDelim)
+                {
+                    UIRegistry.showLocalizedError("ATTCH_ERROR_PROCESSING");
+                    return false;
+                }
+            } catch (IOException e)
+            {
+                UIRegistry.showLocalizedError("ATTCH_ERROR_PROCESSING");
+                return false;
+            }
+        }
         
         mapFileNameToCatNum = new HashMap<String, ArrayList<String>>();
         try
@@ -270,6 +305,7 @@ public class BatchAttachFiles
             JFileChooser fileChooser = new JFileChooser("BatchAttachFiles.CH_FILE_MSG");
             fileChooser.setFileFilter(new IndexFileFilter());
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setFileHidingEnabled(true);
     
             File indexFile      = null;
             int    returnVal = fileChooser.showOpenDialog(getTopWindow());

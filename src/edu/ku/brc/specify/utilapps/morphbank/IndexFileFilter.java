@@ -31,7 +31,7 @@ import java.io.File;
  */
 public class IndexFileFilter extends javax.swing.filechooser.FileFilter
 {
-    private final String[] okFileExtensions = { "csv", "tab" };
+    private final String[] okFileExtensions = { "csv", "tab", "txt" };
 
     /*
      * (non-Javadoc)
@@ -54,6 +54,6 @@ public class IndexFileFilter extends javax.swing.filechooser.FileFilter
     @Override
     public String getDescription()
     {
-        return null;
+        return "CSV, TXT, or TAB Files";
     }
 }
