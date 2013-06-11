@@ -44,10 +44,13 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -83,6 +86,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.tools.export.ExportPanel;
@@ -190,7 +194,8 @@ public class BatchAttachFiles
                 {
                     if (line.indexOf('\t') > 0) tabCnt++;
                     if (line.indexOf(',') > 0) tabCnt++;
-                    cnt++;
+                    if (!line.trim().isEmpty()) cnt++;
+                    System.out.println("["+line.trim()+"]");
                 }
                 if (tabCnt == cnt) 
                 {
@@ -286,7 +291,36 @@ public class BatchAttachFiles
         String title = getResourceString("BatchAttachFiles.CHOOSE_DEST");
         String msg   = getResourceString("BatchAttachFiles.CHOOSE_DESTMSG");
         ChooseFromListDlg<FileNameParserIFace> dlg = new ChooseFromListDlg<FileNameParserIFace>((Frame)getMostRecentWindow(), title, msg, ChooseFromListDlg.OKCANCELHELP, items);
-        dlg.setHelpContext("");
+        //dlg.setHelpContext("NEED_HELP_CONTEXT");
+        dlg.createUI();
+        
+        dlg.getList().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                JList<?> list = (JList<?>)e.getSource();
+                int selIndex = list.getSelectedIndex();
+                if (selIndex > -1)
+                {
+                    final FileNameParserIFace fnp = items.get(selIndex);
+                    
+                    if (fnp.getTableId() == CollectingEvent.getClassTableId() && 
+                        fnp.getFieldName().equals("stationFieldNumber"))
+                    {
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                UIRegistry.showLocalizedError(JOptionPane.WARNING_MESSAGE, "ATTCH_UNIQUE_FIELD", fnp.getFieldTitle());
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        
         
         UIHelper.centerAndShow(dlg);
         if (dlg.isNotCancelled())
@@ -307,7 +341,7 @@ public class BatchAttachFiles
             JFileChooser fileChooser = new JFileChooser("BatchAttachFiles.CH_FILE_MSG");
             fileChooser.setFileFilter(new IndexFileFilter());
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setFileHidingEnabled(true);
+            //fileChooser.setFileHidingEnabled(true);
     
             File indexFile      = null;
             int    returnVal = fileChooser.showOpenDialog(getTopWindow());
