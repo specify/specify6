@@ -211,7 +211,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    BatchAttachFiles.uploadImagesByFileName();
+                    BatchAttachFiles.uploadAttachmentsByFileName();
                 }
             });
             

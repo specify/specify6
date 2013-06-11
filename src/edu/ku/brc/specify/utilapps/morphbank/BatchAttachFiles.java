@@ -136,10 +136,12 @@ public class BatchAttachFiles
     /**
      * @param fnParser
      * @param directory
+     * @param isForImagesOnly
      * @throws Exception
      */
     public BatchAttachFiles(final FileNameParserIFace fnParser, 
-                            final File directory) throws Exception
+                            final File directory,
+                            final boolean isForImagesOnly) throws Exception
     {
         super();
         this.fnParser  = fnParser;
@@ -147,7 +149,7 @@ public class BatchAttachFiles
         
         if (directory.isDirectory())
         {
-            bldFilesFromDir(directory, exts);
+            bldFilesFromDir(directory, isForImagesOnly ? exts : null);
         }
     }
     
@@ -315,7 +317,7 @@ public class BatchAttachFiles
                 try
                 {
                     String           path      = FilenameUtils.getFullPath(indexFile.getAbsolutePath());
-                    BatchAttachFiles batchFile = new BatchAttachFiles(fnParser, new File(path));
+                    BatchAttachFiles batchFile = new BatchAttachFiles(fnParser, new File(path), false);
                     batchFile.attachFileFromIndexFile(indexFile);
                     
                 } catch (Exception ex)
@@ -330,7 +332,7 @@ public class BatchAttachFiles
      * Ask for what table and field are the destination of the attachments, and then
      * asks for the directory or files.
      */
-    public static void uploadImagesByFileName()
+    public static void uploadAttachmentsByFileName()
     {
         FileNameParserIFace fnParser = chooseFileNameParser();
         if (fnParser != null)
@@ -350,7 +352,7 @@ public class BatchAttachFiles
                         indexFile = chooser.getSelectedFile();
                         try
                         {
-                            BatchAttachFiles batchFile = new BatchAttachFiles(fnParser, indexFile);
+                            BatchAttachFiles batchFile = new BatchAttachFiles(fnParser, indexFile, false);
                             batchFile.attachFiles();
                             
                         } catch (Exception ex)
@@ -385,8 +387,8 @@ public class BatchAttachFiles
      */
     private static int askForDirOrFiles()
     {
-        return displayConfirmLocalized("Choose", "BatchAttachFiles.ASK_DIRORFILES_MSG", 
-                "BatchAttachFiles.DO_DIRS", "BatchAttachFiles.DO_FILES", "Cancel", JOptionPane.QUESTION_MESSAGE);
+        return displayConfirmLocalized("CHOOSE", "BatchAttachFiles.ASK_DIRORFILES_MSG", 
+                "BatchAttachFiles.DO_DIRS", "BatchAttachFiles.DO_FILES", "CANCEL", JOptionPane.QUESTION_MESSAGE);
     }
 
     /**

@@ -213,7 +213,7 @@ public class BatchAttachLauncher implements DatabaseLoginListener
 			//for Auburn +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//Attach 'blank' attachments from list of image file names
 			BatchAttachFiles baf = new BatchAttachFiles(new BarCodeFileNameParser("altCatalogNumber"),
-					new File("/media/Terror/ConversionsAndFixes/auburn/ImageFileNames.txt"));
+					new File("/media/Terror/ConversionsAndFixes/auburn/ImageFileNames.txt"), true);
 			baf.attachFiles();
 			//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
