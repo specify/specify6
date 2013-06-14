@@ -358,7 +358,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 Object[] config = synConfigs.get(c);
                 Integer parentRank = (Integer)config[0];
                 Integer childRank = (Integer)config[1];		
-                boolean skipBads = needKeys && c < synConfigs.size() - 1 && childRank.equals(synConfigs.get(c+1)[1]);                
+                boolean skipBads = needKeys && c < synConfigs.size() - 1 && childRank.equals(synConfigs.get(c+1)[1]); //wha???               
             	fixMisparentedSynonymsLevel(newDBConn, tblWriter, phHelper, parentRank, childRank, skipBads, stats, processedKeys, progressInterval, doPercent);
             	//tblWriter.endTable();
             }
@@ -596,9 +596,13 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
      * @param parentLevelRankID
      * @return
      */
-    Taxon getPlaceHolder(PlaceholderHelper phHelper, int parentLevelRankID)
+    Taxon getPlaceHolder(PlaceholderHelper phHelper, int parentLevelRankID, int childLevelRankID)
     {
     	Taxon placeHolder = phHelper.getPlaceHolderTreeHash().get(parentLevelRankID);
+    	while (placeHolder != null && placeHolder.getRankId() >= childLevelRankID)
+    	{
+    		placeHolder = placeHolder.getParent();
+    	}
     	if (placeHolder == null && parentLevelRankID== 0)
     	{
     		placeHolder = phHelper.getHighestPlaceHolder();
@@ -644,7 +648,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         String postfix = " FROM taxon WHERE IsAccepted = 0 AND AcceptedID IS NOT NULL AND RankID = " + childLevelRankID + " AND " + whereStr;
         int totalCnt   = BasicSQLUtils.getCountAsInt("SELECT COUNT(TaxonID) " + postfix);
  
-    	System.out.println("fixMisparentedSynonymsLevel: " + parentLevelRankID + " > " + childLevelRankID + " (" + totalCnt + ")");
+    	//System.out.println("fixMisparentedSynonymsLevel: " + parentLevelRankID + " > " + childLevelRankID + " (" + totalCnt + ")");
 
         if (totalCnt == 0)
         {
@@ -765,7 +769,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
 					}
 				} else {
 					Taxon placeHolder = getPlaceHolder(phHelper,
-							parentLevelRankID);
+							parentLevelRankID, childLevelRankID);
 					if (placeHolder != null) {
 						cnt++;
 						tblWriter.logWithSpaces(Integer.toString(cnt),
