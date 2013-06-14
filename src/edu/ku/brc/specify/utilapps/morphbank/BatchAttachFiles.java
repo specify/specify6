@@ -711,7 +711,7 @@ public class BatchAttachFiles
     		
     		if (files.size() == 0)
     		{
-    		    showLocalizedError(JOptionPane.WARNING_MESSAGE, "IMPORT_NO_FILES_SEL");
+    		    showLocalizedError(JOptionPane.WARNING_MESSAGE, "ATTCH_IMPORT_NO_FILES_SEL");
     		}
     		
 		} catch (Exception ex)
