@@ -263,14 +263,19 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             //String parentRankText = "Parent";//getRankText(parentRank);
             //tblWriter.logHdr(NBSP, "Orphan Synonym", "Current " + parentRankText, "Current Family", "Proposed " + parentRankText, "Proposed Family", "Catalog Numbers<BR>Determined to Synonym");
             
-            DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
-            String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
-            String      cntStr   = String.format("SELECT COUNT(*) FROM taxon WHERE IsAccepted = 0 AND %s", whereStr);
-            
             Discipline        discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             PlaceholderHelper phHelper   = new PlaceholderHelper(doCleanup, discipline.getTaxonTreeDef());
             phHelper.setSynonymBranch(true);
             phHelper.buildPlaceHolderInfo();
+            
+            DBTableInfo ti       = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId());
+            String      whereStr = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
+            Taxon phTop = phHelper.getHighestPlaceHolder();
+            if (phTop.getId() != null && phTop.getNodeNumber() != null && phTop.getHighestChildNodeNumber() != null)
+            {
+            	whereStr = "((" + whereStr + ") AND  NOT NodeNumber BETWEEN " + phTop.getNodeNumber() + " AND " + phTop.getHighestChildNodeNumber() + ")";
+            }
+            String      cntStr   = String.format("SELECT COUNT(*) FROM taxon WHERE IsAccepted = 0 AND %s", whereStr);            
             
             // Now eliminate duplicates with no Determination
             String sql = String.format("SELECT K,CNT FROM (SELECT K,COUNT(K) CNT FROM (SELECT CONCAT(AcceptedID, '_', ParentID, '_', TimestampCreated, '_', FullName) AS K FROM taxon WHERE %s AND IsAccepted = 0) T1 GROUP BY K) T1 WHERE CNT > 1", whereStr);
@@ -631,6 +636,11 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         
         log.debug(String.format("\nParent: %s (%d)    Child: %s (%d)", parentName, parentLevelRankID, childName, childLevelRankID));
         
+        Taxon phTop = phHelper.getHighestPlaceHolder();
+        if (phTop.getId() != null && phTop.getNodeNumber() != null && phTop.getHighestChildNodeNumber() != null)
+        {
+        	whereStr = "((" + whereStr + ") AND  NOT NodeNumber BETWEEN " + phTop.getNodeNumber() + " AND " + phTop.getHighestChildNodeNumber() + ")";
+        }
         String postfix = " FROM taxon WHERE IsAccepted = 0 AND AcceptedID IS NOT NULL AND RankID = " + childLevelRankID + " AND " + whereStr;
         int totalCnt   = BasicSQLUtils.getCountAsInt("SELECT COUNT(TaxonID) " + postfix);
  

@@ -44,7 +44,8 @@ public class PlaceholderHelper
 {
     protected static final Logger           log         = Logger.getLogger(PlaceholderHelper.class);
     protected static final String                PLACEHOLDER         = "Placeholder"; 
-    protected static final String                SYN_PLACEHOLDER     = "Synonym Placeholder"; 
+    
+    public static final String                   SYN_PLACEHOLDER     = "Synonym Placeholder"; 
     
     protected TaxonTreeDef                       taxonTreeDef        = null;
     protected HashMap<Integer, Taxon>            placeHolderTreeHash = new HashMap<Integer, Taxon>();
@@ -187,20 +188,30 @@ public class PlaceholderHelper
     /**
      * @param item
      * @param parentTaxon
+     * @param session
      * @return
      */
     private Taxon createTaxon(final TaxonTreeDefItem item, 
-                              final Taxon parentTaxon)
+                              final Taxon parentTaxon,
+                              final DataProviderSessionIFace session)
     {
-        Taxon taxon = new Taxon();
-        taxon.initialize();
-        taxon.setRankId(item.getRankId());
-        taxon.setName(taxonTitle);
-        taxon.setFullName(taxon.getName());
+        Taxon taxon = null;
+    	if (isSynonymBranch)
+    	{
+    		taxon = getSynonymPlaceHolder(item, parentTaxon, session);
+    	}
+    	if (taxon == null)
+    	{
+    		taxon = new Taxon();
+    		taxon.initialize();
+    		taxon.setRankId(item.getRankId());
+    		taxon.setName(taxonTitle);
+    		taxon.setFullName(taxon.getName());
         
-        taxon.setDefinition(taxonTreeDef);
-        taxon.setDefinitionItem(item);
-        taxon.setParent(parentTaxon);
+    		taxon.setDefinition(taxonTreeDef);
+    		taxon.setDefinitionItem(item);
+    		taxon.setParent(parentTaxon);
+    	}
         return taxon;
     }
     
@@ -278,6 +289,50 @@ public class PlaceholderHelper
         return placeHolderTreeHash.size() > 0;
     }
     
+    
+    /**
+     * @param node
+     * @return  true if node 'is' a synonym placeholder node
+     * 
+     * Reliably determining whether a node is a placeholder is kind of impossible.
+     *  
+     */
+    protected boolean isSynonymPlaceHolder(Taxon node)
+    {
+    	//but what if a user edited a placeholder node's name, or created a node with name of SYN_PLACEHOLDER?
+    	return SYN_PLACEHOLDER.equals(node.getName());
+    }
+    
+    /**
+     * @param item
+     * @param parent
+     * @param session
+     * @return
+     */
+    private Taxon getSynonymPlaceHolder(final TaxonTreeDefItem item, final Taxon parent, final DataProviderSessionIFace session)
+    {
+    	List<?> children = session.getDataList("from Taxon where parentId = " + parent.getParentId() + " and rankId = " + item.getRankId());
+    	for (Object child : children)
+    	{
+    		if (isSynonymPlaceHolder((Taxon)child))
+    		{
+    			return (Taxon)child;
+    		}
+    	}
+    	return null;
+    }
+    
+    /**
+     * @param item
+     * @param parent
+     * @param session
+     * @return
+     */
+    private boolean needToCreateNode(final TaxonTreeDefItem item, final Taxon parent, final DataProviderSessionIFace session)
+    {
+    	return getSynonymPlaceHolder(item, parent, session) == null;
+    }
+    
     /**
      * 
      */
@@ -292,8 +347,8 @@ public class PlaceholderHelper
                 
                 taxonTreeDef = session.get(TaxonTreeDef.class, taxonTreeDef.getId());
                 
-                String  msg     = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
-                Integer taxonId = BasicSQLUtils.getCount(msg);
+                String  sql     = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
+                Integer taxonId = BasicSQLUtils.getCount(sql);
                 if (taxonId != null)
                 {
                     Taxon  txRoot = (Taxon)session.getData("FROM Taxon WHERE id = " + taxonId);
@@ -303,7 +358,7 @@ public class PlaceholderHelper
                     {
                         if (item.getRankId() > 0)
                         {
-                            Taxon taxon = createTaxon(item, parent);
+                            Taxon taxon = createTaxon(item, parent, session);
                             parent = taxon;
                             
                             if (doCleanup)
