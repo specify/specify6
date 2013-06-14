@@ -352,21 +352,6 @@ public class SecurityAdminTask extends BaseTask
         MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", UIHelper.isMacOS() ? MenuItemDesc.Position.Bottom : MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$
         menuItems.add(mid);
 
-        menuTitle = getKey("CHANGE_PWD_MENU"); //$NON-NLS-1$
-        mneu      = getKey("CHANGE_PWD_MNEU"); //$NON-NLS-1$
-        desc      = getKey("CHANGE_PWD_DESC"); //$NON-NLS-1$
-        mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
-        mi.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                changePassword(false);
-            }
-        });
-        
-        mid = new MenuItemDesc(mi, mid.getMenuPath(), UIHelper.isMacOS() ? MenuItemDesc.Position.Bottom : MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$
-        menuItems.add(mid);
-        
         return menuItems;
     }
     
