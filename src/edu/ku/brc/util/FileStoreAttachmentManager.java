@@ -180,7 +180,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
                 unfilledFiles.add(attachment.getAttachmentLocation());
                 return true;
             }
-            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", (storageFile != null ? storageFile.getAbsolutePath() : "(missing file name)"));
+            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", (storageFile != null ? storageFile.getAbsolutePath() : "(missing file name)"), "File may not exist.");
             log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
         } catch (IOException e)
         {
@@ -188,7 +188,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             
             if (doDisplayErrors)
             {
-                errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", storageFilename);
+                errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", storageFilename, e.getLocalizedMessage());
             } else
             {
                 // This happens when errors are not displayed.
