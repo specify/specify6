@@ -140,9 +140,9 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             extendedNavBoxes.clear();
             
             // Actions
-            RolloverCommand showAllBtn      = (RolloverCommand)addNavBoxItem(actionNavBox,  getResourceString("ATTCH_SHOWALL_ATT"),   "image", null, null);
-            RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGS"),    "image", null, null);
-            RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGSMAP"), "image", null, null);
+            RolloverCommand showAllBtn      = (RolloverCommand)addNavBoxItem(actionNavBox,  getResourceString("ATTCH_SHOWALL_ATT"),   this.iconName, null, null);
+            RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGS"),    this.iconName, null, null);
+            RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGSMAP"), this.iconName, null, null);
             
             //RolloverCommand uploadOCRBtn    = (RolloverCommand)addNavBoxItem(actionNavBox, "Import OCR Data", "image", null, null);
             //addNavBoxItem(actionNavBox, "Import OCR Data", "network_node_del", null, null);
