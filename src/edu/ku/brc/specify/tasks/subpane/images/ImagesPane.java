@@ -703,10 +703,13 @@ public class ImagesPane extends BaseSubPane
             {
                 final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
                 
-                String sql = "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
+                boolean isAttachmentTableItself = ti.getTableId() == Attachment.getClassTableId();
+                
+                String sql = !isAttachmentTableItself ? "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
                 		     "INNER JOIN %sattachment coa ON a.AttachmentID = coa.AttachmentID "+
-                             "WHERE coa.%s IN (%s) %s ORDER BY a.TimestampCreated";
-
+                             "WHERE coa.%s IN (%s) %s ORDER BY a.TimestampCreated"
+                	: "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a where AttachmentID IN (%s) ORDER BY a.Title";
+              
                 int batchSize  = 500;
                 int attchIndex = 0;
                 int batches    = (numItems / batchSize) + (numItems % batchSize == 0 ? 0 : 1); 
@@ -739,7 +742,9 @@ public class ImagesPane extends BaseSubPane
                             filter = " AND " + filter;
                         }
                         
-                        String fullSQL = String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), filter);
+                        
+                        String fullSQL = !isAttachmentTableItself ? String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), filter)
+                        		: String.format(sql, sb.toString(), filter);
                         log.debug(fullSQL);
                         ResultSet rs = stmt.executeQuery(fullSQL);
                         while (rs.next())

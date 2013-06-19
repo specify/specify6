@@ -174,6 +174,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
 
             int[] attachmentTableIDs = {
                     AttachmentImageAttribute.getClassTableId(),
+                    Attachment.getClassTableId(),
                     Accession.getClassTableId(),
                     Agent.getClassTableId(),
                     Borrow.getClassTableId(),
