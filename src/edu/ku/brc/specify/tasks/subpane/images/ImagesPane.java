@@ -705,7 +705,7 @@ public class ImagesPane extends BaseSubPane
                 
                 String sql = "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
                 		     "INNER JOIN %sattachment coa ON a.AttachmentID = coa.AttachmentID "+
-                             "WHERE coa.%s IN (%s) %s ORDER BY a.Title";
+                             "WHERE coa.%s IN (%s) %s ORDER BY a.TimestampCreated";
 
                 int batchSize  = 500;
                 int attchIndex = 0;
