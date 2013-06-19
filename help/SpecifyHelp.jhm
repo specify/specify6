@@ -16,7 +16,6 @@
    <mapID target="SS" url="SpecifyHelp/Simple_Search/SS_Overview.html"/>
    <mapID target="Simple_Search" url="SpecifyHelp/Simple_Search/Simple_Search.html"/>
    <mapID target="Express_Search" url="SpecifyHelp/Simple_Search/Simple_Search.html"/>
-   <mapID target="About" url="SpecifyHelp/Intro/about.html"/>
    <mapID target="Startup" url="SpecifyHelp/Intro/welcome.html"/>
    <mapID target="Update" url="SpecifyHelp/Intro/updating.html"/>
    <mapID target="Inst_Hier" url="SpecifyHelp/Configuration/institution_hierarchy.html"/>
@@ -103,7 +102,6 @@
    <mapID target="Login" url="SpecifyHelp/Dialogs/Login.html"/>
    <mapID target="Statistics" url="SpecifyHelp/Statistics/Statistics.html"/>
    <mapID target="PrefsSystem" url="SpecifyHelp/Prefs/System.html"/>
-   <mapID target="WorkbenchRequirements" url="SpecifyHelp/Workbench/Requirements.html"/>
    <mapID target="PrefsMisc" url="SpecifyHelp/Prefs/Taskbar.html"/>
    <mapID target="TaxonTree" url="SpecifyHelp/Dialogs/taxon_tree_dialog.html"/>
    <mapID target="WorkbenchTechnicalNotes" url="SpecifyHelp/Workbench/TechnicalNotes.html"/>
@@ -128,7 +126,6 @@
    <mapID target="PrefsGeolocate" url="SpecifyHelp/Prefs/Geolocate.html"/>
    <mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/> 
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
-   <mapID target="PrefsGUID" url="SpecifyHelp/Prefs/guid.html"/> 
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
    <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
    <mapID target="security_wiz" url="SpecifyHelp/Security/Security_Wizard.html"/>
@@ -142,6 +139,9 @@
    <mapID target="SGR" url="SpecifyHelp/Plugins/SGR.html"/>
    <mapID target="sgr_intro" url="SpecifyHelp/Plugins/SGR_intro.html"/>
    <mapID target="Lifemapper" url="SpecifyHelp/Plugins/lifemapper.html"/>
+   <mapID target="Attach_Tools" url="SpecifyHelp/Plugins/attachments.html"/>
+   <mapID target="attach_general" url="SpecifyHelp/Plugins/attachments_overview.html"/>
+   
       
 
 
@@ -149,11 +149,6 @@
 
    <mapID target="specify" url="http://specify6.specifysoftware.org"/>
    <mapID target="login" url="SpecifyHelp/Dialogs/Login.html#login"/>
-   <mapID target="Forum" url="SpecifyHelp/Intro/about.html#user_forums"/>
-   <mapID target="Sample_Resources" url="SpecifyHelp/Intro/about.html#sample_resources"/>
-   <mapID target="Sample_Queries" url="SpecifyHelp/Intro/about.html#sample_resources"/>
-   <mapID target="Sample_Reports" url="SpecifyHelp/Intro/about.html#sample_resources"/>
-   <mapID target="Sample_Labels" url="SpecifyHelp/Intro/about.html#sample_resources"/>
    <mapID target="Using_Help" url="SpecifyHelp/Intro/welcome.html#using_help"/>
    <mapID target="Registration" url="SpecifyHelp/Intro/welcome.html#registration"/>
    <mapID target="Services" url="SpecifyHelp/Intro/welcome.html#services"/>
@@ -320,9 +315,6 @@
    <mapID target="schema_authority" url="SpecifyHelp//QueryBuilder/third_party.html#schema_authority"/>
    <mapID target="export_schema_map" url="SpecifyHelp//QueryBuilder/third_party.html#export_schema_map"/>
    <mapID target="delete_schema_map" url="SpecifyHelp//QueryBuilder/third_party.html#delete_schema_map"/>
-   <mapID target="guid" url="SpecifyHelp/Prefs/guid.html#guid"/>
-   <mapID target="guid" url="SpecifyHelp/Prefs/guid.html#guid"/>
-   <mapID target="automatic_guid" url="SpecifyHelp/Prefs/guid.html#automatic_guid"/>
    <mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
    <mapID target="third_party" url="SpecifyHelp/QueryBuilder/third_party.html#third_party"/>
    <mapID target="login_master" url="SpecifyHelp/login.html#login_master"/>
@@ -382,6 +374,11 @@
    <mapID target="wb_geolocate" url="SpecifyHelp/Workbench/BioGeomancer.html#wb_geolocate"/>      
    <mapID target="form_geolocate" url="SpecifyHelp/Data_Entry/Data_Entry.html#form_geolocate"/>
    <mapID target="attach_path" url="SpecifyHelp/Prefs/Attachments.html#attach_path"/>
-   <mapID target="attach_services" url="SpecifyHelp/Prefs/Attachments.html#attach_services"/>        
+   <mapID target="attach_services" url="SpecifyHelp/Prefs/Attachments.html#attach_services"/> 
+   <mapID target="Attach_Tools" url="SpecifyHelp/Prefs/attachments.html#attach_tools"/>
+   <mapID target="Attach_Browser" url="SpecifyHelp/Prefs/attachments.html#attach_browser"/>
+   <mapID target="Import_Attach" url="SpecifyHelp/Prefs/attachments.html#import_attach"/>
+   <mapID target="Import_Attachmap" url="SpecifyHelp/Prefs/attachments.html#import_attachmap"/>
+   <mapID target="about_specify" url="SpecifyHelp/Prefs/welcome.html#about_specify"/>           
                   
 </map>

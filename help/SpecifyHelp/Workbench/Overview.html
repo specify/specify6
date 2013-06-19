@@ -1,97 +1,180 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<head>
- <link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+  <head>
 
-<title>WorkBench Overview</title>
-
-<style type="text/css">
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <link href="../../main.css" rel="stylesheet" type="text/css"
+      media="screen">
+    <title>WorkBench Overview</title>
+    <style type="text/css">
 <!--
 ..style1 {font-style: italic}
 -->
 </style>
-</head>
-
-
-
-<body>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<H2>Welcome to the Specify 6 WorkBench</H2>
-<p>The WorkBench was released to the community as a stand along tool in the Spring of 2007. It was the result of many interviews and evalutaions that requested a tool for entering and cleaning data <em>before</em> it was cataloged into Specify. Some collections required such a tool for entering legacy data, others wanted a small, standalone tool to take in  the field and still others needed to manipulate their  data before cataloging it in Specify 6. </p>
-<p>The WorkBench was created to meet these specific needs within the community. As a pre-catalog data manipulation component in Specify 6, the WorkBench offers the following features: </p>
-<ul>
-  <li>Import from CSV or MS Excel files 
-  <li>Link an image to a record
-  <li>View and edit in either a grid or form view 
-  <li>Visualize georeferenced object information on a map or 
-  in Google Earth 
-  <li>Convert and standardize Latitude and Longitude formats 
-  <li>Georeference</li>
-  <li>Export a Data Set and reimport without needing to remap the Data Set</li>
-</ul>
-<p>The entire WorkBench is now part of Specify as well as a tool to upload the data within the WorkBench into Specify. The Upload function is not available from the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to remember the Data Set mapping. Data Sets imported into the 'embedded' Specify WorkBench from the stand alone WorkBench will need to be remapped. </p>
-<p>This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench.</p>
-<p>The WorkBench has a limit of 2000 records that can be uploaded at one time. </p>
-<h3><br>Using the WorkBench </h3>
-<p>The WorkBench works inside Specify 6 and takes advantage of the same components; side bar, dragging and dropping, tabs, etc. </p>
-<br>
-<h3>Introducing Data Sets</h3>
-<p>Data is entered, edited, organized and stored in a  Data Set. Data within a Data Set is organized within column headings. The WorkBench offers many features for manipulating the data within Data Sets before it is cataloged into Specify 6. </p>
-<p>One of the most important of these features is the organization of the data into Specify fields. This is not only necessary for other features in the WorkBench to function correctly, but also ensures that the data will upload correctly into Specify 6. The column headings for new Data Sets are chosen from a list of Specify fields corresponding to the Specify data model. The column headings can  be renamed, but will still maintain a link to the original Specify field. These links are referred to as 'maps'. These maps can also be edited. </p>
-<p>When data is imported from a CSV or MS Excel file, the WorkBench will read the existing column headings into a Data Set and map them to Specify fields with a built-in 'automapper'. Any column headings that the WorkBench does not recognize and 'automap' can be manually mapped and edited. </p>
-<p>Data Sets can be edited as either a grid or a form. </p>
-<p>The WorkBench  also enables  each record to link to an image within a Data Set. The linked images display in an image window. This is particularly useful for entering data from  scanned catalog cards or specimen labels. </p>
-<h4>&nbsp;</h4>
-<h4>Getting Started </h4>
-<p>Data Sets are created using different Actions depending on the Work Flow. The following table lists a variety of Work Flows and the relevant WorkBench solution: </p>
-<table width="75%" border="1" cellpadding="8">
-  
-  <tr>
-    <td align="left" valign="top">      <p align="left"><u><strong>Work Flow </strong></u></p></td>
-    <td align="left" valign="top">      <p align="left"><u><strong>Action</strong></u></p></td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I have data in an Excel spreadsheet.</td>
-    <td align="left" valign="top"> The "Import Data" action will import the data into a Data Set and map the existing columns to the Specify fields.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I have data in a database format.</td>
-    <td align="left" valign="top">Export the data as a CSV file and use the "Import Data" action to import the data into a Data Set and map the existing columns to Specify fields. </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I have legacy data (cards, labels, catalog pages) as images.</td>
-    <td align="left" valign="top">The "Import Images" action will create a Data Set with each card image linked to a single record. </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I have legacy data on physical cards, labels or catalog pages.</td>
-    <td align="left" valign="top">The "New Data Set" action will allow you to choose column headings from Specify fields and create a Data Set for entering your data. </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I have locality information on field notes.</td>
-    <td align="left" valign="top">The "New Data Set" action will allow you to choose column headings from Specify fields and create a Data Set for entering your data. </td>
-  </tr>
-  
-  <tr>
-    <td align="left" valign="top">I will be visiting a collaborating Institution and want to take my data with me.</td>
-    <td align="left" valign="top">Save the entire WorkBench Component and accompanying Data Sets onto a portable medium (USB key, CD, etc). </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I will be visiting a collaborating Institution and want to take my data with me but they use a Mac and I use a PC.</td>
-    <td align="left" valign="top">No problem! The WorkBench works the same on systems using Windows, Mac OS X as well as Linux. Simply save the entire WorkBench Component and accompanying Data Sets onto a USB key and run the  WorkBench on your associate's Macintosh.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">I will be visiting a collaborating Institution and want to  merge our data but their data is in Excel.</td>
-    <td align="left" valign="top">The "Export Data Set" action will export your data into an Excel spreadsheet, which can then be merged with their data. Thereafter, the file can be imported as a single Data Set into the WorkBench.</td>
-  </tr>
-  
-  <tr>
-    <td align="left" valign="top">I want to verify my data that exists in a non-Specify database.</td>
-    <td align="left" valign="top"><p>Export the data as a CSV file from your database and then use the "Import Data" action to import the data into a WorkBench Data Set by mapping the existing columns into Specify fields. Then you can use the reporting features to verify your data. </p></td>
-  </tr>
-</table>
-<p> </p>
-</body>
+  </head>
+  <body>
+    <table background="../../images/topbar.png" border="0" width="100%">
+      <tbody>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Welcome to the Specify 6 WorkBench</h2>
+    <p>The WorkBench was released to the community as a stand along tool
+      in the Spring of 2007. It was the result of many interviews and
+      evalutaions that requested a tool for entering and cleaning data <em>before</em>
+      it was cataloged into Specify. Some collections required such a
+      tool for entering legacy data, others wanted a small, standalone
+      tool to take in the field and still others needed to manipulate
+      their data before cataloging it in Specify 6. </p>
+    <p>The WorkBench was created to meet these specific needs within the
+      community. As a pre-catalog data manipulation component in Specify
+      6, the WorkBench offers the following features: </p>
+    <ul>
+      <li>Import from CSV or MS Excel files </li>
+      <li>Link an image to a record </li>
+      <li>View and edit in either a grid or form view </li>
+      <li>Visualize georeferenced object information on a map or in
+        Google Earth </li>
+      <li>Convert and standardize Latitude and Longitude formats </li>
+      <li>Georeference</li>
+      <li>Export a Data Set and reimport without needing to remap the
+        Data Set</li>
+    </ul>
+    <p>The entire WorkBench is now part of Specify as well as a tool to
+      upload the data within the WorkBench into Specify. The Upload
+      function is not available from the stand alone WorkBench. Data
+      Sets created using the stand alone version will need to be
+      exported and reimported into the Specify 6 WorkBench for
+      uploading. The current version of the stand alone WorkBench is not
+      able to remember the Data Set mapping. Data Sets imported into the
+      'embedded' Specify WorkBench from the stand alone WorkBench will
+      need to be remapped. </p>
+    <p>This makes the uploader a fast and easy way to transfer data from
+      an MS Excel or CSV file into Specify by first <a
+        href="../Workbench/ImportData.html">importing</a> the data into
+      the WorkBench.</p>
+    <p>The WorkBench has a limit of 4000 records that can be uploaded at
+      one time. </p>
+    <h3><br>
+      Using the WorkBench </h3>
+    <p>The WorkBench works inside Specify 6 and takes advantage of the
+      same components; side bar, dragging and dropping, tabs, etc. </p>
+    <br>
+    <h3>Introducing Data Sets</h3>
+    <p>Data is entered, edited, organized and stored in a Data Set. Data
+      within a Data Set is organized within column headings. The
+      WorkBench offers many features for manipulating the data within
+      Data Sets before it is cataloged into Specify 6. </p>
+    <p>One of the most important of these features is the organization
+      of the data into Specify fields. This is not only necessary for
+      other features in the WorkBench to function correctly, but also
+      ensures that the data will upload correctly into Specify 6. The
+      column headings for new Data Sets are chosen from a list of
+      Specify fields corresponding to the Specify data model. The column
+      headings can be renamed, but will still maintain a link to the
+      original Specify field. These links are referred to as 'maps'.
+      These maps can also be edited. </p>
+    <p>When data is imported from a CSV or MS Excel file, the WorkBench
+      will read the existing column headings into a Data Set and map
+      them to Specify fields with a built-in 'automapper'. Any column
+      headings that the WorkBench does not recognize and 'automap' can
+      be manually mapped and edited. </p>
+    <p>Data Sets can be edited as either a grid or a form. </p>
+    <p>The WorkBench also enables each record to link to an image within
+      a Data Set. The linked images display in an image window. This is
+      particularly useful for entering data from scanned catalog cards
+      or specimen labels. </p>
+    <h4>&nbsp;</h4>
+    <h4>Getting Started </h4>
+    <p>Data Sets are created using different Actions depending on the
+      Work Flow. The following table lists a variety of Work Flows and
+      the relevant WorkBench solution: </p>
+    <table border="1" cellpadding="8" width="75%">
+      <tbody>
+        <tr>
+          <td align="left" valign="top">
+            <p align="left"><u><strong>Work Flow </strong></u></p>
+          </td>
+          <td align="left" valign="top">
+            <p align="left"><u><strong>Action</strong></u></p>
+          </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I have data in an Excel
+            spreadsheet.</td>
+          <td align="left" valign="top"> The "Import Data" action will
+            import the data into a Data Set and map the existing columns
+            to the Specify fields.</td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I have data in a database
+            format.</td>
+          <td align="left" valign="top">Export the data as a CSV file
+            and use the "Import Data" action to import the data into a
+            Data Set and map the existing columns to Specify fields. </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I have legacy data (cards,
+            labels, catalog pages) as images.</td>
+          <td align="left" valign="top">The "Import Images" action will
+            create a Data Set with each card image linked to a single
+            record. </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I have legacy data on physical
+            cards, labels or catalog pages.</td>
+          <td align="left" valign="top">The "New Data Set" action will
+            allow you to choose column headings from Specify fields and
+            create a Data Set for entering your data. </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I have locality information on
+            field notes.</td>
+          <td align="left" valign="top">The "New Data Set" action will
+            allow you to choose column headings from Specify fields and
+            create a Data Set for entering your data. </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I will be visiting a
+            collaborating Institution and want to take my data with me.</td>
+          <td align="left" valign="top">Save the entire WorkBench
+            Component and accompanying Data Sets onto a portable medium
+            (USB key, CD, etc). </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I will be visiting a
+            collaborating Institution and want to take my data with me
+            but they use a Mac and I use a PC.</td>
+          <td align="left" valign="top">No problem! The WorkBench works
+            the same on systems using Windows, Mac OS X as well as
+            Linux. Simply save the entire WorkBench Component and
+            accompanying Data Sets onto a USB key and run the WorkBench
+            on your associate's Macintosh.</td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I will be visiting a
+            collaborating Institution and want to merge our data but
+            their data is in Excel.</td>
+          <td align="left" valign="top">The "Export Data Set" action
+            will export your data into an Excel spreadsheet, which can
+            then be merged with their data. Thereafter, the file can be
+            imported as a single Data Set into the WorkBench.</td>
+        </tr>
+        <tr>
+          <td align="left" valign="top">I want to verify my data that
+            exists in a non-Specify database.</td>
+          <td align="left" valign="top">
+            <p>Export the data as a CSV file from your database and then
+              use the "Import Data" action to import the data into a
+              WorkBench Data Set by mapping the existing columns into
+              Specify fields. Then you can use the reporting features to
+              verify your data. </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p> </p>
+  </body>
 </html>

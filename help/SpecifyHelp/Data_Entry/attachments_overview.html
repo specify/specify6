@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <link href="../../main.css" rel="stylesheet" type="text/css"
+      media="screen">
+    <title>Attachment Overview</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table background="../../images/topbar.png" border="0" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2> <a name="attach_general" id="attach_general"></a><img
+        src="../../images/record_sets_new.png" alt=""> Attachments</h2>
+    Specify allows several file types to be attached to records
+    <ul>
+      <li>text</li>
+      <li>audio</li>
+      <li>binary</li>
+      <li>pdf</li>
+      <li>image (jpg, png, gif, tiff)</li>
+      <li>html</li>
+      <li>spreadsheet</li>
+      <li>others</li>
+    </ul>
+    <h3>Attach Files</h3>
+    Files can be attached to records via the <a
+      href="../Data_Entry/Data_Entry.html">Form system</a>, <a
+      href="../Uploading/wb_uploader.html">WorkBench Uploads,</a> and,
+    available in Specify 6.5, group uploads using <a
+      href="../Attachments/attachment_tools.html">Attachment Tools</a>.
+    Attachment tools also includes an Attachment Browser that displays
+    all attachments within a single collection as thumbnails. The
+    attachment browser also offers access to additional attachment
+    information and its associated record. <br>
+    <h3><br>
+    </h3>
+    <h3>Store Attachments</h3>
+    Attachments are copied, renamed using a unique name, and stored in
+    an Attachment Storage location. Only the path to the attachment
+    storage location is stored in the Specify database. The Specify
+    Setup Wizard sets a default storage location on the local drive but
+    this location can be changed in System Preferences:<br>
+    <ul>
+      <li>For Mac: Specify &gt; Preferences &gt; System &gt; Attachment
+        Storage Location.</li>
+      <li>For PC and Linux: Choose Edit &gt; Preferences &gt; System
+        &gt; Attachment Storage Location.</li>
+    </ul>
+    <p>Attachments can be stored on a local hard drive, network drive or
+      an attachment server. Specify creates a directory named
+      'originals' for storing the attachment files, and a directory
+      named 'thumbnails' for storing the thumbnails it creates. These
+      directories are created within the specified attachment storage
+      directory.<br>
+    </p>
+    <p>When storing attachments on a local drive attachments may not be
+      shared. For example, if user1 attaches an image and stores it on
+      their local drive and user2 logs into the same collection, user2
+      will not be able to access the attachment. <br>
+    </p>
+    <p>Storing attachments on a network drive allows the attachment to
+      be shared. In the example above if the attachments are stored on a
+      network drive user2 can log into the original collection and view,
+      open and export attachments.<br>
+    </p>
+    <p>Museums with access to IT personnel may consider storing
+      attachments in an attachment server. This is an alternative to
+      storing attachments on a network drive and allows a web server
+      direct access to the attachment location.<br>
+    </p>
+    <p><br>
+    </p>
+    <h3>Change Computer/Backup Attachments</h3>
+    <p>Attachments are not stored in the database and therefore are not
+      included in a backup of a database. Only the path to the
+      attachment storage location is included in the database.
+      Attachments stored on a local hard drive should be backed up as
+      part of the local system backup procedure.<br>
+    </p>
+    <p>To access attachments on an alternate computer when the
+      attachment storage location is on a local hard drive will require
+      the attachment directory to be copied to the alternate computer.
+      Copy the attachment storage location/directory in the exact same
+      path on the new computer. For example: If John Smith is using
+      machineA but upgrades to machineB and his attachment storage path
+      is c:/users/john/myattachments he will need to copy the entire
+      myattachments directory from machineA to machineB and place the
+      myattachments directory in c:/users/john.<br>
+    </p>
+    <p>To access attachments on an alternate computer when the
+      attachment storage location is on either a shared network drive or
+      attachment server simply change the attachment path in the System
+      Preferences on the new computer.<br>
+    </p>
+    <p><br>
+    </p>
+    <p><br>
+    </p>
+    <p><br>
+      <br>
+    </p>
+  </body>
+</html>

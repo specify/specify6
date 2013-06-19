@@ -10,6 +10,7 @@
 			<tocitem text="Usage and Usability Statistics" target="PHUI" />
 			<tocitem text="Updating" target="Updating" />
 			<tocitem text="Using Specify Help" target="Using_Help" />
+			<tocitem text="About Specify" target="about_specify" />
 			<tocitem text="Contact Information" target="Contact_Information" />
 		</tocitem>
 		<tocitem text="Login to Specify" target="starting" />

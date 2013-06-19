@@ -1,457 +1,985 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Specify Setup Wizard</title>
-<style type="text/css">
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <link href="../../main.css" rel="stylesheet" type="text/css"
+      media="screen">
+    <title>Specify Setup Wizard</title>
+    <style type="text/css">
 <!--
 .style1 {color: #990066}
 .style2 {color: #000000; }
 -->
 </style>
-</head>
-
-<body bgcolor="#ffffff">
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<h2><img src="../../images/spwizard32.png" width="32" height="32" /> Specify Setup Wizard</h2>
-
-<p>The Specify Setup Wizard is required to customize the necessary components in MySQL for communication with Specify. It walks you through the creation of a database including; the insertion of a schema within MySQL, the creation of an administrative level  Specify user, and the initialization of the database structure. It also allows you to download the start of Taxon and Geography authority files.</p>
-<p>Before running the Specify 6.5 Setup Wizard to create a blank database for the full Specify application, MySQL must be installed. MySQL must include  an administrative (root) login account with all MySQL permissions.</p>
-<p>The Setup Wizard should NOT be run if a collection data already exists in Specify. It creates a new, blank database and will permanently erase all 
-existing data. The Wizard should only be run one time, for the initial Specify installation and setup, then can be deleted from your computer. If Specify 
-will be installed on a network server and run on several computers, the Setup Wizard should only be used to setup the database on the Network. DO NOT use the
- Setup Wizard on other computers, they only need to have Specify installed.</p>
-<p>Fields within the Wizard that must contain data before continuing to the next step in the Wizard are displayed in <strong>bold</strong> font.</p>
-<h4>MySQL requirements for creating a Specify database and Master credentials using the Specify Wizard</h4>
-<p>The first   Wizard window creates a blank Specify database within MySQL and inserts the schema (empty tables, fields and relationships) for the database. The second Wizard window creates a Specify Master username and password. The Specify Wizard can <strong>NOT</strong> be used to perform these two tasks if:</p>
-
-<ol type="I">
-  <li> The default data management engine for an existing MySQL installation is NOT InnoDB.</li>
-  <li>The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</li>
-  <li>You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</li>
-  </ol>
-  <blockquote>
-  <p><strong>I. </strong>The default data management engine for an existing MySQL installation is NOT InnoDB.</p>
-  
-  <ol>
-  <li>If your default MySQL engine is not InnoDB it can be changed using the guidelines found on the Specify website at: <a href="http://specifysoftware.org/content/changing-default-mysql-engine-innodb">http://specifysoftware.org/content/changing-default-mysql-engine-innodb</a>. </li>
-    <p>OR</p>
-    <p>If you are unable to change your default MySQL engine, you will need to create a blank Specify database   with MySQL's software tools and insert a Specify schema <em>before</em> running the Specify Setup Wizard. The Specify team provides both an explanation and script for performing these tasks from within MySQL on the Specify website at: <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
+  </head>
+  <body bgcolor="#ffffff">
+    <table background="../../images/topbar.png" border="0" width="100%">
+      <tbody>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2><img src="../../images/spwizard32.png" height="32" width="32">
+      Specify Setup Wizard</h2>
+    <p>The Specify Setup Wizard is required to customize the necessary
+      components in MySQL for communication with Specify. It walks you
+      through the creation of a database including; the insertion of a
+      schema within MySQL, the creation of an administrative level
+      Specify user, and the initialization of the database structure. It
+      also allows you to download the start of Taxon and Geography
+      authority files.</p>
+    <p>Before running the Specify 6.5 Setup Wizard to create a blank
+      database for the full Specify application, MySQL must be
+      installed. MySQL must include an administrative (root) login
+      account with all MySQL permissions.</p>
+    <p>The Setup Wizard should NOT be run if a collection data already
+      exists in Specify. It creates a new, blank database and will
+      permanently erase all existing data. The Wizard should only be run
+      one time, for the initial Specify installation and setup, then can
+      be deleted from your computer. If Specify will be installed on a
+      network server and run on several computers, the Setup Wizard
+      should only be used to setup the database on the Network. DO NOT
+      use the Setup Wizard on other computers, they only need to have
+      Specify installed.</p>
+    <p>Fields within the Wizard that must contain data before continuing
+      to the next step in the Wizard are displayed in <strong>bold</strong>
+      font.</p>
+    <h4>MySQL requirements for creating a Specify database and Master
+      credentials using the Specify Wizard</h4>
+    <p>The first Wizard window creates a blank Specify database within
+      MySQL and inserts the schema (empty tables, fields and
+      relationships) for the database. The second Wizard window creates
+      a Specify Master username and password. The Specify Wizard can <strong>NOT</strong>
+      be used to perform these two tasks if:</p>
+    <ol type="I">
+      <li> The default data management engine for an existing MySQL
+        installation is NOT InnoDB.</li>
+      <li>The Specify Setup will be on a dedicated server, or desktop
+        computer accessed by other desktops.</li>
+      <li>You wish to create your own database rather than use the
+        Wizard to create the Specify database and insert the schema.</li>
+    </ol>
     <blockquote>
-      <p><em><strong>Note:</strong></em> The MySQL step-by-step installation guide, located on the Specify web site, prompts users to designate InnoDB as the default data storage engine.  Institutions with legacy installations of MySQL may have originally configured  their system for a different data engine and may not be able to change the default storage engine to InnoDB; in this case, do not run the Wizard you have created a black Specify database using MySQL software tools and inserted a Specify schema. </p>
+      <p><strong>I. </strong>The default data management engine for an
+        existing MySQL installation is NOT InnoDB.</p>
+      <ol>
+        <li>If your default MySQL engine is not InnoDB it can be changed
+          using the guidelines found on the Specify website at: <a
+href="http://specifysoftware.org/content/changing-default-mysql-engine-innodb">http://specifysoftware.org/content/changing-default-mysql-engine-innodb</a>.
+        </li>
+        <p>OR</p>
+        <p>If you are unable to change your default MySQL engine, you
+          will need to create a blank Specify database with MySQL's
+          software tools and insert a Specify schema <em>before</em>
+          running the Specify Setup Wizard. The Specify team provides
+          both an explanation and script for performing these tasks from
+          within MySQL on the Specify website at: <a
+href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>.
+        </p>
+        <blockquote>
+          <p><em><strong>Note:</strong></em> The MySQL step-by-step
+            installation guide, located on the Specify web site, prompts
+            users to designate InnoDB as the default data storage
+            engine. Institutions with legacy installations of MySQL may
+            have originally configured their system for a different data
+            engine and may not be able to change the default storage
+            engine to InnoDB; in this case, do not run the Wizard you
+            have created a black Specify database using MySQL software
+            tools and inserted a Specify schema. </p>
+        </blockquote>
+        <li> Once a Specify database is created using the MySQL software
+          tools and a schema inserted by running the provided script,
+          run the Specify Wizard to create other necessary components of
+          the database. </li>
+        <br>
+        <li> When running the Specify Wizard, rather than creating the
+          database and inserting the schema in the first Wizard window,
+          you will verify that Specify can access your existing database
+          and schema in the <em>Advanced</em> section by clicking on
+          the <em>Test IT Login</em> button. </li>
+        <br>
+        <li>When accessing the database locally, the Wizard can be used
+          to create the Specify Master by clicking the <em>Create
+            Master User</em> on the second Wizard window. </li>
+        <p>OR</p>
+        <p>When accessing the database remotely please follow the steps
+          in procedure #2 below.</p>
+        <p>&nbsp;</p>
+      </ol>
+      <p><strong>II.</strong> The Specify Setup will be on a dedicated
+        server, or desktop computer accessed by other desktops.</p>
+      <ol>
+        <li>If the Specify database will be accessed by other 'client'
+          computers you will first need to manually create a Specify
+          Master username and password in MySQL before running the
+          Specify Wizard. Instrucions for setting up the Specify Master
+          username and password in MySQL can be found on the Specify
+          website at: <a
+            href="http://specifysoftware.org/content/specify-system-setup">http://specifysoftware.org/content/specify-system-setup</a>.</li>
+        <br>
+        <li>After reading the information on the website and creating
+          the Specify Master username and password in MySQL, run the
+          Specify Wizard and enter the MySQL information on the first
+          Wizard screen and click the <em>Create Specify Database</em>
+          button to create the database and insert the schema (unless
+          you have created a database using the MySQL tools in procedure
+          #1 above). </li>
+        <br>
+        <li>On the second Specify Wizard window enter the Specify Master
+          credentials, then click the <em>Test Master Login</em> button
+          to verify that the Specify Master credentials were created
+          from within MySQL.</li>
+      </ol>
+      <p>&nbsp;</p>
+      <p><strong>III.</strong> You wish to create your own database
+        rather than use the Wizard to create the Specify database and
+        insert the schema.</p>
+      <ol>
+        <li>If you wish to create your own Specify database and insert a
+          schema from within MySQL rather than using the Specify Wizard,
+          the Specify team provides both an explanation and script for
+          performing this task from within MySQL on the Specify website
+          at <a
+href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>.
+        </li>
+        <br>
+        <li>Once you have read the provided information and created your
+          Specify database and inserted the schema, run the Specify
+          Wizard. </li>
+        <br>
+        <li>On the first Wizard window, rather than creating the
+          database and inserting the schema, verify that Specify can
+          access your existing database and schema in the <em>Advanced</em>
+          section by clicking on the <em>Test IT Login</em> button. </li>
+        <br>
+        <li>When accessing the database locally, the Wizard can be used
+          to create the Specify Master by clicking the <em>Create
+            Master User</em> on the second Wizard window. </li>
+        <p>OR</p>
+        <p>When accessing the database remotely, please follow the steps
+          for #2 found above.</p>
+        <p>&nbsp;</p>
+      </ol>
     </blockquote>
-    <li> Once a Specify database is created using the MySQL software tools and a schema inserted by running the provided script, run the  Specify Wizard  to create other necessary components of the database. </li><br />
-    <li> When running the Specify Wizard, rather than creating the database and inserting the schema in the first Wizard window, you will verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </li><br />
-    <li>When accessing the database locally, the Wizard can be used to create the Specify Master by clicking the <em>Create Master User</em> on the second Wizard window. </li>
-    <p>OR</p>
-    <p>When accessing the database remotely please follow the steps in procedure #2 below.</p>
-    <p>&nbsp;</p>
-    </ol>
-  
-  <p><strong>II.</strong> The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</p>
-  
-    <ol>
-    <li>If the Specify database will be accessed by other 'client' computers you will first need to manually create a Specify Master username and password in MySQL before running the Specify Wizard. Instrucions for setting up the Specify Master username and password in MySQL can be found on the Specify website at: <a href="http://specifysoftware.org/content/specify-system-setup">http://specifysoftware.org/content/specify-system-setup</a>.</li><br />
-    <li>After reading the information on the website and creating the Specify Master username and password in MySQL, run the  Specify Wizard and enter the MySQL information on the first Wizard screen and click the <em>Create Specify Database</em> button to create the database and insert the schema (unless you have created a database using the MySQL tools in procedure #1 above). </li><br />
-    <li>On the second Specify Wizard window enter the Specify Master credentials, then click the <em>Test Master Login</em> button to verify that the Specify Master credentials were created from within MySQL.</li>
-    
-    </ol>
-    <p>&nbsp;</p>
-  
-  <p><strong>III.</strong> You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</p>
-  
-  <ol>
-    <li>If you wish to create your own Specify database and insert a schema from within MySQL rather than using the Specify Wizard, the Specify team provides both an explanation and script for performing this task from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </li><br />
-    <li>Once you have read the provided information and created your Specify database and inserted the schema, run the Specify Wizard. </li><br />
-    <li>On the first Wizard window, rather than creating the database and inserting the schema,  verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </li><br />
-    <li>When accessing the database locally, the Wizard can be used to create the Specify Master by clicking the <em>Create Master User</em> on the second Wizard window. </li>
-    <p>OR</p>
-    <p>When accessing the database remotely, please follow the steps for #2 found above.</p>
-    <p>&nbsp;</p>
-    </ol>
-  </blockquote>
-</blockquote>
-<h3>Running the Specify Setup Wizard</h3>
-<p><a name="mysql_username" id="mysql_username"></a><u><strong>Database Information</strong></u></p>
-<p align="center"><img src="../../images/window1.png" /></p>
-<p align="center"><span class="imgcaption">Enter MySQL IT Username and Password</span></p>
-<blockquote>
-  <p>The first window allows you to either create a Specify database or verify that Specify can access a database you have already created within MySQL. To create or verify a database, you must first complete the following information:</p>
-  <ul>
-    <li>The <strong>IT Username</strong> and <strong>IT Password</strong> must be an existing account with full administrator privileges in the MySQL database manager. This account will be used by the Specify Setup Wizard to create your Specify database and a Specify Master account (in the next window) in MySQL. If you do not know the IT administrator (&quot;root&quot;) account username and password for MySQL, or do not have a MySQL installation, exit now. You can not go further without these.    </li>
-  </ul>
+    <h3>Running the Specify Setup Wizard</h3>
+    <p><a name="mysql_username" id="mysql_username"></a><u><strong>Database
 
-  <ul>
-    <li>The <strong>Database Name</strong> will be used to name the database that the Setup Wizard is about to create. If you do not have an existing database but are using the Wizard to create one, you are creating this name as you type it into the window. Once you name the database make sure to document it so you can reference it if you need it at a later date.</li>
-  </ul>
-  <blockquote>
-    <p>If you have an existing database you must enter the name of the database in this text box so that the Wizard may verify that Specify can connect to the database before continuing with the Wizard. If you are testing an existing database be sure to click on the <em>Test IT Login</em> button to test the connection to your database. </p>
-  </blockquote>
-  <ul>
-    <li>The <strong>Host Name</strong> is the name of the computer that is running MySQL. This is either an IP Address  or name of the computer that is recognized by the server. When running MySQL on your local machine this is almost always 'localhost' or '127.0.0.1'.
+          Information</strong></u></p>
+    <p align="center"><img src="../../images/window1.png"></p>
+    <p align="center"><span class="imgcaption">Enter MySQL IT Username
+        and Password</span></p>
+    <blockquote>
+      <p>The first window allows you to either create a Specify database
+        or verify that Specify can access a database you have already
+        created within MySQL. To create or verify a database, you must
+        first complete the following information:</p>
+      <ul>
+        <li>The <strong>IT Username</strong> and <strong>IT Password</strong>
+          must be an existing account with full administrator privileges
+          in the MySQL database manager. This account will be used by
+          the Specify Setup Wizard to create your Specify database and a
+          Specify Master account (in the next window) in MySQL. If you
+          do not know the IT administrator ("root") account username and
+          password for MySQL, or do not have a MySQL installation, exit
+          now. You can not go further without these. </li>
+      </ul>
+      <ul>
+        <li>The <strong>Database Name</strong> will be used to name the
+          database that the Setup Wizard is about to create. If you do
+          not have an existing database but are using the Wizard to
+          create one, you are creating this name as you type it into the
+          window. Once you name the database make sure to document it so
+          you can reference it if you need it at a later date.</li>
+      </ul>
       <blockquote>
-        <p><em><strong>Note:</strong></em> When using an IP Address make sure that the IP is 'static'. </p>
+        <p>If you have an existing database you must enter the name of
+          the database in this text box so that the Wizard may verify
+          that Specify can connect to the database before continuing
+          with the Wizard. If you are testing an existing database be
+          sure to click on the <em>Test IT Login</em> button to test
+          the connection to your database. </p>
       </blockquote>
-    </li>
-    <li><strong>Create a Specify Database</strong>
-        <blockquote>
-          <p>When you click the <em>Create Specify Database</em> button Specify will connect to MySQL using the information you have entered, create your Specify database, and insert the Specify schema. If Specify can not connect to MySQL and build the database for any reason a message will display. To proceed in the Wizard you will need to verify that the information entered and your MySQL setup are correct.</p>
-        </blockquote>
-    </li>
-    <li><strong>Advanced: Test IT Login</strong>
-        <blockquote>
-          <p>If a Specify database exists withing MySQL you must verify it before proceeding in the Wizard. Enter your database information, then click the <em>Test IT Login</em> button in the Advanced section of the window. The Wizard will verify that Specify can connect to your existing database. If Specify can not connect to the existing database you may not proceed within the Wizard using the existing database.</p>
-        </blockquote>
-    </li>
-  </ul>
-  <p>&nbsp;</p>
-</blockquote>
-<p><a name="master_username" id="master_username"></a><u><strong>Specify Master Credentials</strong></u></p>
-<p align="center"><img src="../../images/window2.png"/></p>
-<p align="center"><span class="imgcaption">Create a Master Username and Password</span></p>
-<p>&nbsp;</p>
-<blockquote>
-  <p>The security system for Specify 6 uses both a &quot;Master&quot; username and password, which Specify uses to access  the MySQL Database, as well as a User username and password, which allows a user to run the Specify program. The Master account has SELECT, INSERT, UPDATE,  DELETE and TABLE LOCK privileges on data tables in your Specify database only and has no other MySQL privileges. Specify uses only one Master username and password for all users, but encrypts the Master password with the User information, creating an encrypted string. This allows the Master information to become unique for each user. </p>
-  <p>This window either creates the Master username and password for your Specify system, or verifies that a Master username and password that has already been created within MySQL is recognized by Specify. Any instance of Specify that does not access MySQL on the local machine, (uses a remote server), must create the Master username and password using the MySQL Admin. tool. Instructions for setting up the Specify Master username and password in MySQL can be found on the Specify website at<a href="http://specifysoftware.org/content/specify-system-setup"> http://specifysoftware.org/content/specify-system-setup</a>.</p>
-  <p>When creating the Master username and password, the word &quot;Master&quot; or &quot;Root&quot; SHOULD NOT BE USED. Please create a unique Master username and  a secure, strong password for it. This should not be the same as the username and password used for the MySQL IT account in the previous window. This information should be remembered and secured by the person installing MySQL and Specify at your institution. The Specify administrator,  (a role and  account within Specify), will need the Master username and password to create new user accounts in Specify. </p>
-  <p>Also, the &quot;Master&quot; username and password should not be used as a Specify user account name within Specify.  Whichever username and password you choose for the Master account, that username and password is never used to log in to Specify. This &quot;Master&quot; username and password should ALWAYS be unique. Do not use this username and password for any other accounts in MySQL or Specify.</p>
-  <blockquote>
-    <p><strong>Create the Master</strong></p>
-    <p>When you click the <em>Create Master User</em> button Specify will take a moment to create the Master account in the database. Once this account has been created you may not change the information on this screen, or  any previous screens.</p>
-    <p><strong>Advanced: Test the Master</strong></p>
-    <p>Click the <em>Test Master Login</em> button to verify that Specify can connect to the Specify database using the existing master credentials that you have previously created in the MySQL command line tool. </p>
-  </blockquote>
-</blockquote>
-<p><a name="security_on" id="security_on"></a><strong><u>Security</u></strong></p>
-<p align="center"><img src="../../images/window_security.png"/></p>
-<p align="center" class="imgcaption">Turn Security On/Off</p>
-<blockquote>
-  <p align="left">Specify Security refers to the set of permissions and entitlements within Specify which gives users the rights to see certain data and to use particular functions. If your Specify database will never have more than one user, (you), then Security (i.e. permissions within Specify), can be turned off. This will give you total access to all Specify program functions and data. Specify will not check your credentials or limit your access to data or Specify components.</p>
-  <p align="left">If you will be creating multiple users within Specify it is recommended that you turn security on. </p>
-  <p align="left">Security can be turned on or off inside the Specify application.</p>
-</blockquote>
-<p align="left">&nbsp;</p>
-<p align="left"><a name="create_it_user" id="create_it_user"></a><strong><u>Manager</u></strong></p>
-<p align="center"><img src="../../images/window3.png"/></p>
-<p align="center"><span class="imgcaption">Create Specify Manager / Administrator</span></p>
-<p>&nbsp;</p>
-<blockquote>
-  <p>This account is the first Specify user account for your database, and is  created at the level of Manager, the highest  level in the  Specify permission model. The account usually represents the primary user, or administrator, of your collection database. An Administrator account will also be created within Specify using this information.    It is this username and password that will be used to log in to Specify for the first time, once this Setup Wizard is finished. At that time additional users can be added within Specify. </p>
-  <p>Protect the username and make the password strong. This Specify manager level information will  also be used to create a record in the Specify database for an &lsquo;Agent&rsquo; representing the same person. </p>
-</blockquote>
-<p>&nbsp;</p>
-<p><a name="create_institution" id="create_institution"></a><u><strong>Institution</strong></u></p>
-<p align="center"><img src="../../images/window_inst.png"/></p>
-<p align="center"><span class="imgcaption">Create Institution and Enter Information</span></p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">The Specify data management levels mimic  the common levels of hierarchy within institutions. Access to information and Specify tools are then set at the various levels both within the application and through the User Permissions. </p>
-  <p align="left">The Setup Wizard creates a single entry for each level of the hierarchy (Institution, Division, Discipline and Collection).  This setup window is the first step in that process. Each of the screens for creating these levels must be completed before the <em>Next</em> button will become enabled.</p>
-  <ul>
-    <li>The <strong>Name</strong> should be the formal name for your institution. It is a field within the Specify database, is displayed on the Institution form, and can be queried and used in reports. </li><br />
-    <li>The <strong>Code</strong> is typically an acronym, codon, abbreviation or short name for your institution (not your collection), if you don't know of one, put in a placeholder, this can be edited at a later date. Institution codes are often required for web services such as DiGIR/TAPIR.</li><br />
-    <li>The <strong>Institution Address</strong> information, such as <strong>City</strong>, <strong>State</strong>, <strong>Country</strong>, <strong>Zip Code</strong> and <strong>Phone Number</strong>, is also added to fields within the Specify database and displayed on the Institution form and can be queried and used in reports.</li>
-  </ul>
-  <p align="left">&nbsp;</p>
-</blockquote>
-<p align="left"><a name="choose_accession_level" id="choose_accession_level"></a><u><strong>Accessions</strong></u></p>
-<p align="center"><img src="../../images/window4.png"/></p>
-<p align="center" class="imgcaption">Choose Accession Level</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">Accessioning is the formal process by which a specimen or object is legally accepted and recorded as a museum item and differs from cataloging.  Some museums and herbaria have a formal accessioning process, some do not. If your institution does not use the concept of accessions (typically handled by a registrar or administrative curator), then leave this item unchecked and simply click the <em>Next</em> button to proceed to the next window.</p>
-  <p align="left">For organizations that do recognize accessions, the process usually entails documenting  proof of ownership (in the form of a signed deed of gift), and that the material was legally acquired (in the form of all associated permits - collecting, import and export). An accession usually covers an entire field trip and multiple catalog items could be included within a single accession.  For the institutions that use it, accessioning and its associated numbering system is usually set up as a standard museum-wide process, backed by policy.  </p>
-  <p align="left">The accession numbering scheme or sequence can either be recorded  at an Institution level for all collections (Globally) or at a Division level. The way to do this within Specify is based on whether your institution has  staff which manage all accession transactions for your institution, like a Registrar, or if accessions and accession numbers will be managed and assigned  within one or more separate Divisions within the Institution.  Again, if you do not use accessions, this choice can be ignored.  Assigning accessions to be managed &quot;globally&quot; across the entire organization will ensure that accession numbers and records are unique across all collections for the entire institution.</p>
-  <blockquote>
-    <p align="left"><em><strong>Note:</strong></em> If you choose to manage your accessions globally you will be presented with the following window to choose a format. If you did not choose to manage your Accessions globally you will be presented with the window later in the Wizard process when you create a Collection.</p>
-  </blockquote>
-  <p align="left">&nbsp;</p>
-</blockquote>
-<a name="create_accession_number" id="create_accession_number"></a><u><strong>Accession Number Format</strong></u>
-<p align="center"><img src="../../images/window5.png"/></p>
-<p align="center" class="imgcaption">Create Accession Number Format</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">Accession Numbers may require a format or may simply use a number. Choose <em>None</em> to leave the Accession Number as a text field on the Accession form. Accession Number formats are not editable once data has been entered into this table in the database.</p>
-  <ul>
-    <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
+      <ul>
+        <li>The <strong>Host Name</strong> is the name of the computer
+          that is running MySQL. This is either an IP Address or name of
+          the computer that is recognized by the server. When running
+          MySQL on your local machine this is almost always 'localhost'
+          or '127.0.0.1'.
+          <blockquote>
+            <p><em><strong>Note:</strong></em> When using an IP Address
+              make sure that the IP is 'static'. </p>
+          </blockquote>
+        </li>
+        <li><b>Database Structure Creation Only</b> should not be
+          checked unless you have received a conversion database from
+          the Specify team and specific instructions check this box.</li>
+        <li><strong>Create a Specify Database</strong>
+          <blockquote>
+            <p>When you click the <em>Create Specify Database</em>
+              button Specify will connect to MySQL using the information
+              you have entered, create your Specify database, and insert
+              the Specify schema. If Specify can not connect to MySQL
+              and build the database for any reason a message will
+              display. To proceed in the Wizard you will need to verify
+              that the information entered and your MySQL setup are
+              correct.</p>
+          </blockquote>
+        </li>
+        <li><strong>Advanced: Test IT Login</strong>
+          <blockquote>
+            <p>If a Specify database exists withing MySQL you must
+              verify it before proceeding in the Wizard. Enter your
+              database information, then click the <em>Test IT Login</em>
+              button in the Advanced section of the window. The Wizard
+              will verify that Specify can connect to your existing
+              database. If Specify can not connect to the existing
+              database you may not proceed within the Wizard using the
+              existing database.</p>
+          </blockquote>
+        </li>
+      </ul>
+      <p>&nbsp;</p>
+    </blockquote>
+    <p><a name="master_username" id="master_username"></a><u><strong>Specify
+
+          Master Credentials</strong></u></p>
+    <p align="center"><img src="../../images/window2.png"></p>
+    <p align="center"><span class="imgcaption">Create a Master Username
+        and Password</span></p>
+    <p>&nbsp;</p>
+    <blockquote>
+      <p>The security system for Specify 6 uses both a "Master" username
+        and password, which Specify uses to access the MySQL Database,
+        as well as a User username and password, which allows a user to
+        run the Specify program. The Master account has SELECT, INSERT,
+        UPDATE, DELETE and TABLE LOCK privileges on data tables in your
+        Specify database only and has no other MySQL privileges. Specify
+        uses only one Master username and password for all users, but
+        encrypts the Master password with the User information, creating
+        an encrypted string. This allows the Master information to
+        become unique for each user. </p>
+      <p>This window either creates the Master username and password for
+        your Specify system, or verifies that a Master username and
+        password that has already been created within MySQL is
+        recognized by Specify. Any instance of Specify that does not
+        access MySQL on the local machine, (uses a remote server), must
+        create the Master username and password using the MySQL Admin.
+        tool. Instructions for setting up the Specify Master username
+        and password in MySQL can be found on the Specify website at<a
+          href="http://specifysoftware.org/content/specify-system-setup">
+          http://specifysoftware.org/content/specify-system-setup</a>.</p>
+      <p>When creating the Master username and password, the word
+        "Master" or "Root" SHOULD NOT BE USED. Please create a unique
+        Master username and a secure, strong password for it. This
+        should not be the same as the username and password used for the
+        MySQL IT account in the previous window. This information should
+        be remembered and secured by the person installing MySQL and
+        Specify at your institution. The Specify administrator, (a role
+        and account within Specify), will need the Master username and
+        password to create new user accounts in Specify. </p>
+      <p>Also, the "Master" username and password should not be used as
+        a Specify user account name within Specify. Whichever username
+        and password you choose for the Master account, that username
+        and password is never used to log in to Specify. This "Master"
+        username and password should ALWAYS be unique. Do not use this
+        username and password for any other accounts in MySQL or
+        Specify.</p>
       <blockquote>
-        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p>
-        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
-        <p align="left"><strong>Accession Number</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
-        <p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
-        <p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+        <p><strong>Create the Master</strong></p>
+        <p>When you click the <em>Create Master User</em> button
+          Specify will take a moment to create the Master account in the
+          database. Once this account has been created you may not
+          change the information on this screen, or any previous
+          screens.</p>
+        <p><strong>Advanced: Test the Master</strong></p>
+        <p>Click the <em>Test Master Login</em> button to verify that
+          Specify can connect to the Specify database using the existing
+          master credentials that you have previously created in the
+          MySQL command line tool. </p>
       </blockquote>
-    </li>
-    <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
-  </ul>
+    </blockquote>
+    <p><a name="security_on" id="security_on"></a><strong><u>Security</u></strong></p>
+    <p align="center"><img src="../../images/window_security.png"></p>
+    <p class="imgcaption" align="center">Turn Security On/Off</p>
+    <blockquote>
+      <p align="left">Specify Security refers to the set of permissions
+        and entitlements within Specify which gives users the rights to
+        see certain data and to use particular functions. If your
+        Specify database will never have more than one user, (you), then
+        Security (i.e. permissions within Specify), can be turned off.
+        This will give you total access to all Specify program functions
+        and data. Specify will not check your credentials or limit your
+        access to data or Specify components.</p>
+      <p align="left">If you will be creating multiple users within
+        Specify it is recommended that you turn security on. </p>
+      <p align="left">Security can be turned on or off inside the
+        Specify application.</p>
+    </blockquote>
+    <p align="left">&nbsp;</p>
+    <p align="left"><a name="create_it_user" id="create_it_user"></a><strong><u>Manager</u></strong></p>
+    <p align="center"><img src="../../images/window3.png"></p>
+    <p align="center"><span class="imgcaption">Create Specify Manager /
+        Administrator</span></p>
+    <p>&nbsp;</p>
+    <blockquote>
+      <p>This account is the first Specify user account for your
+        database, and is created at the level of Manager, the highest
+        level in the Specify permission model. The account usually
+        represents the primary user, or administrator, of your
+        collection database. An Administrator account will also be
+        created within Specify using this information. It is this
+        username and password that will be used to log in to Specify for
+        the first time, once this Setup Wizard is finished. At that time
+        additional users can be added within Specify. </p>
+      <p>Protect the username and make the password strong. This Specify
+        manager level information will also be used to create a record
+        in the Specify database for an ‘Agent’ representing the same
+        person. </p>
+    </blockquote>
+    <p>&nbsp;</p>
+    <p><a name="create_institution" id="create_institution"></a><u><strong>Institution</strong></u></p>
+    <p align="center"><img src="../../images/window_inst.png"></p>
+    <p align="center"><span class="imgcaption">Create Institution and
+        Enter Information</span></p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">The Specify data management levels mimic the
+        common levels of hierarchy within institutions. Access to
+        information and Specify tools are then set at the various levels
+        both within the application and through the User Permissions. </p>
+      <p align="left">The Setup Wizard creates a single entry for each
+        level of the hierarchy (Institution, Division, Discipline and
+        Collection). This setup window is the first step in that
+        process. Each of the screens for creating these levels must be
+        completed before the <em>Next</em> button will become enabled.</p>
+      <ul>
+        <li>The <strong>Name</strong> should be the formal name for
+          your institution. It is a field within the Specify database,
+          is displayed on the Institution form, and can be queried and
+          used in reports. </li>
+        <br>
+        <li>The <strong>Code</strong> is typically an acronym, codon,
+          abbreviation or short name for your institution (not your
+          collection), if you don't know of one, put in a placeholder,
+          this can be edited at a later date. Institution codes are
+          often required for web services such as DiGIR/TAPIR.</li>
+        <br>
+        <li>The <strong>Institution Address</strong> information, such
+          as <strong>City</strong>, <strong>State</strong>, <strong>Country</strong>,
+          <strong>Zip Code</strong> and <strong>Phone Number</strong>,
+          is also added to fields within the Specify database and
+          displayed on the Institution form and can be queried and used
+          in reports.</li>
+      </ul>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <p align="left"><a name="choose_accession_level"
+        id="choose_accession_level"></a><u><strong>Accessions</strong></u></p>
+    <p align="center"><img src="../../images/window4.png"></p>
+    <p class="imgcaption" align="center">Choose Accession Level</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">Accessioning is the formal process by which a
+        specimen or object is legally accepted and recorded as a museum
+        item and differs from cataloging. Some museums and herbaria have
+        a formal accessioning process, some do not. If your institution
+        does not use the concept of accessions (typically handled by a
+        registrar or administrative curator), then leave this item
+        unchecked and simply click the <em>Next</em> button to proceed
+        to the next window.</p>
+      <p align="left">For organizations that do recognize accessions,
+        the process usually entails documenting proof of ownership (in
+        the form of a signed deed of gift), and that the material was
+        legally acquired (in the form of all associated permits -
+        collecting, import and export). An accession usually covers an
+        entire field trip and multiple catalog items could be included
+        within a single accession. For the institutions that use it,
+        accessioning and its associated numbering system is usually set
+        up as a standard museum-wide process, backed by policy. </p>
+      <p align="left">The accession numbering scheme or sequence can
+        either be recorded at an Institution level for all collections
+        (Globally) or at a Division level. The way to do this within
+        Specify is based on whether your institution has staff which
+        manage all accession transactions for your institution, like a
+        Registrar, or if accessions and accession numbers will be
+        managed and assigned within one or more separate Divisions
+        within the Institution. Again, if you do not use accessions,
+        this choice can be ignored. Assigning accessions to be managed
+        "globally" across the entire organization will ensure that
+        accession numbers and records are unique across all collections
+        for the entire institution.</p>
+      <blockquote>
+        <p align="left"><em><strong>Note:</strong></em> If you choose to
+          manage your accessions globally you will be presented with the
+          following window to choose a format. If you did not choose to
+          manage your Accessions globally you will be presented with the
+          window later in the Wizard process when you create a
+          Collection.</p>
+      </blockquote>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <a name="create_accession_number" id="create_accession_number"></a><u><strong>Accession
 
-  <ul>
-    <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
-  </ul>
-  <p align="left">&nbsp;</p>
-</blockquote>
-<p align="left"><a name="configure_storage_tree" id="configure_storage_tree"></a><u><strong>Storage Tree</strong></u></p>
-<p align="center"><img src="../../images/window6.png"/></p>
-<p align="center" class="imgcaption">Configure the Storage Tree</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">Specify 6 visually presents some data  types in hierarchical tree displays. These data types include the Taxon, Geography, (Specimen) Storage, Chronostratigraphy and Lithostratigraphy tables. Each tree is visualy displayed as heirarchical levels. The Levels must first be defined in a tree definition, then nodes can be added. The Setup Wizard offers a table  for each of the trees (Chronostratigraphy and Lithostratigraphy for paleo collections only) for creating  tree definitions, or levels. These can also be edited at a later date from within Specify. </p>
-  <p align="left">Nodes for the Storage tree can be added within the Specify application. The storage tree operates at the Institution level and is available and visible to all Collections. </p>
-  <ul>
-    <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. Therefore, it is important to include the necessary levels for all collection.</li>
-  </ul>
-
-  <ul>
-    <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree levels that are used by Specify as a system requirement. These are automatically added to the tree and can not be deleted on this screen or later from within Specify.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is Enforced</strong> ensures that  the level can not be skipped when adding nodes at lower levels down the tree. Levels that are Required by the system are also Enforced by the system and can not be edited. </li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is in Full Name</strong> includes the level when building a full name expression, which can be queried and used in reports. Create the full name by checking the desired boxes. This is the string that will be displayed in the storage field in the preparation table. <br />
-      <br />
-      <u>At least one level for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
-      </u><br />
-    </li>
-    <li><strong align="left">Separator</strong> refers to the character that separates the levels when displaying the full name. This can be any single character, such as a comma (,) or a space. To make the separator a space simply double click inside the column and delete the comma, then press your spacebar once.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
-  </ul>
-</blockquote>
-<p>&nbsp;</p>
-<p><strong><a id="institution" name="institution"><u>Create Institution</u></a></strong></p>
-<p align="center"><img src="../../images/window7.png"/></p>
-<p align="center" class="imgcaption">Create Institution and the Administrator</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">Click the <strong><em>Create Institution</em></strong> button to create your institution and add you as Administrator in your Specify database. Once this information has been created you may not change it on any of the previous screens and the <em>Back</em> button will become disabled.</p>
-  <p align="left">The Institution must be created before the <em>Next</em> button will become enabled.</p>
-</blockquote>
-<ul>
-  <br />
-</ul>
-<p align="left"><a name="enter_division" id="enter_division"></a><strong><u>Division</u></strong></p>
-<p align="center"><img src="../../images/window8.png"/></p>
-<p align="center" class="imgcaption">Create a Division</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">This window is used to create a single Division within your institutional hierarchy. Additional divisions can be added later from within Specify.</p>
-  <ul>
-    <li>The <strong>Name</strong> will appear on the division form and  can be queried and used in reports. A division is used to collectively name similar collections e.g. the Division of Peleontology may include Vertebrate Paleontology, Invertebrate Peleontology and Peleobotany collections. The Name is a field within the Specify database and is displayed on the Institution form. It can be edited, queried and used in reports. </li><br />
-    <li>The <strong>Code</strong> can be a short name, acronym, codon or abbreviation. If your Division does not have a Code, put in a placeholder, this can be edited at a later date. Division codes are sometimes required for web services.</li>
-  </ul>
-  <p align="left">&nbsp;</p>
-</blockquote>
-<p><a name="choose_discipline_type" id="choose_discipline_type"></a><strong><u>Discipline</u></strong></p>
-<p align="center" class="style1"><img src="../../images/window9.png"/></p>
-<p align="center" class="imgcaption">Choose a Discipline Type</p>
-<p align="left">&nbsp;</p>
-<ul>
-  <li>Choose a taxonomic <strong>Discipline Type</strong> from the drop-down menu. Specify uses this information to load the correct default data entry Forms, Trees and schema (tables and fields) based on the predefined disciplines within Specify. If your discipline type does not appear in the list, choose the closest discipline to yours based on taxonomic qualities.</li><br />
-  <li>The <strong>Name</strong> is pre-filled with the discipline type name but can be any user specific variation of the Discipline Type. It can be edited, queried and used in reports. Additional Disciplines can be added from within Specify.</li>
-</ul>
-<blockquote>
-  <p align="left">&nbsp;</p>
-</blockquote>
-<p><a name="configure_taxon_tree" id="configure_taxon_tree"></a><u><strong>Taxon Tree</strong></u></p>
-<p align="center"><img src="../../images/window10.png" width="430" height="328" /></p>
-<p align="center" class="imgcaption">Configure the Taxon Tree</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">This table will create the tree definition for the Taxon tree. The Taxon tree operates at the Discipline level and will be used by all Collections within the Discipline you created in the last window. Nodes to the Taxon tree can be added later from within Specify.</p>
-  <ul>
-    <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the Level in the tree. </li>
-  </ul>
-  <ul>
-    <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree Levels that are used by Specify as a system requirement. These are automatically added to the tree and can not be deleted on this screen or later.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is Enforced</strong> ensures that  the Level can not be skipped when adding nodes lower down the tree.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is in Full Name</strong> includes the level when building a full name expression for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports when the full name is desired. The full name generally includes at least the binomial Genus and Species fields together with any levels below species (if used). Create the full name by checking the desired boxes.<br />
-      <u><br />
-      At least one level for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
-      </u><br />
-      <br />
-    </li>
-    <li><strong align="left">Separator</strong> refers to the character that separates the levels when displaying the full name. This can be any single character, such as a comma (,) or a space. To make the separator a space simply double click inside the column and delete the comma, then press your spacebar one time.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
-  </ul>
-</blockquote>
-<p>&nbsp;</p>
-<p><a name="preload_taxon" id="preload_taxon"></a><u><strong>Taxon Authority File</strong></u><br />
-</p>
-<p align="center"><img src="../../images/window11.png"/></p>
-<p align="center" class="imgcaption">Preload Taxon Records/Nodes</p>
-<p>&nbsp;</p>
-<blockquote>
-  <p>The Specify Wizard not only defines the Taxon tree but also allows pre-loading of an authority file for the discipline you are creating. <span class="style2">Authority files were created using data from the </span> Catalog of Life Project for some of the disciplines within Specify. If this window does not appear, there are no existing authority files for your chosen discipline. </p>
-  <p>If  you choose to load the data into your tree the Taxon tree  will be populated with hundreds of taxon nodes and all associated data. Then, when adding Collection Objects into your database you can simply choose a taxon from the Taxon field rather than adding each individually as needed.</p>
-  <p>Please note that loading the Taxon tree will also affect the tree definition. If you load the provided Taxon authority file for your discipline the accompanying tree definition may include Levels that were not defined by you in the previous window, but are necessary to include all the predefined Taxon information.</p>
-  <p>Additional discipline-specific trees can be loaded from within Specify at the time new disciplines are created.</p>
-</blockquote>
-<ul>
-  <li>Click the <strong><em>Choose</em></strong> button for a list of taxon files for the discipline you are creating. Not all disciplines offer more than one taxon file. Once the taxon file is chosen, information will display in the <strong>Source</strong>, <strong>Coverage</strong> and <strong>Description</strong> fields for that file. </li>
-</ul>
-<blockquote>
-  <blockquote>
+        Number Format</strong></u>
+    <p align="center"><img src="../../images/window5.png"></p>
+    <p class="imgcaption" align="center">Create Accession Number Format</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">Accession Numbers may require a format or may
+        simply use a number. Choose <em>None</em> to leave the
+        Accession Number as a text field on the Accession form.
+        Accession Number formats are not editable once data has been
+        entered into this table in the database.</p>
+      <ul>
+        <li><strong align="left">Format</strong> offers several choices
+          in the drop-down menu list:
+          <blockquote>
+            <p align="left"><strong>None</strong> is the default
+              setting, which is a 60 character string field.</p>
+            <p align="left"><strong>Create</strong> allows you to create
+              your own format. Choosing Create will open the Field
+              Formatting Editor. Click <a
+                href="../Security/Field_Format_Editor.html">HERE</a> for
+              the Field Formatting Editor help page. </p>
+            <p align="left"><strong>Accession Number</strong>
+              (2009-AA-###) The year will appear automatically in the
+              first section (2009) of the format, and can also be
+              manually edited. The 'AA' section of the format is
+              alphanumeric and accepts both characters <em>a</em>
+              through <em>z</em> and numbers. The ### section of the
+              format is a number that is automatically incremented when
+              Auto Numbering is turned on in Specify and manually
+              entered when Auto Numbering is turned off. This format
+              offers two alphanumeric characters and three incremented
+              numbers. </p>
+            <p align="left"><strong>AccessionNumberByYear</strong>
+              (2009-AA-AAA) The year will appear automatically in the
+              first section (2009) of the format, and can also be
+              manually edited. The 'A' sections of the format are
+              alphanumeric and accept both characters <em>a</em>
+              through <em>z</em> and numbers. This format offers two
+              alphanumeric sections, the first is two characters in
+              length and the second is three characters in length.</p>
+            <p align="left"><strong>AccessionStringFormatter</strong>
+              (AAAAAA) This is a single alphanumeric format that accepts
+              characters <em>a</em> through <em>z</em> and numbers.
+              The Accession number would be seven characters in length.</p>
+          </blockquote>
+        </li>
+        <li><strong>Pattern</strong> displays the pattern used to create
+          each format (these are explained in further detail above).</li>
+      </ul>
+      <ul>
+        <li><strong>Is Auto Incremented</strong> displays a 'yes' if the
+          format is automatically incremented.</li>
+      </ul>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <p align="left"><a name="configure_storage_tree"
+        id="configure_storage_tree"></a><u><strong>Storage Tree</strong></u></p>
+    <p align="center"><img src="../../images/window6.png"></p>
+    <p class="imgcaption" align="center">Configure the Storage Tree</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">Specify 6 visually presents some data types in
+        hierarchical tree displays. These data types include the Taxon,
+        Geography, (Specimen) Storage, Chronostratigraphy and
+        Lithostratigraphy tables. Each tree is visualy displayed as
+        heirarchical levels. The Levels must first be defined in a tree
+        definition, then nodes can be added. The Setup Wizard offers a
+        table for each of the trees (Chronostratigraphy and
+        Lithostratigraphy for paleo collections only) for creating tree
+        definitions, or levels. These can also be edited at a later date
+        from within Specify. </p>
+      <p align="left">Nodes for the Storage tree can be added within the
+        Specify application. The storage tree operates at the
+        Institution level and is available and visible to all
+        Collections. </p>
+      <ul>
+        <li>The <strong>Level</strong> column displays the available
+          levels. This name can be edited from within Specify. Click the
+          <em>Include</em> box to place the level in the tree.
+          Therefore, it is important to include the necessary levels for
+          all collection.</li>
+      </ul>
+      <ul>
+        <li><strong>Include</strong> places the Level in the tree
+          definition. Levels that are not included can not be Enforced
+          or added to the Full Name.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is Required</strong> is not editable,
+          but an indication of the tree levels that are used by Specify
+          as a system requirement. These are automatically added to the
+          tree and can not be deleted on this screen or later from
+          within Specify.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is Enforced</strong> ensures that the
+          level can not be skipped when adding nodes at lower levels
+          down the tree. Levels that are Required by the system are also
+          Enforced by the system and can not be edited. </li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is in Full Name</strong> includes the
+          level when building a full name expression, which can be
+          queried and used in reports. Create the full name by checking
+          the desired boxes. This is the string that will be displayed
+          in the storage field in the preparation table. <br>
+          <br>
+          <u>At least one level for Full Name must be checked before the
+            <em>Next</em> button will become enabled.<br>
+          </u><br>
+        </li>
+        <li><strong align="left">Separator</strong> refers to the
+          character that separates the levels when displaying the full
+          name. This can be any single character, such as a comma (,) or
+          a space. To make the separator a space simply double click
+          inside the column and delete the comma, then press your
+          spacebar once.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Full Name Order</strong> will reverse
+          the full name as shown in the <strong>Full Name Example</strong>.
+        </li>
+      </ul>
+    </blockquote>
+    <p>&nbsp;</p>
+    <p><strong><a id="institution" name="institution"><u>Create
+            Institution</u></a></strong></p>
+    <p align="center"><img src="../../images/window7.png"></p>
+    <p class="imgcaption" align="center">Create Institution and the
+      Administrator</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">Click the <strong><em>Create Institution</em></strong>
+        button to create your institution and add you as Administrator
+        in your Specify database. Once this information has been created
+        you may not change it on any of the previous screens and the <em>Back</em>
+        button will become disabled.</p>
+      <p align="left">The Institution must be created before the <em>Next</em>
+        button will become enabled.</p>
+    </blockquote>
     <ul>
-      <p><em><strong>Note:</strong></em> Botany and Entomology authority files represent partial trees due to the size of these files. Contact  Specify at <strong>specify@ku.edu</strong> for additional authority files. </p>
+      <br>
     </ul>
-  </blockquote>
-</blockquote>
-<ul>
-  <li>The<strong> Downloadable File</strong> section in this window allows you to choose taxon files from your hard drive. The Setup Wizard can only install files that were downloaded from the Specify website. The Specify team is currently in the process of creating more of these files.</li>
-</ul>
-<blockquote>
-  <p>&nbsp;</p>
-</blockquote>
-<p><a name="configure_geography_tree" id="configure_geography_tree"></a><u><strong>Geography Tree</strong></u></p>
-<p align="center"><img src="../../images/window12.png"/></p>
-<p align="center" class="imgcaption">Configure and Load Geography Tree</p>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. Nodes to the Geography tree can be added later in the Wizard as well as from within Specify. The geography tree was created using data from Geonames.</p>
-  <ul>
-    <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. </li>
-  </ul>
+    <p align="left"><a name="enter_division" id="enter_division"></a><strong><u>Division</u></strong></p>
+    <p align="center"><img src="../../images/window8.png"></p>
+    <p class="imgcaption" align="center">Create a Division</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">This window is used to create a single Division
+        within your institutional hierarchy. Additional divisions can be
+        added later from within Specify.</p>
+      <ul>
+        <li>The <strong>Name</strong> will appear on the division form
+          and can be queried and used in reports. A division is used to
+          collectively name similar collections e.g. the Division of
+          Peleontology may include Vertebrate Paleontology, Invertebrate
+          Peleontology and Peleobotany collections. The Name is a field
+          within the Specify database and is displayed on the
+          Institution form. It can be edited, queried and used in
+          reports. </li>
+        <br>
+        <li>The <strong>Code</strong> can be a short name, acronym,
+          codon or abbreviation. If your Division does not have a Code,
+          put in a placeholder, this can be edited at a later date.
+          Division codes are sometimes required for web services.</li>
+      </ul>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <p><a name="choose_discipline_type" id="choose_discipline_type"></a><strong><u>Discipline</u></strong></p>
+    <p class="style1" align="center"><img src="../../images/window9.png"></p>
+    <p class="imgcaption" align="center">Choose a Discipline Type</p>
+    <p align="left">&nbsp;</p>
+    <ul>
+      <li>Choose a taxonomic <strong>Discipline Type</strong> from the
+        drop-down menu. Specify uses this information to load the
+        correct default data entry Forms, Trees and schema (tables and
+        fields) based on the predefined disciplines within Specify. If
+        your discipline type does not appear in the list, choose the
+        closest discipline to yours based on taxonomic qualities.</li>
+      <br>
+      <li>The <strong>Name</strong> is pre-filled with the discipline
+        type name but can be any user specific variation of the
+        Discipline Type. It can be edited, queried and used in reports.
+        Additional Disciplines can be added from within Specify.</li>
+    </ul>
+    <blockquote>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <p><a name="configure_taxon_tree" id="configure_taxon_tree"></a><u><strong>Taxon
 
-  <ul>
-    <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree levels that are used by Specify as a system requirement. These are automatically added to the tree and can not be deleted on this screen or later.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is Enforced</strong> ensures that  the level can not be skipped when adding nodes lower down the tree.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Is in Full Name</strong> includes the level when building a full name expression, which can be queried and used in reports. Create the full name by checking the desired boxes.<br />
-      <br />
-      <u>At least one level for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
-      </u><br />
-      <br />
-    </li>
-    <li><strong align="left">Separator</strong> refers to the character that separates the levels when displaying the full name. This can be any single character, such as a comma (,) or a space. To make the separator a space simply double click inside the column and delete the comma, then press your spacebar one time.</li>
-  </ul>
-
-  <ul>
-    <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
-  </ul>
-  <p align="left"><br />
-  </p>
-  <p class="style2">The Wizard will automatically load data for the Geography tree, including Continents, Countries, and States throughout the world as well as Counties within the United States. Data for the Geography tree was  converted from the online website of the World Gazetteer.</p>
-</blockquote>
-<p class="style2">&nbsp;</p>
-<p class="style2"><a name="create_collection" id="create_collection"></a><u><strong>Collection</strong></u><strong></strong></p>
-<p align="center" class="style2"><img src="../../images/window13.png"/></p>
-<p align="center" class="imgcaption">Create a Collection</p>
-
-<blockquote>
-  <p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a single Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
-
-<p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data exports and web interfaces in upcoming releases of Specify.</p>
-<p align="left">Additional collections can be added from within Specify.</p>
-<p align="left">&nbsp;</p>
-</blockquote>
-<p align="left"><a name="create_catalog_number" id="create_catalog_number"></a><u><strong>Catalog Number Format</strong></u></p>
-<p align="center"><img src="../../images/window14.png"/></p>
-<p align="center" class="imgcaption">Create a Catalog Number Format</p>
-<p>&nbsp;</p>
-<blockquote>
-  <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Most collections routinely assign catalog numbers to  incoming materials, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
-  <p>Catalog Numbers can either be unique to each Collection, shared by several collections or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
-  <p>Several formats are  available from the drop-down menu list:</p>
-  <ul>
-    <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
-      <blockquote>
-        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p><br />
-        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p><br />
-        <p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited inside Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p><br />
-        <p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited from within Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p><br />
-        <p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented  when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off.</p><br />
-        <p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters</p>
-      </blockquote>
-    </li>
-    <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
-  </ul>
-
-  <ul>
-    <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
-  </ul>
-
-  <ul>
-    <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
-  </ul>
-
-  <p>Collections that do not use one specific format for their Catalog Number may wish to choose CatalogNumberString from the list, this will allow any format to be entered. </p>
-</blockquote>
-<p>&nbsp;</p>
-<h4><u><strong>Accession Number Format</strong></u></h4>
-<p align="center"><img src="../../images/window5.png"/></p>
-<p align="center" class="imgcaption">Create an Accession Number Format</p>
-<blockquote>
-  <blockquote>
-    <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions globally you will have already chosen a format for your accession number and will not be presented with this window again.</p>
-  </blockquote>
-</blockquote>
-<p align="left">&nbsp;</p>
-<blockquote>
-  <p align="left">Accession Numbers may require a format or may simply use a number. Choose <em>None</em> to leave the Accession Number as a text field on the Accession form. Accession Number formats are not editable once data has been entered in the database.</p>
-  <ul>
-    <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
-      <blockquote>
-        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p><br />
-        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p><br />
-        <p align="left"><strong>Accession Number</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p><br />
-        <p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p><br />
-        <p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
-      </blockquote>
-    </li>
-    <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
-  </ul>
-  <blockquote>
-    <p><br />
+          Tree</strong></u></p>
+    <p align="center"><img src="../../images/window10.png" height="328"
+        width="430"></p>
+    <p class="imgcaption" align="center">Configure the Taxon Tree</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">This table will create the tree definition for the
+        Taxon tree. The Taxon tree operates at the Discipline level and
+        will be used by all Collections within the Discipline you
+        created in the last window. Nodes to the Taxon tree can be added
+        later from within Specify.</p>
+      <ul>
+        <li>The <strong>Level</strong> column displays the available
+          levels. This name can be edited from within Specify. Click the
+          <em>Include</em> box to place the Level in the tree. </li>
+      </ul>
+      <ul>
+        <li><strong>Include</strong> places the Level in the tree
+          definition. Levels that are not included can not be Enforced
+          or added to the Full Name.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is Required</strong> is not editable,
+          but an indication of the tree Levels that are used by Specify
+          as a system requirement. These are automatically added to the
+          tree and can not be deleted on this screen or later.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is Enforced</strong> ensures that the
+          Level can not be skipped when adding nodes lower down the
+          tree.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is in Full Name</strong> includes the
+          level when building a full name expression for any associated
+          Collection Objects (which appears in the Taxon Full Name field
+          of the taxon table). The Full Name is also displayed in the
+          Preferred Taxon field on the Determinations form and is useful
+          when running queries and reports when the full name is
+          desired. The full name generally includes at least the
+          binomial Genus and Species fields together with any levels
+          below species (if used). Create the full name by checking the
+          desired boxes.<br>
+          <u><br>
+            At least one level for Full Name must be checked before the
+            <em>Next</em> button will become enabled.<br>
+          </u><br>
+          <br>
+        </li>
+        <li><strong align="left">Separator</strong> refers to the
+          character that separates the levels when displaying the full
+          name. This can be any single character, such as a comma (,) or
+          a space. To make the separator a space simply double click
+          inside the column and delete the comma, then press your
+          spacebar one time.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Full Name Order</strong> will reverse
+          the full name as shown in the <strong>Full Name Example</strong>.
+        </li>
+      </ul>
+    </blockquote>
+    <p>&nbsp;</p>
+    <p><a name="preload_taxon" id="preload_taxon"></a><u><strong>Taxon
+          Authority File</strong></u><br>
     </p>
-  </blockquote>
-  <ul>
-    <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
-  </ul>
-</blockquote>
-<br />
-<h4 align="left"><a name="summary" id="summary"></a><u>Summary</u></h4>
-<p align="center"><img src="../../images/window_complete.png"/></p>
-<p align="center" class="imgcaption">Summary Window</p>
-<blockquote>
-  <p align="left">Congratulations! You have finished the Specify Setup Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
-  <p align="left">Click the <em>Build Database</em> button to create a blank database with all the necessary components to begin using your collection. Then, select the Specify application from your menus and login with your newly created username and password.</p>
-</blockquote>
-</body>
+    <p align="center"><img src="../../images/window11.png"></p>
+    <p class="imgcaption" align="center">Preload Taxon Records/Nodes</p>
+    <p>&nbsp;</p>
+    <blockquote>
+      <p>The Specify Wizard not only defines the Taxon tree but also
+        allows pre-loading of an authority file for the discipline you
+        are creating. <span class="style2">Authority files were created
+          using data from the </span> Catalog of Life Project for some
+        of the disciplines within Specify. If this window does not
+        appear, there are no existing authority files for your chosen
+        discipline. </p>
+      <p>If you choose to load the data into your tree the Taxon tree
+        will be populated with hundreds of taxon nodes and all
+        associated data. Then, when adding Collection Objects into your
+        database you can simply choose a taxon from the Taxon field
+        rather than adding each individually as needed.</p>
+      <p>Please note that loading the Taxon tree will also affect the
+        tree definition. If you load the provided Taxon authority file
+        for your discipline the accompanying tree definition may include
+        Levels that were not defined by you in the previous window, but
+        are necessary to include all the predefined Taxon information.</p>
+      <p>Additional discipline-specific trees can be loaded from within
+        Specify at the time new disciplines are created.</p>
+    </blockquote>
+    <ul>
+      <li>Click the <strong><em>Choose</em></strong> button for a list
+        of taxon files for the discipline you are creating. Not all
+        disciplines offer more than one taxon file. Once the taxon file
+        is chosen, information will display in the <strong>Source</strong>,
+        <strong>Coverage</strong> and <strong>Description</strong>
+        fields for that file. </li>
+    </ul>
+    <blockquote>
+      <blockquote>
+        <ul>
+          <p><em><strong>Note:</strong></em> Botany and Entomology
+            authority files represent partial trees due to the size of
+            these files. Contact Specify at <strong>specify@ku.edu</strong>
+            for additional authority files. </p>
+        </ul>
+      </blockquote>
+    </blockquote>
+    <ul>
+      <li>The<strong> Downloadable File</strong> section in this window
+        allows you to choose taxon files from your hard drive. The Setup
+        Wizard can only install files that were downloaded from the
+        Specify website. The Specify team is currently in the process of
+        creating more of these files.</li>
+    </ul>
+    <blockquote>
+      <p>&nbsp;</p>
+    </blockquote>
+    <p><a name="configure_geography_tree" id="configure_geography_tree"></a><u><strong>Geography
+
+          Tree</strong></u></p>
+    <p align="center"><img src="../../images/window12.png"></p>
+    <p class="imgcaption" align="center">Configure and Load Geography
+      Tree</p>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">The Geography tree operates at the Discipline
+        level and is used by all Collections within the Discipline.
+        Nodes to the Geography tree can be added later in the Wizard as
+        well as from within Specify. The geography tree was created
+        using data from Geonames.</p>
+      <ul>
+        <li>The <strong>Level</strong> column displays the available
+          levels. This name can be edited from within Specify. Click the
+          <em>Include</em> box to place the level in the tree. </li>
+      </ul>
+      <ul>
+        <li><strong>Include</strong> places the Level in the tree
+          definition. Levels that are not included can not be Enforced
+          or added to the Full Name.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is Required</strong> is not editable,
+          but an indication of the tree levels that are used by Specify
+          as a system requirement. These are automatically added to the
+          tree and can not be deleted on this screen or later.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is Enforced</strong> ensures that the
+          level can not be skipped when adding nodes lower down the
+          tree.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Is in Full Name</strong> includes the
+          level when building a full name expression, which can be
+          queried and used in reports. Create the full name by checking
+          the desired boxes.<br>
+          <br>
+          <u>At least one level for Full Name must be checked before the
+            <em>Next</em> button will become enabled.<br>
+          </u><br>
+          <br>
+        </li>
+        <li><strong align="left">Separator</strong> refers to the
+          character that separates the levels when displaying the full
+          name. This can be any single character, such as a comma (,) or
+          a space. To make the separator a space simply double click
+          inside the column and delete the comma, then press your
+          spacebar one time.</li>
+      </ul>
+      <ul>
+        <li><strong align="left">Full Name Order</strong> will reverse
+          the full name as shown in the <strong>Full Name Example</strong>.
+        </li>
+      </ul>
+      <p align="left"><br>
+      </p>
+      <p class="style2">The Wizard will automatically load data for the
+        Geography tree, including Continents, Countries, and States
+        throughout the world as well as Counties within the United
+        States. Data for the Geography tree was converted from the
+        online website of the World Gazetteer.</p>
+    </blockquote>
+    <p class="style2">&nbsp;</p>
+    <p class="style2"><a name="create_collection" id="create_collection"></a><u><strong>Collection</strong></u><strong></strong></p>
+    <p class="style2" align="center"><img
+        src="../../images/window13.png"></p>
+    <p class="imgcaption" align="center">Create a Collection</p>
+    <blockquote>
+      <p align="left">Enter the <strong>Name</strong> and
+        internationally recognized Collection <strong>Code</strong> to
+        create a single Collection within the Discipline. This is the
+        name that will appear within Specify on the Collection form and
+        can be queried and used in reports. </p>
+      <p align="left">The Code should be your standard collections
+        community assigned code for your collection. This Code will be
+        used in data exports and web interfaces in upcoming releases of
+        Specify.</p>
+      <p align="left">Additional collections can be added from within
+        Specify.</p>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <p align="left"><a name="create_catalog_number"
+        id="create_catalog_number"></a><u><strong>Catalog Number Format</strong></u></p>
+    <p align="center"><img src="../../images/window14.png"></p>
+    <p class="imgcaption" align="center">Create a Catalog Number Format</p>
+    <p>&nbsp;</p>
+    <blockquote>
+      <p>Specify is able to accept data for collection objects or
+        observations without assigning a Catalog Number. But when
+        Catalog Numbers are used, they must be unique for each lot,
+        specimen or observation. Most collections routinely assign
+        catalog numbers to incoming materials, perhaps as part of the
+        accessioning process. These numbers may require a format with
+        specific sections for data such as Institution Code and year or
+        they may simply use an incrementing number.</p>
+      <p>Catalog Numbers can either be unique to each Collection, shared
+        by several collections or be used throughout the Institution.
+        The Catalog Number chosen at this time will not affect where it
+        is used relative to other collections, this will be configured
+        from within the Specify application. The Catalog Number format
+        for this collection can not be edited once it is chosen.</p>
+      <p>Several formats are available from the drop-down menu list:</p>
+      <ul>
+        <li><strong align="left">Format</strong> offers several choices
+          in the drop-down menu list:
+          <blockquote>
+            <p align="left"><strong>None</strong> is the default
+              setting, which is a 60 character string field.</p>
+            <br>
+            <p align="left"><strong>Create</strong> allows you to create
+              your own format. Choosing Create will open the Field
+              Formatting Editor. Click <a
+                href="../Security/Field_Format_Editor.html">HERE</a> for
+              the Field Formatting Editor help page. </p>
+            <br>
+            <p><strong>CatalogNumber</strong> (2009-######) The year
+              will appear automatically in the first section (2009) of
+              the format, and can also be manually edited inside
+              Specify. The '###' section of the format is a number that
+              is six digits in length. This section can be automatically
+              incremented when Auto Numbering is turned on in Specify or
+              manually entered when Auto Numbering is turned off. These
+              two sections are separated by a dash.</p>
+            <br>
+            <p><strong>CatalogNumberAlphaNumByYear</strong>
+              (2009-######) The year will appear automatically in the
+              first section (2009) of the format, and can also be
+              manually edited from within Specify. The '###' section of
+              the format is a number that is six digits in length. This
+              section can be automatically incremented when Auto
+              Numbering is turned on in Specify or manually entered when
+              Auto Numbering is turned off. These two sections are
+              separated by a dash.</p>
+            <br>
+            <p><strong>CatalogNumberNumeric</strong> (#########) This is
+              a nine digit number that is automatically incremented when
+              Auto Numbering is turned on in Specify or manually entered
+              when Auto Numbering is turned off.</p>
+            <br>
+            <p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is
+              a ten digit string that can include numbers, alphabet or
+              characters</p>
+          </blockquote>
+        </li>
+        <li><strong>Is Numeric</strong> will display a 'yes' if the
+          format is numeric.</li>
+      </ul>
+      <ul>
+        <li><strong>Pattern</strong> displays the pattern used to create
+          each format (these are explained in further detail above).</li>
+      </ul>
+      <ul>
+        <li><strong>Is Auto Incremented</strong> displays a 'yes' if the
+          format is automatically incremented.</li>
+      </ul>
+      <p>Collections that do not use one specific format for their
+        Catalog Number may wish to choose CatalogNumberString from the
+        list, this will allow any format to be entered. </p>
+    </blockquote>
+    <p>&nbsp;</p>
+    <h4><u><strong>Accession Number Format</strong></u></h4>
+    <p align="center"><img src="../../images/window5.png"></p>
+    <p class="imgcaption" align="center">Create an Accession Number
+      Format</p>
+    <blockquote>
+      <blockquote>
+        <p align="left"><strong><em>Note:</em></strong> If you chose to
+          manage your Accessions globally you will have already chosen a
+          format for your accession number and will not be presented
+          with this window again.</p>
+      </blockquote>
+    </blockquote>
+    <p align="left">&nbsp;</p>
+    <blockquote>
+      <p align="left">Accession Numbers may require a format or may
+        simply use a number. Choose <em>None</em> to leave the
+        Accession Number as a text field on the Accession form.
+        Accession Number formats are not editable once data has been
+        entered in the database.</p>
+      <ul>
+        <li><strong align="left">Format</strong> offers several choices
+          in the drop-down menu list:
+          <blockquote>
+            <p align="left"><strong>None</strong> is the default
+              setting, which is a 60 character string field.</p>
+            <br>
+            <p align="left"><strong>Create</strong> allows you to create
+              your own format. Choosing Create will open the Field
+              Formatting Editor. Click <a
+                href="../Security/Field_Format_Editor.html">HERE</a> for
+              the Field Formatting Editor help page. </p>
+            <br>
+            <p align="left"><strong>Accession Number</strong>
+              (2009-AA-###) The year will appear automatically in the
+              first section (2009) of the format, and can also be
+              manually edited. The 'AA' section of the format is
+              alphanumeric and accepts both characters <em>a</em>
+              through <em>z</em> and numbers. The ### section of the
+              format is a number that is automatically incremented when
+              Auto Numbering is turned on in Specify and manually
+              entered when Auto Numbering is turned off. This format
+              offers two alphanumeric characters and three incremented
+              numbers. </p>
+            <br>
+            <p align="left"><strong>AccessionNumberByYear</strong>
+              (2009-AA-AAA) The year will appear automatically in the
+              first section (2009) of the format, and can also be
+              manually edited. The 'A' sections of the format are
+              alphanumeric and accept both characters <em>a</em>
+              through <em>z</em> and numbers. This format offers two
+              alphanumeric sections, the first is two characters in
+              length and the second is three characters in length.</p>
+            <br>
+            <p align="left"><strong>AccessionStringFormatter</strong>
+              (AAAAAA) This is a single alphanumeric format that accepts
+              characters <em>a</em> through <em>z</em> and numbers.
+              The Accession number would be seven characters in length.</p>
+          </blockquote>
+        </li>
+        <li><strong>Pattern</strong> displays the pattern used to create
+          each format (these are explained in further detail above).</li>
+      </ul>
+      <blockquote>
+        <p><br>
+        </p>
+      </blockquote>
+      <ul>
+        <li><strong>Is Auto Incremented</strong> displays a 'yes' if the
+          format is automatically incremented.</li>
+      </ul>
+    </blockquote>
+    <br>
+    <h4 align="left"><a name="summary" id="summary"></a><u>Summary</u></h4>
+    <p align="center"><img src="../../images/window_complete.png"></p>
+    <p class="imgcaption" align="center">Summary Window</p>
+    <blockquote>
+      <p align="left">Congratulations! You have finished the Specify
+        Setup Wizard. This last screen displays all the data that has
+        been created using the information provided in the preceding
+        windows. If edits are required simply click the <em>Back</em>
+        button until the desired window displays and re-enter the
+        information.</p>
+      <p align="left">Click the <em>Build Database</em> button to
+        create a blank database with all the necessary components to
+        begin using your collection. Then, select the Specify
+        application from your menus and login with your newly created
+        username and password.</p>
+    </blockquote>
+  </body>
 </html>

@@ -1,101 +1,173 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<head>
-<link rel="StyleSheet" href="../../main.css" type="text/css" media="screen">
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen">
-<title>Image Window</title>
-</head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+  <head>
 
-<body>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<h2>Image Window </h2>
-
-<p>The Image Window displays linked images and provides additional functionality for working with the images. </p>
-<p>It is important to understand that the WorkBench does not relocate or store  image files within Data Sets. The WorkBench  creates a link to the image location. The WorkBench does create a smaller version, or thumbnail, of the image, but it is not a replacement for the original image. The original image should never be deleted or moved. The WorkBench displays the thumbnail image in the Image Window by default but the original image can be displayed by using the <a href="#imagemenu">Image Menu</a>.</p>
-<p>&nbsp;</p>
-<h3><a name="ImageWindow" id="ImageWindow"></a>Image Toggle </h3>
-<p>The image window is toggled on and off by clicking the <img src="../images/Image-Window-B-16x16.png" alt="image" width="16" height="16"> (Image Window) button in the work space Item Bar. When an image window is toggled 'on' an 'Image' column appears in the Data Set, which includes the names of the files linked to the Data Set records.</p>
-<p>The Image Window will open on the side of the WorkBench window that allows the most space on the screen. The Image Window may overlap the WorkBench window if the screen does not allow enough space for both to exist side-by-side. The Image Window default setting is 'always on top'. This can be changed in the <a href="#imagemenu">Image Menu</a>.</p>
-<p>&nbsp;</p>
-<h3>Link Image(s)</h3>
-<p>Link one or more images to a single record using the Image Window. </p>
-<p>First select a record, then click the <img src="../images/Image-Window-B-16x16.png" alt="image" width="16" height="16"> (Image Window)  button to activate the Image Window. </p>
-<p align="center"><img src="../images/imagewindow.png" alt="image window"></p>
-<p align="center" class="imgcaption">Image Window </p>
-<p>&nbsp;</p>
-<p align="left">Click on 'Link New Image(s)'. </p>
-<p align="left">A file dialog will appear: </p>
-<p align="center"><img src="../images/imagefile.png"/></p>
-<p align="center" class="imgcaption">Image File Dialog </p>
-<p align="center" class="imgcaption">&nbsp; </p>
-<p>Choose an image file (or files) to link and click 'Open'. </p>
-<p>The first image will display in the main image window. Multiple linked images will show as  thumbnails in the 'tray' at the bottom of the image window. </p>
-<p align="center"><img src="../images/linkedimages.png" alt="linked images"></p>
-<p align="center" class="imgcaption">Linked Images </p>
-<p>Click on a thumbnail to change the image on display in the main image window.</p>
-<p>The filename of the linked image will be displayed in the status bar at the bottom of the Image Window. </p>
-<p>To link a new image to a new record simply click on the  new record. The 'Link New Image(s)' button will display in the Image Window. </p>
-<p><em><strong>Note:</strong></em> Do not select the Image Window button to link another image, it will close the Image Window as well as the Image column. </p>
-<p>&nbsp;</p>
-<h3><a name="imagemenu"></a>Image Menu</h3>
-<p>More image controls are available in the Image Window menus, located at the top of the Image Window.</p>
-<p>The menu items available in the Image Window menus are defined in the following table:</p>
-<table width=85% border="1">
-  <tr>
-    <td><u><strong>Menu</strong></u></td>
-    <td><u><strong>Choices</strong></u></td>
-    <td><u><strong>Result</strong></u></td>
-  </tr>
-  <tr>
-    <td width="10%"><div align="left"><strong>File</strong></div></td>
-    <td width="25%"><em>Import Images</em></td>
-    <td width="65%">Imports images into the Data Set, creating a new, empty row for each image imported.</td>
-  </tr>
-  <tr>
-    <td width="10%"><div align="left"></div></td>
-    <td width="25%"><em>Close</em></td>
-    <td width="65%">Closes the Image Window.</td>
-  </tr>
-  <tr>
-    <td><div align="left"><strong>View</strong></div></td>
-    <td><em>Reduced Size</em></td>
-    <td>Displays the Image thumbnail.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><em>Original Size</em></td>
-    <td>Displays the original image in full resolution.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><em>Keep Window on Top</em></td>
-    <td>Keeps  the Image Window displayed on top of the WorkBench.</td>
-  </tr>
-  <tr>
-    <td><div align="left"><strong>Image</strong></div></td>
-    <td><em>Add Image Links </em></td>
-    <td>Opens a dialog to choose  new images to link to the record.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><em>Delete Image Link</em></td>
-    <td>Unlinks the image from the record.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><em>Replace Image</em></td>
-    <td>Opens a dialog to choose a new image to link to the record, replacing the currently selected image.</td>
-  </tr>
-  
-  <tr>
-    <td><div align="left"><strong>Help</strong></div></td>
-    <td><em>Image Window</em></td>
-    <td>Opens the Image Window section of the WorkBench Help.</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-</body>
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <link rel="StyleSheet" href="../../main.css" type="text/css"
+      media="screen">
+    <link href="../../main.css" rel="stylesheet" type="text/css"
+      media="screen">
+    <title>Image Window</title>
+  </head>
+  <body>
+    <table background="../../images/topbar.png" border="0" width="100%">
+      <tbody>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Image Window </h2>
+    <p>The Image Window displays linked images and provides additional
+      functionality for working with the images. </p>
+    <p>It is important to understand that the WorkBench does not
+      relocate or store image files within Data Sets. The WorkBench
+      creates a link to the image location. The WorkBench does create a
+      smaller version, or thumbnail, of the image, but it is not a
+      replacement for the original image. The original image should
+      never be deleted or moved. The WorkBench displays the thumbnail
+      image in the Image Window by default but the original image can be
+      displayed by using the <a href="#imagemenu">Image Menu</a>.</p>
+    <p>&nbsp;</p>
+    <h3><a name="ImageWindow" id="ImageWindow"></a>Image Toggle </h3>
+    <p>The image window is toggled on and off by clicking the <img
+        src="../images/Image-Window-B-16x16.png" alt="image" height="16"
+        width="16"> (Image Window) button in the work space Item Bar.
+      When an image window is toggled 'on' an 'Image' column appears in
+      the Data Set, which includes the names of the files linked to the
+      Data Set records.</p>
+    <p>The Image Window will open on the side of the WorkBench window
+      that allows the most space on the screen. The Image Window may
+      overlap the WorkBench window if the screen does not allow enough
+      space for both to exist side-by-side. The Image Window default
+      setting is 'always on top'. This can be changed in the <a
+        href="#imagemenu">Image Menu</a>.</p>
+    <p>&nbsp;</p>
+    <h3>Link Image(s)</h3>
+    <p>Link one or more images to a single record using the Image
+      Window. </p>
+    <p>First select a record, then click the <img
+        src="../images/Image-Window-B-16x16.png" alt="image" height="16"
+        width="16"> (Image Window) button to activate the Image Window.
+    </p>
+    <p align="center"><img src="../images/imagewindow.png" alt="image
+        window"></p>
+    <p class="imgcaption" align="center">Image Window </p>
+    <p>&nbsp;</p>
+    <p align="left">Click on 'Link New Image(s)'.<br>
+    </p>
+    <p align="left"><i><b>Note:</b></i> Attachments can be uploaded to
+      the Locality, Collecting Information, Accession, Collection Object
+      and Taxon tables. When these tables include the necessary
+      information for a Data Set to qualify to be uploaded the WorkBench
+      will present a dialog to choose which table you wish to attach the
+      image. Choose a table from the list provided in the dialog. </p>
+    <p align="left">A file dialog will appear: </p>
+    <p align="center"><img src="../images/imagefile.png"></p>
+    <p class="imgcaption" align="center">Image File Dialog </p>
+    <p class="imgcaption" align="center">&nbsp; </p>
+    <p>Choose an image file (or files) to link and click 'Open'. </p>
+    <p>The first image will display in the main image window. Multiple
+      linked images will show as thumbnails in the 'tray' at the bottom
+      of the image window. </p>
+    <p align="center"><img src="../images/linkedimages.png" alt="linked
+        images"></p>
+    <p class="imgcaption" align="center">Linked Images </p>
+    <p>Click on a thumbnail to change the image on display in the main
+      image window.</p>
+    <p>The filename of the linked image will be displayed in the status
+      bar at the bottom of the Image Window. </p>
+    <p>To link a new image to a new record simply click on the new
+      record. The 'Link New Image(s)' button will display in the Image
+      Window. </p>
+    <p><em><strong>Note:</strong></em> Do not select the Image Window
+      button to link another image, it will close the Image Window as
+      well as the Image column. </p>
+    <p>&nbsp;</p>
+    <h3><a name="imagemenu"></a>Image Menu</h3>
+    <p>More image controls are available in the Image Window menus,
+      located at the top of the Image Window.</p>
+    <p>The menu items available in the Image Window menus are defined in
+      the following table:</p>
+    <table border="1" width="85%">
+      <tbody>
+        <tr>
+          <td><u><strong>Menu</strong></u></td>
+          <td><u><strong>Choices</strong></u></td>
+          <td><u><strong>Result</strong></u></td>
+        </tr>
+        <tr>
+          <td width="10%">
+            <div align="left"><strong>File</strong></div>
+          </td>
+          <td width="25%"><em>Import Images</em></td>
+          <td width="65%">Imports images into the Data Set, creating a
+            new, empty row for each image imported.</td>
+        </tr>
+        <tr>
+          <td width="10%">
+            <div align="left"></div>
+            <br>
+          </td>
+          <td width="25%"><em>Close</em></td>
+          <td width="65%">Closes the Image Window.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"><strong>View</strong></div>
+          </td>
+          <td><em>Reduced Size</em></td>
+          <td>Displays the Image thumbnail.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"></div>
+            <br>
+          </td>
+          <td><em>Original Size</em></td>
+          <td>Displays the original image in full resolution.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"></div>
+            <br>
+          </td>
+          <td><em>Keep Window on Top</em></td>
+          <td>Keeps the Image Window displayed on top of the WorkBench.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"><strong>Image</strong></div>
+          </td>
+          <td><em>Add Image Links </em></td>
+          <td>Opens a dialog to choose new images to link to the record.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"></div>
+            <br>
+          </td>
+          <td><em>Delete Image Link</em></td>
+          <td>Unlinks the image from the record.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"></div>
+            <br>
+          </td>
+          <td><em>Replace Image</em></td>
+          <td>Opens a dialog to choose a new image to link to the
+            record, replacing the currently selected image.</td>
+        </tr>
+        <tr>
+          <td>
+            <div align="left"><strong>Help</strong></div>
+          </td>
+          <td><em>Image Window</em></td>
+          <td>Opens the Image Window section of the WorkBench Help.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>&nbsp;</p>
+  </body>
 </html>
