@@ -380,14 +380,14 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             }
             StringBuilder statsSB = new StringBuilder();
             statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
-            String[] descs  = {UIRegistry.getResourceString("SynonymCleanup.TotalRecsProcessed"), 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsInReport"),//"Number of Records in Report", 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsWithNewGenus"),//"Number Records with new Genus", 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsParentedToPlaceHolder"),//"Number of Records parented to Place Holder", 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberSynsDetermined"),//"Number of Synonyms used in Determinations", 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberSynsCorrectlyParented"),//"Number of Synonyms correctly parented",  
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecordsInError"),//"Number of Records in Error", 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberOfUpdateErrors")};//"Number of Update Errors"};
+            String[] descs  = {UIRegistry.getResourceString("SynonymCleanup.TotalRecsProcessed"),//1 
+              		UIRegistry.getResourceString("SynonymCleanup.NumberSynsDetermined"),//2 
+                    UIRegistry.getResourceString("SynonymCleanup.NumberSynsCorrectlyParented"),//3  
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsInReport"),//4 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsWithNewGenus"),//5 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsParentedToPlaceHolder"),//6 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberRecordsInError"),//7 
+            		UIRegistry.getResourceString("SynonymCleanup.NumberOfUpdateErrors")};//8
             //int[]    values = {processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};
             for (int i=0;i<descs.length;i++)
             {
@@ -659,7 +659,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         
         log.debug("SELECT COUNT(TaxonID) " + postfix);
         
-        int cnt = stats[1];
+        int cnt = stats[3];
         try
         {
             
@@ -667,12 +667,11 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             notFoundCnt = 0;
             
  
-            //processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};            
             int processCnt    = stats[0]; //
-            int fndCnt        = stats[2]; //
-            int phCnt         = stats[3]; //
-            int withCatNumCnt = stats[4]; //
-            int correct       = stats[5]; //
+            int withCatNumCnt = stats[1]; //
+            int correct       = stats[2]; //
+            int fndCnt        = stats[4]; //
+            int phCnt         = stats[5]; //
             int err           = stats[6]; //
             int updateErr     = stats[7]; //
 
@@ -799,14 +798,14 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             rs.close();
             
 
-            stats[0] = processCnt;
-            stats[1] = cnt;
-            stats[2] = fndCnt;
-            stats[3] = phCnt;
-            stats[4] = withCatNumCnt;
-            stats[5] = correct;
-            stats[6] = err;
-            stats[7] = updateErr;
+            stats[0] = processCnt; //1
+            stats[1] = withCatNumCnt; //2
+            stats[2] = correct; //3
+            stats[3] = cnt; //4
+            stats[4] = fndCnt; //5
+            stats[5] = phCnt; //6
+            stats[6] = err; //7
+            stats[7] = updateErr; //8
             
             pTaxNodeStmt.close();
             pCatNumStmt.close();
