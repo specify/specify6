@@ -182,7 +182,7 @@
     
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
     
-    <icon name="ClipboardCopy"   file="clipboardCopy.png"  sizes="all"/>
+    <icon name="ClipboardCopy"   file="clipboardPaste32.png"  sizes="all"/>
     <icon name="ClipboardPaste"  file="clipboardPaste32.png" sizes="all"/>
     
     <icon name="ValidationValid"   file="validation-valid.gif"    sizes="all"/>
