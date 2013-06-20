@@ -139,8 +139,8 @@
    <mapID target="SGR" url="SpecifyHelp/Plugins/SGR.html"/>
    <mapID target="sgr_intro" url="SpecifyHelp/Plugins/SGR_intro.html"/>
    <mapID target="Lifemapper" url="SpecifyHelp/Plugins/lifemapper.html"/>
-   <mapID target="Attach_Tools" url="SpecifyHelp/Plugins/attachments.html"/>
-   <mapID target="attach_general" url="SpecifyHelp/Plugins/attachments_overview.html"/>
+   <mapID target="ATTACHMENTS" url="SpecifyHelp/Data_Entry/attachments.html"/>
+   <mapID target="attach_general" url="SpecifyHelp/Data_Entry/attachments_overview.html"/>
    
       
 
