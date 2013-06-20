@@ -285,12 +285,13 @@ public class BatchAttachFiles
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static FileNameParserIFace chooseFileNameParser()
+    private static FileNameParserIFace chooseFileNameParser(final String helpContext)
     {
         final List<FileNameParserIFace> items = FileNameParserFactory.getInstance().getList();
         String title = getResourceString("BatchAttachFiles.CHOOSE_DEST");
         String msg   = getResourceString("BatchAttachFiles.CHOOSE_DESTMSG");
         ChooseFromListDlg<FileNameParserIFace> dlg = new ChooseFromListDlg<FileNameParserIFace>((Frame)getMostRecentWindow(), title, msg, ChooseFromListDlg.OKCANCELHELP, items);
+        dlg.setHelpContext(helpContext);
         //dlg.setHelpContext("NEED_HELP_CONTEXT");
         dlg.createUI();
         
@@ -335,7 +336,7 @@ public class BatchAttachFiles
      */
     public static void attachFileFromIndexFile()
     {
-        FileNameParserIFace fnParser = chooseFileNameParser();
+        FileNameParserIFace fnParser = chooseFileNameParser("Import_Attachmap");
         if (fnParser != null)
         {
             JFileChooser fileChooser = new JFileChooser("BatchAttachFiles.CH_FILE_MSG");
@@ -368,7 +369,7 @@ public class BatchAttachFiles
      */
     public static void uploadAttachmentsByFileName()
     {
-        FileNameParserIFace fnParser = chooseFileNameParser();
+        FileNameParserIFace fnParser = chooseFileNameParser("Import_Attach");
         if (fnParser != null)
         {
             int rv = askForDirOrFiles();
