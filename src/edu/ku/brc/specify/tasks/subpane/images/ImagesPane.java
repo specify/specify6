@@ -130,6 +130,8 @@ public class ImagesPane extends BaseSubPane
     private static final int     MENU_FILENAME = 2;
     private static final int     MENU_COMBO    = 3;
     
+    public enum SearchType { AllAttachments, AllImages, FromRecordSet}
+    
     //private static final int GLASS_FONT_SIZE = 14;
     //private static final int MAX_IMAGE_REQUEST_COUNT = 3;
     
@@ -141,7 +143,7 @@ public class ImagesPane extends BaseSubPane
     private BubbleGlassPane       bubblePane = null;
     private boolean               showingGlassPane = false;
     
-    private boolean               isAllImages;
+    private SearchType            searchType;
     private RecordSetIFace        recordSet;
     
     private Vector<ImageDataItem> rowsVector = new Vector<ImageDataItem>();
@@ -177,15 +179,16 @@ public class ImagesPane extends BaseSubPane
     /**
      * @param name
      * @param task
+     * @param isAllAttachments
      * @param isAllImages
      */
     public ImagesPane(final String name, 
                       final Taskable task, 
-                      final boolean isAllImages)
+                      final SearchType searchType)
     {
         super(name, task);
-        this.isAllImages = isAllImages;
-        this.recordSet   = null;
+        this.searchType = searchType;
+        this.recordSet  = null;
         initImagePane();
     }
     
@@ -199,8 +202,8 @@ public class ImagesPane extends BaseSubPane
                       final RecordSetIFace recordSet)
     {
         super(name, task);
-        this.isAllImages = false;
-        this.recordSet   = recordSet;
+        this.searchType = SearchType.FromRecordSet;
+        this.recordSet  = recordSet;
         initImagePane();
     }
      
@@ -346,7 +349,7 @@ public class ImagesPane extends BaseSubPane
         reloadBtn = UIHelper.createIconBtn("Reload", IconManager.STD_ICON_SIZE, null, null);
         reloadBtn.setEnabled(true);
         
-        helpBtn = UIHelper.createHelpIconButton("ImageBrowser");
+        helpBtn = UIHelper.createHelpIconButton("Attach_Browser");
         
         //filterBtn = UIHelper.createIconBtn("Filter20", IconManager.STD_ICON_SIZE, null, null);
         //filterBtn.setEnabled(true);
@@ -362,7 +365,7 @@ public class ImagesPane extends BaseSubPane
         botPanel.add(metaDataPanel, BorderLayout.CENTER);
         
         setLayout(new BorderLayout());
-        if (isAllImages)
+        if (searchType != SearchType.FromRecordSet)
         {
             createColObjSearch();
             
@@ -565,14 +568,14 @@ public class ImagesPane extends BaseSubPane
 //        String sql = "SELECT a.AttachmentID, a.Title, a.AttachmentLocation, a.MimeType FROM collectionobject co INNER JOIN collectionobjectattachment coa ON co.CollectionObjectID = coa.CollectionObjectID " +
 //                           "INNER JOIN attachment a ON coa.AttachmentID = a.AttachmentID %s";
 //
-//        String whereStr = isAllImages ? "ORDER BY Title" : "WHERE CatalogNumber = '%s' ORDER BY Ordinal";
+//        String whereStr = isAllAttachments ? "ORDER BY Title" : "WHERE CatalogNumber = '%s' ORDER BY Ordinal";
 //        sql = String.format(sql, whereStr);
 //        
 //        UIFieldFormatterIFace fmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
-//        if (fmt != null || isAllImages)
+//        if (fmt != null || isAllAttachments)
 //        {
 //            String queryStr = sql;
-//            if (!isAllImages)
+//            if (!isAllAttachments)
 //            {
 //                coVBP.getMultiView().getDataFromUI();
 //                //System.out.println("["+dataMap.get("CatalogNumber")+"]");
@@ -677,9 +680,10 @@ public class ImagesPane extends BaseSubPane
         		                     "(ScopeType = 2 AND ScopeID = %d) OR " +
         		                     "(ScopeType = 3 AND ScopeID = %d)) ", // INSTITUTION_SCOPE
         		                        colId, dspId, divId, instId);
-        
-        //return "a.MimeType = 'application/pdf'";
-        //return String.format("NOT (a.MimeType LIKE 'image/%s')", "%");
+        if (searchType == SearchType.AllImages)
+        {
+            sql += String.format(" AND a.MimeType LIKE 'image/%s' ", "%");
+        }
         return sql;
     }
     
@@ -708,7 +712,8 @@ public class ImagesPane extends BaseSubPane
                 String sql = !isAttachmentTableItself ? "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
                 		     "INNER JOIN %sattachment coa ON a.AttachmentID = coa.AttachmentID "+
                              "WHERE coa.%s IN (%s) %s ORDER BY a.TimestampCreated"
-                	: "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a where AttachmentID IN (%s) ORDER BY a.Title";
+                	: "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
+                			"WHERE AttachmentID IN (%s) ORDER BY a.TimestampCreated";
               
                 int batchSize  = 500;
                 int attchIndex = 0;
@@ -1135,7 +1140,7 @@ public class ImagesPane extends BaseSubPane
 //            remove(mainComp);
 //        }
         
-        if (isAllImages)
+        if (searchType != SearchType.FromRecordSet)
         {
             searchForAllAttachments();
             gridPanel.setItemList(rowsVector);
@@ -1146,7 +1151,7 @@ public class ImagesPane extends BaseSubPane
         
         CellConstraints cc = new CellConstraints();
         
-        String rowDef  = isAllImages ? "f:p:g" : "p,4px,f:p:g";
+        String rowDef  = searchType != SearchType.FromRecordSet ? "f:p:g" : "p,4px,f:p:g";
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,2px,p", rowDef));
         
         int y = 1;

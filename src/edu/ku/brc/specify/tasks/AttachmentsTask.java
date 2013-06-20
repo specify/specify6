@@ -80,6 +80,7 @@ import edu.ku.brc.specify.tasks.subpane.images.FullImagePane;
 import edu.ku.brc.specify.tasks.subpane.images.ImageDataItem;
 import edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane;
+import edu.ku.brc.specify.tasks.subpane.images.ImagesPane.SearchType;
 import edu.ku.brc.specify.utilapps.morphbank.BatchAttachFiles;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -141,6 +142,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             
             // Actions
             RolloverCommand showAllBtn      = (RolloverCommand)addNavBoxItem(actionNavBox,  getResourceString("ATTCH_SHOWALL_ATT"),   this.iconName, null, null);
+            RolloverCommand showAllImgsBtn  = (RolloverCommand)addNavBoxItem(actionNavBox,  getResourceString("ATTCH_SHOWALL_IMGS"),   this.iconName, null, null);
             RolloverCommand uploadImagesBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGS"),    this.iconName, null, null);
             RolloverCommand uploadIndexBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("ATTCH_IMPORT_IMGSMAP"), this.iconName, null, null);
             
@@ -254,7 +256,21 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
                     {
                         removeSubPaneFromMgr(starterPane);
                     }
-                    starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), AttachmentsTask.this, true); 
+                    starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), AttachmentsTask.this, SearchType.AllAttachments); 
+                    addSubPaneToMgr(starterPane);
+                }
+            });
+            
+            showAllImgsBtn.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (starterPane != null) 
+                    {
+                        removeSubPaneFromMgr(starterPane);
+                    }
+                    starterPane = imagesPane = new ImagesPane(getResourceString(ATTACHMENTS), AttachmentsTask.this, SearchType.AllImages); 
                     addSubPaneToMgr(starterPane);
                 }
             });
