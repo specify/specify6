@@ -98,6 +98,7 @@ import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
+import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
@@ -415,8 +416,9 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean shouldSkipMatching()
     {
-        return isOneToOneChild() || 
-        	(tblClass.equals(CollectingEvent.class) &&  AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
+        return isOneToOneChild() 
+        	|| (tblClass.equals(CollectingEvent.class) &&  AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        	|| tblClass.equals(PaleoContext.class) /*&& isEmbeddedPaleoContext???*/;
     }
     
     /**
