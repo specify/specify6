@@ -344,7 +344,10 @@ public class BatchAttachFiles
         if (fnParser != null)
         {
             JFileChooser fileChooser = new JFileChooser("BatchAttachFiles.CH_FILE_MSG");
-            fileChooser.setFileFilter(new IndexFileFilter());
+            // Commented out for now, too dificult for Windows user
+            // to operate
+            //fileChooser.setFileFilter(new IndexFileFilter());
+            
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             //fileChooser.setFileHidingEnabled(true);
     
