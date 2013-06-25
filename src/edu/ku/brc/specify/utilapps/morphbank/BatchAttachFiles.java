@@ -261,9 +261,13 @@ public class BatchAttachFiles
                     {
                         errFiles.add(new Pair<String, FileErrorType>(fileName, FileErrorType.eMisingFile));
                     }
+                } else
+                {
+                    errCnt++;
                 }
             }
             
+            errCnt += errFiles.size();
             if (errCnt == records.size() && errCnt > 0)
             {
                 showLocalizedError(isTabDelim? "IMPORT_IMG_BAD_DELIM_TAB" : "IMPORT_IMG_BAD_DELIM_COMMA");
@@ -451,6 +455,7 @@ public class BatchAttachFiles
     {
         if (files.size() == 0 || fnParser == null)
         {
+            showLocalizedError("BatchAttachFiles.IMPORT_NO_FILES");
             return;
         }
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
