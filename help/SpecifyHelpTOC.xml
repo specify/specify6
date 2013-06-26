@@ -93,6 +93,7 @@
 				<tocitem text="Agent Form" target="Data_Entry_Agent" />
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
+				<tocitem text="GUID" target="guid" />
 			</tocitem>
 			<tocitem text="Interactions Forms" target="Interactions">
 				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />

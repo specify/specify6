@@ -379,6 +379,7 @@
    <mapID target="Attach_Browser" url="SpecifyHelp/Data_Entry/attachments.html#attach_browser"/>
    <mapID target="Import_Attach" url="SpecifyHelp/Data_Entry/attachments.html#import_attach"/>
    <mapID target="Import_Attachmap" url="SpecifyHelp/Data_Entry/attachments.html#import_attachmap"/>
-   <mapID target="about_specify" url="SpecifyHelp/Data_Entry/welcome.html#about_specify"/>           
+   <mapID target="about_specify" url="SpecifyHelp/Intro/welcome.html#about_specify"/>
+   <mapID target="clean_synonyms" url="SpecifyHelp/Configuration/system_setup.html#clean_synonyms"/> 
                   
 </map>

@@ -31,12 +31,20 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
     <p> Access data forms by clicking the <img
         src="../../images/data_entry.png" height="20" width="20">&nbsp;(Data
 
+
+
+
+
       ) button. A list of forms will appear in the side bar. </p>
     <p> Each discipline has access to a specific set of forms for
       viewing, entering and editing data. Specify ships with the most
       frequently used forms listed on the side bar. Less common forms
       are found by clicking <img alt="more forms"
         src="../../images/more_forms.png" height="32" width="32">&nbsp;(More
+
+
+
+
 
       Forms) in the side bar and choosing a form from the pop-up dialog.
     </p>
@@ -48,6 +56,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
     <blockquote>
       <p> Right-click an open section of the side bar to activate the <img
           src="../../images/configure_box.png" height="27" width="110">&nbsp;button
+
+
+
+
 
         or choose <em>Tabs &gt; Configure Side Bar</em> from the top
         menu bar. </p>
@@ -74,6 +86,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
       <p> Deleting a form from either the side bar or Extra Forms will
         place it back in the master list which is accessed by the <img
           alt="add" src="../../images/add.png" height="16" width="16">&nbsp;(add)
+
+
+
+
 
         button. </p>
     </blockquote>
@@ -122,8 +138,16 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
         indepth explanation of the container concept in Specify please
         read the document, <em>Containers and Storage Concepts, </em>found
 
+
+
+
+
         on the <a
           href="http://specifysoftware.org/content/documentation">Documentation
+
+
+
+
 
           page</a> of the Specify website.</p>
       <p>Containers can be either physical or logical. The above
@@ -165,6 +189,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
         <p>Container forms can be added to the side bar using the <a
             href="../Data_Entry/Data_Entry.html#data_entry_configure">Side
 
+
+
+
+
             Bar Data Form Configuration tool</a>.</p>
       </blockquote>
       <ul>
@@ -183,6 +211,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
         <li><strong>Type</strong> is a pick list that you may configure,
           this may include sheet, folder, box, etc. For more information
           please refer to <a href="../PickList/system_picklist.html">system
+
+
+
+
 
             pick lists</a>. </li>
         <br>
@@ -386,6 +418,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
         <tbody>
           <tr>
             <td align="left" valign="top" width="11%"> <strong>Alternate
+
+
+
+
 
                 Name</strong> </td>
             <td align="left" valign="top" width="89%"> A free text field
@@ -598,6 +634,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
               <tr>
                 <td align="left" valign="top" width="137"><strong>Locality
 
+
+
+
+
                     Name</strong></td>
                 <td align="left" valign="top" width="241">
                   <div align="left">Yes</div>
@@ -660,6 +700,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
               <tr>
                 <td align="left" valign="top" width="137"><strong>Locality
 
+
+
+
+
                     Name</strong></td>
                 <td align="left" valign="top" width="241">
                   <div align="left">Yes</div>
@@ -697,8 +741,11 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
             acceptable countries is available on the <a
               href="http://www.museum.tulane.edu/geolocate/standalone/globalExp.html">GEOLocate
 
+
+
+
+
               website</a>.&nbsp; </p>
-          <p></p>
         </blockquote>
         <p>&nbsp;</p>
         <p>Once the locality information is complete, the GEOLocate
@@ -1276,6 +1323,10 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
             <p> Choose a mode by clicking the <img
                 src="../../images/Down16x16.png" height="16" width="16">(expand)
 
+
+
+
+
               button and selecting a mode. </p>
             <p> <img src="../../images/form_editor20x20.png"
                 height="20" width="20">&nbsp;Form Mode </p>
@@ -1327,10 +1378,64 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
                   width="16"> (reorder) buttons to reorder the
                 Attachments. </li>
             </ul>
+            <p><br>
+            </p>
+            <ul>
+            </ul>
           </blockquote>
         </blockquote>
       </blockquote>
-      <p>&nbsp; </p>
+    </blockquote>
+    <h3><a name="GUID"></a>GUID</h3>
+    <blockquote>
+      <p>As of Specify 6.5, GUIDs are generated using a 128-bit
+        Universally Unique Identifier, or UUID (example:
+        bf3066d2-c088-47c8-b279-e7941463a65f0). The Specify 6.5 update
+        from earlier versions of Specify will automatically change
+        existing GUIDs within a Specify database to the UUID system.
+        GUID fields have also been added to the default forms of several
+        tables.<br>
+      </p>
+      <p>Specify automatically creates GUIDs in the GUID field of the
+        following tables:<br>
+      </p>
+      <ul>
+        <li>Agent<br>
+        </li>
+        <li>Attachment<br>
+        </li>
+        <li>Collection<br>
+        </li>
+        <li>Collecting Event<br>
+        </li>
+        <li>Collection Object<br>
+        </li>
+        <li>Determination<br>
+        </li>
+        <li>Geologic Time Period<br>
+        </li>
+        <li>Institution<br>
+        </li>
+        <li>Journal<br>
+        </li>
+        <li>Litho Stratigraphy<br>
+        </li>
+        <li>Locality <br>
+        </li>
+        <li>Reference Work<br>
+        </li>
+      </ul>
+      <ul>
+      </ul>
+      <p> </p>
+      <p>Using a GUID to identify information allows it to be shared and
+        recognized globally. As more biological information systems use
+        GUID/UUID's it will become possible to instantly recognize when
+        globally exchanged information has been updated or duplicated.<br>
+      </p>
+      <p><br>
+      </p>
+      <br>
     </blockquote>
   </body>
 </html>
