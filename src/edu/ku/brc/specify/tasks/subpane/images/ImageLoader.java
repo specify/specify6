@@ -38,17 +38,19 @@ import edu.ku.brc.util.AttachmentUtils;
  */
 public class ImageLoader implements ImageLoaderIFace
 {
-    private String    imageName;
-    private String    mimeType;
-    private boolean   doLoadFullImage;
-    private int       scale;
-    private File      localFile;
+    private String              imageName;
+    private String              mimeType;
+    private boolean             doLoadFullImage;
+    private int                 scale;
+    private File                localFile;
     
-    private ImageIcon imageIcon;
-    private boolean   isError;
+    private ImageIcon           imageIcon;
+    private boolean             isError;
     private ImageLoaderListener listener;
-    private AtomicBoolean contLoading = new AtomicBoolean(true);
-    
+    //private AtomicBoolean       contLoading = new AtomicBoolean(true);
+    private boolean             contLoading = true;
+    private byte[]              bytes       = null;
+
     /**
      * @param imageName
      * @param mimeType
@@ -76,29 +78,42 @@ public class ImageLoader implements ImageLoaderIFace
     @Override
     public void load()
     {
+        if (!contLoading)
+        {
+            //System.err.println(">>>>>>>>>>>>>>>>>>>>>>> skipping loading: "+this.imageName);
+            return;
+        }
+        
         //System.out.println(id+" Starting Load: "+imageName);
         try
         {
+            if (bytes == null) 
+            {
+                bytes = new byte[10240*2];
+            }
             AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
             localFile = null;
             if (doLoadFullImage)
             {
                 if (scale == -1)
                 {
-                    localFile = attachmentMgr.getOriginal(imageName, null, mimeType);
+                    localFile = attachmentMgr.getOriginal(imageName, null, mimeType, bytes);
                 } else
                 {
-                    localFile = attachmentMgr.getOriginalScaled(imageName, null, mimeType, scale);
+                    localFile = attachmentMgr.getOriginalScaled(imageName, null, mimeType, scale, bytes);
                 }
             } else
             {
-                localFile = attachmentMgr.getOriginalScaled(imageName, null, mimeType, scale);
+                localFile = attachmentMgr.getOriginalScaled(imageName, null, mimeType, scale, bytes);
             }
             
             if (localFile != null)
             {
-                imageIcon = new ImageIcon(localFile.getAbsolutePath());
-                isError   = imageIcon == null;
+                if (!doLoadFullImage || AttachmentUtils.isMimeTypeDisplayable(mimeType))
+                {
+                    imageIcon = new ImageIcon(localFile.getAbsolutePath());
+                    isError   = imageIcon == null;
+                }
             } else
             {
                 isError = true;
@@ -119,9 +134,14 @@ public class ImageLoader implements ImageLoaderIFace
     {
         // contLoading is for when something or someone wants to 
         // prematurely stop the loading.external 
-        if (listener != null && contLoading.get())
+        if (listener != null)
         {
-            listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
+            if  (contLoading) 
+            {
+                listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
+            } else {
+                listener.imageStopped(imageName, doLoadFullImage);
+            }
         }
     }
 
@@ -197,6 +217,14 @@ public class ImageLoader implements ImageLoaderIFace
     {
         return isError;
     }
+    
+    /**
+     * Enables the Loader to be able to start again.
+     */
+    public void enableLoading()
+    {
+        this.contLoading = true;
+    }
 
     /**
      * @param imageName the imageName to set
@@ -218,8 +246,22 @@ public class ImageLoader implements ImageLoaderIFace
      * @see edu.ku.brc.ui.ImageLoaderIFace#stopLoading()
      */
     @Override
-    public void stopLoading()
+    public synchronized void stopLoading()
     {
-        this.contLoading.set(false);
+        this.contLoading = false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#cleanup()
+     */
+    @Override
+    public void cleanup()
+    {
+        imageName = null;
+        mimeType  = null;
+        imageIcon = null;
+        listener  = null;
+        bytes     = null;
+        localFile = null;
     }
 }

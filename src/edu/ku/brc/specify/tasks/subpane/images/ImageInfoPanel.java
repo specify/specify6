@@ -184,15 +184,24 @@ public class ImageInfoPanel extends ExpandShrinkPanel
                 imgDataItem.loadScaledImage(IMG_SIZE, new ImageLoaderListener()
                 {
                     @Override
-                    public void imagedLoaded(String imageName,
-                                             String mimeType,
-                                             boolean doLoadFullImage,
-                                             int scale,
-                                             boolean isError, 
-                                             ImageIcon imgIcon,
-                                             File localFile)
+                    public void imagedLoaded(final String    imageName,
+                                             final String    mimeType,
+                                             final boolean   doLoadFullImage,
+                                             final int       scale,
+                                             final boolean   isError,
+                                             final ImageIcon imageIcon, 
+                                             final File      localFile)
                     {
-                        imgDisplay.setImage(imgIcon);
+                        imgDisplay.setImage(imageIcon);
+                    }
+                    
+                    /* (non-Javadoc)
+                     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+                     */
+                    @Override
+                    public void imageStopped(final String imageName, final boolean doLoadFullImage)
+                    {
+                        imgDisplay.setImage((ImageIcon)null);
                     }
                 });
                 imgDisplay.setImage(IconManager.getImage("Loading"));

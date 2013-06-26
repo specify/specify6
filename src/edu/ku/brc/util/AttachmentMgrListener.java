@@ -17,43 +17,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package edu.ku.brc.specify.tasks.subpane.images;
-
-import java.io.File;
-
-import javax.swing.ImageIcon;
+package edu.ku.brc.util;
 
 /**
  * @author rods
  *
  * @code_status Alpha
  *
- * Sep 4, 2012
+ * Jun 22, 2013
  *
  */
-public interface ImageLoaderListener
+public interface AttachmentMgrListener
 {
     /**
-     * @param imageName
-     * @param mimeType
-     * @param doLoadFullImage
-     * @param scale
-     * @param isError
-     * @param imgIcon
-     * @param localFile
+     * @param numberOfFiles
      */
-    public abstract void imagedLoaded(String    imageName,
-                                      String    mimeType,
-                                      boolean   doLoadFullImage,
-                                      int       scale,
-                                      boolean   isError,
-                                      ImageIcon imageIcon, 
-                                      File      localFile);
+    public void filesLoading(int numberOfFiles);
     
-    /**
-     * Called if image was asked to stop loading.
-     * @param imageName
-     * @param doLoadFullImage
-     */
-    public abstract void imageStopped(String imageName, boolean doLoadFullImage);
 }

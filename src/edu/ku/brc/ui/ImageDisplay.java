@@ -40,7 +40,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -95,8 +94,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     private   int            status         = kImageOK;
     private   ArrayList<File> fileCache = new ArrayList<File>();
 
-    protected AtomicBoolean isLoading       = new AtomicBoolean(false);
-    protected AtomicBoolean stopLoading     = new AtomicBoolean(false);
+    //protected AtomicBoolean isLoading       = new AtomicBoolean(false);
+    //protected AtomicBoolean stopLoading     = new AtomicBoolean(false);
+    protected boolean isLoading   = false;
+    protected boolean stopLoading = false;
 
 	/**
 	 * Constructor.
@@ -175,7 +176,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     @Override
     public void stopLoading()
     {
-        stopLoading.set(true);
+        stopLoading = true;
     }
 
 	/**
@@ -207,7 +208,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
      */
     public boolean isLoading()
     {
-        return isLoading.get();
+        return isLoading;
     }
 
     /**
@@ -215,7 +216,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
      */
     public void setLoading(boolean isLoading)
     {
-        this.isLoading.set(isLoading);
+        this.isLoading = isLoading;
     }
 
     /**
@@ -338,7 +339,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     @Override
     public void done()
     {
-        if (paintComponent != null && !stopLoading.get())
+        if (paintComponent != null && !stopLoading)
         {
             notifyOnUIThread(true, true);
         }
@@ -349,7 +350,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	 */
 	private void startImageLoad()
 	{
-	    if (stopLoading.get())
+	    if (stopLoading)
 	    {
 	        System.err.println("Skipping load..."+url);
 	        status = kError;
@@ -399,6 +400,20 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	}
 
 	/* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#cleanup()
+     */
+    @Override
+    public void cleanup()
+    {
+        image          = null;
+        changeListener = null;
+        paintComponent = null;
+        fileCache.clear();
+        fileCache      = null;
+
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.ImageLoaderIFace#getStatus()
      */
     @Override
@@ -430,8 +445,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		int h = getHeight();
 
         Image   dspImg         = image;
-		boolean doDisplayImage = (image != null && (!isNoAttachment && status == kImageOK)) || isLoading.get();
-		if (isLoading.get())
+		boolean doDisplayImage = (image != null && (!isNoAttachment && status == kImageOK)) || isLoading;
+		if (isLoading)
 		{
 		    doDisplayImage = true;
 		    dspImg = IconManager.getImage("Loading").getImage();
@@ -505,7 +520,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	 */
 	private void notifyOnUIThread(final boolean doRepaint, final boolean notifyChangeListeners)
 	{
-	    if (!stopLoading.get())
+	    if (!stopLoading)
 	    {
             SwingUtilities.invokeLater(new Runnable()
             {

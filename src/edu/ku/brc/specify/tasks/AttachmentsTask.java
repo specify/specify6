@@ -21,7 +21,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -396,6 +395,14 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+     */
+    @Override
+    public void imageStopped(final String imageName, final boolean doLoadFullImage)
+    {
+    }
+
     /**
      * @param cmdAction
      */
@@ -411,8 +418,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
         File original = AttachmentUtils.getAttachmentFile(dataObj);
         if (original != null)
         {
-            String mimeType = AttachmentUtils.getMimeType(original.getName());
-            if (mimeType.startsWith("image") && !mimeType.startsWith("image/tif"))
+            if (AttachmentUtils.isFileDisplayable(original.getName()))
             {
                 // Here we are 
                 FullImagePane pane = new FullImagePane(attachment.getTitle(), this, original);

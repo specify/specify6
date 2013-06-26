@@ -590,6 +590,8 @@ public class MorphBankPanel extends UIPluginBase
 			protected Boolean success = false;
 			protected Boolean imageFilePosted = false;
 			protected Exception killer = null;
+			protected byte[] bytes = new byte[10240];
+
 
 			/**
 			 * @param morphbankImageId
@@ -709,7 +711,8 @@ public class MorphBankPanel extends UIPluginBase
 			 */
 			private String getImageFileName()
 			{
-				File imageDir = AttachmentUtils.getAttachmentManager().getOriginal(attachment);
+			    
+				File imageDir = AttachmentUtils.getAttachmentManager().getOriginal(attachment, bytes);
 				return imageDir.getAbsolutePath();
 			}
 			

@@ -305,7 +305,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      */
     private void schedRepaint()
     {
-        if (!stopLoading.get())
+        if (!stopLoading)
         {
             SwingUtilities.invokeLater(new Runnable()
             {
@@ -359,43 +359,47 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      */
     public void startLoad()
     {
-        if (imageLoader == null)
+        if (!stopLoading)
         {
-            int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
-            imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, this);
-        } else
-        {
-            imageLoader.setImageName(imgDataItem.getImgName());
-            imageLoader.setMimeType(imgDataItem.getMimeType());
+            if (imageLoader == null)
+            {
+                int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
+                imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, this);
+            } else
+            {
+                imageLoader.setImageName(imgDataItem.getImgName());
+                imageLoader.setMimeType(imgDataItem.getMimeType());
+                imageLoader.enableLoading();
+            }
+            setLoading(true);
+            ImageLoaderExector.getInstance().loadImage(imageLoader);
         }
-        setLoading(true);
-        ImageLoaderExector.getInstance().loadImage(imageLoader);
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
      */
     @Override
-    public void imagedLoaded(String imageName,
-                             String mimeType,
-                             boolean doLoadFullImage,
-                             int scale,
-                             boolean isError,
-                             ImageIcon imgIcon,
-                             File localFile)
+    public void imagedLoaded(final String    imageName,
+                             final String    mimeType,
+                             final boolean   doLoadFullImage,
+                             final int       scale,
+                             final boolean   isError,
+                             final ImageIcon imageIcon, 
+                             final File      localFile)
     {
         setLoading(false);
 
         //System.out.println(imageName+" -> "+isError);
         if (!isError)
         {
-            setImage(imgIcon);
+            setImage(imageIcon);
             if (doLoadFullImage)
             {
-                imgDataItem.setFullImgIcon(imgIcon);
+                imgDataItem.setFullImgIcon(imageIcon);
             } else
             {
-                imgDataItem.setImgIcon(imgIcon);
+                imgDataItem.setImgIcon(imageIcon);
             }
         } else
         {
@@ -404,9 +408,52 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
         
         if (this.listener != null)
         {
-            this.listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imgIcon, localFile);
+            this.listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+     */
+    @Override
+    public void imageStopped(String imageName, final boolean doLoadFullImage)
+    {
+        if (doLoadFullImage)
+        {
+            imgDataItem.setFullImgIcon(null);
+        } else
+        {
+            imgDataItem.setImgIcon(null);
+        }
+
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageDisplay#setLoading(boolean)
+     */
+    @Override
+    public synchronized void setLoading(boolean isLoading)
+    {
+        super.setLoading(isLoading);
+        if (!isLoading && imageLoader != null)
+        {
+            imageLoader.stopLoading();
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#stopLoading()
+     */
+    @Override
+    public void stopLoading()
+    {
+        super.stopLoading();
+        if (imageLoader != null)
+        {
+            imageLoader.stopLoading();
+        }
+    }
+
 
     /**
      * @return the isSelected
@@ -438,7 +485,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     /**
      * @param imgDataItem the imgDataItem to set
      */
-    public void setImageDataItem(ImageDataItem imgDataItem)
+    public void setImageDataItem(final ImageDataItem imgDataItem)
     {
         this.imgDataItem = imgDataItem;
         
@@ -470,5 +517,37 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
             listeners.remove(lsl);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#cleanup()
+     */
+    @Override
+    public void cleanup()
+    {
+        super.cleanup();
+        
+        image          = null;
+        changeListener = null;
+        paintComponent = null;
+        
+        if (listeners != null)
+        {
+            listeners.clear();
+            listeners = null;
+        }
+        
+        if (imgDataItem != null) 
+        {
+            imgDataItem.cleanup();
+            imgDataItem = null;
+        }
+        
+        if (imageLoader != null) 
+        {
+            imageLoader.cleanup();
+            imageLoader = null;
+        }
+    }
+
 
 }

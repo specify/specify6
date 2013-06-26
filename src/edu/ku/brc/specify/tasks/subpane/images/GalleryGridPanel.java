@@ -249,13 +249,13 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
      * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
      */
     @Override
-    public void imagedLoaded(String imageName,
-                             String mimeType,
-                             boolean doLoadFullImage,
-                             int scale,
-                             boolean isError,
-                             ImageIcon imgIcon,
-                             File localFile)
+    public void imagedLoaded(final String    imageName,
+                             final String    mimeType,
+                             final boolean   doLoadFullImage,
+                             final int       scale,
+                             final boolean   isError,
+                             final ImageIcon imageIcon, 
+                             final File      localFile)
     {
         itemsLoaded++;
         if (itemsLoaded == displayList.size() && itemsLoaded > 0)
@@ -280,7 +280,14 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
             };
             worker.execute();
         }
-        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+     */
+    @Override
+    public void imageStopped(final String imageName, final boolean doLoadFullImage)
+    {
     }
 
     /**
@@ -307,12 +314,13 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
         {
             for (ImageDataItem idi : itemList)
             {
-                idi.shutdown();
+                idi.cleanup();
             }
             
             for (ImageCellDisplay icd : displayList)
             {
                 icd.stopLoading();
+                icd.cleanup();
             }
             
             for (ImageCellDisplay icd : recycleList)

@@ -223,7 +223,8 @@ public class AttachmentUtils
         {
             if (isAttachLocOK())
             {
-                original = attachMgr.getOriginal(attachment);
+                byte[] bytes = new byte[10240];
+                original = attachMgr.getOriginal(attachment, bytes);
             }
         }
         else
@@ -243,8 +244,8 @@ public class AttachmentUtils
         {
             public void actionPerformed(ActionEvent e)
             {
-                File original = getAttachmentFile(e.getSource());
-                String errMsg = null;
+                File   original = getAttachmentFile(e.getSource());
+                String errMsg   = null;
                 if (original != null && original.exists())
                 {
                     try
@@ -282,6 +283,30 @@ public class AttachmentUtils
         }
         
         return mimeMap.getContentType(filename);
+    }
+    
+    /**
+     * Returns whether the app can display the mimetype fro the file extension
+     * @param filename the file name to be checked
+     * @return true if the app can display the mime type within the app
+     */
+    public static boolean isFileDisplayable(final String filename)
+    {
+        if (filename == null)  return false;
+        
+        return isMimeTypeDisplayable(getMimeType(filename));
+    }
+    
+    /**
+     * Returns whether the app can display the mimetype
+     * @param filename the file name to be checked
+     * @return true if the app can display the mime type within the app
+     */
+    public static boolean isMimeTypeDisplayable(final String mimeType)
+    {
+        if (mimeType == null)  return false;
+        
+        return mimeType.startsWith("image") && !mimeType.startsWith("image/tif");
     }
     
     /**

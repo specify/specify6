@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Vector;
 
@@ -69,6 +70,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     protected File thumbsDir;
     
     protected int thumbSize = 256;
+    
+    private ArrayList<AttachmentMgrListener> listeners = new ArrayList<AttachmentMgrListener>();
     
     /** 
      * A collection of all files created by calls to setStorageLocationIntoAttachment
@@ -208,7 +211,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(edu.ku.brc.specify.datamodel.Attachment)
      */
-    public File getOriginal(final Attachment attachment)
+    public File getOriginal(final Attachment attachment, final byte[] bytes)
     {
         String attachLoc = attachment.getAttachmentLocation();
         String origLoc   = attachment.getOrigFilename();
@@ -219,7 +222,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType)
+    public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType, final byte[] bytes)
     {
         return getFile(attachLoc, originalLoc, mimeType, null);
     }
@@ -231,7 +234,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public File getOriginalScaled(final String attachLoc,
                                   final String originalLoc,
                                   final String mimeType,
-                                  final int maxSideInPixels)
+                                  final int maxSideInPixels,
+                                  final byte[] bytes)
     {
         return getFile(attachLoc, originalLoc, mimeType, maxSideInPixels);
     }
@@ -563,7 +567,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getFileEmbddedDate(int)
      */
     @Override
-    public Calendar getFileEmbddedDate(int attachmentID)
+    public Calendar getFileEmbeddedDate(int attachmentID)
     {
         return ImageMetaDataHelper.getEmbeddedDateOrFileDate(getFileFromID(attachmentID)); 
     }
@@ -595,7 +599,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public File getThumbnail(final Attachment attachment, final int maxSideInPixels)
     {
-        return getOriginalScaled(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), maxSideInPixels);
+        return getOriginalScaled(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), maxSideInPixels, null);
     }
 
 
@@ -803,6 +807,24 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public String getImageAttachmentURL()
     {
         return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#addListener(edu.ku.brc.util.AttachmentMgrListener)
+     */
+    @Override
+    public void addListener(AttachmentMgrListener listener)
+    {
+        listeners.add(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#removeListener(edu.ku.brc.util.AttachmentMgrListener)
+     */
+    @Override
+    public void removeListener(AttachmentMgrListener listener)
+    {
+        listeners.remove(listener);
     }
 
     /* (non-Javadoc)

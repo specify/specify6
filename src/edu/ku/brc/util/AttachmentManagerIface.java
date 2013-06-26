@@ -59,7 +59,7 @@ public interface AttachmentManagerIface
      * @param attachment the attachment record
      * @return a java.io.File handle to the attachment document
      */
-    public abstract File getOriginal(Attachment attachment);
+    public abstract File getOriginal(Attachment attachment, byte[] bytes);
     
     /**
      * @param attachLoc
@@ -69,7 +69,8 @@ public interface AttachmentManagerIface
      */
     public abstract File getOriginal(String attachLoc,
                                      String originalLoc,
-                                     String mimeType);
+                                     String mimeType,
+                                     byte[] bytes);
 
     /**
      * @param attachLoc
@@ -81,7 +82,8 @@ public interface AttachmentManagerIface
     public abstract File getOriginalScaled(String attachLoc,
                                            String originalLoc,
                                            String mimeType,
-                                           int maxSideInPixels);
+                                           int maxSideInPixels,
+                                           byte[] bytes);
 
     /**
      * @param attachmentID the record id of the attachment.
@@ -93,7 +95,7 @@ public interface AttachmentManagerIface
      * @param attachmentID the record id of the attachment.
      * @return the embedded image meta data for the image in the repository.
      */
-    public abstract Calendar getFileEmbddedDate(int attachmentID);
+    public abstract Calendar getFileEmbeddedDate(int attachmentID);
     
     /**
      * Get a file handle to the attachment thumbnail.
@@ -176,7 +178,19 @@ public interface AttachmentManagerIface
     /**
      * @param sizeInPixels
      */
-    public void setThumbSize(int sizeInPixels);
+    public abstract void setThumbSize(int sizeInPixels);
+    
+    /**
+     * Adds a listener for when files are loading.
+     * @param listener the listener
+     */
+    public abstract void addListener(AttachmentMgrListener listener);
+    
+    /**
+     * Removes a listener for when files are loading.
+     * @param listener the listener
+     */
+    public abstract void removeListener(AttachmentMgrListener listener);
     
     /**
      * Perform any internal cleanup needed before shutdown.

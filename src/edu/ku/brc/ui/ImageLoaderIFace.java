@@ -56,4 +56,9 @@ public interface ImageLoaderIFace
      * Tells Image Loader to stop
      */
     public abstract void stopLoading();
+    
+    /**
+     * Removes listeners and other internal memory items.
+     */
+    public abstract void cleanup();
 }

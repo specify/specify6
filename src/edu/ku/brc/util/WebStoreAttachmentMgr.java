@@ -35,10 +35,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -86,11 +90,13 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
 
     
     private Boolean                 isInitialized      = null;
-    private byte[]                  bytes              = new byte[100*1024];
     private File                    downloadCacheDir; 
     private File                    shortTermCacheDir; 
     private FileCache               shortTermCache;
     private SimpleDateFormat        dateFormat         = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
+    
+    private ArrayList<AttachmentMgrListener> listeners = new ArrayList<AttachmentMgrListener>();
+    private AtomicInteger                    attachCnt = new AtomicInteger(0);
     
     // URLs
     private String                  readURLStr    = null;
@@ -198,8 +204,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             if (StringUtils.isNotEmpty(urlStr))
             {
-                File tmpFile = File.createTempFile("sp6", ".xml", downloadCacheDir.getAbsoluteFile());
-                if (fillFileFromWeb(urlStr, tmpFile))
+                byte[] bytes   = new byte[100*1024]; // 10K
+                File   tmpFile = File.createTempFile("sp6", ".xml", downloadCacheDir.getAbsoluteFile());
+                if (fillFileFromWeb(urlStr, tmpFile, bytes))
                 {
                     if (getURLSFromFile(tmpFile))
                     {
@@ -336,8 +343,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 InputStream inpStream = url.openStream();
                 if (inpStream != null)
                 {
-                    StringBuilder dataStr = new StringBuilder();
-                    BufferedInputStream  in  = new BufferedInputStream(inpStream);
+                    byte[]               bytes   = new byte[100*1024]; // 10K
+                    StringBuilder        dataStr = new StringBuilder();
+                    BufferedInputStream  in      = new BufferedInputStream(inpStream);
                     do
                     {
                         int numBytes = in.read(bytes);
@@ -372,7 +380,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getFileEmbddedDate(int)
      */
     @Override
-    public Calendar getFileEmbddedDate(final int attachmentID)
+    public Calendar getFileEmbeddedDate(final int attachmentID)
     {
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
         if (StringUtils.isNotEmpty(fileName))
@@ -425,18 +433,18 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(edu.ku.brc.specify.datamodel.Attachment)
      */
     @Override
-    public synchronized File getOriginal(final Attachment attachment)
+    public synchronized File getOriginal(final Attachment attachment, final byte[] bytes)
     {
-        return getOriginal(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType());
+        return getOriginal(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), bytes);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType)
+    public File getOriginal(final String attachLoc, final String originalLoc, final String mimeType, final byte[] bytes)
     {
-        return getFile(attachLoc, originalLoc, mimeType, null);
+        return getFile(attachLoc, originalLoc, mimeType, null, bytes);
     }
 
     /* (non-Javadoc)
@@ -446,9 +454,10 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     public File getOriginalScaled(final String attachLoc,
                                   final String originalLoc,
                                   final String mimeType,
-                                  final int maxSideInPixels)
+                                  final int maxSideInPixels,
+                                  final byte[] bytes)
     {
-        return getFile(attachLoc, originalLoc, mimeType, maxSideInPixels);
+        return getFile(attachLoc, originalLoc, mimeType, maxSideInPixels, bytes);
     }
 
     /* (non-Javadoc)
@@ -457,7 +466,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     @Override
     public synchronized File getThumbnail(final Attachment attachment, final int maxSideInPixels)
     {
-        return getOriginalScaled(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), maxSideInPixels);
+        return getOriginalScaled(attachment.getAttachmentLocation(), attachment.getOrigFilename(), attachment.getMimeType(), maxSideInPixels, new byte[10240]);
     }
 
     /**
@@ -568,10 +577,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @param scale
      * @return
      */
-    private synchronized File getFile(final String  attachLocation,
-                                      final String  originalLoc,
-                                      final String  mimeTypeArg,
-                                      final Integer scale)
+    private File getFile(final String  attachLocation,
+                         final String  originalLoc,
+                         final String  mimeTypeArg,
+                         final Integer scale,
+                         final byte[]  bytes)
     {
         // Check to see what locations were passed in
         boolean hasAttachmentLoc = StringUtils.isNotEmpty(attachLocation);
@@ -651,14 +661,17 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             
             if (hasScaleSize && isImage) // Images get scaled on the server
             {
-                File tmpFile = getFileFromWeb(attachLocation, mimeType, scale); // ask server for scaled image
+                File tmpFile = getFileFromWeb(attachLocation, mimeType, scale, bytes); // ask server for scaled image
+                if (tmpFile == null)  return null;
+                
                 FileUtils.copyFile(tmpFile, destFile);
                 return shortTermCache.cacheFile(destFile);
             }  
             
             // Get the Full Image
             // It's not an image, so we need to get the whole file
-            File tmpFile = getFileFromWeb(attachLocation, mimeType, null);
+            File tmpFile = getFileFromWeb(attachLocation, mimeType, null, bytes);
+            if (tmpFile == null) return null;
             
             // Rename file to cache
             String path  = FilenameUtils.getPrefix(tmpFile.getAbsolutePath()) + FilenameUtils.getPath(tmpFile.getAbsolutePath()) + destFile.getName();
@@ -690,13 +703,41 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     }
     
     /**
+     * @param inc
+     */
+    private synchronized void notifyListeners(final int inc) 
+    {
+        attachCnt.set(attachCnt.intValue() + inc);
+        final int count = attachCnt.intValue();
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                for (AttachmentMgrListener l : listeners)
+                {
+                    l.filesLoading(count);
+                }
+            }
+        });
+    }
+    
+    /**
      * @param urlStr
      * @param tmpFile
      * @return
      * @throws IOException
      */
-    private boolean fillFileFromWeb(final String urlStr, final File tmpFile)
+
+    private boolean fillFileFromWeb(final String urlStr, final File tmpFile, final byte[] bytes)
     {
+        if (bytes == null)
+        {
+            System.out.println("bytes == null");
+        }
+        notifyListeners(1);
+
         try
         {
             URL url = new URL(urlStr);
@@ -730,6 +771,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             log.error(ex.getMessage());
             //ex.printStackTrace();
+        } finally 
+        {
+            notifyListeners(-1);
         }
         
         return false;
@@ -742,8 +786,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @param scale
      * @return
      */
-    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final Integer scale)
-    {
+//    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final Integer scale)
+//    {
 // For testing
 //        boolean NO_INTERNET = false;
 //        if (NO_INTERNET)
@@ -775,19 +819,18 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
 //            }
 //            return tmpFile;
 //        }
-        
+    
+    private File getFileFromWeb(final String fileName, 
+                                final String mimeType, 
+                                final Integer scale,
+                                final byte[] bytes)
+    {
         try
         {
-            File tmpFile = createTempFile(fileName, false);
+            File   tmpFile = createTempFile(fileName, false);
+            String urlStr  = subAllExtraData(readURLStr, fileName, scale != null, scale, null);
             
-            //String urlStr = String.format("http://localhost/cgi-bin/fileget.php?type=%s&filename=%s&mimeType=%s;disp=%s", 
-            //                  isThumb ? "thumbs" : "originals", fileName, StringUtils.isNotEmpty(mimeType) ? mimeType : "",
-            //                  discipline.getName());
-            
-            String urlStr = subAllExtraData(readURLStr, fileName, scale != null, scale, null);
-            
-            //log.debug("["+urlStr+"]");
-            return fillFileFromWeb(urlStr, tmpFile) ? tmpFile : null;
+            return fillFileFromWeb(urlStr, tmpFile, bytes) ? tmpFile : null;
             
         } catch (Exception ex)
         {
@@ -1041,7 +1084,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             
         } else
         {
-            origFile = getOriginal(attachment);
+            origFile = getOriginal(attachment, new byte[10240]);
         }
         
         if (origFile != null)
@@ -1072,6 +1115,24 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         return thumbFile;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#addListener(edu.ku.brc.util.AttachmentMgrListener)
+     */
+    @Override
+    public void addListener(AttachmentMgrListener listener)
+    {
+        listeners.add(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#removeListener(edu.ku.brc.util.AttachmentMgrListener)
+     */
+    @Override
+    public void removeListener(AttachmentMgrListener listener)
+    {
+        listeners.remove(listener);
+    }
+
     /**
      * @param algorithm
      * @param fileName
@@ -1199,5 +1260,18 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         return fileGetMetaDataURLStr;
     }
     
-    
+    class FileDownloadQueue {
+        String url;
+        File   tmpFile;
+        /**
+         * @param url
+         * @param tmpFile
+         */
+        public FileDownloadQueue(String url, File tmpFile)
+        {
+            super();
+            this.url = url;
+            this.tmpFile = tmpFile;
+        }
+    }
 }

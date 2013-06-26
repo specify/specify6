@@ -215,13 +215,13 @@ public class ImagesPane extends BaseSubPane
         imgLoadListenerExtern = new ImageLoaderListener()
         {
             @Override
-            public void imagedLoaded(final String imageName,
-                                     final String mimeType,
-                                     final boolean doLoadFullImage,
-                                     final int scale,
-                                     final boolean isError, 
-                                     final ImageIcon imgIcon,
-                                     final File localFile)
+            public void imagedLoaded(final String    imageName,
+                                     final String    mimeType,
+                                     final boolean   doLoadFullImage,
+                                     final int       scale,
+                                     final boolean   isError,
+                                     final ImageIcon imageIcon, 
+                                     final File      localFile)
             {
                 if (!isError && localFile != null && localFile.exists())
                 {
@@ -237,6 +237,14 @@ public class ImagesPane extends BaseSubPane
                         ex.printStackTrace();
                     }
                 }
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+             */
+            @Override
+            public void imageStopped(final String imageName, final boolean doLoadFullImage)
+            {
             }
         };
         
@@ -407,6 +415,7 @@ public class ImagesPane extends BaseSubPane
                 reloadAttachments();
             }
         });
+        
     }
     
     /**
@@ -619,7 +628,7 @@ public class ImagesPane extends BaseSubPane
     {
         for (ImageDataItem idi : rowsVector)
         {
-            idi.shutdown();
+            idi.cleanup();
         }
         rowsVector.clear();
         
@@ -634,7 +643,7 @@ public class ImagesPane extends BaseSubPane
         String filter   = getFilterString();
         String whereStr = StringUtils.isNotEmpty(filter) ? (" WHERE " + filter) : ""; 
         String    sql   = String.format("SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType " +
-        		                        "FROM attachment a %s ORDER BY TimestampCreated DESC", whereStr);
+                                        "FROM attachment a %s ORDER BY TimestampCreated DESC", whereStr);
         log.debug(sql);
         Statement stmt  = null;
         try
@@ -1085,8 +1094,6 @@ public class ImagesPane extends BaseSubPane
             @Override
             public void itemSelected(ImageCellDisplay icd, int index, boolean isSelected, int clickCount)
             {
-                log.debug("itemSelected - index: "+index+"  isSelected:" +isSelected+"  clickCount:" +clickCount);
-
                 if (isSelected)
                 {
                     if (clickCount == 1)

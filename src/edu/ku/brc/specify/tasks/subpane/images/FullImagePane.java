@@ -95,15 +95,26 @@ public class FullImagePane extends BaseSubPane
             imgDataItem.loadScaledImage(-1, new ImageLoaderListener()
             {
                 @Override
-                public void imagedLoaded(String imageName,
-                                         String mimeType,
-                                         boolean doLoadFullImage,
-                                         int scale,
-                                         boolean isError,
-                                         ImageIcon imageIcon, 
-                                         File localFile)
+                public void imagedLoaded(final String    imageName,
+                                         final String    mimeType,
+                                         final boolean   doLoadFullImage,
+                                         final int       scale,
+                                         final boolean   isError,
+                                         final ImageIcon imageIcon, 
+                                         final File      localFile)
                 {
                     imgIcon = !isError ? imageIcon : null;
+                    imgDisp.setImage(imgIcon);
+                    FullImagePane.this.repaint();
+                }
+
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+                 */
+                @Override
+                public void imageStopped(final String imageName, final boolean doLoadFullImage)
+                {
+                    imgIcon = null;
                     imgDisp.setImage(imgIcon);
                     FullImagePane.this.repaint();
                 }

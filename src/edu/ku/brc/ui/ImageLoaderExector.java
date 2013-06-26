@@ -36,7 +36,7 @@ public class ImageLoaderExector
      */
     public ImageLoaderExector()
     {
-        this(5);
+        this(2);
     }
     
     /**
