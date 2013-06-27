@@ -479,9 +479,11 @@ public class ExportMappingTask extends QueryTask
 	@Override
 	public String getHelpTarget() 
 	{
-		return "export_data";
+		return "schema_mapping";
 	}
 
+	
+	
 	/**
 	 * @return TableInfo for the current exportSchema
 	 */

@@ -779,11 +779,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         
-        JButton helpBtn = UIHelper.createHelpIconButton("QB");
+        JButton helpBtn = UIHelper.createHelpIconButton(getHelpBtnContext());
         bottom.add(helpBtn, BorderLayout.WEST);
         add(bottom, BorderLayout.SOUTH);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+    
+    /**
+     * @return
+     */
+    protected String getHelpBtnContext()
+    {
+    	if (getTask() instanceof ExportMappingTask)
+    	{
+    		return "schema_mapping";
+    	} else 
+    	{
+    		return "QB";
+    	}
     }
     
     /**
