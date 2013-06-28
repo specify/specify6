@@ -34907,7 +34907,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="guid" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="guid" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
