@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -83,7 +85,6 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 public class WebStoreAttachmentMgr implements AttachmentManagerIface
 {
     private static final Logger  log   = Logger.getLogger(WebStoreAttachmentMgr.class);
-    private static final String DEFAULT_URL    = "http://specifyassets.nhm.ku.edu/Informatics/getmetadata.php?dt=<dt>&type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>";
     private static final String ATTACHMENT_URL = "SELECT AttachmentLocation FROM attachment WHERE AttachmentID = ";
     private static final String UNKNOWN        = "unknown";
     private static MessageDigest sha1 = null;
@@ -383,11 +384,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     public Calendar getFileEmbeddedDate(final int attachmentID)
     {
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
-        if (StringUtils.isNotEmpty(fileName))
+        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
         {
-            String metaDataURLStr = StringUtils.isNotEmpty(fileGetMetaDataURLStr) ? fileGetMetaDataURLStr :  DEFAULT_URL;
-            
-            String urlStr  = subAllExtraData(metaDataURLStr, fileName, false, null, "date");
+            String urlStr  = subAllExtraData(fileGetMetaDataURLStr, fileName, false, null, "date");
             String dateStr = getURLDataAsString(urlStr);
             
             if (dateStr != null && dateStr.length() == 10)
@@ -416,11 +415,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     public String getMetaDataAsJSON(final int attachmentID)
     {
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
-        if (StringUtils.isNotEmpty(fileName))
+        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
         {
-            String metaDataURLStr = StringUtils.isNotEmpty(fileGetMetaDataURLStr) ? fileGetMetaDataURLStr : DEFAULT_URL;
-            
-            String urlStr  = subAllExtraData(metaDataURLStr, fileName, false, null, "json");
+            String urlStr  = subAllExtraData(fileGetMetaDataURLStr, fileName, false, null, "json");
             String jsonStr = getURLDataAsString(urlStr);
         
             //log.debug(jsonStr);
@@ -569,6 +566,18 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         // No thumbnail, no icon, use the 'unknown' icon
         return getFileForIconName(UNKNOWN);
     }
+    
+    /**
+     * Returns true if the Attachment Server can create an image for it.
+     * (Ideally this class should as the server for the mime types)
+     * @param mimeType the mime type of the file
+     * @return true if it is retruned as an image
+     */
+    private boolean isAvailableAsImage(final String  mimeType)
+    {
+        return mimeType.startsWith("image/") ||
+               mimeType.endsWith("pdf");
+    }
 
     /**
      * @param attachLocation
@@ -591,7 +600,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         if (!hasAttachmentLoc && !hasOrigFileName) return getFileForIconName(UNKNOWN);
         
         String  mimeType = mimeTypeArg != null ? mimeTypeArg : AttachmentUtils.getMimeType(hasAttachmentLoc ? attachLocation : originalLoc);
-        boolean isImage  = mimeType.startsWith("image/");
+        boolean isImage  = isAvailableAsImage(mimeType);
         
         String fileNameToGet = attachLocation;
         if (hasAttachmentLoc)
@@ -738,9 +747,10 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         notifyListeners(1);
 
+        URL url = null;
         try
         {
-            URL url = new URL(urlStr);
+            url = new URL(urlStr);
             InputStream inpStream = url.openStream();
             if (inpStream != null)
             {
@@ -767,10 +777,15 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 return true;
             }
             
-        } catch (IOException ex)
+        } catch(FileNotFoundException ex)
         {
             log.error(ex.getMessage());
-            //ex.printStackTrace();
+        }
+        catch (IOException ex)
+        {
+            log.error(ex.getMessage());
+            log.error(url);
+            ex.printStackTrace();
         } finally 
         {
             notifyListeners(-1);
@@ -1005,7 +1020,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         String targetFileName = attachment.getAttachmentLocation();
         if (deleteFileFromWeb(targetFileName, false))
         {
-            deleteFileFromWeb(targetFileName, true); // ok to fail deleting thumb
+            // the server deletes thumbs when deleting original.
+//            deleteFileFromWeb(targetFileName, true); // ok to fail deleting thumb
         } else
         {
             UIRegistry.showLocalizedError("ATTCH_NOT_DEL_REPOS", targetFileName);
@@ -1034,15 +1050,19 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             //String     targetURL  = String.format("http://localhost/cgi-bin/filedelete.php?filename=%s;disp=%s", targetName, discipline.getName());
-            String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
-            GetMethod  getMethod  = new GetMethod(targetURL);
-
+            //String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
+            PostMethod  postMethod  = new PostMethod(delURLStr);
+            postMethod.addParameter("filename", fileName);
+            postMethod.addParameter("coll", values[0]);
+            postMethod.addParameter("disp", values[1]);
+            postMethod.addParameter("div",  values[2]);
+            postMethod.addParameter("inst", values[3]);            
             //log.debug("Deleting " + fileName + " from " + targetURL );
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-            int status = client.executeMethod(getMethod);
+            int status = client.executeMethod(postMethod);
             
             //log.debug(getMethod.getResponseBodyAsString());
 
@@ -1054,6 +1074,49 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             ex.printStackTrace();
         }
         return false;
+//        String targetURL = delURLStr;
+//        PostMethod delPost = new PostMethod(targetURL);
+//
+//        fillValuesArray();
+//        
+//        try
+//        {
+//            log.debug("Deleting " + fileName);
+//            
+//            Part[] parts = {
+//                    new StringPart("type", isThumb ? "T" : "O"),
+//                    new StringPart("store", fileName),
+//                    new StringPart("coll", values[0]),
+//                    new StringPart("disp", values[1]),
+//                    new StringPart("div",  values[2]),
+//                    new StringPart("inst", values[3]),
+//                };
+//
+//            delPost.setRequestEntity(new MultipartRequestEntity(parts, delPost.getParams()));
+//            HttpClient client = new HttpClient();
+//            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+//
+//            int status = client.executeMethod(delPost);
+//            
+//            //log.debug("---------------------------------------------------");
+//            log.debug(delPost.getResponseBodyAsString());
+//            //log.debug("---------------------------------------------------");
+//
+//            if (status == HttpStatus.SC_OK)
+//            {
+//                return true;
+//            }
+//            
+//        } catch (Exception ex)
+//        {
+//            log.error("Error:  " + ex.getMessage());
+//            ex.printStackTrace();
+//            
+//        } finally
+//        {
+//            delPost.releaseConnection();
+//        }
+//        return false;
     }
 
     /* (non-Javadoc)
