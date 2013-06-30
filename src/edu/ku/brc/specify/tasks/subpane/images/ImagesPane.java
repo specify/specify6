@@ -659,6 +659,11 @@ public class ImagesPane extends BaseSubPane
             }
             rs.close();
             
+            if (rowsVector.size() == 0) 
+            {
+                writeTimedSimpleGlassPaneMsg(getResourceString("ATTCH_NO_IMAGES"));
+            }
+            
             //Collections.sort(rowsVector, createComparator());
             
         } catch (Exception e)

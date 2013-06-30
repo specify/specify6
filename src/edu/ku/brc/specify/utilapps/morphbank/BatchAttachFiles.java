@@ -193,9 +193,9 @@ public class BatchAttachFiles
                 for (String line : FileUtils.readLines(indexFile))
                 {
                     if (line.indexOf('\t') > 0) tabCnt++;
-                    if (line.indexOf(',') > 0) tabCnt++;
+                    if (line.indexOf(',') > 0) commaCnt++;
                     if (!line.trim().isEmpty()) cnt++;
-                    System.out.println("["+line.trim()+"]");
+                    //System.out.println("["+line.trim()+"]");
                 }
                 if (tabCnt == cnt) 
                 {

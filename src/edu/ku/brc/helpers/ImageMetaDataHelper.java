@@ -106,7 +106,7 @@ public class ImageMetaDataHelper
             String mimeType = URLConnection.guessContentTypeFromStream(bufInp);
             bufInp.close();
             
-            System.err.println("MimeType: "+mimeType);
+            //System.err.println("MimeType: "+mimeType);
             if (mimeType != null && mimeType.startsWith("image"))
             {
                 Metadata metadata = ImageMetadataReader.readMetadata(file);

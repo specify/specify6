@@ -155,7 +155,7 @@ public class FileCache implements DataCacheIFace
 		maxCacheMB        = 30; // 30MB
 		maxRententionDays = 5;  // days
 		
-		purgeOldFiles();
+		purgeFiles();
 	}
 
     /**
@@ -163,17 +163,18 @@ public class FileCache implements DataCacheIFace
      */
     public void clear()
     {
-        // purge all of the files
-        while (purgeLruCacheFile())
+        handleToFilenameHash.clear();
+        File[] files = cacheDir.listFiles();
+        for(File file : files)
         {
-            // do nothing
+            file.delete();
         }
     }
     
     /**
      * Removes all the files that are past the maximum retention time.
      */
-    protected synchronized void purgeOldFiles()
+    protected synchronized void purgeFiles()
     {
         long maxMilliSeconds = ONE_DAY_MILLSEC * maxRententionDays;
         long currMilliSecs   = System.currentTimeMillis();
@@ -187,7 +188,7 @@ public class FileCache implements DataCacheIFace
             boolean isOld = currMilliSecs - p.second > maxMilliSeconds;
             //double  days  = (double)(currMilliSecs - p.second) / (double)ONE_DAY_MILLSEC;
             //log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld+"  Days:"+String.format("%8.4f", days));
-            if (isOld)
+            if (isOld || (totalCacheSize / ONE_MEG) > maxCacheMB)
             {
                 if (!purgeCacheFile(p.first))
                 {
@@ -298,8 +299,13 @@ public class FileCache implements DataCacheIFace
 	 */
 	public void setMaxCacheSize(int megaBytes)
 	{
+	    boolean doPurge = (maxCacheMB < megaBytes) || (totalCacheSize / ONE_MEG) > megaBytes;
 		maxCacheMB          = megaBytes;
         this.enforceMaxSize = true;
+        if (doPurge) 
+        {
+            purgeFiles();
+        }
 	}
 
 	/**
@@ -341,7 +347,7 @@ public class FileCache implements DataCacheIFace
      */
     protected synchronized void loadCacheMappingFile()
 	{
-		//log.debug("Loading old cache mapping data from " + mappingFilename);
+		log.debug("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir, mappingFilename);
         if (!cacheDir.exists())
         {
@@ -388,7 +394,20 @@ public class FileCache implements DataCacheIFace
 		}
 		else
 		{
-			log.warn("Unable to locate old cache mapping file.  Cache will start out empty.");
+		    handleToFilenameHash.clear();
+		    totalCacheSize = 0L;
+		    File[] files = cacheDir.listFiles();
+		    for (File file : files)
+		    {
+		        String nm = file.getName();
+		        if (!nm.startsWith(".") && !nm.endsWith("xml") && !nm.endsWith("map") && !nm.endsWith("cache"))
+		        {
+		            totalCacheSize += file.length();
+		            handleToFilenameHash.setProperty(nm, file.getAbsolutePath());
+		        }
+		    }
+		    
+			log.warn(String.format("Unable to locate old cache mapping file.  Building cache... %d / %d", totalCacheSize, totalCacheSize / ONE_MEG));
 		}
 	}
 
@@ -488,8 +507,10 @@ public class FileCache implements DataCacheIFace
 			{
 				File f = new File(filename);
 				totalCacheSize += f.length();
+				//System.out.println(String.format("%s - %d", filename, f.length()));
 			}
 		}
+		log.debug(String.format("Cache Size: %d / %d", totalCacheSize, totalCacheSize / ONE_MEG));
 	}
 
     /**
@@ -529,15 +550,15 @@ public class FileCache implements DataCacheIFace
      * 
 	 * @return true if a file was purged, false otherwise
 	 */
-	protected synchronized boolean purgeLruCacheFile()
-	{
-	    Pair<String, Long> p = findOldestKeyLRU();
-	    if (p != null)
-	    {
-	        return purgeCacheFile(p.first);
-	    }
-	    return false;
- 	}
+//	protected synchronized boolean purgeLruCacheFile()
+//	{
+//	    Pair<String, Long> p = findOldestKeyLRU();
+//	    if (p != null)
+//	    {
+//	        return purgeCacheFile(p.first);
+//	    }
+//	    return false;
+// 	}
 
 	/**
 	 * Cache <code>item</code> using the given key for retrieval.
@@ -557,15 +578,10 @@ public class FileCache implements DataCacheIFace
 
 		totalCacheSize += item.length();
 		
-		long totSize = totalCacheSize / ONE_MEG;
+		//long totSize = totalCacheSize / ONE_MEG;
         //log.debug("Just Added New File totSize: "+totSize +" > maxCacheMB: "+maxCacheMB+"   enforceMaxSize: "+enforceMaxSize+"   Bytes to be added:"+item.length());
         
-		while (enforceMaxSize && (totSize > maxCacheMB))
-		{
-			if (!purgeLruCacheFile()) break;
-		    totSize = totalCacheSize / ONE_MEG;
-		    //log.debug("totSize: "+totSize +"  maxCacheMB: "+maxCacheMB);
-		}
+		purgeFiles();
 	}
 	
 	/**
