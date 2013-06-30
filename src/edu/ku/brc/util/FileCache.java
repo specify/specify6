@@ -28,7 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Properties;
@@ -45,14 +44,14 @@ import org.apache.log4j.Logger;
  * Provides for a local file cache of <code>File</code>s, binary data
  * in the form of <code>byte[]</code>s, and web resources or URLs.
  *
- * @code_status Complete
+ * @code_status Never Complete
  * @author jstewart
  */
 public class FileCache implements DataCacheIFace
 {
 	private static final Logger log             = Logger.getLogger(FileCache.class);
 	private static String mappingFileComment    = "edu.ku.brc.util.FileCache Name Mapping File";
-	private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
+	//private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
 	private static String defaultPrefix         = "brc-";
 	private static String defaultSuffix         = ".cache";
     private static String defaultPath           = System.getProperty("java.io.tmpdir");
@@ -186,7 +185,7 @@ public class FileCache implements DataCacheIFace
             if (p == null) break;
             
             boolean isOld = currMilliSecs - p.second > maxMilliSeconds;
-            double  days  = (double)(currMilliSecs - p.second) / (double)ONE_DAY_MILLSEC;
+            //double  days  = (double)(currMilliSecs - p.second) / (double)ONE_DAY_MILLSEC;
             //log.debug(p.first+" - "+p.second+"; "+ (currMilliSecs - p.second) +" > " + maxMilliSeconds + " = "+isOld+"  Days:"+String.format("%8.4f", days));
             if (isOld)
             {
@@ -415,7 +414,7 @@ public class FileCache implements DataCacheIFace
 	 *
 	 * @return the least recently used key and it last access time
 	 */
-	protected Pair<String, Long> findOldestKeyLRU()
+	protected synchronized Pair<String, Long> findOldestKeyLRU()
 	{
 		String lruKey        = null;
 		long   lruAccessTime = Long.MAX_VALUE;
@@ -548,7 +547,7 @@ public class FileCache implements DataCacheIFace
 	 */
 	protected synchronized void cacheNewItem(final String key, final File item)
 	{
-        long currentTime = System.currentTimeMillis();
+        //long currentTime = System.currentTimeMillis();
         //log.debug("Caching " + key + " at " + currentTime);
 		Object oldValue = handleToFilenameHash.setProperty(key, item.getAbsolutePath());
 		if (oldValue != null)
@@ -728,7 +727,7 @@ public class FileCache implements DataCacheIFace
 	 * @param key the handle to the cached file
 	 * @return the cached File, or null if no such file exists
 	 */
-	public File getCacheFile(final String key)
+	public synchronized File getCacheFile(final String key)
 	{
 	    //log.debug(String.format("Get [%s]", key));
 
@@ -760,7 +759,7 @@ public class FileCache implements DataCacheIFace
      * @param key the key for the cached item
      * @return the last time the item was accessed
      */
-    public long getLastAccessTime(final String key)
+    public synchronized long getLastAccessTime(final String key)
     {
         try
         {
