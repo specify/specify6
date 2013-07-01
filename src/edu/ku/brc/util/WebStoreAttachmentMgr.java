@@ -341,6 +341,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
         {
             GetMethod method = new GetMethod(fileGetMetaDataURLStr);
+            fillValuesArray();
             method.setQueryString(new NameValuePair[] {
                     new NameValuePair("dt", "json"),
                     new NameValuePair("filename", fileName),
@@ -396,6 +397,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
       if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
       {
             GetMethod method = new GetMethod(fileGetMetaDataURLStr);
+            fillValuesArray();
             method.setQueryString(new NameValuePair[] {
                     new NameValuePair("dt", "json"),
                     new NameValuePair("filename", fileName),
@@ -1002,6 +1004,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             //String     targetURL  = String.format("http://localhost/cgi-bin/filedelete.php?filename=%s;disp=%s", targetName, discipline.getName());
             //String     targetURL  = subAllExtraData(delURLStr, fileName, isThumb, null, null);
+            fillValuesArray();
             PostMethod  postMethod  = new PostMethod(delURLStr);
             postMethod.addParameter("filename", fileName);
             postMethod.addParameter("coll", values[0]);
