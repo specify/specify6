@@ -66,7 +66,7 @@ public class FullImagePane extends BaseSubPane
     {
         super(name, task);
         this.imageFile   = imageFile;
-        
+
         createUI();
     }
     
@@ -79,6 +79,7 @@ public class FullImagePane extends BaseSubPane
         CellConstraints cc = new CellConstraints();
         
         imgDisp = new ImageDisplay(1024, 768, false, false);
+        imgDisp.setFullImage(true);
         
         final JScrollPane  sp = UIHelper.createScrollPane(imgDisp, true);
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"), this);
@@ -90,7 +91,7 @@ public class FullImagePane extends BaseSubPane
             imgDisp.setImage(imgIcon);
             FullImagePane.this.repaint();
             
-        } else
+        } else if (imgDataItem != null)
         {
             imgDataItem.loadScaledImage(-1, new ImageLoaderListener()
             {

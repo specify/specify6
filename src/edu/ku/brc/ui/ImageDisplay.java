@@ -81,9 +81,11 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
     
 	protected Image        image           = null;
 	protected String       url;
-	protected boolean      isEditMode      = true;
+    protected boolean      isEditMode      = true;
+    protected boolean      isFullImage     = false;
 	protected JButton      editBtn;
-	protected String[]     noAttachmentStr      = StringUtils.split(getResourceString("nothumbnail"), ' ');
+    protected String[]     noAttachmentStr      = StringUtils.split(getResourceString("noattachment"), ' ');
+    protected String[]     noThumnailStr        = StringUtils.split(getResourceString("nothumbnail"), ' ');
 	protected String[]     loadingAttachmentStr = StringUtils.split(getResourceString("loadingattachment"), ' ');
 	protected boolean      isNoAttachment       = true;
     protected JFileChooser chooser;
@@ -169,6 +171,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 			add(editBtn, cc.xy(3, 1));
 		}
 	}
+
+    /**
+     * @param isFullImage the isFullImage to set
+     */
+    public void setFullImage(boolean isFullImage)
+    {
+        this.isFullImage = isFullImage;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.ImageLoaderIFace#stopLoading()
@@ -352,11 +362,11 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 	{
 	    if (stopLoading)
 	    {
-	        System.err.println("Skipping load..."+url);
+	        //System.err.println("Skipping load..."+url);
 	        status = kError;
             return;
 	    }
-	    System.err.println("Starting load.... "+url);
+	    //System.err.println("Starting load.... "+url);
 	    
 	    status = kImageOK;
 		if (isNotEmpty(url))
@@ -492,7 +502,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		} else if (doShowText)
 		{
 		    GraphicsUtils.turnOnAntialiasedDrawing(g);
-			String[]    label   = this.isNoAttachment ? noAttachmentStr : loadingAttachmentStr;
+			String[]    label   = this.isNoAttachment ? (isFullImage ? noAttachmentStr : noThumnailStr) : loadingAttachmentStr;
 			FontMetrics fm      = g.getFontMetrics();
 			int         spacing = 2;
 			int         yOffset = (h - (fm.getHeight() + spacing) * label.length) / 2;
