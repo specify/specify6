@@ -23,12 +23,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.DigestInputStream;
@@ -46,10 +44,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -201,39 +200,40 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      */
     private boolean getURLSetupXML(final String urlStr)
     {
-        try
+        boolean result = false;
+        if (StringUtils.isNotEmpty(urlStr))
         {
-            if (StringUtils.isNotEmpty(urlStr))
+            GetMethod method = new GetMethod(urlStr);
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+        
+            try
             {
-                byte[] bytes   = new byte[100*1024]; // 10K
-                File   tmpFile = File.createTempFile("sp6", ".xml", downloadCacheDir.getAbsoluteFile());
-                if (fillFileFromWeb(urlStr, tmpFile, bytes))
+                int status = client.executeMethod(method);
+                if (status == HttpStatus.SC_OK)
                 {
-                    if (getURLSFromFile(tmpFile))
-                    {
-                        tmpFile.delete();
-                        return true;
-                    }
-                    tmpFile.delete();
+                    result = getURLSFromStr(method.getResponseBodyAsString());
                 }
-            } 
-            
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+            } catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                method.releaseConnection();
+            }
         }
-        return false;
+        return result;
     }
     
     /**
      * @param webAssetFile
      * @return
      */
-    private boolean getURLSFromFile(final File webAssetFile)
+    private boolean getURLSFromStr(final String data)
     {
         try
         {
-            Element root = XMLHelper.readFileToDOM4J(webAssetFile);
+            Element root = XMLHelper.readStrToDOM4J(data);
             if (root != null)
             {
                 for (Iterator<?> i = root.elementIterator("url"); i.hasNext();) //$NON-NLS-1$
@@ -330,81 +330,58 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         return false;
     }
     
-    /**
-     * @param urlStr
-     * @return
-     */
-    public String getURLDataAsString(final String urlStr)
-    {
-        try
-        {
-            if (StringUtils.isNotEmpty(urlStr))
-            {
-                URL         url       = new URL(urlStr);
-                InputStream inpStream = url.openStream();
-                if (inpStream != null)
-                {
-                    byte[]               bytes   = new byte[100*1024]; // 10K
-                    StringBuilder        dataStr = new StringBuilder();
-                    BufferedInputStream  in      = new BufferedInputStream(inpStream);
-                    do
-                    {
-                        int numBytes = in.read(bytes);
-                        if (numBytes == -1)
-                        {
-                            break;
-                        }
-                        if (numBytes > 0)
-                        {
-                            String data = new String(bytes);
-                            dataStr.append(data);
-                        }
-                        
-                    } while(true);
-                    in.close();
-                
-                    //log.debug(dataStr.toString());
-                    return dataStr.toString();
-                }
-            }
-            
-        } catch (IOException ex)
-        {
-            log.error(ex.getMessage());
-        }
-
-        return null;
-    }
-
-
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getFileEmbddedDate(int)
      */
     @Override
     public Calendar getFileEmbeddedDate(final int attachmentID)
     {
+        String dateStr = null;
         String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
         if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
         {
-            String urlStr  = subAllExtraData(fileGetMetaDataURLStr, fileName, false, null, "date");
-            String dateStr = getURLDataAsString(urlStr);
-            
-            if (dateStr != null && dateStr.length() == 10)
+            GetMethod method = new GetMethod(fileGetMetaDataURLStr);
+            method.setQueryString(new NameValuePair[] {
+                    new NameValuePair("dt", "json"),
+                    new NameValuePair("filename", fileName),
+                    new NameValuePair("coll", values[0]),
+                    new NameValuePair("disp", values[1]),
+                    new NameValuePair("div",  values[2]),
+                    new NameValuePair("inst", values[3])
+            });
+    
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+        
+            try
             {
-                try
+                int status = client.executeMethod(method);
+                if (status == HttpStatus.SC_OK)
                 {
-                    Date convertedDate = dateFormat.parse(dateStr);
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(convertedDate.getTime());
-                    return cal;
-                    
-                } catch (ParseException e)
-                {
-                    e.printStackTrace();
+                    dateStr= method.getResponseBodyAsString();
                 }
+            } catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                method.releaseConnection();
+            }
+        }     
+                
+        if (dateStr != null && dateStr.length() == 10)
+        {
+            try
+            {
+                Date convertedDate = dateFormat.parse(dateStr);
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(convertedDate.getTime());
+                return cal;                        
+            } catch (ParseException e)
+            {
+                e.printStackTrace();
             }
         }
-            
         return null;
     }
 
@@ -414,16 +391,50 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     @Override
     public String getMetaDataAsJSON(final int attachmentID)
     {
-        String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
-        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
-        {
-            String urlStr  = subAllExtraData(fileGetMetaDataURLStr, fileName, false, null, "json");
-            String jsonStr = getURLDataAsString(urlStr);
+      String result = null;
+      String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
+      if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
+      {
+            GetMethod method = new GetMethod(fileGetMetaDataURLStr);
+            method.setQueryString(new NameValuePair[] {
+                    new NameValuePair("dt", "json"),
+                    new NameValuePair("filename", fileName),
+                    new NameValuePair("coll", values[0]),
+                    new NameValuePair("disp", values[1]),
+                    new NameValuePair("div",  values[2]),
+                    new NameValuePair("inst", values[3])
+            });
+    
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         
-            //log.debug(jsonStr);
-            return jsonStr;
-        }
-        return null;
+            try
+            {
+                int status = client.executeMethod(method);
+                if (status == HttpStatus.SC_OK)
+                {
+                    result = method.getResponseBodyAsString();
+                }
+            } catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                method.releaseConnection();
+            }
+      }     
+
+        //?dt=<dt>&type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>
+//        String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
+//        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
+//        {
+//            String urlStr  = subAllExtraData(fileGetMetaDataURLStr, fileName, false, null, "json");
+//            String jsonStr = getURLDataAsString(urlStr);
+//        
+//            //log.debug(jsonStr);
+//            return jsonStr;
+//        }
+        return result;
     }
 
     /* (non-Javadoc)
@@ -739,120 +750,101 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @throws IOException
      */
 
-    private boolean fillFileFromWeb(final String urlStr, final File tmpFile, final byte[] bytes)
+    private File getFileFromWeb(final String fileName, 
+                                 final String mimeType, 
+                                 final Integer scale,
+                                 final byte[] bytes)
     {
+        
+        File tmpFile;
+        try
+        {
+            tmpFile = createTempFile(fileName, false);
+        } catch (IOException e1)
+        {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            return null;
+        }
+        
+        boolean success = false;
+       
         if (bytes == null)
         {
             System.out.println("bytes == null");
         }
         notifyListeners(1);
 
-        URL url = null;
+        GetMethod getMethod = new GetMethod(readURLStr);
+        // type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>
+        fillValuesArray();
+        getMethod.setQueryString(new NameValuePair[] {
+                new NameValuePair("type", (scale != null) ? "T" : "O"),
+                new NameValuePair("scale", "" + scale),
+                new NameValuePair("filename", fileName),
+                new NameValuePair("coll", values[0]),
+                new NameValuePair("disp", values[1]),
+                new NameValuePair("div",  values[2]),
+                new NameValuePair("inst", values[3])
+        });
+                         
+                
+        HttpClient client = new HttpClient();
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+        
         try
         {
-            url = new URL(urlStr);
-            InputStream inpStream = url.openStream();
-            if (inpStream != null)
+            int status = client.executeMethod(getMethod);
+            if (status == HttpStatus.SC_OK)
             {
-                BufferedInputStream  in  = new BufferedInputStream(inpStream);
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
-                
-                //long totBytes = 0;
-                do
+                InputStream inpStream = getMethod.getResponseBodyAsStream();
+                if (inpStream != null)
                 {
-                    int numBytes = in.read(bytes);
-                    if (numBytes == -1)
-                    {
-                        break;
-                    }
-                    //totBytes += numBytes;
-                    bos.write(bytes, 0, numBytes);
+                    BufferedInputStream  in  = new BufferedInputStream(inpStream);
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
                     
-                } while(true);
-                //log.debug(String.format("Total Bytes for file: %d %d", totBytes, totBytes / 1024));
-                in.close();
-                bos.flush();
-                bos.close();
-            
-                return true;
-            }
-            
-        } catch(FileNotFoundException ex)
+                    //long totBytes = 0;
+                    do
+                    {
+                        int numBytes = in.read(bytes);
+                        if (numBytes == -1)
+                        {
+                            break;
+                        }
+                        //totBytes += numBytes;
+                        bos.write(bytes, 0, numBytes);
+                        
+                    } while(true);
+                    //log.debug(String.format("Total Bytes for file: %d %d", totBytes, totBytes / 1024));
+                    in.close();
+                    bos.flush();
+                    bos.close();
+                
+                    success = true;
+                }
+            }                                        
+        } catch (HttpException e)
         {
-            log.error(ex.getMessage());
-        }
-        catch (IOException ex)
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e)
         {
-            log.error(ex.getMessage());
-            log.error(url);
-            ex.printStackTrace();
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } finally 
         {
+            getMethod.releaseConnection();
             notifyListeners(-1);
         }
-        
-        return false;
-    }
     
-    /**
-     * @param fileName
-     * @param mimeType
-     * @param isThumb
-     * @param scale
-     * @return
-     */
-//    private synchronized File getFileFromWeb(final String fileName, final String mimeType, final Integer scale)
-//    {
-// For testing
-//        boolean NO_INTERNET = false;
-//        if (NO_INTERNET)
-//        {
-//            File tmpFile = null;
-//            try
-//            {
-//                tmpFile = createTempFile(fileName, false);
-//                
-//                if (fileName.endsWith("pdf"))
-//                {
-//                    FileUtils.copyFile(new File("/Users/rods/Downloads/PaymentConfirmation.pdf"), tmpFile);
-//                    
-//                } else if (fileName.endsWith("pdf"))
-//                {
-//                    FileUtils.copyFile(new File("/Users/rods/Downloads/IA.png"), tmpFile);
-//                    
-//                } else if (fileName.endsWith("docx"))
-//                {
-//                    FileUtils.copyFile(new File("/Users/rods/Downloads/Image.docx"), tmpFile);
-//                    
-//                } else if (fileName.endsWith("txt"))
-//                {
-//                    FileUtils.copyFile(new File("/Users/rods/Downloads/ich.txt"), tmpFile);
-//                }
-//            } catch (Exception ex)
-//            {
-//                ex.printStackTrace();
-//            }
-//            return tmpFile;
-//        }
-    
-    private File getFileFromWeb(final String fileName, 
-                                final String mimeType, 
-                                final Integer scale,
-                                final byte[] bytes)
-    {
-        try
-        {
-            File   tmpFile = createTempFile(fileName, false);
-            String urlStr  = subAllExtraData(readURLStr, fileName, scale != null, scale, null);
-            
-            return fillFileFromWeb(urlStr, tmpFile, bytes) ? tmpFile : null;
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
+        if (success) {
+            return tmpFile;
+        } else{
+            tmpFile.delete();
+            return null;
         }
-        return null;
     }
+    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
@@ -879,16 +871,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         
     }
 
-    /**
-     * @param urlStr
-     * @param symbol
-     * @param value
-     */
-    private String doSub(final String urlStr, final String symbol, final String value)
-    {
-        return StringUtils.replace(urlStr, symbol, value);
-    }
-    
+ 
     /**
      * 
      */
@@ -908,38 +891,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         {
             values[i] = StringUtils.replace(values[i], " ", "%20");
         }
-    }
-    
-    /**
-     * @param urlStr
-     */
-    private String subAllExtraData(final String urlStr, 
-                                   final String fileName, 
-                                   final boolean isThumb,
-                                   final Integer scale,
-                                   final String datatype)
-    {
-        fillValuesArray(); // with current values
-        
-        String newURLStr = urlStr;
-        for (int i=0;i<values.length;i++)
-        {
-            newURLStr = doSub(newURLStr, symbols[i], values[i]);
-        }
-        
-        newURLStr = doSub(newURLStr, "<type>", isThumb ? "T" : "O");
-        newURLStr = doSub(newURLStr, "<fname>", fileName);
-        newURLStr = doSub(newURLStr, "<dt>", datatype);
-        
-        if (scale != null)
-        {
-            if (!newURLStr.endsWith("&"))
-            {
-                newURLStr += "&";
-            }
-            newURLStr += "scale=" + scale.toString();
-        }
-        return newURLStr;
     }
     
     /**
@@ -1074,49 +1025,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             ex.printStackTrace();
         }
         return false;
-//        String targetURL = delURLStr;
-//        PostMethod delPost = new PostMethod(targetURL);
-//
-//        fillValuesArray();
-//        
-//        try
-//        {
-//            log.debug("Deleting " + fileName);
-//            
-//            Part[] parts = {
-//                    new StringPart("type", isThumb ? "T" : "O"),
-//                    new StringPart("store", fileName),
-//                    new StringPart("coll", values[0]),
-//                    new StringPart("disp", values[1]),
-//                    new StringPart("div",  values[2]),
-//                    new StringPart("inst", values[3]),
-//                };
-//
-//            delPost.setRequestEntity(new MultipartRequestEntity(parts, delPost.getParams()));
-//            HttpClient client = new HttpClient();
-//            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-//
-//            int status = client.executeMethod(delPost);
-//            
-//            //log.debug("---------------------------------------------------");
-//            log.debug(delPost.getResponseBodyAsString());
-//            //log.debug("---------------------------------------------------");
-//
-//            if (status == HttpStatus.SC_OK)
-//            {
-//                return true;
-//            }
-//            
-//        } catch (Exception ex)
-//        {
-//            log.error("Error:  " + ex.getMessage());
-//            ex.printStackTrace();
-//            
-//        } finally
-//        {
-//            delPost.releaseConnection();
-//        }
-//        return false;
     }
 
     /* (non-Javadoc)
