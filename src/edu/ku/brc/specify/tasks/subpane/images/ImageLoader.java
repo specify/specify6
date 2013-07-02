@@ -124,14 +124,6 @@ public class ImageLoader implements ImageLoaderIFace
         {
             ex.printStackTrace();
         }
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.ImageLoaderIFace#done()
-     */
-    @Override
-    public void done()
-    {
         // contLoading is for when something or someone wants to 
         // prematurely stop the loading.external 
         if (listener != null)
@@ -143,6 +135,14 @@ public class ImageLoader implements ImageLoaderIFace
                 listener.imageStopped(imageName, doLoadFullImage);
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ImageLoaderIFace#done()
+     */
+    @Override
+    public void done()
+    {
+
     }
 
     /* (non-Javadoc)

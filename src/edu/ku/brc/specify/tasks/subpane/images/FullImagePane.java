@@ -104,7 +104,7 @@ public class FullImagePane extends BaseSubPane
                                          final ImageIcon imageIcon, 
                                          final File      localFile)
                 {
-                    imgIcon = !isError ? imageIcon : null;
+                    imgIcon = !isError ? imgDataItem.getFullImgIcon() : null;
                     imgDisp.setImage(imgIcon);
                     FullImagePane.this.repaint();
                 }

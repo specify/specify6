@@ -91,8 +91,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     private Boolean                 isInitialized      = null;
     private File                    downloadCacheDir; 
-    private File                    shortTermCacheDir; 
-    private FileCache               shortTermCache;
     private SimpleDateFormat        dateFormat         = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
     
     private ArrayList<AttachmentMgrListener> listeners = new ArrayList<AttachmentMgrListener>();
@@ -136,17 +134,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         if (isInitialized == null)
         {
             isInitialized = false;
-            
-            shortTermCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "attach_cache");
-            if (!shortTermCacheDir.exists())
-            {
-                if (!shortTermCacheDir.mkdir())
-                {
-                    shortTermCacheDir = null;
-                    return isInitialized;
-                }
-            }
-                
+                            
             downloadCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "download_cache");
             if (!downloadCacheDir.exists())
             {
@@ -164,40 +152,12 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 } catch (IOException e) {}
             }
                 
-            try
-            {
-                shortTermCache = new FileCache(shortTermCacheDir.getAbsolutePath(), "cache.map");
-                
-                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-                Integer maxCacheMB = localPrefs.getInt("ATTACH_CACHE_SIZE", null);
-                if (maxCacheMB != null)
-                {
-                    shortTermCache.setMaxCacheSize(maxCacheMB);
-                }
-                shortTermCache.setSuffix("");
-                shortTermCache.setUsingExtensions(true);
-                
-                return isInitialized = getURLSetupXML(urlStr);
-                
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+          
+            isInitialized = getURLSetupXML(urlStr);
         }
         return isInitialized;
     }
     
-    /**
-     * @return
-     */
-    /*private File getConfigFile()
-    {
-        return new File(UIRegistry.getAppDataDir() + File.separator + "web_asset_store.xml");
-    }*/
-    
-    /**
-     * @return
-     */
     private boolean getURLSetupXML(final String urlStr)
     {
         boolean result = false;
@@ -425,18 +385,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 method.releaseConnection();
             }
       }     
-
-        //?dt=<dt>&type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>
-//        String fileName = BasicSQLUtils.querySingleObj(ATTACHMENT_URL + attachmentID);
-//        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(fileGetMetaDataURLStr))
-//        {
-//            String urlStr  = subAllExtraData(fileGetMetaDataURLStr, fileName, false, null, "json");
-//            String jsonStr = getURLDataAsString(urlStr);
-//        
-//            //log.debug(jsonStr);
-//            return jsonStr;
-//        }
-        return result;
+      return result;
     }
 
     /* (non-Javadoc)
@@ -495,6 +444,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
         return file;
     }
+    
+    private File getDLFileForName(final String fileName)
+    {
+        return new File(downloadCacheDir.getAbsoluteFile(), fileName);
+    }
 
     /**
      * @param iconName
@@ -548,11 +502,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 return getFileForIconName(UNKNOWN);
             }
             
-            // Put thumbail into cache with thumbnail name
-            File cachedFileHandle = shortTermCache.cacheFile(destFile);
-            if (destFile.exists()) destFile.delete();
-            
-            return cachedFileHandle;
+            return destFile;
             
         } catch (IOException ex)
         {
@@ -561,24 +511,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         return getFileForIconName(UNKNOWN);
     }
     
-    /**
-     * @param fileName
-     * @return
-     */
-    private File getIconFromFileName(final String fileName)
-    {
-        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(fileName.toLowerCase()));
-        if (iconName != null)
-        {
-            File iconFile = getFileForIconName(iconName);
-            if (iconFile != null) 
-            { 
-                return iconFile;
-            }
-        }
-        // No thumbnail, no icon, use the 'unknown' icon
-        return getFileForIconName(UNKNOWN);
-    }
+ 
     
     /**
      * Returns true if the Attachment Server can create an image for it.
@@ -591,6 +524,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         return mimeType.startsWith("image/") ||
                mimeType.endsWith("pdf");
     }
+
 
     /**
      * @param attachLocation
@@ -627,23 +561,12 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 fileNameToGet = getScaledFileName(attachLocation, scale);
             }
             
-            // Is the filename in the cache?
-            File cachedFile = shortTermCache.getCacheFile(fileNameToGet);
-            if (cachedFile != null && cachedFile.exists())
-            {
-                return cachedFile;
+            
+            File dlFile = getDLFileForName(fileNameToGet);
+            if (dlFile.exists()) {
+                return dlFile;
             }
             
-        } else if (hasOrigFileName && !hasScaleSize)
-        {
-            //////////////////////////////////////////////////////////////////
-            // Check to see if it is cached by original name (Full Sized)
-            //////////////////////////////////////////////////////////////////
-            File cachedFile = shortTermCache.getCacheFile(originalLoc);
-            if (cachedFile != null && cachedFile.exists())
-            {
-                return cachedFile;
-            }
         }
         
         //////////////////////////////////////////////////////////////////////
@@ -670,60 +593,22 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             return getFileForIconName(UNKNOWN);
         }
         
-        try
-        {
             // The File is on the server.
             //
             // Now if we need a scaled version of the file we need to make
             // sure we have a thumbnailer that can make the scaled image,
             // if we don't then just get an icon.
             
-            String fullPath = shortTermCache.createCachFileName(fileNameToGet);
-            File   destFile = new File(fullPath);
-            
             if (hasScaleSize && isImage) // Images get scaled on the server
             {
-                File tmpFile = getFileFromWeb(attachLocation, mimeType, scale, bytes); // ask server for scaled image
-                if (tmpFile == null)  return null;
-                
-                FileUtils.copyFile(tmpFile, destFile);
-                return shortTermCache.cacheFile(destFile);
+                return getFileFromWeb(attachLocation, mimeType, scale, bytes); // ask server for scaled image
             }  
             
             // Get the Full Image
             // It's not an image, so we need to get the whole file
-            File tmpFile = getFileFromWeb(attachLocation, mimeType, null, bytes);
-            if (tmpFile == null) return null;
-            
-            // Rename file to cache
-            String path  = FilenameUtils.getPrefix(tmpFile.getAbsolutePath()) + FilenameUtils.getPath(tmpFile.getAbsolutePath()) + destFile.getName();
-            File   dFile = new File(path);
-            
-            Path src = Paths.get(tmpFile.getAbsoluteFile().toURI());
-            Path dst = Paths.get(dFile.getAbsoluteFile().toURI());
-            java.nio.file.Files.move(src, dst, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-            File localFileFromCache = shortTermCache.cacheFile(dFile);
-            if (dFile.exists()) dFile.delete();
-            if (tmpFile.exists()) tmpFile.delete();
-            
-            if (hasScaleSize)
-            {
-                if (Thumbnailer.getInstance().hasGeneratorForMimeType(mimeType))
-                {
-                    return getThumnailFromFile(localFileFromCache, fileNameToGet, mimeType, scale);
-                }
-                return getIconFromFileName(fileNameToGet);
-            }
-            return localFileFromCache;
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
-        
-        return getFileForIconName(UNKNOWN); // I know, it shouldn't be an icon
+            return getFileFromWeb(attachLocation, mimeType, null, bytes);
     }
-    
+        
     /**
      * @param inc
      */
@@ -752,22 +637,23 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @throws IOException
      */
 
-    private File getFileFromWeb(final String fileName, 
+    private File getFileFromWeb(final String attachLocation, 
                                  final String mimeType, 
                                  final Integer scale,
                                  final byte[] bytes)
     {
-        
-        File tmpFile;
+        File dlFile = getDLFileForName((scale == null) ? attachLocation: getScaledFileName(attachLocation, scale));
         try
         {
-            tmpFile = createTempFile(fileName, false);
+            dlFile.createNewFile();
+            dlFile.deleteOnExit();
         } catch (IOException e1)
         {
             // TODO Auto-generated catch block
             e1.printStackTrace();
             return null;
         }
+
         
         boolean success = false;
        
@@ -783,7 +669,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         getMethod.setQueryString(new NameValuePair[] {
                 new NameValuePair("type", (scale != null) ? "T" : "O"),
                 new NameValuePair("scale", "" + scale),
-                new NameValuePair("filename", fileName),
+                new NameValuePair("filename", attachLocation),
                 new NameValuePair("coll", values[0]),
                 new NameValuePair("disp", values[1]),
                 new NameValuePair("div",  values[2]),
@@ -803,7 +689,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 if (inpStream != null)
                 {
                     BufferedInputStream  in  = new BufferedInputStream(inpStream);
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dlFile));
                     
                     //long totBytes = 0;
                     do
@@ -840,9 +726,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
     
         if (success) {
-            return tmpFile;
+            return dlFile;
         } else{
-            tmpFile.delete();
+            dlFile.delete();
             return null;
         }
     }
@@ -906,7 +792,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                                           final boolean isThumb)/*,
                                           final boolean saveInCache)*/
     {
-        String targetURL = writeURLStr;//"http://localhost/cgi-bin/fileupload.php";
+        String targetURL = writeURLStr;
         PostMethod filePost = new PostMethod(targetURL);
 
         fillValuesArray();
@@ -1076,14 +962,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                     sendFile(thumbFile, thumbFile.getName(), true);
                 }
                 
-                try
-                {
-                    thumbFile = shortTermCache.cacheFile(thumbFile.getName(), thumbFile);
-                    
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
             }
         }
         return thumbFile;
@@ -1193,13 +1071,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     @Override
     public void cleanup()
     {
-        try
-        {
-            shortTermCache.saveCacheMapping();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+
     }
 
     /**
