@@ -124,9 +124,9 @@ public class BuildSearchIndex2
         super();
         //XXX need to get schemamapping object, probably
         this.mapping = mapping;
-        this.writeToDir = writeToDir;
+        this.writeToDir = writeToDir + File.separator + "PortalFiles";
         
-        String solrIdxDir = writeToDir + File.separator + "solr";
+        String solrIdxDir = this.writeToDir + File.separator + "solr";
         fileNames  = new String[] {solrIdxDir};
         files      = new File[fileNames.length];
         analyzers  = new Analyzer[fileNames.length];
@@ -623,7 +623,7 @@ public class BuildSearchIndex2
     	String portalInstance = UUID.randomUUID().toString();
     	File f = new File(writeToDir + File.separator + mapping.getMappingName() + "_PortalInstanceSetting.json");
     	List<String> lines = new ArrayList<String>();
-    	lines.add("//Place the following line at the second line of resorces/config/settings.json. Remove previous portalInstance line if necessary.");
+    	lines.add("//Place the following line at the second line of resources/config/settings.json. Remove previous portalInstance line if necessary.");
     	lines.add("\"portalInstance\":\"" + portalInstance + "\",");
     	FileUtils.writeLines(f, lines);
     }
