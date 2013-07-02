@@ -661,6 +661,21 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            isInitialized = false;
+            initialize();
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
     @Override
