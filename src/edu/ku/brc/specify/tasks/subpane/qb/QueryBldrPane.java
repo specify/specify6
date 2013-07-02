@@ -3113,6 +3113,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             Set<Integer> queryFldsWithoutPanels = new HashSet<Integer>();
             for (SpQueryField qf : query.getFields())
             {
+            	System.out.println(qf.getFieldName());
             	queryFldsWithoutPanels.add(qf.getId());
             }
             
@@ -3179,7 +3180,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             
             if (schemaMapping != null)
             {
-            	result =  DataModelObjBase.saveWithError(true, query, schemaMapping);
+            	//result =  DataModelObjBase.saveWithError(true, query, schemaMapping);
+            	result =  DataModelObjBase.saveWithError(true, schemaMapping, query);
             }
             else
             {
@@ -4490,6 +4492,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         			//fld and field are different java objects
         			if (field.getId().equals(fld.getId()))
         			{
+        				SpExportSchemaItemMapping mappingForField = null;
+        				for (SpExportSchemaItemMapping m : schemaMapping.getMappings())
+        				{
+        					if (m.getQueryField() != null && field.getId().equals(m.getQueryField().getId()))
+        					{
+        						mappingForField = m;
+        						break;
+        					}
+        				}
+        				if (mappingForField != null)
+        				{
+        					schemaMapping.getMappings().remove(mappingForField);
+        					mappingForField.setExportSchemaItem(null);
+        					mappingForField.setExportSchemaMapping(null);
+        					mappingForField.setQueryField(null);
+        				}
         				fields.remove(field);
         				field.setQuery(null);
         				fld.setQuery(null);
