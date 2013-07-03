@@ -231,6 +231,8 @@ import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
+import edu.ku.brc.util.AttachmentManagerIface;
+import edu.ku.brc.util.AttachmentMgrListener;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.CacheManager;
 import edu.ku.brc.util.FileCache;
@@ -735,6 +737,62 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             toolBar.setVisible(false);
         }
+        
+//        AttachmentManagerIface attchMgr = AttachmentUtils.getAttachmentManager();
+//        attchMgr.addListener(new AttachmentMgrListener()
+//        {
+//            int max = 0;
+//            @Override
+//            public void filesLoading(final int numberOfFiles)
+//            {
+//                final String statusName = "ATTACH";
+//                SwingUtilities.invokeLater(new Runnable()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        //System.out.println("N: "+numberOfFiles+" MX: "+max);
+//                        statusField.setIndeterminate(statusName, numberOfFiles > 0);
+//                        
+////                        if (max == 0) 
+////                        {
+////                            statusField.setProgressRange(statusName, 0, 100);
+////                            statusField.setValue(statusName, 0);
+////                        }
+////                        boolean hasFiles = numberOfFiles > 0;
+////                        if (hasFiles) 
+////                        {
+////                            if (numberOfFiles > max) 
+////                            {
+////                                max = numberOfFiles;
+////                            } 
+////                            int num = (int)((double)(max - numberOfFiles) / (double)max) * 100;
+////                            System.out.println("N: "+numberOfFiles+" MX: "+max+"  num: "+num);
+////                            if (numberOfFiles == max && max == 1)
+////                            {
+////                                statusField.setIndeterminate(statusName, true);
+////                                System.out.println("setIndeterminate true");
+////
+////                            } else
+////                            {
+////                                statusField.setIndeterminate(statusName, false);
+////                                statusField.setValue(statusName, num);
+////                                System.out.println("setIndeterminate falsw");
+////                                //progress.setValue(num);
+////                                //progress.setString(Integer.toString(num)+"%");
+////                            }
+////                            //progress.repaint();
+////                        } else 
+////                        {
+////                            max = 0;
+////                            statusField.setProgressDone(statusName);
+////                        }
+//                    }
+//                });
+//            }
+//        });
+
+
      }
 
     /**
@@ -750,7 +808,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      * General Method for initializing the class
      *
      */
-    private void initialize(GraphicsConfiguration gc)
+    private void initialize(final GraphicsConfiguration gc)
     {
         setLayout(new BorderLayout());
 
@@ -812,6 +870,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
 
         add(statusField, BorderLayout.SOUTH);
+        
     }
 
     /**
@@ -2774,6 +2833,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;
+                    
+                    globalPrefs.flush();
                     
                     FixDBAfterLogin.addPickListByName("ContainerType");
 

@@ -251,7 +251,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             {
                 // Clone current Properties
                 Properties currentProps = (Properties)appPrefsMgr.getProperties().clone();
-                System.out.println(currentProps.getProperty("rodsx"));
+                //System.out.println(currentProps.getProperty("rodsx"));
                 
                 // Load existing.
                 spAppResource = null;
