@@ -204,7 +204,12 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
                 
                 cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
                 String serviceName = String.format("Image Search %s", tblInfo.getTitle());
-                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "AttachmentPrefs", tblInfo.getTitle(), false); // the Name gets Hashed
+                String tooltip = UIRegistry.getResourceString(ATTACHMENTS);
+                if (tblId != Attachment.getClassTableId()) 
+                {
+                	tooltip = tblInfo.getTitle() + " " + tooltip;
+                }
+                ContextMgr.registerService(10, serviceName, tblId, cmdAction, this, "AttachmentPrefs", tooltip , false); // the Name gets Hashed
             }
 
             
