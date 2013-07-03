@@ -31,6 +31,7 @@ import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
@@ -119,7 +120,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                        tableInfo.getTableId() == Accession.getClassTableId() ||
                        tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
                        tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
-                       tableInfo.getTableId() == ExchangeOut.getClassTableId())
+                       tableInfo.getTableId() == ExchangeOut.getClassTableId() ||
+                       tableInfo.getTableId() == ConservDescription.getClassTableId())
             {
                 if (prefix.equals(""))
                 {
@@ -292,7 +294,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             tableInfo.getTableId() == Accession.getClassTableId() ||
             tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
             tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
-            tableInfo.getTableId() == ExchangeOut.getClassTableId())
+            tableInfo.getTableId() == ExchangeOut.getClassTableId() ||
+            tableInfo.getTableId() == ConservDescription.getClassTableId())
         {
             if (isHQL)
             {
