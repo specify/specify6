@@ -309,7 +309,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             if (AppPreferences.getLocalPrefs().getBoolean("SHOW_ADDOBJ_PREF", true))
             {
-                collNavBox.add(NavBox.createBtnWithTT("Adding Data Prefs", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                collNavBox.add(NavBox.createBtnWithTT("Activate Subforms", SYSTEMSETUPTASK, "", IconManager.STD_ICON_SIZE, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
                         showAddObjPrefs();
