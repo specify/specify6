@@ -635,6 +635,19 @@ public class ImagesPane extends BaseSubPane
         //gridPanel.reset();
     }
     
+    private String getNotFoundMessage()
+    {
+    	if (this.searchType == SearchType.AllImages)
+    	{
+    		return getResourceString("ATTCH_NO_IMAGES");
+    	}
+    	if (this.searchType == SearchType.FromRecordSet)
+    	{
+    		return getResourceString("ATTCH_NO_ATTCH_RS");
+    	}
+    	return getResourceString("ATTCH_NO_ATTACHMENTS");
+    }
+    
     /**
      * 
      */
@@ -661,7 +674,7 @@ public class ImagesPane extends BaseSubPane
             
             if (rowsVector.size() == 0) 
             {
-                writeTimedSimpleGlassPaneMsg(getResourceString("ATTCH_NO_IMAGES"));
+                writeTimedSimpleGlassPaneMsg(getNotFoundMessage());
             }
             
             //Collections.sort(rowsVector, createComparator());
@@ -820,7 +833,7 @@ public class ImagesPane extends BaseSubPane
                 } else
                 {
                     ((AttachmentsTask)task).attachmentSearchDone(null);
-                    writeTimedSimpleGlassPaneMsg(getResourceString("ATTCH_NO_IMAGES"));
+                    writeTimedSimpleGlassPaneMsg(getNotFoundMessage());
                 }
             }
         };
@@ -1147,11 +1160,6 @@ public class ImagesPane extends BaseSubPane
      */
     private void createColObjSearch()
     {
-//        if (mainComp != null)
-//        {
-//            remove(mainComp);
-//        }
-        
         if (searchType != SearchType.FromRecordSet)
         {
             searchForAllAttachments();
