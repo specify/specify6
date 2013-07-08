@@ -48,7 +48,7 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 3, 2012
  *
  */
-public class GalleryGridPanel extends JPanel
+public class GalleryGridPanel extends JPanel implements ImageLoaderListener
 {
     protected static final int CELL_SIZE = 135;
     protected static final int SEP_SIZE  = 8;
@@ -386,7 +386,7 @@ public class GalleryGridPanel extends JPanel
                 
                 if (imgDsp.getImageDataItem() != null)
                 {
-                    imgDsp.startLoad();
+                    imgDsp.startLoad(this);
                 }
                 displayList.add(imgDsp);
                 
@@ -411,6 +411,36 @@ public class GalleryGridPanel extends JPanel
             this.removeAll();
         }
         invalidate();
+        
+        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+        {
+            @Override
+            protected Boolean doInBackground() throws Exception
+            {
+                try
+                {
+                    Thread.sleep(100);
+                } catch (Exception ex) {}
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                synchronized (displayList)
+                {
+                    for (ImageCellDisplay icd : displayList)
+                    {
+                        if (icd.isLoading())
+                        {
+                            rsController.setUIEnabled(false);
+                        }
+                    }
+                }
+            }
+        };
+        worker.execute();
+        
     }
 
     /**
@@ -550,5 +580,50 @@ public class GalleryGridPanel extends JPanel
         {
             loadListeners.remove(l);
         }
+    }
+
+    @Override
+    public void imageLoaded(String imageName,
+                            String mimeType,
+                            boolean doLoadFullImage,
+                            int scale,
+                            boolean isError,
+                            ImageIcon imageIcon,
+                            File localFile)
+    {
+        loadComplete();
+    }
+
+    @Override
+    public void imageStopped(String imageName, boolean doLoadFullImage)
+    {
+        loadComplete();
+    }
+    
+    private void loadComplete()
+    {
+        itemsLoaded++;
+        if (itemsLoaded == displayList.size() && itemsLoaded > 0)
+        {
+            SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+            {
+                @Override
+                protected Boolean doInBackground() throws Exception
+                {
+                    try
+                    {
+                        Thread.sleep(100);
+                    } catch (Exception ex) {}
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
+                    rsController.setUIEnabled(true);
+                }
+            };
+            worker.execute();
+        }         
     }
 }

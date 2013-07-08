@@ -94,6 +94,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     private Vector<GalleryGridListener> listeners = new Vector<GalleryGridListener>();
     
     private ImageDataItem       imgDataItem = null;
+    private ImageLoaderListener loadListener;
     
     /**
      * @param imgWidth
@@ -354,8 +355,9 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     /**
      * 
      */
-    public void startLoad()
+    public void startLoad(ImageLoaderListener listener)
     {
+        loadListener = listener;
         if (!stopLoading)
         {
             int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
@@ -378,6 +380,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
                              final File      localFile)
     {
         setLoading(false);
+        loadListener.imageLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
 
         //System.out.println(imageName+" -> "+isError);
         if (!isError)
@@ -397,7 +400,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     @Override
     public void imageStopped(String imageName, final boolean doLoadFullImage)
     {
-
+        loadListener.imageStopped(imageName, doLoadFullImage);
     }
 
     /* (non-Javadoc)
