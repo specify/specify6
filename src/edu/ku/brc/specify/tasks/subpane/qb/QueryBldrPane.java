@@ -3278,6 +3278,27 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     /**
+     * @return
+     */
+    protected String getNameSavePrompt() 
+    {
+    	return this.task instanceof ExportMappingTask ?
+    			UIRegistry.getResourceString("MappingNamePrompt") :
+    			UIRegistry.getResourceString("QB_Q_NAME_PROMPT");
+    }
+  
+    /**
+     * @return
+     */
+    protected String getSaveDlgTitle(boolean saveAs) 
+    {
+    	String key = this.task instanceof ExportMappingTask ?
+    			saveAs ? "SaveMappingAsTitle" : "SaveMappingTitle" :
+    			saveAs ? "QB_SAVE_Q_AS_TITLE" : "QB_SAVE_Q_TITLE";
+    	return UIRegistry.getResourceString(key);
+    }
+
+    /**
      * @return true if a valid query name was obtained from user
      */
     protected boolean getQueryNameFromUser(final boolean saveAs)
@@ -3295,13 +3316,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 //Using above method causes Hibernate 'Dirty Collection' issues for save as.
                 //Currently the only info involved is the name so using a simple dialog box is good enuf.
                 JTextField nameText = new JTextField(newQueryName);
-                JLabel nameLbl = UIHelper.createLabel(UIRegistry.getResourceString("QB_Q_NAME_PROMPT"));
+                JLabel nameLbl = UIHelper.createLabel(getNameSavePrompt());
                 PanelBuilder pane = new PanelBuilder(new FormLayout("4dlu, p, 2dlu, fill:p:grow, 4dlu", "5dlu, p, 5dlu"));
                 CellConstraints cc = new CellConstraints();
                 pane.add(nameLbl, cc.xy(2, 2));
                 pane.add(nameText, cc.xy(4, 2));
                 CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
-                        saveAs ? UIRegistry.getResourceString("QB_SAVE_Q_AS_TITLE") : UIRegistry.getResourceString("QB_SAVE_Q_TITLE"), 
+                        getSaveDlgTitle(saveAs), 
                         true, CustomDialog.OKCANCELHELP, pane.getPanel());
                 cd.setHelpContext("QBSave");
                 UIHelper.centerAndShow(cd);
