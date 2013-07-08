@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
+import java.awt.Image;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -32,6 +33,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
+import edu.ku.brc.ui.ImageLoaderExector;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -42,9 +44,8 @@ import edu.ku.brc.ui.UIHelper;
  * Aug 30, 2012
  *
  */
-public class FullImagePane extends BaseSubPane
+public class FullImagePane extends BaseSubPane implements ImageLoaderListener
 {
-    private ImageIcon     imgIcon;
     private ImageDisplay  imgDisp;
     private ImageDataItem imgDataItem;
     
@@ -87,42 +88,42 @@ public class FullImagePane extends BaseSubPane
         
         if (imageFile != null && imageFile.exists())
         {
-            imgIcon = new ImageIcon(imageFile.getAbsolutePath());
+            ImageIcon imgIcon = new ImageIcon(imageFile.getAbsolutePath());
             imgDisp.setImage(imgIcon);
             FullImagePane.this.repaint();
             
         } else if (imgDataItem != null)
         {
-            imgDataItem.loadScaledImage(-1, new ImageLoaderListener()
-            {
-                @Override
-                public void imagedLoaded(final String    imageName,
-                                         final String    mimeType,
-                                         final boolean   doLoadFullImage,
-                                         final int       scale,
-                                         final boolean   isError,
-                                         final ImageIcon imageIcon, 
-                                         final File      localFile)
-                {
-                    imgIcon = !isError ? imgDataItem.getFullImgIcon() : null;
-                    imgDisp.setImage(imgIcon);
-                    FullImagePane.this.repaint();
-                }
-
-                /* (non-Javadoc)
-                 * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
-                 */
-                @Override
-                public void imageStopped(final String imageName, final boolean doLoadFullImage)
-                {
-                    imgIcon = null;
-                    imgDisp.setImage(imgIcon);
-                    FullImagePane.this.repaint();
-                }
-            }); 
+            ImageLoader loader = new ImageLoader(imgDataItem.getImgName(), 
+                                                imgDataItem.getMimeType(), 
+                                                true, -1, this);
+            ImageLoaderExector.getInstance().loadImage(loader);
             imgDisp.setImage(IconManager.getImage("Loading"));
         }
     }
+    
+    @Override
+    public void imageLoaded(final String    imageName,
+                             final String    mimeType,
+                             final boolean   doLoadFullImage,
+                             final int       scale,
+                             final boolean   isError,
+                             final ImageIcon imageIcon, 
+                             final File      localFile)
+    {
+        imgDisp.setImage(imageIcon);
+        repaint();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+     */
+    @Override
+    public void imageStopped(final String imageName, final boolean doLoadFullImage)
+    {
+        imgDisp.setImage((ImageIcon)null);
+        repaint();
+    }    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
@@ -139,7 +140,6 @@ public class FullImagePane extends BaseSubPane
     @Override
     public void shutdown()
     {
-        imgIcon = null;
         imgDisp.setImage((ImageIcon)null);
         super.shutdown();
     }

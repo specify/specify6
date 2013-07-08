@@ -77,12 +77,14 @@ import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.images.FullImagePane;
 import edu.ku.brc.specify.tasks.subpane.images.ImageDataItem;
+import edu.ku.brc.specify.tasks.subpane.images.ImageLoader;
 import edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane;
 import edu.ku.brc.specify.tasks.subpane.images.ImagesPane.SearchType;
 import edu.ku.brc.specify.utilapps.morphbank.BatchAttachFiles;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.ImageLoaderExector;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
@@ -367,7 +369,8 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
                     }
                     if (isOK)
                     {
-                        idi.loadScaledImage(-1, this);
+                        ImageLoader loader = new ImageLoader(idi.getImgName(), idi.getMimeType(), true, -1, this);
+                        ImageLoaderExector.getInstance().loadImage(loader);
                     }
                 }
                 System.out.println(file.toPath());
@@ -379,7 +382,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
      * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
      */
     @Override
-    public void imagedLoaded(final String    imageName,
+    public void imageLoaded(final String    imageName,
                              final String    mimeType,
                              final boolean   doLoadFullImage,
                              final int       scale,

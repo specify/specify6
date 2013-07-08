@@ -48,7 +48,7 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 3, 2012
  *
  */
-public class GalleryGridPanel extends JPanel implements ImageLoaderListener
+public class GalleryGridPanel extends JPanel
 {
     protected static final int CELL_SIZE = 135;
     protected static final int SEP_SIZE  = 8;
@@ -245,50 +245,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
         reload(width, height);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
-     */
-    @Override
-    public void imagedLoaded(final String    imageName,
-                             final String    mimeType,
-                             final boolean   doLoadFullImage,
-                             final int       scale,
-                             final boolean   isError,
-                             final ImageIcon imageIcon, 
-                             final File      localFile)
-    {
-        itemsLoaded++;
-        if (itemsLoaded == displayList.size() && itemsLoaded > 0)
-        {
-            SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
-            {
-                @Override
-                protected Boolean doInBackground() throws Exception
-                {
-                    try
-                    {
-                        Thread.sleep(100);
-                    } catch (Exception ex) {}
-                    return null;
-                }
-
-                @Override
-                protected void done()
-                {
-                    rsController.setUIEnabled(true);
-                }
-            };
-            worker.execute();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
-     */
-    @Override
-    public void imageStopped(final String imageName, final boolean doLoadFullImage)
-    {
-    }
+ 
 
     /**
      * 
@@ -409,7 +366,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                 } else
                 {
                     int selSize = ImageCellDisplay.SELECTION_WIDTH * 2;
-                    imgDsp = new ImageCellDisplay(CELL_SIZE-selSize, CELL_SIZE-selSize, this);
+                    imgDsp = new ImageCellDisplay(CELL_SIZE-selSize, CELL_SIZE-selSize);
                     imgDsp.addListener(infoListener);
                 }
                 
@@ -427,7 +384,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
                     imgDsp.setImageDataItem(null);
                 }
                 
-                if (imgDsp.getImageDataItem() != null && imgDsp.getImageDataItem().getImgIcon() == null)
+                if (imgDsp.getImageDataItem() != null)
                 {
                     imgDsp.startLoad();
                 }
@@ -454,45 +411,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
             this.removeAll();
         }
         invalidate();
-        
-        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
-        {
-            @Override
-            protected Boolean doInBackground() throws Exception
-            {
-                try
-                {
-                    Thread.sleep(100);
-                } catch (Exception ex) {}
-                return null;
-            }
-
-            @Override
-            protected void done()
-            {
-                synchronized (displayList)
-                {
-                    for (ImageCellDisplay icd : displayList)
-                    {
-                        if (icd.isLoading())
-                        {
-                            rsController.setUIEnabled(false);
-                        }
-                    }
-                }
-            }
-        };
-        worker.execute();
-        
     }
-    
-    /**
-     * @return the rs
-     */
-//    public ResultSetController getResultSetController()
-//    {
-//        return rsController;
-//    }
 
     /**
      * @param forceReload the forceReload to set
@@ -510,7 +429,7 @@ public class GalleryGridPanel extends JPanel implements ImageLoaderListener
         int pageEnd = currOffIndex + pageSize; 
         for (int i=currOffIndex;i<itemList.size() && i < pageEnd;i++)
         {
-           displayList.get(i-currOffIndex).setImage(itemList.get(i).getImgIcon()); 
+//           displayList.get(i-currOffIndex).setImage(itemList.get(i).getImgIcon()); 
            displayList.get(i-currOffIndex).repaint();
         }
     }

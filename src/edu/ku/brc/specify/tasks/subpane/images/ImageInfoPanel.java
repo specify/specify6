@@ -47,6 +47,7 @@ import edu.ku.brc.specify.tasks.subpane.lm.BlueMarbleFetcher;
 import edu.ku.brc.specify.tasks.subpane.lm.BufferedImageFetcherIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
+import edu.ku.brc.ui.ImageLoaderExector;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -59,7 +60,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * Aug 31, 2012
  *
  */
-public class ImageInfoPanel extends ExpandShrinkPanel
+public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderListener
 {
     public static int IMG_SIZE = 300;
 
@@ -177,40 +178,10 @@ public class ImageInfoPanel extends ExpandShrinkPanel
         {
             model.setItems(imagesPane.getImageData(imgDataItem));
             
-            ImageIcon img = imgDataItem.getImgIcon();
-            //System.out.println(String.format("%d,%d", img.getIconWidth(), ImageDataItem.STD_ICON_SIZE));
-            if (img == null || img.getIconWidth() != IMG_SIZE)
-            {
-                imgDataItem.loadScaledImage(IMG_SIZE, new ImageLoaderListener()
-                {
-                    @Override
-                    public void imagedLoaded(final String    imageName,
-                                             final String    mimeType,
-                                             final boolean   doLoadFullImage,
-                                             final int       scale,
-                                             final boolean   isError,
-                                             final ImageIcon imageIcon, 
-                                             final File      localFile)
-                    {
-                        imgDisplay.setImage(imageIcon);
-                    }
-                    
-                    /* (non-Javadoc)
-                     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
-                     */
-                    @Override
-                    public void imageStopped(final String imageName, final boolean doLoadFullImage)
-                    {
-                        imgDisplay.setImage((ImageIcon)null);
-                    }
-                });
-                imgDisplay.setImage(IconManager.getImage("Loading"));
-                imgDisplay.repaint();
-            } else
-            {
-                //System.out.println(img);
-                imgDisplay.setImage(img);
-            }
+            ImageLoader loader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, IMG_SIZE, this);
+            ImageLoaderExector.getInstance().loadImage(loader);
+            imgDisplay.setImage(IconManager.getImage("Loading"));
+            imgDisplay.repaint();
         } else
         {
             imgDisplay.setImage((ImageIcon)null);
@@ -237,6 +208,27 @@ public class ImageInfoPanel extends ExpandShrinkPanel
                 }
             }
         }
+    }
+    
+    @Override
+    public void imageLoaded(final String    imageName,
+                             final String    mimeType,
+                             final boolean   doLoadFullImage,
+                             final int       scale,
+                             final boolean   isError,
+                             final ImageIcon imageIcon, 
+                             final File      localFile)
+    {
+        imgDisplay.setImage(imageIcon);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+     */
+    @Override
+    public void imageStopped(final String imageName, final boolean doLoadFullImage)
+    {
+        imgDisplay.setImage((ImageIcon)null);
     }
     
     class RightTableCellRenderer extends DefaultTableCellRenderer

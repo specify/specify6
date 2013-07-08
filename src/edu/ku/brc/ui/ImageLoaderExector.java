@@ -81,6 +81,7 @@ public class ImageLoaderExector
                 try
                 {
                     imageLoadObj.load();
+                    imageLoadObj.done();
                     return imageLoadObj;                    
                 } catch (Exception ex)
                 {

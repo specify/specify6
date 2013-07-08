@@ -44,7 +44,7 @@ import edu.ku.brc.util.Pair;
  * Apr 24, 2012
  *
  */
-public class ImageDataItem implements ImageLoaderListener
+public class ImageDataItem
 {
     public static int STD_ICON_SIZE = 135;
     static ImageIcon noImage = null;
@@ -55,8 +55,6 @@ public class ImageDataItem implements ImageLoaderListener
     private String    title;
     private String    mimeType;
     private File      localFile;
-    private ImageIcon imgIcon;
-    private ImageIcon fullImgIcon       = null;
     private List<Pair<String, Object>> dataList = null;
     private boolean   isSelected        = false;
     
@@ -96,7 +94,6 @@ public class ImageDataItem implements ImageLoaderListener
         this.imgName        = imgName;
         this.title          = title;
         this.mimeType       = mimeType;
-        this.imgIcon        = null;
         this.localFile      = null;
         
         /*if (noImage == null)
@@ -107,52 +104,6 @@ public class ImageDataItem implements ImageLoaderListener
     }
     
     
-    /**
-     * @return
-     */
-    public ImageIcon getImageIcon()
-    {
-        /*if (imgIcon == null || isLoading.get() || isError.get())
-        {
-            return noImage;
-        }*/
-        return imgIcon;
-    }
-    
-    /**
-     * @param scale
-     * @param externalLoadListener
-     */
-    public void loadScaledImage(final int scale, final ImageLoaderListener externalLoadListener)
-    {
-        loadImage(scale < 0, scale, externalLoadListener);
-    }
-    
-    /**
-     * @param doLoadFullImage
-     * @param scale
-     * @param externalLoadListener
-     */
-    private void loadImage(final boolean             doLoadFullImage, 
-                           final int                 scale,
-                           final ImageLoaderListener externalLoadListener)
-    {
-        this.externalImgLoadListener = externalLoadListener;
-        
-        if (!stopLoading.get())
-        {
-            //System.out.println("loadImage - doLoadFullImage "+doLoadFullImage+"   scale "+scale);
-            if (imageLoader == null)
-            {
-                imageLoader = new ImageLoader(imgName, mimeType, doLoadFullImage, scale, this);
-            }
-            
-            imageLoader.setScale(scale);
-            imageLoader.setDoLoadFullImage(doLoadFullImage);
-            
-            ImageLoaderExector.getInstance().loadImage(imageLoader);
-        }
-    }
 
     /**
      * @return the fullImgIcon
@@ -162,21 +113,7 @@ public class ImageDataItem implements ImageLoaderListener
         return dataList != null && dataList.size() > 0 ? (Integer)dataList.get(dataList.size()-1).second : null;
     }
 
-    /**
-     * @return the fullImgIcon
-     */
-    public ImageIcon getFullImgIcon()
-    {
-        return fullImgIcon;
-    }
 
-    /**
-     * @param fullImgIcon the fullImgIcon to set
-     */
-    public void setFullImgIcon(ImageIcon fullImgIcon)
-    {
-        this.fullImgIcon = fullImgIcon;
-    }
 
     /**
      * @return the attachmentId
@@ -210,21 +147,7 @@ public class ImageDataItem implements ImageLoaderListener
         return mimeType;
     }
 
-    /**
-     * @return the imgIcon
-     */
-    public ImageIcon getImgIcon()
-    {
-        return imgIcon;
-    }
 
-    /**
-     * @param imgIcon the imgIcon to set
-     */
-    public void setImgIcon(ImageIcon imgIcon)
-    {
-        this.imgIcon = imgIcon;
-    }
 
     /**
      * @return the tableId
@@ -432,72 +355,5 @@ public class ImageDataItem implements ImageLoaderListener
         }
     }
     
-    //--------------------------------------------------------------------------------------
-    //-- ImageLoaderListener
-    //--------------------------------------------------------------------------------------
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
-     */
-    @Override
-    public void imagedLoaded(final String    imageName, 
-                             final String    mimeType, 
-                             final boolean   doLoadFullImage, 
-                             final int       scale, 
-                             final boolean   isError,
-                             final ImageIcon imageIcon,
-                             final File      localFile)
-    {
-        ImageDataItem.this.localFile = localFile;
 
-        if (!imageLoader.isError())
-        {
-            if (doLoadFullImage)
-            {
-                fullImgIcon = imageIcon;
-            } else
-            {
-                imgIcon = imageIcon;
-            }
-        }
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (externalImgLoadListener != null)
-                {
-                    if (!stopLoading.get())
-                    {
-                        externalImgLoadListener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
-                    } else
-                    {
-                        externalImgLoadListener.imageStopped(imageName, doLoadFullImage);
-                    }
-                }
-            }
-        });
-        imageLoader.cleanup();
-        imageLoader = null;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
-     */
-    @Override
-    public void imageStopped(final String imageName, final boolean doLoadFullImage)
-    {
-        if (externalImgLoadListener != null)// && !stopLoading.get())
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    externalImgLoadListener.imageStopped(imageName, doLoadFullImage);
-                }
-            });
-        }
-        imageLoader.cleanup();
-        imageLoader = null;
-    }
 }

@@ -130,7 +130,7 @@ public class ImageLoader implements ImageLoaderIFace
         {
             if  (contLoading) 
             {
-                listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
+                listener.imageLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
             } else {
                 listener.imageStopped(imageName, doLoadFullImage);
             }

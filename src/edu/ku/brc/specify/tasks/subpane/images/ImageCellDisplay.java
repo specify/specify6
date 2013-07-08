@@ -38,6 +38,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.util.Vector;
+import java.util.concurrent.Future;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -93,8 +94,6 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     private Vector<GalleryGridListener> listeners = new Vector<GalleryGridListener>();
     
     private ImageDataItem       imgDataItem = null;
-    private ImageLoaderListener listener    = null;
-    private ImageLoader         imageLoader = null;
     
     /**
      * @param imgWidth
@@ -102,12 +101,10 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @param listener
      */
     public ImageCellDisplay(final int imgWidth, 
-                            final int imgHeight, 
-                            final ImageLoaderListener listener)
+                            final int imgHeight)
     {
         super(imgWidth, imgHeight, false, false);
         
-        this.listener = listener;
         
         setBackground(Color.WHITE);
         setOpaque(true);
@@ -361,16 +358,8 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     {
         if (!stopLoading)
         {
-            if (imageLoader == null)
-            {
-                int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
-                imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, this);
-            } else
-            {
-                imageLoader.setImageName(imgDataItem.getImgName());
-                imageLoader.setMimeType(imgDataItem.getMimeType());
-                imageLoader.enableLoading();
-            }
+            int loadSize = ImageDataItem.STD_ICON_SIZE - (4 * SELECTION_WIDTH);
+            ImageLoader imageLoader = new ImageLoader(imgDataItem.getImgName(), imgDataItem.getMimeType(), false, loadSize, this);
             setLoading(true);
             ImageLoaderExector.getInstance().loadImage(imageLoader);
         }
@@ -380,7 +369,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
      * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imagedLoaded(java.lang.String, java.lang.String, boolean, int, boolean, javax.swing.ImageIcon, java.io.File)
      */
     @Override
-    public void imagedLoaded(final String    imageName,
+    public void imageLoaded(final String    imageName,
                              final String    mimeType,
                              final boolean   doLoadFullImage,
                              final int       scale,
@@ -394,22 +383,12 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
         if (!isError)
         {
             setImage(imageIcon);
-            if (doLoadFullImage)
-            {
-                imgDataItem.setFullImgIcon(imageIcon);
-            } else
-            {
-                imgDataItem.setImgIcon(imageIcon);
-            }
+
         } else
         {
             setImage((ImageIcon)null);
         }
-        
-        if (this.listener != null)
-        {
-            this.listener.imagedLoaded(imageName, mimeType, doLoadFullImage, scale, isError, imageIcon, localFile);
-        }
+
     }
 
     /* (non-Javadoc)
@@ -418,13 +397,6 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     @Override
     public void imageStopped(String imageName, final boolean doLoadFullImage)
     {
-        if (doLoadFullImage)
-        {
-            imgDataItem.setFullImgIcon(null);
-        } else
-        {
-            imgDataItem.setImgIcon(null);
-        }
 
     }
 
@@ -435,10 +407,10 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     public synchronized void setLoading(boolean isLoading)
     {
         super.setLoading(isLoading);
-        if (!isLoading && imageLoader != null)
-        {
-            imageLoader.stopLoading();
-        }
+//        if (!isLoading && imageLoader != null)
+//        {
+//            imageLoader.stopLoading();
+//        }
     }
     
     /* (non-Javadoc)
@@ -448,10 +420,10 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
     public void stopLoading()
     {
         super.stopLoading();
-        if (imageLoader != null)
-        {
-            imageLoader.stopLoading();
-        }
+//        if (imageLoader != null)
+//        {
+//            imageLoader.stopLoading();
+//        }
     }
 
 
@@ -541,12 +513,7 @@ public class ImageCellDisplay extends ImageDisplay implements ImageLoaderListene
             imgDataItem.cleanup();
             imgDataItem = null;
         }
-        
-        if (imageLoader != null) 
-        {
-            imageLoader.cleanup();
-            imageLoader = null;
-        }
+
     }
 
 

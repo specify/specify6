@@ -105,6 +105,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ImageLoaderExector;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.SearchBoxComponent;
 import edu.ku.brc.ui.UIHelper;
@@ -121,7 +122,7 @@ import edu.ku.brc.util.Pair;
  * Oct 12, 2011
  *
  */
-public class ImagesPane extends BaseSubPane
+public class ImagesPane extends BaseSubPane implements ImageLoaderListener
 {
     private static final Logger  log = Logger.getLogger(ImagesPane.class);
     private static final String  LAST_SEARCH   = "imglastsearch"; 
@@ -173,9 +174,6 @@ public class ImagesPane extends BaseSubPane
     private HashMap<String, String>  dataMap = new HashMap<String, String>();
     private CollectionDataFetcher    dataFetcher = new CollectionDataFetcher();
     
-    // Listener for when it is an unknown mimetype
-    private ImageLoaderListener      imgLoadListenerExtern;
-    
     /**
      * @param name
      * @param task
@@ -212,49 +210,46 @@ public class ImagesPane extends BaseSubPane
      */
     private void initImagePane()
     {
-        imgLoadListenerExtern = new ImageLoaderListener()
-        {
-            @Override
-            public void imagedLoaded(final String    imageName,
-                                     final String    mimeType,
-                                     final boolean   doLoadFullImage,
-                                     final int       scale,
-                                     final boolean   isError,
-                                     final ImageIcon imageIcon, 
-                                     final File      localFile)
-            {
-                if (!isError && localFile != null && localFile.exists())
-                {
-                    try
-                    {
-                        AttachmentUtils.openFile(localFile);
-                    } catch (java.io.IOException ex)
-                    {
-                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-
-            /* (non-Javadoc)
-             * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
-             */
-            @Override
-            public void imageStopped(final String imageName, final boolean doLoadFullImage)
-            {
-            }
-        };
-        
+      
         rsController = new ResultSetController(null, false, false, false, "Image", 0, true);
         gridPanel    = new GalleryGridPanel(rsController);
         addGridListener();
         
         createUI();
     }
-    
+ 
+    @Override
+    public void imageLoaded(final String    imageName,
+                             final String    mimeType,
+                             final boolean   doLoadFullImage,
+                             final int       scale,
+                             final boolean   isError,
+                             final ImageIcon imageIcon, 
+                             final File      localFile)
+    {
+        if (!isError && localFile != null && localFile.exists())
+        {
+            try
+            {
+                AttachmentUtils.openFile(localFile);
+            } catch (java.io.IOException ex)
+            {
+                UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.images.ImageLoaderListener#imageStopped(java.lang.String)
+     */
+    @Override
+    public void imageStopped(final String imageName, final boolean doLoadFullImage)
+    {
+    }    
     /**
      * @param isEmbeded
      */
@@ -874,7 +869,8 @@ public class ImagesPane extends BaseSubPane
                     SubPaneMgr.getInstance().addPane(pane);
                 } else
                 {
-                    item.loadScaledImage(-1, imgLoadListenerExtern);
+                    ImageLoader loader = new ImageLoader(item.getImgName(), item.getMimeType(), true, -1, this);
+                    ImageLoaderExector.getInstance().loadImage(loader);
                 }
             }
         }

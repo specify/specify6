@@ -42,7 +42,7 @@ public interface ImageLoaderListener
      * @param imgIcon
      * @param localFile
      */
-    public abstract void imagedLoaded(String    imageName,
+    public abstract void imageLoaded(String    imageName,
                                       String    mimeType,
                                       boolean   doLoadFullImage,
                                       int       scale,
