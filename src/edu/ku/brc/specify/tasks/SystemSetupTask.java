@@ -371,7 +371,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         dlg.setApplyLabel(getResourceString("CANCEL"));
         dlg.setCloseOnApplyClk(true);
         dlg.createUI();
-        dlg.setSize(800, 600);
+        dlg.setSize(600, 450);
         UIHelper.centerAndShow(dlg);
         if (dlg.getBtnPressed() != CustomDialog.APPLY_BTN)
         {
