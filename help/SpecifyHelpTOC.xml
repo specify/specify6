@@ -175,8 +175,9 @@
 		</tocitem>
 		<tocitem text="Lifemapper" target="Lifemapper" />
 		<tocitem text="Exporting Data" target="export_data">
+		    <tocitem text="Web Portal" target="web_portal" /> 
 			<tocitem text="Web Publishing" target="web_publishing" />
-			<tocitem text="Schema Mapping" target="schema_mapping" />
+			<tocitem text="Schema Mapping" target="schema_map" />
 			<tocitem text="Data Exporter Application" target="schema_tool" />
 		</tocitem>
 		<tocitem text="Stand-Alone Specify Applications" target="separate_apps">

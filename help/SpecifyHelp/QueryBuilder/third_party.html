@@ -27,7 +27,7 @@
       Next, the data file is created and/or updated using the Data
       Exporter stand-alone application (found in the bin directory
       within the Specify application directory). </p>
-    <h3>Creating a Web Portal using exported Specify data and Solr</h3>
+    <h3><a name="web_portal"></a>Creating a Web Portal using exported Specify data and Solr</h3>
     <blockquote>
       <p>Specify 6.5 harnesses the search capabilities of Apache Solr to
         automate the creation of a web data portal. Solr is a "popular,
@@ -42,7 +42,7 @@
         several steps:<br>
       </p>
       <ol>
-        <li>Apache Solr and Tomcat must be installed on the computer
+        <li>Apache Solr and a server must be installed on the computer
           that will be serving data to the internet.</li>
         <li>Create and Export a Schema Mapping file from within Specify.</li>
         <li>Use the Data Exporter, a separate Specify tool, to create
@@ -83,18 +83,7 @@
         <li>IPT must be setup to display Specify data. </li>
       </ol>
       <p>Each of these steps is explained in the pdf document, <em>Publishing
-
-
-
-
-
-
-
-
-
-
-
-          Specify Data with IPT,</em> found on the Specify website
+      Specify Data with IPT,</em> found on the Specify website
         documentation page at <a
           href="http://specifysoftware.org/content/documentation">http://specifysoftware.org/content/documentation</a>.
       </p>
@@ -102,22 +91,11 @@
     <br>
     <p>The current document explains how to define, or 'map', the
       Specify fields for data export. Please refer to the <a
-        href="file:///Users/rods/Norine/web%20portal/data_exporter.html">Data
-
-
-
-
-
-
-
-
-
-
-
+        href="../../QueryBuilder/data_exporter.html">Data
         Exporter</a> page for documentation about generating the export
       data file.<br>
     </p>
-    <h3> <a name="schema_mapping" id="schema_mapping">Mapping Specify
+    <h3> <a name="schema_map" id="schema_map">Mapping Specify
         fields </a><br>
     </h3>
     <p> Open the Schema Mapping Editor by choosing <em>System &gt;
@@ -130,6 +108,9 @@
         exporting data for third parties such as IPT) or by creating it
         (recommended when exporting data for a web portal). </li>
     </ul>
+    <blockquote>
+    <p><b><i>Note:</i></b>it is not necessary to include attachment fields in mappings, attachments are automatically included in mapping files.</p>
+    </blockquote>
     <ul>
       <li>Import Schema - when using a supported schema (example: Darwin
         Core) the schema file must first be imported into Specify, this
@@ -196,15 +177,13 @@
             Builder tool with the Schema Concept added. The Schema
             Concept refers to the name of the field that will be
             associated with the data exported from Specify. </p>
-          <p> <img alt="new mapping" src="../../images/new_map.png"
-              height="70%" width="70%"><br>
+          <p> <img alt="new mapping" src="../../images/new_map.png"><br>
             <br>
             When creating a schema map for exporting data to a web
             portal the name of the Schema Concept can be renamed.<br>
           </p>
           <img alt="schema authority"
-            src="../../images/schema_authority_map.png" height="70%"
-            width="70%"><br>
+            src="../../images/schema_authority_map.png"><br>
           <br>
           When using a schema authority to share data with a third party
           the Schema Concept will display a pick list of all choices for
