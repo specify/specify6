@@ -49,6 +49,8 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.WebStoreAttachmentException;
+import edu.ku.brc.util.WebStoreAttachmentKeyException;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
 
 /**
@@ -67,8 +69,10 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     protected static final String ATTACHMENT_USE_PATH = "attachment.use_path";
     protected static final String ATTACHMENT_PATH     = "attachment.path";
     protected static final String ATTACHMENT_URL      = "attachment.url";
+    protected static final String ATTACHMENT_KEY      = "attachment.key";
     protected static final String ATTCH_PATH_ID       = "attch_path";
     protected static final String ATTCH_URL_ID        = "attch_url";
+    protected static final String ATTCH_KEY_ID        = "attch_key";
     
     protected boolean           isUsingGlobalAttchPrefs = false;
     protected boolean           canEditGlobalAttchPrefs = false;
@@ -80,14 +84,19 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     protected ValBrowseBtnPanel pathBrwse;
     protected JLabel            pathLbl;
     protected ValTextField      urlTxt;
-    protected JLabel            urlLbl; 
+    protected JLabel            urlLbl;
+    
+    protected JLabel    keyLbl;
+    protected ValTextField  keyTxt;
 
     protected boolean           isInitialized       = false;
     protected String            oldAttachmentPath   = null;
     protected String            oldAttachmentURL    = null;
+    protected String            oldAttachmentKey    = null;
     
     protected String            cachedAttachmentPath   = null;
     protected String            cachedAttachmentURL    = null;
+    protected String            cachedAttachmentKey    = null;
     
     protected JRadioButton      pathRB;
     protected JRadioButton      urlRB;
@@ -107,7 +116,9 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         pathBrwse = form.getCompById(ATTCH_PATH_ID);
         pathLbl   = form.getLabelFor(ATTCH_PATH_ID);
         urlTxt    = form.getCompById(ATTCH_URL_ID);
-        urlLbl    = form.getLabelFor(ATTCH_URL_ID); 
+        urlLbl    = form.getLabelFor(ATTCH_URL_ID);
+        keyTxt    = form.getCompById(ATTCH_KEY_ID);
+        keyLbl    = form.getLabelFor(ATTCH_KEY_ID);
         
         isInitialized = pathPanel != null && urlPanel != null && pathBrwse != null && pathLbl != null && urlTxt != null && urlLbl != null;
         if (!isInitialized)
@@ -145,8 +156,12 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 @Override
                 public void actionPerformed(ActionEvent arg0)
                 {
+                    oldAttachmentURL  = (String)urlTxt.getText().trim();
+                    oldAttachmentKey  = (String)keyTxt.getText().trim();
+
                     globalPrefs.put(ATTACHMENT_PATH, oldAttachmentPath);
                     globalPrefs.put(ATTACHMENT_URL, oldAttachmentURL);
+                    globalPrefs.put(ATTACHMENT_KEY, oldAttachmentKey);
                     globalPrefs.putBoolean(ATTACHMENT_USE_PATH, pathRB.isSelected());
                     
                     // Make sure local prefs is set for the type we are using.
@@ -165,6 +180,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 {
                     globalPrefs.remove(ATTACHMENT_PATH);
                     globalPrefs.remove(ATTACHMENT_URL);
+                    globalPrefs.remove(ATTACHMENT_KEY);
                     globalPrefs.remove(ATTACHMENT_USE_PATH);
                     try
                     {
@@ -192,6 +208,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         {
             pathBrwse.setEnabled(false);
             urlTxt.setEnabled(false);
+            keyTxt.setEnabled(false);
             pathRB.setEnabled(false);
             urlRB.setEnabled(false);
         }
@@ -229,6 +246,8 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
             pathLbl.setEnabled(isPathSelected);
             urlTxt.setEnabled(!isPathSelected);
             urlLbl.setEnabled(!isPathSelected);
+            keyTxt.setEnabled(!isPathSelected);
+            keyLbl.setEnabled(!isPathSelected);
             
         } else if (isUsingGlobalAttchPrefs)
         {
@@ -236,23 +255,33 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
             pathLbl.setEnabled(false);
             urlTxt.setEnabled(false);
             urlLbl.setEnabled(false);
+            keyTxt.setEnabled(false);
+            keyLbl.setEnabled(false);
         } else
         {
             pathBrwse.setEnabled(isPathSelected);
             pathLbl.setEnabled(isPathSelected);
             urlTxt.setEnabled(!isPathSelected);
             urlLbl.setEnabled(!isPathSelected);
+            keyTxt.setEnabled(!isPathSelected);
+            keyLbl.setEnabled(!isPathSelected);
         }
         
         if (isPathSelected)
         {
             String newURL = urlTxt.getText().trim();
+            String newKey = keyTxt.getText().trim();
             if (StringUtils.isNotEmpty(newURL))
             {
                 cachedAttachmentURL = newURL;
             }
+            if (StringUtils.isNotEmpty(newURL))
+            {
+                cachedAttachmentKey = newKey;
+            }
             pathBrwse.setValue(cachedAttachmentPath, null);
             urlTxt.setValue("", null);
+            keyTxt.setValue("", null);
         } else
         {
             String newPath = (String)pathBrwse.getValue();
@@ -261,6 +290,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 cachedAttachmentPath = newPath;
             }
             urlTxt.setValue(cachedAttachmentURL, null);
+            keyTxt.setValue(cachedAttachmentKey, null);
             pathBrwse.setValue("", null);
         }
     }
@@ -285,9 +315,11 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         
         oldAttachmentPath = prefs.get(ATTACHMENT_PATH, null);
         oldAttachmentURL  = prefs.get(ATTACHMENT_URL, null);
+        oldAttachmentKey  = prefs.get(ATTACHMENT_KEY, null);
         
         cachedAttachmentPath = prefs.get(ATTACHMENT_PATH, "");
         cachedAttachmentURL  = prefs.get(ATTACHMENT_URL, "");
+        cachedAttachmentKey = prefs.get(ATTACHMENT_KEY, "");
         
         if ((isEmpty(oldAttachmentPath) && isNotEmpty(oldAttachmentURL)) || isUsingGlobalAttchPrefs)
         {
@@ -296,6 +328,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         
         pathBrwse.setValue(oldAttachmentPath, null);
         urlTxt.setValue(oldAttachmentURL, null);
+        keyTxt.setValue(oldAttachmentKey, null);
 
         setRadio(isUsingPath);
         
@@ -315,6 +348,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         {
             oldAttachmentPath = (String)pathBrwse.getValue();
             oldAttachmentURL  = "";
+            oldAttachmentKey = "";
             if (StringUtils.isNotEmpty(oldAttachmentPath))
             {
                 try
@@ -340,17 +374,22 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         {
             oldAttachmentPath = "";
             oldAttachmentURL  = (String)urlTxt.getText().trim();
+            oldAttachmentKey  = (String)keyTxt.getText().trim();
             
             if (StringUtils.isNotEmpty(oldAttachmentURL))
             {
-                WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-                if (!webAssetMgr.isInitialized(oldAttachmentURL))
+                WebStoreAttachmentMgr webAssetMgr = null;
+                try
                 {
-                    webAssetMgr = null;
-                    UIRegistry.showLocalizedError("SystemPrefs.BAD_ATTCH_URL");
-                } else
-                {
+                    webAssetMgr = new WebStoreAttachmentMgr(oldAttachmentURL, oldAttachmentKey);
+                    AttachmentUtils.setAttachmentManager(webAssetMgr);
                     return true;
+                } catch (WebStoreAttachmentKeyException e)
+                {
+                    UIRegistry.showLocalizedError("SystemPrefs.BAD_ATTCH_KEY");
+                } catch (WebStoreAttachmentException e)
+                {
+                    UIRegistry.showLocalizedError("SystemPrefs.BAD_ATTCH_URL");
                 }
             } else
             {
@@ -380,9 +419,11 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 {
                     localPrefs.put(ATTACHMENT_PATH, oldAttachmentPath);
                     localPrefs.put(ATTACHMENT_URL, "");
+                    localPrefs.put(ATTACHMENT_KEY, "");
                 } else
                 {
                     localPrefs.put(ATTACHMENT_URL, oldAttachmentURL);
+                    localPrefs.put(ATTACHMENT_KEY, oldAttachmentKey);
                     localPrefs.put(ATTACHMENT_PATH, "");
                 }
                 localPrefs.putBoolean(ATTACHMENT_USE_PATH, usingPath); 

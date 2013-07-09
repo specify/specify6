@@ -58,6 +58,8 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.WebStoreAttachmentException;
+import edu.ku.brc.util.WebStoreAttachmentKeyException;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
 
 /**
@@ -75,6 +77,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     private static final String USE_GLOBAL_PREFS     = "USE_GLOBAL_PREFS";
     private static final String USE_FILE_PATH_PREF   = "attachment.use_path";
     private static final String ATTACHMENT_URL_PREF  = "attachment.url";
+    private static final String ATTACHMENT_KEY_PREF  = "attachment.key";
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
 
     private static final String WELCOME_BTN_PREF = "StartupTask.OnTaskbar";
@@ -140,6 +143,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     {
         Boolean useFilePath = prefs.getBoolean(USE_FILE_PATH_PREF, null);
         String  attchURL    = prefs.get(ATTACHMENT_URL_PREF, null);
+        String  attchKey    = prefs.get(ATTACHMENT_KEY_PREF, null);
         String  filePath    = prefs.get(ATTACHMENT_PATH_PREF, null);
         
         if (useFilePath == null)
@@ -160,8 +164,18 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
             useFilePath = false;
             AttachmentUtils.setConfigForPath(useFilePath);
 
-            WebStoreAttachmentMgr webAssetMgr = new WebStoreAttachmentMgr();
-            if (webAssetMgr.isInitialized(attchURL))
+            WebStoreAttachmentMgr webAssetMgr = null;
+            try
+            {
+                webAssetMgr = new WebStoreAttachmentMgr(attchURL, attchKey);
+            } catch (WebStoreAttachmentKeyException e)
+            {
+                errorKey = "KEY_BAD";
+            } catch (WebStoreAttachmentException e)
+            {
+                errorKey = "URL_BAD";
+            }
+            if (webAssetMgr != null)
             {
                 attachMgr = webAssetMgr;
             }

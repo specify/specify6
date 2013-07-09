@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.DigestInputStream;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -39,12 +40,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -89,7 +96,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     private static MessageDigest sha1 = null;
 
     
-    private Boolean                 isInitialized      = null;
     private File                    downloadCacheDir; 
     private SimpleDateFormat        dateFormat         = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
     
@@ -102,6 +108,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     private String                  delURLStr     = null;
     private String                  fileGetURLStr = null;
     private String                  fileGetMetaDataURLStr = null;
+    private String                  testKeyURLStr = null;
+    
+    private String                  attachment_key = null;
+    
+    private Long                    serverTimeDelta = null;
     
     private String[]                symbols        = {"<coll>", "<disp>", "<div>", "<inst>"};
     private String[]                values  = new String[symbols.length];
@@ -117,48 +128,72 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
     }
     /**
+     * @throws WebStoreAttachmentException 
      * 
      */
-    public WebStoreAttachmentMgr()
+    public WebStoreAttachmentMgr(final String urlStr, final String keyStr) throws WebStoreAttachmentException
     {
-        super();
-
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#isInitialized()
-     */
-    @Override
-    public boolean isInitialized(final String urlStr)
-    {
-        if (isInitialized == null)
+        attachment_key = keyStr;
+                        
+        downloadCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "download_cache");
+        if (!downloadCacheDir.exists())
         {
-            isInitialized = false;
-                            
-            downloadCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "download_cache");
-            if (!downloadCacheDir.exists())
+            if (!downloadCacheDir.mkdir())
             {
-                if (!downloadCacheDir.mkdir())
-                {
-                    downloadCacheDir = null;
-                    return isInitialized;
-                }
-
-            } else
-            {
-                try
-                {
-                    FileUtils.cleanDirectory(downloadCacheDir);
-                } catch (IOException e) {}
+                downloadCacheDir = null;
+                throw new WebStoreAttachmentException("Failed to create download cache dir.");
             }
-                
-          
-            isInitialized = getURLSetupXML(urlStr);
+
+        } else
+        {
+            try
+            {
+                FileUtils.cleanDirectory(downloadCacheDir);
+            } catch (IOException e) {}
         }
-        return isInitialized;
+            
+        getURLSetupXML(urlStr);
+        testKey();
     }
     
-    private boolean getURLSetupXML(final String urlStr)
+    private void testKey() throws WebStoreAttachmentKeyException
+    {
+       if (StringUtils.isEmpty(attachment_key))
+       {
+           return;
+       }
+       GetMethod method = new GetMethod(testKeyURLStr);
+       String r = "" + (new Random()).nextInt();
+       method.setQueryString(new NameValuePair[] {
+               new NameValuePair("random", r),
+               new NameValuePair("token", generateToken(r))
+       });
+       
+       HttpClient client = new HttpClient();
+       client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+
+       try
+       {
+           int status = client.executeMethod(method);
+           updateServerTimeDelta(method);
+           if (status == HttpStatus.SC_OK)
+           {
+               return;
+           } else if (status == HttpStatus.SC_FORBIDDEN)
+           {
+               throw new WebStoreAttachmentKeyException("Attachment key is invalid.");
+           }
+       } catch (IOException e)
+       {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } finally {
+           method.releaseConnection();
+       }
+       throw new WebStoreAttachmentKeyException("Problem verifying attachment key.");
+    }
+    
+    private void getURLSetupXML(final String urlStr) throws WebStoreAttachmentException
     {
         boolean result = false;
         if (StringUtils.isNotEmpty(urlStr))
@@ -173,6 +208,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 if (status == HttpStatus.SC_OK)
                 {
                     result = getURLSFromStr(method.getResponseBodyAsString());
+                    updateServerTimeDelta(method);
                 }
             } catch (IOException e)
             {
@@ -182,9 +218,25 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 method.releaseConnection();
             }
         }
-        return result;
+        if (!result) {
+            throw new WebStoreAttachmentException("Problem getting setup from URL XML.");
+        }
     }
     
+    private void updateServerTimeDelta(HttpMethodBase method)
+    {
+        try
+        {
+            Header timestamp = method.getResponseHeader("X-Timestamp");
+            if (timestamp == null) return;
+            long serverTime = Long.parseLong(timestamp.getValue());
+            serverTimeDelta = serverTime - getSystemTime();
+        } catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @param webAssetFile
      * @return
@@ -221,6 +273,9 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                     } else if (type.equals("getmetadata"))
                     {
                         fileGetMetaDataURLStr = urlStr;
+                    } else if (type.equals("testkey"))
+                    {
+                        testKeyURLStr = urlStr;
                     }
                 }
             }
@@ -305,6 +360,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             method.setQueryString(new NameValuePair[] {
                     new NameValuePair("dt", "json"),
                     new NameValuePair("filename", fileName),
+                    new NameValuePair("token", generateToken(fileName)),
                     new NameValuePair("coll", values[0]),
                     new NameValuePair("disp", values[1]),
                     new NameValuePair("div",  values[2]),
@@ -317,6 +373,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             try
             {
                 int status = client.executeMethod(method);
+                updateServerTimeDelta(method);
                 if (status == HttpStatus.SC_OK)
                 {
                     dateStr= method.getResponseBodyAsString();
@@ -361,6 +418,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             method.setQueryString(new NameValuePair[] {
                     new NameValuePair("dt", "json"),
                     new NameValuePair("filename", fileName),
+                    new NameValuePair("token", generateToken(fileName)),
                     new NameValuePair("coll", values[0]),
                     new NameValuePair("disp", values[1]),
                     new NameValuePair("div",  values[2]),
@@ -373,6 +431,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             try
             {
                 int status = client.executeMethod(method);
+                updateServerTimeDelta(method);
                 if (status == HttpStatus.SC_OK)
                 {
                     result = method.getResponseBodyAsString();
@@ -670,6 +729,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
                 new NameValuePair("type", (scale != null) ? "T" : "O"),
                 new NameValuePair("scale", "" + scale),
                 new NameValuePair("filename", attachLocation),
+                new NameValuePair("token", generateToken(attachLocation)),
                 new NameValuePair("coll", values[0]),
                 new NameValuePair("disp", values[1]),
                 new NameValuePair("div",  values[2]),
@@ -683,6 +743,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             int status = client.executeMethod(getMethod);
+            updateServerTimeDelta(getMethod);
+            if (status == HttpStatus.SC_FORBIDDEN)
+            {
+                System.out.println(getMethod.getResponseBodyAsString());
+            }
             if (status == HttpStatus.SC_OK)
             {
                 InputStream inpStream = getMethod.getResponseBodyAsStream();
@@ -733,6 +798,29 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         }
     }
     
+    private Long getSystemTime()
+    {
+        return System.currentTimeMillis() / 1000L + 100000;
+    }
+    
+    private String generateToken(String attachLocation)
+    {
+        SecretKeySpec keySpec = new SecretKeySpec(attachment_key.getBytes(), "HmacMD5");
+        Mac mac;
+        try
+        {
+            mac = Mac.getInstance("HmacMD5");
+            mac.init(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e)
+        {
+            throw new RuntimeException(e);
+        }
+        
+        String timestamp = "" + (getSystemTime() + serverTimeDelta);
+        byte[] raw = mac.doFinal((timestamp + attachLocation).getBytes());
+                
+        return  new String(Hex.encodeHex(raw)) + ":" + timestamp;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
@@ -819,6 +907,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
             int status = client.executeMethod(filePost);
+            updateServerTimeDelta(filePost);
             
             //log.debug("---------------------------------------------------");
             log.debug(filePost.getResponseBodyAsString());
@@ -903,6 +992,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
             int status = client.executeMethod(postMethod);
+            updateServerTimeDelta(postMethod);
             
             //log.debug(getMethod.getResponseBodyAsString());
 

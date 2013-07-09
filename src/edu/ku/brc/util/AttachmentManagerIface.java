@@ -35,12 +35,7 @@ import edu.ku.brc.specify.datamodel.Attachment;
  */
 public interface AttachmentManagerIface
 {
-    /**
-     * Whether it was initialized OK.
-     * @param urlStr null for File-based stores and not null for web-based stores
-     * @return true if initialized and can be used.
-     */
-    public abstract boolean isInitialized(String urlStr);
+
     
     /**
      * Sets the attachmentLocation field in the passed in Attachment
@@ -196,4 +191,5 @@ public interface AttachmentManagerIface
      * Perform any internal cleanup needed before shutdown.
      */
     public abstract void cleanup();
+
 }

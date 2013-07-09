@@ -386,7 +386,7 @@
             <desc><![CDATA[Attachments Preference Form.]]></desc>
             
             <columnDef>p,35px,p,4px,p,f:p:g</columnDef>
-            <rowDef>p,4px,p,4px,p, 10px,p,4px,p,4px,p,4px,p</rowDef>
+            <rowDef>p,4px,p,4px,p, 10px,p,4px,p,4px,p,4px,p,4px,p</rowDef>
                
             <rows>
             
@@ -413,6 +413,11 @@
                     <cell type="label" label=" "/>
                     <cell type="label" id="attch_url_lbl" labelfor="attch_url" label="ATTACHMENT_URL"/>
                     <cell type="field" id="attch_url" name="attachment.url" cols="30" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="label" id="attch_key_lbl" labelfor="attch_key" label="ATTACHMENT_KEY"/>
+                    <cell type="field" id="attch_key" name="attachment.key" cols="30" uitype="text" colspan="2"/>
                 </row>
                 <row>
                     <cell type="panel" id="btnpanel" name="btnpanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="6">

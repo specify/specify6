@@ -90,14 +90,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         releaseDate.set(2013, 1, 22);
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#isInitialized(java.lang.String)
-     */
-    @Override
-    public boolean isInitialized(final String urlStr)
-    {
-        return false;
-    }
+
 
     /**
      * @param baseDir
