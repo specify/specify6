@@ -888,18 +888,16 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         try
         {
             log.debug("Uploading " + targetFile.getName() + " to " + targetURL);
-            
-            String sha1Hash = calculateHash(targetFile);
 
             Part[] parts = {
                     new FilePart(targetFile.getName(), targetFile),
                     new StringPart("type", isThumb ? "T" : "O"),
                     new StringPart("store", fileName),
+                    new StringPart("token", generateToken(fileName)),
                     new StringPart("coll", values[0]),
-                    new StringPart("hash", sha1Hash == null ? "" : sha1Hash),
-                    //new StringPart("disp", values[1]),
-                    //new StringPart("div",  values[2]),
-                    //new StringPart("inst", values[3]),
+                    new StringPart("disp", values[1]),
+                    new StringPart("div",  values[2]),
+                    new StringPart("inst", values[3]),
                 };
 
             filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
@@ -982,6 +980,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             fillValuesArray();
             PostMethod  postMethod  = new PostMethod(delURLStr);
             postMethod.addParameter("filename", fileName);
+            postMethod.addParameter("token", generateToken(fileName));
             postMethod.addParameter("coll", values[0]);
             postMethod.addParameter("disp", values[1]);
             postMethod.addParameter("div",  values[2]);
