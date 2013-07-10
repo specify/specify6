@@ -32,6 +32,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 
 /**
  * @author timbo
@@ -261,6 +262,10 @@ public class RelatedClassSetter
         return uploadTbl;
     }
 
+    /**
+     * @return
+     * @throws UploaderException
+     */
     protected Discipline getDiscipline() throws UploaderException
     {
     	Discipline discipline;
@@ -281,6 +286,10 @@ public class RelatedClassSetter
 		return discipline;
     }
 
+    /**
+     * @return
+     * @throws UploaderException
+     */
     protected Collection getCollection() throws UploaderException
     {
     	Collection collection;
@@ -299,6 +308,30 @@ public class RelatedClassSetter
 			session.close();
 		}
 		return collection;
+    }
+
+    /**
+     * @return
+     * @throws UploaderException
+     */
+    protected Institution getInstitution() throws UploaderException
+    {
+    	Institution institution;
+		DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		try 
+		{
+			DataModelObjBase temp = AppContextMgr.getInstance().getClassObject(Institution.class);
+			institution = (Institution) session.get(temp.getDataClass(), temp
+					.getId());
+		} catch (Exception ex) 
+		{
+			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+		} finally 
+		{
+			session.close();
+		}
+		return institution;
     }
 
     /**
@@ -323,6 +356,11 @@ public class RelatedClassSetter
         {
             setDefaultId(getDiscipline().getDivision().getId());
             return true;
+        }
+        
+        if (relatedClass.equals(Institution.class))
+        {
+        	setDefaultId(getInstitution().getId());
         }
         
         log.debug("unable to meet requirement: " + getUploadTbl().getTblClass().getSimpleName() + "<->"

@@ -57,6 +57,9 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionMember;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.DisciplineMember;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -435,7 +438,7 @@ public class MissingDataResolver implements ActionListener
                 log.debug("setting ReferenceWork.ReferenceWorkType to 1");
                 dfe.setDefaultValue(new Byte("1"));
                 return true;
-            }
+            }        
         }
         if (dfe.getUploadTbl().getTblClass() == edu.ku.brc.specify.datamodel.Determination.class)
         {
@@ -463,6 +466,15 @@ public class MissingDataResolver implements ActionListener
                 return true;
             } 
             log.error("No default Collection has been set!");
+        }
+        if (DisciplineMember.class.isAssignableFrom(dfe.getUploadTbl().getTblClass()) && ("DisciplineID".equalsIgnoreCase(dfe.getFldName())))
+        {
+            if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
+            {
+                dfe.setDefaultValue(AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
+                return true;
+            } 
+            log.error("No default Discipline has been set!");
         }
         log.error("unable to meet requirement: " + dfe.getUploadTbl().getTblClass().getSimpleName() + "." + dfe.getFldName());
         return false;
