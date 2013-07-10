@@ -140,6 +140,14 @@ public class AttachmentIconMapper implements ObjectIconMapper
             return notifyListener(listener, IconManager.getIcon("BrokenImage"));
         }
         
+        if (StringUtils.isNotEmpty(attachment.getAttachmentLocation()))
+        {
+            // the attachment location is set, so it should be there.
+            // don't fall back to the original file because that
+            // will just confuse matters.
+            return notifyListener(listener, IconManager.getIcon("BrokenImage"));
+        }
+        
         // next, try to make a new thumbnail in a tmp directory
         
         // make sure to only start one thumb generating thread per attachment

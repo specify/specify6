@@ -433,6 +433,9 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
                 SubPaneMgr.getInstance().addPane(pane);
                 return;
             }
+        } else {
+            UIRegistry.showLocalizedError("noattachment");
+            return;
         }
         
         try
