@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 public class GeoRefConverter implements StringConverter
 {
     protected final String decimalSep;
+    
 	
 	//NOTE: on mac the order of the formats matters. 
 	//Some strings will (invalidly - at least according to windows/linux interpretation)
@@ -213,7 +214,7 @@ public class GeoRefConverter implements StringConverter
             else if (originalFormat.equals(GeoRefFormat.DMS_NSEW) || originalFormat.equals(GeoRefFormat.DMS_PLUS_MINUS))
             {
             	//decimalFmtLen += 2;
-            	decimalFmtLen = Math.min(5, decimalFmtLen + 2);
+            	decimalFmtLen = Math.min(LatLonConverter.DDMMMM_LEN, decimalFmtLen + 2);
             }
             
         	if (destFormat.equals(GeoRefFormat.DM_PLUS_MINUS.name()))
@@ -230,12 +231,12 @@ public class GeoRefConverter implements StringConverter
             if (originalFormat.equals(GeoRefFormat.DMS_NSEW) || originalFormat.equals(GeoRefFormat.DMS_PLUS_MINUS))
             {
             	//decimalFmtLen += 7;
-            	decimalFmtLen = 7;
+            	decimalFmtLen = LatLonConverter.DDDDDD_LEN;
             }
             else if (originalFormat.equals(GeoRefFormat.DM_NSEW) || originalFormat.equals(GeoRefFormat.DM_PLUS_MINUS))
             {
             	//decimalFmtLen += 5;
-            	decimalFmtLen = Math.min(decimalFmtLen + 5, 7);
+            	decimalFmtLen = Math.min(decimalFmtLen + LatLonConverter.DDMMMM_LEN, LatLonConverter.DDDDDD_LEN);
             }
             
             if (destFormat.equals(GeoRefFormat.D_PLUS_MINUS.name()))
@@ -547,15 +548,15 @@ public class GeoRefConverter implements StringConverter
             String convertedVal = null;
             if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
             {
-                convertedVal = LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus, Math.min(3, decimalFmtLen));
+                convertedVal = LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus, Math.min(LatLonConverter.DDMMSS_LEN, decimalFmtLen));
             }
             else if (destFormat == GeoRefFormat.DM_PLUS_MINUS.name())
             {
-                convertedVal = LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, Math.min(5, decimalFmtLen));
+                convertedVal = LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, Math.min(LatLonConverter.DDMMMM_LEN, decimalFmtLen));
             }
             else if (destFormat == GeoRefFormat.D_PLUS_MINUS.name())
             {
-                convertedVal = LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, Math.min(7, decimalFmtLen));
+                convertedVal = LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, Math.min(LatLonConverter.DDDDDD_LEN, decimalFmtLen));
             }
             
             System.out.println("Converted value:   " + convertedVal);
