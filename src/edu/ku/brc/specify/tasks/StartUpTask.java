@@ -113,12 +113,10 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         }
         
         boolean wasOK = false;
-        if (!isUsingPath)
+        if (isUsingGlobalAttchPrefs)
         {
             wasOK = configureAttachmentManager(AppPreferences.getGlobalPrefs());
-        }
-        
-        if (!wasOK)
+        } else
         {
             wasOK = configureAttachmentManager(localPrefs);
         }
@@ -235,7 +233,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         
         AttachmentUtils.setAttachmentManager(attachMgr);
         
-        return true;
+        return attachMgr != null;
     }
     
 

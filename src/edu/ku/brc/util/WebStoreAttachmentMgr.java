@@ -133,7 +133,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      */
     public WebStoreAttachmentMgr(final String urlStr, final String keyStr) throws WebStoreAttachmentException
     {
-        attachment_key = keyStr;
+        attachment_key = keyStr == null ? "" : keyStr;
                         
         downloadCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "download_cache");
         if (!downloadCacheDir.exists())
@@ -158,10 +158,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     private void testKey() throws WebStoreAttachmentKeyException
     {
-       if (StringUtils.isEmpty(attachment_key))
-       {
-           return;
-       }
        GetMethod method = new GetMethod(testKeyURLStr);
        String r = "" + (new Random()).nextInt();
        method.setQueryString(new NameValuePair[] {
@@ -805,6 +801,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     private String generateToken(String attachLocation)
     {
+        if (StringUtils.isEmpty(attachment_key)) return "";
+        
         SecretKeySpec keySpec = new SecretKeySpec(attachment_key.getBytes(), "HmacMD5");
         Mac mac;
         try
