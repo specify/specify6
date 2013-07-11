@@ -648,22 +648,42 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             return getFileForIconName(UNKNOWN);
         }
         
-            // The File is on the server.
-            //
-            // Now if we need a scaled version of the file we need to make
-            // sure we have a thumbnailer that can make the scaled image,
-            // if we don't then just get an icon.
-            
-            if (hasScaleSize && isImage) // Images get scaled on the server
-            {
+        // The File is on the server.
+        //
+        // Now if we need a scaled version of the file we need to make
+        // sure we have a thumbnailer that can make the scaled image,
+        // if we don't then just get an icon.
+        
+        if (hasScaleSize)
+        {   
+            if (isImage) // Images get scaled on the server
+            {   
                 return getFileFromWeb(attachLocation, mimeType, scale, bytes); // ask server for scaled image
-            }  
-            
-            // Get the Full Image
-            // It's not an image, so we need to get the whole file
-            return getFileFromWeb(attachLocation, mimeType, null, bytes);
+            } else {
+                return getIconFromFileName(attachLocation);
+            }
+        }
+        
+        // Get the Full Image
+        // It's not an image, so we need to get the whole file
+        return getFileFromWeb(attachLocation, mimeType, null, bytes);
     }
         
+    private File getIconFromFileName(final String fileName)
+    {
+        String iconName = Thumbnailer.getIconNameFromExtension(FilenameUtils.getExtension(fileName.toLowerCase()));
+        if (iconName != null)
+        {
+            File iconFile = getFileForIconName(iconName);
+            if (iconFile != null) 
+            { 
+                return iconFile;
+            }
+        }
+        // No thumbnail, no icon, use the 'unknown' icon
+        return getFileForIconName(UNKNOWN);
+    }
+    
     /**
      * @param inc
      */
