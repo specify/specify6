@@ -1184,7 +1184,28 @@ public class UploadTableTree extends UploadTable
         return result;
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getParentParam(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry, int, java.util.HashMap)
+	 */
+	@Override
+	protected DataModelObjBase getParentParam(ParentTableEntry pte, int recNum,
+			HashMap<UploadTable, DataModelObjBase> overrideParentParams)
+			throws UploaderException {
+      	DataModelObjBase result =  overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
+      			: pte.getImportTable().getParentRecord(recNum, this);
+      	if (result == null)
+      	{
+      		UploadTableTree p = parent;
+      		while (result == null && p != null) {
+      			result = overrideParentParams.get(p);
+      			p = p.parent;
+      		}
+      	}
+      	return result;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getMatchCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int, java.util.Vector, java.util.HashMap)
      */
     @Override

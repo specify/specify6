@@ -3164,6 +3164,19 @@ public class UploadTable implements Comparable<UploadTable>
 		}
 		return uf.getSetter() != null;
 	}
+	
+	/**
+	 * @param pte
+	 * @param recNum
+	 * @param overrideParentParams
+	 * @return
+	 * @throws UploaderException
+	 */
+	protected DataModelObjBase getParentParam(final ParentTableEntry pte, final int recNum, HashMap<UploadTable, DataModelObjBase> overrideParentParams) throws UploaderException
+	{
+      	return overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
+      			: pte.getImportTable().getParentRecord(recNum, this);
+	}
     /**
      * 
      * 
@@ -3219,9 +3232,9 @@ public class UploadTable implements Comparable<UploadTable>
             {
               if (!needToMatchChildren() || !pte.getImportTable().isOneToOneChild())
               {
-              	DataModelObjBase parentParam = overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
-              			: pte.getImportTable().getParentRecord(
-                                  recNum, this);
+              	DataModelObjBase parentParam = getParentParam(pte, recNum, overrideParentParams);//overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
+              			//: pte.getImportTable().getParentRecord(
+                        //          recNum, this);
               	restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
                       critter, pte.getPropertyName(), parentParam, false), -1));
               }
@@ -3361,12 +3374,13 @@ public class UploadTable implements Comparable<UploadTable>
     	protected final boolean isBlank;
     	protected boolean isSkipped; //true if matching was not attempted because of un-matched parent
     	protected final int recNum;
+    	protected final boolean stoppedAlready;
 		/**
 		 * @param matches
 		 * @param parent
 		 */
 		public ParentMatchInfo(List<DataModelObjBase> matches,
-				UploadTable table, boolean isBlank, boolean isSkipped, int recNum)
+				UploadTable table, boolean isBlank, boolean isSkipped, int recNum, boolean stoppedAlready)
 		{
 			super();
 			this.matches = matches;
@@ -3374,7 +3388,17 @@ public class UploadTable implements Comparable<UploadTable>
 			this.isBlank = isBlank;
 			this.isSkipped = isSkipped;
 			this.recNum = recNum;
+			this.stoppedAlready = stoppedAlready;
 		}
+		
+		/**
+		 * @return stoppedAlready
+		 */
+		public boolean getStoppedAlready()
+		{
+			return stoppedAlready;
+		}
+		
 		/**
 		 * @return the matches
 		 */
@@ -3492,6 +3516,7 @@ public class UploadTable implements Comparable<UploadTable>
     	boolean matched = false;
     	boolean blankParentage = true;
     	boolean blank = isBlankRow(row, uploader.getUploadData(), adjustedRecNum);
+    	boolean stopAlready = false;
 		Vector<DataModelObjBase> matches = new Vector<DataModelObjBase>();
 		//XXX need to include matchChildrenParents in parentParams 
 		for (List<ParentMatchInfo> pm : parentMatches)
@@ -3499,18 +3524,24 @@ public class UploadTable implements Comparable<UploadTable>
 			if (doMatch && pm.size() > 0)
 			{
 				ParentMatchInfo nearest = pm.get(pm.size() - 1);
-				blankParentage &= nearest.isBlank();
+				int b = 2;
+				while (pm.size() - b >= 0 && nearest.isSkipped() && !nearest.getStoppedAlready())
+				{
+					nearest = pm.get(pm.size() - b++);
+				}
+				blankParentage &= nearest != null & nearest.isBlank();
 				if (nearest.getMatches().size() == 1
-						|| (nearest.getMatches().size() == 0 && nearest
-								.isBlank()))
+						|| (!nearest.getStoppedAlready() && nearest.getMatches().size() == 0 && (nearest.isBlank() || nearest.isSkipped())))
 				{
 					DataModelObjBase match = nearest.getMatches().size() == 1 ? nearest
 							.getMatches().get(0)
 							: null;
+							stopAlready = this instanceof UploadTableTree && nearest.getMatches().size() == 0 && (nearest.isBlank() || nearest.isSkipped());
 					parentParams.put(nearest.getTable(), match);
 				} else
 				{
 					doMatch = false;
+					stopAlready = nearest.getStoppedAlready();
 				}
 			}
 			result.addAll(pm);
@@ -3536,7 +3567,6 @@ public class UploadTable implements Comparable<UploadTable>
 			{
 				skipChildrenMatching.set(false);
 			}
-			
 	    	
 	    	
 	    	
@@ -3602,7 +3632,7 @@ public class UploadTable implements Comparable<UploadTable>
 //    				}
 //    			}
 //    		}
-    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched, recNum));
+    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched, recNum, stopAlready));
     	}
     	
     	return result;
