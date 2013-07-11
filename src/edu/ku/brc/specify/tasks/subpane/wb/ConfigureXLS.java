@@ -389,7 +389,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                     if (!dupedCols.contains(col.getColTitle()))
                     {
                     	String key = getKeyForCol(col, usesViewOrder);
-                    	if (key != null)
+                    	if (key != null && props.get(key) != null)
                     	{
                     		String[] mapping = ((String) props.get(key)).split("\t");
                     		col.setMapToTbl(mapping[mapIdxOffset + 0]);
