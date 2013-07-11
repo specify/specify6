@@ -12338,7 +12338,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="verbatimDate" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="verbatimDate" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
