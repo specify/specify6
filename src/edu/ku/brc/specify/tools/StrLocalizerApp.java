@@ -654,7 +654,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         rsController = new ResultSetController(null, false, false, false, "", 1, true);
         
-        transBtn = UIHelper.createButton(getResourceString("StrLocalizerApp.Translate"));
+        //transBtn = UIHelper.createButton(getResourceString("StrLocalizerApp.Translate"));
         
         
         PanelBuilder pbr = new PanelBuilder(new FormLayout("r:p,2px,f:p:g", "p, 4px, c:p,4px,p,4px,p,4px,p,4px,p,10px,p,2px,f:p:g"));
@@ -672,7 +672,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         pbr.add(textField,                        cc.xy(3, 5));
         
         pbr.add(rsController.getPanel(),          cc.xyw(1, 7, 3));
-        pbr.add(transBtn,                         cc.xy(1,  9));
+        //pbr.add(transBtn,                         cc.xy(1,  9));
         pbr.addSeparator("Searching",             cc.xyw(1, 11, 3));
         
         searchBtn = createButton(getResourceString("SEARCH"));
