@@ -1,6 +1,6 @@
-/* Copyright (C) 2009, University of Kansas Center for Research
+/* Copyright (C) 2013, University of Kansas Center for Research
  * 
- * Modifications Copyright (C) 2012 President and Fellows of Harvard College
+ * Modifications Copyright (C) 2013 President and Fellows of Harvard College
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
