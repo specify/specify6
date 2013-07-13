@@ -525,6 +525,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 
                                 fixLocaleSchema();
                                 
+                                // Unhide All GUID fields for Schema 1.8
+                                String updateSQL = "UPDATE splocalecontaineritem SET IsHidden=TRUE WHERE Name = 'GUID'";
+                                BasicSQLUtils.update(dbConn.getConnection(), updateSQL);
+                                
+                                
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
