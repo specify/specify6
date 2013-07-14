@@ -159,6 +159,8 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     
     private void testKey() throws WebStoreAttachmentKeyException
     {
+       if (testKeyURLStr == null) return; // skip test if there is not test url.
+       
        GetMethod method = new GetMethod(testKeyURLStr);
        String r = "" + (new Random()).nextInt();
        method.setQueryString(new NameValuePair[] {
