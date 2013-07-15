@@ -382,5 +382,9 @@
    <mapID target="about_specify" url="SpecifyHelp/Intro/welcome.html#about_specify"/>
    <mapID target="clean_synonyms" url="SpecifyHelp/Configuration/system_setup.html#clean_synonyms"/> 
    <mapID target="activate_subform" url="SpecifyHelp/QueryBuilder/third_party.html#activate_subform"/>  
-   <mapID target="show_images" url="SpecifyHelp/Data_Entry/attachments.html#show_images"/>               
+
+   <mapID target="show_images" url="SpecifyHelp/Data_Entry/attachments.html#show_images"/>
+   <mapID target="view_attach" url="SpecifyHelp/Data_Entry/attachments_overview.html#view_attach"/>
+   <mapID target="store_attach" url="SpecifyHelp/Data_Entry/attachments_overview.html#store_attach"/>
+   <mapID target="backup_attach" url="SpecifyHelp/Data_Entry/attachments_overview.html#backup_attach"/>               
 </map>

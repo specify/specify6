@@ -42,7 +42,7 @@
       <br>
       <br>
     </blockquote>
-    <h3>View Attachments</h3>
+    <h3><a name="view_attach" id="view_attach"></a>View Attachments</h3>
     <blockquote> <a href="../Attachments/attachment_tools.html">Attachment
         Tools</a>  enable users to browse thumbnail representations
       of all attachments within a collection in a workspace window,
@@ -58,13 +58,15 @@
       button located on the <a
         href="../QueryBuilder/Query_Builder.html#q_results">Query
         Results Tool Bar</a>.<br>
+        <blockquote>
       <p><i><b>Note:</b></i> thumbnails are created for jpg, png and
         most pdfs. Other file types are represented by a default
         thumbnail based on their file type.<br>
         <br>
       </p>
+      </blockquote>
     </blockquote>
-    <h3>Store Attachments</h3>
+    <h3><a name="store_attach" id="store_attach"></a>Store Attachments</h3>
     <blockquote> Attachments are copied, renamed using a unique name,
       and stored in an Attachment Storage location. Only the path to the
       attachment storage location is stored in the Specify database. The
@@ -94,18 +96,18 @@
         attachments in an attachment server. This is an alternative to
         storing attachments on a network drive and allows a web server
       to directly access the attachment location.</p>
-      <p>Note: all collections within the same division must share a directory in the storage location. If a directory is not shared tables which share data will not have access to attachments. For instance, within Specify two collections in the same divison share Agent information. If each collection stores its attachments in unique directories in the storage location and an attachment is added to an Agent record in Collection 1 and the user changes collections to Collection 2 the Agent record will be accessible, but the Attachment will be missing.</p>
-      <p><br>
-      </p>
+      <blockquote>
+      <p><strong><em>Note:</em></strong> all collections within the same division must share a directory in the storage location. If a directory is not shared tables which share data will not have access to attachments. For instance, within Specify two collections in the same divison share Agent information. If each collection stores its attachments in unique directories in the storage location and an attachment is added to an Agent record in Collection 1 Agent record will be accessible for users in Collection 2, but the Agent Attachment will show a status of missing.</p>
+      </blockquote>
+      <p>&nbsp; </p>
     </blockquote>
-    <h3>Change Computer/Backup Attachments</h3>
+    <h3><a name="backup_attach" id="backup_attach"></a>Change Computer/Backup Attachments</h3>
     <blockquote>
       <p>Attachments are not stored in the database and therefore are
         not included in a backup of a database. Only the path to the
         attachment storage location is included in the database.
         Attachments stored on a local hard drive should be backed up as
-        part of the local system backup procedure.<br>
-      </p>
+        part of the local system backup procedure.</p>
       <p>To access attachments on an alternate computer when the
         attachment storage location is on a local hard drive will
         require the attachment directory to be copied to the alternate

@@ -14,9 +14,7 @@
 <h2>Specify Setup</h2>
 <p>Specify's flexible design can accommodate a single user with a single collection, or multiple collections representing multiple disciplines within an institution - all sharing the same database. This is accomplished by creating relationships among collection data, as well as modeling how collections are organized within institutions themselves, and then configuring components within Specify specifically for each institutional level. </p>
 <p>What this means for the  user, is that Specify 6 can be configured to work congruently with existing collection management procedures, but it requires a thoughtful setup process. This process may vary depending on how Specify was installed. If you were a Specify 5 user and have worked with the Specify staff to convert your data, many of the setup steps will have been performed for you. However, it is still recommended that you read the help sections for each of the modules to better understand how each module can be utilized for your specific needs. </p>
-<p>If you installed Specify 6 and ran the Specify Setup Wizard to create a new, blank database, the Specify 6 team recommends that you now perform the following procedures to customize the Specify setup to your particular needs. </p>
-
-<div id="section">
+<p>If you installed Specify 6 and ran the Specify Setup Wizard to create a new, blank database, the Specify 6 team recommends that you now perform the following procedures to customize the Specify setup to your particular needs.</p>
 <p>1. Add institutional levels (divisions, disciplines, collections)</p>
 <blockquote>
   <p>Systems that were created by first running the Specify Setup Wizard will include one of each of the institutional levels (institution, division, discipline, collection and user). Most systems will require more than one of each of these institutional levels.</p>
@@ -59,8 +57,22 @@
 <blockquote>
   <p><a href="../ReportsLabels/reports.html">Reports</a> can be created for use in Specify. Reports may include labels for specimens or invoices for loans as well as reports for collection data. Each institution will have different needs. It is helpful to have reports created before users start entering data into the database that are based on your specific needs. Specify harnesses the power of iReport 3.0, an open source report writing software package, by modifying the original iReport version to  interact with Queries created in Specify 6 and data supplied from the Specify 6 database. <a href="../ReportsLabels/specifyireports.html">SpecifyiReport</a> is a separate application and must be launched separately from Specify. SpecifyiReport is located in the Specify application <em><strong>bin</strong></em> directory.</p>
 </blockquote>
-<p>&nbsp;</p>
-<p>7. Customize the Backup and Restore function</p>
+<p>7. Change Attachment Storage Location</p>
+<blockquote>
+<p><a href="../Data_Entry/attachments_overview#store_attach">Attachments</a> are copied, renamed using a unique name,
+      and stored in an Attachment Storage location. Only the path to the
+      attachment storage location is stored in the Specify database. The
+      Specify Setup Wizard sets a default storage location on the local
+      drive but this location can be changed in System Preferences:<br />
+</p>
+<ul>
+  <li>For Mac: Specify &gt; Preferences &gt; System &gt;
+  Attachment Storage Location.</li>
+  <li>For PC and Linux: Choose Edit &gt; Preferences &gt; System
+    &gt; Attachment Storage Location.</li>
+</ul>
+</blockquote>
+<p>8. Customize the Backup and Restore function</p>
 <blockquote>
   <p>A <a href="../Restore/backup_restore.html">Backup and Restore</a> tool ships with Specify  as a separate application. It allows IT personnel to backup and restore the database to the MySQL location on the server, or a local disk. BackupAndRestore is located in the Specify application directory, in the <strong><em>bin</em></strong> file, which stores the executable files for Specify.</p>
 </blockquote>

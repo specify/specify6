@@ -106,6 +106,19 @@
 				<tocitem text="Repository Agreements" target="Repos_Agree" />
 			</tocitem>
 		</tocitem>
+		
+		<tocitem text="Attachments" target="attach_general">
+                <tocitem text="View" target="view_attach" />
+                <tocitem text="Store" target="store_attach" />
+                <tocitem text="Backup" target="backup_attach" />
+                <tocitem text="Attachment Tools" target="ATTACHMENTS" >
+                    <tocitem text="Show All Attachments" target="Attach_Browser" />
+                    <tocitem text="Show All Images" target="show_images" />
+                    <tocitem text="Import Attachments" target="Import_Attach" />
+                    <tocitem text="Import Mapping File" target="Import_Attachmap" />
+                </tocitem>
+		</tocitem>
+		
 		<tocitem text="Trees in Specify" target="Trees_About">
 			<tocitem text="Tree Terminology" target="Trees_Terms" />
 			<tocitem text="Building Trees" target="Trees_Build" />
