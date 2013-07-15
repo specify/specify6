@@ -314,7 +314,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             if (storageFile.exists())
             {
                 attachment.setAttachmentLocation(storageFile.getName());
-                storageFile.deleteOnExit();
+                
+                // This is kludgie as hell, but delete the cache file so that it will be downloaded
+                // after the attachment is stored. Otherwise, the system will think the empty file
+                // is the cached attachment file.
+                storageFile.delete();
                 
                 return true;
             }
