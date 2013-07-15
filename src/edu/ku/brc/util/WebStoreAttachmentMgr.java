@@ -1052,7 +1052,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             
             //log.debug(getMethod.getResponseBodyAsString());
 
-            return status == HttpStatus.SC_OK;
+            return status == HttpStatus.SC_OK || status == HttpStatus.SC_NOT_FOUND;
             
         } catch (Exception ex)
         {
