@@ -336,7 +336,7 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
             System.out.println(idi.getImgName());
             
             String origFilePath = BasicSQLUtils.querySingleObj("SELECT OrigFilename FROM attachment WHERE AttachmentID = " + idi.getAttachmentId());
-            if (StringUtils.isEmpty(origFilePath))
+            if (StringUtils.isNotEmpty(origFilePath))
             {
                 origFilePath = FilenameUtils.getName(origFilePath);
             } else
