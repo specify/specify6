@@ -131,6 +131,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected String              title;
     protected String              shortDesc;
     protected String              iconName;
+    protected String              helpContextName = null;
 
     protected List<NavBoxIFace>   navBoxes      = new Vector<NavBoxIFace>();
     protected boolean             isInitialized = false;
@@ -182,6 +183,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         this.name     = name;
         this.title    = title;
         this.iconName = name;
+        this.helpContextName = name;
     }
     
     /**
@@ -1601,7 +1603,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 	@Override
 	public String getHelpTarget()
 	{
-		return name;
+		return helpContextName != null ? helpContextName : name;
 	}
 
     /* (non-Javadoc)

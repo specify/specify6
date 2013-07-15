@@ -352,7 +352,7 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
         reloadBtn = UIHelper.createIconBtn("Reload", IconManager.STD_ICON_SIZE, null, null);
         reloadBtn.setEnabled(true);
         
-        helpBtn = UIHelper.createHelpIconButton("Attach_Browser");
+        helpBtn = UIHelper.createHelpIconButton(searchType == SearchType.AllAttachments ? "Attach_Browser" : "show_images");
         
         //filterBtn = UIHelper.createIconBtn("Filter20", IconManager.STD_ICON_SIZE, null, null);
         //filterBtn.setEnabled(true);

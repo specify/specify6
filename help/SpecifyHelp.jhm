@@ -382,5 +382,5 @@
    <mapID target="about_specify" url="SpecifyHelp/Intro/welcome.html#about_specify"/>
    <mapID target="clean_synonyms" url="SpecifyHelp/Configuration/system_setup.html#clean_synonyms"/> 
    <mapID target="activate_subform" url="SpecifyHelp/QueryBuilder/third_party.html#activate_subform"/>  
-   <mapID target="activate_subform" url="SpecifyHelp/Data_Entry/attachments#show_images"/>               
+   <mapID target="show_images" url="SpecifyHelp/Data_Entry/attachments.html#show_images"/>               
 </map>

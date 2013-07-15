@@ -124,7 +124,8 @@ public class AttachmentsTask extends BaseTask implements ImageLoaderListener
     public AttachmentsTask()
     {
         super(ATTACHMENTS, getResourceString(ATTACHMENTS));
-        this.iconName = "AttachmentPrefs";
+        this.iconName        = "AttachmentPrefs";
+        this.helpContextName = "Attach_Browser";
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
 
