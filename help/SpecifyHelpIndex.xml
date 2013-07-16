@@ -246,10 +246,15 @@
 	<indexitem text="Block Logins" target="block_logins" mergetype="javax.help.SortMerge" />
 	<indexitem text="Lifemapper" target="Lifemapper" mergetype="javax.help.SortMerge" />
 	<indexitem text="SGR" target="SGR" mergetype="javax.help.SortMerge" />
-	<indexitem text="Attachments">
+	<indexitem text="Attachments" target="attach_general" mergetype="javax.help.SortMerge">
 		<indexitem text="Using Forms" target="Data_Entry_Attachments" mergetype="javax.help.SortMerge" />
 		<indexitem text="Setting Preferences" target="PrefsAttachments" mergetype="javax.help.SortMerge" />
 		<indexitem text="File Path" target="attach_path" mergetype="javax.help.SortMerge" />
 		<indexitem text="Web Services" target="attach_services" mergetype="javax.help.SortMerge" />
+	</indexitem>
+	<indexitem text="Attachment Tools" target="Attach_Tools" mergetype="javax.help.SortMerge">
+		<indexitem text="View Attachments" target="Attach_Browser" mergetype="javax.help.SortMerge" />
+		<indexitem text="Import Images" target="ImageBrowser" mergetype="javax.help.SortMerge" />
+		<indexitem text="Import Map" target="Import_Attachmap" mergetype="javax.help.SortMerge" />
 	</indexitem>
 </index>
