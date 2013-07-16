@@ -393,7 +393,8 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                 locality.setLong1text(convertToDDDDDD(lon, DEGREES_FORMAT.String, DIRECTION.EastWest, 6));
                                 
                                 locality.setSrcLatLongUnit((byte)0); // Decimal Degrees
-                                
+                                locality.setLatLongMethod(getGeoRefProviderName());
+
                                 Set<GeoCoordDetail> geoCoordDetails = locality.getGeoCoordDetails();
                                 GeoCoordDetail gcDetail = null;
                                 if (geoCoordDetails.size() == 0)
