@@ -1036,7 +1036,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 pb.add(UIHelper.createScrollPane(list), cc.xy(1, 3));
                 pb.setDefaultDialogBorder();
                 
-                dirty = true;
+                dirty = qfps.size() > 0;
                 CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                                                     UIRegistry.getResourceString("QB_FIELD_MISSING_TITLE"), true, 
                                                     CustomDialog.OK_BTN, pb.getPanel());
