@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,7 +31,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,8 +77,8 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
     private static final Logger log = Logger.getLogger(SynonymCleanup.class);
     private static final String NBSP = "&nbsp;";
     
-    private String tmpReportName = "orphan_synonym_report_%s.tmp";
-    private String reportName    = "orphan_synonym_report_%s.html";
+    private String tmpReportName = "orphan_synonym_report_%s_%s.tmp";
+    private String reportName    = "orphan_synonym_report_%s_%s.html";
 
     private int maxSynRankToReparent = 230; //Ranks 'below' this rank are just moved to a placeholder
     private boolean moveAllSynsOfLowerRanksToPlaceHolder = true; //if a synonym's preferred taxon has a lower rank than the synonym 
@@ -109,10 +112,12 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
         
         this.collectionName = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName();
         
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMddhhmmss"); //$NON-NLS-1$
+        String dateStr = dateFormatter.format(Calendar.getInstance().getTime());
         String dirPath = getAppDataDir() + File.separator;
         String colNm   = StringUtils.replaceChars(this.collectionName, ' ', '_');
-        tmpReportName  = dirPath + String.format(tmpReportName, colNm);
-        reportName     = dirPath + String.format(reportName, colNm);
+        tmpReportName  = dirPath + String.format(tmpReportName, colNm, dateStr);
+        reportName     = dirPath + String.format(reportName, colNm, dateStr);
         
         String msg = String.format("Synonym Cleanup for %s", collectionName);
         UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
@@ -313,19 +318,19 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             //String statsStr = "";
             tblWriter.startTable();
             String parentRankText = "Parent";//getRankText((Integer)config[0]);
-            tblWriter.logHdr(NBSP, UIRegistry.getResourceString("SynonymCleanup.OrphanSynonym"), 
-            		String.format(UIRegistry.getResourceString("SynonymCleanup.CurrentParent"), parentRankText), 
-            		UIRegistry.getResourceString("SynonymCleanup.CurrentFamily"), 
-            		String.format(UIRegistry.getResourceString("SynonymCleanup.ProposedParent"), parentRankText), 
-            		UIRegistry.getResourceString("SynonymCleanup.ProposedFamily"), 
-            		UIRegistry.getResourceString("SynonymCleanup.CatalogNumsDetermined"));
+            tblWriter.logHdr(NBSP, getResourceString("SynonymCleanup.OrphanSynonym"), 
+            		String.format(getResourceString("SynonymCleanup.CurrentParent"), parentRankText), 
+            		getResourceString("SynonymCleanup.CurrentFamily"), 
+            		String.format(getResourceString("SynonymCleanup.ProposedParent"), parentRankText), 
+            		getResourceString("SynonymCleanup.ProposedFamily"), 
+            		getResourceString("SynonymCleanup.CatalogNumsDetermined"));
             int[] stats = {0, 0, 0, 0, 0, 0, 0, 0};
 
-            boolean needKeys = false;
-            int currRank = (Integer)synConfigs.get(0)[1];
-            int totalSynCount = BasicSQLUtils.getCount(cntStr);
-            boolean doPercent = totalSynCount < 5000;
-            int progressInterval = totalSynCount  / (!doPercent ? 500 : (totalSynCount > 1200 ? 100 : 50));
+            boolean needKeys         = false;
+            int     currRank         = synConfigs.size() > 0 ? (Integer)synConfigs.get(0)[1] : 0;
+            int     totalSynCount    = BasicSQLUtils.getCount(cntStr);
+            boolean doPercent        = totalSynCount < 5000;
+            int     progressInterval = totalSynCount  / (!doPercent ? 500 : (totalSynCount > 1200 ? 100 : 50));
             if (!doPercent)
             {
                 progressFrame.getProcessProgress().setIndeterminate(true);
@@ -380,14 +385,14 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             }
             StringBuilder statsSB = new StringBuilder();
             statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
-            String[] descs  = {UIRegistry.getResourceString("SynonymCleanup.TotalRecsProcessed"),//1 
-              		UIRegistry.getResourceString("SynonymCleanup.NumberSynsDetermined"),//2 
-                    UIRegistry.getResourceString("SynonymCleanup.NumberSynsCorrectlyParented"),//3  
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsInReport"),//4 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsWithNewGenus"),//5 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecsParentedToPlaceHolder"),//6 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberRecordsInError"),//7 
-            		UIRegistry.getResourceString("SynonymCleanup.NumberOfUpdateErrors")};//8
+            String[] descs  = {getResourceString("SynonymCleanup.TotalRecsProcessed"),//1 
+              		getResourceString("SynonymCleanup.NumberSynsDetermined"),//2 
+                    getResourceString("SynonymCleanup.NumberSynsCorrectlyParented"),//3  
+            		getResourceString("SynonymCleanup.NumberRecsInReport"),//4 
+            		getResourceString("SynonymCleanup.NumberRecsWithNewGenus"),//5 
+            		getResourceString("SynonymCleanup.NumberRecsParentedToPlaceHolder"),//6 
+            		getResourceString("SynonymCleanup.NumberRecordsInError"),//7 
+            		getResourceString("SynonymCleanup.NumberOfUpdateErrors")};//8
             //int[]    values = {processCnt, cnt, fndCnt, phCnt, withCatNumCnt, correct, err, updateErr};
             for (int i=0;i<descs.length;i++)
             {
