@@ -130,7 +130,7 @@ public class StatsTask extends BaseTask
                     {
                         Element item = (Element) iter2.next();
                         String boxName  = item.attributeValue("name"); //$NON-NLS-1$
-                        String boxTitle = item.attributeValue("title"); //$NON-NLS-1$
+                        String boxTitle = UIRegistry.getResourceString(item.attributeValue("title")); //$NON-NLS-1$
                         String type     = item.attributeValue("type"); //$NON-NLS-1$
                         ActionListener action = null;
                         if (type.toLowerCase().equals(PIE_CHART))
