@@ -762,6 +762,10 @@
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -771,6 +775,10 @@
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -782,6 +790,10 @@
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -791,6 +803,10 @@
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs/>
@@ -802,6 +818,10 @@
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -810,6 +830,10 @@
         <names>
           <str language="en">
             <version>0</version>
+            <text>Taxon</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
             <text>Taxon</text>
           </str>
         </names>
@@ -822,6 +846,10 @@
             <version>0</version>
             <text>Ordinal</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Ordinal</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -831,6 +859,10 @@
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs/>
@@ -842,6 +874,10 @@
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -850,6 +886,10 @@
       <str language="en">
         <version>1</version>
         <text>Taxon Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Taxon</text>
       </str>
     </names>
     <descs>
@@ -1816,7 +1856,7 @@
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Anexos</text>
+            <text>Anexos Livro de Campo</text>
           </str>
         </names>
         <descs/>
@@ -3314,7 +3354,7 @@
         <names>
           <str language="pt">
             <version>1</version>
-            <text>Anexos</text>
+            <text>Anexos Corrida Sequenciação DNA</text>
           </str>
           <str language="en">
             <version>0</version>
@@ -3408,6 +3448,11 @@
           <str language="en">
             <version>0</version>
             <text>Gene Sequence</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Squência do Gene</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -6159,6 +6204,10 @@
             <version>0</version>
             <text>Conserv Event</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Evento Conservador</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -6168,6 +6217,10 @@
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs/>
@@ -6179,6 +6232,10 @@
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -6188,6 +6245,10 @@
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -6199,6 +6260,10 @@
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -6208,6 +6273,10 @@
           <str language="en">
             <version>0</version>
             <text>Version</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
           </str>
         </names>
         <descs/>
@@ -6219,6 +6288,10 @@
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -6228,6 +6301,10 @@
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -6252,6 +6329,10 @@
       <str language="en">
         <version>1</version>
         <text>Conservator Event Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Evento Conservador</text>
       </str>
     </names>
     <descs>
@@ -10952,7 +11033,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="pt">
             <version>1</version>
-            <text>Anexos</text>
+            <text>Anexos Página Livro de Campo</text>
           </str>
           <str language="en">
             <version>0</version>
@@ -15041,6 +15122,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -15050,6 +15135,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -15061,6 +15150,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Permit</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Autorização</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -15070,6 +15163,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs/>
@@ -15081,6 +15178,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -15091,6 +15192,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -15100,6 +15205,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs/>
@@ -15121,6 +15230,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -15129,6 +15242,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
       <str language="en">
         <version>1</version>
         <text>Permit Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Autorização</text>
       </str>
     </names>
     <descs>
@@ -16139,6 +16256,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -16148,6 +16269,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -16159,6 +16284,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -16168,6 +16297,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Repository Agreement</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexos Acordo Repositório</text>
           </str>
         </names>
         <descs/>
@@ -16179,6 +16312,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -16189,6 +16326,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -16198,6 +16339,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+          </str>
+          <str language="en">
+            <version>0</version>
+            <text>Modificado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -16219,6 +16364,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -16227,6 +16376,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
       <str language="en">
         <version>1</version>
         <text>Repository Agreement Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Acordo Repositório</text>
       </str>
     </names>
     <descs>
@@ -17693,7 +17846,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="pt">
             <version>1</version>
-            <text>Anexos</text>
+            <text>Anexos Conjunto Páginas Livro de Campo</text>
           </str>
           <str language="en">
             <version>0</version>
@@ -17888,6 +18041,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -17897,6 +18054,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs/>
@@ -17908,6 +18069,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -17918,6 +18083,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexos</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -17927,6 +18096,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -17950,6 +18123,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <text>Dna Sequence</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Sequência DNA</text>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -17961,6 +18138,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -17971,6 +18152,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -17979,6 +18164,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
       <str language="en">
         <version>0</version>
         <text>DNA Sequence Attachment</text>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexos Sequência DNA</text>
       </str>
     </names>
     <descs>
@@ -19350,6 +19539,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -19359,6 +19552,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -19370,6 +19567,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Collection Member Id</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Id Membro Coleção</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -19379,6 +19580,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -19390,6 +19595,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Preparation</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Preparação</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -19399,6 +19608,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs/>
@@ -19410,6 +19623,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -19419,6 +19636,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -19440,6 +19661,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -19448,6 +19673,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
       <str language="en">
         <version>1</version>
         <text>Preparation Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Preparação</text>
       </str>
     </names>
     <descs>
@@ -21480,6 +21709,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Value</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Valor</text>
+          </str>
         </names>
         <descs>
           <str language="en">
@@ -21495,6 +21728,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21505,6 +21742,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexos</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21514,6 +21755,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs>
@@ -21530,6 +21775,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Name</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Nome</text>
+          </str>
         </names>
         <descs>
           <str language="en">
@@ -21545,6 +21794,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21554,6 +21807,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs>
@@ -21570,6 +21827,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21577,7 +21838,11 @@ Specify provides an extensive array of utilities for curatorial management of sp
     <names>
       <str language="en">
         <version>1</version>
-        <text>Attachment Metadata</text>
+        <text>Attachment MetadataMetadados</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Metadados</text>
       </str>
     </names>
     <descs>
@@ -21597,6 +21862,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21606,6 +21875,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -21617,6 +21890,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Locality</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Localidade</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21626,6 +21903,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Version</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
           </str>
         </names>
         <descs/>
@@ -21637,6 +21918,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21647,6 +21932,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -21656,6 +21945,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -21676,6 +21969,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -24713,6 +25010,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs>
           <str language="en">
@@ -24727,6 +25028,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -24748,6 +25053,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -24757,6 +25066,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -24768,6 +25081,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -24777,6 +25094,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Loan</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Empréstimo</text>
           </str>
         </names>
         <descs/>
@@ -24788,6 +25109,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -24798,6 +25123,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -24806,6 +25135,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
       <str language="en">
         <version>1</version>
         <text>Loan Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Empréstimo</text>
       </str>
     </names>
     <descs>
@@ -25078,6 +25411,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -25087,6 +25424,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Accession</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Registo</text>
           </str>
         </names>
         <descs>
@@ -25103,6 +25444,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -25113,6 +25458,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -25122,6 +25471,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs>
@@ -25153,6 +25506,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -25162,6 +25519,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs/>
@@ -25173,6 +25534,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -25181,6 +25546,10 @@ Specify provides an extensive array of utilities for curatorial management of sp
       <str language="en">
         <version>1</version>
         <text>Accession Attachment</text>
+      </str>
+      <str language="pt">
+        <version>0</version>
+        <text>Anexos Registo</text>
       </str>
     </names>
     <descs>
@@ -26677,6 +27046,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26686,6 +27059,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs/>
@@ -26697,6 +27074,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26706,6 +27087,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Version</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
           </str>
         </names>
         <descs/>
@@ -26727,6 +27112,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26736,6 +27125,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -26747,6 +27140,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26757,6 +27154,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Field Notebook Page</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Página Livro de Campo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26765,6 +27166,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>0</version>
         <text>Field Notebook Page Attachment</text>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexos Página Livro de Campo</text>
       </str>
     </names>
     <descs>
@@ -26795,6 +27200,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26804,6 +27213,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -26815,6 +27228,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26824,6 +27241,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -26835,6 +27256,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26844,6 +27269,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Version</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
           </str>
         </names>
         <descs/>
@@ -26855,6 +27284,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26865,6 +27298,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Field Notebook Page Set</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Conjunto Páginas Livro de Campo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -26873,6 +27310,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>0</version>
         <text>Field Notebook Page Set Attachment</text>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexos Conjunto Páginas Livro de Campo</text>
       </str>
     </names>
     <descs>
@@ -27406,7 +27847,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Anexos</text>
+            <text>Anexos Pedido Empréstimo</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -33120,6 +33561,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33129,6 +33574,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Field Notebook</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Livro de Campo</text>
           </str>
         </names>
         <descs/>
@@ -33150,6 +33599,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33159,6 +33612,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -33170,6 +33627,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33179,6 +33640,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs/>
@@ -33190,6 +33655,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33200,6 +33669,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexos</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33208,6 +33681,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>0</version>
         <text>Field Notebook Attachment</text>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexos Livro de Campo</text>
       </str>
     </names>
     <descs>
@@ -33355,6 +33832,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33364,6 +33845,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Conserv Description</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Descrição Conservador</text>
           </str>
         </names>
         <descs/>
@@ -33390,6 +33875,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33399,6 +33888,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -33410,6 +33903,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33419,6 +33916,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs/>
@@ -33430,6 +33931,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33440,6 +33945,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -33448,6 +33957,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>1</version>
         <text>Conservator Description Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Descrição Conservador</text>
       </str>
     </names>
     <descs>
@@ -35808,6 +36321,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Created</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -35817,6 +36334,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
           </str>
         </names>
         <descs/>
@@ -35828,6 +36349,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Created By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -35837,6 +36362,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Collecting Event</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Evento Colheita</text>
           </str>
         </names>
         <descs/>
@@ -35848,6 +36377,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Collection Member Id</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Id Membro Coleção</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -35857,6 +36390,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
           </str>
         </names>
         <descs/>
@@ -35868,6 +36405,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Modified By Agent</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modified By Agent</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -35877,6 +36418,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
           </str>
         </names>
         <descs>
@@ -35908,6 +36453,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -35916,6 +36465,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>1</version>
         <text>Collecting Event Attachment</text>
+      </str>
+      <str language="pt">
+        <version>2</version>
+        <text>Anexos Evento Colheita</text>
       </str>
     </names>
     <descs>
@@ -37655,6 +38208,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Reference Work Attachments</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexos Referência Obra</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -37817,8 +38375,8 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <version>0</version>
         <names>
           <str language="pt">
-            <version>0</version>
-            <text>Volume</text>
+            <version>1</version>
+            <text>Livro</text>
           </str>
           <str language="en">
             <version>0</version>
@@ -37991,6 +38549,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Institution</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Instituição</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -41003,6 +41566,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Timestamp Modified</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -41028,6 +41595,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Remarks</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -41037,6 +41608,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
           </str>
         </names>
         <descs/>
@@ -41048,6 +41623,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Version</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -41057,6 +41636,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -41068,6 +41651,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Attachment</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -41077,6 +41664,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Collection Object</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Objeto Coleção</text>
           </str>
         </names>
         <descs/>
@@ -41088,6 +41679,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Collection Member Id</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Id Membro Coleção</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -41097,6 +41692,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
           </str>
         </names>
         <descs/>
@@ -41109,7 +41708,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
       </str>
       <str language="pt" country="" variant="">
         <version>0</version>
-        <text>Anexo</text>
+        <text>Anexo Objeto Coleção</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
@@ -41547,6 +42146,10 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <version>0</version>
             <text>Collection Member Id</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Id Membro Coleção</text>
+          </str>
         </names>
         <descs/>
       </desc>
@@ -41741,6 +42344,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Text2</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto2</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43584,6 +44192,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Borrow</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Pedido Empréstimo</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43595,6 +44208,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43610,6 +44228,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Attachment</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43621,6 +44244,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43649,6 +44277,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Version</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43660,6 +44293,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Timestamp Modified</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43675,6 +44313,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Created By Agent</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43688,6 +44331,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Remarks</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43697,6 +44345,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>0</version>
         <text>Borrow Attachment</text>
+        <containerName class="container" reference="../../.."/>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexos Pedido Empréstimo</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
@@ -43715,6 +44368,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Gift</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Oferta</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43726,6 +44384,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Version</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43754,6 +44417,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Remarks</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43765,6 +44433,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Timestamp Created</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43780,6 +44453,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Attachment</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43791,6 +44469,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43806,6 +44489,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Timestamp Modified</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43817,6 +44505,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43851,6 +44544,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Created By Agent</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43862,6 +44560,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43877,6 +44580,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Remarks</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43890,6 +44598,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Timestamp Modified</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43901,6 +44614,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexo</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43929,6 +44647,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Reference Work</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Referência Obra</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43940,6 +44663,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Version</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -43955,6 +44683,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Timestamp Created</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -43964,6 +44697,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>0</version>
         <text>Reference Work Attachment</text>
+        <containerName class="container" reference="../../.."/>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexo Referência Obra</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
@@ -44217,6 +44955,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Remarks</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -44228,6 +44971,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Created By Agent</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Criado pelo Agente</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -44256,6 +45004,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Dna Sequencing Run</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Corrida Sequenciação DNA</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -44267,6 +45020,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Attachment</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Anexos</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -44282,6 +45040,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Version</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Versão</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -44293,6 +45056,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
           <str language="en">
             <version>0</version>
             <text>Modified By Agent</text>
+            <itemName reference="../../.."/>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Modificado pelo Agente</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -44308,6 +45076,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Timestamp Modified</text>
             <itemName reference="../../.."/>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Modificado</text>
+            <itemName reference="../../.."/>
+          </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
@@ -44321,7 +45094,12 @@ Preparation: A subdivision of a collection object that refers to the preparation
             <text>Timestamp Created</text>
             <itemName reference="../../.."/>
           </str>
-        </names>
+          <str language="pt">
+            <version>1</version>
+            <text>Marca Temporal Criado</text>
+            <itemName reference="../../.."/>
+          </str>
+       </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
@@ -44330,6 +45108,11 @@ Preparation: A subdivision of a collection object that refers to the preparation
       <str language="en">
         <version>0</version>
         <text>D N A Sequencing Run Attachment</text>
+        <containerName class="container" reference="../../.."/>
+      </str>
+      <str language="pt">
+        <version>1</version>
+        <text>Anexos Corrida Sequenciação DNA</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
