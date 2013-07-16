@@ -1751,6 +1751,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     
+                    tblName = getTableNameAndTitleForFrame(Attachment.getClassTableId());
+                    len     = getFieldLength(conn, databaseName, tblName, "origFilename");
+                    if (len != null && len == 128)
+                    {
+                        alterFieldLength(conn, databaseName, tblName, "origFilename", 128, 20000);
+                    }
+                    
+                    len     = getFieldLength(conn, databaseName, tblName, "title");
+                    if (len != null && len == 64)
+                    {
+                        alterFieldLength(conn, databaseName, tblName, "title", 64, 255);
+                    }
+                    
                     frame.setDesc("Updating GUIDs"); // I18N
                     if (!checkAndUpdateGUIDs(conn, databaseName))
                     {
