@@ -113,7 +113,7 @@ public class TableTreePathPoint
 			{
 				return false;
 			}
-			return StringUtils.equals(name, ttpp.name);
+			return StringUtils.equalsIgnoreCase(name, ttpp.name);
 		}
 		
 		return false;
