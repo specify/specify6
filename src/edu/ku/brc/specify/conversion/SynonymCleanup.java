@@ -34,7 +34,6 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -316,7 +315,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
             //int s = 0;
             
             //String statsStr = "";
-            tblWriter.startTable();
+            tblWriter.startTable(UIRegistry.getResourceString("SynonymCleanup.Table_2_Title"));
             String parentRankText = "Parent";//getRankText((Integer)config[0]);
             tblWriter.logHdr(NBSP, getResourceString("SynonymCleanup.OrphanSynonym"), 
             		String.format(getResourceString("SynonymCleanup.CurrentParent"), parentRankText), 
@@ -384,7 +383,8 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 }
             }
             StringBuilder statsSB = new StringBuilder();
-            statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\">\n");
+            statsSB.append("<BR><TABLE class=\"o\" cellspacing=\"0\" cellpadding=\"1\"><caption>"
+            		+ UIRegistry.getResourceString("SynonymCleanup.Table_1_Title") + "</caption>\n");
             String[] descs  = {getResourceString("SynonymCleanup.TotalRecsProcessed"),//1 
               		getResourceString("SynonymCleanup.NumberSynsDetermined"),//2 
                     getResourceString("SynonymCleanup.NumberSynsCorrectlyParented"),//3  
