@@ -448,7 +448,7 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                     				inDetailTbl = !isTableEnd;
                     			}
                     		}
-                    		printIt = !inDetailTbl;
+                    		printIt = !inDetailTbl && !isTableEnd;
                     	}
                     	if (printIt)
                     	{
