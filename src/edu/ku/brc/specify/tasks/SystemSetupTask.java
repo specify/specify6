@@ -373,7 +373,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         dlg.createUI();
         dlg.setSize(600, 450);
         UIHelper.centerAndShow(dlg);
-        if (!dlg.isCancelled() && dlg.getBtnPressed() != CustomDialog.APPLY_BTN)
+        if (dlg.getBtnPressed() == CustomDialog.OK_BTN || dlg.getBtnPressed() == CustomDialog.CANCEL_BTN)
         {
             boolean        doCleanup      = dlg.getBtnPressed() == CustomDialog.OK_BTN;
             SynonymCleanup synonymCleanup = new SynonymCleanup(doCleanup);
