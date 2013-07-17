@@ -421,16 +421,39 @@ public class SynonymCleanup extends SwingWorker<Boolean, Boolean>
                 
                 progressInterval = Math.max(progressInterval, 1);
                 int processCnt = 0;
+                boolean statsPrinted = false;
+                boolean inDetailTbl = false;
                 while (line != null)
                 {
-                    if (line.startsWith(TOKEN))
+                    boolean isTableStart = line.trim().toLowerCase().startsWith("<table ");
+                    boolean isTableEnd = line.trim().toLowerCase().startsWith("</table");
+                	if (line.startsWith(TOKEN))
                     {
                         //pw.println(statsStr[s++]);
                         //pw.println(statsStr);
                     	pw.println(statsSB.toString());
-                    } else
+                    	statsPrinted = true;
+                    } else 
                     {
-                        pw.println(line);
+                        boolean printIt = tblWriter.hasLines() || !statsPrinted;
+                    	if (!printIt && !tblWriter.hasLines())
+                    	{
+                    		if (statsPrinted)
+                    		{
+                    			if (!inDetailTbl)
+                    			{
+                    				inDetailTbl = isTableStart;
+                    			} else
+                    			{
+                    				inDetailTbl = !isTableEnd;
+                    			}
+                    		}
+                    		printIt = !inDetailTbl;
+                    	}
+                    	if (printIt)
+                    	{
+                    		pw.println(line);
+                    	}
                     }
                     line = br.readLine();
                     processCnt++;
