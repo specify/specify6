@@ -19,10 +19,10 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.solr.common.util.StrUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
@@ -32,6 +32,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.FieldMetaData;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
+import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoRel;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -98,9 +99,16 @@ public class ExportToMySQLDB
 	{
 		DBFieldInfo fld = column.getFieldInfo();
 		Class<?> dataType = column.getColClass() != null ? column.getColClass() : (fld != null ? fld.getDataClass() : null);
+		if (column instanceof ERTICaptionInfoRel)
+		{
+			if (((ERTICaptionInfoRel )column).getRelationship().getType().equals(DBRelationshipInfo.RelationshipType.OneToMany))
+			{
+				return "text";
+			}
+		}
 		if (dataType == null && fld == null)
 		{
-			//assume it's format or aggregatated or otherwise special
+			//assume it's formatted or otherwise special
 			return "varchar(" + defaultFldLenForFormattedFld + ")";
 		}
 		
