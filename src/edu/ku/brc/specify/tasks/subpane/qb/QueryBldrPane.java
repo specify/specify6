@@ -4568,6 +4568,34 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		{
         			log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
                         + "]");
+            		for (SpQueryField field : fields)
+            		{
+            			//ain't superstitious but checking ids in case 
+            			//fld and field are different java objects
+            			if (field.getId().equals(fld.getId()))
+            			{
+            				SpExportSchemaItemMapping mappingForField = null;
+            				for (SpExportSchemaItemMapping m : schemaMapping.getMappings())
+            				{
+            					if (m.getQueryField() != null && field.getId().equals(m.getQueryField().getId()))
+            					{
+            						mappingForField = m;
+            						break;
+            					}
+            				}
+            				if (mappingForField != null)
+            				{
+            					schemaMapping.getMappings().remove(mappingForField);
+            					mappingForField.setExportSchemaItem(null);
+            					mappingForField.setExportSchemaMapping(null);
+            					mappingForField.setQueryField(null);
+            				}
+            				fields.remove(field);
+            				field.setQuery(null);
+            				fld.setQuery(null);
+            				break;
+            			}
+            		}
         			if (missingFlds != null)
         			{
         				missingFlds.add(fld.getColumnAlias());
