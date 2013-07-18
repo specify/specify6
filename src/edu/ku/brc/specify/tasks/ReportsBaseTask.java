@@ -315,7 +315,7 @@ public class ReportsBaseTask extends BaseTask
             {
                 if (reportsNavBox == null)
                 {
-                    reportsNavBox = new NavBox(navMime.getFirst());
+                    reportsNavBox = new NavBox(UIRegistry.getResourceString(navMime.getFirst()));
                 }
                 navBox = reportsNavBox;
             }
@@ -323,7 +323,7 @@ public class ReportsBaseTask extends BaseTask
             {
                 if (labelsNavBox == null)
                 {
-                    labelsNavBox = new NavBox(navMime.getFirst());
+                    labelsNavBox = new NavBox(UIRegistry.getResourceString(navMime.getFirst()));
                 }
                 navBox = labelsNavBox;
             }
