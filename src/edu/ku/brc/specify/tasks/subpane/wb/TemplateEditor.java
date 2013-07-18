@@ -248,6 +248,12 @@ public class TemplateEditor extends CustomDialog
                     		{
                     			title += " " + (upInfo.getSequence() + 1);
                     		}
+                    		//if mapped-to table is different than the container table used
+                    		// in the wb, add the mapped-to table's title
+                    		if (mInfo.getTableInfo().getTableId() != ti.getTableId())
+                    		{
+                    			title = mInfo.getTableInfo().getTitle() + " " + title;
+                    		}
                     		fi.setTitle(title);
                     	}
                     }
