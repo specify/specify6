@@ -2754,7 +2754,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         final SpecifySchemaUpdateService schemaUpdater = (SpecifySchemaUpdateService)SpecifySchemaUpdateService.getInstance();
         
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
-                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", schemaUpdater.getGUIDPrefNameForCollection()};
+                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "UpdatedAllDBGUIDS"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
         boolean anyNeededToBeFixed = false;
@@ -2763,11 +2763,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             isFixed[i] = globalPrefs.getBoolean(prefNames[i], false);
             if (!isFixed[i]) anyNeededToBeFixed = true;
         }
+        
+        if (!anyNeededToBeFixed) return;
 
-        String msg = "Updating database for release...";
+        String msg = getResourceString("UPDATING_FOR_RELEASE");
         UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
 
-        final ProgressFrame frame = anyNeededToBeFixed ? new ProgressFrame(msg) : null;
+        final ProgressFrame frame = new ProgressFrame(msg);
         if (frame != null)
         {
             frame.adjustProgressFrame();

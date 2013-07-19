@@ -31,12 +31,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.UUID;
 
 import javax.swing.SwingUtilities;
-
-import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
@@ -56,14 +56,12 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -153,8 +151,8 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     @Override
     public void buildGUIDs(final PropertyChangeListener pcl)
     {
-        Collection col = AppContextMgr.getInstance().getClassObject(Collection.class);
-        File outFile = new File(UIRegistry.getAppDataDir() + File.separator + String.format("guids_%d.txt", col.getId()));
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddhhmmss");
+        File outFile = new File(UIRegistry.getAppDataDir() + File.separator + String.format("guids_%s.txt", sf.format(Calendar.getInstance().getTime())));
         try
         {
             pw = new PrintWriter(outFile);
@@ -163,7 +161,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
             ex.printStackTrace();
         }
         
-        if (frame != null) frame.setDesc("Updating GUIDs..."); // I18N
+        if (frame != null) frame.setDesc(getResourceString("SpecifyGUIDGeneratorFactory.UPDATING_GUIDS"));
 
         setProgressValue(true, 0, 100); // Sets Overall Progress to 0 -> 100
         
@@ -209,53 +207,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         
         pw.close();
     }
-    
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#setGUIDOnId(edu.ku.brc.af.ui.forms.FormDataObjIFace, boolean, edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace)
-//     */
-//    @Override
-//    public String setGUIDOnId(final FormDataObjIFace data)
-//    {
-//        if (data == null) return null;
-//        
-//        
-//        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(data.getTableId());
-//        if (tableInfo != null)
-//        {
-//            String primaryColumn = StringUtils.capitalize(tableInfo.getIdFieldName());
-//            
-//            String sql = String.format("SELECT Version FROM %s WHERE %s = %d ", tableInfo.getName(), primaryColumn, data.getId());
-//            Integer version = BasicSQLUtils.getCount(sql);
-//            if (version == null) version = 0;
-//            
-//            Statement updStmt = null;
-//            try
-//            {
-//                updStmt = DBConnection.getInstance().getConnection().createStatement();
-//                    
-//                UUID   uuid    = UUID.randomUUID();
-//                String uuidStr = uuid.toString();
-//                        
-//                sql = String.format("UPDATE %s SET Version=%d,GUID='%s' WHERE %s = %d", 
-//                                    tableInfo.getName(), version+1, uuidStr, primaryColumn, data.getId());
-//                int rv = updStmt.executeUpdate(sql);
-//                return rv == 1 ? uuidStr : null;
-//                
-//            } catch (SQLException ex)
-//            {
-//                ex.printStackTrace();
-//                
-//            } finally
-//            {
-//                try
-//                {
-//                    if (updStmt != null) updStmt.close();
-//                } catch (SQLException e) {}
-//            }
-//        }
-//        return null;
-//    }
-    
     
     /**
      * @param isOverall
