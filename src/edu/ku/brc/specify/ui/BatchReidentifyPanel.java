@@ -246,6 +246,9 @@ public class BatchReidentifyPanel extends JPanel
         
         model   = new ColObjTaxaTableModel();
         coTable = new JTable(model);
+        coTable.setRowSelectionAllowed(false);
+        coTable.setColumnSelectionAllowed(false);
+        coTable.setCellSelectionEnabled(false);
         
         DefaultTableCellRenderer       cr   = new DefaultTableCellRenderer();
         DefaultTableCellHeaderRenderer tchr = new DefaultTableCellHeaderRenderer();
