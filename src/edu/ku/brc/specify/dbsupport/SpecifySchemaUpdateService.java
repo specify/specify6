@@ -2351,7 +2351,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             String post = " FROM (SELECT ce.CollectingEventID ID, COUNT(c.OrderNumber) CNT, MAX(c.OrderNumber) MX, MIN(c.OrderNumber) MN " +
                             "FROM collectingevent ce " +
                             "INNER JOIN collector c ON ce.CollectingEventID = c.CollectingEventID " +
-                            "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN <> 0 OR MX <> CNT ";
+                            "INNER JOIN agent a ON c.AgentID = a.AgentID GROUP BY ce.CollectingEventID) T1 WHERE MN != 0 OR MX+1 != CNT ";
        
             String sql = "SELECT COUNT(*)"+post;
             log.debug(sql);
