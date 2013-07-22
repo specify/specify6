@@ -429,7 +429,7 @@ public class BatchAttachFiles
      */
     private static int askForDirOrFiles()
     {
-        return displayConfirmLocalized("CHOOSE", "BatchAttachFiles.ASK_DIRORFILES_MSG", 
+        return displayConfirmLocalized("BatchAttachFiles.CHOOSE_UPLOAD_METHOD", "BatchAttachFiles.ASK_DIRORFILES_MSG", 
                 "BatchAttachFiles.DO_DIRS", "BatchAttachFiles.DO_FILES", "CANCEL", JOptionPane.QUESTION_MESSAGE);
     }
 
