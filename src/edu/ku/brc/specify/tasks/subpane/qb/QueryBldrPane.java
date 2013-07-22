@@ -212,7 +212,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JCheckBox                                      distinctChk;
     protected JCheckBox                                      countOnlyChk;
     protected JCheckBox                                      searchSynonymyChk;
-    protected boolean                                 		 searchSynonymy     = true;
+    protected boolean                                 		 searchSynonymy     = false;
     
     /**
      * When countOnly is true, count of matching records is displayed, but the records are not displayed.
@@ -714,9 +714,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             {
                                 UsageTracker.incrUsageCount("QB.CountOnlyOff");
                             }
-                            if ((isTreeLevelSelected() || isAggFieldSelected()) && countOnly && distinctChk.isSelected())
+                            if ((isTreeLevelSelected() || isAggFieldSelected()) && countOnly && (distinctChk.isSelected() || searchSynonymyChk.isSelected()))
                             {
                             	distinctChk.setSelected(false);
+                                searchSynonymyChk.setSelected(false);
                             }
                         }
                         else
@@ -756,6 +757,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         {
                             UsageTracker.incrUsageCount("QB.SearchSynonymyOn");
                         }
+    					if (isTreeLevelSelected() && countOnly && searchSynonymyChk.isSelected())
+    					{
+    						countOnlyChk.setSelected(false);
+    						countOnly = false;
+    					}
                         query.setSearchSynonymy(searchSynonymy);
                         saveBtn.setEnabled(thereAreItems());
                         return null;
@@ -1131,7 +1137,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				distinctChk.setSelected(query.isSelectDistinct());
 				countOnlyChk.setSelected(query.getCountOnly() == null ? false : query.getCountOnly());
 				countOnly = countOnlyChk.isSelected();
-				searchSynonymyChk.setSelected(query.getSearchSynonymy() == null ? true : query.getSearchSynonymy());
+				searchSynonymyChk.setSelected(query.getSearchSynonymy() == null ? searchSynonymy : query.getSearchSynonymy());
 				searchSynonymy = searchSynonymyChk.isSelected();
 			}
         	
@@ -1406,7 +1412,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
-        if (distinct || hqlHasSynJoins)
+        if (distinct /*|| hqlHasSynJoins*/)
         {
             sqlStr.append("distinct ");
         }
@@ -1589,7 +1595,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (!checkHQL(result)) return null;
         
         log.info(result);
-        return new HQLSpecs(result, paramsToSet, sortElements);
+        return new HQLSpecs(result, paramsToSet, sortElements, hqlHasSynJoins);
     }
   
     /**
@@ -2875,8 +2881,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setCaptions((List<ERTICaptionInfo> )captions);
         qri.setExpanded(true);
         qri.setHasIds(!distinct);
-        boolean filterDups = false;
-        if (distinct)
+        boolean filterDups = hqlSpecs.isHasSynJoins();
+        if (!filterDups && distinct)
         {
         	for (ERTICaptionInfo caption : captions)
         	{

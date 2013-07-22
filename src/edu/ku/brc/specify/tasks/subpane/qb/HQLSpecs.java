@@ -34,27 +34,47 @@ public class HQLSpecs
     protected final String                     hql;
     protected final List<Pair<String, Object>> args;
     protected final List<SortElement>          sortElements;
+    protected final boolean hasSynJoins;
 
     public HQLSpecs(final String hql, final List<Pair<String, Object>> args,
-            final List<SortElement> sortElements)
+            final List<SortElement> sortElements, final boolean hasSynJoins)
     {
         this.hql = hql;
         this.args = args;
         this.sortElements = sortElements;
+        this.hasSynJoins = hasSynJoins;
     }
 
+    /**
+     * @return
+     */
     public String getHql()
     {
         return hql;
     }
 
+    /**
+     * @return
+     */
     public List<Pair<String, Object>> getArgs()
     {
         return args;
     }
 
+    /**
+     * @return
+     */
     public List<SortElement> getSortElements()
     {
         return sortElements;
     }
+
+	/**
+	 * @return the hasSynJoins
+	 */
+	public boolean isHasSynJoins() {
+		return hasSynJoins;
+	}
+    
+    
 }
