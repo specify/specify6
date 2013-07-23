@@ -311,14 +311,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
 //        }
         if (tableInfo != null)
         {
-            String origScope = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
-            boolean isScopeNotEmpty = origScope != null;
-            
-            String scope = (isScopeNotEmpty ? ("AND " + origScope) : "");
-            
-            System.out.println(tableInfo.getTitle()+" -> "+scope);
-            String where = "GUID IS NOT NULL " + scope;
-            String sql   = String.format("SELECT %s,GUID FROM %s WHERE %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
+            String sql   = String.format("SELECT %s,GUID FROM %s WHERE GUID IS NOT NULL", tableInfo.getIdColumnName(), tableInfo.getName());
             System.out.println(sql);
             
             Statement         stmt    = null;
@@ -337,9 +330,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 pw.flush();
                 
                 // Do all Records
-                where = isScopeNotEmpty ? "WHERE " + origScope : "";
-                
-                sql   = String.format("SELECT COUNT(*) FROM %s %s", tableInfo.getName(), where);
+                sql   = String.format("SELECT COUNT(*) FROM %s", tableInfo.getName());
                 count = BasicSQLUtils.getCountAsInt(sql);
                 System.out.println(sql);
                 System.out.println(tableInfo.getName()+" -> "+count);
@@ -350,7 +341,7 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 
                 setProgressValue(false, 0, 100);
                 
-                sql = String.format("SELECT %s,Version FROM %s %s", tableInfo.getIdColumnName(), tableInfo.getName(), where);
+                sql = String.format("SELECT %s,Version FROM %s", tableInfo.getIdColumnName(), tableInfo.getName());
                 System.out.println(sql);
 
                 String updateStr = String.format("UPDATE %s SET GUID=?, VERSION=? WHERE %s=?", tableInfo.getName(), tableInfo.getIdColumnName());
