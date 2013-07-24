@@ -1745,11 +1745,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     // Adding fields to the 'attachment' table and fill them in
-                    frame.setDesc("Updating the Attachments"); // I18N
+                    frame.setDesc("Adding TableID to Attachment Table"); // I18N
                     if (!addTableIDToAttachmentTable(conn, databaseName))
                     {
                         return false;
                     }
+                    
+                    frame.setDesc("Adding and fixing Attachment scoping");
+                    if (!addScopingToAttachmentTable(conn, databaseName))
+                    {
+                        return false;
+                    }
+                    
+                    frame.setDesc("Fixing PDF mimetype in Attachment Table");
+                    update(conn, 
+                            "UPDATE attachment SET MimeType='application/pdf' " +
+                    		"WHERE MimeType = 'application/octet-stream' " +
+                    		"AND LOWER(SubStr(AttachmentLocation, LENGTH(AttachmentLocation) - 2, LENGTH(AttachmentLocation))) = 'pdf'");
                     
                     tblName = getTableNameAndTitleForFrame(Attachment.getClassTableId());
                     len     = getFieldLength(conn, databaseName, tblName, "origFilename");
@@ -1873,33 +1885,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      * @throws SQLException
      */
-    private boolean fixTablesRefWorksAttachmentsColumnID(final Connection conn, 
-                                                          final Statement stmt) throws SQLException
+    private void fixTablesRefWorksAttachmentsScoping(final Connection conn) throws SQLException
      {
          int      instID = BasicSQLUtils.getCountAsInt("SELECT InstitutionID FROM institution");
-         String  pSQL   = String.format("UPDATE attachment SET ScopeID=%d,ScopeType=%d WHERE AttachmentID = ?", instID, Attachment.INSTITUTION_SCOPE);
-         PreparedStatement pStmt = conn.prepareStatement(pSQL);
-         
-         String sql = "SELECT a.AttachmentID FROM attachment a " +
-         		      "INNER JOIN referenceworkattachment rwa ON a.AttachmentID = rwa.AttachmentID " +
-                      "INNER JOIN referencework rw ON rwa.ReferenceWorkID = rw.ReferenceWorkID ";
-         System.out.println(sql);
-         int cnt = 0;
-         ResultSet rs  = stmt.executeQuery(sql);
-         while (rs.next())
-         {
-             pStmt.setInt(1, rs.getInt(1)); // AttachmentID
-             if (pStmt.executeUpdate() != 1)
-             {
-                 log.error("Error updating AttachmentID "+rs.getInt(1));
-                 return false;
-             }
-             cnt++;
-         }
-         rs.close();
+         String  sql   = String.format("UPDATE attachment SET ScopeID = %d, ScopeType = %d " +
+         		                        "WHERE AttachmentID IN " +
+         		                        "(SELECT AttachmentID FROM referenceworkattachment) " +
+                                        "AND (ScopeID IS NULL OR ScopeType IS NULL)",
+         		                        instID, Attachment.INSTITUTION_SCOPE);
+         int cnt = update(conn, sql);
          log.debug(String.format("Updated %d RefWorks Attachments", cnt));
-         pStmt.close();
-         return true;
      }
                                  
     /**
@@ -1908,136 +1903,81 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      * @throws SQLException
      */
-    private boolean fixTablesAccessionAttachmentsColumnID(final Connection conn, 
-                                                          final Statement stmt) throws SQLException
+    private void fixTablesAccessionAttachmentsScoping(final Connection conn) throws SQLException
      {
          int     instID        = BasicSQLUtils.getCountAsInt("SELECT InstitutionID FROM institution");
          boolean isMgrGlobally = BasicSQLUtils.getCountAsInt("SELECT IsAccessionsGlobal FROM institution") != 0;
-         String  pSQL          = isMgrGlobally ? String.format("UPDATE attachment SET ScopeID=%d,ScopeType=%d WHERE AttachmentID = ?", instID, Attachment.INSTITUTION_SCOPE) :
-                                                 String.format("UPDATE attachment SET ScopeID=?,ScopeType=%d WHERE AttachmentID = ?", Attachment.DIVISION_SCOPE);
-         PreparedStatement pStmt = conn.prepareStatement(pSQL);
          
-         String sql = "SELECT a.AttachmentID, ac.AccessionID, ac.DivisionID FROM attachment a " +
-                      "INNER JOIN accessionattachment aa ON a.AttachmentID = aa.AttachmentID " +
-                      "INNER JOIN accession ac ON aa.AccessionID = ac.AccessionID ";
-         System.out.println(sql);
-         int cnt = 0;
-         ResultSet rs  = stmt.executeQuery(sql);
-         while (rs.next())
+         String sql;
+         if (isMgrGlobally)
          {
-             if (isMgrGlobally)
-             {
-                 pStmt.setInt(1, rs.getInt(1)); // AttachmentID
-             } else
-             {
-                 pStmt.setInt(1, rs.getInt(3)); // ScopeID (DivisionID)
-                 pStmt.setInt(2, rs.getInt(1)); // AttachmentID
-             }
-             
-             if (pStmt.executeUpdate() != 1)
-             {
-                 log.error("Error updating AttachmentID "+rs.getInt(1));
-                 return false;
-             }
-             cnt++;
+             sql = String.format(
+                     "UPDATE attachment, accessionattachment " +
+                     "SET attachment.ScopeID = %d, attachment.ScopeType = %d " +
+                     "WHERE attachment.AttachmentID = accessionattachment.AttachmentID " +
+                     "AND (attachment.ScopeID IS NULL OR attachment.ScopeType IS NULL)", 
+                     instID, Attachment.INSTITUTION_SCOPE);
+         } else {
+             sql = String.format(
+                     "UPDATE attachment, accessionattachment, accession " +
+                     "SET attachment.ScopeID = accession.DivisionID, attachment.ScopeType = %d " +
+                     "WHERE attachment.AttachmentID = accessionattachment.AttachmentID " +
+                     "AND accession.AccessionID = accessionattachment.AccessionID " +
+                     "AND (attachment.ScopeID IS NULL OR attachment.ScopeType IS NULL)",
+                     Attachment.DIVISION_SCOPE);
          }
-         rs.close();
+
+         int cnt = update(conn, sql);
          log.debug(String.format("Updated %d Accession Attachments", cnt));
-         pStmt.close();
-         return true;
      }
                                  
-    /**
-     * @param conn
-     * @param stmt
-     * @param classes
-     * @param sqls
-     * @param colName
-     * @param scopeType
-     * @return
-     * @throws SQLException
-     */
-    private boolean fixTablesAttachmentsColumnID(final Connection conn, 
-                                                 final Statement stmt,
-                                                 final Class<?>[] classes, 
-                                                 final String[] sqls, 
-                                                 final String colName,
-                                                 final byte[] scopeType) throws SQLException
-     {
-         PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET ScopeID=?,ScopeType=? WHERE AttachmentID = ?");
-         int i = 0;
-         for (Class<?> cls : classes)
-         {
-             DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(cls.getName());
-             
-             int cnt = 0;
-             frame.setProcess(i);
-             
-             String      nm      = ti.getName();
-             String      nma     = (ti.getTableId() == 88 ? "dnasequencerun" : ti.getName()) + "attachment";
-             String      nmCap   = cls.getSimpleName();
-             String      sql;
-             if (sqls == null)
-             {
-                 sql     = String.format("SELECT a.AttachmentID,cc.%s FROM attachment a " +
-                                         "INNER JOIN %s aa ON a.AttachmentID = aa.AttachmentID " +  
-                                         "INNER JOIN %s cc ON aa.%sID = cc.%sID", 
-                                         colName, nma, nm, nmCap, nmCap);
-             } else
-             {
-                 sql = sqls[i];
-             }
-             log.debug(sql);
-             
-             ResultSet rs  = stmt.executeQuery(sql);
-             while (rs.next())
-             {
-                 if (scopeType[i] == Attachment.GLOBAL_SCOPE)
-                 {
-                     pStmt.setObject(1, null);
-                 } else
-                 {
-                     pStmt.setInt(1, rs.getInt(2));
-                 }
-             
-                 pStmt.setByte(2, scopeType[i]);
-                 pStmt.setInt(3, rs.getInt(1));
-                 
-                 if (pStmt.executeUpdate() != 1)
-                 {
-                     log.error("Error updating AttachmentID "+rs.getInt(1));
-                     return false;
-                 }
-                 cnt++;
-             }
-             rs.close();
-             log.debug(String.format("Updated %d for %s", cnt, nmCap));
-             i++;
-         }
-         pStmt.close();
-         return true;
-     }
     
+    private String makeSimpleAttachmentFixerSql(final Class<?> cls, final String scopeIdCol, 
+                                                final byte scopeType)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+        
+        String mainTable = ti.getName();
+        String joinTable = (ti.getTableId() == 88 ? "dnasequencerun" : ti.getName()) + "attachment";
+        String idCol = cls.getSimpleName() + "ID";
+        
+        String scopeIDExpr = (scopeType == Attachment.GLOBAL_SCOPE) ? "NULL" : "maintable." + scopeIdCol;
+        
+        return String.format(
+                "UPDATE attachment, %s jointable, %s maintable " +
+                "SET attachment.ScopeID = %s, attachment.ScopeType = %d " +
+                "WHERE attachment.AttachmentID = jointable.AttachmentID " +
+                "AND jointable.%s = maintable.%s " +
+                "AND (attachment.ScopeID IS NULL OR attachment.ScopeType IS NULL)",
+                joinTable, mainTable,
+                scopeIDExpr, scopeType,
+                idCol, idCol);
+    }
+    
+    
+ 
+  
     /**
      * @param conn
      * @param stmt
      * @param classes
      * @param sqls
-     * @param colName
+     * @param scopeIdCol
      * @param scopeType
      * @return
      * @throws SQLException
      */
-    private boolean fixTablesAttachmentsColMemID(final Connection conn, 
-                                                 final Statement stmt,
+    private void fixSimpleAttachmentScoping(final Connection conn, 
                                                  final Class<?>[] classes, 
-                                                 final String[] sqls, 
-                                                 final String colName,
+                                                 final String scopeIdCol,
                                                  final byte scopeType) throws SQLException
     {
-        byte[] scopes = new byte[classes.length];
-        for (int i=0;i<scopes.length;i++) scopes[i] = scopeType;
-        return fixTablesAttachmentsColumnID(conn, stmt, classes, sqls, colName, scopes);
+        for (Class<?> cls : classes)
+        {
+            String sql = makeSimpleAttachmentFixerSql(cls, scopeIdCol, scopeType);
+            int cnt = update(conn, sql);
+            log.debug(String.format("Updated %d for %s", cnt, cls.getSimpleName()));
+        }
     }
     
     /**
@@ -2092,14 +2032,140 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
        return true;
     }
+    
+    public boolean addScopingToAttachmentTable(final Connection conn, final String databaseName)
+    {
+        String scopeId = "ScopeID";
+        String tblName = getTableNameAndTitleForFrame(Attachment.getClassTableId());
+
+        if (!doesColumnExist(databaseName, tblName, scopeId))
+        {
+            if (!addColumn(conn, databaseName, tblName, scopeId,  INT11, "TableID"))
+            {
+                return false;
+            }
+        } 
+        String scopeType = "ScopeType";
+        if (!doesColumnExist(databaseName, tblName, scopeType))
+        {
+            if (!addColumn(conn, databaseName, tblName, scopeType,  "TINYINT", "ScopeID"))
+            {
+                return false;
+            }
+        } 
+
+        try
+        {
+            int step = 1;
+            frame.setProcess(0, 4);
+            
+            fixTablesAccessionAttachmentsScoping(conn);
+            
+            fixTablesRefWorksAttachmentsScoping(conn);
+            
+            
+            Class<?>[] attachOwnerClasses = {
+                    CollectionObject.class,  
+                    Borrow.class,  // Borrow -> BorrowMaterial.ColMemID
+                    DNASequence.class, 
+                    DNASequencingRun.class, 
+                    Preparation.class, 
+                };
+            fixSimpleAttachmentScoping(conn, attachOwnerClasses, "CollectionMemberID", Attachment.COLLECTION_SCOPE);
+            frame.setProcess(step++);
+            
+            Class<?>[] divOwnerClasses = {
+                    Agent.class,
+                    ConservDescription.class,
+                    RepositoryAgreement.class,
+            };
+            fixSimpleAttachmentScoping(conn, divOwnerClasses, "DivisionID", Attachment.DIVISION_SCOPE);
+            frame.setProcess(step++);
+            
+            Class<?>[] dispOwnerClasses = {
+                    CollectingEvent.class,
+                    Gift.class,
+                    Loan.class,
+                    Locality.class,
+                    FieldNotebook.class,  
+            };
+            fixSimpleAttachmentScoping(conn, dispOwnerClasses, "DisciplineID", Attachment.DISCIPLINE_SCOPE);
+            frame.setProcess(step++);
+            
+            
+            String[] sqls = {
+                    String.format(
+                    "UPDATE attachment, conserveventattachment, conservevent, conservdescription " +
+                    "SET attachment.ScopeID = conservdescription.DivisionID, attachment.ScopeType = %d " +
+                    "WHERE attachment.AttachmentID = conserveventattachment.AttachmentID " +
+                    "AND conserveventattachment.ConserveventID = conservevent.ConserveventID " +
+                    "AND conservevent.ConservDescriptionID = conservdescription.ConservDescriptionID",
+                    Attachment.DIVISION_SCOPE),
+                    
+                    String.format(
+                    "UPDATE attachment, fieldnotebookpagesetattachment, fieldnotebookpageset, fieldnotebook " +
+                    "SET attachment.ScopeID = fieldnotebook.DisciplineID, attachment.ScopeType = %d " +
+                    "WHERE attachment.AttachmentID = fieldnotebookpagesetattachment.AttachmentID " +
+                    "AND fieldnotebookpagesetattachment.FieldNotebookPageSetID = fieldnotebookpageset.FieldNotebookPageSetID " +
+                    "AND fieldnotebookpageset.FieldNotebookID = fieldnotebook.FieldNotebookID",
+                    Attachment.DISCIPLINE_SCOPE),
+                    
+                    String.format(
+                    "UPDATE attachment, fieldnotebookpageattachment, fieldnotebookpage, fieldnotebookpageset, fieldnotebook " +
+                    "SET attachment.ScopeID = fieldnotebook.DisciplineID, attachment.ScopeType = %d " +
+                    "WHERE attachment.AttachmentID = fieldnotebookpageattachment.AttachmentID " +
+                    "AND fieldnotebookpageattachment.FieldNotebookPageID = fieldnotebookpage.FieldNotebookPageID " +
+                    "AND fieldnotebookpage.FieldNotebookPageSetID = fieldnotebookpageset.FieldNotebookPageSetID " +
+                    "AND fieldnotebookpageset.FieldNotebookID = fieldnotebook.FieldNotebookID",
+                    Attachment.DISCIPLINE_SCOPE),
+                    
+                    String.format(
+                    "UPDATE attachment, permitattachment, permit " +
+                    "SET attachment.ScopeID = permit.InstitutionID, attachment.ScopeType = %d " +
+                    "WHERE attachment.AttachmentID = permitattachment.AttachmentID " +
+                    "AND permitattachment.PermitID = permit.PermitID",
+                    Attachment.INSTITUTION_SCOPE),
+                    
+                    String.format(
+                    "UPDATE attachment, taxonattachment, taxon, discipline " +
+                    "SET attachment.ScopeID = discipline.UserGroupScopeID, attachment.ScopeType = %d " +
+                    "WHERE attachment.AttachmentID = taxonattachment.AttachmentID " +
+                    "AND taxonattachment.TaxonID = taxon.TaxonID " +
+                    "AND taxon.TaxonTreeDefID = discipline.TaxonTreeDefID",
+                    Attachment.DISCIPLINE_SCOPE)
+            };
+            
+            for (String sql: sqls)
+            {
+                int cnt = update(conn, sql + " AND (attachment.ScopeID IS NULL OR attachment.ScopeType IS NULL)");
+                log.debug(String.format("Updated %d attachments.", cnt));
+            }
+
+            frame.setProcess(step++);
+            
+            if (!doesIndexExist("attachment", "AttchScopeIDIDX"))
+            {
+                update(conn, "CREATE INDEX AttchScopeIDIDX ON attachment(ScopeID)");
+            }            
+            if (!doesIndexExist("attachment", "AttchScopeTypeIDX"))
+            {
+                update(conn, "CREATE INDEX AttchScopeTypeIDX ON attachment(ScopeType)");
+            }
+                        
+            return true;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
                                   
     /**
      * @param conn
      */
     public boolean addTableIDToAttachmentTable(final Connection conn, final String databaseName)
     {
-        frame.setDesc("Updating Attachments...");
-
         String tableID = "TableID";
         String tblName = getTableNameAndTitleForFrame(Attachment.getClassTableId());
         if (!doesColumnExist(databaseName, tblName, tableID))
@@ -2118,23 +2184,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         }
         
-        String scopeId = "ScopeID";
-        if (!doesColumnExist(databaseName, tblName, scopeId))
-        {
-            if (!addColumn(conn, databaseName, tblName, scopeId,  INT11, "TableID"))
-            {
-                return false;
-            }
-        } 
-        String scopeType = "ScopeType";
-        if (!doesColumnExist(databaseName, tblName, scopeType))
-        {
-            if (!addColumn(conn, databaseName, tblName, scopeType,  "TINYINT", "ScopeID"))
-            {
-                return false;
-            }
-        } 
-
         try
         {
             Class<?>[] attachmentClasses = {
@@ -2184,154 +2233,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 };
 
             frame.setProcess(0, attachmentClasses.length);
-            PreparedStatement pStmt = conn.prepareStatement("UPDATE attachment SET TableID = ? WHERE AttachmentID = ?");
-            Statement         stmt   = conn.createStatement();
             
             int i = 1;
             for (Class<?> cls : attachmentClasses)
             {
-                int cnt = 0;
                 frame.setProcess(i);
                 DBTableInfo ownerTI = DBTableIdMgr.getInstance().getByClassName(ownerClasses[i-1].getName());
                 DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(cls.getName());
-                String      sql     = String.format("SELECT a.AttachmentID FROM attachment a INNER JOIN %s aa ON a.AttachmentID = aa.AttachmentID", ti.getName());
-                log.debug(sql);
-                ResultSet rs  = stmt.executeQuery(sql);
-                while (rs.next())
-                {
-                    System.out.println(String.format("%d / %d", ownerTI.getTableId(), rs.getInt(1)));
-                    pStmt.setInt(1, ownerTI.getTableId());
-                    pStmt.setInt(2, rs.getInt(1));
-                    if (pStmt.executeUpdate() != 1)
-                    {
-                        log.error("Error updating AttachmentID "+rs.getInt(1));
-                        return false;
-                    }
-                    cnt++;
-                }
-                rs.close();
-                log.debug(String.format("Updated %d for %s", cnt, ti.getName()));
+                String sql = String.format(
+                        "UPDATE attachment SET TableID = %d " +
+                        "WHERE AttachmentID IN (SELECT AttachmentID FROM %s) " +
+                        "AND TableID IS NULL",
+                        ownerTI.getTableId(), ti.getName());
+                
+                int cnt = update(conn, sql);
+                log.debug(String.format("Set TableID for %d attachments.", cnt));
                 i++;
             }
-            pStmt.close();
-            
-            
-            int step = 1;
-            frame.setProcess(0, 4);
-            
-            if (!fixTablesAccessionAttachmentsColumnID(conn, stmt))
-            {
-                return false;
-            }
-            
-            if (!fixTablesRefWorksAttachmentsColumnID(conn, stmt))
-            {
-                return false;
-            }
-            
-            
-            Class<?>[] attachOwnerClasses = {
-                    CollectionObject.class,  
-                    Borrow.class,  // Borrow -> BorrowMaterial.ColMemID
-                    DNASequence.class, 
-                    DNASequencingRun.class, 
-                    Preparation.class, 
-                };
-            if (!fixTablesAttachmentsColMemID(conn, stmt, attachOwnerClasses, null, "CollectionMemberID", Attachment.COLLECTION_SCOPE))
-            {
-                return false;
-            }
-            frame.setProcess(step++);
-            
-//            Class<?>[] fnbOwnerClasses = {
-//                    FieldNotebook.class,  
-//                };
-//            if (!fixTablesAttachmentsColMemID(conn, stmt, fnbOwnerClasses, null, "CollectionID", Attachment.COLLECTION_SCOPE))
-//            {
-//                return false;
-//            }
-//            frame.setProcess(step++);
-            
-            Class<?>[] divOwnerClasses = {
-                    Agent.class,
-                    ConservDescription.class,
-                    RepositoryAgreement.class,
-            };
-            if (!fixTablesAttachmentsColMemID(conn, stmt, divOwnerClasses, null, "DivisionID", Attachment.DIVISION_SCOPE))
-            {
-                return false;
-            }
-            frame.setProcess(step++);
-            
-            Class<?>[] dispOwnerClasses = {
-                    CollectingEvent.class,
-                    Gift.class,
-                    Loan.class,
-                    Locality.class,
-                    FieldNotebook.class,  
-            };
-            if (!fixTablesAttachmentsColMemID(conn, stmt, dispOwnerClasses, null, "DisciplineID", Attachment.DISCIPLINE_SCOPE))
-            {
-                return false;
-            }
-            frame.setProcess(step++);
-            
-            String[] sqls = { 
-                    "SELECT a.AttachmentID, cd.DivisionID FROM attachment a INNER JOIN conserveventattachment cea ON a.AttachmentID = cea.AttachmentID " +
-                    "INNER JOIN conservevent ce ON cea.ConservEventID = ce.ConservEventID " +
-                    "INNER JOIN conservdescription cd ON ce.ConservDescriptionID = cd.ConservDescriptionID",
-            
-                    "SELECT a.AttachmentID, fb.DisciplineID FROM attachment a INNER JOIN fieldnotebookpagesetattachment fbpsa ON a.AttachmentID = fbpsa.AttachmentID " +
-                    "INNER JOIN fieldnotebookpageset fbps ON fbpsa.FieldNotebookPageSetID = fbps.FieldNotebookPageSetID " +
-                    "INNER JOIN fieldnotebook fb ON fbps.FieldNotebookID = fb.FieldNotebookID",
-            
-                    "SELECT a.AttachmentID, fb.DisciplineID FROM attachment a INNER JOIN fieldnotebookpageattachment fbpa ON a.AttachmentID = fbpa.AttachmentID " +
-                    "INNER JOIN fieldnotebookpage fbp ON fbpa.FieldNotebookPageID = fbp.FieldNotebookPageID " +
-                    "INNER JOIN fieldnotebookpageset fbps ON fbp.FieldNotebookPageSetID = fbps.FieldNotebookPageSetID " +
-                    "INNER JOIN fieldnotebook fb ON fbps.FieldNotebookID = fb.FieldNotebookID",
-                    
-                    "SELECT a.AttachmentID, i.UserGroupScopeId FROM attachment a " +
-                    "INNER JOIN permitattachment pa ON a.AttachmentID = pa.AttachmentID " +
-                    "INNER JOIN permit p ON pa.PermitID = p.PermitID " + 
-                    "INNER JOIN institution i ON p.InstitutionID = i.UserGroupScopeId",
-                    
-                    "SELECT a.AttachmentID, d.UserGroupScopeId FROM attachment a INNER JOIN taxonattachment ta ON a.AttachmentID = ta.AttachmentID " +
-                    "INNER JOIN taxon t ON ta.TaxonID = t.TaxonID " +
-                    "INNER JOIN discipline d ON t.TaxonTreeDefID = d.TaxonTreeDefID",
-            };        
-            
-            Class<?>[] extraAttachOwnerClasses = {
-                ConservEvent.class, // ConservEvent -> ConservDescription.ColMemID
-                FieldNotebookPage.class, // FieldNotebookPage -> FieldNotebook.CollectionID 
-                FieldNotebookPageSet.class, // FieldNotebookPageSet -> FieldNotebookPage -> FieldNotebook.CollectionID 
-                Permit.class, 
-                Taxon.class,
-            };
-            byte[] scopes = {Attachment.DIVISION_SCOPE, Attachment.DISCIPLINE_SCOPE, Attachment.DISCIPLINE_SCOPE, 
-                             Attachment.INSTITUTION_SCOPE, Attachment.DISCIPLINE_SCOPE, };
-            
-            if (!fixTablesAttachmentsColumnID(conn, stmt, extraAttachOwnerClasses, sqls, null, scopes))
-            {
-                return false;
-            }
-            frame.setProcess(step++);
-
-            stmt.close();
-            
-            if (!doesIndexExist("attachment", "AttchScopeIDIDX"))
-            {
-                update(conn, "CREATE INDEX AttchScopeIDIDX ON attachment(ScopeID)");
-            }            
-            if (!doesIndexExist("attachment", "AttchScopeTypeIDX"))
-            {
-                update(conn, "CREATE INDEX AttchScopeTypeIDX ON attachment(ScopeType)");
-            }
-            
-            String updateStr = "UPDATE attachment SET MimeType='application/pdf' WHERE MimeType = 'application/octet-stream' AND LOWER(SubStr(AttachmentLocation, LENGTH(AttachmentLocation) - 2, LENGTH(AttachmentLocation))) = 'pdf'";
-            update(conn, updateStr);
-            
             return true;
-            
         } catch (Exception ex)
         {
             ex.printStackTrace();
