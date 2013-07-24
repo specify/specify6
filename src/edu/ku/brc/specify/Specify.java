@@ -1970,7 +1970,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             DBFieldInfo fi = ti.getFieldByColumnName("GUID");
             if (fi != null)
             {
-                return String.format("%s %s", ti.getTitle(), fi.getTitle());
+                return String.format("%s %s", ti.getTitle(), /*fi.getTitle()*/"GUID");
             }
         }
         return "GUID";
