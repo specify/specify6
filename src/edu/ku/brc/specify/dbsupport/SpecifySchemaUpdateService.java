@@ -463,6 +463,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 return SchemaUpdateType.Error;
                             }
                             
+                            /* Warning Dlg about GUID overwrite. See Bug #9356
                             if (Double.parseDouble(schemaVerFromDB) < 1.8)
                             {
                             	String msg = UIRegistry.getResourceString("SpecifySchemaUpdateService.UPDATE_SCH_GUID_OVERWRITE");
@@ -476,7 +477,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                     return SchemaUpdateType.Error;  
                                 }
-                            }
+                            }*/
                             
                             String msg = UIRegistry.getResourceString("UPDATE_SCH_BACKUP");
                             int opt = UIRegistry.askYesNoLocalized("EXIT", "CONTINUE", msg, "MySQLBackupService.BACKUP_NOW");
