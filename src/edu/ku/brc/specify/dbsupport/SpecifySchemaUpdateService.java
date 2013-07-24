@@ -1793,10 +1793,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     frame.setDesc("Updating GUIDs"); // I18N
-                    if (!checkAndUpdateGUIDs(conn, databaseName))
+                    if (!addGUIDCols(conn, databaseName))
                     {
                         return false;
                     }
+                    
+                    generateMissingGUIDs(frame);
+                    
                     // Setting new Field Length for QueryFields
                     String startValue = "StartValue";
                     tblName = getTableNameAndTitleForFrame(SpQueryField.getClassTableId());
@@ -1997,18 +2000,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
     
     /**
-     * @return
-     */
-    public String getGUIDPrefNameForCollection()
-    {
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        return String.format("UPDATED_GUIDS_CNV_%d", collection.getId());
-    }
-    
-    /**
      * @param frame
      */
-    public void checkForGUIDs(final ProgressFrame frame)
+    private void generateMissingGUIDs(final ProgressFrame frame)
     {        
         if (GenericGUIDGeneratorFactory.getInstance() instanceof SpecifyGUIDGeneratorFactory)
         {
@@ -2023,7 +2017,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param databaseName
      * @return
      */
-    public boolean checkAndUpdateGUIDs(final Connection conn, final String databaseName)
+    private boolean addGUIDCols(final Connection conn, final String databaseName)
     {
         String   guidField = "GUID";
         int[]    tblIds    = {CollectingEvent.getClassTableId(), Attachment.getClassTableId(), Collection.getClassTableId(), Institution.getClassTableId(), Determination.getClassTableId()};
@@ -2045,7 +2039,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 update(conn, String.format("CREATE INDEX %s ON %s(GUID)", indexName[i], ti.getName()));
             }
         }
-        
        return true;
     }
     

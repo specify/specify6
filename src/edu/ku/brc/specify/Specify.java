@@ -204,7 +204,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.SecurityAdminTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
@@ -231,8 +230,6 @@ import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
-import edu.ku.brc.util.AttachmentManagerIface;
-import edu.ku.brc.util.AttachmentMgrListener;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.CacheManager;
 import edu.ku.brc.util.FileCache;
@@ -2751,10 +2748,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private void performManualDBUdpatesAfterLogin()
     {
         final AppPreferences             globalPrefs   = AppPreferences.getGlobalPrefs();
-        final SpecifySchemaUpdateService schemaUpdater = (SpecifySchemaUpdateService)SpecifySchemaUpdateService.getInstance();
         
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
-                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "UpdatedAllDBGUIDS"};
+                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
         boolean anyNeededToBeFixed = false;
@@ -2827,14 +2823,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.checkMultipleLocalities();
-                            
-                    if (!isFixed[inx])
-                    {
-                        // Check and update GUIDS
-                        schemaUpdater.checkForGUIDs(frame);
-                        globalPrefs.putBoolean(prefNames[inx], true);
-                    }
-                    inx++;
                     
                     globalPrefs.flush();
                     

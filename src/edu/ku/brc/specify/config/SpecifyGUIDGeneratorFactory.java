@@ -23,17 +23,11 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -44,9 +38,9 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -89,8 +83,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     protected String              colCode       = null;
     
     protected ProgressFrame       frame;
-    protected PrintWriter         pw            = null;
-        
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.GenericGUIDGeneratorFactory#getErrorMsg()
@@ -143,16 +135,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     @Override
     public void buildGUIDs(final PropertyChangeListener pcl)
     {
-        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddhhmmss");
-        File outFile = new File(UIRegistry.getAppDataDir() + File.separator + String.format("guids_%s.txt", sf.format(Calendar.getInstance().getTime())));
-        try
-        {
-            pw = new PrintWriter(outFile);
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
-        
         if (frame != null) frame.setDesc(getResourceString("SpecifyGUIDGeneratorFactory.UPDATING_GUIDS"));
 
         setProgressValue(true, false, 0, CATEGORY_TYPE.values().length); // Sets Overall Progress to 0 -> 100
@@ -185,8 +167,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
             }
             setProgressValue(true, false, count++);
         }
-        
-        pw.close();
     }
     
     /**
@@ -250,43 +230,6 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     }
     
     
-    private boolean saveOldGUIDS(final Connection connection,
-                              final DBTableInfo tableInfo)
-    {
-        setProgressDesc(String.format("Saving any existing GUIDS in %s...", tableInfo.getName()));
-        
-        System.out.println(tableInfo.getTitle()+" -> ");
-        String sql   = String.format("SELECT %s,GUID FROM %s WHERE GUID IS NOT NULL",
-                tableInfo.getIdColumnName(), tableInfo.getName());
-        System.out.println(sql);
-        
-        Statement stmt = null;
-        try
-        {
-            stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next())
-            {
-                pw.write(String.format("%d\t%d\t%s\n", tableInfo.getTableId(), rs.getInt(1), rs.getString(2)));
-            }
-            rs.close();
-            pw.flush();
-            return true;
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                if (stmt != null) stmt.close();
-            } catch (SQLException e) {}
-        }
-        return false;
-    }
-                                
-        
     private void buildGUIDs(final Connection    connection,
                             final CATEGORY_TYPE category)
     {
@@ -296,16 +239,23 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
         
         if (tableInfo != null)
         {
-            if (!saveOldGUIDS(connection, tableInfo)) {
-                // bail out if saving old GUIDS fails.
+            String sql = String.format("SELECT count(*) FROM %s ", tableInfo.getName());
+            int totalCnt = BasicSQLUtils.getCountAsInt(connection, sql);
+            int notEmptyCnt = BasicSQLUtils.getCountAsInt(connection, sql + "WHERE GUID > ''");
+
+            if (notEmptyCnt > 0) {
+                System.out.println("Not populating GUIDS in " + tableInfo.getName()
+                        + " because " + notEmptyCnt + " of " + totalCnt +
+                        		" records contain values.");
                 return;
             }
             setProgressDesc(String.format("Setting GUIDS in %s...", tableInfo.getName()));
             PreparedStatement updStmt = null;
             try
             {               
-                // Do all Records
-                String updateStr = String.format("UPDATE %s SET GUID = UUID(), version = version+1", 
+                String updateStr = String.format(
+                        "UPDATE %s SET GUID = UUID(), version = version+1 " +
+                		"WHERE GUID IS NULL OR GUID = ''", 
                         tableInfo.getName());
                 System.out.println(updateStr);
                 updStmt = connection.prepareStatement(updateStr);
