@@ -463,6 +463,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 return SchemaUpdateType.Error;
                             }
                             
+                            if (Double.parseDouble(schemaVerFromDB) < 1.8)
+                            {
+                            	String msg = UIRegistry.getResourceString("SpecifySchemaUpdateService.UPDATE_SCH_GUID_OVERWRITE");
+                                boolean opt = UIRegistry.displayConfirm(UIRegistry.getResourceString("SpecifySchemaUpdateService.UPDATE_SCH_GUID_TITLE"),
+                                		msg,
+                                		UIRegistry.getResourceString("CONTINUE"),
+                                		UIRegistry.getResourceString("CANCEL"),
+                                		JOptionPane.WARNING_MESSAGE);
+                                if (!opt)
+                                {
+                                    CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
+                                    return SchemaUpdateType.Error;  
+                                }
+                            }
+                            
                             String msg = UIRegistry.getResourceString("UPDATE_SCH_BACKUP");
                             int opt = UIRegistry.askYesNoLocalized("EXIT", "CONTINUE", msg, "MySQLBackupService.BACKUP_NOW");
                             if (opt == JOptionPane.YES_OPTION)
