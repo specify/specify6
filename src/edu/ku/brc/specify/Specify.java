@@ -2088,11 +2088,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             guidStr = acm.getClassObject(Collection.class).getGuid();
             addLabel(values, infoPB, UIHelper.createLabel(guidStr != null ? guidStr : noGUID),cc.xy(3, y)); y += 2;
             
-            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
-            addLabel(values, infoPB, UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
+           //addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
+           //addLabel(values, infoPB, UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
             
+            addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
             UIRegistry.loadAndPushResourceBundle("bld");
-            addLabel(values, infoPB, UIHelper.createFormLabel("SVN"), cc.xy(1, y));
             addLabel(values, infoPB, UIHelper.createLabel(getResourceString("build")),cc.xy(3, y)); y += 2;
             
             addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD_TM"), cc.xy(1, y));
