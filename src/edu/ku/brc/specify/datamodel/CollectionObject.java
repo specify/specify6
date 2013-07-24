@@ -84,6 +84,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        projectNumber;
     protected String                        text1;
     protected String                        text2;
+    protected String                        text3;
+    protected String                        reservedText;
     protected Float                         number1;
     protected Float                         number2;
     protected Boolean                       yesNo1;
@@ -168,6 +170,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         description           = null;
         text1                 = null;
         text2                 = null;
+        text3                 = null;
+        reservedText          = null;
         number1               = null;
         number2               = null;
         yesNo1                = null;
@@ -327,6 +331,18 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     }
 
     /**
+    *
+    */
+   @Column(name = "ReservedText", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+   public String getReservedText() {
+       return this.reservedText;
+   }
+
+   public void setReservedText(String reservedText) {
+       this.guid = reservedText;
+   }
+
+    /**
      *      * User definable
      */
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
@@ -466,6 +482,19 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
+
+    /**
+    *
+    */
+   @Lob
+   @Column(name = "Text3", length = 4096)
+   public String getText3() {
+       return this.text3;
+   }
+
+   public void setText3(String text3) {
+       this.text3 = text3;
+   }
 
     /**
      *
