@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
-import java.awt.Image;
 import java.io.File;
 
 import javax.swing.ImageIcon;

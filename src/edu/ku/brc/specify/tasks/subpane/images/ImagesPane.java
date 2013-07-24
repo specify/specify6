@@ -112,7 +112,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -880,13 +880,13 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
      * @param item
      * @return
      */
-    protected List<Pair<String, Object>> getImageData(final ImageDataItem item)
+    protected List<Triple<String, String, Object>> getImageData(final ImageDataItem item)
     {
-        List<Pair<String, Object>> list = item.getDataMap();
+        List<Triple<String, String, Object>> list = item.getDataMap();
         if (list == null)
         {
             list = dataFetcher.queryByTableId(item.getAttachmentId(), item.getTableId());
-            item.setDataMap(list);
+            item.setDataList(list);
         }
         return list;
     }
@@ -943,7 +943,7 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
         });
         
         int linesAdded = 0;
-        List<Pair<String, Object>> values = null;
+        List<Triple<String, String, Object>> values = null;
         if (whichBtn == ImageCellDisplay.INFO_BTN)
         {
             values = getImageData(item);
@@ -951,8 +951,8 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
             {
                 for (int i=0;i<values.size()-1;i++) // Minus 1, Do not want to show the 'Id' field
                 {
-                    Pair<String, Object> p = values.get(i);
-                    bubblePane.addLine(p.first, p.second != null ? p.second.toString() : "");
+                    Triple<String, String, Object> p = values.get(i);
+                    bubblePane.addLine(p.second, p.third != null ? p.third.toString() : "");
                     linesAdded++;
                 }
             }

@@ -82,6 +82,7 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Loan;
@@ -104,7 +105,7 @@ import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -355,15 +356,18 @@ public class CollectionDataFetcher
      */
     private String getColumnTitle(final BubbleDisplayInfo bdi, final int tblId)
     {
-        if (tblId == 1 || tblId == 2 || tblId == 4 || tblId == 10)
+        if (tblId == CollectionObject.getClassTableId() || 
+            tblId == Locality.getClassTableId() || 
+            tblId == Taxon.getClassTableId() || 
+            tblId == CollectingEvent.getClassTableId())
         {
-            if (bdi.getColumnName().equals("FullName") && bdi.getFieldInfo().getTableInfo().getTableId() == 3)
+            if (bdi.getColumnName().equals("FullName") && bdi.getFieldInfo().getTableInfo().getTableId() == Geography.getClassTableId())
             {
-                return DBTableIdMgr.getInstance().getInfoById(3).getTitle();
+                return DBTableIdMgr.getInstance().getInfoById(Geography.getClassTableId()).getTitle();
             }
-            if (bdi.getColumnName().equals("FullName") && bdi.getFieldInfo().getTableInfo().getTableId() == 4)
+            if (bdi.getColumnName().equals("FullName") && bdi.getFieldInfo().getTableInfo().getTableId() == Taxon.getClassTableId())
             {
-                return DBTableIdMgr.getInstance().getInfoById(4).getTitle();
+                return DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getTitle();
             }
         }
         return bdi.getTitle();
@@ -375,10 +379,10 @@ public class CollectionDataFetcher
      * @return
      * @throws SQLException 
      */
-    private List<Pair<String, Object>> readDataIntoMap(final ResultSet rs, final int tableId) throws SQLException
+    private List<Triple<String, String, Object>> readDataIntoMap(final ResultSet rs, final int tableId) throws SQLException
     {
-        List<BubbleDisplayInfo>    displayInfos = bciHash.get(tableId);
-        List<Pair<String, Object>> dataList     = new ArrayList<Pair<String, Object>>();
+        List<BubbleDisplayInfo>              displayInfos = bciHash.get(tableId);
+        List<Triple<String, String, Object>> dataList     = new ArrayList<Triple<String, String, Object>>();
         if (rs != null)
         {
             if (rs.next())
@@ -427,11 +431,11 @@ public class CollectionDataFetcher
                             }
                         }
                     }
-                    String title = getColumnTitle(bdi, tableId);
-                    dataList.add(new Pair<String, Object>(title + ": ", val));
+                    String title = getColumnTitle(bdi, tableId) + ": ";
+                    dataList.add(new Triple<String, String, Object>(bdi.getFieldInfo().getColumn(), title, val));
                 }
                 //System.out.println(rs.getObject(rsmd.getColumnCount()));
-                dataList.add(new Pair<String, Object>("Id", rs.getObject(rsmd.getColumnCount())));
+                dataList.add(new Triple<String, String, Object>("Id", "Id", rs.getObject(rsmd.getColumnCount())));
             }
             rs.close();
         }
@@ -499,17 +503,18 @@ public class CollectionDataFetcher
      * @return
      * @throws SQLException
      */
-    private List<Pair<String, Object>> queryAgent(final int         attachmentID,
-                                                  final DBTableInfo ti, 
-                                                  final String      joinStr1,
-                                                  final String      joinStr2,
-                                                  final Statement   stmt) throws SQLException
+    private List<Triple<String, String, Object>> queryAgent(
+          final int         attachmentID,
+          final DBTableInfo ti, 
+          final String      joinStr1,
+          final String      joinStr2,
+          final Statement   stmt) throws SQLException
     {
         ResultSet rs = queryGenerically(attachmentID, ti, joinStr1, joinStr2, stmt);
         if (rs != null)
         {
-            List<Pair<String, Object>> dataList = readDataIntoMap(rs, Agent.getClassTableId());
-            Pair<String, Object> p = dataList.get(0);
+            List<Triple<String, String, Object>> dataList = readDataIntoMap(rs, Agent.getClassTableId());
+            Triple<String, String, Object> p = dataList.get(0);
             if (p != null)
             {
                 String[] agentTitles = AgentBusRules.getTypeTitle();
@@ -533,11 +538,11 @@ public class CollectionDataFetcher
      * @return
      * @throws SQLException
      */
-    private List<Pair<String, Object>> queryGenericTable(final int         attachmentID,
-                                                         final DBTableInfo ti, 
-                                                         final String      joinStr1,
-                                                         final String      joinStr2,
-                                                         final Statement  stmt) throws SQLException
+    private List<Triple<String, String, Object>> queryGenericTable(final int         attachmentID,
+                                                                   final DBTableInfo ti, 
+                                                                   final String      joinStr1,
+                                                                   final String      joinStr2,
+                                                                   final Statement  stmt) throws SQLException
     {
         ResultSet rs = queryGenerically(attachmentID, ti, joinStr1, joinStr2, stmt);
         if (rs != null)
@@ -556,11 +561,11 @@ public class CollectionDataFetcher
      * @return
      * @throws SQLException
      */
-    private List<Pair<String, Object>> queryColObj(final int attachmentID,
-                                            final DBTableInfo ti, 
-                                            final String joinStr1,
-                                            final String joinStr2,
-                                            final Statement stmt) throws SQLException
+    private List<Triple<String, String, Object>> queryColObj(final int attachmentID,
+                                                             final DBTableInfo ti, 
+                                                             final String joinStr1,
+                                                             final String joinStr2,
+                                                             final Statement stmt) throws SQLException
     {
         
         StringBuilder preSB = new StringBuilder("SELECT ");
@@ -599,7 +604,7 @@ public class CollectionDataFetcher
      * @param attachmentID
      * @param tableId
      */
-    public List<Pair<String, Object>> queryByTableId(final int attachmentID, final int tableId)
+    public List<Triple<String, String, Object>> queryByTableId(final int attachmentID, final int tableId)
     {
         DBTableInfo ti  = DBTableIdMgr.getInstance().getInfoById(tableId);
         Class<?>    cls = clsHashMap.get(ti.getClassObj());

@@ -270,10 +270,15 @@ public class ResultSetController implements ValidationListener
             {
                 if (e.getClickCount() == 2)
                 {
-                    showGotoRecDlg();
+                    if (numRecords == 1)
+                    {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString("OnlyOneRrecordInCon"));
+                    } else
+                    {
+                        showGotoRecDlg();
+                    }
                 }
             }
-              
         };
         recDisp.addMouseListener(mouseListener);
 
@@ -711,7 +716,8 @@ public class ResultSetController implements ValidationListener
         recDisp.setEnabled(enabled);
         recDisp.setBorder(enabled ? enabledBorder : disabledBorder);
         //recDisp.setBackground(enabled ? enabledTxtBG : disabledTxtBG);
-        recDisp.setText(numRecords > 0 ? ((currentInx+1) + " of " + numRecords) : " "); // XXX Move to I18N properties file formatted
+        String lbl = UIRegistry.getLocalizedMessage("RecordControllerDisplay", (currentInx+1), numRecords);
+        recDisp.setText(numRecords > 0 ? lbl : " "); // XXX Move to I18N properties file formatted
         
         if (delRecBtn != null)
         {

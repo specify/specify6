@@ -38,7 +38,6 @@ import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.util.Vector;
-import java.util.concurrent.Future;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;

@@ -25,16 +25,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.ui.ImageLoaderExector;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -55,12 +52,12 @@ public class ImageDataItem
     private String    title;
     private String    mimeType;
     private File      localFile;
-    private List<Pair<String, Object>> dataList = null;
-    private boolean   isSelected        = false;
+    private List<Triple<String, String, Object>> dataList = null;
+    private boolean   isSelected = false;
     
     private double    lat;
     private double    lon;
-    private Boolean   hasLatLon = null; 
+    private Boolean   hasLatLon  = null; 
     
 
     
@@ -68,7 +65,7 @@ public class ImageDataItem
     
     private AtomicBoolean stopLoading = new AtomicBoolean(false);
     
-    private ImageLoaderListener externalImgLoadListener;
+    //private ImageLoaderListener externalImgLoadListener;
     
     //private AtomicBoolean isLoading = new AtomicBoolean(false);
     //private AtomicBoolean isError   = new AtomicBoolean(false);
@@ -110,7 +107,7 @@ public class ImageDataItem
      */
     public Integer getOwnerRecId()
     {
-        return dataList != null && dataList.size() > 0 ? (Integer)dataList.get(dataList.size()-1).second : null;
+        return dataList != null && dataList.size() > 0 ? (Integer)dataList.get(dataList.size()-1).third : null;
     }
 
 
@@ -179,7 +176,7 @@ public class ImageDataItem
     /**
      * @return the dataMap
      */
-    public List<Pair<String, Object>> getDataMap()
+    public List<Triple<String, String, Object>> getDataMap()
     {
         return dataList;
     }
@@ -188,9 +185,9 @@ public class ImageDataItem
     /**
      * @param dataMap the dataMap to set
      */
-    public void setDataMap(List<Pair<String, Object>> dataMap)
+    public void setDataList(List<Triple<String, String, Object>> dataLst)
     {
-        this.dataList = dataMap;
+        this.dataList = dataLst;
     }
     
     /**
@@ -225,12 +222,26 @@ public class ImageDataItem
      * @param bd
      * @return
      */
-    private String convert(final BigDecimal bd)
+    private String convert(final Object obj)
     {
-        if (bd != null)
+        if (obj != null)
         {
-            String str = StringUtils.stripEnd(bd.toString(), "0");
-            return str.endsWith(".") ? str + "0" : str;
+            String str = null;
+            if (obj instanceof BigDecimal)
+            {
+                str = StringUtils.stripEnd(obj.toString(), "0");
+            } else if (obj instanceof Double)
+            {
+                str = String.format("%7.3f", (Double)obj);
+            } else if (obj instanceof Float)
+            {
+                str = String.format("%7.3f", (Float)obj);
+            }
+            
+            if (str != null)
+            {
+                return str.endsWith(".") ? str + "0" : str;
+            }
         }
         return null;
     }
@@ -243,26 +254,26 @@ public class ImageDataItem
         if (hasLatLon == null)
         {
             hasLatLon = false;
-            BigDecimal latBD = getValue(dataList, 2, "Latitude1");
-            BigDecimal lonBD = getValue(dataList, 2, "Longitude1");
-            if (latBD != null && lonBD != null)
+            Object latObj = getValue(dataList, 2, "Latitude1");
+            Object lonObj = getValue(dataList, 2, "Longitude1");
+            if (latObj != null && lonObj != null)
             {
-                String latStr = convert(latBD);
-                String lonStr = convert(lonBD);
+                String latStr = latObj instanceof String ? (String)latObj : convert(latObj);
+                String lonStr = lonObj instanceof String ? (String)lonObj : convert(lonObj);
                 hasLatLon = lonStr != null && latStr != null;
                 if (hasLatLon)
                 {
-                    lat = latBD.doubleValue();
-                    lon = lonBD.doubleValue();
-                    setValue(dataList, 2, "Latitude1",  latStr);
-                    setValue(dataList, 2, "Longitude1", lonStr);
+                    lat = Double.parseDouble(latStr);
+                    lon = Double.parseDouble(lonStr);
+                    if (!(latObj instanceof String)) setValue(dataList, 2, "Latitude1",  latStr);
+                    if (!(lonObj instanceof String)) setValue(dataList, 2, "Longitude1", lonStr);
                 }
             }
         }
     }
     
     /**
-     * @return the lat
+     * @return the latitude
      */
     public double getLat()
     {
@@ -271,7 +282,7 @@ public class ImageDataItem
     }
 
     /**
-     * @return the lon
+     * @return the longitude
      */
     public double getLon()
     {
@@ -309,20 +320,16 @@ public class ImageDataItem
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected static <T> T getValue(List<Pair<String, Object>> dataList, final int tableId, final String columnName)
+    protected static <T> T getValue(List<Triple<String, String, Object>> dataList, final int tableId, final String columnName)
     {
         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
         if (ti != null)
         {
-            DBFieldInfo fi = ti.getFieldByColumnName(columnName);
-            if (fi != null)
+            for (Triple<String, String, Object> p : dataList)
             {
-                for (Pair<String, Object> p : dataList)
+                if (p.first.equals(columnName))
                 {
-                    if (p.first.equals(fi.getTitle()))
-                    {
-                        return (T)p.second;
-                    }
+                    return (T)p.third;
                 }
             }
         }
@@ -336,24 +343,18 @@ public class ImageDataItem
      * @param data
      */
     @SuppressWarnings("unchecked")
-    protected static void setValue(List<Pair<String, Object>> dataList, final int tableId, final String columnName, final Object data)
+    protected static void setValue(List<Triple<String, String, Object>> dataList, final int tableId, final String columnName, final Object data)
     {
         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
         if (ti != null)
         {
-            DBFieldInfo fi = ti.getFieldByColumnName(columnName);
-            if (fi != null)
+            for (Triple<String, String, Object> p : dataList)
             {
-                for (Pair<String, Object> p : dataList)
+                if (p.first.equals(columnName))
                 {
-                    if (p.first.equals(fi.getTitle()))
-                    {
-                        p.second = data;
-                    }
+                    p.third = data;
                 }
             }
         }
     }
-    
-
 }

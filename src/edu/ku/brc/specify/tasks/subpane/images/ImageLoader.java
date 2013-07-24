@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.tasks.subpane.images;
 
 import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 

@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.images.CollectionDataFetcher;
@@ -55,8 +57,8 @@ public class FileNameParserFactory
     
     private static final FileNameParserFactory instance = new FileNameParserFactory();
     
-    private static final HashMap<FileNameParserIFace, Integer> indexMap   = new HashMap<FileNameParserIFace, Integer>();
-    private static final ArrayList<FileNameParserIFace>        parserList = new ArrayList<FileNameParserIFace>();
+    private final HashMap<FileNameParserIFace, Integer> indexMap   = new HashMap<FileNameParserIFace, Integer>();
+    private final ArrayList<FileNameParserIFace>        parserList = new ArrayList<FileNameParserIFace>();
     
     /**
      * 
@@ -75,17 +77,24 @@ public class FileNameParserFactory
     }
 
     /**
-     * 
+     * @return list of available parsers
      */
-    private void ensureParsers()
+    public List<FileNameParserIFace> getList()
     {
-        if (indexMap.size() == 0)
+        indexMap.clear();
+        parserList.clear();
+        
+        Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
+        boolean isEmbedded = coll.getIsEmbeddedCollectingEvent();
+        
+        int i      = 0;
+        int fldInx = 0;
+        for (Class<?> cls : classes)
         {
-            int i = 0;
-            for (Class<?> cls : classes)
+            if (cls != CollectingEvent.class || !isEmbedded)
             {
                 Class<?>           joinCls = CollectionDataFetcher.getAttachmentClassMap().get(cls);
-                BaseFileNameParser parser  = new BaseFileNameParser(cls, joinCls, fields[i]);
+                BaseFileNameParser parser  = new BaseFileNameParser(cls, joinCls, fields[fldInx]);
                 if (parser != null)
                 {
                     indexMap.put(parser, i);
@@ -93,15 +102,9 @@ public class FileNameParserFactory
                 }
                 i++;
             }
+            fldInx++;
         }
-    }
-    
-    /**
-     * @return list of available parsers
-     */
-    public List<FileNameParserIFace> getList()
-    {
-        ensureParsers();
+
         return new ArrayList<FileNameParserIFace>(parserList);
     }
 }

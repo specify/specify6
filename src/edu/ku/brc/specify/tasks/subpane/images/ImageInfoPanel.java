@@ -49,7 +49,8 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.ImageLoaderExector;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Triple;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -191,11 +192,11 @@ public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderList
         
         if (imgDataItem != null)
         {
-            List<Pair<String, Object>> dataList = imgDataItem.getDataMap(); 
+            List<Triple<String, String, Object>> dataList = imgDataItem.getDataMap(); 
             if (dataList == null)
             {
                 dataList = dataFetcher.queryByTableId(imgDataItem.getAttachmentId(), imgDataItem.getTableId());
-                imgDataItem.setDataMap(dataList);
+                imgDataItem.setDataList(dataList);
             }
             if (dataList != null)
             {
@@ -242,9 +243,9 @@ public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderList
     
     class ImgInfoModel extends DefaultTableModel
     {
-        private List<Pair<String, Object>> items = null;
+        private List<Triple<String, String, Object>> items = null;
         
-        public ImgInfoModel(final Vector<Pair<String, Object>> items)
+        public ImgInfoModel(final Vector<Triple<String, String, Object>> items)
         {
             super();
             this.items = items;
@@ -253,7 +254,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderList
         /**
          * @return the items
          */
-        public List<Pair<String, Object>> getItems()
+        public List<Triple<String, String, Object>> getItems()
         {
             return items;
         }
@@ -261,7 +262,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderList
         /**
          * @param items the items to set
          */
-        public void setItems(List<Pair<String, Object>> items)
+        public void setItems(List<Triple<String, String, Object>> items)
         {
             this.items = items;
             //fireTableDataChanged();
@@ -292,7 +293,7 @@ public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderList
         @Override
         public String getColumnName(int column)
         {
-            return column == 0 ? "Attribute" : "Value";
+            return UIRegistry.getResourceString(column == 0 ? "ATTCH_ATTR_HD" : "ATTCH_VALUE_HD");
         }
 
         /* (non-Javadoc)
@@ -301,8 +302,8 @@ public class ImageInfoPanel extends ExpandShrinkPanel implements ImageLoaderList
         @Override
         public Object getValueAt(int row, int column)
         {
-            Pair<String, Object> item = items.get(row);
-            return column == 0 ? item.first + ": " : item.second;
+            Triple<String, String, Object> item = items.get(row);
+            return column == 0 ? item.second : item.third;
         }
 
         /* (non-Javadoc)
