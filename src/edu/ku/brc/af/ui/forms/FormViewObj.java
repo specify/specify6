@@ -1015,6 +1015,9 @@ public class FormViewObj implements Viewable,
                         } else if (fi.getFormatter() != null && fi.getFormatter().isIncrementer())
                         {
                             isOK = false;
+                        } else if (fi.getName().equalsIgnoreCase("guid"))
+                        {
+                        	isOK = false;
                         }
                     } else
                     {
