@@ -339,7 +339,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
    }
 
    public void setReservedText(String reservedText) {
-       this.guid = reservedText;
+       this.reservedText = reservedText;
    }
 
     /**

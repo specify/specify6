@@ -250,27 +250,15 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 return;
             }
             setProgressDesc(String.format("Setting GUIDS in %s...", tableInfo.getName()));
-            PreparedStatement updStmt = null;
-            try
-            {               
-                String updateStr = String.format(
+            String updateStr = String.format(
                         "UPDATE %s SET GUID = UUID(), version = version+1 " +
                 		"WHERE GUID IS NULL OR GUID = ''", 
                         tableInfo.getName());
-                System.out.println(updateStr);
-                updStmt = connection.prepareStatement(updateStr);
-                updStmt.executeUpdate();           
-            } catch (SQLException e)
-            {
-                e.printStackTrace();
-                
-            } finally
-            {
-                try
-                {
-                    if (updStmt != null) updStmt.close();
-                } catch (SQLException e) {}
-            }
+            System.out.println(updateStr);
+            BasicSQLUtils.update(connection, updateStr);
+//            BasicSQLUtils.update(connection, String.format(
+//                    "ALTER TABLE %s MODIFY GUID VARCHAR(128) NOT NULL",
+//                    tableInfo.getName()));
         }
     }
     
