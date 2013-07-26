@@ -162,16 +162,19 @@ public class BlueMarbleFetcher
     }
     
     private static final double CENTRAL_MERIDIAN_OFFSET = 0.0;
-    public static final double W = 300;
-    public static final double H = 150;// - 34;
+    //public static final double W = 300;
+    //public static final double H = 150;// - 34;
 
     /**
      * @param lat
      * @param lon
      * @return
      */
-    public static double[] toMillerXY(double lat, double lon)
+    private double[] toMillerXY(double lat, double lon)
     {
+        double W = imgWidth;
+        double H = imgHeight;
+        
         // y' = 1499/2 - (1499/ (2 * 2.303412543)) * 1.089472895
         double x, y;
 
