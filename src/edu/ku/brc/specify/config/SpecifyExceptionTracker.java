@@ -265,7 +265,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
             
             if (item.isIncludeEmail())
             {
-                String email = ((SpecifyAppContextMgr)mgr).getMailAddr(true);
+                String email = ((SpecifyAppContextMgr)mgr).getMailAddr(false);
                 if (StringUtils.isNotEmpty(email))
                 {
                     stats.add(new NameValuePair("email", email)); //$NON-NLS-1$
