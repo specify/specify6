@@ -28,7 +28,6 @@
         <exclude>
           <entry location="embedded_libs" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
-          <entry location="wwlibs" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
@@ -496,7 +495,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx1024m -XX:-UseSplitVerifier" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -845,6 +844,27 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="validateApplicationId">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
+              <action name="" id="1966" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.files.DeleteFileAction">
+                      <void property="files">
+                        <array class="java.io.File" length="1">
+                          <void index="0">
+                            <object class="java.io.File">
+                              <string>wwlib_64</string>
+                            </object>
+                          </void>
+                        </array>
+                      </void>
+                      <void property="recursive">
                         <boolean>true</boolean>
                       </void>
                     </object>
@@ -1845,7 +1865,7 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="64_Windows" id="1873" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
+    <windows name="64_Windows" id="1873" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-amd64-1.7.0_25" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />

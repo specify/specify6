@@ -26,52 +26,50 @@
     <entries>
       <dirEntry mountPoint="18" file="../InstallerFiles" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" entryMode="direct" subDirectory="" excludeSuffixes=".DS_Store, .svn" dirMode="755" overrideDirMode="true">
         <exclude>
-          <entry location="demo_files/taxonomy" fileType="regular" />
-          <entry location="hibernate_libs" fileType="regular" />
           <entry location="iReportLibs" fileType="regular" />
           <entry location="embedded_libs" fileType="regular" />
-          <entry location="libs/ant-launcher.jar" fileType="regular" />
-          <entry location="libs/ant.jar" fileType="regular" />
-          <entry location="libs/commons-beanutils.jar" fileType="regular" />
-          <entry location="libs/commons-betwixt.jar" fileType="regular" />
+          <entry location="SpecifyBigSplash.png" fileType="regular" />
+          <entry location="libs/xstream.jar" fileType="regular" />
+          <entry location="libs/msutil.jar" fileType="regular" />
+          <entry location="libs/looks.jar" fileType="regular" />
+          <entry location="libs/forms.jar" fileType="regular" />
+          <entry location="libs/jcommon.jar" fileType="regular" />
+          <entry location="libs/TimingFramework.jar" fileType="regular" />
+          <entry location="libs/javacsv.jar" fileType="regular" />
+          <entry location="libs/xpp3_minO.jar" fileType="regular" />
+          <entry location="libs/ezmorph.jar" fileType="regular" />
+          <entry location="libs/json-lib.jar" fileType="regular" />
+          <entry location="libs/mail.jar" fileType="regular" />
+          <entry location="libs/commons-validator.jar" fileType="regular" />
+          <entry location="libs/jasperreports.jar" fileType="regular" />
+          <entry location="libs/jh.jar" fileType="regular" />
           <entry location="libs/commons-codec.jar" fileType="regular" />
+          <entry location="libs/jazzy-core.jar" fileType="regular" />
+          <entry location="libs/itext.jar" fileType="regular" />
+          <entry location="libs/jaxen.jar" fileType="regular" />
+          <entry location="libs/commons-io.jar" fileType="regular" />
+          <entry location="libs/msbase.jar" fileType="regular" />
+          <entry location="libs/servlet-api.jar" fileType="regular" />
+          <entry location="libs/mssqlserver.jar" fileType="regular" />
+          <entry location="libs/jfreechart.jar" fileType="regular" />
+          <entry location="libs/jazzy-swing.jar" fileType="regular" />
+          <entry location="libs/poi.jar" fileType="regular" />
+          <entry location="libs/commons-lang.jar" fileType="regular" />
+          <entry location="libs/commons-betwixt.jar" fileType="regular" />
+          <entry location="libs/DynamicJasper.jar" fileType="regular" />
+          <entry location="libs/versions.txt" fileType="regular" />
           <entry location="libs/commons-digester.jar" fileType="regular" />
           <entry location="libs/commons-httpclient.jar" fileType="regular" />
-          <entry location="libs/commons-io.jar" fileType="regular" />
-          <entry location="libs/commons-jexl.jar" fileType="regular" />
-          <entry location="libs/commons-lang.jar" fileType="regular" />
-          <entry location="libs/commons-validator.jar" fileType="regular" />
-          <entry location="libs/DynamicJasper.jar" fileType="regular" />
-          <entry location="libs/ezmorph.jar" fileType="regular" />
-          <entry location="libs/forms.jar" fileType="regular" />
-          <entry location="libs/itext.jar" fileType="regular" />
-          <entry location="libs/jasperreports.jar" fileType="regular" />
-          <entry location="libs/javacsv.jar" fileType="regular" />
-          <entry location="libs/jaxen.jar" fileType="regular" />
-          <entry location="libs/jazzy-core.jar" fileType="regular" />
-          <entry location="libs/jazzy-swing.jar" fileType="regular" />
-          <entry location="libs/jcommon.jar" fileType="regular" />
-          <entry location="libs/jfreechart.jar" fileType="regular" />
-          <entry location="libs/jh.jar" fileType="regular" />
-          <entry location="libs/json-lib.jar" fileType="regular" />
+          <entry location="libs/ant.jar" fileType="regular" />
+          <entry location="libs/log4j.jar" fileType="regular" />
           <entry location="libs/jtds.jar" fileType="regular" />
           <entry location="libs/junit.jar" fileType="regular" />
-          <entry location="libs/log4j.jar" fileType="regular" />
-          <entry location="libs/looks.jar" fileType="regular" />
-          <entry location="libs/mail.jar" fileType="regular" />
-          <entry location="libs/msbase.jar" fileType="regular" />
-          <entry location="libs/mssqlserver.jar" fileType="regular" />
-          <entry location="libs/msutil.jar" fileType="regular" />
+          <entry location="libs/ant-launcher.jar" fileType="regular" />
           <entry location="libs/mysql-connector.jar" fileType="regular" />
-          <entry location="libs/poi.jar" fileType="regular" />
-          <entry location="libs/servlet-api.jar" fileType="regular" />
+          <entry location="libs/commons-beanutils.jar" fileType="regular" />
+          <entry location="libs/commons-jexl.jar" fileType="regular" />
           <entry location="libs/swingx.jar" fileType="regular" />
-          <entry location="libs/TimingFramework.jar" fileType="regular" />
-          <entry location="libs/versions.txt" fileType="regular" />
-          <entry location="libs/xpp3_minO.jar" fileType="regular" />
-          <entry location="libs/xstream.jar" fileType="regular" />
-          <entry location="SpecifyBigSplash.png" fileType="regular" />
-          <entry location="wwlibs" fileType="regular" />
+          <entry location="hibernate_libs" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
@@ -298,7 +296,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dembedded" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx1024m -XX:-UseSplitVerifier" arguments="-Dappdir=.. -Dembedded" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -602,6 +600,27 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="validateApplicationId">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
+              <action name="" id="1967" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.files.DeleteFileAction">
+                      <void property="files">
+                        <array class="java.io.File" length="1">
+                          <void index="0">
+                            <object class="java.io.File">
+                              <string>wwlib_64</string>
+                            </object>
+                          </void>
+                        </array>
+                      </void>
+                      <void property="recursive">
                         <boolean>true</boolean>
                       </void>
                     </object>
@@ -1593,7 +1612,7 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="64_Windows" id="1873" customizedId="" mediaFileName="" installDir="SpecifyEZDB" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
+    <windows name="64_Windows" id="1873" customizedId="" mediaFileName="" installDir="SpecifyEZDB" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-amd64-1.7.0_25" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
