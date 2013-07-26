@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="5.1.2" transformSequenceNumber="4">
+<install4j version="5.1.5" transformSequenceNumber="4">
   <directoryPresets config="../InstallerFiles/images" />
   <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.75" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.7" javaMaxVersion="1.7" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
@@ -27,58 +27,56 @@
       <dirEntry mountPoint="18" file="../InstallerFiles" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" entryMode="direct" subDirectory="" excludeSuffixes=".DS_Store, .svn" dirMode="755" overrideDirMode="true">
         <exclude>
           <entry location="embedded_libs" fileType="regular" />
-          <entry location="demo_files/taxonomy" fileType="regular" />
-          <entry location="iReportLibs" fileType="regular" />
           <entry location="hibernate_libs" fileType="regular" />
-          <entry location="libs/commons-digester.jar" fileType="regular" />
-          <entry location="libs/jfreechart.jar" fileType="regular" />
-          <entry location="libs/poi.jar" fileType="regular" />
-          <entry location="libs/xstream.jar" fileType="regular" />
-          <entry location="libs/swingx.jar" fileType="regular" />
-          <entry location="libs/msbase.jar" fileType="regular" />
-          <entry location="libs/jazzy-core.jar" fileType="regular" />
-          <entry location="libs/ezmorph.jar" fileType="regular" />
-          <entry location="libs/jcommon.jar" fileType="regular" />
-          <entry location="libs/versions.txt" fileType="regular" />
-          <entry location="libs/forms.jar" fileType="regular" />
-          <entry location="libs/commons-io.jar" fileType="regular" />
-          <entry location="libs/looks.jar" fileType="regular" />
-          <entry location="libs/log4j.jar" fileType="regular" />
-          <entry location="libs/msutil.jar" fileType="regular" />
-          <entry location="libs/commons-httpclient.jar" fileType="regular" />
-          <entry location="libs/junit.jar" fileType="regular" />
-          <entry location="libs/xpp3_minO.jar" fileType="regular" />
+          <entry location="iReportLibs" fileType="regular" />
           <entry location="libs/ant-launcher.jar" fileType="regular" />
-          <entry location="libs/mssqlserver.jar" fileType="regular" />
-          <entry location="libs/servlet-api.jar" fileType="regular" />
           <entry location="libs/ant.jar" fileType="regular" />
-          <entry location="libs/mail.jar" fileType="regular" />
-          <entry location="libs/commons-codec.jar" fileType="regular" />
-          <entry location="libs/jasperreports.jar" fileType="regular" />
-          <entry location="libs/json-lib.jar" fileType="regular" />
-          <entry location="libs/mysql-connector.jar" fileType="regular" />
-          <entry location="libs/commons-lang.jar" fileType="regular" />
           <entry location="libs/commons-beanutils.jar" fileType="regular" />
-          <entry location="libs/TimingFramework.jar" fileType="regular" />
-          <entry location="libs/jtds.jar" fileType="regular" />
-          <entry location="libs/commons-jexl.jar" fileType="regular" />
-          <entry location="libs/jh.jar" fileType="regular" />
-          <entry location="libs/jazzy-swing.jar" fileType="regular" />
-          <entry location="libs/DynamicJasper.jar" fileType="regular" />
           <entry location="libs/commons-betwixt.jar" fileType="regular" />
+          <entry location="libs/commons-codec.jar" fileType="regular" />
+          <entry location="libs/commons-digester.jar" fileType="regular" />
+          <entry location="libs/commons-httpclient.jar" fileType="regular" />
+          <entry location="libs/commons-io.jar" fileType="regular" />
+          <entry location="libs/commons-jexl.jar" fileType="regular" />
+          <entry location="libs/commons-lang.jar" fileType="regular" />
+          <entry location="libs/commons-validator.jar" fileType="regular" />
+          <entry location="libs/DynamicJasper.jar" fileType="regular" />
+          <entry location="libs/ezmorph.jar" fileType="regular" />
+          <entry location="libs/forms.jar" fileType="regular" />
+          <entry location="libs/itext.jar" fileType="regular" />
+          <entry location="libs/jasperreports.jar" fileType="regular" />
           <entry location="libs/javacsv.jar" fileType="regular" />
           <entry location="libs/jaxen.jar" fileType="regular" />
-          <entry location="libs/commons-validator.jar" fileType="regular" />
-          <entry location="libs/itext.jar" fileType="regular" />
+          <entry location="libs/jazzy-core.jar" fileType="regular" />
+          <entry location="libs/jazzy-swing.jar" fileType="regular" />
+          <entry location="libs/jcommon.jar" fileType="regular" />
+          <entry location="libs/jfreechart.jar" fileType="regular" />
+          <entry location="libs/jh.jar" fileType="regular" />
+          <entry location="libs/json-lib.jar" fileType="regular" />
+          <entry location="libs/jtds.jar" fileType="regular" />
+          <entry location="libs/junit.jar" fileType="regular" />
+          <entry location="libs/log4j.jar" fileType="regular" />
+          <entry location="libs/looks.jar" fileType="regular" />
+          <entry location="libs/mail.jar" fileType="regular" />
+          <entry location="libs/msbase.jar" fileType="regular" />
+          <entry location="libs/mssqlserver.jar" fileType="regular" />
+          <entry location="libs/msutil.jar" fileType="regular" />
+          <entry location="libs/mysql-connector.jar" fileType="regular" />
+          <entry location="libs/poi.jar" fileType="regular" />
+          <entry location="libs/servlet-api.jar" fileType="regular" />
+          <entry location="libs/swingx.jar" fileType="regular" />
+          <entry location="libs/TimingFramework.jar" fileType="regular" />
+          <entry location="libs/versions.txt" fileType="regular" />
+          <entry location="libs/xpp3_minO.jar" fileType="regular" />
+          <entry location="libs/xstream.jar" fileType="regular" />
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
-          <entry location="wwlibs" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
     <components />
   </files>
   <launchers>
-    <launcher name="Specify" id="19" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="Specify" id="19" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -118,7 +116,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpecifyBuilder" id="22" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpecifyBuilder" id="22" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpecifyBuilder" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -158,7 +156,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpLocalizer" id="281" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpLocalizer" id="281" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpLocalizer" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -198,7 +196,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpiReport" id="283" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spireports.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpiReport" id="283" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spireports.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpiReport" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -238,7 +236,7 @@
         <file path="../src/edu/ku/brc/specify/images/spireport32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpecifyDBConverter" id="719" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpecifyDBConverter" id="719" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpecifyDBConverter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -278,7 +276,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="ConvertVerifier" id="722" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="ConvertVerifier" id="722" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="ConvertVerifier" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -318,7 +316,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpWizard" id="803" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spwizard.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpWizard" id="803" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spwizard.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -358,7 +356,7 @@
         <file path="../src/edu/ku/brc/specify/images/spwizard32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="Specify1GB" id="883" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="Specify1GB" id="883" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="Specify1GB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -398,7 +396,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpBackupRestore" id="964" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spbackup.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpBackupRestore" id="964" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spbackup.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpBackupRestore" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -438,7 +436,7 @@
         <file path="../src/edu/ku/brc/specify/images/spbackup32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="Register" id="1044" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/statistics.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="Register" id="1044" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/statistics.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="Register" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -478,7 +476,7 @@
         <file path="../src/edu/ku/brc/specify/images/spstatistics32x32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="ImportFileSplitter" id="1238" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/data_split.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="ImportFileSplitter" id="1238" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/data_split.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -518,7 +516,7 @@
         <file path="../src/edu/ku/brc/specify/images/data_split32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="DataExporter" id="1319" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="DataExporter" id="1319" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="DataExporter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -528,7 +526,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=DataExporter" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx768m -XX:-UseSplitVerifier" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=DataExporter" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -558,7 +556,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpecifyL10N" id="1400" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpecifyL10N" id="1400" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpecifyL10N" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -598,7 +596,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="SpecifyDBSecurityWizard" id="1876" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spsecwizard.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="">
+    <launcher name="SpecifyDBSecurityWizard" id="1876" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spsecwizard.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="">
       <executable name="SpecifyDBSecurityWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -646,7 +644,7 @@
       <customAttributes />
     </autoUpdate>
     <applications>
-      <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="icns/specify.icns" customIcoFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="icns/specify.icns" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">
@@ -699,6 +697,22 @@
             <preActivation />
             <postActivation />
             <actions>
+              <action name="" id="2048" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.RunScriptAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="This OS version is not supported by Specify and Java 7. Please upgrade to Mac OS X Lion (10.7) or later.">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.control.RunScriptAction">
+                      <void property="script">
+                        <object class="com.install4j.api.beans.ScriptProperty">
+                          <void property="value">
+                            <string>(Integer.parseInt(System.getProperty("os.version").replace(".", "")) &gt;= 1070 ? true : false)</string>
+                          </void>
+                        </object>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
               <action name="" id="1784" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
@@ -878,6 +892,27 @@
                 </serializedBean>
                 <condition />
               </action>
+              <action name="" id="1968" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.files.DeleteFileAction">
+                      <void property="files">
+                        <array class="java.io.File" length="1">
+                          <void index="0">
+                            <object class="java.io.File">
+                              <string>wwlib</string>
+                            </object>
+                          </void>
+                        </array>
+                      </void>
+                      <void property="recursive">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
               <action name="" id="8" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
@@ -1049,7 +1084,7 @@ if (condit.equals("SpWizard")) {
           </screen>
         </screens>
       </application>
-      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.UninstallerApplication">
@@ -1153,7 +1188,7 @@ if (condit.equals("SpWizard")) {
           </screen>
         </screens>
       </application>
-      <application name="Updater with silent version check" id="100" customizedId="" beanClass="com.install4j.runtime.beans.applications.CustomApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="${compiler:sys.install4jHome}/resource/macos/updater.icns" customIcoFile="${compiler:sys.install4jHome}/resource/updater.ico" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="Updater with silent version check" id="100" customizedId="" beanClass="com.install4j.runtime.beans.applications.CustomApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="${compiler:sys.install4jHome}/resource/macos/updater.icns" customIcoFile="${compiler:sys.install4jHome}/resource/updater.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.CustomApplication">
@@ -1868,7 +1903,7 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="24" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="true" customInstallBaseDir="" contentFilesType="1" downloadURL="">
+    <macosFolder name="Mac OS X Folder" id="24" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.7.0_25" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="" appleJre="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" signLaunchers="false">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
