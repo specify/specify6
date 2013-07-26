@@ -206,7 +206,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5" readonly="true"/>
                     <cell type="subview" id="exsiccataitem" viewname="ExsiccataItem" name="exsiccataItems" initialize="align=right;btn=true"/>
                 </row>
                 

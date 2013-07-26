@@ -729,15 +729,15 @@
                 <row>
                     <cell type="subview" id="agentAttachments" viewname="ObjectAttachment" name="agentAttachments" initialize="btn=true;icon=AgentAttachment"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="11" />
+                    <cell type="field" id="11" name="guid" uitype="text" colspan="5" readonly="true"/>
+                </row>
                 <!--  <row>
                     <cell type="label" labelfor="19" />
                     <cell type="field" id="19" uitype="plugin" name="this" initialize="name=PartialDateUI;df=dateOfBirth;tp=dateOfBirthPrecision" uifieldformatter="Date"/>
                     <cell type="label" labelfor="20" />
                     <cell type="field" id="20" uitype="plugin" name="this" initialize="name=PartialDateUI;df=dateOfDeath;tp=dateOfDeathPrecision" uifieldformatter="Date"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="11" />
-                    <cell type="field" id="11" name="guid" uitype="text"/>
                     <cell type="label" labelfor="12" />
                     <cell type="field" id="12" name="initials" uitype="text"/>
                     <cell type="label" labelfor="13" />
@@ -1116,13 +1116,13 @@
                 <row>
                     <cell type="subview" viewname="ReferenceWorkSub" id="3" name="referenceWorks" colspan="8" initialize="addsearch=true"/>
                 </row>
-                <!--<row>
+                <row>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" readonly="true"/>
+                </row>
+                <!--<row>
                     <cell type="label" labelfor="issn"/>
                     <cell type="field" id="issn" name="issn" uitype="text"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="rem"/>
                     <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="14"/>
                     <cell type="label" labelfor="sn"/>
@@ -1239,14 +1239,14 @@
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="referenceWorkAttachments" colspan="6" initialize="btn=true;icon=ReferenceWorkAttachment"/>
                 </row>
-                <!--<row>
+                <row>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5" readonly="true"/>
+                </row>
+                <!--<row>
                     <cell type="label" labelfor="isbn"/>
                     <cell type="field" id="isbn" name="isbn" uitype="text"/>
                     <cell type="field" id="ic" name="isPublished" uitype="checkbox"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="n1"/>
                     <cell type="field" id="n1" name="number1" uitype="text"/>
                     <cell type="label" labelfor="n2"/>
@@ -1524,7 +1524,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" uitype="text" name="guid" colspan="7"/>
+                    <cell type="field" id="1" uitype="text" name="guid" colspan="7" readonly="true"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="10"/>
@@ -1908,18 +1908,18 @@
                 <row>
                     <cell type="subview" viewname="GeologicTimePeriodSubform" id="children" name="children" colspan="9"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" readonly="true"/>
+                </row>
                 <!--<row>
                 	<cell type="label" labelfor="fullName"/>
                 	<cell type="field" id="fullName"  uitype="text" name="fullName" colspan="3" readonly="true"/>
+                    <cell type="label" labelfor="std"/>
+                    <cell type="field" id="std" name="standard" uitype="text"/>
                 </row>
                 <row>
                     <cell type="field" id="ia" name="isAccepted" uitype="checkbox" initialize="editable=true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text"/>
-                    <cell type="label" labelfor="std"/>
-                    <cell type="field" id="std" name="standard" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="t1"/>
@@ -2059,16 +2059,16 @@
                 <row>
                     <cell type="subview" viewname="LithoStratSubform" id="children" name="children" colspan="9"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" readonly="true"/>
+                </row>
                 <!--<row>
                 	<cell type="label" labelfor="fullName"/>
                 	<cell type="field" id="fullName"  uitype="text" name="fullName" colspan="3" readonly="true"/>
                 </row>
                 <row>
                     <cell type="field" id="ia" name="isAccepted" uitype="checkbox" initialize="editable=true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="n1"/>

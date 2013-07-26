@@ -197,7 +197,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5" readonly="true"/>
                 </row>
                 <!--<row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
@@ -755,7 +755,7 @@
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="3" initialize="btn=true;icon=CollectingEventAttachment"/>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3" readonly="true"/>
                 </row>
                 <!--<row>
                  <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
@@ -1053,7 +1053,7 @@
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="3" initialize="btn=true;icon=LocalityAttachment"/>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3" readonly="true"/>
                 </row>
             </rows>
         </viewdef>

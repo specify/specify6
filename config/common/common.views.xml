@@ -4083,7 +4083,7 @@
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="3" initialize="btn=true;icon=LocalityAttachment"/>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5" readonly="true"/>
                 </row>
                 <!--<row>
                     <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
