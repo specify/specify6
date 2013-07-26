@@ -24,16 +24,15 @@
       </span></p>
     <ol>
       <li><span class="MichaelsChanges">View/browse all attachments in
-          the workspace</span></li>
-      <li><span class="MichaelsChanges">Locate information about an
-          attachment</span></li>
+          the work space</span></li>
+      <li>View/browse all images in the work space.</li>
+      <li><span class="MichaelsChanges">View attachment information and metadata</span></li>
       <li><span class="MichaelsChanges">Open an associated record in a
           form view<br>
         </span></li>
-      <li><span class="MichaelsChanges">Add multiple attachments in a
+      <li><span class="MichaelsChanges">Add single, or multiple attachments in a
           single action</span></li>
-    </ol>
-    <ol>
+      <li>Export attachments from the work space    </li>
     </ol>
     <p><span class="MichaelsChanges"><br>
         Open the Attachment Tools by clicking the Attachment button on
@@ -41,11 +40,11 @@
       </span></p>
     <p><span class="MichaelsChanges">If <i>Attachment Tools</i> is not
         available on the task bar add it by choosing Specify &gt;
-        Preferences &gt; Taskbar for Macintosh, <br>
-        or Edit &gt; Preferences &gt; Taskbar for Windows and Linux, <br>
+        Preferences &gt; Task Bar for Macintosh, <br>
+        or Edit &gt; Preferences &gt; Task Bar for Windows and Linux, <br>
         then checking the Add Attachments checkbox.<br>
       </span></p>
-    Three functions appear on the sidebar:<br>
+    Four functions appear on the sidebar:<br>
     <ol>
       <li>Show All Attachments</li>
       <li>Show All Images<br>
@@ -54,8 +53,6 @@
       <li><span class="MichaelsChanges">Import Image Index<br>
         </span></li>
     </ol>
-    <ul>
-    </ul>
     <a name="attach_browser" id="attachment_browser"></a>
     <h3>1. Show All Attachments<br>
     </h3>
@@ -187,7 +184,7 @@
               </td>
             </tr>
             <tr>
-              <td valign="top">Perparation<br>
+              <td valign="top">Preparation<br>
               </td>
               <td valign="top">Collection<br>
               </td>
@@ -221,7 +218,7 @@
         <li>Double click an individual image thumbnail to display it
           larger in a new tab in the workspace.</li>
         <li>Double click a non-image file to open it in its native
-          program (example: .exe opens the file in Excel).</li>
+          program (example:  .xls opens the file in Excel).</li>
       </ul>
       <blockquote>
         <p><u><b>Note:</b></u> windows users must set their default media/video 
@@ -260,12 +257,12 @@
             </td>
             <td valign="middle">next to thumbnail<br>
             </td>
-            <td valign="middle">Open associated record in form view.<br>
+            <td valign="middle">Open associated record in form view. Also indicates the table to which the attachment is linked.<br>
             </td>
           </tr>
           <tr>
             <td align="center" valign="middle"><img alt="information"
-                src="file:///Users/rods/workspace/SpecifyAP/help/images/info_20x20.png"
+                src="../../images/info_20x20.png"
                 height="20" width="20"></td>
             <td valign="middle">bottom of workspace<br>
             </td>
@@ -275,7 +272,7 @@
           </tr>
           <tr>
             <td align="center" valign="middle"><img alt="metadata"
-                src="file:///Users/rods/workspace/SpecifyAP/help/images/metadata_20.png"
+                src="../../images/metadata_20.png"
                 height="20" width="20"></td>
             <td valign="middle">bottom of workspace<br>
             </td>
@@ -309,6 +306,11 @@
             </td>
           </tr>
           <tr>
+            <td align="center" valign="middle">2 of 6</td>
+            <td valign="middle">bottom of workspace</td>
+            <td valign="middle">Double click within the box and enter a page number in the resulting dialog to jump to the desired page. </td>
+          </tr>
+          <tr>
             <td align="center" valign="middle">&lt;<br>
             </td>
             <td valign="middle">bottom of workspace</td>
@@ -325,7 +327,7 @@
         </tbody>
       </table>
       <p><u><br>
-        </u> </p>
+      </u> </p>
       <p> <i><b>Note:</b></i> Some file types such as png, bmp and gif
         contain little or no metadata information.<b><i><br>
           </i></b></p>
@@ -369,61 +371,67 @@
       <a name="import_attach" id="import_attach"></a></h3>
     <blockquote>
       <p>The <i>Import Attachments</i> tool allows multiple
-        attachments to be associated to records by simply renaming
-        attachments within a directory to match a unique field within an
+        attachments to be associated to records by matching
+        attachment names within a directory to a unique field within an
         existing record. For example, if records within the Collection
         Object table include unique values for field number, simply
         rename attachment files to match the field numbers in existing
-        records. <br>
+      records. If the attachment names already match the field numbers in existing records, no changes are necessary.<br>
       </p>
       <blockquote>
         <table border="1" cellpadding="2" cellspacing="2" height="194"
           width="639">
           <tbody>
             <tr>
-              <td valign="top"><b>Table </b><b><br>
+              <td width="147" valign="top"><b>Table </b><b><br>
                 </b></td>
-              <td valign="top"><b>Unique Field</b><b> Value<br>
+              <td width="285" valign="top"><b>Unique Field</b><b> Value<br>
                 </b></td>
-              <td valign="top"><b>File Name Example</b><br>
+              <td width="179" valign="top"><b>File Name Example</b><br>
               </td>
             </tr>
             <tr>
               <td valign="top">Collection Object<br>
               </td>
-              <td valign="top">Record Number (YYYY-#####)<br>
-              </td>
+              <td valign="top"><p>Catalog Number <br />
+                (example: 2009-00001)<br>
+              </p></td>
               <td valign="top">2012-00001.jpg<br>
               </td>
             </tr>
             <tr>
               <td valign="top">Collection Object<br>
               </td>
-              <td valign="top">Field Number (NNNNN)<br>
-              </td>
-              <td valign="top">00034.pdf<br>
+              <td valign="top"><p>Field Number <br />
+                (example: 00000034)<br>
+              </p></td>
+              <td valign="top">00000034.pdf<br>
               </td>
             </tr>
             <tr>
               <td valign="top">Collection Object<br>
               </td>
-              <td valign="top">Alternate Catalog Number (#####)<br>
-              </td>
-              <td valign="top">00001.exe<br>
+              <td valign="top"><p>Alternate Catalog Number <br />
+                (example: KU - 00001)<br>
+              </p></td>
+              <td valign="top">KU - 00001.exe<br>
               </td>
             </tr>
             <tr>
-              <td valign="top">Collecting Event/Collector Number<br>
+              <td valign="top">Collecting Event<br>
               </td>
-              <td valign="top">Collector Number (XXXXXX)<br>
-              </td>
+              <td valign="top"><p>Collector Number <br />
+                (example: 00012a)</p>
+                <p><strong><em>Note:</em></strong> this field may also be labeled Field Number. <br>
+              </p></td>
               <td valign="top">00012a.doc<br>
               </td>
             </tr>
             <tr>
               <td valign="top">Taxon<br>
               </td>
-              <td valign="top">Full Name (Genus Species)<br>
+              <td valign="top">Full Name <br />
+                (example: Tursiops truncatus)<br>
               </td>
               <td valign="top">
                 <meta http-equiv="content-type" content="text/html;
@@ -432,14 +440,11 @@
             </tr>
           </tbody>
         </table>
-        <p>Example: the associated image attachment for record number
-          3333 would be saved as file name 3333.jpg.<br>
-          <br>
-        </p>
       </blockquote>
+      <p>&nbsp;</p>
       <p>When the unique field uses a format, multiple attachments
-        can be associated to the same unique identifier by adding a
-        digit to the file name.<br>
+        can be associated to the same record by adding 
+      a  character to the end of the attachment file name. The character can be a letter or a number must be distinctive. For example, add a number to a format ending in a letter but add a letter to a format ending in a number. <br>
       </p>
       <blockquote>
         <table border="1" cellpadding="2" cellspacing="2" height="148"
@@ -454,17 +459,44 @@
             <tr>
               <td valign="top">Numeric only (example:2000)<br>
               </td>
-              <td valign="top">2000x or 2000_x<br>
+              <td valign="top">2000a.jpg, 2000b.jpg<br>
               </td>
             </tr>
             <tr>
-              <td valign="top">Alphanumeric (example:2000A; KU-0002000)<br>
+              <td valign="top">Alphanumeric (example:1325A)</td>
+              <td valign="top">1325A1.png, 1325A2.png</td>
+            </tr>
+            <tr>
+              <td valign="top">Alphanumeric (example:KU-0001548)<br>
               </td>
-              <td valign="top">2000A_x; KU-0002000_x<br>
-              </td>
+              <td valign="top"><p>KU-0001548a.pdf, KU-0001548b.pdf <br>
+              </p></td>
             </tr>
           </tbody>
         </table>
+        <p>When using the default, auto-incrementing, numerical format for catalog number an abbreviated version of the catalog number may be used when naming the attachment file. For all other numeric formats the entire length of the format must be used. </p>
+        <table border="1" cellpadding="2" cellspacing="2" height="148"
+          width="595">
+          <tbody>
+            <tr>
+              <td valign="top"><b>Field Format</b><b><br />
+              </b></td>
+              <td valign="top"><b>Multiple Attachment File Name</b><b><br />
+              </b></td>
+            </tr>
+            <tr>
+              <td valign="top">Default 9-digit Numeric (example:125)<br /></td>
+              <td valign="top">125a.jpg, 125b.jpg<br /></td>
+            </tr>
+            <tr>
+              <td valign="top">Created 5-digit Numeric (example:00125)</td>
+              <td valign="top">00125a.pdf, 00125b.pdf</td>
+            </tr>
+          </tbody>
+        </table>
+        <p><strong><em>Note:</em></strong> the tables in this section list only a few available formats, Specify supports all field formats when attaching files.<br />
+          <br />
+        </p>
       </blockquote>
       <p>Click <i>Import Attachments</i> located on the Attachment side
         bar. <br>
@@ -497,10 +529,10 @@
           width="268"><br>
       </div>
     </blockquote>
-    <h3>4. Import Image Mapping File<a name="import_attachmap"
+    <h3>4. Import Attachment Mapping File<a name="import_attachmap"
         id="import_attachmap"></a></h3>
     <blockquote>
-      <p>The Import Image Mapping File toolallows multiple files to be
+      <p>The Import Image Mapping File tool allows multiple files to be
         attached to records in Specify by associating the files with
         unique field values within specific tables:<br>
       </p>
@@ -508,15 +540,15 @@
         <table border="1" cellpadding="2" cellspacing="2" width="50%">
           <tbody>
             <tr>
-              <td valign="top"><b>Table </b><b><br>
+              <td width="36%" valign="top"><b>Table </b><b><br>
                 </b></td>
-              <td valign="top"><b>Unique Field</b><b> Value<br>
+              <td width="64%" valign="top"><b>Unique Field</b><b> Value<br>
                 </b></td>
             </tr>
             <tr>
               <td valign="top">Collection Object<br>
               </td>
-              <td valign="top">Record Number <br>
+              <td valign="top">Catalog Number <br>
               </td>
             </tr>
             <tr>
@@ -532,10 +564,11 @@
               </td>
             </tr>
             <tr>
-              <td valign="top">Collecting Event/Collector Number<br>
+              <td valign="top">Collecting Event<br>
               </td>
-              <td valign="top">Collector Number <br>
-              </td>
+              <td valign="top"><p>Collector Number </p>
+                <p><strong><em>Note:</em></strong> this field may also be labeled Field Number. <br>
+              </p></td>
             </tr>
             <tr>
               <td valign="top">Taxon<br>
@@ -552,8 +585,8 @@
         as either a tab delimited or csv file. <br>
       </p>
       <p>The spreadsheet/mapping file must contain 2 columns, the first
-        column containing the unique field value within a record and the
-        second containing the name of the attachment file. The unique
+        column includes the unique field value within a record and the
+        second column includes the name of the attachment file. The unique
         field value and file names must match existing values and names
         exactly and the mapping file must be located in the same
         directory as the attachment files.<br>
@@ -594,16 +627,45 @@
             <tr>
               <td valign="top">2000C<br>
               </td>
-              <td valign="top">2000C.jpg<br>
+              <td valign="top">2000C.pdf<br>
               </td>
             </tr>
           </tbody>
         </table>
-      </blockquote>
-      <p><br>
-        <meta charset="utf-8">
-      </p>
-      <p>Click Import Attachment Mapping File located on the Attachment
+        <p>&nbsp;</p>
+        <table border="1" cellpadding="2" cellspacing="2" height="140"
+          width="521">
+        <tbody>
+          <tr>
+            <td valign="top"><b>Unique Field Value</b><b><br />
+            </b></td>
+            <td valign="top"><b>Attachment File</b><b><br />
+            </b></td>
+          </tr>
+          <tr>
+            <td valign="top">2009-KU-0001<br /></td>
+            <td valign="top">pollinator.png<br /></td>
+          </tr>
+          <tr>
+            <td valign="top">2009-KU-0001<br /></td>
+            <td valign="top">Helianthus_annuus.png<br /></td>
+          </tr>
+          <tr>
+            <td valign="top">2013-KU-0035<br /></td>
+            <td valign="top">page5.doc<br /></td>
+          </tr>
+          <tr>
+            <td valign="top">2012-KU-0100<br /></td>
+            <td valign="top">100.pdf<br /></td>
+          </tr>
+        </tbody>
+      </table>
+        <p><strong><em>Note:</em></strong> the spreadsheet examples above show only two available formats, Specify supports all field formats when attaching files.<br>
+        </p>
+        <p>
+          <meta charset="utf-8">
+        </p>
+      <p>Once the attachment mapping file is created, click <em>Import Attachment Mapping File</em> located on the Attachment
         side bar. <br>
       </p>
       <div align="center"><img alt="choose field"
