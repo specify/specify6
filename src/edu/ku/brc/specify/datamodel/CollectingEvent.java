@@ -206,7 +206,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 	 * @return the     /**
      *
      */
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
     public String getGuid() {
         return this.guid;
     }
@@ -650,6 +650,8 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         obj.collectingEventAttribute     = null;
         obj.collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         obj.collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
+        obj.setGUID();
+
         
         for (Collector collector : collectors)
         {

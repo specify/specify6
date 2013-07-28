@@ -458,7 +458,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the guid
      */
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
     public String getGuid()
     {
         return guid;

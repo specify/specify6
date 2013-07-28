@@ -1008,16 +1008,13 @@ public class FormViewObj implements Viewable,
                     DBInfoBase infoBase = fieldInfo.getFieldInfo();
                     if (infoBase instanceof DBFieldInfo)
                     {
-                        if (fi.isUnique())
+                        if (fi.isUnique() || !fi.isUpdatable())
                         {
                             isOK = false;
                             
                         } else if (fi.getFormatter() != null && fi.getFormatter().isIncrementer())
                         {
                             isOK = false;
-                        } else if (fi.getName().equalsIgnoreCase("guid"))
-                        {
-                        	isOK = false;
                         }
                     } else
                     {

@@ -497,7 +497,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
 
-    @Column(name = "GUID", length = 128)
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
     public String getGuid()
     {
         return this.guid;
@@ -686,6 +686,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
         obj.determinationId        = null;
         obj.collectionObject       = null;
         obj.determinationCitations = new HashSet<DeterminationCitation>();
+        
+        obj.setGUID();
         
         for (DeterminationCitation dc : determinationCitations)
         {
