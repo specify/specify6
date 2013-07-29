@@ -36,20 +36,20 @@
     <h3>Attach Files</h3>
     <blockquote> Files can be attached to records via the <a
         href="../Data_Entry/Data_Entry.html">Form system</a>, <a
-        href="../Uploading/wb_uploader.html">WorkBench Uploads,</a> and,
-      available in Specify 6.5, group uploads using <a
+        href="../Uploading/wb_uploader.html">WorkBench Uploads,</a> and, new in Specify 6.5, <a
         href="../Data_Entry/attachment_tools.html">Attachment Tools</a>.
       <br>
       <br>
     </blockquote>
-    <h3><a name="view_attach" id="view_attach"></a>View Attachments</h3>
-    <blockquote> <a href="../Data_Entry/attachment_tools.html">Attachment
+    <h3><a name="view_attach" id="view_attach"></a>View Attachments and Associated Information</h3>
+    <blockquote> 
+      <p><a href="../Data_Entry/attachment_tools.html">Attachment
         Tools</a>  enable users to browse thumbnail representations
-      of all attachments within a collection in a workspace window,
-      locate additional information about an attachment, and open an
-      associated record in a form view. Browse all attachments by clicking <em>Show All Attachments</em> or limit the browse to image attachments by clicking <em>Show All Images</em> on the side bar.<br>
+      of all attachments associated with a collection in a workspace window. The browse can also be limited to show only image attachments. </p>
+      <p>Attachments associated with a single record can be viewed using the <a
+        href="../Data_Entry/Data_Entry.html">Form system</a>.<br>
       <br>
-      Double click an image attachment thumbnail in either a form or attachment browser to open it in a Specify tab. Double click a non-image attachment to open it in the appropriate application on the workstation. If Specify can not find the appropriate application it may be necessary to export the attachment and open it from within the application. <br>
+      Double clicking an image attachment thumbnail in either a form or the attachment browser will open the file in a Specify tab. Double clicking a non-image attachment will open it in the appropriate application on the workstation. If Specify can not find the appropriate application it may be necessary to export the attachment and open it from within the application itself. <br>
       <br>
       The Attachment Tools can be used to view/browse a limited set of
       attachments by first creating a query in the Query Builder, then
@@ -57,17 +57,17 @@
         src="../../images/attachment_20.png" height="20" width="20"> <i>Attachment</i>
       button located on the <a
         href="../QueryBuilder/Query_Builder.html#q_results">Query
-        Results Tool Bar</a>.<br>
-        <blockquote>
+        Results Tool Bar</a>.</p>
+      <blockquote>
       <p><i><b>Note:</b></i> thumbnails are created for jpg, png and
         most pdfs. Other file types are represented by a default
-        thumbnail based on their file type.<br>
-        <br>
-      </p>
-      </blockquote>
+        thumbnail based on their file type.</blockquote>
+      Information associated with the attachment can be viewed in the <a href="../Data_Entry/attachment_tools.html">Attachment
+        Tools</a>, including associated record information and any available metadata. </p>
+
     </blockquote>
     <h3><a name="store_attach" id="store_attach"></a>Store Attachments</h3>
-    <blockquote> Attachments are copied, renamed using a unique name,
+    <blockquote> Attachments are copied, renamed using a unique string,
       and stored in an Attachment Storage location. Only the path to the
       attachment storage location is stored in the Specify database. The
       Specify Setup Wizard sets a default storage location on the local
@@ -85,9 +85,8 @@
         directories are created within the specified attachment storage
         directory.</p>
       <p>When storing attachments on a local drive attachments may not
-        be shared. For example, if User 1 attaches an image and stores it
-        on their local drive and User 2 logs into their instance of Specify on a different workstai
-        User 2 will not be able to access the attachment.</p>
+        be shared with other workstations. For example, if User 1 attaches an image and stores it
+        on their local drive and User 2 logs into their instance of Specify on another workstation, User 2 will not be able to access the attachment.</p>
       <p>Storing attachments on a network drive allows the attachments
         to be shared. In the example above, storing the attachments on a
         network drive will allow User 2 to view, open and export
@@ -97,7 +96,7 @@
         storing attachments on a network drive and allows a web server
       to directly access the attachment location.</p>
       <blockquote>
-      <p><strong><em>Note:</em></strong> all collections within the same division must share a directory in the storage location. If a directory is not shared tables which share data will not have access to attachments. For instance, within Specify two collections in the same divison share Agent information. If each collection stores its attachments in unique directories in the storage location and an attachment is added to an Agent record in Collection 1 Agent record will be accessible for users in Collection 2, but the Agent Attachment will show a status of missing.</p>
+      <p><strong><em>Note:</em></strong> all collections within the same division must share a directory in the storage location. If a directory is not shared, tables which share data will not have access to attachments. For instance, within Specify two collections in the same divison share Agent information. If each collection stores its attachments in unique directories in the storage location and an attachment is added to an Agent record in Collection 1 information within the Agent record will be accessible for users in Collection 2, but the Agent Attachment will not be available and will show a status of missing.</p>
       </blockquote>
       <p>&nbsp; </p>
     </blockquote>
@@ -111,7 +110,7 @@
       <p>To access attachments on an alternate computer when the
         attachment storage location is on a local hard drive will
         require the attachment directory to be copied to the alternate
-        computer. Copy the attachment storage location/directory in the
+        computer. Copy the attachment storage location/directory into the
         exact same path on the new computer. For example: If John Smith
         is using machineA but upgrades to machineB and his attachment
         storage path is c:/users/john/myattachments he will need to copy
@@ -120,7 +119,7 @@
       </p>
       <p>To access attachments on an alternate computer when the
         attachment storage location is on either a shared network drive
-        or attachment server simply change the attachment path in the
+        or attachment server, simply change the attachment path in the
         System Preferences on the new computer.<br>
       </p>
     </blockquote>

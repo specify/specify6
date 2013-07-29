@@ -54,15 +54,7 @@
         the name of both the mapping and table. </li>
       <li> The <strong>Last Update</strong> column lists the date and
         time of the last update of the cache. </li>
-      <li> The <strong>Status</strong> column indicates whether the
-        cache is out of date, and, if so, how many rows are out of date.
-        The number of out of date rows includes the number of rows that
-        have been deleted from the database together with the number of
-        rows that need to be updated due to changes in the database and
-        the number of new rows in the database which must be added to
-        the cache. This information reflects the database contents at
-        the time the exporter was launched; it will not reflect changes
-        to the database that occur while the exporter is running. </li>
+      <li>The<strong>Status</strong> column indicates whether the cache has ever been build, up to date, orout of date. If the cache is out of date, it also indicates the number of rows which require updating. The number of out of date rows includes the number of rows that have been deleted from the database, edited in the database and added since the last update. This information reflects the database contents at the time the exporter was launched; it will not reflect changes to the database that occur while the exporter is running. </li>
     </ul>
     <p>&nbsp; </p>
     <h3> <strong>Available Actions</strong> </h3>

@@ -1277,12 +1277,15 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
           <li> image (jpg, png, gif, tiff) </li>
           <li> html </li>
           <li> spreadsheet </li>
+          <li>video</li>
         </ul>
         <blockquote>
           <p> <strong><em>Note:</em></strong> Specify can accept images
             in a tiff format, but they may not display on the Windows
             and Linux operating systems. </p>
+          <p>&nbsp;</p>
         </blockquote>
+        <p><u><strong>Attach Files</strong></u></p>
         <p>Attach files to a record by clicking the Attachment button (<img
             alt="" src="../../images/collection_object_attachment.png"
             height="20" width="34">) on the form. An Attachment sub form
@@ -1302,14 +1305,15 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
         <blockquote>
           <p> <strong><em>Note:</em></strong> If a table does not have
             an attachment button<span>, i</span>t does not accept
-            attachments.<br>
+          attachments.</p>
+          <p><br>
           </p>
           <img alt="attachment window"
             src="../../images/attach_icon_view.png" height="203"
             width="288">
           <p><i><b>Note:</b></i> For versions of Specify 6.5 and newer
             the default Collection Object form includes an attachment
-            window for adding attachments. This allows attachments to be
+            window, rather than a subform, for adding attachments. This allows attachments to be
             dragged and dropped from the file directory to the
             attachment window. <br>
             &nbsp; </p>
@@ -1390,11 +1394,7 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
     <blockquote>
       <p>As of Specify 6.5, GUIDs are generated using a 128-bit
         Universally Unique Identifier, or UUID (example:
-        bf3066d2-c088-47c8-b279-e7941463a65f0). The Specify 6.5 update
-        from earlier versions of Specify will automatically change
-        existing GUIDs within a Specify database to the UUID system.
-        GUID fields have also been added to the default forms of several
-        tables.<br>
+      bf3066d2-c088-47c8-b279-e7941463a65f0). The Specify 6.5 update does not overwrite any existing data in Specify's GUID fields.&nbsp;The update checks for data in GUID fields and if it finds some in any record, it passes over the data table and no UUIDs are assigned to it. However, new collection data records will be assigned UUID values in all tables with GUID fields (except for Geography and Taxon) when they are created. Collections which previously utilized Specify's GUID data fields for other purposes should contact the Project for assistance to accommodate that data.<br>
       </p>
       <p>Specify automatically creates GUIDs in the GUID field of the
         following tables:<br>
@@ -1425,9 +1425,7 @@ table.box {border-top: 1px solid gray; border-left: 1px solid gray }
         <li>Reference Work<br>
         </li>
       </ul>
-      <ul>
-      </ul>
-      <p> </p>
+<p> </p>
       <p>Using a GUID to identify information allows it to be shared and
         recognized globally. As more biological information systems use
         GUID/UUID's it will become possible to instantly recognize when
