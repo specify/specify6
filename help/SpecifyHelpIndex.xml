@@ -7,9 +7,21 @@
 	<indexitem text="Add a User" target="Add_User" mergetype="javax.help.SortMerge" />
 	<indexitem text="Add Discipline" target="Add_Discipline" mergetype="javax.help.SortMerge" />
 	<indexitem text="Add Division" mergetype="javax.help.SortMerge" />
+	<indexitem text="Attachments" target="attach_general" mergetype="javax.help.SortMerge">
+		<indexitem text="File Path" target="attach_path" mergetype="javax.help.SortMerge" />
+		<indexitem text="Setting Preferences" target="PrefsAttachments" mergetype="javax.help.SortMerge" />
+		<indexitem text="Using Forms" target="Data_Entry_Attachments" mergetype="javax.help.SortMerge" />
+		<indexitem text="Web Services" target="attach_services" mergetype="javax.help.SortMerge" />
+	</indexitem>
+	<indexitem text="Attachment Tools" target="Attach_Tools" mergetype="javax.help.SortMerge">
+		<indexitem text="Import Images" target="ImageBrowser" mergetype="javax.help.SortMerge" />
+		<indexitem text="Import Map" target="Import_Attachmap" mergetype="javax.help.SortMerge" />
+		<indexitem text="View Attachments" target="Attach_Browser" mergetype="javax.help.SortMerge" />
+	</indexitem>
 	<indexitem text="Auto Numbering" target="GE" mergetype="javax.help.SortMerge" />
 	<indexitem text="Backup and Restore tool" target="Backup_Restore" mergetype="javax.help.SortMerge" />
 	<indexitem text="Batch Identify" target="Forms_Batch_Determine" mergetype="javax.help.SortMerge" />
+	<indexitem text="Block Logins" target="block_logins" mergetype="javax.help.SortMerge" />
 	<indexitem text="Carry Forward" target="Carry_Forward" mergetype="javax.help.SortMerge" />
 	<indexitem text="Change Collection" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
 	<indexitem text="Change Collections" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
@@ -63,6 +75,8 @@
 		<indexitem text="Return Loans" target="Int_Return_Loans" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Introduction to Specify" target="Intro" mergetype="javax.help.SortMerge" />
+	<indexitem text="Keyboard Shortcuts" target="Keyboard_Functions" mergetype="javax.help.SortMerge" />
+	<indexitem text="Lifemapper" target="Lifemapper" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift_Catalog Number Dialog" target="AskForCatNumbers" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift _ Choose Record Set" target="ChooseRecordSet" mergetype="javax.help.SortMerge" />
 	<indexitem text="Login Process" target="Login" mergetype="javax.help.SortMerge" />
@@ -139,6 +153,7 @@
 	<indexitem text="Security Summary" mergetype="javax.help.SortMerge" />
 	<indexitem text="Series Data Entry" target="Forms_Series_Entry" mergetype="javax.help.SortMerge" />
 	<indexitem text="Services" target="Services" mergetype="javax.help.SortMerge" />
+	<indexitem text="SGR" target="SGR" mergetype="javax.help.SortMerge" />
 	<indexitem text="Simple Search" target="SS" mergetype="javax.help.SortMerge">
 		<indexitem text="Configure Related Tables" target="ESConfigRelatedTables" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Results Ordering" target="ESConfigResultsOrdering" mergetype="javax.help.SortMerge" />
@@ -210,6 +225,7 @@
 	<indexitem text="User Permissions" target="Permissions" mergetype="javax.help.SortMerge" />
 	<indexitem text="Verifying Data through the WorkBench" target="validate" />
 	<indexitem text="Verifying IT/Master Credentials" target="security_wiz1" />
+	<indexitem text="Web Portal Mapping" target="web_portal" mergetype="javax.help.SortMerge" />
 	<indexitem text="Web Publishing" target="third_party" mergetype="javax.help.SortMerge" />
 	<indexitem text="Welcome" target="Welcome" mergetype="javax.help.SortMerge" />
 	<indexitem text="WorkBench in Specify 6" target="Workbench" mergetype="javax.help.SortMerge">
@@ -241,20 +257,5 @@
 		<indexitem text="Special Tools" target="WorkbenchSpecialTools" mergetype="javax.help.SortMerge" />
 		<indexitem text="Top 10" target="WorkbenchTop10" mergetype="javax.help.SortMerge" />
 		<indexitem text="Working with Images" target="WorkbenchWorkingWithImages" mergetype="javax.help.SortMerge" />
-	</indexitem>
-	<indexitem text="Keyboard Shortcuts" target="Keyboard_Functions" mergetype="javax.help.SortMerge" />
-	<indexitem text="Block Logins" target="block_logins" mergetype="javax.help.SortMerge" />
-	<indexitem text="Lifemapper" target="Lifemapper" mergetype="javax.help.SortMerge" />
-	<indexitem text="SGR" target="SGR" mergetype="javax.help.SortMerge" />
-	<indexitem text="Attachments" target="attach_general" mergetype="javax.help.SortMerge">
-		<indexitem text="Using Forms" target="Data_Entry_Attachments" mergetype="javax.help.SortMerge" />
-		<indexitem text="Setting Preferences" target="PrefsAttachments" mergetype="javax.help.SortMerge" />
-		<indexitem text="File Path" target="attach_path" mergetype="javax.help.SortMerge" />
-		<indexitem text="Web Services" target="attach_services" mergetype="javax.help.SortMerge" />
-	</indexitem>
-	<indexitem text="Attachment Tools" target="Attach_Tools" mergetype="javax.help.SortMerge">
-		<indexitem text="View Attachments" target="Attach_Browser" mergetype="javax.help.SortMerge" />
-		<indexitem text="Import Images" target="ImageBrowser" mergetype="javax.help.SortMerge" />
-		<indexitem text="Import Map" target="Import_Attachmap" mergetype="javax.help.SortMerge" />
 	</indexitem>
 </index>
