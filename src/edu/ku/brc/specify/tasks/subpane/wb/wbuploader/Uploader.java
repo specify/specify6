@@ -2277,7 +2277,9 @@ public class Uploader implements ActionListener, KeyListener
                      */
                     public int compare(Vector<Table> o1, Vector<Table> o2)
                     {
-                        if (o1.size() == o2.size())
+                        int size1 = o1 == null ? 0 : o1.size();
+                        int size2 = o2 == null ? 0 : o2.size();
+                    	if (o1 != null && o2 != null && size1 == size2)
                         {
                             if (o1.containsAll(o2)) { return 0; }
                             // else
@@ -2286,7 +2288,7 @@ public class Uploader implements ActionListener, KeyListener
                             int id2 = o2.get(0).getTableInfo().getTableId();
                             return id1 < id2 ? -1 : (id1 == id2 ? 0 : 1);
                         }
-                        return o1.size() < o2.size() ? -1 : 1;
+                        return size1 < size2 ? -1 : 1;
                         
                     }
                 });
