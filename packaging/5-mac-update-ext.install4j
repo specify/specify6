@@ -504,7 +504,7 @@
                       <void property="script">
                         <object class="com.install4j.api.beans.ScriptProperty">
                           <void property="value">
-                            <string>(Integer.parseInt(System.getProperty("os.version").replace(".", "")) &gt;= 1070 ? true : false)</string>
+                            <string>(Integer.parseInt(System.getProperty("os.version").substring(0, 2).replace(".", "")) &gt;= 107 ? true : false)</string>
                           </void>
                         </object>
                       </void>
