@@ -4541,39 +4541,43 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				for (Integer col : issue.getColumns())
 				{
-					WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
-					if (wbItem == null)
-					{
-						//need to force creation of empty wbItem for blank cell
-						wbItem = wbRow.setData("", col.shortValue(), false, true);
-					}
-					if (wbItem != null)
-					{
-						exceptionalItems.put(col.shortValue(), issue.getStatus());
-						//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
-						synchronized(wbItem)
+					if (col >= 0) {
+						WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
+						if (wbItem == null)
 						{
-							wbItem.setStatusText(issue.getStatusText());
-							if (wbItem.getEditorValidationStatus() != issue.getStatus())
+							//need to force creation of empty wbItem for blank cell
+							wbItem = wbRow.setData("", col.shortValue(), false, true);
+						}
+						if (wbItem != null)
+						{
+							exceptionalItems.put(col.shortValue(), issue.getStatus());
+							//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
+							synchronized(wbItem)
 							{
-								wbItem.setEditorValidationStatus(issue.getStatus());
-								if (issue.getStatus() == WorkbenchDataItem.VAL_ERROR
-										|| issue.getStatus() == WorkbenchDataItem.VAL_ERROR_EDIT)
+								wbItem.setStatusText(issue.getStatusText());
+								if (wbItem.getEditorValidationStatus() != issue.getStatus())
 								{
-									invalidCellCount.getAndIncrement();
-								} else if (issue.getStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH
-										|| issue.getStatus() == WorkbenchDataItem.VAL_NEW_DATA)
-								{
-									unmatchedCellCount.getAndIncrement();
-								}
+									wbItem.setEditorValidationStatus(issue.getStatus());
+									if (issue.getStatus() == WorkbenchDataItem.VAL_ERROR
+											|| issue.getStatus() == WorkbenchDataItem.VAL_ERROR_EDIT)
+									{
+										invalidCellCount.getAndIncrement();
+									} else if (issue.getStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH
+											|| issue.getStatus() == WorkbenchDataItem.VAL_NEW_DATA)
+									{
+										unmatchedCellCount.getAndIncrement();
+									}
 								
-								//System.out.println("error " + invalidCellCount.get());
+									//System.out.println("error " + invalidCellCount.get());
+								}
 							}
 						}
-					}
-					else
-					{
-						log.error("couldn't find workbench item for col " + col);
+						else
+						{
+							log.error("couldn't find workbench item for col " + col);
+						}
+					} else {
+						log.error(issue.getStatusText() + " at " + col + "???");
 					}
 				}
 			}
