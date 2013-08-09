@@ -376,7 +376,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                     }
                                     sb.append("\nThis database will need to be fixed by hand before it can be converted.");
                                     UIRegistry.showError(sb.toString());
-                                    
+                                    System.exit(0);
                                     askForFix = true;
                                     return null;
                                     
