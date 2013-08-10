@@ -687,7 +687,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 String host = (String)row[0];
                 if (StringUtils.isNotEmpty(host))
                 {
-                    String permStr = (String)row[3];
+                    String permStr = (String)row[doAccess ? 3 : 1];
                     if (StringUtils.isNotEmpty(permStr))
                     {
                         int perms = PERM_NONE;
