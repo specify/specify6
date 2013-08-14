@@ -5104,6 +5104,7 @@ public class UploadTable implements Comparable<UploadTable>
         autoAssignedVal = null;  //assumes one autoassign field per table.
         reusingExportedRec = false;
         //for (Vector<UploadField> seq : uploadFields)
+        boolean doSkipMatch = skipMatch || isMatchChild(); //Bug #9375 don't prevent dup manies in 1-manies. May cause constraint violations for some tables.
         for (int recNum = uploadFields.size() - 1; recNum >= 0; recNum--)
         {
             Vector<UploadField> seq = uploadFields.get(recNum);
@@ -5115,7 +5116,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             	if (needToWrite(recNum))
                 {
-                    if (skipMatch || !findMatch(recNum, false, null, null) || updateMatches)
+                    if (doSkipMatch || !findMatch(recNum, false, null, null) || updateMatches)
                     {
                     	if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd())
                     	{
