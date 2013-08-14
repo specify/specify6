@@ -1974,8 +1974,8 @@
       <id column="LatLonPolygonPntID" name="latLonPolygonPntId" type="java.lang.Integer"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LatLonPolygon" relationshipname="latLonPolygon" columnname="LatLonPolygonID" othersidename="points" updatable="false" required="true" save="false" likemanytoone="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LithoStrat" table="lithostrat" tableid="100" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules" abbrv="ls">
-      <display view="LithoStrat" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
+    <table classname="edu.ku.brc.specify.datamodel.LithoStrat" table="lithostrat" tableid="100" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules"  abbrv="ls">
+      <display view="LithoStrat" dataobjformatter="LithoStrat" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
       <fieldalias vname="acceptedParent" aname="acceptedLithoStrat"/>
       <field column="FullName" name="fullName" type="java.lang.String" length="255" indexName="LithoFullNameIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="GUID" name="guid" type="java.lang.String" length="128" indexName="LithoGuidIDX" updatable="false" required="false" unique="false" indexed="true" partialDate="false"/>
