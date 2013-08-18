@@ -58,9 +58,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -73,9 +70,6 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
-import edu.ku.brc.specify.tasks.subpane.images.FullImagePane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -84,7 +78,6 @@ import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.OrderedIconTray;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Orderable;
 import edu.ku.brc.util.OrderableComparator;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -570,6 +563,17 @@ public class IconViewObj implements Viewable
             
         } else
         {
+            if (businessRules != null && mvParent != null) // Bug 9370
+            {
+                if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null)
+                {
+                    if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData()))
+                    {
+                        return;
+                    }
+                }
+            }
+
             FormDataObjIFace newObject;
             if (classToCreate != null)
             {

@@ -996,6 +996,17 @@ public class TableViewObj implements Viewable,
                 
             } else
             {
+                if (businessRules != null && mvParent != null) // Bug 9370
+                {
+                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null)
+                    {
+                        if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData()))
+                        {
+                            return;
+                        }
+                    }
+                }
+                
                 // OK, we need to create it locally
                 
                 if (classToCreate != null)
