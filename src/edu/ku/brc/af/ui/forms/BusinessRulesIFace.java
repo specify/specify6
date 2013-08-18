@@ -295,6 +295,12 @@ public interface BusinessRulesIFace
     public abstract void afterCreateNewObj(Object newDataObj);
     
     /**
+     * @param parentObj
+     * @return
+     */
+    public abstract boolean isOkToAddSibling(Object parentObj);
+    
+    /**
      * Called before the objects in the cached HashSet of objects are processed in a loop.
      */
     public abstract void startProcessingBeforeAfterRules();

@@ -26,13 +26,18 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityDetail;
 
 /**
  * @author rod
@@ -179,4 +184,21 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
     {
         return super.afterSaveCommit(dataObj, session);
     }
+    
+//    /* (non-Javadoc)
+//     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+//     */
+//    @Override
+//    public void addChildrenToNewDataObjects(final Object newDataObj)
+//    {
+//        super.addChildrenToNewDataObjects(newDataObj);
+//        
+//        if (newDataObj instanceof GeoCoordDetail)
+//        {
+//            if ()
+//        } else if (newDataObj instanceof LocalityDetail)
+//        {
+//            
+//        }
+//    }
 }

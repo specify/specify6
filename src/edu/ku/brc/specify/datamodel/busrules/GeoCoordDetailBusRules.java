@@ -30,7 +30,9 @@ import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -157,5 +159,23 @@ public class GeoCoordDetailBusRules extends BaseBusRules
                 }
             });
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAddSibling(java.lang.Object)
+     */
+    @Override
+    public boolean isOkToAddSibling(Object parentObj)
+    {
+        if (parentObj instanceof Locality)
+        {
+            if (((Locality)parentObj).getGeoCoordDetails().size() > 0) 
+            {
+                UIRegistry.showLocalizedError("GeoCoordDetailBusRules.ONLY_ONE");
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

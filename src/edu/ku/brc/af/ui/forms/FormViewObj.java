@@ -2029,6 +2029,16 @@ public class FormViewObj implements Viewable,
             
         } else
         {
+            if (businessRules != null && mvParent != null)
+            {
+                if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null)
+                {
+                    if (!businessRules.isOkToAddSibling(mvParent.getMultiViewParent().getData()))
+                    {
+                        return;
+                    }
+                }
+            }
             // 06/16/09 - rods - no longer need to override the children objects. Let them be created anyway and then set overtop of them
             // this is because we don't know no in the business rules which ones should be created or not
             // from the CarryForward info

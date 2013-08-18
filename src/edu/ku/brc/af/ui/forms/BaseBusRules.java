@@ -735,6 +735,15 @@ public class BaseBusRules implements BusinessRulesIFace
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#isOkToAddSibling(java.lang.Object)
+     */
+    @Override
+    public boolean isOkToAddSibling(Object parentObj)
+    {
+        return true;
+    }
+
     /**
      * Uses a generic strin from the resource bundle to create an error message using the localized name of the field.
      * @param msgKey the key of the message

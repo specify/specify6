@@ -665,6 +665,7 @@
         
         <view name="LocalityDetail"
             class="edu.ku.brc.specify.datamodel.LocalityDetail"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityDetailBusRules"
             >
             <desc><![CDATA[LocalityDetail form.]]></desc>
             <altviews>
