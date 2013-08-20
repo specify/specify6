@@ -11,7 +11,7 @@ There are three types of connection strings:
   
 -->
 <databases>
-    <db name="MySQL" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect" embedded="false" port="3306">
+    <db name="MySQL" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQL5InnoDBDialect" embedded="false" port="3306">
         <connection type="open"><![CDATA[jdbc:mysql://SERVER:PORT/DATABASE?characterEncoding=UTF-8&autoReconnect=true]]></connection>
         <connection type="opensys"><![CDATA[jdbc:mysql://SERVER:PORT/]]></connection>
     </db>
