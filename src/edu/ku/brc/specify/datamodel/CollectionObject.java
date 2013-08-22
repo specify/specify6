@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -1361,8 +1362,19 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         String myCatNum = catalogNumber == null ? "" : catalogNumber;
         String objCatNum = obj.catalogNumber == null ? "" : obj.catalogNumber;
-        return myCatNum.compareTo(objCatNum);
-        
+        if (!"".equals(myCatNum) || !"".equals(objCatNum)) {
+        	return myCatNum.compareTo(objCatNum);
+        } else {
+        	Timestamp myStamp = timestampCreated;
+        	Timestamp objStamp = obj.timestampCreated;
+        	if (myStamp != null && objStamp != null) {
+        		return myStamp.compareTo(objStamp);
+        	} else if (myStamp != null) {
+        		return 1;
+        	} else {
+        		return 0;
+        	}
+        }
     }
 
 }
