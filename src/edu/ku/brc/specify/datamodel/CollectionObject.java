@@ -1371,6 +1371,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         		return myStamp.compareTo(objStamp);
         	} else if (myStamp != null) {
         		return 1;
+        	} else if (objStamp != null) {
+        		return -1;
         	} else {
         		return 0;
         	}
