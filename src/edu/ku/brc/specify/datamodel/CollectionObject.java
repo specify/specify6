@@ -1306,7 +1306,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         
         for (Project prj : projects)
         {
-            prj.getCollectionObjects().size();
+            //prj.getCollectionObjects().size();
+        	//prj.
         }
     }
     
@@ -1356,13 +1357,12 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      */
     public int compareTo(CollectionObject obj)
     {
-        // XXX TODO need to fix when Cat Nums change to Strings!
-        if (catalogNumber != null && obj != null && obj.catalogNumber != null)
-        {
-            return catalogNumber.compareTo(obj.catalogNumber);
-        }
-        // else
-        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
+        if (obj == null) return 1;
+        
+        String myCatNum = catalogNumber == null ? "" : catalogNumber;
+        String objCatNum = obj.catalogNumber == null ? "" : obj.catalogNumber;
+        return myCatNum.compareTo(objCatNum);
+        
     }
 
 }
