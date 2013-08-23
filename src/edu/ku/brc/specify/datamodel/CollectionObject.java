@@ -1308,7 +1308,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         for (Project prj : projects)
         {
         	//get something harmless, don't load collectionobjects
-        	//fix for bug #9382 (probably relates to bugs 9380 and 9381)
+        	//fix for bug #9381 (probably relates to bugs 9380 and 9382)
         	//prj.getCollectionObjects().size();
         	
         	prj.getProjectName();
