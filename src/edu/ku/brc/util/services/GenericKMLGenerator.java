@@ -20,15 +20,19 @@
 package edu.ku.brc.util.services;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
 import edu.ku.brc.util.Pair;
 
@@ -46,11 +50,8 @@ public class GenericKMLGenerator
     /** Logger used to emit any messages from this class. */
     //private static final Logger log = Logger.getLogger(GenericKmlGenerator.class);
 
-    /** Standard XML file type declaration. */
-    protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-
     /** Keyhole Markup Language namespace declaration. */
-    protected static String KML_NAMESPACE_DECL = "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n";
+    protected static String KML_NAMESPACE_DECL = "http://earth.google.com/kml/2.1";
 
     /** A list of all points to be included in the generated KML. */
     protected List<Pair<Double, Double>> points = new Vector<Pair<Double,Double>>();
@@ -204,44 +205,39 @@ public class GenericKMLGenerator
     }
     
     /**
+     * @param style 
      * @param iconURL
      * @return
      */
-    public static String generateIconCode(final String iconURL)
+    public static void generateIconCode(Element style, final String iconURL)
     {
         if (StringUtils.isNotEmpty(iconURL))
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<IconStyle>\n");
-            sb.append("<Icon>\n");
-            sb.append("<href>");
-            sb.append(iconURL);
-            sb.append("</href>\n");
-            sb.append("</Icon>\n");
-            sb.append("</IconStyle>\n");
-            return sb.toString();
+            style.addElement("IconStyle")
+            .addElement("Icon")
+            .addElement("href")
+            .addText(iconURL);
         }
-        return "";
     }
     
     /**
+     * @param style 
      * @param balloonStyleBgColor
      * @param balloonStyleTextColor
      * @param balloonStyleText
      * @return
      */
-    public static String generateBalloon(final String balloonStyleBgColor, 
+    public static void generateBalloon(Element style, final String balloonStyleBgColor, 
                                          final String balloonStyleTextColor, 
                                          final String balloonStyleText)
     {
         if (balloonStyleBgColor != null || balloonStyleTextColor != null || balloonStyleText != null)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<BalloonStyle>\n");
+            Element balloonStyle = style.addElement("BalloonStyle");
             
             if (balloonStyleBgColor != null)
             {
-                sb.append("<bgColor>" + balloonStyleBgColor + "</bgColor>\n");
+                balloonStyle.addElement("bgColor").addText(balloonStyleBgColor);
             }
             
             // GoogleEarth 5.0 on Windows and Linux causes the color to color the entire test area
@@ -252,36 +248,30 @@ public class GenericKMLGenerator
             
             if (balloonStyleText != null)
             {
-                sb.append("<text><![CDATA[" + balloonStyleText + "]]></text>\n");
+                balloonStyle.addElement("text").addCDATA(balloonStyleText);
             }
-            sb.append("</BalloonStyle>\n");
-            return sb.toString();
         }
-        return "";
     }
     
     /**
+     * @param kmlDocument 
      * @param iconURL
      * @param balloonStyleBgColor
      * @param balloonStyleTextColor
      * @param balloonStyleText
      * @return
      */
-    public static String generateStyle(final String iconURL,
+    public static void generateStyle(Element kmlDocument, final String iconURL,
                                        final String balloonStyleBgColor, 
                                        final String balloonStyleTextColor, 
                                        final String balloonStyleText)
     {
         if (iconURL != null || balloonStyleBgColor != null || balloonStyleTextColor != null || balloonStyleText != null)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<Style id=\"custom\">\n");
-            sb.append(generateIconCode(iconURL));
-            sb.append(generateBalloon(balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
-            sb.append("</Style>\n"); 
-            return sb.toString();
+            Element style = kmlDocument.addElement("Style").addAttribute("id", "custom");
+            generateIconCode(style, iconURL);
+            generateBalloon(style, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText);
         }
-        return "";
     }
 
     /**
@@ -289,36 +279,31 @@ public class GenericKMLGenerator
      * 
      * @return a String containing the generated KML
      */
-    public String generateKML()
+    public Document generateKML()
     {
-        StringBuilder kmlBuilder = new StringBuilder();
-        kmlBuilder.append(XML_DECLARATION);
-        kmlBuilder.append(KML_NAMESPACE_DECL);
-        kmlBuilder.append("<Document>\n");
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("kml").addAttribute("xmlns", KML_NAMESPACE_DECL);
+        Element kmlDocument = root.addElement("Document");
         if (StringUtils.isNotEmpty(description))
         {
-            kmlBuilder.append("<description><![CDATA[");
-            kmlBuilder.append(description);
-            kmlBuilder.append("]]></description>");
+            kmlDocument.addElement("description").addText(description);
         }
         // setup the custom style, if any of these are non-null
-        kmlBuilder.append(generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
+        generateStyle(kmlDocument, placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText);
         
         // generate a placemark for each point
         for (Pair<Double, Double> point: points)
         {
             String name     = pointNameMap.get(point);
             String htmlDesc = pointDescMap.get(point);
-            kmlBuilder.append(buildPlacemark(point, name, balloonStyleTextColor, htmlDesc, placemarkIconURL));
+            buildPlacemark(kmlDocument, point, name, balloonStyleTextColor, htmlDesc, placemarkIconURL);
         }
-        
-        kmlBuilder.append("</Document>\n");
-        kmlBuilder.append("</kml>\n");
-        return kmlBuilder.toString();
+        return document;
     }
     
     /**
      * Builds the XML for a KML 'Placemark' element using the given data.
+     * @param kmlDocument 
      * 
      * @param point the geolocation of the placemark
      * @param name the string label of the placemark
@@ -326,53 +311,35 @@ public class GenericKMLGenerator
      * @param htmlDesc the HTML content of the placemark popup balloon
      * @return the XML string
      */
-    public static String buildPlacemark(final Pair<Double, Double> point, 
+    public static void buildPlacemark(Element kmlDocument, final Pair<Double, Double> point, 
                                         final String name, 
                                         final String textColor,
                                         final String htmlDesc, 
                                         @SuppressWarnings("unused") final String iconURL)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(generateXmlStartTag("Placemark"));
-        sb.append(generateXmlElement("name", name));
-        
-        sb.append(generateXmlElement("styleUrl", "#custom"));
-        sb.append("\n");
-        sb.append(generateXmlElement("description", "<![CDATA[" + htmlDesc + "]]>"));
-        sb.append("\n");
-        sb.append(buildPointAndLookAt(point));
-        sb.append("\n");
-        sb.append(generateXmlEndTag("Placemark"));
-        
-        return sb.toString();
+        Element placemark = kmlDocument.addElement("Placemark");
+        placemark.addElement("name").addText(name);
+        placemark.addElement("styleUrl").addText("#custom");
+        placemark.addElement("description").addText(htmlDesc);
+        buildPointAndLookAt(placemark, point);
     }
     
     /**
      * Builds the XML for KML 'LookAt' and 'Point' elements.
+     * @param placemark 
      * 
      * @param point the geolocation of the point
      * @return the XML string
      */
-    public static String buildPointAndLookAt(final Pair<Double,Double> point)
+    public static void buildPointAndLookAt(Element placemark, final Pair<Double,Double> point)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<LookAt>\n");
-        sb.append("<latitude>");
-        sb.append(point.first);
-        sb.append("</latitude>\n");
-        sb.append("<longitude>");
-        sb.append(point.second);
-        sb.append("</longitude>\n");
-        sb.append("<range>300000.00</range>\n");
-        sb.append("</LookAt>\n");
-        sb.append("<Point>\n");
-        sb.append("<coordinates>");
-        sb.append(point.second);
-        sb.append(",");
-        sb.append(point.first);
-        sb.append("</coordinates>\n");
-        sb.append("</Point>\n");
-        return sb.toString();
+        Element lookAt = placemark.addElement("LookAt");
+        lookAt.addElement("latitude").addText("" + point.first);
+        lookAt.addElement("longitude").addText("" + point.second);
+        lookAt.addElement("range").addText("300000.00");
+        
+        placemark.addElement("Point").addElement("coordinates").addText(
+                point.second + "," + point.first);
     }
     
     /**
@@ -381,10 +348,13 @@ public class GenericKMLGenerator
      * @param out a stream to which the KML is written
      * @throws IOException if an I/O error occurs
      */
-    public void generateKML(final OutputStream out) throws IOException
+    public void generateKML(final FileWriter out) throws IOException
     {
-        String kml = generateKML();
-        out.write(kml.getBytes("UTF-8"));
+        Document kml = generateKML();
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter writer = new XMLWriter(out, format);
+        writer.write(kml);
+        writer.close();
     }
 
     /**
@@ -395,49 +365,12 @@ public class GenericKMLGenerator
      */
     public void generateKML(final File outputFile) throws IOException
     {
-        FileOutputStream fos = new FileOutputStream(outputFile);
-        generateKML(fos);
+        FileWriter out = new FileWriter(outputFile);
+        generateKML(out);
+        out.close();
     }
     
-    /**
-     * Builds an XML start tag of the given name.
-     * 
-     * @param name the name of the start tag
-     * @return the XML snippet
-     */
-    public static String generateXmlStartTag(final String name)
-    {
-        return "<" + name + ">";
-    }
 
-    /**
-     * Builds an XML end tag of the given name.
-     * 
-     * @param name the name of the end tag
-     * @return the XML snippet
-     */
-    public static String generateXmlEndTag(final String name)
-    {
-        return "</" + name + ">";
-    }
-    
-    /**
-     * Builds an XML element with the given name and content.
-     * 
-     * @param name the name of the element
-     * @param content the content of the element
-     * @return the XML snippet
-     */
-    public static String generateXmlElement(final String name, final String content)
-    {
-        if (content == null || content.equals("") )
-        {
-            return "<" + name + "/>";
-        }
-
-        return "<" + name + ">" + content + "</" + name + ">";
-    }
-    
     /**
      * A test main.
      * 

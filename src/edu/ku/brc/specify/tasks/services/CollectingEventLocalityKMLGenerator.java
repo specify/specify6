@@ -22,9 +22,10 @@ package edu.ku.brc.specify.tasks.services;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.util.LatLonConverter.convertToDDDDDD;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -34,6 +35,11 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -69,11 +75,8 @@ public class CollectingEventLocalityKMLGenerator
 	/** Logger used to emit any messages from this class. */
 	private static final Logger log = Logger.getLogger(CollectingEventLocalityKMLGenerator.class);
 
-	/** Standard XML file type declaration. */
-	protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-	
 	/** Keyhole Markup Language namespace declaration. */
-	protected static String KML_NAMESPACE_DECL = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";
+	protected static String KML_NAMESPACE_DECL = "http://earth.google.com/kml/2.0";
 
 	/** <code>CollectingEvents</code> to map in the KML output. */
 	protected List<FormDataObjIFace> dataObjs;
@@ -165,17 +168,14 @@ public class CollectingEventLocalityKMLGenerator
 	 */
 	public void outputToFile(final String filename) throws IOException
 	{
-		BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-		writer.write(XML_DECLARATION);
-		writer.write(KML_NAMESPACE_DECL);
-		writer.write("<Document>\n");
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("kml").addAttribute("xmlns", KML_NAMESPACE_DECL);
+        Element kmlDocument = root.addElement("Document");
         if (StringUtils.isNotEmpty(description))
         {
-            writer.append("<description><![CDATA[");
-            writer.append(description);
-            writer.append("]]></description>");
+            kmlDocument.addElement("description").addText(description);
         }
-		writer.write(GenericKMLGenerator.generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
+        GenericKMLGenerator.generateStyle(kmlDocument, placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText);
 		
 		boolean isDoingCollectingEvents = false;
 		DataProviderSessionIFace session = null;
@@ -189,24 +189,18 @@ public class CollectingEventLocalityKMLGenerator
                 
                 session.attach(dataObj);
                 
-                String kmlStr = null;
                 if (dataObj instanceof CollectingEvent)
                 {
-                    kmlStr = generatePlacemark((CollectingEvent)dataObj, label);
+                    generatePlacemark(kmlDocument, (CollectingEvent)dataObj, label);
         			isDoingCollectingEvents = true;
         			
                 } else if (dataObj instanceof Locality)
                 {
-                    kmlStr = generatePlacemark((Locality)dataObj, label);
+                    generatePlacemark(kmlDocument, (Locality)dataObj, label);
                     
                 } else if (dataObj instanceof CollectionObject)
                 {
-                    kmlStr = generatePlacemark((CollectionObject)dataObj, label);
-                }
-                
-                if (kmlStr != null)
-                {
-                    writer.write(kmlStr);
+                    generatePlacemark(kmlDocument, (CollectionObject)dataObj, label);
                 }
     		}
 		} catch (Exception ex)
@@ -230,44 +224,46 @@ public class CollectingEventLocalityKMLGenerator
             }*/
 		}
 		
-		writer.write("</Document>\n");
-		writer.write("</kml>\n");
-		writer.flush();
-		writer.close();
+		FileWriter out = new FileWriter(filename);
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter writer = new XMLWriter(out, format);
+        writer.write(document);
+        writer.close();
+		out.close();
 	}
 
-	/**
-	 * Builds an XML chunk describing the path from the first locality to the last.
-	 *
-	 * @return an XML string
-	 */
-	protected String generatePathForLocalities()
-	{
-	    int cnt = 0;
-		StringBuilder sb = new StringBuilder("<Placemark>\n");
-        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-        sb.append("\n");
-        sb.append("<LineString>\n");
-		sb.append("<coordinates>");
-		for( FormDataObjIFace dataObj : dataObjs )
-		{
-		    Locality loc = dataObj instanceof CollectingEvent ? ((CollectingEvent)dataObj).getLocality() : (Locality)dataObj;
-		    if (loc != null && loc.getLongitude1() != null && loc.getLatitude1() != null)
-		    {
-    			sb.append(loc.getLongitude1());
-    			sb.append(",");
-    			sb.append(loc.getLatitude1());
-    			sb.append(",");
-    			sb.append("0.0\n");
-    			cnt++;
-		    }
-		}
-		sb.append("</coordinates>\n");
-		sb.append("</LineString>\n");
-		sb.append("</Placemark>\n\n\n");
-
-		return cnt > 0 ? sb.toString() : null;
-    }
+//	/**
+//	 * Builds an XML chunk describing the path from the first locality to the last.
+//	 *
+//	 * @return an XML string
+//	 */
+//	protected String generatePathForLocalities()
+//	{
+//	    int cnt = 0;
+//		StringBuilder sb = new StringBuilder("<Placemark>\n");
+//        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+//        sb.append("\n");
+//        sb.append("<LineString>\n");
+//		sb.append("<coordinates>");
+//		for( FormDataObjIFace dataObj : dataObjs )
+//		{
+//		    Locality loc = dataObj instanceof CollectingEvent ? ((CollectingEvent)dataObj).getLocality() : (Locality)dataObj;
+//		    if (loc != null && loc.getLongitude1() != null && loc.getLatitude1() != null)
+//		    {
+//    			sb.append(loc.getLongitude1());
+//    			sb.append(",");
+//    			sb.append(loc.getLatitude1());
+//    			sb.append(",");
+//    			sb.append("0.0\n");
+//    			cnt++;
+//		    }
+//		}
+//		sb.append("</coordinates>\n");
+//		sb.append("</LineString>\n");
+//		sb.append("</Placemark>\n\n\n");
+//
+//		return cnt > 0 ? sb.toString() : null;
+//    }
 
     /**
      * Generates a KML chunk describing the given collecting event.
@@ -276,13 +272,13 @@ public class CollectingEventLocalityKMLGenerator
      * @param label the label for the event
      * @return the KML string
      */
-    protected String generatePlacemark(final Locality loc, final String label)
+    protected void generatePlacemark(Element kmlDocument, final Locality loc, final String label)
     {
         if (loc == null || 
             loc.getLatitude1() == null || 
             loc.getLongitude1() == null)
         {
-            return null;
+            return;
         }
         BigDecimal lat = loc.getLatitude1();
         BigDecimal lon = loc.getLongitude1();
@@ -292,76 +288,36 @@ public class CollectingEventLocalityKMLGenerator
         //Geography  geo = loc.getGeography(); 
 
         // build the placemark
-        StringBuilder sb = new StringBuilder("<Placemark>\n");
-        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-        sb.append("\n");
-        sb.append("<name>");
-        if (label != null)
-        {
-            sb.append(label);
-        } else
-        {
-            sb.append(loc.getLocalityName());
-        }
-        sb.append("</name>\n");
+        Element placemark = kmlDocument.addElement("Placemark");
+        placemark.addElement("styleUrl").addText("#custom");
+        placemark.addElement("name").addText(
+                label != null ? label : loc.getLocalityName());
 
         // build the fancy HTML popup description
-        
-        sb.append("<description><![CDATA[");
-        //sb.append("<h3>"+getResourceString("GE_LOCALITY")+":</h3>\n<ul>\n");
-        sb.append("<table>\n");
-        
-        sb.append("<tr>\n");
-        sb.append("<td style=\"color:#"+textColor+"; text-align:right\">"+getResourceString("Latitude")+":</td>\n");
-        sb.append("<td style=\"color:#"+textColor+"\" >"+lat.doubleValue()+"</td></tr>\n");
-        sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+getResourceString("Longitude")+":</td>\n");
-        sb.append("<td style=\"color:#"+textColor+"\" >"+lon.doubleValue()+"</td>\n");
-        if (loc.getGeography() != null)
-        {
-            sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+getResourceString("Geography")+":</td>\n");
-            sb.append("<td style=\"color:#"+textColor+"\" >"+loc.getGeography().getFullName()+"</td>\n");
-        }
-        sb.append("</tr>\n");
-        
-        sb.append("</table>]]></description>\n");
-        
-        sb.append("<LookAt>\n");
-        sb.append("<latitude>");
-        sb.append(lat.doubleValue());
-        sb.append("</latitude>\n");
-        sb.append("<longitude>");
-        sb.append(lon.doubleValue());
-        sb.append("</longitude>\n");
-        sb.append("<range>300000.00</range>\n");
-        sb.append("</LookAt>\n");
-        sb.append("<Point>\n");
-        sb.append("<coordinates>");
-        sb.append(lon.doubleValue());
-        sb.append(",");
-        sb.append(lat.doubleValue());
-        sb.append("</coordinates>\n");
-        sb.append("</Point>\n");
-        sb.append("</Placemark>\n\n\n");
+        placemark.addElement("description").addCDATA(generateHtmlDesc(loc));
 
-        log.debug("Generated placemark:\n " + sb.toString() );
-        return sb.toString();
+
+        GenericKMLGenerator.buildPointAndLookAt(placemark,
+                new Pair<Double, Double>(lat.doubleValue(), lon.doubleValue()));
     }
+
 
     /**
      * Generates a KML chunk describing the given collecting event.
+     * @param kmlDocument 
      *
      * @param ce the event
      * @param label the label for the event
      * @return the KML string
      */
-    protected String generatePlacemark(final CollectingEvent ce, final String label)
+    protected void generatePlacemark(Element kmlDocument, final CollectingEvent ce, final String label)
     {
         if (ce == null || 
             ce.getLocality() == null || 
             ce.getLocality().getLatitude1() == null ||
             ce.getLocality().getLongitude1() == null)
         {
-            return null;
+            return;
         }
         
 		// get all of the important information
@@ -390,10 +346,41 @@ public class CollectingEventLocalityKMLGenerator
 	        endString = dfEnd.format(end.getTime());
 		}
 
-		// get names of collectors
-		List<String> agentNames = new Vector<String>();
-		for( Collector c : ce.getCollectors() )
-		{
+
+		// build the placemark
+        Element placemark = kmlDocument.addElement("Placemark");
+        placemark.addElement("styleUrl").addText("#custom");
+		
+		StringBuilder name = new StringBuilder();
+        if(label != null)
+        {
+            name.append(label);
+        }
+        
+        if (StringUtils.isNotEmpty(startString))
+        {
+            name.append(startString);
+            if (StringUtils.isNotEmpty(endString) && !startString.equals(endString))
+            {
+                name.append(" - ");
+                name.append(endString);
+            }
+        }
+        
+        placemark.addElement("name").addText(name.toString());
+		// build the fancy HTML popup description
+        
+        placemark.addElement("description").addCDATA(generateHtmlDesc(ce));
+        
+        GenericKMLGenerator.buildPointAndLookAt(placemark, 
+                new Pair<Double, Double>(lat.doubleValue(), lon.doubleValue()));
+    }
+        
+    protected String generateHtmlDesc(CollectingEvent ce) {
+        // get names of collectors
+        List<String> agentNames = new Vector<String>();
+        for( Collector c : ce.getCollectors() )
+        {
             if (StringUtils.isEmpty(c.getAgent().getFirstName()))
             {
                 agentNames.add(c.getAgent().getLastName());
@@ -401,74 +388,55 @@ public class CollectingEventLocalityKMLGenerator
             {
                 agentNames.add(c.getAgent().getFirstName()+ " "+ c.getAgent().getLastName());
             }
-		}
+        }
 
-		// get taxonomy of collection object
-		Hashtable<Pair<String, String>, CollectionObject> coHash = new Hashtable<Pair<String,String>, CollectionObject>();
-		Vector<Pair<String,String>> genusSpecies = new Vector<Pair<String,String>>();
-		for( CollectionObject co : ce.getCollectionObjects() )
-		{
-			String genus = null;
-			String species = null;
-			for (Determination d: co.getDeterminations())
-			{
-				if (d.isCurrentDet())
-				{
-					Taxon t = d.getPreferredTaxon();
-					species = t.getName();
-					genus = t.getParent().getName();
-					break;
-				}
-			}
-			Pair<String, String> genusSpeciesPair = new Pair<String,String>(genus,species);
-			genusSpecies.add(genusSpeciesPair);
-			coHash.put(genusSpeciesPair, co);
-		}
-		
-		DBTableInfo           colObjTableInfo = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
-		DBFieldInfo           catalogNumberFI = colObjTableInfo.getFieldByColumnName("CatalogNumber");
-		UIFieldFormatterIFace formatter       = catalogNumberFI.getFormatter();
-
-		// build the placemark
-		StringBuilder sb = new StringBuilder("<Placemark>\n");
-        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-        sb.append("\n");
-		sb.append("<name>");
-        if(label != null)
+        // get taxonomy of collection object
+        Hashtable<Pair<String, String>, CollectionObject> coHash = new Hashtable<Pair<String,String>, CollectionObject>();
+        Vector<Pair<String,String>> genusSpecies = new Vector<Pair<String,String>>();
+        for( CollectionObject co : ce.getCollectionObjects() )
         {
-            sb.append(label);
+            String genus = null;
+            String species = null;
+            for (Determination d: co.getDeterminations())
+            {
+                if (d.isCurrentDet())
+                {
+                    Taxon t = d.getPreferredTaxon();
+                    species = t.getName();
+                    genus = t.getParent().getName();
+                    break;
+                }
+            }
+            Pair<String, String> genusSpeciesPair = new Pair<String,String>(genus,species);
+            genusSpecies.add(genusSpeciesPair);
+            coHash.put(genusSpeciesPair, co);
         }
         
-        if (StringUtils.isNotEmpty(startString))
-        {
-            sb.append(startString);
-            if (StringUtils.isNotEmpty(endString) && !startString.equals(endString))
-            {
-                sb.append(" - ");
-                sb.append(endString);
-            }
-        }
-		sb.append("</name>\n");
+        DBTableInfo           colObjTableInfo = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+        DBFieldInfo           catalogNumberFI = colObjTableInfo.getFieldByColumnName("CatalogNumber");
+        UIFieldFormatterIFace formatter       = catalogNumberFI.getFormatter();
 
-		// build the fancy HTML popup description
-		sb.append("<description><![CDATA[");
+
+        Element desc = DocumentHelper.createElement("div");
 		//sb.append("<center><h3>");
 		//sb.append(startString);
 		//sb.append(" - ");
 		//sb.append(endString);
 		//sb.append("</h3></center><br/>");
-		sb.append("<h3>"+getResourceString("GE_COLLECTOR")+":</h3>\n<ul>\n");
+        desc.addElement("h3").addText(getResourceString("GE_COLLECTOR"));
+		
+		Element ul = desc.addElement("ul");
 		for( String agent: agentNames )
 		{
-			sb.append("<li>");
-			sb.append(agent);
-			sb.append("</li>\n");
+		    ul.addElement("li").addText(agent);
 		}
-		sb.append("</ul>\n");
 		
 		if (genusSpecies.size() > 0)
 		{
-    		sb.append("<br/><h3>"+getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
+		    desc.addElement("br");
+		    desc.addElement("h3").addText(getResourceString("GE_COLLECTION_OBJECTS"));
+    		
+    		Element table = desc.addElement("table");
     		
     		AppPreferences remotePrefs = AppPreferences.getRemote();
     		
@@ -477,59 +445,59 @@ public class CollectingEventLocalityKMLGenerator
             String secondaryURL      = remotePrefs.get(PluginsTask.GE_BALLOON_SECONDARY_URL, null);
             String secondaryURLTitle = remotePrefs.get(PluginsTask.GE_BALLOON_SECONDARY_URL_TITLE, null);
             
-            sb.append("<tr>");
-            sb.append("<th><center>");
-            sb.append(getResourceString("GE_CATALOG_NUMBER"));
-            sb.append("</center></th>\n");
-            sb.append("<th>");
-            sb.append(getResourceString("GE_TAXONOMY"));
-            sb.append("</b></th>\n");
+            Element tr = table.addElement("tr");
+            
+            tr.addElement("th").addElement("center")
+                .addText(getResourceString("GE_CATALOG_NUMBER"));
+            
+            tr.addElement("th").addText(getResourceString("GE_TAXONOMY"));
+
             if (StringUtils.isNotEmpty(primaryURL))
             {
-                sb.append("<th style=\"color:#"+textColor+"\"><center>"+getResourceString("GE_PRIMARY")+"</center></th>\n");
+                tr.addElement("th").addAttribute("style", "color:#" + textColor)
+                    .addElement("center").addText(getResourceString("GE_PRIMARY"));
             }
             
             if (StringUtils.isNotEmpty(secondaryURL))
             {
-                sb.append("<th style=\"color:#"+textColor+"\"><center>"+getResourceString("GE_SECONDARY")+"</center></th>\n");
+                tr.addElement("th").addAttribute("style", "color:#" + textColor)
+                    .addElement("center").addText(getResourceString("GE_SECONDARY"));
             }
-            sb.append("</tr>\n");
             
     		for( Pair<String, String> tax : genusSpecies )
     		{
-    			sb.append("<tr>\n");
-                sb.append("<td><center>");
-                if (formatter != null)
-                {
-                    sb.append(formatter.formatToUI(coHash.get(tax).getCatalogNumber()));                
-                } else
-                {
-                    sb.append(coHash.get(tax).getCatalogNumber());    
-                }
-                sb.append("</center></td>\n");
+    		    tr = table.addElement("tr");
+    		    tr.addElement("td").addElement("center")
+    		        .addText( 
+    		            (formatter != null) ?
+    		                formatter.formatToUI(coHash.get(tax).getCatalogNumber()).toString()
+    		                :
+    		                coHash.get(tax).getCatalogNumber()
+    		        );     
                 
     			// simple name text
     			String taxonomicName = (tax.first != null ? tax.first : "") + " " + (tax.second != null ? tax.second : "");
-    			sb.append("<td><i>");
-    			sb.append(taxonomicName);
-    			sb.append("</i></td>\n");
+    			
+    			tr.addElement("td").addElement("i").addText(taxonomicName);
     
     			String linkTextColor = (textColor.startsWith("F") ? "WHITE" : "BLACK");
     			
                 if (StringUtils.isNotEmpty(primaryURL))
                 {
                     String primaryURLStr = String.format(primaryURL, tax.first, tax.second);
-                    sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+primaryURLStr+"\"><center>");
-                    sb.append(primaryURLTitle);
-                    sb.append("</a></center></td>\n");
+                    tr.addElement("td").addElement("center").addElement("a")
+                        .addAttribute("style", "color:" + linkTextColor)
+                        .addAttribute("href", primaryURLStr)
+                        .addText(primaryURLTitle);
                 }
                 
                 if (StringUtils.isNotEmpty(secondaryURL))
                 {
                     String secondaryURLStr = String.format(secondaryURL, tax.first, tax.second);
-                    sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+secondaryURLStr+"\"><center>");
-                    sb.append(secondaryURLTitle);
-                    sb.append("</a></center></td>\n");
+                    tr.addElement("td").addElement("center").addElement("a")
+                    .addAttribute("style", "color:" + linkTextColor)
+                    .addAttribute("href", secondaryURLStr)
+                    .addText(secondaryURLTitle);
                 }
                 
     			if( speciesToImageMapper != null )
@@ -538,103 +506,72 @@ public class CollectingEventLocalityKMLGenerator
                     //System.out.println("["+taxonomicName+"]["+imgSrc+"]");
     				if( imgSrc != null )
     				{
-    					sb.append("<td><img src=\"");
-    					sb.append(imgSrc);
-    					sb.append("\"/></td>\n");
+    				    tr.addElement("td").addElement("img")
+    				        .addAttribute("src", imgSrc);
     				}
     				else
     				{
-    					sb.append("<td>&nbsp;</td>\n");
+    				    tr.addElement("td");
     				}
     			}
-    
-    			sb.append("</tr>\n");
     		}
-    		sb.append("</table>\n");
 		}
-        sb.append("]]></description>\n");
-		sb.append("<LookAt>\n");
-		sb.append("<latitude>");
-		sb.append(lat.doubleValue());
-		sb.append("</latitude>\n");
-		sb.append("<longitude>");
-		sb.append(lon.doubleValue());
-		sb.append("</longitude>\n");
-		sb.append("<range>300000.00</range>\n");
-		sb.append("</LookAt>\n");
-		sb.append("<Point>\n");
-		sb.append("<coordinates>");
-		sb.append(lon.doubleValue());
-		sb.append(",");
-		sb.append(lat.doubleValue());
-		sb.append("</coordinates>\n");
-		sb.append("</Point>\n");
-		sb.append("</Placemark>\n\n\n");
+		return XMLtoString(desc);
+    }
 
-		log.debug("Generated placemark:\n " + sb.toString() );
-		return sb.toString();
-	}
-    
-    /**
-     * @param sb
-     * @param title
-     * @param value
-     */
-    private void appendCellTR(final StringBuilder sb, 
-                              final Integer tableId,
-                              final String  colName,
-                              final String  titleArg, 
-                              final String  value)
+    private String XMLtoString(Element el)
     {
-        String title = titleArg;
-        if (titleArg == null && tableId != null)
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        Writer writer = new StringWriter();
+        try
         {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
-            if (ti != null)
-            {
-                if (colName != null)
-                {
-                    DBFieldInfo fi = ti.getFieldByColumnName(colName);
-                    if (fi != null)
-                    {
-                        title = fi.getTitle();
-                    }
-                } else
-                {
-                    title = ti.getTitle();
-                }
-            }
-        }
-        if (StringUtils.isNotEmpty(title) &&StringUtils.isNotEmpty(value))
+            new XMLWriter(writer, format).write(el);
+        } catch (IOException e)
         {
-            sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+title+":</td><td style=\"color:#"+textColor+"\" >"+value+"</td></tr>\n");
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        return writer.toString();
     }
     
-    /**
-     * Generates a KML chunk describing the given collecting event.
-     *
-     * @param ce the event
-     * @param label the label for the event
-     * @return the KML string
-     */
-    protected String generatePlacemark(final CollectionObject colObj, final String label)
+    private String generateHtmlDesc(Locality loc)
     {
-        if (colObj == null || 
-            colObj.getCollectingEvent() == null || 
-            colObj.getCollectingEvent().getLocality() == null)
+        BigDecimal lat = loc.getLatitude1();
+        BigDecimal lon = loc.getLongitude1();
+
+        Element desc = DocumentHelper.createElement("div");
+//        desc.addElement("h3").addText(getResourceString("GE_LOCALITY"));
+        
+        Element table = desc.addElement("table");
+        Element tr = table.addElement("tr");
+        tr.addElement("td").addAttribute("style", "color:#"+textColor+"; text-align:right")
+            .addText(getResourceString("Latitude")+":");
+        tr.addElement("td").addAttribute("style", "color:#"+textColor)
+            .addText("" + lat.doubleValue());
+        
+        tr = table.addElement("tr");
+        tr.addElement("td").addAttribute("style", "color:#"+textColor+"; text-align:right")
+            .addText(getResourceString("Longitude")+":");
+        tr.addElement("td").addAttribute("style", "color:#"+textColor)
+            .addText("" + lon.doubleValue());
+        
+        if (loc.getGeography() != null)
         {
-            return null;
+            tr = table.addElement("tr");
+            tr.addElement("td").addAttribute("style", "color:#"+textColor+"; text-align:right")
+                .addText(getResourceString("Geography")+":");
+            tr.addElement("td").addAttribute("style", "color:#"+textColor)
+                .addText(loc.getGeography().getFullName());
         }
         
+        return XMLtoString(desc);
+    }
+    
+    private String generateHtmlDesc(CollectionObject colObj)
+    {
         CollectingEvent ce = colObj.getCollectingEvent();
         Locality        loc = ce.getLocality();
-        
-        if (loc.getLatitude1() == null || loc.getLongitude1() == null)
-        {
-            return null;
-        }
-        
+       
         BigDecimal lat = loc.getLatitude1();
         BigDecimal lon = loc.getLongitude1();
         
@@ -680,58 +617,106 @@ public class CollectingEventLocalityKMLGenerator
             geoStr = loc.getGeography().getFullName();
         }
         
-        // build the placemark
-        StringBuilder sb = new StringBuilder("<Placemark>\n");
-        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-        sb.append("\n");
-        sb.append("<name>");
-        if (label != null)
-        {
-            sb.append(label);
-        } else
-        {
-            sb.append(title.toString());
-        }
-        sb.append("</name>\n");
+//        sb.append(
+//                DocumentHelper.createElement("h3")
+//                    .addText(getResourceString("GE_LOCALITY")+":").asXML());
+        
+        Element table = DocumentHelper.createElement("table");
+   
+  
+        appendCellTR(table, CollectingEvent.getClassTableId(), "StartDate",  "Start Date", startDateStr);
+        appendCellTR(table, Taxon.getClassTableId(),            null,        "Taxon",      taxonStr);
+        appendCellTR(table, Locality.getClassTableId(),        "Latitude1",  "Latitude",   convertToDDDDDD(loc.getLatitude1(), DEGREES_FORMAT.String, DIRECTION.NorthSouth, 4));
+        appendCellTR(table, Locality.getClassTableId(),        "Longitude1", "Longitude",  convertToDDDDDD(loc.getLongitude1(), DEGREES_FORMAT.String, DIRECTION.EastWest, 4));
+        appendCellTR(table, Geography.getClassTableId(),       null,         "Geography",  geoStr);
 
-        // build the fancy HTML popup description
-        
-        sb.append("<description><![CDATA[");
-        //sb.append("<h3>"+getResourceString("GE_LOCALITY")+":</h3>\n<ul><br/>\n");
-        sb.append("<table>\n");
-        
-        appendCellTR(sb, CollectingEvent.getClassTableId(), "StartDate",  "Start Date", startDateStr);
-        appendCellTR(sb, Taxon.getClassTableId(),            null,        "Taxon",      taxonStr);
-        appendCellTR(sb, Locality.getClassTableId(),        "Latitude1",  "Latitude",   convertToDDDDDD(loc.getLatitude1(), DEGREES_FORMAT.String, DIRECTION.NorthSouth, 4));
-        appendCellTR(sb, Locality.getClassTableId(),        "Longitude1", "Longitude",  convertToDDDDDD(loc.getLongitude1(), DEGREES_FORMAT.String, DIRECTION.EastWest, 4));
-        appendCellTR(sb, Geography.getClassTableId(),       null,         "Geography",  geoStr);
-        
-        sb.append("</table>]]></description>\n");
-        
-        
-        sb.append("<LookAt>\n");
-        sb.append("<latitude>");
-        sb.append(lat.doubleValue());
-        sb.append("</latitude>\n");
-        sb.append("<longitude>");
-        sb.append(lon.doubleValue());
-        sb.append("</longitude>\n");
-        sb.append("<range>300000.00</range>\n");
-        sb.append("</LookAt>\n");
-        sb.append("<Point>\n");
-        sb.append("<coordinates>");
-        sb.append(lon.doubleValue());
-        sb.append(",");
-        sb.append(lat.doubleValue());
-        sb.append("</coordinates>\n");
-        sb.append("</Point>\n");
-        sb.append("</Placemark>\n\n\n");
-
-        log.debug("Generated placemark:\n " + sb.toString() );
-        return sb.toString();
+        return XMLtoString(table);
     }
 
 
+    /**
+     * @param table
+     * @param title
+     * @param value
+     */
+    private void appendCellTR(final Element table, 
+                              final Integer tableId,
+                              final String  colName,
+                              final String  titleArg, 
+                              final String  value)
+    {
+        String title = titleArg;
+        if (titleArg == null && tableId != null)
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+            if (ti != null)
+            {
+                if (colName != null)
+                {
+                    DBFieldInfo fi = ti.getFieldByColumnName(colName);
+                    if (fi != null)
+                    {
+                        title = fi.getTitle();
+                    }
+                } else
+                {
+                    title = ti.getTitle();
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(title) &&StringUtils.isNotEmpty(value))
+        {
+            Element tr = table.addElement("tr");
+            tr.addElement("td").addAttribute("style", "color:#"+textColor+"; text-align:right")
+                .addText(title + ":");
+            tr.addElement("td").addAttribute("style", "color:#"+textColor)
+                .addText(value);
+        }
+    }
+    
+    /**
+     * Generates a KML chunk describing the given collecting event.
+     *
+     * @param ce the event
+     * @param label the label for the event
+     * @return the KML string
+     */
+    protected void generatePlacemark(Element kmlDocument, final CollectionObject colObj, final String label)
+    {
+        if (colObj == null || 
+            colObj.getCollectingEvent() == null || 
+            colObj.getCollectingEvent().getLocality() == null)
+        {
+            return;
+        }
+        
+        CollectingEvent ce = colObj.getCollectingEvent();
+        Locality        loc = ce.getLocality();
+        
+        if (loc.getLatitude1() == null || loc.getLongitude1() == null)
+        {
+            return;
+        }
+        
+        BigDecimal lat = loc.getLatitude1();
+        BigDecimal lon = loc.getLongitude1();
+        
+        //DBTableInfo coti = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+        DBTableInfo ceti = DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId());
+        
+        StringBuilder title        = new StringBuilder(colObj.getIdentityTitle());
+
+        // build the placemark
+        Element placemark = kmlDocument.addElement("Placemark");
+        placemark.addElement("styleUrl").addText("#custom");
+        placemark.addElement("name").addText(
+                label != null ? label : title.toString());
+        
+        placemark.addElement("description").addCDATA(generateHtmlDesc(colObj));
+       
+        GenericKMLGenerator.buildPointAndLookAt(placemark,
+                new Pair<Double, Double>(lat.doubleValue(), lon.doubleValue()));
+    }
 
     /**
      * @param placemarkIconURL the placemarkIconURL to set
