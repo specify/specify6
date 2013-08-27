@@ -165,9 +165,9 @@ public class QueryTask extends BaseTask
     protected NavBox                     actionNavBox     = null;
     
     protected Vector<String>             favQueries       = new Vector<String>();
-    protected Vector<String>             freqQueries;
-    protected Vector<String>             extraQueries;
-    protected Vector<String>             stdQueries       = new Vector<String>();
+    protected List<String>             freqQueries;
+    protected List<String>             extraQueries;
+    protected List<String>             stdQueries       = new ArrayList<String>();
     protected int                        nonFavCount      = 0;
     
     //protected List<DBTableInfo>               tableInfos       = new ArrayList<DBTableInfo>();
@@ -302,31 +302,20 @@ public class QueryTask extends BaseTask
     {
         freqQueries  = readResourceForList("QueryFreqList");
         extraQueries = readResourceForList("QueryExtraList");
-        if (AppContextMgr.isSecurityOn())
-        {
-            securityFilter(freqQueries);
-            securityFilter(extraQueries);
-        }
     }
     
-    /**
-     * @param list
-     * 
-     * Removes tables from list if they are not viewable.
-     * Assumes security is ON.
-     */
-    protected void securityFilter(Vector<String> list)
-    {
-        for (int t = list.size()-1; t >= 0; t--)
-        {
-            String tblName = list.get(t);
-            if (!DBTableIdMgr.getInstance().getByShortClassName(tblName).getPermissions().canView())
-            {
-                list.remove(t);
-            }
-        }
+    protected List<String> filterQueryList(List<String> list, boolean doSecurity, boolean doVisibility) {
+    	List<String> result = new ArrayList<String>();
+    	for (String q  : list) {
+            DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(q);
+    		if ((!doVisibility || !tbl.isHidden()) && (!doSecurity || tbl.getPermissions().canView())) {
+    			result.add(q);
+    		}
+    	}
+    	return result;
     }
     
+        
     /**
      * Reads a single list from the database.
      * @param resName the name of the resource to use to save it.
@@ -393,7 +382,7 @@ public class QueryTask extends BaseTask
      * @param list the list to be saved.
      */
     protected void saveQueryList(final String resourceName,
-                                 final Vector<String> list)
+                                 final List<String> list)
     {
         XStream xstream = new XStream();
         AppResourceIFace uaAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
@@ -422,25 +411,34 @@ public class QueryTask extends BaseTask
      */
     protected void configureCreatorQueries()
     {
-        QueryCreatorsConfigureDlg dlg = new QueryCreatorsConfigureDlg(QueryTask.this, freqQueries, extraQueries, stdQueries);
+        List<String> filteredFreqs = filterQueryList(freqQueries, AppContextMgr.isSecurityOn(), true);
+        List<String> filteredExtras = filterQueryList(extraQueries, AppContextMgr.isSecurityOn(), true);
+    	QueryCreatorsConfigureDlg dlg = new QueryCreatorsConfigureDlg(QueryTask.this, 
+        		filteredFreqs,
+        		filteredExtras,
+        		filterQueryList(stdQueries, AppContextMgr.isSecurityOn(), true));
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
             actionNavBox.clear();
+                        
+            freqQueries.removeAll(filteredFreqs);
+            for (String freq : dlg.getFreqQueries()) {
+            	freqQueries.add(freq);
+            }
+            extraQueries.removeAll(filteredExtras);
+            for (String extra : dlg.getExtraQueries()) {
+            	extraQueries.add(extra);
+            }
             
-            Vector<String> freqs  = dlg.getFreqQueries();
-            Vector<String> extras = dlg.getExtraQueries();
-            
-            buildNavBoxes(freqs, extras);
+            buildNavBoxes(filterQueryList(freqQueries, AppContextMgr.isSecurityOn(), true), 
+            		filterQueryList(extraQueries, AppContextMgr.isSecurityOn(), true));
             
             actionNavBox.validate();
             actionNavBox.doLayout();
             NavBoxMgr.getInstance().validate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();
-            
-            freqQueries  = freqs;
-            extraQueries = extras;
             
             // Persist out to database
             saveQueryListConfiguration();
@@ -734,8 +732,8 @@ public class QueryTask extends BaseTask
      * @param freqList the frequently used list of names
      * @param extraList the list of extra (hidden) names
      */
-    protected void buildNavBoxes(final Vector<String> freqList,
-                                 final Vector<String> extraList)
+    protected void buildNavBoxes(final List<String> freqList,
+                                 final List<String> extraList)
     {
         createCreateQueryNavBtns(freqList);
         
@@ -763,9 +761,10 @@ public class QueryTask extends BaseTask
     protected void showMiscViewsDlg()
     {
         String shortClassName = null;
-        if (extraQueries.size() == 1)
+        List<String> extras = filterQueryList(extraQueries, AppContextMgr.isSecurityOn(), true);
+        if (extras.size() == 1)
         {
-            shortClassName = extraQueries.get(0);
+            shortClassName = extras.get(0);
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
             if (tableInfo != null)
             {
@@ -777,7 +776,7 @@ public class QueryTask extends BaseTask
             final Hashtable<String, DBTableInfo> tiHash = new Hashtable<String, DBTableInfo>();
             Vector<String> names = new Vector<String>();
             
-            for (String sName : extraQueries)
+            for (String sName : extras)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(sName);
                 names.add(tableInfo.getTitle());
@@ -854,7 +853,7 @@ public class QueryTask extends BaseTask
      * Creates all the NavBtns from a list of Queries create names.
      * @param list the list of names
      */
-    protected void createCreateQueryNavBtns(final Vector<String> list)
+    protected void createCreateQueryNavBtns(final List<String> list)
     {
         for (String shortClassName : list)
         {
@@ -884,10 +883,15 @@ public class QueryTask extends BaseTask
                 }));
     }
 
+    /**
+     * @param tblName
+     * @return
+     */
     protected boolean showQueryCreator(final String tblName)
     {
-        DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(tblName);
-        return !tbl.isHidden() && (!AppContextMgr.isSecurityOn() || tbl.getPermissions().canView());
+        //DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(tblName);
+        //return /*!tbl.isHidden() && */(!AppContextMgr.isSecurityOn() || tbl.getPermissions().canView());
+        return true;
     }
     /**
      * Adds the NavBtns for creating new queries.
@@ -895,7 +899,8 @@ public class QueryTask extends BaseTask
     protected void addNewQCreators()
     {
         readOrgLists();
-        buildNavBoxes(freqQueries, extraQueries);
+        buildNavBoxes(filterQueryList(freqQueries, AppContextMgr.isSecurityOn(), true), 
+        		filterQueryList(extraQueries, AppContextMgr.isSecurityOn(), true));
         
         try
         {
@@ -1203,7 +1208,7 @@ public class QueryTask extends BaseTask
      * @param query
      * @return QueryBldrPane for new query
      */
-    protected QueryBldrPane getNewQbPane(SpQuery query)
+    protected QueryBldrPane getNewQbPane(SpQuery query) throws QueryBuilderContextException
     {
     	return new QueryBldrPane(query.getName(), this, query);
     }
@@ -1227,17 +1232,22 @@ public class QueryTask extends BaseTask
     {
     	if (checkLock(query)) 
     	{
-			QueryBldrPane newPane = getNewQbPane(query);
-			if (starterPane != null) 
-			{
-				SubPaneMgr.getInstance().replacePane(starterPane, newPane);
-				starterPane = null;
-			} else if (queryBldrPane != null) 
-			{
-				SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
+			try {
+				QueryBldrPane newPane = getNewQbPane(query);
+				if (starterPane != null) 
+				{
+					SubPaneMgr.getInstance().replacePane(starterPane, newPane);
+					starterPane = null;
+				} else if (queryBldrPane != null) 
+				{
+					SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
+				}
+				queryBldrPane = newPane;
+				return true;
+			} catch (QueryBuilderContextException e) {
+				//e.printStackTrace();
+				UIRegistry.displayErrorDlgLocalized("QueryTask.QUERY_CONTEXT_ERRMSG");
 			}
-			queryBldrPane = newPane;
-			return true;
 		}
     	return false;
     }
@@ -2513,5 +2523,11 @@ public class QueryTask extends BaseTask
         	session.close();
         }
         return true;
+    }
+    
+    @SuppressWarnings("serial")
+    public class QueryBuilderContextException extends Exception 
+    {
+    	
     }
 }

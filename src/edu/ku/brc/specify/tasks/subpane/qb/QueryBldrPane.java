@@ -259,7 +259,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param name name of subpanel
      * @param task the owning task
      */
-    public QueryBldrPane(final String name, final Taskable task, final SpQuery query)
+    public QueryBldrPane(final String name, final Taskable task, final SpQuery query) throws QueryTask.QueryBuilderContextException
     {
         this(name, task, query, false);
     }
@@ -273,7 +273,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public QueryBldrPane(final String name, 
                          final Taskable task, 
                          final SpQuery query,
-                         final boolean isHeadless)
+                         final boolean isHeadless) throws QueryTask.QueryBuilderContextException
     {
     	this(name, task, query, isHeadless, null, null);
     }
@@ -288,7 +288,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                          final SpQuery query,
                          final boolean isHeadless,
                          final SpExportSchema exportSchema,
-                         final SpExportSchemaMapping schemaMapping)
+                         final SpExportSchemaMapping schemaMapping) throws QueryTask.QueryBuilderContextException
     {
         super(name, task);
 
@@ -986,7 +986,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * 
      */
-    protected void setupUI()
+    protected void setupUI() throws QueryTask.QueryBuilderContextException
     {
         if (!isHeadless && !SwingUtilities.isEventDispatchThread()) 
         { 
@@ -1027,7 +1027,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             TableQRI qri = (TableQRI) tableList.getSelectedValue();
             if (qri == null) 
             { 
-                throw new RuntimeException("Invalid context for query."); 
+                //throw new RuntimeException("Invalid context for query."); 
+                throw ((QueryTask )task).new QueryBuilderContextException();
             }
             //query.forceLoad(true);                	
             qfps = !isExportMapping ? getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds)
@@ -3175,7 +3176,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 query.setNamed(true); //XXX this isn't getting persisted!!!!!!!!!
                 if (query.getSpQueryId() != null && saveAs)
                 {
-                    this.setupUI();
+                    try 
+                    {
+                    	this.setupUI();
+                    } catch (QueryTask.QueryBuilderContextException e) {
+                    	//It can't happen here. 
+                    }
                 }   
                 
                 SubPaneMgr.getInstance().renamePane(this, query.getName());

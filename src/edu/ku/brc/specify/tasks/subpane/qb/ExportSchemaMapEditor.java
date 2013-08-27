@@ -48,6 +48,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
@@ -88,7 +89,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 	    createUI();
 	}
 	
-	protected QueryBldrPane buildQb(final SpQuery query)
+	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException
 	{
         return new QueryBldrPane(query.getName(), task, query, false, exportSchema, schemaMapping);
 	}
@@ -151,10 +152,10 @@ public class ExportSchemaMapEditor extends CustomDialog
 	/**
 	 * @return a list model containing available export mappings.
 	 */
-	protected DefaultListModel getMappingsModel()
+	protected DefaultListModel<SpExportSchemaMapping> getMappingsModel()
 	{
 		Vector<SpExportSchemaMapping> mappings = getMappings();
-		DefaultListModel result = new DefaultListModel();
+		DefaultListModel<SpExportSchemaMapping> result = new DefaultListModel<SpExportSchemaMapping>();
 		for (SpExportSchemaMapping mapping : mappings)
 		{
 			result.addElement(mapping);
@@ -209,8 +210,12 @@ public class ExportSchemaMapEditor extends CustomDialog
 	 */
 	protected void setupQB(final SpQuery query)
 	{
-       	qb = buildQb(query);
-
+       	try {
+       		qb = buildQb(query);
+       	} catch (QueryTask.QueryBuilderContextException qex) {
+			UIRegistry.displayErrorDlgLocalized("ExportMappingTask.QUERY_CONTEXT_ERRMSG");
+			return;
+       	}
         CardLayout layout = (CardLayout )rightSidePane.getLayout();
         if (workPane != null)
         {
@@ -370,7 +375,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 	/**
 	 * @param mapping the mapping to delete.
 	 */
-	protected void deleteMapping(final JList mapList)
+	protected void deleteMapping(final JList<SpExportSchemaMapping> mapList)
 	{
 		//XXX need a name field for SpExportSchemaMapping?
 		SpExportSchemaMapping mapping = (SpExportSchemaMapping )mapList.getSelectedValue();
@@ -389,7 +394,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 					@Override
 					public void run()
 					{
-						((DefaultListModel )mapList.getModel()).removeElementAt(mapList.getSelectedIndex());
+						((DefaultListModel<SpExportSchemaMapping> )mapList.getModel()).removeElementAt(mapList.getSelectedIndex());
 					}
 				});
 			}
@@ -408,7 +413,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 		
 		CellConstraints cc = new CellConstraints();
 
-		final JList mappingList = UIHelper.createList(getMappingsModel());
+		final JList<?> mappingList = UIHelper.createList(getMappingsModel());
 	
 		final JButton editBtn = UIHelper.createButton(UIRegistry.getResourceString("EDIT"));
 		editBtn.addActionListener(new ActionListener() {
@@ -445,9 +450,10 @@ public class ExportSchemaMapEditor extends CustomDialog
 			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 			 */
 			@Override
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent arg0)
 			{
-				deleteMapping(mappingList);				
+				deleteMapping((JList<SpExportSchemaMapping>)mappingList);				
 			}
 			
 		});
@@ -597,7 +603,7 @@ public class ExportSchemaMapEditor extends CustomDialog
 		
 	}
 	
-	public class MappingListRenderer implements ListCellRenderer
+	public class MappingListRenderer implements ListCellRenderer<Mapping>
 	{
 		//testing testing testing
 		protected SpQueryField dummy;
@@ -617,14 +623,16 @@ public class ExportSchemaMapEditor extends CustomDialog
             }
 			
 		}
+		
+		
 		/* (non-Javadoc)
 		 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
 		 */
 		@Override
-		public Component getListCellRendererComponent(JList arg0, Object arg1,
+		public Component getListCellRendererComponent(JList<? extends Mapping> arg0, Mapping arg1,
 				int arg2, boolean arg3, boolean arg4)
 		{
-			Mapping mapping = (Mapping )arg1;
+			Mapping mapping = arg1;
         	//FieldQRI fieldQRI = qb.getFieldQRI(mapping.getQueryField());
         	FieldQRI fieldQRI = qb.getFieldQRI(dummy);
             if (fieldQRI != null)

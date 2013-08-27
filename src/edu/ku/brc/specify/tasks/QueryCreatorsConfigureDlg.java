@@ -68,15 +68,16 @@ import edu.ku.brc.ui.UIRegistry;
  * Created Date: Feb 28, 2008
  *
  */
+@SuppressWarnings("serial")
 public class QueryCreatorsConfigureDlg extends CustomDialog
 {
     //private static final Logger log = Logger.getLogger(DataEntryConfigureDlg.class);
     
     protected QueryTask             task;
     
-    protected Vector<String>        freqQueries       = null;
-    protected Vector<String>        extraQueries      = null;
-    protected Vector<String>        stdQueries      = null;
+    protected List<String>        freqQueries       = null;
+    protected List<String>        extraQueries      = null;
+    protected List<String>        stdQueries      = null;
     
     protected JButton               mvToExtraBtn;
     protected JButton               mvToFreqBtn;
@@ -89,8 +90,8 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
     
     protected Hashtable<String, String> reverseNameHash = new Hashtable<String, String>();
     protected Hashtable<String, String> nameHash        = new Hashtable<String, String>();
-
     
+
     /**
      * Creates the Dialog for configuring the queries
      * @param task the QueryTask
@@ -99,9 +100,9 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
      * @param stdQueries the master list
      */
     public QueryCreatorsConfigureDlg(final QueryTask task,
-                               final Vector<String> freqQueries,
-                               final Vector<String> extraQueries,
-                               final Vector<String> stdQueries)
+                               final List<String> freqQueries,
+                               final List<String> extraQueries,
+                               final List<String> stdQueries)
     {
         super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_CREATORS"), true, OKCANCELHELP, null);
         
@@ -117,8 +118,8 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             nameHash.put(sName, tableInfo.getTitle());
             reverseNameHash.put(tableInfo.getTitle(), sName);
         }
-
     }
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
@@ -182,10 +183,9 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         int inx = freqPanel.getOrderList().getSelectedIndex();
         if (inx > -1)
         {
-            Object name = freqPanel.getOrderList().getSelectedValue();
-            ((DefaultListModel)freqPanel.getOrderList().getModel()).removeElement(name);
-            ((DefaultListModel)extraPanel.getOrderList().getModel()).addElement(name);
-            //pack();
+            String name = freqPanel.getOrderList().getSelectedValue();
+            ((DefaultListModel<String> )freqPanel.getOrderList().getModel()).removeElement(name);
+            ((DefaultListModel<String> )extraPanel.getOrderList().getModel()).addElement(name);
         }
     }
     
@@ -197,10 +197,9 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         int inx = extraPanel.getOrderList().getSelectedIndex();
         if (inx > -1)
         {
-            Object name = extraPanel.getOrderList().getSelectedValue();
-            ((DefaultListModel)extraPanel.getOrderList().getModel()).removeElement(name);
-            ((DefaultListModel)freqPanel.getOrderList().getModel()).addElement(name);
-            //pack();
+            String name = extraPanel.getOrderList().getSelectedValue();
+            ((DefaultListModel<String>) extraPanel.getOrderList().getModel()).removeElement(name);
+            ((DefaultListModel<String>) freqPanel.getOrderList().getModel()).addElement(name);
         }
     }
     
@@ -217,7 +216,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
      * Adds new items to list
      * @param list the list
      */
-    protected void addItem(final JList list)
+    protected void addItem(final JList<String> list)
     {
         Hashtable<String, Object> hash = new Hashtable<String, Object>();
         for (String sName : freqPanel.getNames())
@@ -227,7 +226,9 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         
         for (String sName : extraPanel.getNames())
         {
-            hash.put(sName, sName);
+            if (sName != null) {
+            	hash.put(sName, sName);
+            }
         }
         
         List<String>              uniqueList    = new Vector<String>();
@@ -257,13 +258,12 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         
         if (!dlg.isCancelled())
         {
-            ListModel model = list.getModel();
+            ListModel<String> model = list.getModel();
             
             for (String name : dlg.getSelectedObjects())
             {
-                ((DefaultListModel)model).addElement(name);
+                ((DefaultListModel<String>) model).addElement(name);
             }
-            //pack();
         }
         setHasChanged(true);
     }
@@ -271,7 +271,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
     /**
      * @return the freq quesries lis
      */
-    public Vector<String> getFreqQueries()
+    public List<String> getFreqQueries()
     {
         return freqPanel.getNames();
     }
@@ -279,7 +279,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
     /**
      * @return the extra queries list
      */
-    public Vector<String> getExtraQueries()
+    public List<String> getExtraQueries()
     {
         return extraPanel.getNames();
     }
@@ -288,12 +288,12 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
      * Removes an item from the list
      * @param list the list
      */
-    protected void removeItem(final JList list)
+    protected void removeItem(final JList<String> list)
     {
         int index = list.getSelectedIndex();
         if (index > -1)
         {
-            ((DefaultListModel)list.getModel()).remove(index);
+            list.remove(index);
             setHasChanged(true);
             list.repaint();
         }
@@ -302,7 +302,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
     /**
      * @param list
      */
-    protected void editItem(final JList list)
+    protected void editItem(final JList<String> list)
     {
     }
 
@@ -319,8 +319,8 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
     public class QueryOrderPanel extends JPanel
     {
         // Table Ordering
-        protected JList                     orderList;
-        protected DefaultListModel          orderModel;
+        protected JList<String>             orderList;
+        protected DefaultListModel<String>  orderModel;
         protected JButton                   orderUpBtn;
         protected JButton                   orderDwnBtn;
         
@@ -331,14 +331,14 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
          * 
          */
         public QueryOrderPanel(final String titleKey, 
-                               final Vector<String> names,
+                               final List<String> names,
                                final boolean orderOnLeft)
         {
             
             PanelBuilder    outer = new PanelBuilder(new FormLayout(orderOnLeft ? "p,2px,f:p:g" : "f:p:g,2px,p", "p,2px,f:p:g,2px,p"), this);
             CellConstraints cc    = new CellConstraints();
             
-            orderModel = new DefaultListModel();
+            orderModel = new DefaultListModel<String>();
             for (String shortClassName : names)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
@@ -349,7 +349,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
                 orderModel.addElement(tableInfo.getTitle());
                 
             }
-            orderList = new JList(orderModel);
+            orderList = new JList<String>(orderModel);
             orderList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 //@Override
                 public void valueChanged(ListSelectionEvent e)
@@ -433,7 +433,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         /**
          * @return the orderList
          */
-        public JList getOrderList()
+        public JList<String> getOrderList()
         {
             return orderList;
         }

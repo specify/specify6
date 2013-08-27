@@ -428,7 +428,7 @@ public class ExportMappingTask extends QueryTask
 	 * @param query
 	 * @return a QueryBldrPane for query
 	 */
-	protected QueryBldrPane buildQb(final SpQuery query)
+	protected QueryBldrPane buildQb(final SpQuery query) throws QueryTask.QueryBuilderContextException
 	{
 		if (!addingMapping.get())
 		{
@@ -466,7 +466,7 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getNewQbPane(edu.ku.brc.specify.datamodel.SpQuery)
 	 */
 	@Override
-	protected QueryBldrPane getNewQbPane(SpQuery query)
+	protected QueryBldrPane getNewQbPane(SpQuery query) throws QueryTask.QueryBuilderContextException
 	{
 		return buildQb(query);
 	}
@@ -1081,7 +1081,7 @@ public class ExportMappingTask extends QueryTask
 	 */
 	protected void displayMappings(SpExportSchema schema, String msg)
 	{
-		DefaultListModel model = new DefaultListModel();
+		DefaultListModel<String> model = new DefaultListModel<String>();
 		int i = 0;
 		for (SpExportSchemaMapping mapping : schema.getSpExportSchemaMappings())
 		{
@@ -1091,7 +1091,7 @@ public class ExportMappingTask extends QueryTask
 				model.add(i++, mapping.getMappingName());
 			}
 		}
-		JList list = new JList(model);
+		JList<String> list = new JList<String>(model);
 		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p:g, 5dlu", "5dlu, p, 3dlu"));
 		CellConstraints cc = new CellConstraints();
 		pb.add(createLabel(msg), cc.xy(2, 2));
