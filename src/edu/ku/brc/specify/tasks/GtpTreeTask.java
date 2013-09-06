@@ -21,16 +21,32 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
 import javax.persistence.Transient;
+import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules;
+import edu.ku.brc.specify.ui.treetables.TreeNodePopupMenu;
+import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Task that handles the UI for viewing geologic time period data.
@@ -79,4 +95,106 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
                Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.invertpaleo) ||
                Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.vertpaleo);
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#createTreeViewer(java.lang.String, boolean)
+	 */
+	@Override
+	protected TreeTableViewer<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> createTreeViewer(
+			String titleArg, boolean isEditMode) {
+		// TODO Auto-generated method stub
+		final TreeTableViewer<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> ttv = 
+				super.createTreeViewer(titleArg, isEditMode);
+		if (ttv != null) {
+            final TreeNodePopupMenu popup = ttv.getPopupMenu();
+            JMenuItem getCos = new JMenuItem(getResourceString("TTV_ASSOC_COS"));
+            getCos.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    GeologicTimePeriod gtpNode = ttv.getSelectedNode(popup.getList());
+
+                    // this call initializes all of the linked objects
+                    // it only initializes the immediate links, not objects that are multiple hops away
+                    //ttv.initializeNodeAssociations(taxon);
+                    
+                    if (getColObjCount(gtpNode) == 0)
+                    {
+                        UIRegistry.displayInfoMsgDlgLocalized("TTV_NO_COS_FOR_NODE", 
+                        		DBTableIdMgr.getInstance().getTitleForId(GeologicTimePeriod.getClassTableId()));
+                        UIRegistry.getStatusBar().setLocalizedText("TTV_NO_COS_FOR_NODE", 
+                        		DBTableIdMgr.getInstance().getTitleForId(GeologicTimePeriod.getClassTableId()));
+                        return;
+                    }
+
+                   final RecordSet recordSet = createColObjRSFromGtp(gtpNode);
+
+                    UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
+                    // This is needed so the StatusBar gets updated
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, recordSet));
+                        }
+                    });
+                }
+            });
+            popup.add(getCos, true);
+			
+		}
+		return ttv;
+	}
+
+	/**
+	 * @param gtp
+	 * @return
+	 */
+	int getColObjCount(GeologicTimePeriod gtp) {
+		String sql = "select count(*) from paleocontext pc inner join "
+				+ "collectionobject co on co.PaleoContextID = pc.PaleoContextID "
+				+ "where (pc.ChronosStratID = " + gtp.getId() 
+				+ " or pc.BioStratID = " + gtp.getId() + ") and co.CollectionMemberID = "
+				+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+		return BasicSQLUtils.getCountAsInt(sql);
+	}
+	
+    /**
+     * @param taxon
+     * @return
+     */
+    private RecordSet createColObjRSFromGtp(final GeologicTimePeriod gtpObj)
+    {
+        RecordSet recordSet = new RecordSet();
+        recordSet.initialize();
+        recordSet.set("TTV", CollectionObject.getClassTableId(), RecordSet.GLOBAL);
+
+        fillRecordSet(gtpObj, recordSet);
+        
+        return recordSet;
+    }
+
+    /**
+     * @param gtp
+     * @param recordSet
+     */
+    protected void fillRecordSet(final GeologicTimePeriod gtp, final RecordSet recordSet)
+    {
+        // The old way using Hibernate relationships was too slow, 
+        // so instead I am using straight SQL it is a lot faster.
+        String sql = "SELECT DISTINCT co.CollectionObjectID FROM paleocontext pc "
+        		+ "INNER JOIN collectionobject co ON co.PaleoContextID = pc.PaleoContextID " 
+                + "WHERE (pc.ChronosStratID = " + gtp.getId()+ " or pc.BioStratID = " + gtp.getId() 
+                +  ") AND co.CollectionMemberID = COLMEMID";
+        
+        Vector<Integer> list = new Vector<Integer>();
+        
+        fillListWithIds(sql, list);
+        
+        for (Integer id : list)
+        {
+            recordSet.addItem(id);
+        }
+    }
+
+    
 }
