@@ -1488,7 +1488,8 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else if (tblClass.equals(ConservEvent.class))
                 {
-                	System.out.println(setterName);
+                	//System.out.println(setterName);
+                	log.info(setterName);
                 }
                 pt.setSetter(tblClass.getMethod("set" + setterName, parType));
                 pt.setGetter(tblClass.getMethod("get" + setterName, (Class<?>[] )null));
@@ -3493,24 +3494,31 @@ public class UploadTable implements Comparable<UploadTable>
     	Vector<List<ParentMatchInfo>> parentMatches = new Vector<List<ParentMatchInfo>>();
     	Vector<List<ParentMatchInfo>> childMatches = new Vector<List<ParentMatchInfo>>();
     	List<UploadTable> childTables = new Vector<UploadTable>(specialChildren);
-    	for (Vector<ParentTableEntry> ptes : parentTables)
-    	{
-    		for (ParentTableEntry pte : ptes)
-    		{
-    			if (!pte.getImportTable().specialChildren.contains(this) || !pte.getImportTable().needToMatchChild(tblClass))
-    			{
-    				if (pte.getImportTable().isOneToOneChild())
-    				{
-    					childTables.add(pte.getImportTable());
-    				} else
-    				{
-    					parentMatches.add(pte.getImportTable().getMatchInfoInternal(row, adjustedRecNum, invalidColNums, 
-    							matchChildrenParents));
-    				}
-    			}
-    		}
-    	}
-    	
+		if (this instanceof UploadTableTree && parentTables.size() == 0) {
+			DataModelObjBase p = getParentRecord(recNum, this /*only the type of the 2nd param is relevant*/);
+			List<DataModelObjBase> m = new ArrayList<DataModelObjBase>();
+			m.add(p);
+			List<ParentMatchInfo> pm = new ArrayList<ParentMatchInfo>();
+			pm.add(new ParentMatchInfo(m, this, isBlankRow(row, uploader.getUploadData(), adjustedRecNum), 
+					false, recNum, false));
+			parentMatches.add(pm);
+		} else {
+			for (Vector<ParentTableEntry> ptes : parentTables) {
+				for (ParentTableEntry pte : ptes) {
+					if (!pte.getImportTable().specialChildren.contains(this)
+							|| !pte.getImportTable().needToMatchChild(tblClass)) {
+						if (pte.getImportTable().isOneToOneChild()) {
+							childTables.add(pte.getImportTable());
+						} else {
+							parentMatches.add(pte.getImportTable()
+									.getMatchInfoInternal(row, adjustedRecNum,
+											invalidColNums,
+											matchChildrenParents));
+						}
+					}
+				}
+			}
+		}
     	HashMap<UploadTable, DataModelObjBase> parentParams = new HashMap<UploadTable, DataModelObjBase>();
     	boolean doMatch = true; 
     	boolean matched = false;
@@ -3850,7 +3858,7 @@ public class UploadTable implements Comparable<UploadTable>
         	
             if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass))
             {
-            	System.out.println("Assuming shared for class: " + tblClass);
+            	//System.out.println("Assuming shared for class: " + tblClass);
             	recIsShared = true;
             }
 
@@ -3882,7 +3890,8 @@ public class UploadTable implements Comparable<UploadTable>
         				//copy expRec to new rec
         				//Including related recs - locdetail, geocoord, attributes, collectors 
         				//---A lot like carry forward??  -- yes, for tables NOT in the upload
-        				System.out.println("!!!!setCurrentRecordFromMatch NOT copying old rec to new rec!!!");
+        				//System.out.println("!!!!setCurrentRecordFromMatch NOT copying old rec to new rec!!!");
+        				log.warn("!!!!setCurrentRecordFromMatch NOT copying old rec to new rec!!!");
         			}         		
     				setCurrentRecord(newRec, recNum);
         		} else
@@ -4915,6 +4924,7 @@ public class UploadTable implements Comparable<UploadTable>
         if (tblClass.equals(Agent.class) || Treeable.class.isAssignableFrom(tblClass))
         {
         	System.out.println("Not attempting to remove disused recs for class: " + tblClass);
+        	log.warn("Not attempting to remove disused recs for class: " + tblClass);
         	return;
         }
 
@@ -4928,6 +4938,7 @@ public class UploadTable implements Comparable<UploadTable>
     	for (Pair<Integer, String> deletedRec : deletedRecs)
     	{
     		System.out.println("Deleted " + tblClass.getSimpleName() + "[" + deletedRec.getFirst() + "]: " + deletedRec.getSecond());
+        	log.info("Not attempting to remove disused recs for class: " + tblClass);
     	}
     }
     
@@ -4937,6 +4948,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected void disUseRec(final Pair<Integer, String> disUsedRec, final SpecifyDeleteHelper delhel)
     {
     	System.out.println("deleting " + disUsedRec);
+    	log.info("deleting " + disUsedRec);
     	try
     	{
     		delhel.delRecordFromTable(tblClass, disUsedRec.getFirst(), true);
@@ -4946,6 +4958,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		delhel.rollback();
     		System.out.println("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
+    		log.warn("unable to delete " + tblClass.getSimpleName() + ":" + disUsedRec);
     	}
     }
     
@@ -5230,6 +5243,7 @@ public class UploadTable implements Comparable<UploadTable>
     	String sql = "delete from " + tblClass.getSimpleName().toLowerCase() + " where " + getTable().getTableInfo().getPrimaryKeyName() + " = " + exportedOneToManyId;
     	int r = BasicSQLUtils.update(sql);
     	System.out.println(r + " deleted (" + sql + ")");
+    	log.info(r + " deleted (" + sql + ")");
     }
     /**
      * @param rec
