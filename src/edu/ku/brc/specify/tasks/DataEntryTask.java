@@ -1620,14 +1620,7 @@ public class DataEntryTask extends BaseTask
         if (cmdAction.getData() instanceof CollectionObject)
         {
             CollectionObject colObj =(CollectionObject)cmdAction.getData();
-            
-            if (colObj.getDeterminations().size() == 0 ||
-                colObj.getPreparations().size() == 0)
-            {
-               UIRegistry.showLocalizedError("DET_NOLBL_CO");
-               return;
-            }
-            
+                        
             Boolean doPrintLabel = null;
             
             if (!doOverride)
@@ -1657,6 +1650,20 @@ public class DataEntryTask extends BaseTask
                     return;
                 }
                 
+				if (inforForPrinting.getSpReport() == null) 
+				{
+					// do tests for data required by the sample labels.
+					// If user customized jrxml, these tests may not be
+					// necessary.
+					if (colObj.getDeterminations().size() == 0
+							|| colObj.getPreparations().size() == 0) 
+					{
+						UIRegistry.showLocalizedError("DET_NOLBL_CO", inforForPrinting.getSpAppResource().getName());
+						return;
+					}
+
+				}
+
                 DataProviderSessionIFace session = null;
                 try
                 {
@@ -1666,12 +1673,12 @@ public class DataEntryTask extends BaseTask
                     
                     colObj = (CollectionObject)session.getData(hql);
                     
-                    Set<Determination> deters = colObj.getDeterminations();
-                    if (deters != null && deters.size() == 0)
-                    {
-                        UIRegistry.displayErrorDlg(getResourceString("NO_DETERS_ERROR"));
-                        
-                    } else
+//                    Set<Determination> deters = colObj.getDeterminations();
+//                    if (deters != null && deters.size() == 0)
+//                    {
+//                        UIRegistry.displayErrorDlg(getResourceString("NO_DETERS_ERROR"));
+//                        
+//                    } else
                     {
                         RecordSet rs = new RecordSet();
                         rs.initialize();

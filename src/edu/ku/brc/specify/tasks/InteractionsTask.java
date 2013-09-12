@@ -1291,17 +1291,20 @@ public class InteractionsTask extends BaseTask
                     gift = isGift ? (Gift)session.getData(hql) : null;
                     
                     Set<Shipment> shipments = isGift ? gift.getShipments() : loan.getShipments();
-                    if (shipments != null && shipments.size() == 0)
+                    boolean keepGoing = true;
+                    if (invoice.getSpReport() == null) 
                     {
-                        UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
-                        
-                    } else if (shipments != null && shipments.size() > 1)
-                    {
+                    	if (shipments != null && shipments.size() == 0)
+                    	{
+                    		UIRegistry.displayErrorDlg(String.format(getResourceString("NO_SHIPMENTS_ERROR"), invoice.getSpAppResource().getName()));
+                    		keepGoing = false;
+                    	} else if (shipments != null && shipments.size() > 1)
+                    	{
                         // XXX Do we allow them to pick a shipment or print all?
-                        UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
-                        
-                    } else
-                    {
+                    		UIRegistry.displayErrorDlg(String.format(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"), invoice.getSpAppResource().getName()));
+                    		keepGoing = false;
+                    	} //else
+                    	//{
                         // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
                         // but the hard part will be sending the correct info so the report can be printed
                         // using both a Loan Id and a Shipment ID, and at some point distinguishing between using
@@ -1322,30 +1325,33 @@ public class InteractionsTask extends BaseTask
 //                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
 //                        } else
 //                        {
-                            String  identTitle;
-                            int     tableId;
-                            Integer id;
-                            if (isGift)
-                            {
-                                identTitle = gift.getIdentityTitle();
-                                tableId    = gift.getTableId();
-                                id         = gift.getId();
-                            } else
-                            {
-                                identTitle = loan.getIdentityTitle();
-                                tableId    = loan.getTableId();
-                                id         = loan.getId();
-                            }
-                            
-                            RecordSet rs = new RecordSet();
-                            rs.initialize();
-                            rs.setName(identTitle);
-                            rs.setDbTableId(tableId);
-                            rs.addItem(id);
-                            
-                            dispatchReport(invoice, rs, "LoanInvoice");
-//                        }
                     }
+					if (keepGoing) 
+					{
+						String identTitle;
+						int tableId;
+						Integer id;
+						if (isGift) 
+						{
+							identTitle = gift.getIdentityTitle();
+							tableId = gift.getTableId();
+							id = gift.getId();
+						} else 
+						{
+							identTitle = loan.getIdentityTitle();
+							tableId = loan.getTableId();
+							id = loan.getId();
+						}
+
+						RecordSet rs = new RecordSet();
+						rs.initialize();
+						rs.setName(identTitle);
+						rs.setDbTableId(tableId);
+						rs.addItem(id);
+
+						dispatchReport(invoice, rs, "LoanInvoice");
+					}
+
                 } finally
                 {
                     if (session != null)
