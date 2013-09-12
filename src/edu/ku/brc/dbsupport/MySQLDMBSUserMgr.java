@@ -278,15 +278,15 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             {
                 try
                 {
-                    pStmt = connection.prepareStatement("SELECT Grant_priv FROM mysql.user WHERE Host = ? AND User = ?");
+                    pStmt = connection.prepareStatement("SELECT Grant_priv FROM mysql.user WHERE (Host = '%' or Host = ?) AND User = ?");
                     pStmt.setString(1, hostMachineName);
                     pStmt.setString(2, username);
                     
                     boolean hasPerm = false;
                     ResultSet rs = pStmt.executeQuery();
-                    if (rs.next())
+                    while (rs.next())
                     {
-                        hasPerm = rs.getString(1).equals("Y");
+                        hasPerm |= rs.getString(1).equals("Y");
                     }
                     rs.close();
                     return hasPerm;
