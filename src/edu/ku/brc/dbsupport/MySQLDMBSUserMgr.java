@@ -59,7 +59,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class MySQLDMBSUserMgr extends DBMSUserMgr 
 {
-    private static final int[] PERM_LIST  = {PERM_SELECT, PERM_INSERT, PERM_UPDATE, PERM_DELETE, PERM_LOCK_TABLES, PERM_ALTER_TABLE, PERM_CREATE_TABLE, PERM_DROP_TABLE, };
+    private static final int[] PERM_LIST  = {PERM_SELECT, PERM_INSERT, PERM_UPDATE, PERM_DELETE, PERM_LOCK_TABLES, PERM_ALTER_TABLE, 
+    	PERM_CREATE_TABLE, PERM_DROP_TABLE, PERM_INDEX};
 
     private static final Logger log = Logger.getLogger(MySQLDMBSUserMgr.class);
     
@@ -639,7 +640,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             boolean       doDebugPerms = AppPreferences.getLocalPrefs().getBoolean("DEBUG_IT_PERMS", false);
             
 
-            String[] permNames = new String[] {"Select", "Insert", "Update", "Delete", "Lock_tables", "Alter", "Create", "Drop"};
+            String[] permNames = new String[] {"Select", "Insert", "Update", "Delete", "Lock_tables", "Alter", "Create", "Drop", "Index"};
             int      permLen   = doAccess ? 5 : permNames.length;
             
             StringBuilder sb = new StringBuilder("SELECT host `Host`");
@@ -933,7 +934,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 return PERM_ALL;
             }
             
-            String columns  = "Select_priv, Insert_priv, Update_priv, Delete_priv, Lock_tables_priv, Alter_priv, Create_priv, Drop_priv ";
+            String columns  = "Select_priv, Insert_priv, Update_priv, Delete_priv, Lock_tables_priv, Alter_priv, Create_priv, Drop_priv, Index_priv ";
             
             String pre = "SELECT " + columns + " ";
             // Check permissions for the user against the database
@@ -952,7 +953,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             if (perms == PERM_NONE)
             {
                 // the the global permissions of the user (like 'root')
-                String sql = pre + "FROM mysql.user WHERE User = ? AND Host = ?";
+                String sql = pre + "FROM mysql.user WHERE User = ? AND (Host = ? OR Host = '%')";
                 perms = getPerms(PERM_LIST, sql, username, hostName);
             }
                 
@@ -982,7 +983,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 pStmt.setString(i+1, args[i]);
             }
             rs = pStmt.executeQuery();
-            if (rs.next())
+            while (rs.next())
             {
                 for (int i=0;i<permList.length;i++)
                 {

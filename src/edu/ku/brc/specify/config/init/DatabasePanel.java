@@ -334,33 +334,35 @@ public class DatabasePanel extends BaseSetupPanel
             		{
                 
             			int perms = mgr.getPermissionsForUser(dbUserName);
-            			if (perms == DBMSUserMgr.PERM_ALL)
+                		if ((perms & DBMSUserMgr.PERM_SKIP_DB_CREATE) == DBMSUserMgr.PERM_SKIP_DB_CREATE) 
+            			{
             				newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
                 
-            			DBConnection dbc = DBConnection.getInstance();
-            			dbc.setConnectionStr(newConnStr);
-            			dbc.setDriver(driverInfo.getDriverClassName());
-            			dbc.setDialect(driverInfo.getDialectClassName());
-            			dbc.setDriverName(driverInfo.getName());
-            			dbc.setServerName(hostName);
-            			dbc.setUsernamePassword(dbUserName, dbPwd);
-            			dbc.setDatabaseName(databaseName);
+            				DBConnection dbc = DBConnection.getInstance();
+            				dbc.setConnectionStr(newConnStr);
+            				dbc.setDriver(driverInfo.getDriverClassName());
+            				dbc.setDialect(driverInfo.getDialectClassName());
+            				dbc.setDriverName(driverInfo.getName());
+            				dbc.setServerName(hostName);
+            				dbc.setUsernamePassword(dbUserName, dbPwd);
+            				dbc.setDatabaseName(databaseName);
                 
-            			boolean canCont = isOK == null || isOK || manualLoginOK;
-            			nextBtn.setEnabled(canCont);
+            				boolean canCont = isOK == null || isOK || manualLoginOK;
+            				nextBtn.setEnabled(canCont);
                 
-            			if (canCont)
-            			{
-            				SwingUtilities.invokeLater(new Runnable()
+            				if (canCont)
             				{
-            					@Override
-            					public void run()
+            					SwingUtilities.invokeLater(new Runnable()
             					{
-            						nextBtn.doClick();
-            					}
-            				});
+            						@Override
+            						public void run()
+            						{
+            							nextBtn.doClick();
+            						}
+            					});
+            				}
+            				return true;
             			}
-            			return true;
             		}
             	}
                } finally 
@@ -375,6 +377,10 @@ public class DatabasePanel extends BaseSetupPanel
         return false;
     }
     
+    protected boolean checkPermissions(boolean forCreate, List<String> missingPerms) 
+    {
+    	return false;
+    }
     /**
      * 
      */
