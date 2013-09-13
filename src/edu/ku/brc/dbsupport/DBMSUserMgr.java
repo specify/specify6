@@ -64,11 +64,7 @@ public abstract class DBMSUserMgr
     public static final int PERM_ALL          = 1023;
     
     public static final int PERM_NO_ACCESS    = 1024;
-    public static final int PERM_INDEX        = 2048;
     
-    public static final int PERM_SKIP_DB_CREATE = PERM_SELECT | PERM_UPDATE | PERM_DELETE | PERM_INSERT | PERM_LOCK_TABLES | PERM_ALTER_TABLE | PERM_INDEX;
-    public static final int PERM_CREATE_DB = PERM_SELECT | PERM_UPDATE | PERM_DELETE | PERM_INSERT | PERM_LOCK_TABLES | PERM_ALTER_TABLE 
-    		| PERM_CREATE_TABLE | PERM_DROP_TABLE | PERM_INDEX;
     
     private static DBMSUserMgr instance = null;
    

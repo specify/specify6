@@ -47,6 +47,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 
+import jogamp.opengl.glu.nurbs.PwlArc;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -81,7 +83,6 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * Jan 17, 2008
  *
  */
-@SuppressWarnings("serial")
 public class DatabasePanel extends BaseSetupPanel
 {
     private enum VerifyStatus {OK, CANCELLED, ERROR}
@@ -323,64 +324,43 @@ public class DatabasePanel extends BaseSetupPanel
         
         try
         {
-            try 
+            if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
             {
-            	if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
-            	{
-            		if (!mgr.canGrantPemissions(hostName, dbUserName))
-            		{
-            			UIRegistry.showLocalizedError("SEC_NO_GRANT", dbUserName, hostName);
-            		} else
-            		{
+                newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
                 
-            			int perms = mgr.getPermissionsForUser(dbUserName);
-                		if ((perms & DBMSUserMgr.PERM_SKIP_DB_CREATE) == DBMSUserMgr.PERM_SKIP_DB_CREATE) 
-            			{
-            				newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
+                DBConnection dbc = DBConnection.getInstance();
+                dbc.setConnectionStr(newConnStr);
+                dbc.setDriver(driverInfo.getDriverClassName());
+                dbc.setDialect(driverInfo.getDialectClassName());
+                dbc.setDriverName(driverInfo.getName());
+                dbc.setServerName(hostName);
+                dbc.setUsernamePassword(dbUserName, dbPwd);
+                dbc.setDatabaseName(databaseName);
                 
-            				DBConnection dbc = DBConnection.getInstance();
-            				dbc.setConnectionStr(newConnStr);
-            				dbc.setDriver(driverInfo.getDriverClassName());
-            				dbc.setDialect(driverInfo.getDialectClassName());
-            				dbc.setDriverName(driverInfo.getName());
-            				dbc.setServerName(hostName);
-            				dbc.setUsernamePassword(dbUserName, dbPwd);
-            				dbc.setDatabaseName(databaseName);
+                boolean canCont = isOK == null || isOK || manualLoginOK;
+                nextBtn.setEnabled(canCont);
                 
-            				boolean canCont = isOK == null || isOK || manualLoginOK;
-            				nextBtn.setEnabled(canCont);
-                
-            				if (canCont)
-            				{
-            					SwingUtilities.invokeLater(new Runnable()
-            					{
-            						@Override
-            						public void run()
-            						{
-            							nextBtn.doClick();
-            						}
-            					});
-            				}
-            				return true;
-            			}
-            		}
-            	}
-               } finally 
-               {
-            	   mgr.close();
-               }
+                if (canCont)
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            nextBtn.doClick();
+                        }
+                    });
+                }
+                mgr.close();
+                return true;
+            }
         } catch (Exception ex)
         {
-            mgr.close();
-        	ex.printStackTrace();
+            ex.printStackTrace();
         }
         return false;
     }
     
-    protected boolean checkPermissions(boolean forCreate, List<String> missingPerms) 
-    {
-    	return false;
-    }
     /**
      * 
      */
