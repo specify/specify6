@@ -731,11 +731,17 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
                 
                 boolean isAttachmentTableItself = ti.getTableId() == Attachment.getClassTableId();
                 
-                String sql = !isAttachmentTableItself ? "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
-                		     "INNER JOIN %sattachment coa ON a.AttachmentID = coa.AttachmentID "+
-                             "WHERE coa.%s IN (%s) %s ORDER BY a.TimestampCreated"
-                	: "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
-                			"WHERE AttachmentID IN (%s) ORDER BY a.TimestampCreated";
+                String sql;
+                if (!isAttachmentTableItself)
+                {
+                    sql = "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
+                            "INNER JOIN %sattachment coa ON a.AttachmentID = coa.AttachmentID "+
+                            "WHERE coa.%s IN (%s) %s ORDER BY FIELD(%s, %s)";
+                } else
+                {
+                    sql = "SELECT a.AttachmentID, a.TableID, a.Title, a.AttachmentLocation, a.MimeType FROM attachment a " +
+                            "WHERE AttachmentID IN (%s) ORDER BY FIELD(a.AttachmentID, %s)";
+                }
               
                 int batchSize  = 500;
                 int attchIndex = 0;
@@ -769,9 +775,14 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
                             filter = " AND " + filter;
                         }
                         
-                        
-                        String fullSQL = !isAttachmentTableItself ? String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), filter)
-                        		: String.format(sql, sb.toString(), filter);
+                        String fullSQL;
+                        if (!isAttachmentTableItself)
+                        {
+                            fullSQL = String.format(sql, ti.getName(), ti.getIdColumnName(), sb.toString(), filter, ti.getIdColumnName(), sb.toString());
+                        } else
+                        {
+                            fullSQL = String.format(sql, sb.toString(), filter, sb.toString());
+                        }
                         log.debug(fullSQL);
                         ResultSet rs = stmt.executeQuery(fullSQL);
                         while (rs.next())
@@ -796,16 +807,6 @@ public class ImagesPane extends BaseSubPane implements ImageLoaderListener
                     {
                     }
                 }
-
-                Collections.sort(rowsVector, new Comparator<ImageDataItem>()
-                {
-                    @Override
-                    public int compare(ImageDataItem o1, ImageDataItem o2)
-                    {
-                        return o1.getShortName().compareTo(o2.getShortName());
-                    }
-                });
-
                 return null;
             }
 
