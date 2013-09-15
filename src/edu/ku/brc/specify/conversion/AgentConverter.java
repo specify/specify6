@@ -764,9 +764,17 @@ public class AgentConverter
                         posHeld = posHeld.substring(0, 32);
                     }
                     
+                    String addr1 = rs.getString(2);
+                    String addr2 = null;
+                    if (addr1 != null && addr1.length() > 255)
+                    {
+                        addr1 = addr1.substring(0, 255);
+                        addr2 = addr1.substring(255);
+                    }
+                    
                     pStmt.setTimestamp(1, rs.getTimestamp(1));
-                    pStmt.setString(2,    rs.getString(2));
-                    pStmt.setString(3,    null);                 // Address 2
+                    pStmt.setString(2,    addr1);
+                    pStmt.setString(3,    addr2);                 // Address 2
                     pStmt.setString(4,    rs.getString(3));
                     pStmt.setString(5,    rs.getString(4));
                     pStmt.setString(6,    rs.getString(5));

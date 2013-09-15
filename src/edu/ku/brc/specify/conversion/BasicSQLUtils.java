@@ -2137,6 +2137,7 @@ public class BasicSQLUtils
             Integer timestampModifiedInx = fromHash.get("TimestampModified");
             Integer timestampCreatedInx  = fromHash.get("TimestampCreated");
             boolean isAccessionTable     = fromTableName.equals("accession");
+            boolean isPermitTable        = fromTableName.equals("permit");
 
             StringBuffer  str   = new StringBuffer(1024);
             int           count = 0;
@@ -2260,10 +2261,10 @@ public class BasicSQLUtils
                     String        newColName       = newFldMetaData.getName();
                     String        oldMappedColName = null;
                     
-                    //System.out.println("["+newFieldName.getName()+"]");
+                    //System.out.println("["+newColName+"]");
 
                     // Get the Old Column Index from the New Name
-                   // String  oldName     = colNewToOldMap != null ? colNewToOldMap.get(newColName) : newColName;
+                    // String  oldName     = colNewToOldMap != null ? colNewToOldMap.get(newColName) : newColName;
                     Integer columnIndex = fromHash.get(newColName);
                     
                     if (columnIndex == null && colNewToOldMap != null)
@@ -2458,6 +2459,11 @@ public class BasicSQLUtils
                             str.append(getStrValue(dataObj, newFldMetaData.getType()));
                         }
 
+                    } else if (isPermitTable && newFldMetaData.getName().equals("InstitutionID"))
+                    {
+                        if (i > 0) str.append(", ");
+                        str.append("1");
+                        
                     } else if (newColName.endsWith("Version"))
                     {
                         if (i > 0) str.append(", ");

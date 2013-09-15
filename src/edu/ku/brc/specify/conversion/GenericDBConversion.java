@@ -2376,6 +2376,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("permit"))
             {
+                String[] ignoredFields = { "InstitutionID", "Version", "CreatedByAgentID",  };
+                setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for IssueeID,
                                                                 // IssuerID
             } else if (fromTableName.equals("preparation"))
@@ -6616,7 +6618,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                   "CollectionObjectID", "VisibilitySetBy", "ContainerOwnerID", "InventoryDate",
                                   "ObjectCondition", "Notifications", "ProjectNumber", "Restrictions", "YesNo3",
                                   "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
-                                  "DNASequenceID", "AppraisalID", "TotalValue", "Description", "SGRStatus", "OCR" };
+                                  "DNASequenceID", "AppraisalID", "TotalValue", "Description", "SGRStatus", "OCR",
+                                  "ReservedText", "Text3"};
 
         HashSet<String> fieldsToSkipHash = new HashSet<String>();
         for (String fName : fieldsToSkip)
