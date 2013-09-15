@@ -244,6 +244,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -506,7 +507,8 @@ public class BuildSampleDatabase
     public boolean createEmptyInstitution(final Properties props, 
                                           final boolean doCreateDiv, 
                                           final boolean doCreateDisp,
-                                          final boolean doFromWizard)
+                                          final boolean doFromWizard,
+                                          final int     treeDir)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
@@ -550,7 +552,7 @@ public class BuildSampleDatabase
         
         if (stgTreeDef == null)
         {
-            stgTreeDef = createStorageTreeDef("Storage");
+            stgTreeDef = createStorageTreeDef("Storage", treeDir);
             institution.setStorageTreeDef(stgTreeDef);
             stgTreeDef.getInstitutions().add(institution);
             persist(stgTreeDef);
@@ -831,6 +833,28 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param props
+     * @param cls
+     * @return
+     */
+    public static int getTreeDirForClass(final Properties props, final Class<?> cls)
+    {
+        return getTreeDirForClass(props, cls, TreeDefIface.REVERSE);
+    }
+    
+    /**
+     * @param props
+     * @param cls
+     * @return
+     */
+    public static int getTreeDirForClass(final Properties props, final Class<?> cls, final int defVal)
+    {
+        String value =  props.getProperty("treedir."+cls.getSimpleName());
+        if (value == null) return defVal;
+        return value.equals("reverse") ? TreeDefIface.REVERSE : TreeDefIface.FORWARD;
+    }
+    
+    /**
      * @param division
      * @param dispTitle
      * @param disciplineType
@@ -856,9 +880,9 @@ public class BuildSampleDatabase
         startTx();
         
         // create tree defs (later we will make the definition items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", getTreeDirForClass(props, TaxonTreeDef.class, TreeDefIface.FORWARD));
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", getTreeDirForClass(props, GeographyTreeDef.class));
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", getTreeDirForClass(props, GeologicTimePeriodTreeDef.class));
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
         frame.incOverall();
@@ -1939,15 +1963,15 @@ public class BuildSampleDatabase
         Division       division   = createDivision(institution, disciplineType.getName(), "Botany", "BT", "Botany");
         
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", TreeDefIface.FORWARD);
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", TreeDefIface.REVERSE);
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", TreeDefIface.REVERSE);
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
         boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef        = createStorageTreeDef("Storage");
+            stgTreeDef        = createStorageTreeDef("Storage", TreeDefIface.REVERSE);
             institution.setStorageTreeDef(stgTreeDef);
             buildStorageTree = true;
         }
@@ -2576,15 +2600,15 @@ public class BuildSampleDatabase
         Division       division   = createDivision(institution, disciplineType.getName(), "Botany", "BT", "Botany");
         
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", TreeDefIface.FORWARD);
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", TreeDefIface.REVERSE);
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", TreeDefIface.REVERSE);
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
         boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef        = createStorageTreeDef("Storage");
+            stgTreeDef        = createStorageTreeDef("Storage", TreeDefIface.REVERSE);
             institution.setStorageTreeDef(stgTreeDef);
             buildStorageTree = true;
         }
@@ -3023,15 +3047,15 @@ public class BuildSampleDatabase
         Division division   = createDivision(institution, disciplineType.getName(), disciplineType.getTitle(), "INVP", disciplineType.getTitle());
         
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", TreeDefIface.FORWARD);
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", TreeDefIface.REVERSE);
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", TreeDefIface.REVERSE);
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
         boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef        = createStorageTreeDef("Storage");
+            stgTreeDef        = createStorageTreeDef("Storage", TreeDefIface.REVERSE);
             institution.setStorageTreeDef(stgTreeDef);
             buildStorageTree = true;
         }
@@ -4216,15 +4240,15 @@ public class BuildSampleDatabase
         Division division   = createDivision(institution, disciplineType.getName(), disciplineType.getTitle(), disciplineType.getAbbrev(), disciplineType.getTitle());
         
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", TreeDefIface.FORWARD);
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", TreeDefIface.REVERSE);
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", TreeDefIface.REVERSE);
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
         boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef        = createStorageTreeDef("Storage");
+            stgTreeDef        = createStorageTreeDef("Storage", TreeDefIface.REVERSE);
             institution.setStorageTreeDef(stgTreeDef);
             buildStorageTree = true;
         }
@@ -5126,15 +5150,15 @@ public class BuildSampleDatabase
         persist(division);
         
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", TreeDefIface.FORWARD);
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", TreeDefIface.REVERSE);
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", TreeDefIface.REVERSE);
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef = createStorageTreeDef("Storage");
+            stgTreeDef = createStorageTreeDef("Storage", TreeDefIface.REVERSE);
             institution.setStorageTreeDef(stgTreeDef);
             buildStorageTree = true;
         }
@@ -7754,7 +7778,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            createEmptyInstitution(props, true, true, doFromWizard);
+            createEmptyInstitution(props, true, true, doFromWizard, getTreeDirForClass(props, StorageTreeDef.class));
 
             SwingUtilities.invokeLater(new Runnable()
             {

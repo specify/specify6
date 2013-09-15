@@ -59,8 +59,6 @@ import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.SpecifyUserTypes;
@@ -793,12 +791,12 @@ public class DataBuilder
      * @param name tree def name
      * @return the geography tree def
      */
-    public static GeographyTreeDef createGeographyTreeDef(final String name)
+    public static GeographyTreeDef createGeographyTreeDef(final String name, final int treeDir)
     {
         GeographyTreeDef gtd = new GeographyTreeDef();
         gtd.initialize();
         gtd.setName(name);
-        gtd.setFullNameDirection(TreeDefIface.REVERSE);
+        gtd.setFullNameDirection(treeDir);
 
         persist(gtd);
         return gtd;
@@ -900,12 +898,12 @@ public class DataBuilder
      * @param name tree def name
      * @return the storage tree def
      */
-    public static StorageTreeDef createStorageTreeDef(final String name)
+    public static StorageTreeDef createStorageTreeDef(final String name, final int treeDir)
     {
         StorageTreeDef ltd = new StorageTreeDef();
         ltd.initialize();
         ltd.setName(name);
-        ltd.setFullNameDirection(TreeDefIface.REVERSE);
+        ltd.setFullNameDirection(treeDir);
 
         persist(ltd);
         return ltd;
@@ -1037,12 +1035,12 @@ public class DataBuilder
      * @param name tree def name
      * @return the geologic time period tree def
      */
-    public static GeologicTimePeriodTreeDef createGeologicTimePeriodTreeDef(final String name)
+    public static GeologicTimePeriodTreeDef createGeologicTimePeriodTreeDef(final String name, final int treeDir)
     {
         GeologicTimePeriodTreeDef gtp = new GeologicTimePeriodTreeDef();
         gtp.initialize();
         gtp.setName(name);
-        gtp.setFullNameDirection(TreeDefIface.REVERSE);
+        gtp.setFullNameDirection(treeDir);
 
         persist(gtp);
         return gtp;
@@ -1133,12 +1131,12 @@ public class DataBuilder
      * @param name tree def name
      * @return the taxon tree def
      */
-    public static TaxonTreeDef createTaxonTreeDef(final String name)
+    public static TaxonTreeDef createTaxonTreeDef(final String name, final int treeDir)
     {
         TaxonTreeDef ttd = new TaxonTreeDef();
         ttd.initialize();
         ttd.setName(name);
-        ttd.setFullNameDirection(TreeDefIface.FORWARD);
+        ttd.setFullNameDirection(treeDir);
         return ttd;
     }
 

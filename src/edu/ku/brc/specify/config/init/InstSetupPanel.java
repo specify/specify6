@@ -43,6 +43,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -202,7 +203,9 @@ public class InstSetupPanel extends GenericFormPanel
                         
                         bsd.setSession(HibernateUtil.getCurrentSession());
                         
-                        isOK = bsd.createEmptyInstitution(properties, false, false, true);
+                        int treeDir = BuildSampleDatabase.getTreeDirForClass(properties, StorageTreeDef.class);
+                        
+                        isOK = bsd.createEmptyInstitution(properties, false, false, true, treeDir);
                         
                         AppContextMgr.getInstance().setClassObject(DataType.class, bsd.getDataType());
 

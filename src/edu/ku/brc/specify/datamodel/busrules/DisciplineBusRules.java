@@ -74,6 +74,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
@@ -660,7 +661,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         Discipline discipline = (Discipline)dataObj;
         if (discipline.getTaxonTreeDef() == null)
         {
-            TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
+            TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def", TreeDefIface.FORWARD);
             discipline.setTaxonTreeDef(taxonTreeDef);
         }
     }
@@ -767,9 +768,9 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         DisciplineType            disciplineType = wizardPanel.getDisciplineType();
         
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon", TreeDefIface.FORWARD);
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography", TreeDefIface.REVERSE);
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy", TreeDefIface.REVERSE);
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
 
         Discipline discipline = (Discipline)newDataObj;

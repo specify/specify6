@@ -80,7 +80,7 @@ import edu.ku.brc.util.Pair;
  * Feb 7, 2009
  *
  */
-public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
+public class TreeDefSetupPanel extends BaseSetupPanel
 {
     protected Class<?>                         classType;
     protected String                           classTitle;
@@ -360,6 +360,8 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         XStream xstream = new XStream();
         TreeDefRow.configXStream(xstream);
         props.put(classType.getSimpleName()+".treedefs", xstream.toXML(treeDefList));
+        
+        props.put("treedir."+classType.getSimpleName(), directionCBX.getSelectedIndex() == 0 ? "forward" : "reverse");
     }
 
     /* (non-Javadoc)
