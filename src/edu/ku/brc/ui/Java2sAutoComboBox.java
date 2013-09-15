@@ -35,10 +35,13 @@
 package edu.ku.brc.ui;
 
 import java.awt.event.ItemEvent;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 
 /**
  * Taken from a un Microsystems, Inc example and then modified.
@@ -203,6 +206,35 @@ public class Java2sAutoComboBox extends JComboBox
     {
         return autoTextFieldEditor.getAutoTextFieldEditor().getDataList();
     }
+    
+    /**
+     * @param comboBox
+     * @param newIndex
+     */
+    public static boolean shouldSetComboboxIndex(final JComboBox<?> comboBox, final int newIndex)
+    {
+        boolean doSetIndex = true;
+        if (newIndex > -1)
+        {
+            Object oldVal = comboBox.getSelectedItem();
+            Object newVal = comboBox.getSelectedItem();
+            if (oldVal instanceof PickListItemIFace && newVal instanceof PickListItemIFace)
+            {
+                PickListItemIFace oldPLI = (PickListItemIFace)oldVal;
+                PickListItemIFace newPLI = (PickListItemIFace)newVal;
+                Integer           oldId  = oldPLI.getId(); 
+                Integer           newId  = newPLI.getId(); 
+                if ((oldId == newId) || (oldId != null && newId != null && oldId.equals(newId)))
+                {
+                    doSetIndex = false;
+                }
+            } else if (oldVal != null && newVal != null && oldVal.toString().equals(newVal.toString()))
+            {
+                doSetIndex = false;
+            }
+        }
+        return doSetIndex;
+    }
 
     /**
      * @param list
@@ -224,14 +256,18 @@ public class Java2sAutoComboBox extends JComboBox
                 if (obj.toString().equals(edtItem.toString()))
                 {
                     final int cbxIndex = index;
-                    SwingUtilities.invokeLater(new Runnable()
+                    if (shouldSetComboboxIndex(this, cbxIndex))
                     {
-                        @Override
-                        public void run()
+                        SwingUtilities.invokeLater(new Runnable()
                         {
-                            Java2sAutoComboBox.this.setSelectedIndex(cbxIndex);
-                        }
-                    });
+                            @Override
+                            public void run()
+                            {
+                                Java2sAutoComboBox.this.setSelectedIndex(cbxIndex);
+                            }
+                        });
+                    }
+                    break;
                 }
                 index++;
             }

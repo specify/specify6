@@ -724,6 +724,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
         return null;
     }
     
+    
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -750,7 +751,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
         
         if (value != null)
         {
-            ComboBoxModel  model = comboBox.getModel();
+            ComboBoxModel<?>  model = comboBox.getModel();
             boolean isFormObjIFace = value instanceof FormDataObjIFace;
 
             if (adapter != null)
@@ -794,7 +795,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
                 // Decided to just let non-existent vales pass on by
                 if (fndInx == -1 && adapter != null)
                 {
-                    ComboBoxModel cbxModel = comboBox.getModel();
+                    ComboBoxModel<?> cbxModel = comboBox.getModel();
                     if (cbxModel instanceof PickListDBAdapterIFace)
                     {
                         PickListDBAdapterIFace pla      = (PickListDBAdapterIFace)comboBox.getModel();
@@ -913,7 +914,10 @@ public class ValComboBox extends JPanel implements UIValidatable,
             }
         }
         
-        comboBox.setSelectedIndex(fndInx);
+        if (Java2sAutoComboBox.shouldSetComboboxIndex(comboBox, fndInx))
+        {
+            comboBox.setSelectedIndex(fndInx);
+        }
         
         if (textEditor != null && fndInx == -1 && (value != null || defaultValue != null))
         {

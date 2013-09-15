@@ -273,7 +273,7 @@ public class FormViewObj implements Viewable,
     protected boolean                       doSetIntoAndValidate = true;
     
     // Forms that have a Selector
-    protected JComboBox                     selectorCBX     = null;
+    protected JComboBox<?>                  selectorCBX     = null;
     protected boolean                       isSelectorForm;
     protected boolean                       isShowing       = false;
 
@@ -1762,6 +1762,35 @@ public class FormViewObj implements Viewable,
             }
         }
     }
+    
+    /**
+     * @param parentMV
+     */
+    protected void traverseToSaveControlData(final MultiView parentMV)
+    {
+        if (parentMV != null)
+        {
+            for (Viewable v : parentMV.getViewables())
+            {
+                FormValidator fv = v.getValidator();
+                if (fv != null && fv.hasChanged() && v instanceof FormViewObj)
+                {
+                    FormViewObj fvo = (FormViewObj)v;
+                    for (FormControlSaveable saveable : fvo.saveableList)
+                    {
+                        saveable.saveControlData();
+                    }
+                }
+            }
+            
+            // if traverseKids is true then the kids have already been walked
+            for (MultiView mv : parentMV.getKids())
+            {
+                traverseToSaveControlData(mv);
+            }
+        }
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#isDataCompleteAndValid(boolean)
@@ -2924,10 +2953,8 @@ public class FormViewObj implements Viewable,
             
             try
             {
-                for (FormControlSaveable saveable : saveableList)
-                {
-                    saveable.saveControlData();
-                }
+                traverseToSaveControlData(mvParent);
+                
             } catch (Exception ex)
             {
                 ex.printStackTrace();
