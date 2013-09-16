@@ -2348,10 +2348,10 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
     		{
-        		System.out.println(ut.getTblTitle());
+        		//System.out.println(ut.getTblTitle());
     			if (attachmentsSupported(ut))
     			{
-    	    		System.out.println("   attachable: " + ut.getTblTitle());
+    	    		//System.out.println("   attachable: " + ut.getTblTitle());
     				result.add(ut);
     			}
     		}
