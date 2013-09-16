@@ -95,9 +95,9 @@
         the user to ensure that the data set is being uploaded to the
         correct Collection.</li>
       <br>
-      <li>&nbsp;Attachment can be associated with the following tables:</li>
+      <li>&nbsp;Images can be attached to the following tables:</li>
       <br>
-      <blockquote> Accession <br>
+      <blockquote> <blockquote>Accession <br>
         Agent <br>
         Borrow <br>
         Collecting Event <br>
@@ -126,10 +126,19 @@
         attached to the 'main' table that is present in the data set
         mapping. The uploader will look for main tables in this order:
         Collection Object, Accession, Taxon, Collecting Event and then
-        Locality.When more than one of the attachment tables is present
+        Locality. When more than one of the attachment tables is present
         in the data set a dialog will display to choose which table to
         associate with the attachment file.<br>
       </p>
+      <p><b>Note:</b>Images may only be attached to the Agent table when using fields 
+      from Agent, or including AgentAddress in the mapping file.</p>
+      <p><b>Note:</b>Images may only be attached to Taxon when using fields from the Only Taxon 
+      table.</p>
+      <p><b>Note:</b>Attachments are not available for tables with multiple field types. 
+      For instance, when PrepType1 and Count1 fields are included within the Preparation 
+      table attachments are available, but if PrepType2 and Count2 are also added within the 
+      Preparation table attachments are no longer possible. </p>
+      </blockquote>
       <br>
       <li>The WorkBench has a limit of 4000 records that can be uploaded
         at one time. MS Excel files that include more than 4000 records
