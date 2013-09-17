@@ -9143,7 +9143,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", null, false);
             }
             // get all of the old records
-            String sql  = String.format("SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s ORDER BY s.StratigraphyID", srcTableName);
+            String sql  = String.format("SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, " +
+            		                    "Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s " +
+            	                        "WHERE s.SuperGroup IS NOT NULL OR s.Group IS NOT NULL OR s.Formation IS NOT NULL OR " +
+            	                        "s.Member IS NOT NULL OR s.Bed IS NOT NULL ORDER BY s.StratigraphyID", srcTableName);
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
@@ -9152,6 +9155,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int stratsWithNoGTP       = 0;
             int stratsWithNoMappedGTP = 0;
             int missingCEMapping      = 0;
+            
+            int lithoCnt = 0;
     
             int counter = 0;
             // for each old record, convert the record
@@ -9179,11 +9184,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String remarks    = escapeStringLiterals(rs.getString(7));
                 String text1      = escapeStringLiterals(rs.getString(8));
                 String text2      = escapeStringLiterals(rs.getString(9));
-                Double number1    = rs.getObject(10) != null ? rs.getDouble(10) : null;
-                Double number2    = rs.getObject(11) != null ? rs.getDouble(11) : null;
+                Double number1    = rs.getObject(10) != null ? rs.getDouble(10)  : null;
+                Double number2    = rs.getObject(11) != null ? rs.getDouble(11)  : null;
                 Boolean yesNo1    = rs.getObject(12) != null ? rs.getBoolean(12) : null;
                 Boolean yesNo2    = rs.getObject(13) != null ? rs.getBoolean(13) : null;
-                Integer gtpId     = doMapGTPIds ? rs.getObject(14) != null ? rs.getInt(14) : null : oldStratId;
+
+                Integer gtpId = null;
+                if (doMapGTPIds)
+                {
+                    if (rs.getObject(14) != null)
+                    {
+                        gtpId = rs.getInt(14);
+                    }
+                } else 
+                {
+                    gtpId = oldStratId;
+                }
                 
                 if (gtpId != null)
                 {
@@ -9205,6 +9221,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 LithoStrat newStrat = getLastLithoStrat(newStrats);
                 counter++;
+                lithoCnt += newStrats.length;
     
                 // Map Old LithoStrat ID to the new Tree Id
                 //System.out.println(oldStratId + " " + newStrat.getLithoStratId());
@@ -9239,6 +9256,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
             stmt.close();
+            
+            System.out.println("lithoCnt: "+lithoCnt);
     
             if (hasFrame)
             {
