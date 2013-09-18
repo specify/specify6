@@ -2712,7 +2712,7 @@
             useresourcelabels="true">
             <desc><![CDATA[The ObjectAttachment form.]]></desc>
             
-            <columnDef>p,2px,400px,15px,p:g</columnDef>
+            <columnDef>p,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
     		<rows>

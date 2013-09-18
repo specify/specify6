@@ -665,7 +665,6 @@
         
         <view name="LocalityDetail"
             class="edu.ku.brc.specify.datamodel.LocalityDetail"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityDetailBusRules"
             >
             <desc><![CDATA[LocalityDetail form.]]></desc>
             <altviews>
@@ -1659,10 +1658,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
             
-            <columnDef>100px,2px,210px,5px,75px,2px,210px,5px,90px,2px,126px,0px,p:g</columnDef>
+            <columnDef>100px,2px,126px,5px,75px,2px,210px,5px,90px,2px,210px,0px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,210px,5px,105px,2px,210px,5px,125px,2px,136px,0px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,230px,5px,95px,2px,255px,5px,125px,2px,181px,0px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,5px:g,p,2px,p:g(2),0px</columnDef>
+            <columnDef os="mac">130px,2px,171px,5px,105px,2px,260px,5px,90px,2px,260px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g,5px:g,p,2px,p:g,5px:g,p,2px,p:g,0px</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -1671,22 +1670,8 @@
                     <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" uitype="plugin" name="this" initialize="name=PartialDateUI;df=startDate;tp=startDatePrecision" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="12" rows="3"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="11" initialize="btn=true;icon=CollectingEventAttachment"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" uitype="plugin" name="this" initialize="name=PartialDateUI;df=endDate;tp=endDatePrecision" uifieldformatter="Date"/>
                 </row>
             </rows>
         </viewdef>
@@ -1715,7 +1700,7 @@
                     <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>                  
                 </row>              
                 <row>
-                    <cell type="subview" viewname="FundingAgents" id="8" name="fundingAgents" colspan="10" rows="3"/>
+                    <cell type="subview" viewname="FundingAgents" id="8" name="fundingAgents" colspan="12" rows="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
@@ -1755,7 +1740,7 @@
                     <cell type="subview" id="3" name="collectingEvents" viewname="CollectingEventSubform" colspan="13" initialize="addsearch=true"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="FundingAgents" id="8" name="fundingAgents" colspan="10" rows="3"/>
+                    <cell type="subview" viewname="FundingAgents" id="8" name="fundingAgents" colspan="13" rows="3"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="sp"/>
