@@ -2137,7 +2137,7 @@ public class BasicSQLUtils
             Integer timestampModifiedInx = fromHash.get("TimestampModified");
             Integer timestampCreatedInx  = fromHash.get("TimestampCreated");
             boolean isAccessionTable     = fromTableName.equals("accession");
-            boolean isPermitTable        = fromTableName.equals("permit");
+            boolean hasInstIdCol         = fromTableName.equals("permit") || fromTableName.equals("journal") || fromTableName.equals("referencework");
 
             StringBuffer  str   = new StringBuffer(1024);
             int           count = 0;
@@ -2459,7 +2459,7 @@ public class BasicSQLUtils
                             str.append(getStrValue(dataObj, newFldMetaData.getType()));
                         }
 
-                    } else if (isPermitTable && newFldMetaData.getName().equals("InstitutionID"))
+                    } else if (hasInstIdCol && newFldMetaData.getName().equals("InstitutionID"))
                     {
                         if (i > 0) str.append(", ");
                         str.append("1");

@@ -115,8 +115,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -2348,7 +2348,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("journal"))
             {
-                String[] ignoredFields = { "ISSN", "Version", "CreatedByAgentID",  "GUID", "Text1"};
+                String[] ignoredFields = { "ISSN", "Version", "CreatedByAgentID", "InstitutionID", "GUID", "Text1"};
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 
             } else /*if (fromTableName.equals("loancollectionobject"))
@@ -2388,7 +2388,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("referencework"))
             {
-                String[] ignoredFields = { "GUID", "Version", "CreatedByAgentID","CollectionMemberID", "ISBN", "ContainedRFParentID", };
+                String[] ignoredFields = { "GUID", "Version", "CreatedByAgentID","CollectionMemberID", "ISBN", "InstitutionID", "ContainedRFParentID", };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for
                                                                 // ContainingReferenceWorkID
