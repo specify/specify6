@@ -141,7 +141,7 @@
       	<!--table name="DNASequence" field="dnaSequences">
       			<alias name="Agent" field="sequencer" /> 
       	</table-->
-      	<alias name="DNASequence" field="DnaSequences"/>
+      	<alias name="DNASequence" field="dnaSequences"/>
  
       	<alias name="Container" field="container"/>
       	<alias name="Container" field="containerOwner"/>
