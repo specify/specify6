@@ -60,6 +60,7 @@ import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.GroupPerson;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.plugins.PartialDateUI;
 import edu.ku.brc.ui.CustomDialog;
@@ -140,7 +141,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                     {
                         if (!ignoreSet)
                         {
-                            fixUpTypeCBX((JComboBox)e.getSource());
+                            fixUpTypeCBX((JComboBox<?>)e.getSource());
                         }
                     }
                 });
@@ -212,11 +213,11 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             if (field instanceof JComboBox || 
                 field instanceof ValComboBox)
             {
-                JComboBox cbx = field instanceof ValComboBox ? ((ValComboBox)field).getComboBox() : (JComboBox)field;
+                JComboBox<?> cbx = field instanceof ValComboBox ? ((ValComboBox)field).getComboBox() : (JComboBox<?>)field;
                 int inx = -1;
                 if (value != null)
                 {
-                    AbstractListModel model = (AbstractListModel)cbx.getModel();
+                    AbstractListModel<?> model = (AbstractListModel<?>)cbx.getModel();
                     for (int i=0;i<model.getSize();i++)
                     {
                         Object item = model.getElementAt(i);
@@ -318,7 +319,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
      * Clears the values and hides somAttachmentOwnere UI depending on what type is selected
      * @param cbx the type cbx
      */
-    protected void fixUpTypeCBX(final JComboBox cbx)
+    protected void fixUpTypeCBX(final JComboBox<?> cbx)
     {
         if (formViewObj != null)
         {
@@ -553,7 +554,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                         
                         cachedAgents.add(dupAgent);
                         
-                        System.out.println(agt.getId() + agt.getLastName());
+                        //System.out.println(agt.getId() + agt.getLastName());
                     }
                 } catch (Exception ex)
                 {
@@ -584,6 +585,35 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         {
             agent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
         }
+        
+        for (GroupPerson gp : agent.getGroups())
+        {
+            if (gp.getId() == null)
+            {
+                try
+                {
+                    session.save(gp);
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        for (GroupPerson gp : agent.getMembers())
+        {
+            if (gp.getId() == null)
+            {
+                try
+                {
+                    session.save(gp);
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         
         //session.attach(agent);
         
@@ -625,7 +655,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 session.delete(addr);
             }
         }
-        
         return super.beforeSaveCommit(dataObj, session);
     }
     

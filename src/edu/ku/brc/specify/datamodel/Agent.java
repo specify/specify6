@@ -348,6 +348,15 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         super.forceLoad();
         
         agentAttachments.size();
+        
+        if (groups != null)
+        {
+            groups.size();
+        }
+        if (members != null)
+        {
+            members.size();
+        }
     }
 
     /**
