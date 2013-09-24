@@ -58,14 +58,18 @@ public abstract class DBMSUserMgr
     public static final int PERM_ALL_BASIC    =   31; // Literally 'all' the basic permissions
     
     public static final int PERM_ALTER_TABLE  =   64;
-    public static final int PERM_CREATE_TABLE =  128;
-    public static final int PERM_DROP_TABLE   =  512;
-    
-    public static final int PERM_ALL          = 1023;
+    public static final int PERM_CREATE       =  128;
+    public static final int PERM_DROP         =  512;
     
     public static final int PERM_NO_ACCESS    = 1024;
+    public static final int PERM_INDEX        = 2048;
+    public static final int PERM_GRANT		  = 4096;	
+    public static final int PERM_RELOAD       = 8192;
+    public static final int PERM_CREATE_USER  = 16384;
     
+    public static final int PERM_ALL          = 32768;
     
+
     private static DBMSUserMgr instance = null;
    
     protected String hostName = null;
@@ -121,6 +125,12 @@ public abstract class DBMSUserMgr
 	 * @return true on success
 	 */
 	public abstract boolean changePassword(String username, String oldPwd, String newPwd);
+
+    /**
+     * @param perm
+     * @return
+     */
+    public abstract String getPermText(int perm); 
 
 	/**
 	 * Closes the connection to the DBMS.
@@ -237,6 +247,11 @@ public abstract class DBMSUserMgr
     public abstract int getPermissionsForUpdate(String username, String dbName);
     
     /**
+     * @return true if current user can update database schema
+     */
+    public abstract boolean checkPermissionsForUpdate(String dbUserName, String dbName);
+    
+    /**
      * Gets the permissions to access a database.
      * @param username the user
      * @param dbName the database
@@ -270,7 +285,7 @@ public abstract class DBMSUserMgr
      * @param username
      * @return
      */
-    public abstract boolean canGrantPemissions(String hostMachineName, String username);
+    //public abstract boolean canGrantPemissions(String hostMachineName, String username);
     
     /**
      * Checks to see which permissions a user has.
@@ -278,7 +293,13 @@ public abstract class DBMSUserMgr
      * @return the mask of permissions
      */
     public abstract int getPermissionsForUser(String userName);
-    
+
+    /**
+     * Checks to see which permissions current user has
+     * @return the list of permissions
+     */
+    public abstract List<PermissionInfo> getPermissionsForCurrentUser();
+
     /**
      * @param hostName the host name to connect to
      */

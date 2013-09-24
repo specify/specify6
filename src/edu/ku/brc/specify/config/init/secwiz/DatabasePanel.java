@@ -70,8 +70,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.dbsupport.PermissionInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
@@ -411,14 +412,10 @@ public class DatabasePanel extends BaseSetupPanel
         {
             if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
             {
-                if (!mgr.canGrantPemissions(hostName, dbUserName))
-                {
-                    UIRegistry.showLocalizedError("SEC_NO_GRANT", dbUserName, hostName);
-                    return false;
-                }
-                
-                int perms = mgr.getPermissionsForUser(dbUserName);
-                return perms == DBMSUserMgr.PERM_ALL;
+                List<PermissionInfo> permAll = new ArrayList<PermissionInfo>(1);
+                permAll.add(new PermissionInfo("", "", DBMSUserMgr.PERM_ALL));
+                permAll.add(new PermissionInfo("", "", DBMSUserMgr.PERM_GRANT));
+                return PermissionInfo.getMissingPerms( mgr.getPermissionsForCurrentUser(), permAll, "*").getFirst().size() == 0;
             }
             
             UIRegistry.showLocalizedError("SEC_UNEX_ERR_LGN");

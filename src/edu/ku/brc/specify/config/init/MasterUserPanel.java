@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -43,6 +45,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
+import edu.ku.brc.dbsupport.PermissionInfo;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -55,6 +58,7 @@ import edu.ku.brc.util.Pair;
  * Apr 01, 2009
  *
  */
+@SuppressWarnings("serial")
 public class MasterUserPanel extends GenericFormPanel
 {
     protected String                  propName = "next";
@@ -201,20 +205,22 @@ public class MasterUserPanel extends GenericFormPanel
 
         if (!isEmbedded)
         {
-            if (mgr.connect(saUserName, saPassword, hostName, dbName))
-            {
-                nextBtn.setEnabled(true);
-                mgr.close();
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        nextBtn.doClick();
-                    }
-                });
-                return true;
-            }
+			try {
+				if (mgr.connect(saUserName, saPassword, hostName, dbName)) {
+					if (checkMasterUserPerms(mgr, saUserName)) {
+						nextBtn.setEnabled(true);
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								nextBtn.doClick();
+							}
+						});
+						return true;
+					}
+				}
+			} finally {
+				mgr.close();
+			}
         } else
         {
             nextBtn.setEnabled(true);
@@ -315,6 +321,101 @@ public class MasterUserPanel extends GenericFormPanel
     }
 
     /**
+     * @param mgr
+     * @return
+     */
+    private boolean checkMasterUserPerms(DBMSUserMgr mgr, String masterUserName) {
+        int[] MASTER_PERMS = {DBMSUserMgr.PERM_SELECT, DBMSUserMgr.PERM_UPDATE, DBMSUserMgr.PERM_DELETE, 
+        		DBMSUserMgr.PERM_INSERT, DBMSUserMgr.PERM_LOCK_TABLES};
+        List<PermissionInfo> masterPerms = new ArrayList<PermissionInfo>(MASTER_PERMS.length);
+        for (int p : MASTER_PERMS) {
+        	masterPerms.add(new PermissionInfo("?", "", p, false));
+        }
+		List<PermissionInfo> perms = mgr.getPermissionsForCurrentUser();
+		String dbName = properties.getProperty(DBNAME);
+		Pair<List<PermissionInfo>, List<PermissionInfo>> missingPerms = PermissionInfo.getMissingPerms(perms, masterPerms, dbName);
+		if (missingPerms.getFirst().size() > 0) {
+			String missingPermStr = PermissionInfo.getMissingPermissionString(mgr, missingPerms.getFirst(), dbName);
+			UIRegistry.showLocalizedError("SEC_MISSING_PERMS", masterUserName, missingPermStr);	
+			return false;
+		}
+		return true;
+    }
+    
+    /**
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected boolean checkPermsForMasterUserCreation() {
+    	boolean result = true;
+            
+    	//In order for the master user creation code to work the it user must have create_user (actually not if the user has already has grants
+    	//on another db, but for now...) and grant on the database, and select on the mysql db (only user and db tables, I think, but for now...)
+    	
+    	List<PermissionInfo> perms = (List<PermissionInfo>)properties.get(DBUSERPERMS);
+		if (perms != null) {
+
+			boolean hasCreateUser = false;
+			boolean hasGrant = false;
+			boolean hasSelectOnMysql = false;
+			String dbName = properties.getProperty(DBNAME);
+			String dbUserName = properties.getProperty(DBUSERNAME);
+			
+			for (PermissionInfo pi : perms) {
+				if (pi.getPerm() == DBMSUserMgr.PERM_CREATE_USER
+						&& (pi.getDb().equals("*") || pi.getDb().equals(dbName))) {
+					hasCreateUser = true;
+				} else if (pi.getPerm() == DBMSUserMgr.PERM_GRANT
+						&& (pi.getDb().equals("*") || pi.getDb().equals(dbName))) {
+					hasGrant = true;
+				} else if (pi.getPerm() == DBMSUserMgr.PERM_SELECT
+						&& (pi.getDb().equals("*") || pi.getDb()
+								.equals("mysql"))) {
+					hasSelectOnMysql = true;
+				}
+				if (hasCreateUser && hasGrant && hasSelectOnMysql) {
+					break;
+				}
+			}
+			if (!hasCreateUser) {
+                DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+                
+                String dbPassword = properties.getProperty("dbPassword");
+                String hostName   = properties.getProperty("hostName");
+                
+                String saUserName = ((JTextField)comps.get("saUserName")).getText();
+                
+                if (mgr.connectToDBMS(dbUserName, dbPassword, hostName)) {
+                	try {
+                		//MySQLDMBSUserMgr.doesUserExists() only works if client and host are on the same machine
+                		//so basically create user will be required for all remote connections whether or not it is REALLY needed.
+                		hasCreateUser = mgr.doesUserExists(saUserName);
+                	} finally {
+                		mgr.close();
+                	}
+                }
+
+			}
+			result = hasCreateUser && hasGrant && hasSelectOnMysql;
+			if (!result) {
+				List<PermissionInfo> missingPerms = new ArrayList<PermissionInfo>();
+				if (!hasCreateUser) {
+					missingPerms.add(new PermissionInfo(dbName, "", DBMSUserMgr.PERM_CREATE_USER, false));
+				}
+				if (!hasGrant) {
+					missingPerms.add(new PermissionInfo(dbName, "", DBMSUserMgr.PERM_GRANT, false));
+				}
+				if (!hasSelectOnMysql) {
+					missingPerms.add(new PermissionInfo("mysql", "", DBMSUserMgr.PERM_SELECT, false));
+				}
+				String missingPermStr = PermissionInfo.getMissingPermissionString(DBMSUserMgr.getInstance(), missingPerms, dbName);
+				UIRegistry.showLocalizedError("SEC_MISSING_PERMS", dbUserName, missingPermStr);	
+			}
+		}    	
+    		
+    	return result;
+    }
+    /**
      * 
      */
     protected void createMasterUser()
@@ -325,6 +426,10 @@ public class MasterUserPanel extends GenericFormPanel
             UIRegistry.showLocalizedError("MASTER_NO_ROOT");
             ((JTextField)comps.get("saUserName")).setText("");
             return;
+        }
+  
+        if (!checkPermsForMasterUserCreation()) {
+        	return;
         }
         
         if (isOK == null || !isOK)
@@ -360,6 +465,7 @@ public class MasterUserPanel extends GenericFormPanel
                         
                         if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
                         {
+                            
                             if (mgr.doesUserExists(saUserName))
                             {
                                 if (!mgr.setPermissions(saUserName, dbName, DBMSUserMgr.PERM_ALL_BASIC))
@@ -376,11 +482,11 @@ public class MasterUserPanel extends GenericFormPanel
                                 if (!isOK)
                                 {
                                     errorKey = "ERR_CRE_MASTER";
-                                }
-                            } else
-                            {
-                                isOK = true;
-                            }
+                            	} else
+                            	{
+                            		isOK = true;
+                            	}
+                        }
                         } else
                         {
                             errorKey = "NO_CONN_ROOT";

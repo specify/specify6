@@ -69,7 +69,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -495,12 +494,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 DBMSUserMgr dbmsMgr = DBMSUserMgr.getInstance();
                                 if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
                                 {
-                                    int permissions = dbmsMgr.getPermissionsForUpdate(itUserNamePassword.first, dbConn.getDatabaseName());
-                                    if (!((permissions & DBMSUserMgr.PERM_ALTER_TABLE) == DBMSUserMgr.PERM_ALTER_TABLE))
-                                    {
+                                	if (!dbmsMgr.checkPermissionsForUpdate(itUserNamePassword.first, dbConn.getDatabaseName()))
+                                	{
                                         dbmsMgr.close();
                                         
-                                        errMsgList.add("You must have permissions to alter database tables.");
+                                        //errMsgList.add("You must have permissions to alter database tables.");
+                                        errMsgList.add(dbmsMgr.getErrorMsg());
                                         //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                         return SchemaUpdateType.Error;
                                     }

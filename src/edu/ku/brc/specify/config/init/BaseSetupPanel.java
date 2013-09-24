@@ -55,10 +55,16 @@ import edu.ku.brc.ui.UIRegistry;
  * Jan 17, 2008
  *
  */
+@SuppressWarnings("serial")
 public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
 {
     protected static final boolean DO_DEBUG = false;
-    
+
+    protected static final String   DB_SKIP_CREATE = "DB_SKIP_CREATE";
+    protected static final String   DBUSERPERMS    = "dbUserPerms";
+    protected static final String   DBNAME         = "dbName";
+    protected static final String   DBUSERNAME     = "dbUserName";
+
     protected String             panelName;
     protected String             helpContext;
     protected KeyAdapter         keyAdapter;

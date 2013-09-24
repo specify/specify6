@@ -47,8 +47,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 
-import jogamp.opengl.glu.nurbs.PwlArc;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -61,6 +59,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.dbsupport.PermissionInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -83,22 +82,21 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * Jan 17, 2008
  *
  */
+@SuppressWarnings("serial")
 public class DatabasePanel extends BaseSetupPanel
 {
     private enum VerifyStatus {OK, CANCELLED, ERROR}
     
     protected final String            PROPNAME       = "PROPNAME";
-    protected final String            DBNAME         = "dbName";
     protected final String            HOSTNAME       = "hostName";
     protected final String            DBPWD          = "dbPassword";
-    protected final String            DBUSERNAME     = "dbUserName";
     public static final String        DB_STRUCT_ONLY = "DB_STRUCT_ONLY";
 
     protected JTextField              usernameTxt;
     protected JTextField              passwordTxt;
     protected JTextField              dbNameTxt;
     protected JTextField              hostNameTxt;
-    protected JComboBox               drivers;
+    protected JComboBox<DatabaseDriverInfo>               drivers;
     protected JCheckBox               isStructureOnly;
     
     protected Vector<DatabaseDriverInfo> driverList;
@@ -115,10 +113,79 @@ public class DatabasePanel extends BaseSetupPanel
     protected JLabel                  advLabel;
     
     protected boolean                 checkForProcesses = true;
+    
+    public final int[] SKIP_DB_CREATE_PERMS = {DBMSUserMgr.PERM_SELECT, DBMSUserMgr.PERM_UPDATE, DBMSUserMgr.PERM_DELETE, 
+    		DBMSUserMgr.PERM_INSERT, DBMSUserMgr.PERM_LOCK_TABLES, DBMSUserMgr.PERM_ALTER_TABLE, 
+    		DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_GRANT, DBMSUserMgr.PERM_RELOAD};
+    
+    public final int[] CREATE_DB_PERMS = {DBMSUserMgr.PERM_SELECT, DBMSUserMgr.PERM_UPDATE, DBMSUserMgr.PERM_DELETE, 
+    		DBMSUserMgr.PERM_INSERT, DBMSUserMgr.PERM_LOCK_TABLES, DBMSUserMgr.PERM_ALTER_TABLE, 
+    		DBMSUserMgr.PERM_CREATE, DBMSUserMgr.PERM_DROP, DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_GRANT,
+    		DBMSUserMgr.PERM_RELOAD};
+    
+	 
+    final int PERM_SKIP_DB_CREATE;
+    final int PERM_CREATE_DB;    
+    
+    private List<PermissionInfo> skipDBCreatePerms;
+    private List<PermissionInfo> createDBPerms;
+    
+    private String getTableForPerm(int perm, boolean isSkip) 
+    {
+    	String result = "?";
+    	if (!isSkip) {
+    		if (perm == DBMSUserMgr.PERM_CREATE || perm == DBMSUserMgr.PERM_DROP) {
+    			//result = "*";
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param perm
+     * @param isSkip
+     * @return
+     */
+    private boolean getOptionalForPerm(int perm, boolean isSkip) {
+    	//Technically, if master user is already created, grant and reload perms are not strictly required.
+    	return isSkip && (perm & (DBMSUserMgr.PERM_RELOAD | DBMSUserMgr.PERM_GRANT)) != 0; 
+    }
+    
+    /**
+     * @param perm
+     * @param isSkip
+     * @return
+     */
+    private PermissionInfo createPermissionInfoForPerm(int perm, boolean isSkip) {
+    	return new PermissionInfo(getTableForPerm(perm, isSkip), "", perm, getOptionalForPerm(perm, isSkip));
+    }
+    /**
+     * 
+     */
+    private void createSkipDBCreatePerms()
+    {
+    	skipDBCreatePerms = new ArrayList<PermissionInfo>();
+    	for (int p : SKIP_DB_CREATE_PERMS) {
+    		skipDBCreatePerms.add(createPermissionInfoForPerm(p, true));
+    	}
+    }
 
+
+    /**
+     * 
+     */
+    private void createCreateDBPerms()
+    {
+    	createDBPerms = new ArrayList<PermissionInfo>();
+    	for (int p : CREATE_DB_PERMS) {
+    		createDBPerms.add(createPermissionInfoForPerm(p, false));
+    	}
+    }
+    
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
      */
+    @SuppressWarnings("unchecked")
     public DatabasePanel(final JButton nextBtn, 
                          final JButton prevBtn, 
                          final String  helpContext,
@@ -127,7 +194,23 @@ public class DatabasePanel extends BaseSetupPanel
         super("DATABASE", helpContext, nextBtn, prevBtn);
         
         this.doSetDefaultValues = doSetDefaultValues;
-        
+  
+ 
+		int t = 0;
+		for (int p : SKIP_DB_CREATE_PERMS) {
+			t |= p;
+		}
+		PERM_SKIP_DB_CREATE = t;
+		
+		t = 0;
+		for (int p : CREATE_DB_PERMS) {
+			t |= p;
+		}
+		PERM_CREATE_DB = t;
+		
+		createSkipDBCreatePerms();
+		createCreateDBPerms();
+		
         String header = getResourceString("ENTER_DB_INFO") + ":";
 
         CellConstraints cc = new CellConstraints();
@@ -144,7 +227,7 @@ public class DatabasePanel extends BaseSetupPanel
         hostNameTxt     = createField(builder, "HOST_NAME", true, row);         row += 2;
 
         driverList  = DatabaseDriverInfo.getDriversList();
-        drivers     = createComboBox(driverList);
+        drivers     = (JComboBox<DatabaseDriverInfo>)createComboBox(driverList);
         
         // MySQL as the default
         drivers.setSelectedItem(DatabaseDriverInfo.getDriver("MySQL"));
@@ -301,7 +384,8 @@ public class DatabasePanel extends BaseSetupPanel
             drivers.setSelectedIndex(0);
         }
     }
-    
+
+        
     /**
      * 
      */
@@ -324,39 +408,53 @@ public class DatabasePanel extends BaseSetupPanel
         
         try
         {
-            if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
+            try 
             {
-                newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
-                
-                DBConnection dbc = DBConnection.getInstance();
-                dbc.setConnectionStr(newConnStr);
-                dbc.setDriver(driverInfo.getDriverClassName());
-                dbc.setDialect(driverInfo.getDialectClassName());
-                dbc.setDriverName(driverInfo.getName());
-                dbc.setServerName(hostName);
-                dbc.setUsernamePassword(dbUserName, dbPwd);
-                dbc.setDatabaseName(databaseName);
-                
-                boolean canCont = isOK == null || isOK || manualLoginOK;
-                nextBtn.setEnabled(canCont);
-                
-                if (canCont)
-                {
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            nextBtn.doClick();
-                        }
-                    });
-                }
-                mgr.close();
-                return true;
+				if (mgr.connectToDBMS(dbUserName, dbPwd, hostName)) {
+					List<PermissionInfo> perms = mgr.getPermissionsForCurrentUser();
+					Pair<List<PermissionInfo>, List<PermissionInfo>> missingPerms = PermissionInfo.getMissingPerms(perms, skipDBCreatePerms, databaseName);
+					if (missingPerms.getFirst().size() > 0) {
+							String missingPermStr = PermissionInfo.getMissingPermissionString(mgr, missingPerms.getFirst(), databaseName);
+							UIRegistry.showLocalizedError("SEC_MISSING_PERMS", dbUserName, missingPermStr);	
+					} else {
+						newConnStr = driverInfo.getConnectionStr(
+								DatabaseDriverInfo.ConnectionType.Open,
+								hostName, databaseName, dbUserName, dbPwd,
+								driverInfo.getName());
+						
+						properties.put(DB_SKIP_CREATE, "true");
+						properties.put(DBUSERPERMS, perms);
+						
+						DBConnection dbc = DBConnection.getInstance();
+						dbc.setConnectionStr(newConnStr);
+						dbc.setDriver(driverInfo.getDriverClassName());
+						dbc.setDialect(driverInfo.getDialectClassName());
+						dbc.setDriverName(driverInfo.getName());
+						dbc.setServerName(hostName);
+						dbc.setUsernamePassword(dbUserName, dbPwd);
+						dbc.setDatabaseName(databaseName);
+
+						boolean canCont = isOK == null || isOK || manualLoginOK;
+						nextBtn.setEnabled(canCont);
+
+						if (canCont) {
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									nextBtn.doClick();
+								}
+							});
+						}
+						return true;
+					}
+				}
+            } catch (Exception ex)
+            {
+            	ex.printStackTrace();
             }
-        } catch (Exception ex)
+        } finally 
         {
-            ex.printStackTrace();
+     	   mgr.close();
         }
         return false;
     }
@@ -411,6 +509,8 @@ public class DatabasePanel extends BaseSetupPanel
                     
                     DBMSUserMgr mgr = DBMSUserMgr.getInstance();
                     
+                    List<PermissionInfo> perms = null;
+                    
                     boolean dbmsOK = false;
                     if (driverInfo.isEmbedded())
                     {
@@ -460,13 +560,34 @@ public class DatabasePanel extends BaseSetupPanel
                         }
                     } else if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
                     {
+    					perms = mgr.getPermissionsForCurrentUser();
+    					Pair<List<PermissionInfo>, List<PermissionInfo>> missingPerms = PermissionInfo.getMissingPerms(perms, createDBPerms, databaseName);
+    					if (missingPerms.getFirst().size() > 0) {
+    							final String missingPermStr = PermissionInfo.getMissingPermissionString(mgr, missingPerms.getFirst(), databaseName);
+    							SwingUtilities.invokeLater(new Runnable() {
+
+									/* (non-Javadoc)
+									 * @see java.lang.Runnable#run()
+									 */
+									@Override
+									public void run() {
+		    							UIRegistry.showLocalizedError("SEC_MISSING_PERMS", dbUserName, missingPermStr);	
+									}
+    								
+    							});
+    							dbmsOK = false;
+    					} else {
+    						dbmsOK = true;
+    					}
                         mgr.close();
-                        dbmsOK = true;
                     }
                     
                     if (dbmsOK)
                     {
-                        firePropertyChange(PROPNAME, 0, 1);
+						properties.put(DB_SKIP_CREATE, false);
+						properties.put(DBUSERPERMS, perms);
+
+                    	firePropertyChange(PROPNAME, 0, 1);
                         
                         try
                         {
