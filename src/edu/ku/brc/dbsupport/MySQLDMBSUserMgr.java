@@ -928,7 +928,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     public boolean checkPermissionsForUpdate(String dbUserName, String dbName) {
         int[] update_perms = {DBMSUserMgr.PERM_SELECT, DBMSUserMgr.PERM_UPDATE, DBMSUserMgr.PERM_DELETE, 
         		DBMSUserMgr.PERM_INSERT, DBMSUserMgr.PERM_ALTER_TABLE, 
-        		DBMSUserMgr.PERM_INDEX};
+        		DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_CREATE, DBMSUserMgr.PERM_DROP};
     	List<PermissionInfo>updatePerms = new ArrayList<PermissionInfo>();
     	for (int p : update_perms) {
     		updatePerms.add(new PermissionInfo("?", "", p, false));
