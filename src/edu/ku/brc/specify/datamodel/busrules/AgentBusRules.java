@@ -586,34 +586,34 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             agent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
         }
         
-        for (GroupPerson gp : agent.getGroups())
+        try
         {
-            if (gp.getId() == null)
+            if (agent.getId() == null)
             {
-                try
+                session.save(agent);
+            }
+            
+            for (GroupPerson gp : agent.getGroups())
+            {
+                if (gp.getId() == null)
                 {
                     session.save(gp);
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
                 }
             }
-        }
 
-        for (GroupPerson gp : agent.getMembers())
-        {
-            if (gp.getId() == null)
+            for (GroupPerson gp : agent.getMembers())
             {
-                try
+                if (gp.getId() == null)
                 {
                     session.save(gp);
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
                 }
             }
-        }
 
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    
         
         //session.attach(agent);
         
