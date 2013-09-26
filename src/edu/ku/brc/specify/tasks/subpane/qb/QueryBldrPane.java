@@ -1271,8 +1271,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             SortElement orderSpec = qfi.getOrderSpec(distinct ? fldPosition-1 : fldPosition-2);
             if (orderSpec != null)
             {
-                postSortPresent |= qfi.getFieldQRI() instanceof TreeLevelQRI || qfi.getFieldQRI() instanceof RelQRI;
-                sortElements.add(orderSpec);
+            	boolean isPostSortSpec = qfi.getFieldQRI() instanceof TreeLevelQRI || qfi.getFieldQRI() instanceof RelQRI;
+                //dis regard post sorts that may have been saved before
+            	//fix for bug #9407
+            	if (!isSchemaExport)
+                {
+                	postSortPresent |= isPostSortSpec;
+                }
+                if (!isPostSortSpec || !isSchemaExport) 
+                {
+                	sortElements.add(orderSpec);
+                }
             }
 
             // Create a Stack (list) of parent from

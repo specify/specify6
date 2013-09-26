@@ -729,8 +729,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 	operatorCBX.setSelectedIndex(0);
                 }
                 setCriteriaText(queryField.getStartValue(), queryField.getEndValue(), (OperatorType )operatorCBX.getSelectedItem());
-                sortCheckbox.setState(queryField.getSortType());
-                sortCheckbox.setEnabled(queryField.getIsDisplay());
+            	sortCheckbox.setState(queryField.getSortType());
+            	sortCheckbox.setEnabled(queryField.getIsDisplay());
                 if (!ownerQuery.isPromptMode())
                 {
                     isDisplayedCkbx.setSelected(queryField.getIsDisplay());
@@ -794,7 +794,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         fieldLabel.setText(fieldLabelText);
         boolean isBool = fieldQRI != null && fieldQRI.getDataClass().equals(Boolean.class);
 		boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
-			
+		boolean isTreeLevel = fieldQRI instanceof TreeLevelQRI;
+		
 		operatorCBX.setModel(new DefaultComboBoxModel(comparators));
 		//XXX need to set up criteria to support 'between' if necessary
 		
@@ -809,14 +810,21 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 		isNotCheckbox.setVisible(fieldQRI != null && !isRel);
 		operatorCBX.setVisible(fieldQRI != null && !isRel);
 		criteria.setVisible(fieldQRI != null && !isRel && !isBool);
-		if (!isRel)
+		if (schemaMapping != null)
 		{
-			this.sortCheckbox.setVisible(fieldQRI != null);
-		} else
+			this.sortCheckbox.setVisible(!(isTreeLevel || isRel));
+		}
+		else
 		{
-			this.sortCheckbox
+			if (!isRel)
+			{
+				this.sortCheckbox.setVisible(fieldQRI != null);
+			} else
+			{
+				this.sortCheckbox
 					.setVisible(((RelQRI) fieldQRI).getRelationshipInfo()
 							.getType() != RelationshipType.OneToMany);
+			}
 		}
 
 		if (schemaMapping != null)
@@ -1919,19 +1927,27 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
 			// for now
 			boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
+			boolean isTreeLevel = fieldQRI instanceof TreeLevelQRI;
 			isNotCheckbox.setVisible(!isRel || pickList != null);
 			operatorCBX.setVisible(!isRel || pickList != null);
 			criteria.setVisible((!isRel && !isBool) || pickList != null);
-			if (!isRel)
+			if (schemaMapping != null)
 			{
-				this.sortCheckbox.setVisible(true);
-			} else
+				this.sortCheckbox.setVisible(!(isTreeLevel || isRel));
+			}
+			else
 			{
-				this.sortCheckbox
+				if (!isRel)
+				{
+					this.sortCheckbox.setVisible(true);
+				} else
+				{
+					this.sortCheckbox
 						.setVisible(((RelQRI) fieldQRI).getRelationshipInfo()
 								.getType() != RelationshipType.OneToMany);
+				}
 			}
-
+			
 			if (!ownerQuery.isPromptMode())
 			{
 				isDisplayedCkbx.setVisible(!isRel);
