@@ -519,33 +519,32 @@ public class BaseBusRules implements BusinessRulesIFace
         
         int fieldCnt = 0;
         Hashtable<String, Vector<String>> fieldHash = new Hashtable<String, Vector<String>>();
+        HashSet<String> skipHash = new HashSet<String>();
+        if (skipTableNames != null)
+        {
+            for (String name : skipTableNames)
+            {
+                skipHash.add(name);
+            }
+        }
         
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
-            Hashtable<String, Boolean> skipHash = new Hashtable<String, Boolean>();
-            if (skipTableNames != null)
-            {
-                for (String name : skipTableNames)
-                {
-                    skipHash.put(name, true);
-                }
-            }
-            
-            if (dataClassObj != null)
+            String tblName = ti.getName();
+            if (dataClassObj != null && !skipHash.contains(tblName))
             {
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {
-                    
                     if (ri.getDataClass() == dataClassObj)
                     {
                         String colName = ri.getColName();
-                        if (StringUtils.isNotEmpty(colName) && !(skipHash.get(ti.getName()) != null && colName.equals(idColName)))
+                        if (StringUtils.isNotEmpty(colName) && !colName.equals(idColName))
                         {
-                            Vector<String> fieldList = fieldHash.get(ti.getName());
+                            Vector<String> fieldList = fieldHash.get(tblName);
                             if (fieldList == null)
                             {
                                 fieldList = new Vector<String>();
-                                fieldHash.put(ti.getName(), fieldList);
+                                fieldHash.put(tblName, fieldList);
                             }
                             fieldList.add(ri.getColName());
                             fieldCnt++;
