@@ -87,6 +87,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.AppContextMgr.CONTEXT_STATUS;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -1202,12 +1203,33 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 return;
             }
             
+            SpecifyAppContextMgr appContext;
             if (userName == null)
             {
-                userName = AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getName();
+                userName   = AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getName();
+                appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            } else
+            {
+                appContext                = new SpecifyAppContextMgr();
+                DBConnection   dbConn     = DBConnection.getInstance();
+                Collection     collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                CONTEXT_STATUS status     = appContext.setContext(dbConn.getDatabaseName(),
+                                                                  userName,
+                                                                  true,  // starting over
+                                                                  false, // do prompt
+                                                                  true,  // isFirstTime
+                                                                  collection.getCollectionName(),
+                                                                  false); // isMainSpecifyApp
+                if (status != CONTEXT_STATUS.OK)
+                {
+                    UIRegistry.showError("There was an error loading the Application Context for user: "+userName);
+                    return;
+                }
+                
             }
             
-            ResourceImportExportDlg dlg = new ResourceImportExportDlg((SpecifyAppContextMgr)AppContextMgr.getInstance(), userName);
+            
+            ResourceImportExportDlg dlg = new ResourceImportExportDlg(appContext, userName);
             dlg.setVisible(true);
             if (dlg.hasChanged())
             {
