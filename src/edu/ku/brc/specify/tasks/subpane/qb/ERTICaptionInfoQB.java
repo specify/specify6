@@ -127,6 +127,10 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     	//else another complication - formats for export to db
     	if (uiFieldFormatter instanceof ExportFieldFormatter)
     	{
+        	if (value != null && fieldInfo.getDataClass().equals(java.sql.Timestamp.class)) 
+        	{
+        		return value.toString();
+        	}
     		return this.uiFieldFormatter.formatToUI(value);
     	}
 
@@ -154,7 +158,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             return value.toString();
     	}
     	//else
-        return super.processValue(value);
+    	return super.processValue(value);
     }
 
     /* (non-Javadoc)
