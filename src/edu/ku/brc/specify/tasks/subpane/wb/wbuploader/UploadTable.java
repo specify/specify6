@@ -4323,6 +4323,10 @@ public class UploadTable implements Comparable<UploadTable>
         				{
         					return true;
         				}
+            			if (ut.parentTableIsNonBlank(row, uploadData))
+            			{
+            				return true;
+            			}
         			}
     			} else 
     			{
@@ -4330,10 +4334,10 @@ public class UploadTable implements Comparable<UploadTable>
     				{
     					return true;
     				}
-    			}
-    			if (ut.parentTableIsNonBlank(row, uploadData))
-    			{
-    				return true;
+        			if (ut.parentTableIsNonBlank(row, uploadData, false, seq))
+        			{
+        				return true;
+        			}
     			}
     		}
      	}
