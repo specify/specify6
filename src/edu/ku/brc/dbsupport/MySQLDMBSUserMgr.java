@@ -669,6 +669,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      */
     private List<String> parseShowGrantResult(final String grantsStr)
     {
+    	if (grantsStr.startsWith("GRANT PROXY")) {
+    		return null;
+    	}
+    	
     	String permStr = grantsStr.substring(0, grantsStr.indexOf(" ON ")).replace("GRANT ", "");
     	String[] perms = permStr.split(",");
     	List<String> permList = new ArrayList<String>();
@@ -681,7 +685,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     	
     	String dbStr = grantsStr.substring(grantsStr.indexOf(" ON ")+4, grantsStr.indexOf(" TO "));
     	String[] dbTbl = dbStr.split("\\.");
-    	String db = dbTbl[0].replace("`", "");
+    	String db = dbTbl[0].replace("'", "");
     	
     	int endofUserHost = grantsStr.indexOf("' ");
     	if (endofUserHost == -1) {
@@ -714,8 +718,9 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 			BasicSQLUtils.setSkipTrackExceptions(false);
 			for (Object[] row : rows) {
 				List<String> grantInfo = parseShowGrantResult((String) row[0]);
-				String host = grantInfo.get(1);
-				//if (StringUtils.isNotEmpty(host) && (host.equals("%") || host.equals(hostName))) {
+				if (grantInfo != null) {
+					String host = grantInfo.get(1);
+					//if (StringUtils.isNotEmpty(host) && (host.equals("%") || host.equals(hostName))) {
 					for (int i = 3; i < grantInfo.size(); i++) {
 						String p = grantInfo.get(i);
 						if ("ALL PRIVILEGES".equals(p)) {
@@ -734,7 +739,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 					if (doDebugPerms) {
 						debugLines.append("Host: [" + host + "]\n\n");
 					}
-				//}
+				}
 			}
 		}
 		return new ArrayList<PermissionInfo>(result);
