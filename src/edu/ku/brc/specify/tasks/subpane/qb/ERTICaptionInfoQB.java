@@ -127,7 +127,11 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     	
     	if (value != null && fieldInfo.getDataClass().equals(java.sql.Timestamp.class)) 
     	{
-    		return value.toString();
+    		String result = value.toString();
+    		if (result.endsWith(".0")) {
+    			result = result.substring(0, result.length() - 2);
+    		}
+    		return result;
     	}
     	//else another complication - formats for export to db
     	if (uiFieldFormatter instanceof ExportFieldFormatter)
