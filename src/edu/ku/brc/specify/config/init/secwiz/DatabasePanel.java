@@ -204,9 +204,11 @@ public class DatabasePanel extends BaseSetupPanel
                     ok = checkForPermissions();
                 }
                 
+                isOK = ok;
                 skipStepBtn.setEnabled(true);
                 advLabel.setText(getResourceString(ok ? "ADV_DB_OK" : "ADV_DB_ERR"));
                 advLabel.setForeground(ok ? Color.BLACK : Color.RED);
+                nextBtn.setEnabled(isOK);
             }
         });
         
@@ -385,7 +387,6 @@ public class DatabasePanel extends BaseSetupPanel
                 dbc.setUsernamePassword(dbUserName, dbPwd);
                 dbc.setDatabaseName(databaseName);
                 
-                nextBtn.setEnabled(isOK = true);
                 mgr.close();
                 return true;
             }
@@ -415,7 +416,13 @@ public class DatabasePanel extends BaseSetupPanel
                 List<PermissionInfo> permAll = new ArrayList<PermissionInfo>(1);
                 permAll.add(new PermissionInfo("", "", DBMSUserMgr.PERM_ALL));
                 permAll.add(new PermissionInfo("", "", DBMSUserMgr.PERM_GRANT));
-                return PermissionInfo.getMissingPerms( mgr.getPermissionsForCurrentUser(), permAll, "*").getFirst().size() == 0;
+				Pair<List<PermissionInfo>, List<PermissionInfo>> missingPerms = PermissionInfo.getMissingPerms( mgr.getPermissionsForCurrentUser(), permAll, "*");
+				if (missingPerms.getFirst().size() > 0) {
+						String missingPermStr = PermissionInfo.getMissingPermissionString(mgr, missingPerms.getFirst(), "*");
+						UIRegistry.showLocalizedError("SEC_MISSING_PERMS", dbUserName, missingPermStr);	
+						return false;
+				}
+                return true;
             }
             
             UIRegistry.showLocalizedError("SEC_UNEX_ERR_LGN");
