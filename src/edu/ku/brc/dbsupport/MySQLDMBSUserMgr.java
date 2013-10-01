@@ -685,7 +685,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     	
     	String dbStr = grantsStr.substring(grantsStr.indexOf(" ON ")+4, grantsStr.indexOf(" TO "));
     	String[] dbTbl = dbStr.split("\\.");
-    	String db = dbTbl[0].replace("'", "");
+    	String db = dbTbl[0].replace("`", "");
     	
     	int endofUserHost = grantsStr.indexOf("' ");
     	if (endofUserHost == -1) {
