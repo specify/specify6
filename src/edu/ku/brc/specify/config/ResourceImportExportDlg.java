@@ -221,9 +221,10 @@ public class ResourceImportExportDlg extends CustomDialog
     @Override
     public void createUI()
     {
+        this.setHelpContext("Import");
+        
         super.createUI();
 
-        this.setHelpContext("Import");
 
         CellConstraints cc = new CellConstraints();
         
