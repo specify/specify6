@@ -217,7 +217,7 @@ public class Java2sAutoComboBox extends JComboBox
         if (newIndex > -1)
         {
             Object oldVal = comboBox.getSelectedItem();
-            Object newVal = comboBox.getSelectedItem();
+            Object newVal = comboBox.getItemAt(newIndex);
             if (oldVal instanceof PickListItemIFace && newVal instanceof PickListItemIFace)
             {
                 PickListItemIFace oldPLI = (PickListItemIFace)oldVal;
