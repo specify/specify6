@@ -223,8 +223,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Hashtable<String, TableStats>                 tableStatHash          = new Hashtable<String, TableStats>();
 
     // Helps during debugging
-    protected static boolean                                shouldCreateMapTables  = false;
-    protected static boolean                                shouldDeleteMapTables  = false;
+    protected static boolean                                shouldCreateMapTables  = true;
+    protected static boolean                                shouldDeleteMapTables  = true;
     
     protected static boolean                                doDeleteAllMappings    = true;
 
