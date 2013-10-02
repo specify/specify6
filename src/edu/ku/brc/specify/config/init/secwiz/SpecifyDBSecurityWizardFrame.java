@@ -132,6 +132,9 @@ public class SpecifyDBSecurityWizardFrame extends JFrame implements FrameworkApp
         setIconImage(IconManager.getIcon(SpecifyDBSecurityWizard.getIconName(), IconManager.IconSize.NonStd).getImage());
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        
+        HelpMgr.setAppDefHelpId("security_wiz1");
+
 
         SpecifyDBSecurityWizard wizPanel = new SpecifyDBSecurityWizard(new SpecifyDBSecurityWizard.WizardListener() {
                     @Override
