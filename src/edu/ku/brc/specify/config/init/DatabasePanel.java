@@ -165,8 +165,13 @@ public class DatabasePanel extends BaseSetupPanel
     private void createSkipDBCreatePerms()
     {
     	skipDBCreatePerms = new ArrayList<PermissionInfo>();
-    	for (int p : SKIP_DB_CREATE_PERMS) {
-    		skipDBCreatePerms.add(createPermissionInfoForPerm(p, true));
+    	
+    	//Skip DB Create should no longer be necessary according to current practice.
+    	//"Therefore" Test IT User will check for same perms that are required for Create DB.
+    	//for (int p : SKIP_DB_CREATE_PERMS) {
+        for (int p : CREATE_DB_PERMS) {
+    		//skipDBCreatePerms.add(createPermissionInfoForPerm(p, true));
+    		skipDBCreatePerms.add(createPermissionInfoForPerm(p, false));
     	}
     }
 
@@ -197,16 +202,17 @@ public class DatabasePanel extends BaseSetupPanel
   
  
 		int t = 0;
-		for (int p : SKIP_DB_CREATE_PERMS) {
-			t |= p;
-		}
-		PERM_SKIP_DB_CREATE = t;
-		
-		t = 0;
+//		for (int p : SKIP_DB_CREATE_PERMS) {
+//			t |= p;
+//		}
+//		PERM_SKIP_DB_CREATE = t;
+//		
+//		t = 0;
 		for (int p : CREATE_DB_PERMS) {
 			t |= p;
 		}
 		PERM_CREATE_DB = t;
+		PERM_SKIP_DB_CREATE = t; //see comments in createSkipDBCreatePerms()
 		
 		createSkipDBCreatePerms();
 		createCreateDBPerms();
