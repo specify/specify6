@@ -1127,9 +1127,18 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            DBTableInfo        parentTI = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
-            DBRelationshipInfo rel      = parentTI.getRelationshipByName(cellName);
-            this.dataClassName = rel.getClassName();
+            DBTableInfo parentTI = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
+            if (parentTI != null)
+            {
+                DBRelationshipInfo rel = parentTI.getRelationshipByName(cellName);
+                if (rel != null)
+                {
+                    this.dataClassName = rel.getClassName();
+                }
+            }
+            // At this point 'this.dataClassName' could be null if 'rel' was null
+            // which happens when the IconViewObj is embedded in a subform
+            // This doesn't seem to matter
         }
         
         checkOrderableness();
