@@ -48,6 +48,13 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.setOneToOneIDHash;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setShowErrors;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 import static edu.ku.brc.ui.UIRegistry.showError;
+import static org.apache.commons.lang.StringUtils.capitalize;
+import static org.apache.commons.lang.StringUtils.contains;
+import static org.apache.commons.lang.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.split;
+import static org.apache.commons.lang.StringUtils.splitPreserveAllTokens;
 
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -87,7 +94,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -98,6 +104,7 @@ import org.hibernate.criterion.Restrictions;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.mysql.jdbc.StringUtils;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -216,8 +223,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Hashtable<String, TableStats>                 tableStatHash          = new Hashtable<String, TableStats>();
 
     // Helps during debugging
-    protected static boolean                                shouldCreateMapTables  = true;
-    protected static boolean                                shouldDeleteMapTables  = true;
+    protected static boolean                                shouldCreateMapTables  = false;
+    protected static boolean                                shouldDeleteMapTables  = false;
     
     protected static boolean                                doDeleteAllMappings    = true;
 
@@ -431,7 +438,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     catSeriesDefOldIds.add(ci.getCatSeriesDefId());
                     
                     if (catSeriesName == null ||
-                        (!StringUtils.containsIgnoreCase(catSeriesName, "paleo") && StringUtils.containsIgnoreCase(objTypeName, "paleo")))
+                        (!containsIgnoreCase(catSeriesName, "paleo") && containsIgnoreCase(objTypeName, "paleo")))
                     {
                         catSeriesName  = objTypeName;
                         colObjTypeID   = ci.getColObjTypeId();
@@ -1275,7 +1282,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
          * ResultSet rs = stmt.executeQuery("select unique LastEditedBy from "+tableName);
          * 
          * while (rs.next()) { String modifierAgent = rs.getString(1); if
-         * (StringUtils.isNotEmpty(editedBy)) { Agent agent = agentMap.get(editedBy); } }
+         * (isNotEmpty(editedBy)) { Agent agent = agentMap.get(editedBy); } }
          *  } catch (Exception ex) {
          *  } }
          */
@@ -2778,7 +2785,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             if (!dlg.isCancelled())
             {
                 String fileName = textField.getText();
-                if (StringUtils.isNotEmpty(fileName))
+                if (isNotEmpty(fileName))
                 {
                     try
                     {
@@ -2872,7 +2879,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     protected Integer getCreatorAgentId(final String createdByName)
     {
-        if (StringUtils.isNotEmpty(createdByName))
+        if (isNotEmpty(createdByName))
         {
             Integer id = getOldAgentIdFromName(createdByName);
             if (id != null)
@@ -2889,7 +2896,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public Integer getModifiedByAgentId(final String modifierAgentName)
     {
-        if (StringUtils.isNotEmpty(modifierAgentName) && agentIdMapper != null)
+        if (isNotEmpty(modifierAgentName) && agentIdMapper != null)
         {
             Integer id = getOldAgentIdFromName(modifierAgentName);
             if (id != null)
@@ -3118,7 +3125,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected boolean checkName(String[] referenceNames, final String nameArg)
     {
         String name = nameArg.toLowerCase();
-        String[] tokens = StringUtils.split(name.toLowerCase(), ' ');
+        String[] tokens = split(name.toLowerCase(), ' ');
         for (String tok : tokens)
         {
             for (String rn : referenceNames)
@@ -3131,8 +3138,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             for (String rn : referenceNames)
             {
-                if (StringUtils.contains(tok, rn.toLowerCase())) { return true; }
-                if (StringUtils.contains(rn.toLowerCase(), tok)) { return true; }
+                if (contains(tok, rn.toLowerCase())) { return true; }
+                if (contains(rn.toLowerCase(), tok)) { return true; }
             }
         }
         return false;
@@ -3192,10 +3199,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     log.debug("    Found["+dispType+"]");
                     if (!dispType.isPaleo() &&
-                            (StringUtils.contains(taxonDescrStr, "paleo") || 
-                             StringUtils.contains(taxonDescrStr, "fossil") ||
-                             StringUtils.contains(catSeriesName.toLowerCase(), "paleo") ||
-                             StringUtils.contains(catSeriesName.toLowerCase(), "fossil")))
+                            (contains(taxonDescrStr, "paleo") || 
+                             contains(taxonDescrStr, "fossil") ||
+                             contains(catSeriesName.toLowerCase(), "paleo") ||
+                             contains(catSeriesName.toLowerCase(), "fossil")))
                     {
                         if (dispType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.botany)
                         {
@@ -3248,14 +3255,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         STD_DISCIPLINES type = null;
         
-        if (StringUtils.contains(name.toLowerCase(), "paleo") ||
-            StringUtils.contains(name.toLowerCase(), "fossil")) 
+        if (contains(name.toLowerCase(), "paleo") ||
+            contains(name.toLowerCase(), "fossil")) 
         { 
-            if (StringUtils.contains(name.toLowerCase(), "invert"))
+            if (contains(name.toLowerCase(), "invert"))
             {
                 type = STD_DISCIPLINES.invertpaleo;
                 
-            } else if (StringUtils.contains(name.toLowerCase(), "botan"))
+            } else if (contains(name.toLowerCase(), "botan"))
             {
                 type = STD_DISCIPLINES.paleobotany;
             } else
@@ -3735,7 +3742,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     collInfo.setDisciplineId(curDisciplineID);
                     
                     AutoNumberingScheme cns = null;
-                    if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
+                    if (catalogSeriesID != null && isNotEmpty(seriesName))
                     {
                         cns = catSeriesToAutoNumSchemeHash.get(catalogSeriesID);
                         if (cns == null)
@@ -3808,7 +3815,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     
                         Integer newCatSeriesID = getHighestId(newDBConn, "CollectionID", "collection");
                         collectionHash.put(hashKey, newCatSeriesID);
-                        if (StringUtils.isNotEmpty(prefix))
+                        if (isNotEmpty(prefix))
                         {
                             prefixHash.put(hashKey, prefix);
                         }
@@ -6288,7 +6295,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             getPartialDate(rs.getObject(detDateInx), partialDateConv);
                         }
-                        if (StringUtils.isNotEmpty(partialDateConv.getDateStr()))
+                        if (isNotEmpty(partialDateConv.getDateStr()))
                         {
                             try
                             {
@@ -6865,7 +6872,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         }
                         
                         colObjId = getStrValue(newColObjId);
-                        if (StringUtils.contains(colObjId, '.'))
+                        if (contains(colObjId, '.'))
                         {
                             String msgStr = String.format("CatalogNumber '%d' contains a decimal point.", colObjId);
                             log.debug(msgStr);
@@ -6906,7 +6913,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             String prefix = collInfo.getCatSeriesPrefix();
                             
                             float catNum = rs.getFloat(catNumInx);
-                            catalogNumber = "\"" + (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "")
+                            catalogNumber = "\"" + (usePrefix && isNotEmpty(prefix) ? (prefix + "-") : "")
                                             + String.format("%9.0f", catNum).trim() + "\"";
                         }
 
@@ -8023,7 +8030,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int inx = 0;
             for (String fld : fields)
             {
-                if (StringUtils.contains(fld, fieldName))
+                if (contains(fld, fieldName))
                 {
                     fndInx = inx;
                 }
@@ -8044,7 +8051,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
         
-        String capName = StringUtils.capitalize(tableName);
+        String capName = capitalize(tableName);
         TableWriter tblWriter = convLogger.getWriter(capName + ".html", capName);
         setTblWriter(tblWriter);
         IdHashMapper.setTblWriter(tblWriter);
@@ -8546,7 +8553,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     private String fixSize(final TableWriter tblWriter, final int id, final String desc, final String str, final int len)
     {
         String s = str;
-        if (StringUtils.isNotEmpty(str))
+        if (isNotEmpty(str))
         {
             if (s.length() > len)
             {
@@ -8665,14 +8672,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Agent   modifiedByAgent = getAgentObj(localSession, getCurAgentModifierID());
             
             
-            /*cont    = StringUtils.isNotEmpty(county)  && cont.equals("null")    ? null : cont;
-            country = StringUtils.isNotEmpty(country) && country.equals("null") ? null : country;
-            state   = StringUtils.isNotEmpty(state)   && state.equals("null")   ? null : state;
-            county  = StringUtils.isNotEmpty(county)  && county.equals("null")  ? null : county;
+            /*cont    = isNotEmpty(county)  && cont.equals("null")    ? null : cont;
+            country = isNotEmpty(country) && country.equals("null") ? null : country;
+            state   = isNotEmpty(state)   && state.equals("null")   ? null : state;
+            county  = isNotEmpty(county)  && county.equals("null")  ? null : county;
             */
             
-            if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && 
-                StringUtils.isEmpty(state) && StringUtils.isEmpty(county))
+            if (isEmpty(cont) && isEmpty(country) && 
+                isEmpty(state) && isEmpty(county))
             {
                 //String msg = "For Record Id["+oldId+"] Continent, Country, State and County are all null.";
                 //log.error(msg);
@@ -8683,7 +8690,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 state   = "Undefined";
                 county  = "Undefined";
                 
-            } else if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && StringUtils.isEmpty(state))
+            } else if (isEmpty(cont) && isEmpty(country) && isEmpty(state))
             {
                 //String msg = "For Record Id["+oldId+"] Continent, Country and State are all null.";
                 //log.error(msg);
@@ -8693,7 +8700,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 country = "Undefined";
                 state   = "Undefined";
                 
-            } else if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country))
+            } else if (isEmpty(cont) && isEmpty(country))
             {
                 //String msg = "For Record Id["+oldId+"] Country is null.";
                 //log.error(msg);
@@ -8702,7 +8709,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 cont    = "Undefined"; 
                 country = "Undefined"; 
                 
-            } else if (StringUtils.isEmpty(cont))
+            } else if (isEmpty(cont))
             {
                 //String msg = "For Record Id["+oldId+"] Country is null.";
                 //log.error(msg);
@@ -9143,10 +9150,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", null, false);
             }
             // get all of the old records
+//            String sql  = String.format("SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, " +
+//            		                    "Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s " +
+//            	                        "WHERE s.SuperGroup IS NOT NULL OR s.Group IS NOT NULL OR s.Formation IS NOT NULL OR " +
+//            	                        "s.Member IS NOT NULL OR s.Bed IS NOT NULL ORDER BY s.StratigraphyID", srcTableName);
             String sql  = String.format("SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, " +
-            		                    "Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s " +
-            	                        "WHERE s.SuperGroup IS NOT NULL OR s.Group IS NOT NULL OR s.Formation IS NOT NULL OR " +
-            	                        "s.Member IS NOT NULL OR s.Bed IS NOT NULL ORDER BY s.StratigraphyID", srcTableName);
+                                        "Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM %s s " +
+                                        "ORDER BY s.StratigraphyID", srcTableName);
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
@@ -9188,13 +9198,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Double number2    = rs.getObject(11) != null ? rs.getDouble(11)  : null;
                 Boolean yesNo1    = rs.getObject(12) != null ? rs.getBoolean(12) : null;
                 Boolean yesNo2    = rs.getObject(13) != null ? rs.getBoolean(13) : null;
-
+                Integer oldGTPId  = rs.getObject(14) != null ? rs.getInt(14)     : null;
+                
+                // Check to see if there is any Litho information OR an GTP Id
+                // If both are missing then skip the record.
+                boolean hasLithoFields = isNotEmpty(superGroup) || isNotEmpty(lithoGroup) || isNotEmpty(formation) || isNotEmpty(member);
+                if (!hasLithoFields && oldGTPId == null)
+                {
+                    continue;
+                }
+                
                 Integer gtpId = null;
                 if (doMapGTPIds)
                 {
-                    if (rs.getObject(14) != null)
+                    if (oldGTPId != null)
                     {
-                        gtpId = rs.getInt(14);
+                        gtpId = oldGTPId;
                     }
                 } else 
                 {
@@ -9214,45 +9233,50 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     stratsWithNoGTP++;
                 }
     
-                // create a new Geography object from the old data
-                LithoStrat[] newStrats = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, remarks, 
-                                                               text1, text2, number1, number2, yesNo1, yesNo2,
-                                                               earth, localSession);
-                
-                LithoStrat newStrat = getLastLithoStrat(newStrats);
-                counter++;
-                lithoCnt += newStrats.length;
-    
-                // Map Old LithoStrat ID to the new Tree Id
-                //System.out.println(oldStratId + " " + newStrat.getLithoStratId());
-                if (newStrat != null)
+                // There may not be any Litho information to add to the LithoStrat tree, 
+                // but it did have GTP Information if we got here
+                if (hasLithoFields)
                 {
-                    lithoStratIdMapper.put(oldStratId, newStrat.getLithoStratId());
+                    // create a new Geography object from the old data
+                    LithoStrat[] newStrats = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, remarks, 
+                                                                   text1, text2, number1, number2, yesNo1, yesNo2,
+                                                                   earth, localSession);
                     
-                    // Convert Old CEId (StratID) to new CEId, then map the new CEId -> new StratId
-                    Integer newCEId = ceMapper.get(oldStratId);
-                    if (newCEId != null)
+                    LithoStrat newStrat = getLastLithoStrat(newStrats);
+                    counter++;
+                    lithoCnt += newStrats.length;
+        
+                    // Map Old LithoStrat ID to the new Tree Id
+                    //System.out.println(oldStratId + " " + newStrat.getLithoStratId());
+                    if (newStrat != null)
                     {
-                        newCEIdToNewStratIdHash.put(newCEId, newStrat.getLithoStratId());
+                        lithoStratIdMapper.put(oldStratId, newStrat.getLithoStratId());
+                        
+                        // Convert Old CEId (StratID) to new CEId, then map the new CEId -> new StratId
+                        Integer newCEId = ceMapper.get(oldStratId);
+                        if (newCEId != null)
+                        {
+                            newCEIdToNewStratIdHash.put(newCEId, newStrat.getLithoStratId());
+                        } else
+                        {
+                            String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
+                            tblWriter.logError(msg);
+                            log.error(msg);
+                            missingCEMapping++;
+                        }
+                        
+                        // Map the New StratId to the new GTP Id
+                        if (gtpId != null && stratGTPIdHash.get(newStrat.getLithoStratId()) == null)
+                        {
+                            stratGTPIdHash.put(newStrat.getLithoStratId(), gtpId);  // new ID to new ID
+                        }
                     } else
                     {
-                        String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
+                        String msg = String.format("Strat Fields were all null for oldID", oldStratId);
                         tblWriter.logError(msg);
                         log.error(msg);
                         missingCEMapping++;
                     }
-                    
-                    // Map the New StratId to the new GTP Id
-                    if (gtpId != null && stratGTPIdHash.get(newStrat.getLithoStratId()) == null)
-                    {
-                        stratGTPIdHash.put(newStrat.getLithoStratId(), gtpId);  // new ID to new ID
-                    }
-                } else
-                {
-                    String msg = String.format("Strat Fields were all null for oldID", oldStratId);
-                    tblWriter.logError(msg);
-                    log.error(msg);
-                    missingCEMapping++;
                 }
             }
             stmt.close();
@@ -9282,7 +9306,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //Hashtable<Integer, Integer> ceToPCHash = new Hashtable<Integer, Integer>();
             
             int ceCnt    = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT Count(CollectingEventID) FROM collectingevent");
-            int stratCnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format("SELECT Count(CollectingEventID) FROM collectingevent INNER JOIN %s ON CollectingEventID = StratigraphyID", srcTableName));
+            int stratCnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format("SELECT Count(CollectingEventID) FROM collectingevent " +
+            		                                                            "INNER JOIN %s ON CollectingEventID = StratigraphyID", srcTableName));
             
             String msg = String.format("There are %d CE->Strat and %d CEs. The diff is %d", stratCnt, ceCnt, (ceCnt - stratCnt));
             tblWriter.log(msg);
@@ -9314,19 +9339,35 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 // Use the new CE ID to get the new Strat Id
                 Integer newLithoId = newCEIdToNewStratIdHash.get(ceId);
+                Integer gtpId      = null;
                 
                 if (newLithoId == null)
                 {
                     missingStrat++;
                     missingStratIds.add(ceId);
-                    continue;
+                    
+                    Integer oldStratID = ceMapper.reverseGet(ceId);
+                    if (oldStratID != null)
+                    {
+                        sql = "SELECT GeologicTimePeriodID FROM stratigraphy WHERE StratigraphyID = " + oldStratID;
+                        Integer oldGTPId = BasicSQLUtils.getCount(oldDBConn, sql);
+                        if (oldGTPId != null)
+                        {
+                            gtpId = gtpIdMapper.get(oldGTPId);
+                        }
+                    }
+                    if (gtpId == null) continue;
                 }
                 
-                // Use the new StratID to get the new GTP Id (ChronosStratigraphy) 
-                Integer gtpId = stratGTPIdHash.get(newLithoId);
+                // Use the new StratID to get the new GTP Id (ChronosStratigraphy)
                 if (gtpId == null)
                 {
-                    missingGTP++;
+                    gtpId = stratGTPIdHash.get(newLithoId);
+                    if (gtpId == null)
+                    {
+                        missingGTP++;
+                        if (newLithoId == null) continue;
+                    }
                 }
                 
                 try
@@ -9340,7 +9381,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             + getCollectionMemberId()
                             + ", 0, " 
                             + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) 
-                            +"," + newLithoId
+                            +"," + (newLithoId != null ? newLithoId : "NULL")
                             +"," + (gtpId != null ? gtpId : "NULL")
                             + ")";
                     updateStatement.executeUpdate(updateStr);
@@ -9396,13 +9437,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             tblWriter.logError(msg);
             log.error(msg);
             
+            StringBuilder sb = new StringBuilder();
+            sb.append("Missing New Strat: ");
+            if (missingStratIds.size() == 0) sb.append("None");
+
             for (Integer id : missingStratIds)
             {
-                msg = String.format("Missing New Strat %d", id);
-                tblWriter.logError(msg);
-                log.error(msg);
+               sb.append(String.format("%d, ", id));
             }
-            
+            tblWriter.logError(sb.toString());
+            log.error(sb.toString());
             
         } catch (Exception ex)
         {
@@ -9512,7 +9556,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
-            String[] columns = StringUtils.splitPreserveAllTokens(line, ',');
+            String[] columns = splitPreserveAllTokens(line, ',');
             if (columns.length < 7)
             {
                 log.error("Skipping[" + line + "]");
@@ -9673,7 +9717,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         int levelsToBuild = 0;
         for (int i = levelNames.length; i > 0; --i)
         {
-            if (StringUtils.isNotEmpty(levelNames[i - 1]))
+            if (isNotEmpty(levelNames[i - 1]))
             {
                 levelsToBuild = i;
                 break;
@@ -9682,7 +9726,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         for (int i = 0; i < levelsToBuild; i++)
         {
-            if (StringUtils.isEmpty(levelNames[i]))
+            if (isEmpty(levelNames[i]))
             {
                 levelNames[i] = "(Empty)";
             }
@@ -9848,7 +9892,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // set the parent/child pointers
         for (int i = 0; i < newItems.size() - 1; ++i)
         {
-            newItems.get(i).setChild(newItems.get(i + 1));
+            GeologicTimePeriodTreeDefItem parent = newItems.get(i);
+            GeologicTimePeriodTreeDefItem child = newItems.get(i + 1);
+            parent.setChild(child);
+            child.setParent(parent);
         }
 
         HibernateUtil.commitTransaction();
@@ -9902,7 +9949,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
         Hashtable<Integer, GeologicTimePeriod> oldIdToGTPMap = new Hashtable<Integer, GeologicTimePeriod>();
 
-        String    sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
+//        String    sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper," +
+//        		       "p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, " +
+//        		       "geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND " +
+//        		       "g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
+        String sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,gb1.Age as Upper," +
+                     "gb1.AgeUncertainty as UpperUncertainty,gb2.Age as Lower,gb2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g " +
+                     "LEFT OUTER JOIN geologictimeboundary gb1 ON g.UpperBoundaryID = gb1.GeologicTimeBoundaryID " +
+                     "LEFT OUTER JOIN geologictimeboundary gb2 ON g.LowerBoundaryID = gb2.GeologicTimeBoundaryID " +
+                     "ORDER BY Lower DESC, RankCode";
         Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         statement.setFetchSize(Integer.MIN_VALUE);
         ResultSet rs        = statement.executeQuery(sql);
@@ -9927,6 +9982,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         ++count;
         newItems.add(allTime);
         
+        ArrayList<GeologicTimePeriod> needsPlaceHolderList = new ArrayList<GeologicTimePeriod>();
+        
         boolean needsTbl = true;
 
         if (isPaleo)
@@ -9942,12 +9999,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Date      creTDate = rs.getDate(7);
                 Timestamp modT     = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
                 Timestamp creT     = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
-                Float     upper    = rs.getFloat(8);
+                Float     upper    = (Float)rs.getObject(8);
                 Float     uError   = (Float)rs.getObject(9);
-                Float     lower    = rs.getFloat(10);
+                Float     lower    = (Float)rs.getObject(10);
                 Float     lError   = (Float)rs.getObject(11);
                 
-                if (StringUtils.isEmpty(name))
+                if (isEmpty(name))
                 {
                     if (needsTbl)
                     {
@@ -9974,12 +10031,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     creT = new Timestamp(modT.getTime());
                 }
                 // else (neither are null, so do nothing)
-    
+
+                GeologicTimePeriodTreeDefItem defItem = rank != null ? treeDef.getDefItemByRank(rank) : null;
+                
                 GeologicTimePeriod gtp = new GeologicTimePeriod();
                 gtp.initialize();
                 gtp.setName(name);
                 gtp.setFullName(name);
-                GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(rank);
                 gtp.setDefinitionItem(defItem);
                 gtp.setRankId(rank);
                 gtp.setDefinition(treeDef);
@@ -9992,7 +10050,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 gtp.setTimestampCreated(creT);
                 gtp.setTimestampModified(modT);
     
-                newItems.add(gtp);
+                if (lower == null || upper == null || rank == null)
+                {
+                    needsPlaceHolderList.add(gtp);
+                    log.debug("PlaceHold Old ID: "+id);
+                } else
+                {
+                    newItems.add(gtp);
+                }
     
                 oldIdToGTPMap.put(id, gtp);
     
@@ -10015,6 +10080,48 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     }
                 }
             }
+            
+            if (needsPlaceHolderList.size() > 0)
+            {
+                int rank = 100;
+                for (GeologicTimePeriodTreeDefItem di : treeDef.getTreeDefItems())
+                {
+                    System.out.println(di.getName()+" -> "+di.getRankId());
+                }
+                GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(rank);
+                        
+                GeologicTimePeriod gtp = new GeologicTimePeriod();
+                gtp.initialize();
+                gtp.setName("Placeholder");
+                gtp.setFullName("Placeholder");
+                gtp.setDefinitionItem(defItem);
+                gtp.setRankId(rank);
+                gtp.setDefinition(treeDef);
+                gtp.setStartPeriod(0.0f);
+                gtp.setStartUncertainty(0.0f);
+                gtp.setEndPeriod(0.0f);
+                gtp.setEndUncertainty(0.0f);
+                gtp.setStandard(null);
+                gtp.setRemarks(null);
+                gtp.setTimestampCreated(now);
+                gtp.setTimestampModified(now);
+                allTime.addChild(gtp);
+
+                rank = 200;
+                defItem = treeDef.getDefItemByRank(rank);
+
+                for (GeologicTimePeriod gtpPH : needsPlaceHolderList)
+                {
+                    gtpPH.setDefinition(treeDef);
+                    gtpPH.setDefinitionItem(defItem);
+                    gtpPH.setRankId(rank);
+                    gtpPH.setStartPeriod(0.0f);
+                    gtpPH.setStartUncertainty(0.0f);
+                    gtpPH.setEndPeriod(0.0f);
+                    gtpPH.setEndUncertainty(0.0f);
+                    gtp.addChild(gtpPH);
+                }
+            }
     
             TreeHelper.fixFullnameForNodeAndDescendants(allTime);
         }
@@ -10031,8 +10138,26 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // add all of the ID mappings
             for (Integer oldId : oldIdToGTPMap.keySet())
             {
-                GeologicTimePeriod gtp = oldIdToGTPMap.get(oldId);
-                gtpIdMapper.put(oldId, gtp.getId());
+                if (oldId != null)
+                {
+                    GeologicTimePeriod gtp = oldIdToGTPMap.get(oldId);
+                    if (gtp != null)
+                    {
+                        if (gtp.getId() != null)
+                        {
+                            gtpIdMapper.put(oldId, gtp.getId());
+                        } else
+                        {
+                            log.debug("GTP id is null: "+gtp.getName());
+                        }
+                    } else
+                    {
+                        log.debug("GTP missing in hash for Old ID: "+oldId);
+                    }
+                } else
+                {
+                    log.debug("Old ID in Hash is null: "+oldId);
+                }
             }
         }
 
@@ -10146,15 +10271,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param child
      * @return
      */
-    protected boolean isParentChildPair(GeologicTimePeriod parent, GeologicTimePeriod child)
+    protected boolean isParentChildPair(final GeologicTimePeriod parent, final GeologicTimePeriod child)
     {
         if (parent == child) { return false; }
 
         Float startParent = parent.getStartPeriod();
-        Float endParent = parent.getEndPeriod();
+        Float endParent   = parent.getEndPeriod();
 
         Float startChild = child.getStartPeriod();
-        Float endChild = child.getEndPeriod();
+        Float endChild   = child.getEndPeriod();
 
         // remember, the numbers represent MYA (millions of yrs AGO)
         // so the logic seems a little backwards
@@ -10204,7 +10329,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             String tableName = rsmd.getTableName(i);
             // log.info("["+tableName+"]");
-            if (StringUtils.isNotEmpty(tableName))
+            if (isNotEmpty(tableName))
             {
                 if (existsMap.get(tableName) != null)
                 {
@@ -10232,7 +10357,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             strBuf.setLength(0);
             String tableName = rsmd.getTableName(i);
-            strBuf.append(StringUtils.isNotEmpty(tableName) ? tableName : missingTableName);
+            strBuf.append(isNotEmpty(tableName) ? tableName : missingTableName);
             strBuf.append(".");
             strBuf.append(rsmd.getColumnName(i));
             map.put(strBuf.toString(), i);
@@ -10259,14 +10384,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String tableName = rsmd.getTableName(i);
             String fieldName = rsmd.getColumnName(i);
 
-            if (StringUtils.isNotEmpty(tableName))
+            if (isNotEmpty(tableName))
             {
                 sb.append(tableName);
             } else
             {
                 for (String fullName : origList)
                 {
-                    String[] parts = StringUtils.split(fullName, ".");
+                    String[] parts = split(fullName, ".");
                     if (parts[1].equals(fieldName))
                     {
                         sb.append(parts[0]);
