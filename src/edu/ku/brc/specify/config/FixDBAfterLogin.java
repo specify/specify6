@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
@@ -68,6 +69,7 @@ import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CustomDialog;
@@ -863,4 +865,62 @@ public class FixDBAfterLogin
         }
     }
 
+    /**
+     * 
+     */
+    public static void fixGTPTreeDefParents()
+    {
+        int     fixed = 0;
+        String  updateSQL = "UPDATE geologictimeperiodtreedefitem SET ParentItemID=? WHERE GeologicTimePeriodTreeDefItemID=?";
+        
+        Connection        conn  = DBConnection.getInstance().getConnection();
+        PreparedStatement pStmt = null;
+        try
+        {
+            pStmt = conn.prepareStatement(updateSQL);
+            
+            Vector<Integer> gtpTreeDefIds = BasicSQLUtils.queryForInts("SELECT GeologicTimePeriodTreeDefID FROM geologictimeperiodtreedef ORDER BY GeologicTimePeriodTreeDefID");
+            for (Integer defId : gtpTreeDefIds)
+            {
+                String sql = String.format("SELECT COUNT(*) FROM geologictimeperiodtreedefitem WHERE ParentItemID IS NULL AND GeologicTimePeriodTreeDefID=%d", defId);
+                if (BasicSQLUtils.getCount(sql) == 1) continue;
+               
+                sql = String.format("SELECT GeologicTimePeriodTreeDefItemID FROM geologictimeperiodtreedefitem WHERE GeologicTimePeriodTreeDefID=%d ORDER BY RankID", defId);
+                Vector<Integer> gtpTreeDefItemIds = BasicSQLUtils.queryForInts(sql);
+                Vector<Integer> parentIds         = new Vector<Integer>();
+                parentIds.add(-1);
+                
+                for (int i = 1; i < gtpTreeDefItemIds.size(); ++i)
+                {
+                    parentIds.add(gtpTreeDefItemIds.get(i-1));
+                }
+                
+                fixed = 0;
+                for (int i = 1; i < gtpTreeDefItemIds.size(); ++i)
+                {
+                    log.debug(String.format("Node: %d  -> Parent: %d", gtpTreeDefItemIds.get(i), parentIds.get(i)));
+                    pStmt.setInt(1, parentIds.get(i));
+                    pStmt.setInt(2, gtpTreeDefItemIds.get(i));
+                    int rv = pStmt.executeUpdate();
+                    if (rv != 1)
+                    {
+                        log.error("Error updating GTP TreeDef Item PArent");
+                    }
+                    fixed++;
+                }
+                log.debug(String.format("Fixed %d/%d", fixed, gtpTreeDefItemIds.size()-1));
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+            } catch (SQLException e) {}
+        }
+    }
 }
