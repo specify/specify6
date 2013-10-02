@@ -8,15 +8,13 @@ body {font-family:Arial, Helvetica, sans-serif}
 </head>
 <body>
 <p>
-This form allows you to test the validity of the Specify “IT” username and password.  
-Typically the Specify “IT” user is either the ‘root’ user of the MySQL database server with all rights.  
-In institutions with database administration or IT support, the IT user name and password may only be known 
-to the system or database administrator.
+This form tests the validity of the Specify &quot;IT User&quot; name and password. For standalone workstation installations of Specify (without a dedicated MySQL Server computer) the Specify IT User is typically the root user account in the MySQL installation. The user name is &quot;root&quot; and the password is whatever was specified during the MySQL installation on that workstation. You must validate your &quot;IT User&quot; (MySQL &quot;root&quot; user) name and password in this window to be able to use this tool.
 </p>  
 <p>
-For small and single-user installations of Specify, the “IT” user name and 
-password would have been specified during the original installation of MySQL as the database engine behind Specify.  
-If you are unable to validate your “IT” username and password strings here, this tool will not be usable. 
+ At institutions which share a MySQL server for one or more institutional databases, the Specify &quot;IT User&quot; is typically NOT the MySQL root user account, but rather a named user granted several permissions to create and modify Specify databases only-for more information, see the documentation for installing MySQL on a shared server on the Specify Software Project web site.
+</p>
+<p>
+This version of the Specify DB Security Wizard does not work with Specify IT User names which are not &quot;root&quot;.  If you are having a problem connecting a Specify installation on a workstation to a dedicated MySQL server and your Specify IT User in MySQL is not &quot;root&quot;, please contact the Specify Software Project for assistance.
 </p>
 </body>
 </html>
