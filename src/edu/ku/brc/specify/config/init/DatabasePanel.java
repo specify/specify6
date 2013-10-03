@@ -49,7 +49,6 @@ import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -63,7 +62,6 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.PermissionInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
@@ -87,8 +85,6 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @SuppressWarnings("serial")
 public class DatabasePanel extends BaseSetupPanel
 {
-    protected static final Logger  log            = Logger.getLogger(DatabasePanel.class);
-    
     private enum VerifyStatus {OK, CANCELLED, ERROR}
     
     protected final String            PROPNAME       = "PROPNAME";
@@ -524,7 +520,6 @@ public class DatabasePanel extends BaseSetupPanel
                     boolean dbmsOK = false;
                     if (driverInfo.isEmbedded())
                     {
-                    	log.info("IsEmbedded. Checking for processes.");
                     	if (checkForProcesses)
                         {
                             ProcessListUtil.checkForMySQLProcesses(null);
@@ -549,7 +544,6 @@ public class DatabasePanel extends BaseSetupPanel
                         if (driverInfo.isEmbedded())
                         {
                             //System.err.println(newConnStr);
-                        	log.info("IsEmbedded. ConnStr=" + newConnStr);
                             try
                             {
                                 Class.forName(driverInfo.getDriverClassName());
@@ -563,11 +557,9 @@ public class DatabasePanel extends BaseSetupPanel
                                     testDB.close();
                                 }
                                 dbmsOK = true;
-                            	log.info("IsEmbedded. dbmsOK");
                                 
                             } catch (Exception ex)
                             {
-                            	log.info("IsEmbedded. dbms NOT OK");
                                 ex.printStackTrace();
                             }
                             DBConnection.getInstance().setDatabaseName(null);
@@ -599,7 +591,9 @@ public class DatabasePanel extends BaseSetupPanel
                     if (dbmsOK)
                     {
 						properties.put(DB_SKIP_CREATE, false);
-						properties.put(DBUSERPERMS, perms);
+						if (perms != null) {
+							properties.put(DBUSERPERMS, perms);
+						}
 
                     	firePropertyChange(PROPNAME, 0, 1);
                         
@@ -939,7 +933,6 @@ public class DatabasePanel extends BaseSetupPanel
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new Exception("The Embedded Data Dir has not been set"));
                 return VerifyStatus.ERROR;
             }  
-            log.info("EzDb: verify db OK");
             return VerifyStatus.OK;
         }
         
