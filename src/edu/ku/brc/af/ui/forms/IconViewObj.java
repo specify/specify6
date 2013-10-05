@@ -510,6 +510,7 @@ public class IconViewObj implements Viewable
         {
             newObject = FormHelper.createAndNewDataObj(view.getClassName(), businessRules);
         }
+        setupAsOrderable(newObject);
 
         FileImportProcessor importer = FileImportProcessor.getInstance();
         if (!importer.importFileIntoRecord(newObject, newObject.getTableId(), f))
@@ -586,6 +587,27 @@ public class IconViewObj implements Viewable
         }
     }
     
+    /**
+     * @param newDataObj
+     */
+    public void setupAsOrderable(final FormDataObjIFace newDataObj)
+    {
+        if (newDataObj instanceof Orderable)
+        {
+            // They really should all be Orderable, 
+            // but just in case we check each one.
+            int maxOrder = -1;
+            for (Object listObj : dataSet)
+            {
+                if (listObj instanceof Orderable)
+                {
+                    maxOrder = Math.max(((Orderable)listObj).getOrderIndex(), maxOrder);
+                }
+            }
+            ((Orderable)newDataObj).setOrderIndex(maxOrder+1);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#setNewObject(edu.ku.brc.af.ui.forms.FormDataObjIFace)
      */
@@ -605,21 +627,7 @@ public class IconViewObj implements Viewable
             mvParent.registerDisplayFrame(dialog);
         }
         
-        if (newDataObj instanceof Orderable)
-        {
-            // They really should all be Orderable, 
-            // but just in case we check each one.
-            int maxOrder = -1;
-            for (Object listObj : dataSet)
-            {
-                if (listObj instanceof Orderable)
-                {
-                    maxOrder = Math.max(((Orderable)listObj).getOrderIndex(), maxOrder);
-                }
-            }
-            ((Orderable)newDataObj).setOrderIndex(maxOrder+1);
-        }
-
+        setupAsOrderable(newDataObj);
         
         dialog.setData(newDataObj);
         dialog.showDisplay(true);
