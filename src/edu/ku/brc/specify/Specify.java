@@ -2750,7 +2750,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         final AppPreferences             globalPrefs   = AppPreferences.getGlobalPrefs();
         
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
-                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "FixedGTPTreeDefParents"};
+                                     "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "FixedGTPTreeDefParents",
+                                     "FixAttachmentOrdinal"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
         boolean anyNeededToBeFixed = false;
@@ -2824,6 +2825,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     if (!isFixed[inx])
                     {
                         FixDBAfterLogin.fixGTPTreeDefParents();
+                        globalPrefs.putBoolean(prefNames[inx], true);
+                    }
+                    inx++;
+                    
+                    if (!isFixed[inx])
+                    {
+                        FixDBAfterLogin.fixAttachmentOrdinal();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;

@@ -68,9 +68,49 @@ import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
+import edu.ku.brc.specify.datamodel.Borrow;
+import edu.ku.brc.specify.datamodel.BorrowAttachment;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.ConservDescription;
+import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
+import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequence;
+import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.DNASequencingRun;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.Gift;
+import edu.ku.brc.specify.datamodel.GiftAttachment;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanAttachment;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
+import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationAttachment;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
+import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
+import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -921,6 +961,108 @@ public class FixDBAfterLogin
             {
                 if (pStmt != null) pStmt.close();
             } catch (SQLException e) {}
+        }
+    }
+    
+    /**
+     * 
+     */
+    public static void fixAttachmentOrdinal()
+    {
+        try
+        {
+            Class<?>[] attachmentClasses = {
+                    AccessionAttachment.class,
+                    AgentAttachment.class,
+                    BorrowAttachment.class,
+                    //CollectingEventAttachment.class,
+                    CollectionObjectAttachment.class,
+                    ConservDescriptionAttachment.class,
+                    ConservEventAttachment.class,
+                    DNASequenceAttachment.class,
+                    DNASequencingRunAttachment.class,
+                    FieldNotebookAttachment.class,
+                    FieldNotebookPageAttachment.class,
+                    FieldNotebookPageSetAttachment.class,
+                    GiftAttachment.class,
+                    LoanAttachment.class,
+                    LocalityAttachment.class,
+                    PermitAttachment.class,
+                    PreparationAttachment.class,
+                    ReferenceWorkAttachment.class,
+                    RepositoryAgreementAttachment.class,
+                    TaxonAttachment.class,
+                };
+            
+            Class<?>[] ownerClasses = {
+                    Accession.class,
+                    Agent.class,
+                    Borrow.class,
+                    //CollectingEvent.class,
+                    CollectionObject.class,
+                    ConservDescription.class,
+                    ConservEvent.class,
+                    DNASequence.class,
+                    DNASequencingRun.class,
+                    FieldNotebook.class,
+                    FieldNotebookPage.class,
+                    FieldNotebookPageSet.class,
+                    Gift.class,
+                    Loan.class,
+                    Locality.class,
+                    Permit.class,
+                    Preparation.class,
+                    ReferenceWork.class,
+                    RepositoryAgreement.class,
+                    Taxon.class,
+                };
+
+            int i = 1;
+            for (Class<?> cls : attachmentClasses)
+            {
+                DBTableInfo ownerTI = DBTableIdMgr.getInstance().getByClassName(ownerClasses[i-1].getName());
+                DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+                
+                  String sql = String.format("SELECT %s FROM %s WHERE Ordinal IS NULL GROUP BY %s", 
+                                             ownerTI.getIdColumnName(), ti.getName(), ownerTI.getIdColumnName());
+                  //System.out.println(sql);
+                  Vector<Integer> ownerIDs = BasicSQLUtils.queryForInts(sql);
+                  if (ownerIDs != null)
+                  {
+                      for (Integer ownerId : ownerIDs)
+                      {
+                          sql = String.format("SELECT %s FROM %s WHERE %s = %d ORDER BY %s", 
+                                  ti.getIdColumnName(), ti.getName(), ownerTI.getIdColumnName(), ownerId, ti.getIdColumnName());
+                          //System.out.println(sql);
+                          
+                          Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+                          if (ids != null)
+                          {
+                              int ordinal = 0;
+                              for (Integer id : ids)
+                              {
+                                  //log.debug(ti.getName()+"   -> "+id);
+                                  sql = String.format("UPDATE %s SET Ordinal = %d WHERE %s = %d",
+                                                      ti.getName(), ordinal, ti.getIdColumnName(), id);
+                                  //System.out.println(sql);
+                                  int cnt = update(sql);
+                                  if (cnt != 1)
+                                  {
+                                      log.error("Error updating [" + cnt + "]");
+                                  }
+                                  //log.debug(String.format("Set TableID for %d attachments.", cnt));
+                                  ordinal++;
+                              }
+                          }
+                      }
+                  }
+                i++;
+            }
+            return;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 }
