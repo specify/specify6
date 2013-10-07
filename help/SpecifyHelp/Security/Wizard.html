@@ -23,183 +23,108 @@
     </table>
     <h2><img src="../../images/spwizard32.png" height="32" width="32">
       Specify Setup Wizard</h2>
-    <p>The Specify Setup Wizard is required to customize the necessary
-      components in MySQL for communication with Specify. It walks you
-      through the creation of a database including; the insertion of a
-      schema within MySQL, the creation of an administrative level
-      Specify user, and the initialization of the database structure. It
-      also allows you to download the start of Taxon and Geography
-      authority files.</p>
-    <p>Before running the Specify 6.5 Setup Wizard to create a blank
-      database for the full Specify application, MySQL must be
-      installed. MySQL must include an administrative (root) login
-      account with all MySQL permissions.</p>
-    <p>The Setup Wizard should NOT be run if a collection data already
-      exists in Specify. It creates a new, blank database and will
-      permanently erase all existing data. The Wizard should only be run
-      one time, for the initial Specify installation and setup, then can
-      be deleted from your computer. If Specify will be installed on a
-      network server and run on several computers, the Setup Wizard
-      should only be used to setup the database on the Network. DO NOT
-      use the Setup Wizard on other computers, they only need to have
-      Specify installed.</p>
-    <p>Fields within the Wizard that must contain data before continuing
-      to the next step in the Wizard are displayed in <strong>bold</strong>
-      font.</p>
-    <h4>Unique MySQL requirements for creating a Specify database and Master
-      credentials</h4>
-      <p>If you wish to install Specify and on a desktop machine that will not be accessed by other desktops please 
-      proceed to <a href="#mysql_username">"Running the Specify Setup Wizard"</a>.
-    <p>If one or more of the following scenarios apply to your situation please read the corresponding section(s) below 
-    and perform the appropriate tasks before using the Specify Setup Wizard:</p>
-    <ol type="I">
-      <li> The default data management engine for an existing MySQL
-        installation is NOT InnoDB.</li>
-      <li>The Specify Setup will be on a dedicated server, or desktop
-        computer accessed by other desktops.</li>
-      <li>You wish to create your own database rather than use the
-        Wizard to create the Specify database and insert the schema.</li>
-    </ol>
+  <p>The Specify Setup Wizard is required to customize and create a Specify database in MySQL. The Wizard walks you through the creation of a database including; the insertion of a schema in MySQL, and the initialization of the Specify database structure. The Specify Wizard also enables you to download authority files for Taxa (for some disciplines) and for Geography, as starting points for building and customizing your taxon and geography data. </p>
+    <p><br />
+      Before running the Specify 6.5 Setup Wizard, MySQL must have been previously installed on either the workstation on which Specify will be run, or on a shared network server computer for access from two or more workstations. User accounts must also exist within MySQL with the necessary permissions for Specify to communicate with MySQL. The creation of these accounts varies depending on your Specify setup. </p>
+    <p><br />
+  <strong>Standalone Specify installation on a workstation &ndash; not accessed by other workstations</strong> </p>
+    
     <blockquote>
-      <p><strong>I. </strong>The default data management engine for an
-        existing MySQL installation is NOT InnoDB.</p>
-      <ol>
-        <li>If your default MySQL engine is not InnoDB it can be changed
-          using the guidelines found on the Specify website at: <a
-href="http://specifysoftware.org/content/changing-default-mysql-engine-innodb">http://specifysoftware.org/content/changing-default-mysql-engine-innodb</a>.
-        </li>
-        <p>OR</p>
-        <p>If you are unable to change your default MySQL engine, you
-          will need to create a blank Specify database with MySQL's
-          software tools and insert a Specify schema <em>before</em>
-          running the Specify Setup Wizard. The Specify team provides
-          both an explanation and script for performing these tasks from
-          within MySQL on the Specify website at: <a
-href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>.
-        </p>
-        <blockquote>
-          <p><em><strong>Note:</strong></em> The MySQL step-by-step
-            installation guide, located on the Specify web site, prompts
-            users to designate InnoDB as the default data storage
-            engine. Institutions with legacy installations of MySQL may
-            have originally configured their system for a different data
-            engine and may not be able to change the default storage
-            engine to InnoDB; in this case, do not run the Wizard you
-            have created a black Specify database using MySQL software
-            tools and inserted a Specify schema. </p>
-        </blockquote>
-        <li> Once a Specify database is created using the MySQL software
-          tools and a schema inserted by running the provided script,
-          run the Specify Wizard to create other necessary components of
-          the database. </li>
-        <br>
-        <li> When running the Specify Wizard, rather than creating the
-          database and inserting the schema in the first Wizard window,
-          you will verify that Specify can access your existing database
-          and schema in the <em>Advanced</em> section by clicking on
-          the <em>Test IT Login</em> button. </li>
-        <br>
-        <li>When accessing the database locally, the Wizard can be used
-          to create the Specify Master by clicking the <em>Create
-            Master User</em> on the second Wizard window. </li>
-        <p>OR</p>
-        <p>When accessing the database remotely please follow the steps
-          in procedure #2 below.</p>
-        <p>&nbsp;</p>
-      </ol>
-      <p><strong>II.</strong> The Specify Setup will be on a dedicated
-        server, or desktop computer accessed by other desktops.</p>
-      <ol>
-        <li>If the Specify database will be accessed by other 'client'
-          computers you will first need to manually create a Specify
-          Master username and password in MySQL before running the
-          Specify Wizard. Instrucions for setting up the Specify Master
-          username and password in MySQL can be found on the Specify
-          website at: <a
-            href="http://specifysoftware.org/content/specify-system-setup">http://specifysoftware.org/content/specify-system-setup</a>.</li>
-        <br>
-        <li>After reading the information on the website and creating
-          the Specify Master username and password in MySQL, run the
-          Specify Wizard and enter the MySQL information on the first
-          Wizard screen and click the <em>Create Specify Database</em>
-          button to create the database and insert the schema (unless
-          you have created a database using the MySQL tools in procedure
-          #1 above). </li>
-        <br>
-        <li>On the second Specify Wizard window enter the Specify Master
-          credentials, then click the <em>Test Master Login</em> button
-          to verify that the Specify Master credentials were created
-          from within MySQL.</li>
-      </ol>
-      <p>&nbsp;</p>
-      <p><strong>III.</strong> You wish to create your own database
-        rather than use the Wizard to create the Specify database and
-        insert the schema.</p>
-      <ol>
-        <li>If you wish to create your own Specify database and insert a
-          schema from within MySQL rather than using the Specify Wizard,
-          the Specify team provides both an explanation and script for
-          performing this task from within MySQL on the Specify website
-          at <a
-href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>.
-        </li>
-        <br>
-        <li>Once you have read the provided information and created your
-          Specify database and inserted the schema, run the Specify
-          Wizard. </li>
-        <br>
-        <li>On the first Wizard window, rather than creating the
-          database and inserting the schema, verify that Specify can
-          access your existing database and schema in the <em>Advanced</em>
-          section by clicking on the <em>Test IT Login</em> button. </li>
-        <br>
-        <li>When accessing the database locally, the Wizard can be used
-          to create the Specify Master by clicking the <em>Create
-            Master User</em> on the second Wizard window. </li>
-        <p>OR</p>
-        <p>When accessing the database remotely, please follow the steps
-          for #2 found above.</p>
-        <p>&nbsp;</p>
-      </ol>
-    </blockquote>
-    <h3>Running the Specify Setup Wizard</h3>
-    <p><a name="mysql_username" id="mysql_username"></a><u><strong>Database
+    <p>
+      The documents <em>Installing MySQL on MacOS X for Specify</em> and <em>Installing MySQL on Windows for Specify</em> give step-by-step instructions for installing MySQL on both a Macintosh and Windows computer (respectively) and setting permissions for the MySQL &lsquo;root&rsquo; user account. The &lsquo;root&rsquo; user is referred to as the Specify &lsquo;IT User&rsquo; in Specify documentation. This account allows the Specify Wizard to access MySQL during the Specify setup process. You will need to enter the name &lsquo;root&rsquo; and the password to run the Wizard. </p>
+    <p>
+      Once the MySQL installation process is complete you may run the Specify Wizard. Step-by-Step instructions for running the Specify Wizard are included in the section of this document titled <a href="#mysql_username">&quot;Running the Specify Setup Wizard&quot;</a>. </p>
+  </blockquote>
+    <p>
+  <strong>The same Workstation running Specify and MySQL, and accessed by other Workstations</strong></p>
+  
+  <blockquote>
+    <p>
+      The documents <em>Installing MySQL on MacOS X for Specify</em> and <em>Installing MySQL on Windows for Specify</em> give step-by-step instructions for installing MySQL on both a Macintosh and Windows computer (respectively) and setting permissions for the MySQL &lsquo;root&rsquo; user account. The &lsquo;root&rsquo; user is referred to as the &lsquo;Specify IT User&rsquo; in Specify documentation. This account allows the Specify Wizard to access MySQL during the Specify setup process. You will need to enter the name &lsquo;root&rsquo; and the password to run the Wizard. </p>
+    <p>
+      Two additional steps need to be completed to allow other workstations to access your Specify database before running the Specify Wizard: </p>
+      <blockquote>
+   <ol>
+   <li>
+      Download and edit the my.cnf file, then copy it to the correct directory in your file system. This is necessary to allow other workstations to access your Specify database. </li>
+    <br />
+     <li> Create a &lsquo;Master User&rsquo; within MySQL. The key points for creating this MySQL user are (1) to grant the necessary privileges the Specify database and (2) to give those MySQL user accounts access to the database based on IP address range values.&nbsp; </li>
+  </ol>
+  </blockquote>
+  
+  <p>
+      Step-by-Step instructions for these tasks can be found in document <em>Setting up a Workstation as a Specify Database Server, </em>which is available on the specify website. </p>
+    <p>Once these steps are complete, you may run the Specify Wizard to create a new database. Step-by-Step instructions for running the Specify Wizard are in the next section of this document. <br />
+  When running the Specify Setup Wizard, in the first Wizard window enter &lsquo;root&rsquo; as the IT Username, and the password that you created. Then enter the dedicated database name chosen during the Master User creation, and the Hostname (network name of the computer running MySQL), then click on <em>Create Database</em>.</p>
+    <p>
+  This will initiate the process of creating Specify&rsquo;s database tables and may take several minutes to complete.    </p>
+    <blockquote>
+  <strong><em>Note:</em></strong> if you click on the <em>Test IT</em> Login button, and if the login is successful, the Wizard will continue to the next screen. Before proceeding though, you must immediately use the <em>Back</em> button to return to the Database Information window, and click on the <em>Create Specify Database</em> button, otherwise your Specify database tables will not be created and the Specify Wizard will eventually fail. </p>
+  </blockquote>
+  
+  <p>In the subsequent Wizard window, which asks you for the Master account information, enter the master username and password that were created earlier in MySQL, and then click the<em>Test Master Login</em> button. This should return a message that your Master Login has worked and then you can proceed with the Wizard screens. If your Master account credentials do not allow you to login to the MySQL server, check your credentials for a misspelling. </p>
+  <p>
+  Do NOT click on the <em>Create Master User</em> button on this window, as that will re-create your Specify master user account with MySQL access permissions restricted only to the workstation on which you are running the Specify Wizard. This will prevent other workstations from accessing your Specify database.</p>
+  <p>Step-by-Step instructions for running the Specify Wizard are included in the section of this document titled <a href="#mysql_username">&quot;Running the Specify Setup Wizard&quot;</a>. </p>
+  </blockquote>
+  <p><strong>A dedicated MySQL server computer with access from multiple workstations</strong></p>
+  
+  <blockquote>
+  <p>Two steps must be completed before running the Specify Wizard:</p>
+  
+  <blockquote>
+    <ol>
+      <li>Create a Specify IT User in MySQL. This includes granting privileges on a named database and allowing access to the database based on IP address range values.</li><br />
+
+      <li>Create a Specify Master User in MySQL. This includes granting privileges on a named database and allowing access to the database based on IP address range values.</li>
+  </ol>
+  </blockquote>
+  
+  <p>Specify requires access to MySQL through either a &lsquo;root&rsquo; account, or another user account, which has been granted all necessary permissions. Often, for shared MySQL servers managed for organizations, e.g. across departments or campuses for multiple databases (not just Specify), the root user account information is typically protected by database or network administrators and will not be available to complete the Specify database creation with the Specify Wizard. In those cases, the database or network administrator must first create two new users with specific privileges for a new database creation, and name the database -- before the Specify Wizard can be run. These user accounts and their passwords must be communicated to you, along with the name used for the database, before proceeding with the Specify Wizard. We provide simple MySQL scripts in the document <em>Setting Up Specify to Use a Networked MySQL Server</em>, available on the Specify Software web site, to enable MySQL server administrators to create the new users for a Specify database, and assign privileges to those users on a shared MySQL server computer. In documentation we refer to the root-level user for the Specify database as the &quot;Specify IT User&quot;. The other user is referred to as a &ldquo;Specify Master User&rdquo;. The Specify (thick) client application does not need to be installed on the MySQL server. The Specify Setup Wizard can be run from the server, but we recommend that it be operated on a networked workstation.</p>
+    <p>
+  When running the Specify Setup Wizard, in the first Wizard window enter the information for the new database: IT User name, IT User Password, Database name, and Hostname (network name of the computer running MySQL), then click on <em>Create Database</em>. </p>
+    <p>
+  This will initiate the process of creating Specify&rsquo;s database tables and may take several minutes to complete.    </p>
+    <blockquote>
+  <em><strong>Note:</strong></em> if you click on the <em>Test IT Login</em> button, and if the login is successful, the Wizard will continue to the next screen. Before proceeding though, you must immediately use the <em>Back</em> button to return to the Database Information window, and click on the <em>Create Specify Database</em> button, otherwise your Specify database tables will not be created and the Specify Wizard will eventually fail. </p>
+  </blockquote>
+  <p>
+    In the subsequent Wizard window, which asks you for the Master account information, enter the master username and password that were created earlier in MySQL, and then click the <em>Test Master Login</em> button. This should return a message that your Master Login has worked and then you can proceed with the Wizard screens. If your Master account credentials do not allow you to login to the MySQL server, check your credentials for a misspelling. </p>
+    <p>
+    Do NOT click on the <em>Create Master User</em> button on this window, as that will re-create your Specify master user account with MySQL access permissions restricted only to the workstation on which you are running the Specify Wizard. This will prevent other workstations from accessing your Specify database.</p>
+    <p>
+      If Specify will be installed on a network server and run on several computers, the Setup Wizard should only be run once, from a single workstation, to setup the database on the network server. Do not re-run the Setup Wizard on other desktop computers when using a shared MySQL server. It creates a new, blank database and will permanently erase all existing data. Once the Wizard is run and completed on a single workstation to setup a Specify database, it is not needed again.</p>
+    <p>&nbsp;</p>
+  </blockquote>
+
+<h3><a name="mysql_username" id="mysql_username"></a>Running the Specify Setup Wizard</h3>
+    <p><u><strong>Database
 
           Information</strong></u></p>
     <p align="center"><img src="../../images/window1.png"></p>
     <p align="center"><span class="imgcaption">Enter MySQL IT Username
         and Password</span></p>
     <blockquote>
-      <p>The first window allows you to either create a Specify database
-        or verify that Specify can access a database you have already
-        created within MySQL. To create or verify a database, you must
-        first complete the following information:</p>
+      <p>The first window allows you to either create a Specify database or verify that Specify can access a database you have already created within MySQL. To create or verify a database, you must first complete the following information:</p>
       <ul>
         <li>The <strong>IT Username</strong> and <strong>IT Password</strong>
-          must be an existing account with full administrator privileges
+          must be an existing account with the necessary privileges
           in the MySQL database manager. This account will be used by
           the Specify Setup Wizard to create your Specify database and a
           Specify Master account (in the next window) in MySQL. If you
-          do not know the IT administrator ("root") account username and
+          do not know the IT administrator account username and
           password for MySQL, or do not have a MySQL installation, exit
           now. You can not go further without these. </li>
       </ul>
       <ul>
         <li>The <strong>Database Name</strong> will be used to name the
-          database that the Setup Wizard is about to create. If you do
-          not have an existing database but are using the Wizard to
-          create one, you are creating this name as you type it into the
+          database that the Setup Wizard is about to create. If you will be running Specify on a single workstation and will not grant access to the Specify database to other workstations, you are creating this name as you type it into the
           window. Once you name the database make sure to document it so
           you can reference it if you need it at a later date.</li>
       </ul>
       <blockquote>
-        <p>If you have an existing database you must enter the name of
-          the database in this text box so that the Wizard may verify
-          that Specify can connect to the database before continuing
-          with the Wizard. If you are testing an existing database be
-          sure to click on the <em>Test IT Login</em> button to test
-          the connection to your database. </p>
-      </blockquote>
+        <p>If you will be allowing other workstations to access your Specify database, a name has been previously identified for the database, and the IT/Master User have been given permission to access MySQL and create the database. You must type in the designated database name. If you have not identified a name for your database and granted the IT and/or Master User permission to access it, you may not proceed and must click <em>Cancel</em> to exit the Setup Wizard. More information about this step can be found in the introductory section of this help document.</p>
+</blockquote>
       <ul>
         <li>The <strong>Host Name</strong> is the name of the computer
           that is running MySQL. This is either an IP Address or name of
@@ -213,32 +138,23 @@ href="http://specifysoftware.org/content/creating-specify-database-within-mysql"
         </li>
         <li><b>Database Structure Creation Only</b> should not be
           checked unless you have received a conversion database from
-          the Specify team and specific instructions check this box.</li>
-        <li><strong>Create a Specify Database</strong>
-          <blockquote>
-            <p>When you click the <em>Create Specify Database</em>
-              button Specify will connect to MySQL using the information
-              you have entered, create your Specify database, and insert
-              the Specify schema. If Specify can not connect to MySQL
-              and build the database for any reason a message will
-              display. To proceed in the Wizard you will need to verify
-              that the information entered and your MySQL setup are
-              correct.</p>
-          </blockquote>
-        </li>
-        <li><strong>Advanced: Test IT Login</strong>
-          <blockquote>
-            <p>If a Specify database exists withing MySQL you must
-              verify it before proceeding in the Wizard. Enter your
-              database information, then click the <em>Test IT Login</em>
-              button in the Advanced section of the window. The Wizard
-              will verify that Specify can connect to your existing
-              database. If Specify can not connect to the existing
-              database you may not proceed within the Wizard using the
-              existing database.</p>
-          </blockquote>
-        </li>
+          the Specify team and specific instructions to check this box.</li><br />
       </ul>
+        <strong>Create a Specify Database</strong>
+          <blockquote>
+            <p>Click the <em>Create Specify Database</em> button and allow the Specify Setup Wizard to connect to MySQL using the information you have entered, create your Specify database, and insert the Specify schema. This process must be completed before proceeding to the next steps of the Setup Wizard.</p>
+            <p>If Specify can not connect to MySQL and build the database for any reason a message will display. To proceed in the Wizard you will need to verify that the information entered and your MySQL setup are correct.</p>
+          </blockquote>
+        
+        <strong>Advanced: Test IT Login</strong>
+          <blockquote>
+            <p>This procedure is very rare and should only be used when specifically instructed by the Specify Help </p>
+          
+          <blockquote>
+          <p><strong><em>Note:</em></strong> if you click on the “Test IT Login” button, and if the login is successful, you will be allowed to continue to the next Wizard screen. Before proceeding though, you must immediately use the “Back” button to return to the Database Information window, and click on the ‘Create Specify Database’ button, otherwise your Specify database tables will not be created and the Specify Wizard will eventually fail. </p>
+          </blockquote>
+          </blockquote>
+
       <p>&nbsp;</p>
     </blockquote>
     <p><a name="master_username" id="master_username"></a><u><strong>Specify
@@ -246,10 +162,10 @@ href="http://specifysoftware.org/content/creating-specify-database-within-mysql"
           Master Credentials</strong></u></p>
     <p align="center"><img src="../../images/window2.png"></p>
     <p align="center"><span class="imgcaption">Create a Master Username
-        and Password</span></p>
-    <p>&nbsp;</p>
+        and Password</span>    </p>
     <blockquote>
-      <p>The security system for Specify 6 uses both a "Master" username
+      <p>This window either creates the Master username and password for your Specify system, or verifies that a Master username and password, that has already been created within MySQL, is recognized by Specify. Any instance of Specify that allows access from other workstations must create the Master username and password using the MySQL Admin. tool. More information about this step can be found in the introductory section of this help document.</p>
+<p>The security system for Specify 6 uses both a &quot;Master&quot; username
         and password, which Specify uses to access the MySQL Database,
         as well as a User username and password, which allows a user to
         run the Specify program. The Master account has SELECT, INSERT,
@@ -258,19 +174,17 @@ href="http://specifysoftware.org/content/creating-specify-database-within-mysql"
         uses only one Master username and password for all users, but
         encrypts the Master password with the User information, creating
         an encrypted string. This allows the Master information to
-        become unique for each user. </p>
-      <p>This window either creates the Master username and password for
-        your Specify system, or verifies that a Master username and
-        password that has already been created within MySQL is
-        recognized by Specify. Any instance of Specify that does not
-        access MySQL on the local machine, (uses a remote server), must
-        create the Master username and password using the MySQL Admin.
-        tool. Instructions for setting up the Specify Master username
-        and password in MySQL can be found on the Specify website at<a
-          href="http://specifysoftware.org/content/specify-system-setup">
-          http://specifysoftware.org/content/specify-system-setup</a>.</p>
-      <p>When creating the Master username and password, the word
-        "Master" or "Root" SHOULD NOT BE USED. Please create a unique
+      become unique for each user.      </p>
+      <blockquote>
+        <p><strong>Create the Master</strong></p>
+        <blockquote>
+        <p>If you are using Specify on a single workstation that has not been configured to grant access to other workstations, click the <em>Create Master User</em> button.
+          Specify will take a moment to create the Master account in the
+          database. Once this account has been created you may not
+          change the information on this screen, or any previous
+          screens.</p>
+        <p>When creating the Master username and password, the word
+        &quot;Master&quot; or &quot;Root&quot; SHOULD NOT BE USED. Please create a unique
         Master username and a secure, strong password for it. This
         should not be the same as the username and password used for the
         MySQL IT account in the previous window. This information should
@@ -278,26 +192,12 @@ href="http://specifysoftware.org/content/creating-specify-database-within-mysql"
         Specify at your institution. The Specify administrator, (a role
         and account within Specify), will need the Master username and
         password to create new user accounts in Specify. </p>
-      <p>Also, the "Master" username and password should not be used as
-        a Specify user account name within Specify. Whichever username
-        and password you choose for the Master account, that username
-        and password is never used to log in to Specify. This "Master"
-        username and password should ALWAYS be unique. Do not use this
-        username and password for any other accounts in MySQL or
-        Specify.</p>
-      <blockquote>
-        <p><strong>Create the Master</strong></p>
-        <p>When you click the <em>Create Master User</em> button
-          Specify will take a moment to create the Master account in the
-          database. Once this account has been created you may not
-          change the information on this screen, or any previous
-          screens.</p>
+        </blockquote>
         <p><strong>Advanced: Test the Master</strong></p>
-        <p>Click the <em>Test Master Login</em> button to verify that
-          Specify can connect to the Specify database using the existing
-          master credentials that you have previously created in the
-          MySQL command line tool. </p>
-      </blockquote>
+        <blockquote>
+        <p>If you will be allowing other workstations to access your Specify database you must first create the Specify Master User in MySQL, grant it the necessary permissions and allow it access to the Specify database by setting an IP address range. If you have completed this step and created a Master User, enter the name and password and click the<em>Test Master Login</em> button. If you have not created the Master within MySQL you may not proceed and must click <em>Ca</em>ncel to exit the Setup Wizard. More information about this step can be found in the introductory section of this document.</p>
+        </blockquote>
+</blockquote>
     </blockquote>
     <p><a name="security_on" id="security_on"></a><strong><u>Security</u></strong></p>
     <p align="center"><img src="../../images/window_security.png"></p>
