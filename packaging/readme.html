@@ -5,132 +5,45 @@
   <title>Release Notes</title>
 </head>
 <body>
-<h3>Release Notes<br />
-Specify 6.5<br />
-29 July 2013<br />
-Specify Software Project</h3><br />
+<h3>Release Notes<br>
+Specify 6.5.01<br>
+10 October 2013<br>
+Specify Software Project</h3>
+<br>
+<br>
+<h4>List of changes in Specify 6.5.01<br>
+</h4>
+<ul>
+<!--<li>EZDB Wizard says cannot create database on every platform. 10/04/13 02:30 PM, (Bugzilla 9416)</li>-->
+<li>Clerified the text on the SpecifyDBSecurityWizard IT user and Master user screens. 10/03/13 02:48 PM, (9414)</li>
+<li>Timestamp field now displays the time along with the date. 10/01/13 04:49 PM, (9411)</li>
+<li>If multiple preps are mapped and StorageTree fields are in use validator incorrectly requires PrepType. 10/01/13 01:13 PM, (9410)</li>
+<li>Help link added for SpecifyDBSecurityWizard. 10/02/13 10:23 AM, (9409)</li>
+<!--<li>Schema Updater only checks IT user for 'Alter' privileges. 10/01/13 01:54 PM, (9405)</li>-->
+<li>DnaSequnces can now be queried in CollectionObject queries. 09/25/13 12:54 PM, (9403)</li>
+<li>The Help button on the Resource Import/Export window now shows the help document. 10/02/13 01:34 PM, (9395)</li>
+<li>Attachments are now sorted in the same order as the search results. 09/26/13 04:29 PM, (9392)</li>
+<!--<li>SpWizard doesn't check IT user permissions when creating db. 10/01/13 01:48 PM, (9391)</li>-->
+<li>Collection Object Attachment fields is now fully visible when in form view. 09/25/13 01:30 PM, (9390)</li>
+<li>Test IT Login on SpecifyDBSecurityWizard now checks for the appropriate permissions. 10/01/13 01:31 PM, (9389)</li>
+<!--<li>SpecifyDBSecurityWizard says mysql root user lacks GRANT privileges. 10/02/13 10:52 AM, (9388)</li>-->
+<!--<li>Need to make Specify database tables Innodb by default even when MySQL uses ISAM by default. 09/17/13 12:53 PM, (9386)</li>-->
+<li>LithoStrat field is now highlighted appropriately in workbench when it is an existing record. 10/01/13 01:22 PM, (9385)</li>
+<!--<li>null catalognumbers cause Serious Error has Happened popups. 10/02/13 11:09 AM, (9379)</li>-->
+<li>Certain characters no longer cause errors in Google Earth. 10/02/13 4:21 PM, (9377)</li>
+<li>Full name is now displayed in the Paleo Context query combobox for Lithostrat. 09/12/13 09:01 AM, (9376)</li>
+<li>Workbench no longer combines preparations into a single preperation record for a CO if the information is the same. 08/20/13 04:04 PM, (9375)</li>
+<li>Geography fullnames are now displayed in the correct order. 09/27/13 03:17 PM, (9372)</li>
+<li>Can no longer create multiple GeoCoord and Locality detail records per Locality. 08/20/13 01:50 PM, (9370)</li>
+<li>Agents can now be added to a Group. 09/25/13 02:01 PM, (9368)</li>
+<!--<li>Better error message for RW schema mapper problem. 08/20/13 02:07 PM, (9367)</li>-->
+<!--<li>Collecting Event Sub-form causes errors when attaching to CE through collecting trip. 09/24/13 01:06 PM, (9246)</li>-->
+<li>Can now generate a label from loan form when the appropriate data is filled in. 09/20/13 04:56 PM, (8957)</li>
+<li>Can now view associated collection objects in the Paleo tree. 09/26/13 04:24 PM, (8927)</li>
+<li>Resource Import/Export now allows you to edit the forms for a different user. 10/01/13 01:52 PM, (8531)</li>
 
-<p align="left"><b>Major New Features and Capabilities</b></p>
-<br />
-
-<u>Specify Support for Images and Attachments</u><br />
-Specify 6.5 adds robust image and attachment handling  for Specify users, enabling easy integration of  collection data with images and other types of file attachments. Images  can be browsed, discovered through queries, displayed on  data forms, and served on the new Specify Web Portal.&nbsp;Clicking on a thumbnail in Specify's new image browser window brings  up the full-size image or launches a helper application, such as a PDF viewer to  view the entire document. Additional  clicks show related database records, global map location, or for some  image types like jpegs, metadata from inside the image file.
-<p align="left"> External files can be linked to records in several tables including: Collection Object, Collecting Event,  Agent, Field Notebook, Locality, Loan, Permit, Repository Agreement, Taxon, and  others.&nbsp;Files can be attached to  collection records one-at-a-time or   linked in batches from files in a  directory. Batch  linking of attachments, whether they be label images,  photos from the field, publication PDFs, reports or permits in Word, can be done by either matching media file names to unique IDs   in the database (e.g. catalog  or field numbers),  or by creating a simple two-column  table which maps attachment file names with the corresponding unique  IDs in  Specify. Attachments are copied from the original source files to a designated repository  location. Files may be stored locally on a  workstation drive or on a shared server drive and accessed through a    directory path.  Alternatively system administrators  may set up a Specify Attachment Server to create  a  repository for  attachment files accessed through the web protocols. </p>
-<p align="left"><u>Specify Attachment Server</u><br />
-The Specify Attachment Server, available now, is a small application written  in Python which handles attachment  transactions, i.e.  file uploads, downloads and deletions on a shared network  file server. It also creates thumbnails from original images. The code is lightweight, has been tested   on Linux and should run on any platform supported by Python. Authentication   only allows repository access from Specify workstations and from the new Specify Web Portal.  Access rights for individual files   follow the same scoping rules for Divisions, Disciplines, and Collections which  govern the use of shared data in the Specify institutional hierarchy. The Specify Attachment Server is a  flexible option for storage of collection-related images and documents,  particularly for institutions with systems support staff and mix of workstation platforms.</p>
-<p align="left"><u>Java 7</u><br />
-Specify 6.5  now uses Java 7.  The Java 7 Runtime Environment (JRE) allows  Specify to run identically across Windows, Linux and Mac OS X platforms.  Users no longer need to download  Java   onto their workstations as the Specify installer puts Java 7 into a  Specify program directory. If your  systems administrator prefers to install Java 7 at a system level, Specify will  detect and use the system  copy. Specify does not  use a Java web browser plug-in. For Mac users, Java 7 requires an Intel processor and Mac OS X 10.7.3 (Lion) or above.</p>
-<p align="left"><u>Specify 6 Synonym Cleanup Tool</u><br />
-Some collection databases which were converted from Specify 5 to 6 have taxon synonyms linked to the wrong parent in their Specify 6 Taxon Trees. That issue resulted from differences in the way that Specify 5 and Specify 6 store and manage synonyms.  Collections which were not converted from Specify 5, but created anew in Specify 6, or migrated from a legacy database to Specify 6, do not benefit from this tool.  Sites with Specify 5-converted databases can run the Synonym Cleanup Report  to check for misplaced synonyms and then execute a cleanup operation to correct synonym placement in the Taxon Tree. Documentation and discussion of this issue can be found on the Specify web site documentation page in the file: &quot;Specify 6 Synonym Cleanup Tool.pdf&quot;.</p>
-<p align="left"><u>Globally Unique Identifiers (GUIDS)</u><br />
-  Specify 6.5 implements  identifiers for several major  data tables to uniquely identify collection data objects on a global  scale.  Specify uses “UUIDS” or  “Universally Unique Identifiers” which are a widely-used type of GUID. The importance of UUIDs is that they    allow software processes to  unambiguously determine  record identity. That capability is useful for data exchange, recurring updates from Specify  providers to collection data aggregators, for collaborative authority works and data validation, and  ultimately for powerful research  integration and analysis utilizing tools  of the semantic web. UUIDs are not intended for human consumption or  for keystroking, but GUID fields can be added to Specify’s data forms for viewing. Specify  stores UUIDs as strings of 26 characters, e.g. f81d4fae-7dec-11d0-a765-00a0c91e6bf6. UUIDs are automatically assigned  when new  records are  created through Specify’s data forms or through the WorkBench. They are permanent  and do not change when records are edited. Specify has GUID fields   in  these data tables: Agent, Attachment, Collection, Collecting Event, Collection Object, Determination, Geography, Geologic Time Period, Institution, Journal, Litho Stratigraphy, Locality, Reference Work, and Taxon. </p>
-<p align="left">The Specify 6.5  update modifies the Specify database  schema and therefore requires the username and password of the Specify “IT  User” (a MySQL user with root privileges) to complete.  In addition to making schema changes, the update assigns UUID values to records in  the tables listed above with the  exception of  Geography and Taxon. <em>The Specify 6.5 installer does not overwrite  any existing data in Specify's GUID fields.</em> The  installer checks for  data in GUID fields and if it finds some  in any record, it passes over the data table  and  no UUIDs are assigned to it. However, new  collection data records will be assigned UUID values in all tables with GUID fields (except for Geography and Taxon) when they are created.  Collections which previously utilized Specify's GUID data fields for other purposes should  contact the Project for assistance to accommodate that data.</p>
-<p align="left"><u>Specify Schema Mapper</u><br />
-The Schema Mapper is a powerful tool for organizing data which need to be exported. Collaborative  project databases and data aggregators commonly prescribe data field types and column headings  for collection data transfers in file formats. Earlier versions of Specify would allow users to export data  only  into a pre-defined and pre-loaded export file schema templates. The Specify 6.5 Schema Mapper is much more versatile. It allows one to choose which data fields in  the Specify database will be represented in the export data file and then enables the names of the export data fields or columns to be changed to match the   standards of the destination database. Starting with a pre-defined  export schema, like one of  the many Darwin Core variants (DwC), it is now possible to  adjust  which DwC concepts will  be mapped to which Specify data fields.The Schema Mapper is also used for exporting data to the new the Specify 6 web portal. The Schema Mapper provides outstanding flexibility for mapping  specimen database information to  alternate  formats for project collaboration and data aggregation.</p>
-
-
-
-<h4>Bugs Fixed in Specify 6.5</h4>
-<ol>
-<li>Verbatim Date is now visible on Collecting Event.  Date Closed: 2013-07-15  Bugzilla # (9334)</li>
-<li>Added clarity to the warning message saying defaults for Preparation are required.  2013-07-11  (9325)</li>
-<li>The scope of Conserv Description and Conserv Event tables are now at the Division level. 2013-07-10  (9308)</li>
-<li>The dialog for saving a mapping now says "Save Mapping".  2013-07-10  (9338)</li>
-
-<li>The correct online help for Export Mapping now appears. 2013-06-28  (9326)</li>
-
-<li>In Portuguese databases, queries using "between" and "in" no longer give error messages.  2013-06-28  (9298)</li>
-<li>PaleoContext records are now scoped correctly.  2013-06-28  (9322)</li>
-
-<li>Password strength display has been removed from change password window.  2013-06-17  (9152)</li>
-
-<li>The Portuguese warning that you will need to enter the IT User name and password when updating database is now formatted correctly.  2013-06-13  (9256)</li>
-
-<li>Problems  with creating and using an Accession Number formatted as an auto-incremented number have been fixed.  2013-06-12  (9297)</li>
-
-<li>Opening the LifeMapper plugin is now working correctly on all platforms.  2013-06-11  (9230)</li>
-<li>Full access users in invert paleo collections can now view statistics correctly.  2013-06-10  (9072)</li>
-
-<li>The loan period scriplet has been fixed.  2013-06-07  (9102)</li>
-<li>During resource import, the pop-up window no longer says &quot;null&quot; was successfully imported but the correct name of the file imported.  2013-06-06  (9232)</li>
-<li>Taxon Citation and Taxon Citation Remarks are no longer hidden by default.  2013-06-04  (9271)</li>
-<li>If a Specify software version is more current than the  database  version, users are warned to backup and update the database. The Backup/Restore tool no longer prevents a backup from occurring before the update. 2013-06-04  (9284)</li>
-<li>The Locality popup window  now sorts by Geography.  2013-06-04  (9067)</li>
-<li>The Specify Setup Wizard now requires a 'code' on the Division/Collection Inf pages.  2013-06-04  (9278)</li>
-<li>Exit button now closes EZDB Wizard background process.  2013-06-04  (9240)</li>
-<li>Saving the Information Request form no longer causes an error.  2013-06-03  (8743)</li>
-<li>Query results tab now displays ReferenceWork type as text instead of a number.  2013-06-03  (9226)</li>
-<li>In a Tree window right-clicking on any component and selecting "Move Columns Left" now also moves the title.  2013-06-03  (9120)</li>
-<li>DataSets using previous mappings are no longer incorrectly offset by one column.  2013-06-03  (9100)</li>
-<li>Making backups with Java 6  and 7 installed will no longer cause an error.  2013-05-31  (9270)</li>
-<li>Changing the latitude\longitude format before saving no longer throws an error.  2013-05-31  (9121)</li>
-<li>WorkBench will no longer map the same field to more than one column in the DataSet Mapper.  2013-05-31  (8950)</li>
-<li>All Portuguese  UTF-8 characters  now display correctly, Latin-1 encodings banished.  2013-05-31  (9106)</li>
-<li>Switching collections no longer causes an error.  2013-05-28  (9273)</li>
-<li>Shipment method drop box is no longer blank in the preferences for Loans.  2013-05-22  (9110)</li>
-<li>Format Lat/Long scriptlet now returns "" instead of null for null arguments.  2013-05-22  (9253)</li>
-<li>For 2nd and 3rd determinations, &quot;IsCurrent&quot; is no longer required even if no other data are present.  2013-05-22  (8921)</li>
-<li>Borrow data form now works correctly.  2013-05-21  (9258)</li>
-<li>Reports saved as PDF files now open in Adobe Reader.  2013-05-21  (8555)</li>
-<li>Exported Lat/Long data now have an appropriate number of  trailing 0's.  2013-05-17  (9188)</li>
-<li>Journal and Reference Work tables are now scoped to Institution.  2013-05-16  (9249)</li>
-<li>Container Type pick list is no longer empty.  2013-05-16  (8430)</li>
-<li>LithoStrat and Geologic Time Period Full Name is no longer hidden in the schema.  2013-05-16  (9245)</li>
-<li>The Exporter App Build Cache no longer fails when BulkInsert is used.  2013-05-16  (9183)</li>
-<li>Upon saving, type status &quot;Isotype&quot; is no longer turned into &quot;ex Isotype&quot;.  2013-05-16  (8747)</li>
-<li>Fixed scale and precision of numeric fields in LocalityDetail and GeoCoordDetail.  2013-05-16  (9173)</li>
-<li>Choosing 'Save As' to rename a query no longer causes both of them to be selected (grayed out).  2013-05-16  (9083)</li>
-<li>Create DataSet from RecordSet now exports ChronoStratigraphy.  2013-05-16  (8906)</li>
-<li>When you add a new TreeLevel or (sometimes) when you edit a TreeLevel the Title field is no longer blank.  2013-05-16  (9254)</li>
-<li>Query set to return records with field value set to "is empty" also returns records when field content value has blanks (in addition to NULL).  2013-05-15  (9248)</li>
-<li>Non ISO-8859-1 characters in properties files are now displayed correctly.  2013-05-14  (9193)</li>
-<li>Invalid cells are now  highlighted and no error is produced when uploading data from the WorkBench into Specify.  2013-05-10  (9128)</li>
-<li>In Rows that need PrepTypes, the missing PrepType is now being detected.  2013-05-10  (9208)</li>
-<li>The grid display in the Exporter app is no longer editable.  2013-05-10  (8780)</li>
-<li>Default field types in Specify WorkBench now change after uploading a new schema.  2013-05-09  (8951)</li>
-<li>Can no longer enter in standard separator character into the "constant" field when creating number formats.  2013-05-09  (9217)</li>
-<li>ChronoStrat and LithoStrat query combo boxes are now set up to show full names.  2013-05-09  (9169)</li>
-<li>The workbench_database_schema.xml file now contains correct mappings for the GeoCoordDetail table.  2013-05-09  (9054)</li>
-<li>Can now scroll through multiple gift records without an error occurring.  2013-05-09  (9043)</li>
-<li>Outdated .xsd files are now removed and latest tdwg_dwcterms.xsd file has been added.  2013-05-09  (8801)</li>
-<li>Passwords for all levels of users can now be changed.  2013-05-08  (8477)</li>
-<li> Error message is now shown when there is a problem entering Cat Numbers for Loans.  2013-05-08  (9216)</li>
-<li>Backup/Restore now correctly uses the new database name after creating a blank shell database in the Wizard.  2013-05-08  (9089)</li>
-<li>EZDB wizard no longer allows "root" to be used for IT/master username.  2013-05-07  (8466)</li>
-<li>CatalogNumber prefixes now change when a user moves from one collection to another.  2013-05-06  (9167)</li>
-<li>If no data have been put into the cataloged date field, uploaded records no longer fill in the field with today's date.  2013-05-06  (9180)</li>
-<li>WorkBench no longer allows you to attach to a blank taxon.  2013-05-06  (9224)</li>
-<li>When you close a tab while WorkBench is open, it no longer deletes the Image column.  2013-05-06  (9182)</li>
-<li>GeoLocate tool button is no longer disabled when "county" is not mapped.  2013-05-01  (9197)</li>
-<li>The Agent form can no longer be saved without entering a Lastname.  2013-04-26  (9135)</li>
-<li>When you choose not to register the first time you open a database, you no longer get an unhandled exception.  2013-04-25  (9186)</li>
-<li>GeoLocate plug-in  now fills in the error polygon and uncertainty radius.  2013-04-25  (9170)</li>
-<li>Reference Work can now be edited.  2013-04-25  (8520)</li>
-<li>Specify no longer adds an extra apostrophe to agent and locality names which contain an apostrophe.  2013-04-25  (9105)</li>
-<li>Duplicate localities can no longer be created in the WorkBench when GeoCoordDetail and LocalityDetail fields are in the DataSet.  2013-04-25  (9049)</li>
-<li>Loan invoices can be printed without a shipping address specified.  2013-04-24  (9073)</li>
-<li>Collection Object Attribute table has been fixed.  2013-04-23  (9112)</li>
-<li>Resource import button now works.  2013-04-12  (9172)</li>
-<li>Resource with same name as existing resource no longer imports after clicking &quot;Cancel&quot; on warning popup.  2013-04-12  (9103)</li>
-<li>Switching coordinate formats before saving a record no longer clears out values.  2013-04-12  (9074)</li>
-<li>No longer get an integer/string error when running a report.  2013-04-12  (9027)</li>
-<li>If you try to add the first field to schema mapper by double clicking the field you no longer get an information window saying no concept selected.  2013-03-12  (9122)</li>
-<li>Count of records in a query is now accurate.  2013-02-18  (9080)</li>
-<li> iReport and Specify can now be open at the same time.  2013-02-15  (9059)</li>
-<li>Issues preventing the creation of a blank  database fixed.  2013-02-15  (8895)</li>
-<li>Lifemapper is no longer a menu option for taxon rank above  Genus.  2013-02-15  (9057)</li>
-<li>Specify Wizard now works correctly.  2013-02-14  (9085)</li>
-<li>Can now use  Catalog Numbers which   exceed nine digits in length - for really BIG collections. 2013-04-19 (9199)</li>
-<li>Spreadsheet .xls file imports have been fixed. 2013-01-28 (9071)</li>
-<li>When an export schema mapping is deleted in Specify, IT level users can now delete the mapping's cached data. 2012-12-14 (9018)</li>
-<li>WorkBench highlighting of cells with &quot;new&quot; data (data not in the database) now works for Taxon and other trees where there are empty data columns in the WorkBench for intermediate ranks, e.g. a WorkBench DataSet with data in family, genus and species columns but no data in a subfamily column. 2013-07-11 (9344)</li>
-<li>Geocoordinate converter now creates valid values. 2013-07-11 (9345)</li>
-<li>Export cache fields are now big enough to handle all aggregated results, for our friends at Vertnet. 2013-07-16 (9354)</li>
-<li>Field name changes made to  the database schema no longer cause Query Builder and Schema Mapper to crash. 2013-07-16 (9353)</li>
-<li>Fields &quot;Collection Object citation Remarks&quot; (1 and 2) are  now shown  as &quot;Collection Object Citation Remarks&quot; (1 and 2) in the DataSet Mapping Editor - actually relieving much confusion.  2013-07-15 (9349)</li>
-<li>The GUID field is no longer hidden in Collection Object schema. 2013-06-10 (9301)</li>
-<li>The field Lat/Long Method is now  filled in by the GEOLocate plug-in with &quot;GEOLocate&quot;.  2013-04-29 (9222)</li>
-</ol>
-<p>&nbsp;</p>
+<br>
+<br>
+<br>
 </body>
 </html>
