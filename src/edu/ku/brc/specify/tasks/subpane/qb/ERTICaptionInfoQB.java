@@ -125,7 +125,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             }
         }	
     	
-    	if (value != null && fieldInfo.getDataClass().equals(java.sql.Timestamp.class)) 
+    	if (value != null && fieldInfo != null && fieldInfo.getDataClass().equals(java.sql.Timestamp.class)) 
     	{
     		String result = value.toString();
     		if (result.endsWith(".0")) {
