@@ -33,6 +33,12 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class LocalityDetailBusRules extends BaseBusRules
 {
+    
+    public LocalityDetailBusRules()
+    {
+        super(LocalityDetailBusRules.class);
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAddSibling(java.lang.Object)
      */

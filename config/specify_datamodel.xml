@@ -2230,7 +2230,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false" save="false" likemanytoone="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWork" columnname="ReferenceWorkID" othersidename="localityCitations" updatable="false" required="true" save="false" likemanytoone="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LocalityDetail" table="localitydetail" tableid="124" searchable="true" abbrv="lcd">
+    <table classname="edu.ku.brc.specify.datamodel.LocalityDetail" table="localitydetail" tableid="124" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.LocalityDetailBusRules" abbrv="lcd">
       <field column="BaseMeridian" name="baseMeridian" type="java.lang.String" length="50" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Drainage" name="drainage" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="EndDepth" name="endDepth" type="java.lang.Double" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

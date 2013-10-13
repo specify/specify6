@@ -290,7 +290,9 @@
             <relationship relationshipname="localityDetails" likemanytoone="true"/>
             <relationship relationshipname="geoCoordDetails" likemanytoone="true"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.LocalityDetail" abbrev="lcd" id="124" workbench="true" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.LocalityDetail" abbrev="lcd" id="124" workbench="true" searchable="true">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LocalityDetailBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityAttachment" abbrev="locat" id="115" searchable="true">
             <display view="ObjectAttachment" newobjdlg="LocalityAttachmentDisplay" searchable="true"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
