@@ -65,6 +65,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.specify.datamodel.PickListItem;
+import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.Java2sAutoComboBox;
@@ -914,7 +915,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
             }
         }
         
-        if (Java2sAutoComboBox.shouldSetComboboxIndex(comboBox, fndInx))
+        if ((adapter instanceof PickListTableAdapter) || Java2sAutoComboBox.shouldSetComboboxIndex(comboBox, fndInx))
         {
             comboBox.setSelectedIndex(fndInx);
         }
