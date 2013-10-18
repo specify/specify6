@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -825,7 +826,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		schemaMapping.getMappings().add(newMapping);
     		qf.setMapping(newMapping);
     		fieldQRI.setIsInUse(true);
-    		updateUIAfterAddOrMap(fieldQRI, qfp, loading, aQfp == null);
+    		updateUIAfterAddOrMap(fieldQRI, qfp, loading, aQfp == null, true);
     		updateAvailableConcepts();
     	} else
     	{
@@ -1160,9 +1161,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
+     * @return true if query is savable. 
+     */
+    protected boolean canSave() {
+    	return canSave(false);
+    }
+    
+    /**
      * @return true if query is savable and the current user has permission to save.
      */
-    protected boolean canSave()
+    protected boolean canSave(boolean isSchemaMapping)
     {
         boolean result = true;
         //if the query builder is enabled for a user then the user can save queries.
@@ -1179,6 +1187,34 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //                result = newQ ? task.getPermissions().canAdd() : task.getPermissions().canModify();
 //            }
 //        }
+        
+        if (isExportMapping) {
+        	//check that 'concept' names are unique
+        	Set<String> concepts = new TreeSet<String>();
+        	for (QueryFieldPanel qp : queryFieldItems) {
+        		if (qp.isForDisplay()) {
+        			final String concept = qp.getSchemaItemCBX().getSelectedItem().toString();
+        			if (concepts.contains(concept)) {
+        				if (isSchemaMapping)
+        				{
+        					SwingUtilities.invokeLater(new Runnable() {
+
+        						@Override
+        						public void run() {
+        							// TODO Auto-generated method stub
+        							UIRegistry.displayErrorDlgLocalized("QueryBldrPane.ConceptDuplicated", concept);
+        						}
+        					});
+        				}
+        				result = false;
+        				break;
+        			} else {
+        				concepts.add(concept);
+        			}
+        		}
+        	}
+        }
+        
         return result;
     }
     /**
@@ -4686,7 +4722,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return new QueryFieldPanel(container, fieldQRI, colDefStr, saveBtn, fld);
     }
     
-    protected void updateUIAfterAddOrMap(final FieldQRI fieldQRI, final QueryFieldPanel qfp, final boolean loading, final boolean isAdd)
+    protected void updateUIAfterAddOrMap(final FieldQRI fieldQRI, final QueryFieldPanel qfp, final boolean loading, final boolean isAdd, final boolean isSchemaMapping)
     {
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -4723,7 +4759,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     queryFieldsPanel.repaint();
                     if (!loading)
                     {
-                        saveBtn.setEnabled(canSave());
+                        saveBtn.setEnabled(canSave(isSchemaMapping));
                         updateSearchBtn();
                     }
                     //Sorry, but a new context can't be selected if any fields are selected from the current context.
@@ -4765,7 +4801,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             queryFieldItems.add(qfp);
             qualifyFieldLabels();
             fieldQRI.setIsInUse(true);
-            updateUIAfterAddOrMap(fieldQRI, qfp, loading, true);
+            updateUIAfterAddOrMap(fieldQRI, qfp, loading, true, false);
         }
     	return result;
     }
