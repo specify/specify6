@@ -7,18 +7,16 @@
 <body>
 <h3>Release Notes<br>
 Specify 6.5.02<br>
-18 October 2013<br>
+22 October 2013<br>
 Specify Software Project</h3>
-<br>
-<br>
+<p>This release does not modify the Specify database schema.</p>
 <h4>List of changes in Specify 6.5.02<br>
-</h4><br>
-<br>
+</h4>
 <ol>
-<li>Non-read only pick lists now save new values. 10/16/2013 13:16 (Bugzilla 9309)</li>
-<li>There are now only one GeoCoord and Locality detail records per Locality. 10/16/2013 11:59 (9370)</li>
-<li>Can now use taxon added as a formatted table within queries. 10/18/2013 (9420)</li>
-<li>Caching an export mapping with taxon tree levels will now run without an error. (9407)</li>
+<li>Only one GeoCoord and one LocalityDetail record are now allowed per Locality record. 10/16/2013 11:59 (9370)</li>
+<li>Queries now work correctly  when a formatted data table added to a Query Builder query contains only one field. 10/18/2013 (9420)</li>
+<li>When creating an external data cache with the Data Exporter, a formatted field (e.g. Taxon) or a tree-level field (e.g. genus, species) can no longer be sorted, which eliminates an error condition. (9407)</li>
+<li>PrepTypes now display correctly when scrolling among Preparations on data forms while in edit mode. 10/18/2013 (9426)</li>
 </ol>
 <br>
 <br>
