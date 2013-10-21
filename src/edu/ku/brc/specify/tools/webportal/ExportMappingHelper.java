@@ -141,12 +141,12 @@ public class ExportMappingHelper
 	protected String getFldsSql()
 	{
 		return "select mi.SpExportSchemaItemMappingID, si.FieldName as Concept, s.Description, " 
-			+ "qf.ContextTableIdent as SpTblID, qf.FieldName as SpFldName, qf.StringId as FieldID, qf.Position "
+			+ "qf.ContextTableIdent as SpTblID, qf.FieldName as SpFldName, qf.StringId as FieldID "
 			+ "from spexportschemamapping m inner join spexportschemaitemmapping mi "
 			+ "on mi.SpExportSchemaMappingID = m.SpExportSchemaMappingID "
 			+ "left join spexportschemaitem si on si.SpExportSchemaItemID = mi.ExportSchemaItemID "
 			+ "left join spexportschema s on s.SpExportSchemaID = si.SpExportSchemaID "
-			+ "inner join spqueryfield qf on qf.SpQueryFieldID = mi.SpQueryFieldID where m.SpExportSchemaMappingID = " + mappingID + " order by qf.Position";
+			+ "inner join spqueryfield qf on qf.SpQueryFieldID = mi.SpQueryFieldID where qf.IsDisplay and m.SpExportSchemaMappingID = " + mappingID + " order by qf.Position";
 	}
 	
 	/**
@@ -158,11 +158,11 @@ public class ExportMappingHelper
 		try 
 		{
 			ResultSet rs = stmt.executeQuery(getFldsSql());
+			int pos = 0;
 			while (rs.next()) 
 			{
 				fields.add(new ExportMappingInfo(rs.getInt("SpExportSchemaItemMappingID"), rs.getString("Concept"), rs.getString("Description"),
-						rs.getInt("SpTblID"), rs.getString("SpFldName"), rs.getString("FieldID"), rs
-								.getInt("Position")));
+						rs.getInt("SpTblID"), rs.getString("SpFldName"), rs.getString("FieldID"), pos++));
 			}
 		} finally {
 			stmt.close();

@@ -727,53 +727,71 @@ public class BuildSearchIndex2
                     			doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
                     		} else 
                     		{
-                    			if (value != null)
-                    			{
-                    				ExportMappingInfo info = map.getMappingByColIdx(c-2);
-                    				String fldType = getSolrFldType(info);
-                    				Field.Index solrIdxType = getSolrIdxType(info);
-                    				if (fldType.equals("string"))
-                    				{
-                    					doc.add(new Field(shortNames.get(c-2), value, Field.Store.YES, solrIdxType));
-                    				} else if (fldType.equals("boolean"))
-                    				{
-                    					doc.add(new Field(shortNames.get(c-2), value, Field.Store.YES, solrIdxType));
-                    				} else
-                    				{
-                    					NumericField f = new NumericField(shortNames.get(c-2), Field.Store.YES, true);
-                    					if (fldType.endsWith("int")) 
-                    					{
-                    						f.setIntValue(rs.getInt(c));
-                    					} else if (fldType.endsWith("double"))
-                    					{
-                    						f.setDoubleValue(rs.getDouble(c));
-                    					} else if (fldType.endsWith("long"))
-                    					{
-                    						f.setLongValue(rs.getLong(c));
-                    					} else if (fldType.endsWith("float"))
-                    					{
-                    						f.setFloatValue(rs.getFloat(c));
-                    					}
-                    					doc.add(f);
-                    				}
-                    			}
-                    			contents.append(StringUtils.isNotEmpty(value) ? value : " ");
-                    			contents.append('\t');
-                    			if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
-                    			{
-                    				lat1 = value;
-                    			} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
-                    			{
-                    				lat2 = value;
-                    			} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
-                    			{
-                    				lng1 = value;
-                    			} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c-2).getSpFldName()))
-                    			{
-                    				lng2 = value;
-                    			}
-                    		}
-                    	}
+								if (value != null) {
+									ExportMappingInfo info = map
+											.getMappingByColIdx(c - 2);
+									//if (info != null) {
+										String fldType = getSolrFldType(info);
+										Field.Index solrIdxType = getSolrIdxType(info);
+										if (fldType.equals("string")) {
+											doc.add(new Field(shortNames
+													.get(c - 2), value,
+													Field.Store.YES,
+													solrIdxType));
+										} else if (fldType.equals("boolean")) {
+											doc.add(new Field(shortNames
+													.get(c - 2), value,
+													Field.Store.YES,
+													solrIdxType));
+										} else {
+											NumericField f = new NumericField(
+													shortNames.get(c - 2),
+													Field.Store.YES, true);
+											if (fldType.endsWith("int")) {
+												f.setIntValue(rs.getInt(c));
+											} else if (fldType
+													.endsWith("double")) {
+												f.setDoubleValue(rs
+														.getDouble(c));
+											} else if (fldType.endsWith("long")) {
+												f.setLongValue(rs.getLong(c));
+											} else if (fldType
+													.endsWith("float")) {
+												f.setFloatValue(rs.getFloat(c));
+											}
+											doc.add(f);
+										}
+										contents.append(StringUtils
+												.isNotEmpty(value) ? value
+												: " ");
+										contents.append('\t');
+										if ("latitude1".equalsIgnoreCase(map
+												.getMappingByColIdx(c - 2)
+												.getSpFldName())) {
+											lat1 = value;
+										} else if ("latitude2"
+												.equalsIgnoreCase(map
+														.getMappingByColIdx(
+																c - 2)
+														.getSpFldName())) {
+											lat2 = value;
+										} else if ("longitude1"
+												.equalsIgnoreCase(map
+														.getMappingByColIdx(
+																c - 2)
+														.getSpFldName())) {
+											lng1 = value;
+										} else if ("longitude2"
+												.equalsIgnoreCase(map
+														.getMappingByColIdx(
+																c - 2)
+														.getSpFldName())) {
+											lng2 = value;
+										}
+									//}
+								}
+							}
+						}
                     }
                     indexStr.append(contents);
 
