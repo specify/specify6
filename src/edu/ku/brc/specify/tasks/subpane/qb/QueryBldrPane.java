@@ -1194,7 +1194,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	for (QueryFieldPanel qp : queryFieldItems) {
         		if (qp.isForDisplay()) {
         			final String concept = qp.getSchemaItemCBX().getSelectedItem().toString();
-        			if (concepts.contains(concept)) {
+        			if (concepts.contains(concept.toLowerCase())) {
         				if (isSchemaMapping)
         				{
         					SwingUtilities.invokeLater(new Runnable() {
@@ -1209,7 +1209,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         				result = false;
         				break;
         			} else {
-        				concepts.add(concept);
+        				concepts.add(concept.toLowerCase());
         			}
         		}
         	}
