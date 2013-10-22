@@ -3122,6 +3122,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean saveQuery(final boolean saveAs)
     {
      	boolean result = false;
+     	if (!canSave(true))
+     	{
+     		saveBtn.setEnabled(false);
+     		return false;
+     	}
      	
     	//if (!isExportMapping)
 		//{
