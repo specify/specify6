@@ -308,7 +308,7 @@ public class QueryTask extends BaseTask
     	List<String> result = new ArrayList<String>();
     	for (String q  : list) {
             DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(q);
-    		if ((!doVisibility || !tbl.isHidden()) && (!doSecurity || tbl.getPermissions().canView())) {
+    		if (tbl != null && (!doVisibility || !tbl.isHidden()) && (!doSecurity || tbl.getPermissions().canView())) {
     			result.add(q);
     		}
     	}
