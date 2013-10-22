@@ -24,8 +24,7 @@
     <h2><img src="../../images/spwizard32.png" height="32" width="32">
       Specify Setup Wizard</h2>
   <p>The Specify Setup Wizard is required to customize and create a Specify database in MySQL. The Wizard walks you through the creation of a database including; the insertion of a schema in MySQL, and the initialization of the Specify database structure. The Specify Wizard also enables you to download authority files for Taxa (for some disciplines) and for Geography, as starting points for building and customizing your taxon and geography data. </p>
-    <p><br />
-      Before running the Specify 6.5 Setup Wizard, MySQL must have been previously installed on either the workstation on which Specify will be run, or on a shared network server computer for access from two or more workstations. User accounts must also exist within MySQL with the necessary permissions for Specify to communicate with MySQL. The creation of these accounts varies depending on your Specify setup. </p>
+    <p>Before running the Specify 6.5 Setup Wizard, MySQL must have been previously installed on either the workstation on which Specify will be run, or on a shared network server computer for access from two or more workstations. User accounts must also exist within MySQL with the necessary permissions for Specify to communicate with MySQL. The creation of these accounts varies depending on your Specify setup. </p>
     <p><br />
   <strong>Standalone Specify installation on a workstation &ndash; not accessed by other workstations</strong> </p>
     
@@ -46,23 +45,23 @@
       <blockquote>
    <ol>
    <li>
-      Download and edit the my.cnf file, then copy it to the correct directory in your file system. This is necessary to allow other workstations to access your Specify database. </li>
+      Edit your my.ini file on Windows, or your my.cnf on Linux and MacOS X, to include your local IP as the Bind-address.</li>
     <br />
-     <li> Create a &lsquo;Master User&rsquo; within MySQL. The key points for creating this MySQL user are (1) to grant the necessary privileges the Specify database and (2) to give those MySQL user accounts access to the database based on IP address range values.&nbsp; </li>
+     <li> Create a &lsquo;Master User&rsquo; within MySQL. The key points for creating this MySQL user are (1) to grant the necessary privileges on a designated Specify database and (2) to give the MySQL user account access to the database based on IP address range values.&nbsp; </li>
   </ol>
   </blockquote>
   
   <p>
-      Step-by-Step instructions for these tasks can be found in document <em>Setting up a Workstation as a Specify Database Server, </em>which is available on the specify website. </p>
+      Instructions for these tasks can be found in the document <em>Setting up a Workstation as a Specify Database Server, </em>which is available on the specify website. </p>
     <p>Once these steps are complete, you may run the Specify Wizard to create a new database. Step-by-Step instructions for running the Specify Wizard are in the next section of this document. <br />
-  When running the Specify Setup Wizard, in the first Wizard window enter &lsquo;root&rsquo; as the IT Username, and the password that you created. Then enter the dedicated database name chosen during the Master User creation, and the Hostname (network name of the computer running MySQL), then click on <em>Create Database</em>.</p>
+  When running the Specify Setup Wizard, in the first Wizard window enter &lsquo;root&rsquo; as the IT Username, and the password that you created. Then enter the dedicated database name chosen during the Master User creation, and the Hostname (network name of the computer running MySQL), then click on <em>Create Specify Database</em>.</p>
     <p>
   This will initiate the process of creating Specify&rsquo;s database tables and may take several minutes to complete.    </p>
     <blockquote>
   <strong><em>Note:</em></strong> if you click on the <em>Test IT</em> Login button, and if the login is successful, the Wizard will continue to the next screen. Before proceeding though, you must immediately use the <em>Back</em> button to return to the Database Information window, and click on the <em>Create Specify Database</em> button, otherwise your Specify database tables will not be created and the Specify Wizard will eventually fail. </p>
   </blockquote>
   
-  <p>In the subsequent Wizard window, which asks you for the Master account information, enter the master username and password that were created earlier in MySQL, and then click the<em>Test Master Login</em> button. This should return a message that your Master Login has worked and then you can proceed with the Wizard screens. If your Master account credentials do not allow you to login to the MySQL server, check your credentials for a misspelling. </p>
+  <p>In the subsequent Wizard window, which asks you for the Master account information, enter the master username and password that were created earlier in MySQL, and then click the<em>Test Master Login</em> button. This should return a message that your Master Login is correct, then you can proceed with the Wizard screens. If your Master account credentials do not allow you to login to the MySQL server, check your credentials for a misspelling. </p>
   <p>
   Do NOT click on the <em>Create Master User</em> button on this window, as that will re-create your Specify master user account with MySQL access permissions restricted only to the workstation on which you are running the Specify Wizard. This will prevent other workstations from accessing your Specify database.</p>
   <p>Step-by-Step instructions for running the Specify Wizard are included in the section of this document titled <a href="#mysql_username">&quot;Running the Specify Setup Wizard&quot;</a>. </p>
@@ -80,7 +79,7 @@
   </ol>
   </blockquote>
   
-  <p>Specify requires access to MySQL through either a &lsquo;root&rsquo; account, or another user account, which has been granted all necessary permissions. Often, for shared MySQL servers managed for organizations, e.g. across departments or campuses for multiple databases (not just Specify), the root user account information is typically protected by database or network administrators and will not be available to complete the Specify database creation with the Specify Wizard. In those cases, the database or network administrator must first create two new users with specific privileges for a new database creation, and name the database -- before the Specify Wizard can be run. These user accounts and their passwords must be communicated to you, along with the name used for the database, before proceeding with the Specify Wizard. We provide simple MySQL scripts in the document <em>Setting Up Specify to Use a Networked MySQL Server</em>, available on the Specify Software web site, to enable MySQL server administrators to create the new users for a Specify database, and assign privileges to those users on a shared MySQL server computer. In documentation we refer to the root-level user for the Specify database as the &quot;Specify IT User&quot;. The other user is referred to as a &ldquo;Specify Master User&rdquo;. The Specify (thick) client application does not need to be installed on the MySQL server. The Specify Setup Wizard can be run from the server, but we recommend that it be operated on a networked workstation.</p>
+  <p>Specify requires access to MySQL through either a &lsquo;root&rsquo; account, or other user account, which has been granted all necessary permissions. Often, for shared MySQL servers managed for organizations, e.g. across departments or campuses for multiple databases (not just Specify), the root user account information is typically protected by database or network administrators and will not be available to complete the Specify database creation with the Specify Wizard. In those cases, the database or network administrator must first create two new users with specific privileges for a new database creation, and name the database -- before the Specify Wizard can be run. These user accounts and their passwords must be communicated to you, along with the name used for the database, before proceeding with the Specify Wizard. We provide simple MySQL scripts in the document <em>Setting Up Specify to Use a Networked MySQL Server</em>, available on the Specify Software web site, to enable MySQL server administrators to create the new users for a Specify database, and assign privileges to those users on a shared MySQL server computer. In documentation we refer to the root-level user for the Specify database as the &quot;Specify IT User&quot;. The other user is referred to as a &ldquo;Specify Master User&rdquo;. The Specify (thick) client application does not need to be installed on the MySQL server. The Specify Setup Wizard can be run from the server, but we recommend that it be operated on a networked workstation.</p>
     <p>
   When running the Specify Setup Wizard, in the first Wizard window enter the information for the new database: IT User name, IT User Password, Database name, and Hostname (network name of the computer running MySQL), then click on <em>Create Database</em>. </p>
     <p>
@@ -120,7 +119,7 @@
         <li>The <strong>Database Name</strong> will be used to name the
           database that the Setup Wizard is about to create. If you will be running Specify on a single workstation and will not grant access to the Specify database to other workstations, you are creating this name as you type it into the
           window. Once you name the database make sure to document it so
-          you can reference it if you need it at a later date.</li>
+          you can reference it at a later date.</li>
       </ul>
       <blockquote>
         <p>If you will be allowing other workstations to access your Specify database, a name has been previously identified for the database, and the IT/Master User have been given permission to access MySQL and create the database. You must type in the designated database name. If you have not identified a name for your database and granted the IT and/or Master User permission to access it, you may not proceed and must click <em>Cancel</em> to exit the Setup Wizard. More information about this step can be found in the introductory section of this help document.</p>
@@ -143,7 +142,7 @@
         <strong>Create a Specify Database</strong>
           <blockquote>
             <p>Click the <em>Create Specify Database</em> button and allow the Specify Setup Wizard to connect to MySQL using the information you have entered, create your Specify database, and insert the Specify schema. This process must be completed before proceeding to the next steps of the Setup Wizard.</p>
-            <p>If Specify can not connect to MySQL and build the database for any reason a message will display. To proceed in the Wizard you will need to verify that the information entered and your MySQL setup are correct.</p>
+            <p>If Specify can not connect to MySQL and build the database for any reason an error message will display. To proceed with the Wizard you will need to verify that the information entered and your MySQL setup are correct.</p>
           </blockquote>
         
         <strong>Advanced: Test IT Login</strong>
@@ -151,7 +150,7 @@
             <p>This procedure is very rare and should only be used when specifically instructed by the Specify Help </p>
           
           <blockquote>
-          <p><strong><em>Note:</em></strong> if you click on the “Test IT Login” button, and if the login is successful, you will be allowed to continue to the next Wizard screen. Before proceeding though, you must immediately use the “Back” button to return to the Database Information window, and click on the ‘Create Specify Database’ button, otherwise your Specify database tables will not be created and the Specify Wizard will eventually fail. </p>
+          <p><strong><em>Note:</em></strong> if you click on the “Test IT Login” button, and if the login is successful, you will automatically proceed to the next Wizard screen. Before proceeding though, you must immediately use the “Back” button to return to the Database Information window, and click on the <em>Create Specify Database</em> button, otherwise your Specify database tables will not be created and the Specify Wizard will eventually fail. </p>
           </blockquote>
           </blockquote>
 
@@ -164,21 +163,21 @@
     <p align="center"><span class="imgcaption">Create a Master Username
         and Password</span>    </p>
     <blockquote>
-      <p>This window either creates the Master username and password for your Specify system, or verifies that a Master username and password, that has already been created within MySQL, is recognized by Specify. Any instance of Specify that allows access from other workstations must create the Master username and password using the MySQL Admin. tool. More information about this step can be found in the introductory section of this help document.</p>
+      <p>This window either creates the Master username and password for your Specify system, or verifies that a Master username and password that has already been created within MySQL is recognized by Specify. Any instance of Specify that allows access from other workstations must create the Master username and password using the MySQL Admin tool. More information about this step can be found in the introductory section of this help document.</p>
 <p>The security system for Specify 6 uses both a &quot;Master&quot; username
-        and password, which Specify uses to access the MySQL Database,
-        as well as a User username and password, which allows a user to
-        run the Specify program. The Master account has SELECT, INSERT,
+        and password, and a User username and password. Specify uses the Master username and password to access the MySQL Database,
+        and the User username and password to
+        grant permission to run the Specify program. The Master account has SELECT, INSERT,
         UPDATE, DELETE and TABLE LOCK privileges on data tables in your
         Specify database only and has no other MySQL privileges. Specify
         uses only one Master username and password for all users, but
-        encrypts the Master password with the User information, creating
+        encrypts the Master information with the User information, creating
         an encrypted string. This allows the Master information to
       become unique for each user.      </p>
       <blockquote>
         <p><strong>Create the Master</strong></p>
         <blockquote>
-        <p>If you are using Specify on a single workstation that has not been configured to grant access to other workstations, click the <em>Create Master User</em> button.
+        <p>If you are using Specify on a single workstation that has not been configured to grant access to other workstations, you will use this screen to create the Master username and password. Click the <em>Create Master User</em> button.
           Specify will take a moment to create the Master account in the
           database. Once this account has been created you may not
           change the information on this screen, or any previous
@@ -196,6 +195,7 @@
         <p><strong>Advanced: Test the Master</strong></p>
         <blockquote>
         <p>If you will be allowing other workstations to access your Specify database you must first create the Specify Master User in MySQL, grant it the necessary permissions and allow it access to the Specify database by setting an IP address range. If you have completed this step and created a Master User, enter the name and password and click the<em>Test Master Login</em> button. If you have not created the Master within MySQL you may not proceed and must click <em>Ca</em>ncel to exit the Setup Wizard. More information about this step can be found in the introductory section of this document.</p>
+        <p>Do NOT click on the <em>Create Master User</em> button on this window, as that will re-create your Master user account with MySQL access permissions restricted only to the workstation on which you are running the Specify Wizard. This will prevent other workstations from accessing your Specify database.</p>
         </blockquote>
 </blockquote>
     </blockquote>
@@ -251,7 +251,7 @@
       <p align="left">The Setup Wizard creates a single entry for each
         level of the hierarchy (Institution, Division, Discipline and
         Collection). This setup window is the first step in that
-        process. Each of the screens for creating these levels must be
+        process. Each of the fields on the screen must be
         completed before the <em>Next</em> button will become enabled.</p>
       <ul>
         <li>The <strong>Name</strong> should be the formal name for
@@ -268,8 +268,8 @@
         <li>The <strong>Institution Address</strong> information, such
           as <strong>City</strong>, <strong>State</strong>, <strong>Country</strong>,
           <strong>Zip Code</strong> and <strong>Phone Number</strong>,
-          is also added to fields within the Specify database and
-          displayed on the Institution form and can be queried and used
+          is also added to fields within the Specify database, 
+          displayed on the Institution form, and can be queried and used
           in reports.</li>
       </ul>
       <p align="left">&nbsp;</p>
@@ -344,7 +344,7 @@
               the Field Formatting Editor help page. </p>
             <p align="left"><strong>Accession Number</strong>
               (2009-AA-###) The year will appear automatically in the
-              first section (2009) of the format, and can also be
+              first section (2009) of the format, and can be
               manually edited. The 'AA' section of the format is
               alphanumeric and accepts both characters <em>a</em>
               through <em>z</em> and numbers. The ### section of the
@@ -372,7 +372,7 @@
       </ul>
       <ul>
         <li><strong>Is Auto Incremented</strong> displays a 'yes' if the
-          format is automatically incremented.</li>
+          selected format is automatically incremented.</li>
       </ul>
       <p align="left">&nbsp;</p>
     </blockquote>
@@ -385,7 +385,7 @@
       <p align="left">Specify 6 visually presents some data types in
         hierarchical tree displays. These data types include the Taxon,
         Geography, (Specimen) Storage, Chronostratigraphy and
-        Lithostratigraphy tables. Each tree is visualy displayed as
+        Lithostratigraphy tables. Each tree is visually displayed as
         heirarchical levels. The Levels must first be defined in a tree
         definition, then nodes can be added. The Setup Wizard offers a
         table for each of the trees (Chronostratigraphy and
@@ -395,13 +395,12 @@
       <p align="left">Nodes for the Storage tree can be added within the
         Specify application. The storage tree operates at the
         Institution level and is available and visible to all
-        Collections. </p>
+        Collections. Therefore, it is important to include the necessary levels for
+        all collections.</p>
       <ul>
         <li>The <strong>Level</strong> column displays the available
           levels. This name can be edited from within Specify. Click the
-          <em>Include</em> box to place the level in the tree.
-          Therefore, it is important to include the necessary levels for
-          all collection.</li>
+          <em>Include</em> box to place the level in the tree.          </li>
       </ul>
       <ul>
         <li><strong>Include</strong> places the Level in the tree
@@ -496,7 +495,7 @@
     <ul>
       <li>Choose a taxonomic <strong>Discipline Type</strong> from the
         drop-down menu. Specify uses this information to load the
-        correct default data entry Forms, Trees and schema (tables and
+        correct default data entry forms, trees and schema (tables and
         fields) based on the predefined disciplines within Specify. If
         your discipline type does not appear in the list, choose the
         closest discipline to yours based on taxonomic qualities.</li>
@@ -584,7 +583,7 @@
       <p>The Specify Wizard not only defines the Taxon tree but also
         allows pre-loading of an authority file for the discipline you
         are creating. <span class="style2">Authority files were created
-          using data from the </span> Catalog of Life Project for some
+          using data from the </span> <em>Catalog of Life Project</em> for some
         of the disciplines within Specify. If this window does not
         appear, there are no existing authority files for your chosen
         discipline. </p>
@@ -640,8 +639,7 @@
       <p align="left">The Geography tree operates at the Discipline
         level and is used by all Collections within the Discipline.
         Nodes to the Geography tree can be added later in the Wizard as
-        well as from within Specify. The geography tree was created
-        using data from Geonames.</p>
+        well as from within Specify. </p>
       <ul>
         <li>The <strong>Level</strong> column displays the available
           levels. This name can be edited from within Specify. Click the
@@ -692,7 +690,7 @@
         Geography tree, including Continents, Countries, and States
         throughout the world as well as Counties within the United
         States. Data for the Geography tree was converted from the
-        online website of the World Gazetteer.</p>
+        online website Geonames.org.</p>
     </blockquote>
     <p class="style2">&nbsp;</p>
     <p class="style2"><a name="create_collection" id="create_collection"></a><u><strong>Collection</strong></u><strong></strong></p>
@@ -728,7 +726,7 @@
         specific sections for data such as Institution Code and year or
         they may simply use an incrementing number.</p>
       <p>Catalog Numbers can either be unique to each Collection, shared
-        by several collections or be used throughout the Institution.
+        by several collections or used throughout the Institution.
         The Catalog Number chosen at this time will not affect where it
         is used relative to other collections, this will be configured
         from within the Specify application. The Catalog Number format
@@ -776,7 +774,7 @@
               characters</p>
           </blockquote>
         </li>
-        <li><strong>Is Numeric</strong> will display a 'yes' if the
+        <li><strong>Is Numeric</strong> will display a 'yes' if the selected
           format is numeric.</li>
       </ul>
       <ul>
@@ -784,7 +782,7 @@
           each format (these are explained in further detail above).</li>
       </ul>
       <ul>
-        <li><strong>Is Auto Incremented</strong> displays a 'yes' if the
+        <li><strong>Is Auto Incremented</strong> displays a 'yes' if the selected
           format is automatically incremented.</li>
       </ul>
       <p>Collections that do not use one specific format for their
