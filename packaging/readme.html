@@ -7,7 +7,7 @@
 <body>
 <h3>Release Notes<br>
 Specify 6.5.02<br>
-22 October 2013<br>
+23 October 2013<br>
 Specify Software Project</h3>
 <p>This release does not modify the Specify database schema.</p>
 <h4>List of changes in Specify 6.5.02<br>
@@ -17,6 +17,9 @@ Specify Software Project</h3>
 <li>Queries now work correctly  when a formatted data table added to a Query Builder query contains only one field. 10/18/2013 (9420)</li>
 <li>When creating an external data cache with the Data Exporter, a formatted field (e.g. Taxon) or a tree-level field (e.g. genus, species) can no longer be sorted, which eliminates an error condition. (9407)</li>
 <li>PrepTypes now display correctly when scrolling among Preparations on data forms while in edit mode. 10/18/2013 (9426)</li>
+<li>Data exporter field mappings created before 6.5.00 that contain un-shown fields no longer cause an error when attempting to export records to the web portal. 10/21/2013 (9427)</li>
+<li>If two data fields in a schema mapping have the same name, an error no longer occurs when trying to build a cache in the Data Exporter. 10/22/2013 (9425)</li>
+<li>Queries on hidden tables no longer cause an error on login. 10/22/2013 (9428)</li>
 </ol>
 <br>
 <br>
