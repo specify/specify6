@@ -669,7 +669,7 @@
 }
 else if(System.getProperty("os.version").replace(".", "").length() == 3)
 {
-    if(Integer.parseInt(System.getProperty("os.version").substring(0, 2).replace(".", "")) &gt;= 108)
+    if(Integer.parseInt(System.getProperty("os.version").replace(".", "")) &gt;= 108)
     {
         return true;
     }
@@ -1880,7 +1880,7 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="24" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.7.0_25" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="" appleJre="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" signLaunchers="false">
+    <macosFolder name="Mac OS X Folder" id="24" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.7.0_45" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="" appleJre="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" signLaunchers="false">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
