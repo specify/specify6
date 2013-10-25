@@ -472,7 +472,7 @@ public class BuildSearchIndex2
             	else if (type.equals("java.sql.Timestamp")) {return "string";}//XXX format???
             	else if (type.equals("java.math.BigDecimal")) {return "tdouble";} //XXX maybe?  
             	else if (type.equals("java.lang.Integer")) {return "tint";}
-            	else if (type.equals("java.lang.Boolean")) {return "boolean";}
+            	else if (type.equals("java.lang.Boolean")) {return /*"boolean"; there seems to be no method in lucene.Document to add boolean fields*/ "string";}
             	else if (type.equals("java.lang.Byte")) {return "tint";}
             	else if (type.equals("java.lang.Double")) {return "tdouble";}
             	else if (type.equals("java.lang.Short")) {return "tint";}
