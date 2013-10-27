@@ -37,11 +37,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.AccessController;
+import java.util.Formatter;
 import java.util.Hashtable;
 
 import javax.swing.ButtonGroup;
@@ -73,8 +70,9 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.HTTPGetter;
+import edu.ku.brc.helpers.HTTPGetter.ErrorCode;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
@@ -83,7 +81,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
-
 /**
  * This class is used to get the Master Username and Password so the application can log in. It also
  * supports the UI and methods needed for changing the user's password and has methods that can be overridden
@@ -118,7 +115,6 @@ public class UserAndMasterPasswordMgr
     private String               usersUserName         = null;
     private String               usersPassword         = null;
     private String               databaseName          = null;
-    
     
     /**
      * Protected Constructor
@@ -178,6 +174,7 @@ public class UserAndMasterPasswordMgr
     {
         String uNameCached = username != null ? username: usersUserName;
         usersUserName = username;
+        databaseName  = dbName;
         
         Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(true), null);
         if (isLocal == null)
@@ -350,7 +347,7 @@ public class UserAndMasterPasswordMgr
                 {
                     try
                     {
-                        keyStr = Encryption.decrypt(keyStr, usersPassword);
+                        keyStr = decrypt(keyStr);
                         
                     } catch (Exception ex) // catch any exception
                     {
@@ -417,7 +414,7 @@ public class UserAndMasterPasswordMgr
             if (isNotEmpty(masterKey))
             {
                 String encryptedKey = AppPreferences.getLocalPrefs().get(masterKey, null);
-                if (isNotEmpty(encryptedKey))
+                if (isNotEmpty(encryptedKey) && !encryptedKey.startsWith("http"))
                 {
                     keyTxt.setText(encryptedKey);
                 }
@@ -669,9 +666,47 @@ public class UserAndMasterPasswordMgr
     }
     
     /**
+     * Super simple encryption of just converting string to HEX.
+     * @param str the string to be encrypted
+     * @return hex-ified string
+     */
+    private String encrypt(final String str)
+    {
+        Formatter formatter = new Formatter();
+        for (byte b : str.getBytes())
+        {
+            formatter.format("%02x", b);
+        }
+        String s = formatter.toString();
+        formatter.close();
+        return s;
+    }
+    
+    private String decrypt(final String s)
+    {
+        int n = s.length();
+        StringBuilder sb = new StringBuilder(n / 2);
+        for (int i = 0; i < n; i += 2)
+        {
+            char a = s.charAt(i);
+            char b = s.charAt(i + 1);
+            sb.append((char) ((hexToInt(a) << 4) | hexToInt(b)));
+        }
+        return sb.toString();
+    }
+
+    private static int hexToInt(char ch)
+    {
+        if ('a' <= ch && ch <= 'f') { return ch - 'a' + 10; }
+        if ('A' <= ch && ch <= 'F') { return ch - 'A' + 10; }
+        if ('0' <= ch && ch <= '9') { return ch - '0'; }
+        throw new IllegalArgumentException(String.valueOf(ch));
+    }
+    
+    /**
      * Calls the URL by adding the username and password to the URL in the form of
      * "u=<username>&p=<password" both are encrypted so they are not password as clear text.
-     * @param urlLoc the URL called to retrive the Master's username,password
+     * @param urlLoc the URL called to retrieve the Master's username,password
      * @param username the encrypted user's username
      * @param password the encrypted user's password
      * @return a single string containing the Master username and password that can be decypted with
@@ -681,40 +716,23 @@ public class UserAndMasterPasswordMgr
                                               final String username,
                                               final String password)
     {
-        String encrytpedStr = Encryption.encrypt(username+","+password, username);
-        String fullURL      = urlLoc + "?data=" + encrytpedStr + ";db=" + DBConnection.getInstance().getDatabaseName();
-        
-        Exception exception = null;
-        BufferedReader bufRdr = null;
+        Exception      exception = null;
+        BufferedReader bufRdr    = null;
         try 
         {
-            URL url = new URL(fullURL); 
-
-            URLConnection urlConn = url.openConnection(); 
-            urlConn.setDoInput(true); 
-            urlConn.setUseCaches(false);
-
-            StringBuilder sb = new StringBuilder();
-            String s;
-            bufRdr = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-            while ((s = bufRdr.readLine()) != null) 
-            { 
-                sb.append(s); 
-            }
-            bufRdr.close();
+            String encryptUsername = encrypt(username);
+            String encryptPassword = encrypt(password);
             
-            return sb.toString();
+            String fullURL = urlLoc + "?u=" + encryptUsername + "&p=" + encryptPassword + "&db=" + databaseName;
+            //System.out.println("["+fullURL+"]");
             
-        } 
-        catch (MalformedURLException mue) 
-        {
-            mue.printStackTrace();
-            exception = mue;
-        } 
-        catch (IOException ioe) 
-        {
-            ioe.printStackTrace();
-            exception = ioe;
+            HTTPGetter getter = new HTTPGetter();
+            getter.setThrowingErrors(false);
+            byte[] bytes      = getter.doHTTPRequest(fullURL);
+            String resultsStr = bytes != null && getter.getStatus() == ErrorCode.NoError ? new String(bytes) : null;
+            
+            //System.out.println("["+resultsStr+"]");
+            return resultsStr;
             
         } catch (Exception ex) 
         {
