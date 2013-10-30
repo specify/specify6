@@ -29,7 +29,7 @@
 		<property name="hibernate.c3p0.initialPoolSize">3</property>
         
         <property name="hibernate.c3p0.acquire_increment">3</property>
-		<property name="hibernate.c3p0.idle_test_period">14400</property>
+		<property name="hibernate.c3p0.idle_test_period">60</property>
 		<property name="hibernate.c3p0.timeout">25200</property>
 		<property name="hibernate.c3p0.max_size">15</property>
 		<property name="hibernate.c3p0.min_size">3</property>
