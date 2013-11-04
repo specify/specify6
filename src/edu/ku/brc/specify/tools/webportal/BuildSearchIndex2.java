@@ -710,6 +710,7 @@ public class BuildSearchIndex2
                     indexStr.setLength(0);
                     contents.setLength(0);
                     sb.setLength(0);
+                    lat1 = null; lng1 = null; lat2 = null; lng2 = null;
                     for (int c = 1; c <= md.getColumnCount(); c++)
                     {
                     	if (includeColumn(c))
