@@ -179,7 +179,7 @@ public class RelQRI extends FieldQRI
             if (formatter != null)
             {
                 String formatField = formatter.getSingleField();
-                if (formatField != null)
+                if (formatField != null && formatter.getFields()[0].getSep() == null)
                 {
                     return ta.getAbbreviation(table.getTableTree()) + "." + formatField;
                 }

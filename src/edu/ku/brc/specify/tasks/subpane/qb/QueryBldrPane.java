@@ -475,7 +475,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (saveQuery(false))
                 {
-                    saveBtn.setEnabled(false);
+                	saveBtn.setEnabled(false);
                 }
             }
         };
@@ -1373,7 +1373,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 						DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter(qfi.getFormatName());
 						if (formatter != null)
 						{
-							addToList = formatter.getSingleField() != null || (isSchemaExport && lastExportTime != null);
+							boolean isSingleSimpleFormat = formatter.getSingleField() != null && formatter.getFields()[0].getSep() == null;
+							addToList = isSingleSimpleFormat || (isSchemaExport && lastExportTime != null);
 						} else
 						{
 							addToList = false;
@@ -2139,7 +2140,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				}
 				DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter(formatName);
 				if ((!relType.equals(RelationshipType.ManyToOne) && !relType.equals(RelationshipType.ManyToMany))
-					|| formatter.getSingleField() == null)
+					|| formatter.getSingleField() == null || (formatter.getSingleField() != null && formatter.getFields()[0].getSep() != null) )
 				{
 					ProcessNode newNode = new ProcessNode(relQRI);
 					if (formatter != null)
@@ -2187,7 +2188,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	if (fqri instanceof RelQRI)
     	{
             DataObjDataFieldFormatIFace formatter = ((RelQRI )fqri).getDataObjFormatter(qfp.getFormatName());
-            if (formatter != null && formatter.getSingleField() != null)
+            if (formatter != null && formatter.getSingleField() != null && formatter.getFields()[0].getSep() == null)
             {
                 return fqri.getTableInfo().getFieldByName(formatter.getSingleField()).getFormatter();
             }
@@ -2256,7 +2257,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         DataObjDataFieldFormatIFace formatter = ((RelQRI )qfp.getFieldQRI()).getDataObjFormatter(qfp.getFormatName());
                         if (formatter != null)
                         {
-                            buildRelERTI = formatter.getSingleField() == null;
+                            buildRelERTI = formatter.getSingleField() == null || (formatter.getSingleField() != null && formatter.getFields()[0].getSep() != null);
                         }
                         else
                         {
