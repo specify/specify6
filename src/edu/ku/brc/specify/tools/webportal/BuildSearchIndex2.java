@@ -804,7 +804,7 @@ public class BuildSearchIndex2
                     	String geoc = lat1 + " " + lng1;
                     	if (lat2 != null && lng2 != null)
                     	{
-                    		geoc += lat2 + " " + lng2;
+                    		geoc += " " + lat2 + " " + lng2;
                     	}
                         doc.add(new Field("geoc", geoc, Field.Store.NO, Field.Index.NOT_ANALYZED));
                     }
