@@ -540,7 +540,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      * @param useValues
      * @return the text contained in the criteria control.
      */
-    protected String getCriteriaText(final boolean useValues)
+    public String getCriteriaText(final boolean useValues)
     {
         if (criteria instanceof JTextField)
         {
@@ -892,7 +892,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             	return getComparatorListForClass(Number.class);
             }
             OperatorType[] stringCmps = getComparatorListForClass(String.class);
-            OperatorType[] result = new OperatorType[stringCmps.length + 3];
+            OperatorType[] result = new OperatorType[stringCmps.length + 2];
             int c = 0;
             for (OperatorType ot : stringCmps)
             {
@@ -900,7 +900,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
             result[c++] = SpQueryField.OperatorType.GREATERTHAN;
             result[c++] = SpQueryField.OperatorType.LESSTHAN;
-            result[c++] = SpQueryField.OperatorType.BETWEEN;
+            //result[c++] = SpQueryField.OperatorType.BETWEEN;
             return result;
         }
         //else
