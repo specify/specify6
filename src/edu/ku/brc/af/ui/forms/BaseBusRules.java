@@ -531,26 +531,33 @@ public class BaseBusRules implements BusinessRulesIFace
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
             String tblName = ti.getName();
-            if (dataClassObj != null && !skipHash.contains(tblName))
+            if (!skipHash.contains(tblName))
             {
-                for (DBRelationshipInfo ri : ti.getRelationships())
-                {
-                    if (ri.getDataClass() == dataClassObj)
-                    {
-                        String colName = ri.getColName();
-                        if (StringUtils.isNotEmpty(colName) && !colName.equals(idColName))
-                        {
-                            Vector<String> fieldList = fieldHash.get(tblName);
-                            if (fieldList == null)
-                            {
-                                fieldList = new Vector<String>();
-                                fieldHash.put(tblName, fieldList);
-                            }
-                            fieldList.add(ri.getColName());
-                            fieldCnt++;
-                        }
-                    }
-                }
+            	if (dataClassObj != null)
+            	{
+            		for (DBRelationshipInfo ri : ti.getRelationships())
+            		{
+            			if (ri.getDataClass() == dataClassObj)
+            			{
+            				String colName = ri.getColName();
+            				if (StringUtils.isNotEmpty(colName) /*&& !colName.equals(idColName)*/
+                        		//I am pretty sure the following condition reproduces the logic in revision prior to 11305,
+                        		//if skipHash.contains test is removed above.
+                        		//&& (!skipHash.contains(tblName)  || (skipHash.contains(tblName) && !colName.equals(idColName)))
+                        		)
+            				{
+            					Vector<String> fieldList = fieldHash.get(tblName);
+            					if (fieldList == null)
+            					{
+            						fieldList = new Vector<String>();
+            						fieldHash.put(tblName, fieldList);
+            					}
+            					fieldList.add(ri.getColName());
+            					fieldCnt++;
+            				}
+            			}
+            		}
+            	}
             }
         }
         

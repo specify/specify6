@@ -498,7 +498,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             } else
             {
                 DBTableInfo tableInfo      = DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId());
-                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"agent", "address", "agentvariant", "groupperson"}, tableInfo);
+                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"agent", "address", "agentvariant", "agentspecialty"}, tableInfo);
                 isOK = okToDelete(tableFieldList, dbObj.getId());
                 if (isOK && ((Agent)dbObj).getSpecifyUser() != null)
                 {
