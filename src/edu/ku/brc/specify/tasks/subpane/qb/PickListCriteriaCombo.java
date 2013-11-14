@@ -52,7 +52,7 @@ import edu.ku.brc.ui.UIHelper;
 public class PickListCriteriaCombo extends JComboBox
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
-
+    protected static final String NULL_CODE = "|null|";
     protected final PickListDBAdapterIFace items;
     protected List<PickListItemIFace> sels = new ArrayList<PickListItemIFace>();
     protected static final int SELMODE_SINGLE = 0;
@@ -227,11 +227,11 @@ public class PickListCriteriaCombo extends JComboBox
     	{
             if (items instanceof PickListTableAdapter)
             {
-                if (sel.getValueObject() == null)
+                if (sel.getValueObject() == null || NULL_CODE.equalsIgnoreCase(sel.getValueObject().toString()))
                 {
                 	return true;
                 }
-            } else if (sel.getValue() == null)
+            } else if (sel.getValue() == null || NULL_CODE.equalsIgnoreCase(sel.getValue().toString()))
             {
             	return true;
             }
