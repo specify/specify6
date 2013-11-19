@@ -2703,12 +2703,14 @@ public class FormViewObj implements Viewable,
                 
                 if (numTries == 1 && deletedItems != null)
                 {
-                    deleteItemsInDelList(session, deletedItems);
+                   deleteItemsInDelList(session, deletedItems);
+                   session.flush();
                 }
     
                 if (numTries == 1 && toBeSavedItems != null)
                 {
                     saveItemsInToBeSavedList(session, toBeSavedItems);
+                    session.flush();
                 }
     
                 if (businessRules != null)
