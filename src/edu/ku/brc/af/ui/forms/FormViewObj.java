@@ -2701,16 +2701,29 @@ public class FormViewObj implements Viewable,
                                 
                 session.beginTransaction();
                 
-                if (numTries == 1 && deletedItems != null)
+                if (numTries == 1 && deletedItems != null && deletedItems.size() > 0)
                 {
+                   //As far as I can tell it is not necessary to do delete the items by hand, hibernate will delete them automatically
+                   //when the parent object is saved. EXCEPT if constraint violations are present due to user actions:
+                   //Say a user deletes Jim Jones from the collector list, and then changes mind and adds Jim Jones, and saves.
+                   //Then it is necessary to delete here -- I think because hibernate doesn't work.	
                    deleteItemsInDelList(session, deletedItems);
-                   session.flush();
+                   try 
+                   {
+                	   //need to flush so later actions in the transaction know about the deletes.
+                	   session.flush();
+                   } catch (org.hibernate.ObjectDeletedException odex) 
+                   {
+                	   //for some reason, for authors (apparently ONLY authors, even though the annotations look the same as for collector, groupmember), 
+                	   //hibernate will complain that the object is going to be deleted anyway (I think that's what it's
+                	   //saying.) If we just ignore the exception hibernate cascade deletes the object later. 
+                	   log.warn(odex.getMessage());
+                   }
                 }
     
                 if (numTries == 1 && toBeSavedItems != null)
                 {
                     saveItemsInToBeSavedList(session, toBeSavedItems);
-                    session.flush();
                 }
     
                 if (businessRules != null)
