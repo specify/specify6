@@ -1812,6 +1812,9 @@ public class QueryTask extends BaseTask
                                 	newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
                                                 .getRankId(), "author", treeDef));
+                                	newTreeNode.getTableQRI().addField(
+                                            new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                                    .getRankId(), "groupNumber", treeDef));
                                 }
                             }
                             catch (Exception ex)
