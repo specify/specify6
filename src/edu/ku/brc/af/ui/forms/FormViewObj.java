@@ -2415,9 +2415,14 @@ public class FormViewObj implements Viewable,
     {
         if (!isNewlyCreatedDataObj)
         {
-            if (mvParent != null && mvParent.isTopLevel())
+            if (mvParent != null)
             {
-                collectionViewState();
+            	mvParent.clearItemsToBeDeleted();
+            	mvParent.clearItemsToBeSaved();
+            	if (mvParent.isTopLevel())
+            	{
+            		collectionViewState();
+            	}
             }
             
             if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -2703,10 +2708,15 @@ public class FormViewObj implements Viewable,
                 
                 if (numTries == 1 && deletedItems != null && deletedItems.size() > 0)
                 {
-                   //As far as I can tell it is not necessary to do delete the items by hand, hibernate will delete them automatically
+                	
+                   //As far as I can tell it is not necessary to delete the items by hand, hibernate will delete them automatically
                    //when the parent object is saved. EXCEPT if constraint violations are present due to user actions:
                    //Say a user deletes Jim Jones from the collector list, and then changes mind and adds Jim Jones, and saves.
                    //Then it is necessary to delete here -- I think because hibernate doesn't work.	
+                   
+                   //If not for the merging done by business rules for embedded collectingevents it would be possible
+                   //to only delete manually if numTries was 2, i.e. hibernate failed the first try, but the merging generates
+                   //exceptions for duplicate keys that are not thrown up to this method but mess up the session.
                    deleteItemsInDelList(session, deletedItems);
                    try 
                    {
@@ -2715,14 +2725,15 @@ public class FormViewObj implements Viewable,
                    } catch (org.hibernate.ObjectDeletedException odex) 
                    {
                 	   //for some reason, for authors (apparently ONLY authors, even though the annotations look the same as for collector, groupmember), 
-                	   //hibernate will complain that the object is going to be deleted anyway (I think that's what it's
-                	   //saying.) If we just ignore the exception hibernate cascade deletes the object later. 
+                	   //hibernate will complain that the object "will be re-saved by cascade rules". If we just ignore the exception hibernate cascade deletes the object later. 
                 	   log.warn(odex.getMessage());
                    }
                 }
     
                 if (numTries == 1 && toBeSavedItems != null)
                 {
+                	//see remarks above for deletes.
+                	//No problems here so far, so just do it the first time around.
                     saveItemsInToBeSavedList(session, toBeSavedItems);
                 }
     
@@ -2757,7 +2768,7 @@ public class FormViewObj implements Viewable,
                     mvParent.clearItemsToBeSaved();
                 }
                 
-                if (numTries == 1 && deletedItems != null)
+                if (deletedItems != null)
                 {
                     // notify the business rules object that a deletion has occurred
                     for (Object obj: deletedItems)
