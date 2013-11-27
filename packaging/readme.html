@@ -6,22 +6,22 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.5.02<br>
-31 October 2013<br>
+Specify 6.5.03<br>
+27 November 2013<br>
 Specify Software Project</h3>
-<p>This release does not modify the Specify database schema.</p>
-<h4>List of changes in Specify 6.5.02<br>
+<br>
+This update does not change the Specify database schema.
+<br>
+<h4>List of changes in Specify 6.5.03<br>
 </h4>
 <ol>
-<li>Only one GeoCoord and one LocalityDetail record are now allowed per Locality record. 10/16/2013 11:59 (9370)</li>
-<li>Queries now work correctly  when a formatted data table added to a Query Builder query contains only one field. 10/18/2013 (9420)</li>
-<li>When creating an external data cache with the Data Exporter, a formatted field (e.g. Taxon) or a tree-level field (e.g. genus, species) can no longer be sorted, which eliminates an error condition. (9407)</li>
-<li>PrepTypes now display correctly when scrolling among Preparations on data forms while in edit mode. 10/18/2013 (9426)</li>
-<li>Data exporter field mappings created before 6.5.00 that contain un-shown fields no longer cause an error when attempting to export records to the web portal. 10/21/2013 (9427)</li>
-<li>If two data fields in a schema mapping have the same name, an error no longer occurs when trying to build a cache in the Data Exporter. 10/22/2013 (9425)</li>
-<li>Queries on hidden tables no longer cause an error on login. 10/22/2013 (9428)</li>
-<li>Specify now maintains connection to a Networked MySQL server, after an extended idle period. 10/30/2013 (9396, 9201)</li>
-<li>Specify Web Portal now displays the value for Yes/No (Boolean) fields correctly. 10/30/2013 (9431)</li>
+<li>An error no longer occurs under certain conditions when editing group members, collectors, or authors. 11/27/13 10:16 AM (Bugzilla 9449)</li>
+<li>GroupNumber is now accessible for queries. 11/26/13 09:53 AM (9451)</li>
+<li>Single field formats with added text now display completely in query results. 11/21/13 10:35 AM (9429)</li>
+<li>Agents which are associated with data records in other tables, can no longer be deleted. 11/20/13 12:52 PM (9447)</li>
+<li>The extra "between" operator in the Query Builder has been removed for databases with non-numeric catalog numbers. 11/14/13 02:59 PM (9446)</li>
+<li>Catalog numbers which exceed 9 digits can now be added. 11/14/13 02:40 PM (9199)</li>
+<li>Lat/long data is now displayed in the correct location on the map within the map view of the web portal. (Web portal fix.) 11/14/13 10:39 AM (9435)</li>
 </ol>
 <br>
 <br>
