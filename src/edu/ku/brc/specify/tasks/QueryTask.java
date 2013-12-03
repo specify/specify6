@@ -99,6 +99,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -1809,12 +1810,18 @@ public class QueryTask extends BaseTask
                                                 .getRankId(), "name", treeDef));
                                 if (defItem instanceof TaxonTreeDefItem)
                                 {
-                                	newTreeNode.getTableQRI().addField(
-                                        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                .getRankId(), "author", treeDef));
-                                	newTreeNode.getTableQRI().addField(
-                                            new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                    .getRankId(), "groupNumber", treeDef));
+                                	DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getFieldByName("author");
+                                	if (fi != null && !fi.isHidden()) {
+                                		newTreeNode.getTableQRI().addField(
+                                				new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                						.getRankId(), "author", treeDef));
+                                	}
+                                	fi = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getFieldByName("groupNumber");
+                                	if (fi != null && !fi.isHidden()) {
+                                		newTreeNode.getTableQRI().addField(
+                                				new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                						.getRankId(), "groupNumber", treeDef));
+                                	}
                                 }
                             }
                             catch (Exception ex)

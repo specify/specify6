@@ -1126,6 +1126,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	}
         }*/
         	
+		fillNextList(tableList);
+		
         updateAvailableConcepts();
 
         SwingUtilities.invokeLater(new Runnable(){
@@ -4302,7 +4304,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					}
 					if (foundPathItem)
 					{
-						// fillNextList(currList);
+						//fillNextList(currList);
 						p++;
 					} else
 					{
