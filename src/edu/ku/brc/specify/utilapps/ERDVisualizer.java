@@ -63,10 +63,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
-
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -766,45 +762,32 @@ public class ERDVisualizer extends JFrame
         {
         
             long start = System.currentTimeMillis();
-            boolean oldWay = true;
-            if (oldWay)
+
+            // Find a jpeg writer
+            ImageWriter writer = null;
+            Iterator<?> iter = ImageIO.getImageWritersByFormatName("jpg");
+            if (iter.hasNext())
             {
-
-                // Find a jpeg writer
-                ImageWriter writer = null;
-                Iterator<?> iter = ImageIO.getImageWritersByFormatName("jpg");
-                if (iter.hasNext())
-                {
-                    writer = (ImageWriter)iter.next();
-                }
-
-                // Prepare output file
-                ImageOutputStream ios = ImageIO.createImageOutputStream(outfile);
-                writer.setOutput(ios);
-
-                // Set the compression quality
-                ImageWriteParam iwparam = new MyImageWriteParam();
-                iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT) ;
-                iwparam.setCompressionQuality(compressionQuality);
-
-                // Write the image
-                writer.write(null, new IIOImage(bufferedImage, null, null), null);
-
-                // Cleanup
-                ios.flush();
-                writer.dispose();
-                ios.close();
-
-            } else
-            {
-                FileOutputStream out  = new FileOutputStream(outfile);
-
-                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-                JPEGEncodeParam  param   = encoder.getDefaultJPEGEncodeParam(bufferedImage);
-                param.setQuality(0.75f, false);
-                //encoder.setJPEGEncodeParam(param);
-                encoder.encode(bufferedImage, param);
+                writer = (ImageWriter)iter.next();
             }
+
+            // Prepare output file
+            ImageOutputStream ios = ImageIO.createImageOutputStream(outfile);
+            writer.setOutput(ios);
+
+            // Set the compression quality
+            ImageWriteParam iwparam = new MyImageWriteParam();
+            iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT) ;
+            iwparam.setCompressionQuality(compressionQuality);
+
+            // Write the image
+            writer.write(null, new IIOImage(bufferedImage, null, null), null);
+
+            // Cleanup
+            ios.flush();
+            writer.dispose();
+            ios.close();
+
             System.out.println(System.currentTimeMillis() - start);
 
         } catch (IOException e)
