@@ -957,42 +957,48 @@ public class NavigationTreeMgr
         {
             newAgentOption = UIRegistry.askYesNoLocalized("NVTM.NEW_AGT", "NVTM.EXT_AGT", getResourceString("NVTM.USRAGTMSGF"), "NVTM.USRAGTMSGF_TITLE");
             
-            if (newAgentOption == JOptionPane.NO_OPTION) // Search For Agent
-            {
-                Division   currDivision   = AppContextMgr.getInstance().getClassObject(Division.class);
-                Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                
-                AppContextMgr.getInstance().setClassObject(Division.class, parentDivision);
-                AppContextMgr.getInstance().setClassObject(Discipline.class, parentDiscipline);
-                
-                ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, "UserAgentSearch");
-                try
-                {
-                    dlg.registerQueryBuilder(null);
-                    dlg.setMultipleSelection(true);
-                    dlg.getDialog().setVisible(true);
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    
-                } finally
-                {
-                    AppContextMgr.getInstance().setClassObject(Division.class, currDivision);
-                    AppContextMgr.getInstance().setClassObject(Discipline.class, currDiscipline);
-                }
-                
-                if (!dlg.isCancelled())
-                {
-                    for (Object obj : dlg.getSelectedObjects())
-                    {
-                        Agent agt = session.get(Agent.class, ((Agent)obj).getAgentId());
-                        agt.getDivision().getId(); // forcing the Division to load
-                        agentsList.add(agt);
-                    }
-                    return agentsList;
-                }
-            }
+			if (newAgentOption == JOptionPane.NO_OPTION) { // Search For Agent 
+				Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
+				Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+
+
+				boolean keepTrying = true;
+				while (keepTrying) {
+					agentsList.clear();
+					AppContextMgr.getInstance().setClassObject(Division.class, parentDivision);
+					AppContextMgr.getInstance().setClassObject(Discipline.class, parentDiscipline);
+					ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, "UserAgentSearch");
+					try {
+						dlg.registerQueryBuilder(null);
+						dlg.setMultipleSelection(false);
+						dlg.getDialog().setVisible(true);
+
+					} catch (Exception ex) {
+						ex.printStackTrace();
+
+					} finally {
+						AppContextMgr.getInstance().setClassObject(Division.class, currDivision);
+						AppContextMgr.getInstance().setClassObject(Discipline.class, currDiscipline);
+					}
+
+					if (!dlg.isCancelled()) {
+						Agent agt = session.get(Agent.class, ((Agent) dlg.getSelectedObject()).getAgentId());
+						agt.getDivision().getId(); // forcing the Division to load
+						if (agt.getSpecifyUser() == null) {
+							agentsList.add(agt);
+							keepTrying = false;
+							break;
+						} else {
+							//System.out.println("The selected agent is already associated with user '" + agt.getSpecifyUser().getName() + "'.");
+							UIRegistry.showLocalizedError("NVTM.AgentAlreadyHasUser", agt.getSpecifyUser().getName());
+							keepTrying = true;
+						}
+					} else {
+						keepTrying = false;
+					}
+				}
+				return agentsList;
+			}
         }
         
         if (!doAddNewUser)
