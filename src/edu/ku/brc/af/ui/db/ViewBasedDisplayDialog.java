@@ -390,7 +390,11 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                                                                 fvo.getDataObj(), 
                                                                                 isNewObj))
                     {
-                        UIRegistry.showError(br.getMessagesAsString());
+                        String msg = br.getMessagesAsString();
+                        if (StringUtils.isBlank(msg)) {
+                        	msg = UIRegistry.getResourceString("ViewBasedDisplayDialog.ActionNotCompleted");
+                        }
+                    	UIRegistry.showError(msg);
                         return;
                     }
                 }
