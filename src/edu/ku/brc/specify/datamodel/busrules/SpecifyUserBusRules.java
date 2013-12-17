@@ -343,7 +343,7 @@ public class SpecifyUserBusRules extends BaseBusRules
             UIRegistry.showLocalizedError(keyName);
             return false;
         }
-        return false;
+        return true;
     }
     
     /* (non-Javadoc)
@@ -364,12 +364,12 @@ public class SpecifyUserBusRules extends BaseBusRules
                                                       SpecifyUser.class, 
                                                       "specifyUserId");
         
-        if (isFieldOK("1", "NO_SPC_USRNAME", false))
+        if (!isFieldOK("1", "NO_SPC_USRNAME", false))
         {
             return STATUS.Error;
         }
         
-        if (isFieldOK("3", "NO_SPC_PWDNAME", true))
+        if (!isFieldOK("3", "NO_SPC_PWDNAME", true))
         {
             return STATUS.Error;
         }
