@@ -127,6 +127,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
@@ -3787,6 +3788,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		return true;
     	}
         	
+        
+        else if (Agent.class.isAssignableFrom(tblInfo.getClassObj()))
+        {
+        	return (alias.getParent() != null && ("members".equals(alias.getParent().getField()) || "groups".equals(alias.getParent().getField())));
+        	//return true;
+        }
+        
         return false;
             //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
             //Determination <-> Taxon behavior seems ok for now.

@@ -45,9 +45,18 @@
         <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
         </table>
+        <alias name="GroupPerson" field="members" />
+        <alias name="GroupPerson" field="groups" />        
         <table name="AgentVariant" field="variants"/>
     </table>
-
+    
+    <table name="GroupPerson">
+    	<alias name="Agent" field="group" />
+    	<alias name="Agent" field="member" />
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+	</table>
+	
 	<table name="Appraisal">
 		<alias name="Agent" field="agent"/>
 	</table>
