@@ -45,6 +45,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
@@ -437,6 +438,13 @@ public class StatsTrackerTask extends BaseTask
             String installID = UsageTracker.getInstallId();
             postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
     
+            //get ISA number
+            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            try 
+            {
+            	postParams.add(new NameValuePair("ISA_number",   collection.getIsaNumber())); //$NON-NLS-1$
+            } catch (NullPointerException e) {}
+            
             // get the OS name and version
             postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
             postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
