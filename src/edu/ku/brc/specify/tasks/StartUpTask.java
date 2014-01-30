@@ -101,7 +101,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
      * If using path then we just check the local prefs, if using the server
      * then first check the global prefs and then the local prefs
      */
-    protected void configureAttachmentManager()
+    public static void configureAttachmentManager()
     {
         AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
         boolean        isUsingPath = localPrefs.getBoolean(USE_FILE_PATH_PREF, true); 
@@ -137,7 +137,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     /**
      * @param prefs
      */
-    protected boolean configureAttachmentManager(final AppPreferences prefs)
+    protected static boolean configureAttachmentManager(final AppPreferences prefs)
     {
         Boolean useFilePath = prefs.getBoolean(USE_FILE_PATH_PREF, null);
         String  attchURL    = prefs.get(ATTACHMENT_URL_PREF, null);

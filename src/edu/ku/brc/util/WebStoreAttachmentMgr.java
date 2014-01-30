@@ -112,6 +112,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     private String                  testKeyURLStr = null;
     
     private String                  attachment_key = null;
+    private String                  server_url = null;
     
     private Long                    serverTimeDelta = null;
     
@@ -135,6 +136,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     public WebStoreAttachmentMgr(final String urlStr, final String keyStr) throws WebStoreAttachmentException
     {
         attachment_key = keyStr == null ? "" : keyStr;
+        server_url = urlStr;
                         
         downloadCacheDir = new File(UIRegistry.getAppDataDir() + File.separator + "download_cache");
         if (!downloadCacheDir.exists())
@@ -1254,6 +1256,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     public String getFileGetMetaDataURLStr()
     {
         return fileGetMetaDataURLStr;
+    }
+
+    public String getServerURL()
+    {
+        return server_url;
     }
     
     class FileDownloadQueue {

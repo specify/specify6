@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -76,7 +77,9 @@ import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
  */
 public class BuildSearchIndex2
 {
-    
+
+    private final String collectionName;
+    private final String attachmentURL;
     private Connection dbConn    = null;
     private Connection dbConn2   = null;
     private Connection dbConn3   = null;
@@ -119,12 +122,14 @@ public class BuildSearchIndex2
      * @param username
      * @param pwd
      */
-    public BuildSearchIndex2(SpExportSchemaMapping mapping, String writeToDir)
+    public BuildSearchIndex2(SpExportSchemaMapping mapping, String writeToDir, String collectionName, String attachmentURL)
     {
         super();
         //XXX need to get schemamapping object, probably
         this.mapping = mapping;
         this.writeToDir = writeToDir + File.separator + "PortalFiles";
+        this.collectionName = collectionName;
+        this.attachmentURL = attachmentURL;
         
         String solrIdxDir = this.writeToDir + File.separator + "solr";
         fileNames  = new String[] {solrIdxDir};
@@ -622,10 +627,11 @@ public class BuildSearchIndex2
     {
     	String portalInstance = UUID.randomUUID().toString();
     	File f = new File(writeToDir + File.separator + mapping.getMappingName() + "_PortalInstanceSetting.json");
-    	List<String> lines = new ArrayList<String>();
-    	lines.add("//Place the following line at the second line of resources/config/settings.json. Remove previous portalInstance line if necessary.");
-    	lines.add("\"portalInstance\":\"" + portalInstance + "\",");
-    	FileUtils.writeLines(f, lines);
+        JSONObject json = new JSONObject();
+        json.accumulate("portalInstance", portalInstance);
+        json.accumulate("collectionName", collectionName);
+        json.accumulate("imageBaseUrl", StringUtils.replace(attachmentURL, "/web_asset_store.xml", ""));
+        FileUtils.writeStringToFile(f, json.toString(2));
     }
     	
     /**

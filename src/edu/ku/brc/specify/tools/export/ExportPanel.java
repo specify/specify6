@@ -49,6 +49,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import edu.ku.brc.specify.tasks.StartUpTask;
+import edu.ku.brc.util.AttachmentManagerIface;
+import edu.ku.brc.util.WebStoreAttachmentMgr;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
@@ -105,6 +108,8 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.AttachmentUtils;
+
 
 /**
  * @author timo
@@ -164,6 +169,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		{
 			updateStats.add(new Pair<SpExportSchemaMapping, Long>(map, -2L));
 		}
+        StartUpTask.configureAttachmentManager();
 		createUI();
 		startStatusCalcs();
 	}
@@ -360,7 +366,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	    				//localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getCurrentDirectory().getPath());
 	    				localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getSelectedFile().getPath());
 						
-			        	final BuildSearchIndex2 bsi = new BuildSearchIndex2(maps.get(row), save.getSelectedFile().getPath());
+                        final BuildSearchIndex2 bsi = new BuildSearchIndex2(
+                                maps.get(row),
+                                save.getSelectedFile().getPath(),
+                                getCollectionName(),
+                                getAttachmentURL());
+
 			        	try {
 			        		bsi.connect();
 			        	} catch (SQLException sqex) {
@@ -594,7 +605,50 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             }
         });
     }
-    
+
+    private String getAttachmentURL() {
+        AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
+        if (attachmentMgr instanceof WebStoreAttachmentMgr) {
+            return ((WebStoreAttachmentMgr)attachmentMgr).getServerURL();
+        } else {
+            return "";
+        }
+    }
+
+    private String getCollectionName() {
+        String collectionName = null;
+
+        try {
+            DataProviderSessionIFace session = null;
+            SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            if (currentUser != null) {
+                session = DataProviderFactory.getInstance().createSession();
+
+                SpecifyUser user = session.getData(SpecifyUser.class, "id", currentUser.getId(), DataProviderSessionIFace.CompareType.Equals);
+                collectionName = user.getLoginCollectionName();
+                user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+
+                try {
+                    session.beginTransaction();
+                    session.saveOrUpdate(user);
+                    session.commit();
+
+                } catch (Exception ex) {
+                    log.error(ex);
+
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+            log.error(ex);
+        }
+
+        return collectionName;
+    }
     /**
      * 
      */
@@ -1331,23 +1385,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	@Override
 	public void filling()
 	{
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run()
-			{
-				if (rowCount > 0 && prog.isIndeterminate())
-				{
-					prog.setIndeterminate(false);
-					prog.setValue(0);
-				}
-				if (rowCount >= 0 && rowCount < cacheRowCount) 
-				{
-					status.setText(String.format(UIRegistry.getResourceString("ExportPanel.UpdatingCacheChunk"), rowsExported+1, rowsExported + rowCount, cacheRowCount));
-				} else
-				{
-					status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache"));
-				}
-			}
-		});
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (rowCount > 0 && prog.isIndeterminate()) {
+                    prog.setIndeterminate(false);
+                    prog.setValue(0);
+                }
+                if (rowCount >= 0 && rowCount < cacheRowCount) {
+                    status.setText(String.format(UIRegistry.getResourceString("ExportPanel.UpdatingCacheChunk"), rowsExported + 1, rowsExported + rowCount, cacheRowCount));
+                } else {
+                    status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache"));
+                }
+            }
+        });
 	}
 
 	/* (non-Javadoc)
