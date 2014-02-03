@@ -613,7 +613,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         });
     }
 
-    private String getAttachmentURL() {
+    public static String getAttachmentURL() {
         AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
         if (attachmentMgr instanceof WebStoreAttachmentMgr) {
             return ((WebStoreAttachmentMgr)attachmentMgr).getServerURL();
@@ -860,7 +860,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param map
 	 * @return the number of columns in the cache table for map
 	 */
-	protected int getNumberColumnsInCache(SpExportSchemaMapping map)
+	protected static int getNumberColumnsInCache(SpExportSchemaMapping map)
 	{
 		try
 		{
@@ -891,7 +891,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param map
 	 * @return true if cache table for map needs to be rebuilt
 	 */
-	protected boolean needsToBeRebuilt(SpExportSchemaMapping map)
+	public static boolean needsToBeRebuilt(SpExportSchemaMapping map)
 	{
         if (map.getTimestampExported() != null)
         {
@@ -946,8 +946,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param getColInfo
 	 * @return
 	 */
-	protected List<Specs> getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
-			boolean getColInfo, boolean rebuildExistingTbl)
+	protected static List<Specs> getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
+			boolean getColInfo, boolean rebuildExistingTbl, QBDataSourceListenerIFace listener)
 	{
         UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
         QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
@@ -967,7 +967,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         }
         TableQRI rootQRI = null;
 		final Vector<QBDataSourceListenerIFace> dataSrcListeners = new Vector<QBDataSourceListenerIFace>();
-		dataSrcListeners.add(this);
+		if (listener != null) {
+			dataSrcListeners.add(listener);
+		}
 		SpQuery exportQuery = theMapping.getMappings().iterator().next().getQueryField().getQuery();
         int cId = exportQuery.getContextTableId();
         for (TableTree tt : ttHash.values())
@@ -1033,7 +1035,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         return result;
 	}
 	
-	protected String adjustPathForWindows(String path)
+	protected static String adjustPathForWindows(String path)
 	{
 		String result = path;
 		if (UIHelper.isWindows()) 
@@ -1044,6 +1046,123 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return result;
 	}
 	
+	protected static Boolean updateInBackground(
+			final boolean includeRecordIds,
+			final boolean useBulkLoad, final String bulkFileDir,
+			final SpExportSchemaMapping theMapping,
+			final QBDataSourceListenerIFace listener, final Connection conn,
+			final long cacheRowCount) throws Exception {
+		List<Specs> specs = getSpecs(theMapping, includeRecordIds, true,
+				false, listener);
+		if (specs == null) {
+			return false;
+		}
+
+		final List<ERTICaptionInfoQB> cols = specs.get(0).getCols();
+		final HQLSpecs hql = specs.get(0).getSpecs();
+		final String uniquenessHql = specs.get(0).getUniquenessHQL();
+		final HQLSpecs uniquenessSpecs = specs.get(0).getUniquenessSpecs();
+		final SpQuery exportQuery = theMapping.getMappings().iterator().next()
+				.getQueryField().getQuery();
+		long rowsExported = 0;
+		Pair<Boolean, Long> ucheck = QueryBldrPane.checkUniqueRecIds(
+				uniquenessHql, uniquenessSpecs.getArgs());
+		if (!ucheck.getFirst()) {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					UIRegistry.displayErrorDlg(UIRegistry
+							.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
+				}
+			});
+			return false;
+		}
+
+		BasicSQLUtils
+				.update("update spexportschemamapping set TimestampExported = null where SpExportSchemaMappingID = "
+						+ theMapping.getId());
+
+		boolean firstPass = true;
+		String actualTblName = ExportToMySQLDB.fixTblNameForMySQL(exportQuery
+				.getName());
+		String bulkFilePath = useBulkLoad ? bulkFileDir + File.separator
+				+ actualTblName : null;
+		Connection loopConn = conn;
+		List<QBDataSourceListenerIFace> dataSrcListeners = new ArrayList<QBDataSourceListenerIFace>();
+		if (listener != null) {
+			dataSrcListeners.add(listener);
+		}
+		/*
+		 * debug aid ArrayList<Pair<Long, Double>> stats = new
+		 * ArrayList<Pair<Long,Double>>(1000); for (int i = 0; i < 1000; i++) {
+		 * stats.add(new Pair<Long, Double>(-1L, -1.0)); }
+		 */
+		while (rowsExported < cacheRowCount) {
+			// long startTime = System.nanoTime();
+			QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(),
+					hql.getSortElements(), cols, includeRecordIds);
+			for (QBDataSourceListenerIFace l : dataSrcListeners) {
+				src.addListener(l);
+			}
+
+			src.setFirstResult(rowsExported);
+			src.setMaxResults(ExportPanel.maxExportRowCount);
+			src.startDataAcquisition();
+			// loading();
+
+			// XXX Assuming specimen-based export - 1 for baseTableId.
+			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src,
+					exportQuery.getName(), dataSrcListeners, includeRecordIds,
+					false, true, 1, firstPass, bulkFilePath);
+
+			firstPass = false;
+		}
+		if (useBulkLoad) {
+			// May need work to ensure the loopConn has permission to execute "load data"
+			Statement bulkLoadStmt = loopConn.createStatement(); 
+			try {
+				// XXX if this fails, there's no need to roll back right?
+				bulkLoadStmt.executeUpdate("set character_set_database='utf8'");
+				String bulkFileSql = "load data local infile '"
+						+ adjustPathForWindows(bulkFilePath)
+						+ "'into table "
+						+ actualTblName
+						+ " fields terminated by '\\t' optionally enclosed by '\\''";
+				bulkLoadStmt.executeUpdate(bulkFileSql);
+				FileUtils.delete(new File(bulkFilePath));
+				// fileLoaded = true;
+			} finally {
+				// leave the file on disk in case of bulkLoad failure.
+				bulkLoadStmt.close();
+			}
+		}
+
+		boolean transOpen = false;
+		DataProviderSessionIFace theSession = DataProviderFactory.getInstance()
+				.createSession();
+		try {
+			SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
+			mergedMap.setTimestampExported(new Timestamp(System
+					.currentTimeMillis()));
+			theSession.beginTransaction();
+			transOpen = true;
+			theSession.saveOrUpdate(mergedMap);
+			theSession.commit();
+			transOpen = false;
+		} catch (Exception ex) {
+			// UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_SETTING_EXPORT_TIMESTAMP"));
+			if (transOpen) {
+				theSession.rollback();
+			}
+			throw ex;
+		} finally {
+			theSession.close();
+		}
+		return true;
+	}
+
+
     protected javax.swing.SwingWorker<Object, Object> exportToTable(final SpExportSchemaMapping theMapping, final boolean rebuildExistingTbl)
     {
         UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
@@ -1063,7 +1182,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         
 		rowsExported = 0;
 		final boolean includeRecordIds = true;
-        List<Specs> specs = getSpecs(theMapping, includeRecordIds, true, rebuildExistingTbl);
+        List<Specs> specs = getSpecs(theMapping, includeRecordIds, true, rebuildExistingTbl, this);
         if (specs == null)
         {
         	return null;
@@ -1460,6 +1579,71 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		});
 	}
 
+	/**
+	 * @param map
+	 * @return
+	 */
+	public static MappingUpdateStatus retrieveMappingStatus(final SpExportSchemaMapping map) {
+		try
+		{
+			Connection conn = DBConnection.getInstance().createConnection();
+			Statement stmt = conn.createStatement();
+			try
+			{
+				MappingUpdateStatus result = null;
+				String tbl = getCacheTableName(map.getMappingName());
+				String keyFld = tbl + "Id";
+				SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
+				DBTableInfo rootTbl = DBTableIdMgr.getInstance().getInfoById(q.getContextTableId());
+				String spTbl = rootTbl.getName();
+				String spKeyFld = rootTbl.getIdColumnName();
+				String sql = "select count(*) from " + tbl + " where " + keyFld 
+					+ " not in(select " + spKeyFld + " from " + spTbl;
+				
+				//XXX Collection Scoping Issue???
+				if (rootTbl.getFieldByName("collectionMemberId") != null)
+				{
+					sql += " where CollectionMemberId = " 
+						+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+				}
+				
+				sql += ")";
+				int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
+				int otherRecs = 0; 
+				
+				HQLSpecs hql = getSpecs(map, true, false, false, null).get(0).getSpecs();
+				DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
+		        try
+		        {
+		        	QueryIFace query = theSession.createQuery(hql.getHql(), false);
+	                if (hql.getArgs() != null)
+	                {
+	                    for (Pair<String, Object> param : hql.getArgs())
+	                    {
+	                    	query.setParameter(param.getFirst(), param.getSecond());
+	                    }
+	                }
+	                otherRecs = query.list().size();
+		        } finally
+		        {
+		        	theSession.close();
+		        }
+		        result = new MappingUpdateStatus(deletedRecs, 0, 0, deletedRecs + otherRecs);
+				return result;
+			} finally
+			{
+				stmt.close();
+				conn.close();
+			}
+		} catch (Exception ex)
+		{
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
+            throw new RuntimeException(ex);
+		}
+		
+	}
+	
 	protected void getMappingStatus(final SpExportSchemaMapping map)
 	{
 		javax.swing.SwingWorker<MappingUpdateStatus, Object> worker = new javax.swing.SwingWorker<MappingUpdateStatus, Object>() {
@@ -1470,63 +1654,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			@Override
 			protected MappingUpdateStatus doInBackground() throws Exception
 			{
-				try
-				{
-					Connection conn = DBConnection.getInstance().createConnection();
-					Statement stmt = conn.createStatement();
-					try
-					{
-						MappingUpdateStatus result = null;
-						String tbl = getCacheTableName(map.getMappingName());
-						String keyFld = tbl + "Id";
-						SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
-						DBTableInfo rootTbl = DBTableIdMgr.getInstance().getInfoById(q.getContextTableId());
-						String spTbl = rootTbl.getName();
-						String spKeyFld = rootTbl.getIdColumnName();
-						String sql = "select count(*) from " + tbl + " where " + keyFld 
-							+ " not in(select " + spKeyFld + " from " + spTbl;
-						
-						//XXX Collection Scoping Issue???
-						if (rootTbl.getFieldByName("collectionMemberId") != null)
-						{
-							sql += " where CollectionMemberId = " 
-								+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
-						}
-						
-						sql += ")";
-						int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
-						int otherRecs = 0; 
-						
-						HQLSpecs hql = getSpecs(map, true, false, false).get(0).getSpecs();
-						DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
-				        try
-				        {
-				        	QueryIFace query = theSession.createQuery(hql.getHql(), false);
-			                if (hql.getArgs() != null)
-			                {
-			                    for (Pair<String, Object> param : hql.getArgs())
-			                    {
-			                    	query.setParameter(param.getFirst(), param.getSecond());
-			                    }
-			                }
-			                otherRecs = query.list().size();
-				        } finally
-				        {
-				        	theSession.close();
-				        }
-				        result = new MappingUpdateStatus(deletedRecs, 0, 0, deletedRecs + otherRecs);
-						return result;
-					} finally
-					{
-						stmt.close();
-						conn.close();
-					}
-				} catch (Exception ex)
-				{
-		            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-		            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
-		            throw new RuntimeException(ex);
-				}
+				return retrieveMappingStatus(map);
 			}
 
 			/* (non-Javadoc)
@@ -1568,58 +1696,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 	
 	
-	public class MappingUpdateStatus
-	{
-		protected final long recsToDelete;
-		protected final long recsUpdated;
-		protected final long recsAdded;
-		protected final long totalRecsChanged;
-		/**
-		 * @param recsToDelete
-		 * @param recsUpdated
-		 * @param recsAdded
-		 * @param totalRecsChanged
-		 */
-		public MappingUpdateStatus(long recsToDelete, long recsUpdated,
-				long recsAdded, long totalRecsChanged)
-		{
-			super();
-			this.recsToDelete = recsToDelete;
-			this.recsUpdated = recsUpdated;
-			this.recsAdded = recsAdded;
-			this.totalRecsChanged = totalRecsChanged;
-		}
-		/**
-		 * @return the recsToDelete
-		 */
-		public long getRecsToDelete()
-		{
-			return recsToDelete;
-		}
-		/**
-		 * @return the recsUpdated
-		 */
-		public long getRecsUpdated()
-		{
-			return recsUpdated;
-		}
-		/**
-		 * @return the recsAdded
-		 */
-		public long getRecsAdded()
-		{
-			return recsAdded;
-		}
-		/**
-		 * @return the totalRecsChanged
-		 */
-		public long getTotalRecsChanged()
-		{
-			return totalRecsChanged;
-		}
-		
-		
-	}
 	
 	private static void startUp()
 	{
@@ -1850,39 +1926,4 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         
     }
     
-    private class Specs 
-    {
-    	protected final HQLSpecs specs; 
-    	protected final List<ERTICaptionInfoQB> cols;
-    	protected final String uniquenessHQL;
-    	protected final HQLSpecs uniquenessSpecs;
-    	
-    	public Specs(HQLSpecs specs, List<ERTICaptionInfoQB> cols, String uniquenessHQL, HQLSpecs uniquenessSpecs)
-    	{
-    		this.specs = specs;
-    		this.cols = cols;
-    		this.uniquenessHQL = uniquenessHQL;
-    		this.uniquenessSpecs = uniquenessSpecs;
-    	}
-
-		public HQLSpecs getSpecs()
-		{
-			return specs;
-		}
-
-		public List<ERTICaptionInfoQB> getCols()
-		{
-			return cols;
-		}
-
-		public String getUniquenessHQL()
-		{
-			return uniquenessHQL;
-		}
-    	
-    	public HQLSpecs getUniquenessSpecs()
-    	{
-    		return uniquenessSpecs == null ? specs : uniquenessSpecs;
-    	}
-    }
 }
