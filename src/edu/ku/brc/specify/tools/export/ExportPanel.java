@@ -1046,6 +1046,23 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return result;
 	}
 	
+	/**
+	 * @param includeRecordIds
+	 * @param useBulkLoad
+	 * @param bulkFileDir
+	 * @param theMapping
+	 * @param listener
+	 * @param conn
+	 * @param cacheRowCount
+	 * @return
+	 * @throws Exception
+	 * 
+	 * 
+	 */
+	//XXX This is a streamlined copy of the doInBackground() method of the swing worker returned by
+	//XXX exportToTable(). It is used by ExportCmdLine. It would probably be better to make
+	//XXX this function callable from exportToTable()'s swing worker. But, for now,
+	//XXX changes to cache updating may have to be applied to this method AND exportToTable().
 	protected static Boolean updateInBackground(
 			final boolean includeRecordIds,
 			final boolean useBulkLoad, final String bulkFileDir,
@@ -1163,6 +1180,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 
 
+    /**
+     * @param theMapping
+     * @param rebuildExistingTbl
+     * @return
+     */
+	//XXX see remarks for updateInBackground() !!!
+	//XXX changes here may need to applied to updateInBackground() !!!
     protected javax.swing.SwingWorker<Object, Object> exportToTable(final SpExportSchemaMapping theMapping, final boolean rebuildExistingTbl)
     {
         UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
