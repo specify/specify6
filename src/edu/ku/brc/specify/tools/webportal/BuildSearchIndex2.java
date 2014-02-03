@@ -17,8 +17,9 @@
  */
 package edu.ku.brc.specify.tools.webportal;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -30,9 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -80,6 +84,8 @@ public class BuildSearchIndex2
 
     private final String collectionName;
     private final String attachmentURL;
+    private final String outputFileName;
+    private final Path tempDir;
     private Connection dbConn    = null;
     private Connection dbConn2   = null;
     private Connection dbConn3   = null;
@@ -115,21 +121,22 @@ public class BuildSearchIndex2
     		{"img", "string", "true", "true", "false"},
     		{"geoc", "string", "true", "true", "false"}
     };
-    /**
-     * @param server
-     * @param port
-     * @param dbName
-     * @param username
-     * @param pwd
-     */
-    public BuildSearchIndex2(SpExportSchemaMapping mapping, String writeToDir, String collectionName, String attachmentURL)
+
+    public BuildSearchIndex2(SpExportSchemaMapping mapping, String outputFileName, String collectionName, String attachmentURL)
     {
         super();
         //XXX need to get schemamapping object, probably
         this.mapping = mapping;
-        this.writeToDir = writeToDir + File.separator + "PortalFiles";
+        this.outputFileName = outputFileName;
         this.collectionName = collectionName;
         this.attachmentURL = attachmentURL;
+        try {
+            tempDir = Files.createTempDirectory("portal_export");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.writeToDir = tempDir.toString() + File.separator + "PortalFiles";
+
         
         String solrIdxDir = this.writeToDir + File.separator + "solr";
         fileNames  = new String[] {solrIdxDir};
@@ -340,7 +347,7 @@ public class BuildSearchIndex2
     }
     
     /**
-     * @param str
+     * @param inStr
      * @param len
      * @param used
      * @return an un-used abbreviation for str, hopefully of length <= len. 
@@ -844,7 +851,6 @@ public class BuildSearchIndex2
                 writePortalJsonToFile(portalFldJson);
                 writeSolrFldXmlToFile(solrFldXml);
                 writePortalInstanceJsonToFile();
-                
 
             } catch (Exception ex) 
             {
@@ -906,6 +912,9 @@ public class BuildSearchIndex2
             }
             
         }
+
+        buildZipFile();
+
         if (progressListener != null)
         {
         	progressListener.done(totalRecs);
@@ -915,8 +924,34 @@ public class BuildSearchIndex2
         return true;
 
     }
-    
-       
+
+    private void  buildZipFile() {
+        try {
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputFileName));
+            File src = new File(writeToDir);
+            addToZip(out, src, "");
+            out.close();
+        } catch (IOException e) {
+            throw  new RuntimeException(e);
+        }
+    }
+
+
+    private void addToZip(ZipOutputStream out, File src, String base) throws IOException {
+        if (src.isDirectory())
+        {
+            base = base + src.getName() + "/";
+            out.putNextEntry(new ZipEntry(base));
+            for (File f : src.listFiles() )
+            {
+                addToZip(out, f, base);
+            }
+        } else {
+            out.putNextEntry(new ZipEntry(base + src.getName()));
+            IOUtils.copy(new FileInputStream(src), out);
+        }
+    }
+
     /**
      * @param mapping
      * @return

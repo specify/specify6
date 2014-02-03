@@ -49,6 +49,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.WebStoreAttachmentMgr;
@@ -357,7 +358,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						String defPath = localPrefs.get(EXPORT_WEBPORTAL_PATH, null);
 						JFileChooser save = defPath == null ? new JFileChooser() :
 							new JFileChooser(new File(defPath));
-						save.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						save.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                        save.setFileFilter(new UIFileFilter("zip"));
 						int result = save.showSaveDialog(null);
 	    				if (result != JFileChooser.APPROVE_OPTION)
 						{	
@@ -365,10 +367,15 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						}
 	    				//localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getCurrentDirectory().getPath());
 	    				localPrefs.put(EXPORT_WEBPORTAL_PATH, save.getSelectedFile().getPath());
-						
+
+                        String zipFile = save.getSelectedFile().getPath();
+                        if (!zipFile.toLowerCase().endsWith(".zip"))
+                        {
+                             zipFile += ".zip";
+                        }
                         final BuildSearchIndex2 bsi = new BuildSearchIndex2(
                                 maps.get(row),
-                                save.getSelectedFile().getPath(),
+                                zipFile,
                                 getCollectionName(),
                                 getAttachmentURL());
 
