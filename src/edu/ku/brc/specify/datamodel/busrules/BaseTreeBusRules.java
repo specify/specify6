@@ -477,13 +477,13 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                            final T nodeInForm)
     {
         log.debug("Adjusting the model for the 'rank' combo box in a tree node form");
-        log.debug("nodeInForm = " + nodeInForm.getName());
         if (nodeInForm == null)
         {
             return;
         }
+        log.debug("nodeInForm = " + nodeInForm.getName());
         
-        DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
+        DefaultComboBoxModel<I> model = (DefaultComboBoxModel<I>)rankComboBox.getModel();
         model.removeAllElements();
 
         // this is the highest rank the edited item can possibly be
@@ -1502,7 +1502,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 					{
 						if (System.currentTimeMillis() - semaphore.getLockedTime().getTime() > FORM_SAVE_LOCK_MAX_DURATION_IN_MILLIS) {
 							//something is clearly wrong with the lock. Ignore it and re-use it. It will be cleared when save succeeds.
-							log.warn("automatically overriding expired " + getFormSaveLockTitle() + " locked by " + 
+							log.warn("automatically overriding expired " + getFormSaveLockTitle() + " lock set by " + 
 									prevLockBy + " at " + DateFormat.getDateTimeInstance().format(semaphore.getLockedTime()));
 							return USER_ACTION.OK;
 						} else {
