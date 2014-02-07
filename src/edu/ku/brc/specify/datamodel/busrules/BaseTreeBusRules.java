@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.DateFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -65,8 +66,8 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
@@ -92,7 +93,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        extends AttachmentOwnerBaseBusRules
 {
     public static final boolean ALLOW_CONCURRENT_FORM_ACCESS = true;
-	
+	public static final long FORM_SAVE_LOCK_MAX_DURATION_IN_MILLIS = 60000;
 	private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
     
     private boolean processedRules = false;
@@ -1499,7 +1500,14 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 							SpTaskSemaphore semaphore,
 							boolean previouslyLocked, String prevLockBy)
 					{
-						return USER_ACTION.Error;
+						if (System.currentTimeMillis() - semaphore.getLockedTime().getTime() > FORM_SAVE_LOCK_MAX_DURATION_IN_MILLIS) {
+							//something is clearly wrong with the lock. Ignore it and re-use it. It will be cleared when save succeeds.
+							log.warn("automatically overriding expired " + getFormSaveLockTitle() + " locked by " + 
+									prevLockBy + " at " + DateFormat.getDateTimeInstance().format(semaphore.getLockedTime()));
+							return USER_ACTION.OK;
+						} else {
+							return USER_ACTION.Error;
+						}
 					}
 			
 		}, false);
