@@ -49,7 +49,7 @@ import edu.ku.brc.util.Pair;
  */
 public class ExportCmdLine {
 
-	private static String[] argkeys = {"-u", "-p", "-d", "-m", "-a", "-l", "-h", "-o"};
+	private static String[] argkeys = {"-u", "-p", "-d", "-m", "-a", "-l", "-h", "-o", "-w"};
 	
 	protected List<Pair<String, String>> argList;
 	protected String userName;
@@ -61,6 +61,7 @@ public class ExportCmdLine {
 	protected SpExportSchemaMapping theMapping = null;
 	protected String action;
 	protected String hostName;
+	protected String workingPath = ".";
 	protected Pair<String, String> master;
 	protected String collectionName;
 	protected JaasContext jaasContext;
@@ -158,6 +159,7 @@ public class ExportCmdLine {
     protected void setupPrefs() throws Exception {
 		//Apparently this is correct...
         UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+        UIRegistry.setDefaultWorkingPath(this.workingPath);
         final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         adjustLocaleFromPrefs();
@@ -318,8 +320,8 @@ public class ExportCmdLine {
 	 */
 	public ExportCmdLine() {
 		argList = buildArgList(argkeys);
-		//dbDrivers = DatabaseDriverInfo.getDriversList();
-		dbDrivers.add(buildDefaultDriverInfo());
+		dbDrivers = DatabaseDriverInfo.getDriversList();
+		//dbDrivers.add(buildDefaultDriverInfo());
 		dbDriverIdx = 0;
 		hostName = "localhost";
 	}
@@ -392,6 +394,7 @@ public class ExportCmdLine {
 		mapping = getArg("-m");
 		action = getArg("-a");
 		outputName = getArg("-o");
+		workingPath = getArg("-w");
 		String logFile = getArg("-l");
 		if (logFile != null) {
 			openLog(logFile);
@@ -544,8 +547,6 @@ public class ExportCmdLine {
 		try {
 			try {
 				try {
-					ecl.setupPrefs();
-
 					ecl.readArgs(args);
 
 					String argErr = ecl.checkArgs();
@@ -556,6 +557,7 @@ public class ExportCmdLine {
 
 					ecl.setMembers();
 					ecl.initLog(args);
+					ecl.setupPrefs();
 
 					if (ecl.hasMasterKey()) {
 						ecl.out("Master key set");
