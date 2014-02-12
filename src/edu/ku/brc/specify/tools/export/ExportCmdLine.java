@@ -307,12 +307,19 @@ public class ExportCmdLine {
 		this.success = success;
 	}
 	
+	protected DatabaseDriverInfo buildDefaultDriverInfo() {
+		DatabaseDriverInfo result = new DatabaseDriverInfo("MySQL", "com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQL5InnoDBDialect", false, "3306");
+		result.addFormat(DatabaseDriverInfo.ConnectionType.Opensys, "jdbc:mysql://SERVER:PORT/");
+		result.addFormat(DatabaseDriverInfo.ConnectionType.Open, "jdbc:mysql://SERVER:PORT/DATABASE?characterEncoding=UTF-8&autoReconnect=true");
+		return result;
+	}
 	/**
 	 * 
 	 */
 	public ExportCmdLine() {
 		argList = buildArgList(argkeys);
-		dbDrivers = DatabaseDriverInfo.getDriversList();
+		//dbDrivers = DatabaseDriverInfo.getDriversList();
+		dbDrivers.add(buildDefaultDriverInfo());
 		dbDriverIdx = 0;
 		hostName = "localhost";
 	}
