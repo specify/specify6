@@ -320,10 +320,14 @@ public class ExportCmdLine {
 	 */
 	public ExportCmdLine() {
 		argList = buildArgList(argkeys);
-		dbDrivers = DatabaseDriverInfo.getDriversList();
+		//dbDrivers = DatabaseDriverInfo.getDriversList();
 		//dbDrivers.add(buildDefaultDriverInfo());
 		dbDriverIdx = 0;
 		hostName = "localhost";
+	}
+	
+	public void loadDrivers() {
+		dbDrivers = DatabaseDriverInfo.getDriversList();
 	}
 	
     protected String getConnectionStr() {
@@ -558,7 +562,8 @@ public class ExportCmdLine {
 					ecl.setMembers();
 					ecl.initLog(args);
 					ecl.setupPrefs();
-
+					ecl.loadDrivers();
+					
 					if (ecl.hasMasterKey()) {
 						ecl.out("Master key set");
 					} else {
