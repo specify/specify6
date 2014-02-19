@@ -785,7 +785,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         boolean canModify = !isViewOnly;
         if (AppContextMgr.isSecurityOn() && tableInfo.getPermissions() != null)
         {
-            canModify = tableInfo.getPermissions().canModify() && !isViewOnly;
+            canModify = (tableInfo.getPermissions().canModify() || (tableInfo.getPermissions().canAdd() && isNewObject)) 
+            		&& !isViewOnly;
         }
         
         int options = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | 
