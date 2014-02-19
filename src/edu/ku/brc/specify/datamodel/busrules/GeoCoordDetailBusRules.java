@@ -30,6 +30,7 @@ import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
@@ -98,6 +99,18 @@ public class GeoCoordDetailBusRules extends BaseBusRules
         }
     }
     
+    /**
+     * @param dataObj
+     * @return
+     */
+    protected boolean isNewObject(Object dataObj) {
+    	if (dataObj instanceof DataModelObjBase) {
+    		return ((DataModelObjBase)dataObj).getId() == null;
+    	} else {
+    		return isNewObject();
+    	}
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
@@ -106,7 +119,7 @@ public class GeoCoordDetailBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        if (geoRefDetByQCBX != null && geoRefDetByQCBX.isEnabled() && isEditMode() && isNewObject())
+        if (geoRefDetByQCBX != null && geoRefDetByQCBX.isEnabled() && isEditMode() && isNewObject(dataObj) )
         {
             // Always get a new copy of the Agent Object
             SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
@@ -147,7 +160,7 @@ public class GeoCoordDetailBusRules extends BaseBusRules
             }
         }
         
-        if (geoRefDetDateTF != null && geoRefDetDateTF.isEnabled() && isEditMode() && isNewObject())
+        if (geoRefDetDateTF != null && geoRefDetDateTF.isEnabled() && isEditMode() && isNewObject(dataObj))
         {
             SwingUtilities.invokeLater(new Runnable()
             {
