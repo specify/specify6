@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
@@ -46,6 +47,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -162,13 +164,42 @@ public class BaseBusRules implements BusinessRulesIFace
         return strBuf.toString();
     }
 
+    /**
+     * @param dataObj
+     * @return true if current user has permission to save.
+     */
+    protected boolean checkSavePermission(Object dataObj) {
+        if (dataObj instanceof DataModelObjBase) {
+        	DBTableInfo info = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)dataObj).getTableId());
+        	return info != null && (info.getPermissions().canModify() || (info.getPermissions().canAdd() && ((DataModelObjBase)dataObj).getId() == null)); 
+        }
+    	return true;
+    }
+    
+    /**
+     * @param dataObj
+     * @return
+     */
+    protected String getDataObjDesc(Object dataObj) {
+        if (dataObj instanceof DataModelObjBase) {
+        	DBTableInfo info = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)dataObj).getTableId());
+        	if (info != null) {
+        		return info.getTitle();
+        	}
+        }
+    	return dataObj.getClass().getSimpleName();
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
     public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
     {
-        return true;
+        if (AppContextMgr.isSecurityOn() && !checkSavePermission(dataObj)) {
+        	reasonList.add(String.format(UIRegistry.getResourceString("DET_NO_MOD_PERM"), getDataObjDesc(dataObj)));
+        	return false;
+        }
+    	return true;
     }
 
     /* (non-Javadoc)
