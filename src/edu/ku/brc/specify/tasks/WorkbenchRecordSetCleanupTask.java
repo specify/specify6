@@ -53,6 +53,14 @@ public class WorkbenchRecordSetCleanupTask extends BaseTask
 	
 	
 	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#isPermissionsSettable()
+	 */
+	@Override
+	public boolean isPermissionsSettable() {
+		return false;
+	}
+
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.BaseTask#initialize()
 	 */
 	@Override
