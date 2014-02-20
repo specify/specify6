@@ -347,6 +347,9 @@ public class SpExportSchemaMapping extends CollectionMember
 		for (SpExportSchema schema : getSpExportSchemas())
 		{
 			schema.getId();
+			for (SpExportSchemaItem it : schema.getSpExportSchemaItems()) {
+				it.getId();
+			}
 		}
 		boolean loadedQuery = !loadQuery;
 		for (SpExportSchemaItemMapping map : getMappings())
