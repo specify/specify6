@@ -39,15 +39,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
+import edu.ku.brc.util.AttachmentUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -275,6 +272,15 @@ public class IconViewObj implements Viewable
                     doDoubleClick();
                 }
             }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                if (e.isPopupTrigger())
+                {
+                    showContextMenu(e);
+                }
+            }
             
         });
         
@@ -357,7 +363,34 @@ public class IconViewObj implements Viewable
         mainComp.add(iconTray,BorderLayout.CENTER);
         
     }
-    
+
+    private void showContextMenu(MouseEvent e) {
+        final FormDataObjIFace selection = iconTray.getSelectedValue();
+
+        if (selection instanceof ObjectAttachmentIFace<?>)
+        {
+            final File original = AttachmentUtils.getAttachmentFile(
+                    ((ObjectAttachmentIFace) selection).getAttachment());
+
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("AttachmentUtils.OPEN_IN_EV"));
+            menuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    try
+                    {
+                        AttachmentUtils.openFile(original);
+                    } catch (Exception ex)
+                    {
+                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                    }
+                }
+            });
+            popup.add(menuItem);
+            popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#isDataCompleteAndValid(boolean)
      */
@@ -436,6 +469,7 @@ public class IconViewObj implements Viewable
                 dialog.dispose();
             }
         }
+
     }
     
     /**

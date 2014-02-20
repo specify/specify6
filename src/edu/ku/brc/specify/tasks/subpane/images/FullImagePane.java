@@ -19,10 +19,13 @@
 */
 package edu.ku.brc.specify.tasks.subpane.images;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
-import javax.swing.ImageIcon;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -30,10 +33,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ImageDisplay;
-import edu.ku.brc.ui.ImageLoaderExector;
-import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.*;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rods
@@ -84,6 +85,17 @@ public class FullImagePane extends BaseSubPane implements ImageLoaderListener
         final JScrollPane  sp = UIHelper.createScrollPane(imgDisp, true);
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"), this);
         pb.add(sp, cc.xy(1, 1));
+
+        imgDisp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showContextMenu(e);
+            }
+            @Override
+            public void mouseReleased(MouseEvent event) {
+                showContextMenu(event);
+            }
+        });
         
         if (imageFile != null && imageFile.exists())
         {
@@ -98,6 +110,29 @@ public class FullImagePane extends BaseSubPane implements ImageLoaderListener
                                                 true, -1, this);
             ImageLoaderExector.getInstance().loadImage(loader);
             imgDisp.setImage(IconManager.getImage("Loading"));
+        }
+    }
+
+    protected void showContextMenu(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("AttachmentUtils.OPEN_IN_EV"));
+            menuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    try
+                    {
+                        AttachmentUtils.openFile(imageFile);
+                    } catch (Exception ex)
+                    {
+                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                    }
+                }
+            });
+            popup.add(menuItem);
+            popup.show(e.getComponent(), e.getX(), e.getY());
         }
     }
     
