@@ -31,6 +31,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.JPAQuery;
@@ -133,8 +134,14 @@ public class QBResultSetTableModel extends ResultSetTableModel
 
                 synchronized (this)
                 {
-                    cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
+                    if (agg != null) {
+                    	cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
                             jpa.getDataObjects(), agg));
+                    } else if (jpa.getDataObjects() != null && jpa.getDataObjects().size() > 0) {
+                    	cols.set(col, UIRegistry.getResourceString("QBResultSeTableModel.DataPresentButNoAgg"));
+                    } else {
+                    	cols.set(col, null);
+                    }
                     bgTaskCount--;
                     if (bgTaskCount < 10)
                     {
@@ -250,23 +257,19 @@ public class QBResultSetTableModel extends ResultSetTableModel
 									Vector<Object> info = new Vector<Object>();
 									info.add(rowNum);
 									info.add(row.size());
-									//info.add(ertiRel.getRelationship()
-									//		.getDataClass());
 									info.add(ertiRel.getProcessor());
 									info.add(row);
 									jpa.setData(info);
 									if (debugging)
 										log.debug("*** 3 launching aggregator["
-												+ erti.getColLabel() + "]");
+											+ erti.getColLabel() + "]");
 									jpa.start();
-
 									synchronized (this) 
 									{
 										bgTaskCount++;
 									}
-									row
-											.add(UIRegistry
-													.getResourceString("QBResultSetTableModel.LOADING_CELL"));
+									row.add(UIRegistry
+												.getResourceString("QBResultSetTableModel.LOADING_CELL"));
 								}
 								else
 								{
