@@ -5598,7 +5598,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			if (fi != null && fi.getTableInfo().getTableId() == CollectionObject.getClassTableId()
 					&& "catalogNumber".equalsIgnoreCase(fi.getColumn())) {
 				UIFieldFormatterIFace formatter = fi.getFormatter();
-				if (formatter != null && formatter.isNumeric()) {
+				if (formatter != null && formatter.isNumeric() && qfp.isForDisplay()) {
 					result = col;
 				}
 			} else if (qfp.getFieldQRI() instanceof RelQRI) {
@@ -5615,6 +5615,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		return result;
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#changeNotification(java.lang.Object)
+	 */
+	@Override
+	public void changeNotification(Object changed) {
+		if (QueryFieldPanel.class.isAssignableFrom(changed.getClass()) && isSmushableContext()) {
+			QueryFieldPanel qfp = (QueryFieldPanel)changed;
+			DBFieldInfo fi = qfp.getFieldInfo();
+			if (fi != null && fi.getTableInfo().getTableId() == CollectionObject.getClassTableId()
+					&& "catalogNumber".equalsIgnoreCase(fi.getColumn())) {
+				updateSmushBtn();
+			}
+		}
+	}
+
 	/**
 	 * @return
 	 */

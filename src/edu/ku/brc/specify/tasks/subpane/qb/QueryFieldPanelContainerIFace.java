@@ -91,4 +91,9 @@ public interface QueryFieldPanelContainerIFace
      */
     void doSearch();
     
+    /**
+     * @param changed
+     */
+    void changeNotification(Object changed);
+    
 }
