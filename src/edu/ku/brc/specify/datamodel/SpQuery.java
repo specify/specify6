@@ -77,6 +77,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     protected Boolean           selectDistinct;
     protected Boolean			searchSynonymy;
     protected Boolean           countOnly;
+    protected Boolean 		    smushed;
     
     protected Set<SpQueryField> fields;
     protected Set<SpReport>     reports;
@@ -114,6 +115,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         selectDistinct   = null;
         searchSynonymy   = null;
         countOnly        = null;
+        smushed          = null;
     }
     
     
@@ -192,6 +194,14 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     }
 
     /**
+     * @param smushed the smushed to smush
+     */
+    public void setSmushed(Boolean smushed) 
+    {
+    	this.smushed = smushed;
+    }
+    
+    /**
      * 
      */
     @Lob
@@ -261,6 +271,14 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         return isFavorite;
     }
 
+    /**
+     * @return the smushed
+     */
+    @Column(name = "Smushed", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getSmushed()
+    {
+        return smushed;
+    }
     
     
     /**
@@ -416,6 +434,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         addAttr(sb, "named", named);
         addAttr(sb, "ordinal", ordinal);
         addAttr(sb, "appversion", UIRegistry.getAppVersion());
+        addAttr(sb, "smushed", smushed);
         
         sb.append(">\r\n");
         
@@ -452,6 +471,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         isFavorite      = getAttr(element, "isFavorite", false);
         named           = getAttr(element, "named", false);
         ordinal         = getAttr(element, "ordinal", (short)0);
+        smushed         = getAttr(element, "smushed", false);
         
         Element sqlNode = (Element)element.selectSingleNode("sqlStr");
         sqlStr = sqlNode != null ? sqlNode.getTextTrim() : null;

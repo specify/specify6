@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -31,7 +32,6 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.af.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.JPAQuery;
@@ -313,6 +313,9 @@ public class QBResultSetTableModel extends ResultSetTableModel
 				} else 
 				{
 					results.cacheFilled(cache);
+					if (((QBQueryForIdResultsHQL)results).getCache() != null) {
+						cache = ((QBQueryForIdResultsHQL)results).getCache();
+					}
 				}
 				loadingCache.set(false);
 
@@ -380,18 +383,39 @@ public class QBResultSetTableModel extends ResultSetTableModel
         {
             for (Vector<Object> row : cache)
             {
-                rs.addItem((Integer )row.get(idCol));
+                //rs.addItem((Integer )row.get(idCol));
+                addRsItems(rs, getIds(row.get(idCol)));
             }
         }
         else
         {
             for (int inx : rows)
             {
-                rs.addItem((Integer )cache.get(inx).get(idCol));
+                //rs.addItem((Integer )cache.get(inx).get(idCol));
+            	addRsItems(rs, getIds(cache.get(inx).get(idCol)));
             }
         }
         
         return rs;
+    }
+    
+    protected void addRsItems(RecordSetIFace rs, List<Integer> ids) {
+        for (Integer id : ids) {
+        	rs.addItem(id);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected List<Integer> getIds(Object idVal) {
+    	List<Integer> result;
+    	//if (Collection.class.isAssignableFrom(idVal.getClass())) {
+    	if (idVal instanceof List<?>) {
+    		result = (List<Integer> )idVal;
+    	} else {
+    		result = new ArrayList<Integer>();
+    		result.add((Integer)idVal);
+    	}
+    	return result;
     }
 
     /**
@@ -409,7 +433,13 @@ public class QBResultSetTableModel extends ResultSetTableModel
             return null;
         }
         Vector<Object> row = cache.get(index);
-        return (Integer )row.get(row.size()-1);
+        Object idVal = row.get(row.size()-1);
+        if (idVal instanceof List<?>) {
+        	//XXX if row is a series return id of first item ???
+        	return (Integer )((List<?>)idVal).get(0);
+        } else {
+        	return (Integer )idVal;
+        }
     }
     
     /**

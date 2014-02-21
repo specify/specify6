@@ -75,6 +75,9 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
      */
     protected final List<SortElement> sort;
     
+    protected final int smusherColIdx;
+    protected final int smusherRecIdIdx;
+    
     /**
      * true if data has been pre-processed (i.e. sorted).
      */
@@ -372,7 +375,21 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
      */
     protected boolean needToPreProcess()
     {
+    	return needToSort() || needToSmush();
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean needToSort() {
     	return sort != null && sort.size() > 0;
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean needToSmush() {
+    	return smusherColIdx != -1;
     }
     
     /* (non-Javadoc)
@@ -439,7 +456,13 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
                 cache.add(row);
             }
             this.setUpColNamesPostProcess();
-            Collections.sort(cache, new ResultRowComparator(sort, true));
+            if (needToSort()) {
+            	Collections.sort(cache, new ResultRowComparator(sort, true));
+            }
+            if (needToSmush()) {
+        		Smusher s = new Smusher(cache, smusherColIdx, smusherRecIdIdx);
+        		this.cache = s.smush();
+            }
             processed = true;
             firstRow = true;
             currentRow = 0;
@@ -479,6 +502,9 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         this.hql = hql;
         this.params = params;
         this.sort = sort;
+        //XXX assuming no smushing for exports, easy enough to add with some work in tools.export.ExportPanel.java
+        this.smusherColIdx = -1;
+        this.smusherRecIdIdx = -1;
     }
     
     /**
@@ -490,12 +516,15 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
      */
     public QBDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort,
                           final List<ERTICaptionInfoQB> columnInfo,
-                          final boolean recordIdsIncluded, final Object repeats)
+                          final boolean recordIdsIncluded, final Object repeats,
+                          final int smusherColIdx, final int smusherRecIdIdx)
     {
         super(columnInfo, recordIdsIncluded, repeats);
         this.hql = hql;
         this.params = params;
         this.sort = sort;
+        this.smusherColIdx = smusherColIdx;
+        this.smusherRecIdIdx = smusherRecIdIdx;
     }    
     
     /**

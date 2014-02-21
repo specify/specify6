@@ -266,4 +266,44 @@ public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace, Clon
     	return entry;
     }
 
+    /**
+     * @param entry a list of one or more numeric cataloger numbers, possibly containing alphabetic prefixes or suffixes.
+     * @param formatter the CatalogNumber formatter for the entry.
+     * @return a comma delimited of numeric portions of the catalognumbers in the list. "-" is interpreted as a dash indicating a series.
+     * Other Non-numeric characters are treated as delimiters.
+     */
+    public static String preParseNumericCatalogNumbersWithSeries(final String entry, final UIFieldFormatterIFace formatter)
+    {
+    	if (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter )formatter).isNumeric())
+    	{
+    		//just go through char by char
+    		StringBuilder result = new StringBuilder();
+    		String numericCatNumChars = "0123456789-"; // and no decimal points in Numeric cat nums.
+    		boolean separate = false;
+    		for (int i = 0; i < entry.length(); i++)
+    		{
+    			String current = entry.substring(i, i+1);
+    			if (numericCatNumChars.contains(current))
+    			{
+    				if (!"-".equals(current) || separate) {
+    					result.append(current);
+    					separate = true;
+    				}
+    			}
+    			else if (result.length() > 0 && separate)
+    			{
+    				result.append(", ");
+    				separate = false;
+    			}
+    		}
+    		if (!StringUtils.isBlank(result.toString()))
+    		{
+    			return result.toString();
+    		}
+    		return entry;
+    	}
+    	log.warn("not pre-parsing " + entry + " because the supplied formatter is not a numeric catalognumber formatter");
+    	return entry;
+    }
+
 }

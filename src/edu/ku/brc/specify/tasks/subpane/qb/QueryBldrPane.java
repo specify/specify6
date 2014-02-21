@@ -215,6 +215,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JCheckBox                                      countOnlyChk;
     protected JCheckBox                                      searchSynonymyChk;
     protected boolean                                 		 searchSynonymy     = false;
+    protected JCheckBox                                      smushedChk;
+    protected boolean										 smushed = false;
     
     /**
      * When countOnly is true, count of matching records is displayed, but the records are not displayed.
@@ -461,6 +463,52 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //    		ex.printStackTrace();
 //    	}
 //    }
+    
+    /**
+     * @return
+     */
+    protected DBFieldInfo getCatalogNumberField() {
+    	return DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");	
+    }
+    
+    /**
+     * @return
+     */
+    protected String getCatalogNumberTitle() {
+    	return getCatalogNumberField().getTitle();    
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean isSmushableContext() {
+    	boolean result = false;
+    	if (query != null && !isForSchemaExport() &&
+    			Integer.valueOf(CollectionObject.getClassTableId()).equals(Integer.valueOf(query.getContextTableId()))) {
+    		DBFieldInfo cat = getCatalogNumberField();
+    		result = cat != null && !cat.isHidden() && cat.getFormatter().isNumeric();
+    	}
+    	return result;
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean isSmushable() {
+    	return isSmushableContext() && getSmushedCol() != -1;
+    }
+    
+    /**
+     * Probably should be called on swing thread.
+     */
+    protected void updateSmushBtn() {
+    	boolean wasSelected = smushedChk.isSelected();
+    	boolean wasEnabled = smushedChk.isEnabled();
+    	smushedChk.setEnabled(isSmushable());
+    	if (wasSelected && wasEnabled && !isSmushable()) {
+    		smushedChk.setSelected(false);
+    	}
+    }
     
     /**
      * create the query builder UI.
@@ -772,17 +820,49 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         });
 
-        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
+		smushedChk = createCheckBox(UIRegistry
+				.getResourceString("QB_SMUSH_RESULTS"));
+		smushedChk.setVisible(isSmushableContext());
+		if (isSmushableContext()) {
+			smushedChk.setSelected(smushed);
+			smushedChk.setToolTipText(String.format(
+					UIRegistry.getResourceString("QB_SMUSH_RESULTS_HINT"),
+					getCatalogNumberTitle()));
+			smushedChk.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					new SwingWorker() {
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see edu.ku.brc.helpers.SwingWorker#construct()
+						 */
+						@Override
+						public Object construct() {
+							smushed = !smushed;
+							if (!smushed) {
+								UsageTracker.incrUsageCount("QB.SmushedOff");
+							} else {
+								UsageTracker.incrUsageCount("QB.SmushedOn");
+							}
+							query.setSmushed(smushed);
+							saveBtn.setEnabled(thereAreItems());
+							return null;
+						}
+					}.start();
+				}
+			});
+		}
+		
+        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
  
         CellConstraints cc = new CellConstraints();
-        outer.add(searchSynonymyChk, cc.xy(1, 1));
-        outer.add(distinctChk, cc.xy(3, 1));
-        outer.add(countOnlyChk, cc.xy(5, 1));
-        outer.add(searchBtn, cc.xy(7, 1));
-        
-        
-        
-        outer.add(saveBtn, cc.xy(9, 1));
+        outer.add(smushedChk, cc.xy(1, 1));
+        outer.add(searchSynonymyChk, cc.xy(3, 1));
+        outer.add(distinctChk, cc.xy(5, 1));
+        outer.add(countOnlyChk, cc.xy(7, 1));
+        outer.add(searchBtn, cc.xy(9, 1));
+        outer.add(saveBtn, cc.xy(11, 1));
         
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
@@ -1144,6 +1224,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				countOnly = countOnlyChk.isSelected();
 				searchSynonymyChk.setSelected(query.getSearchSynonymy() == null ? searchSynonymy : query.getSearchSynonymy());
 				searchSynonymy = searchSynonymyChk.isSelected();
+				smushedChk.setSelected(query.getSmushed() == null ? smushed : query.getSmushed());
+				smushed = smushedChk.isSelected();
 			}
         	
         });
@@ -1533,22 +1615,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 criteriaStr.append(" and ");
             }
+        	criteriaStr.append("(");
             criteriaStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()) + "." 
                     + rootTable.getTableInfo().getIdFieldName() + " in(");
             boolean comma = false;
+            int maxInClauseLen = 2500;
+            int inClauseLen = 0;
             for (RecordSetItemIFace item : keysToRetrieve.getOrderedItems())
             {
-                if (comma)
-                {
+                if (inClauseLen == maxInClauseLen) {
+                	criteriaStr.append(") or "); 
+                    criteriaStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()) + "." 
+                            + rootTable.getTableInfo().getIdFieldName() + " in(");
+                    inClauseLen = 0;
+                } else if (comma) {
                     criteriaStr.append(",");
-                }
-                else
-                {
+                } else {
                     comma = true;
                 }
                 criteriaStr.append(item.getRecordId());
+                inClauseLen++;
             }
-            criteriaStr.append(")");
+            criteriaStr.append("))");
         }
         else
         {
@@ -2611,7 +2699,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 
                 	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                         .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false),
-                        includeRecordIds, report.getRepeats());
+                        includeRecordIds, report.getRepeats(), getSmushedCol(qfps)+1,
+                        /*getRecordIdCol(qfps)*/0);
                 	((QBDataSource )src).startDataAcquisition();
                 }
                 else 
@@ -4211,6 +4300,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				saveBtn.setEnabled(thereAreItems()
 								&& canSave());
 				updateSearchBtn();
+				updateSmushBtn();
 				UIRegistry.displayStatusBarText(null);
 			}
 		});
@@ -4449,6 +4539,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (fieldQRI != null)
             {
                 result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));
+                
                 fieldQRI.setIsInUse(true);
                 if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
                 {
@@ -4772,6 +4863,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     
                     updateAddBtnState();
                     selectQFP(qfp);
+                    updateSmushBtn();
                     queryFieldsPanel.repaint();
                     if (!loading)
                     {
@@ -5474,7 +5566,73 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		return false;
 	}
 	
+	/**
+	 * @return
+	 */
+	public boolean isSmushed() {
+		return smushed && isSmushable(queryFieldItems);
+	}
 	
+	/**
+	 * @return
+	 */
+	public static boolean isSmushable(List<QueryFieldPanel> qfps) {
+		return getSmushedCol(qfps) != -1;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getSmushedCol() {
+		return getSmushedCol(queryFieldItems);
+	}
+	
+	/**
+	 * @return
+	 */
+	public static int getSmushedCol(List<QueryFieldPanel> qfps) {
+		int result = -1;
+		int col = 0;
+		for (QueryFieldPanel qfp : qfps) {
+			DBFieldInfo fi = qfp.getFieldInfo();
+			if (fi != null && fi.getTableInfo().getTableId() == CollectionObject.getClassTableId()
+					&& "catalogNumber".equalsIgnoreCase(fi.getColumn())) {
+				UIFieldFormatterIFace formatter = fi.getFormatter();
+				if (formatter != null && formatter.isNumeric()) {
+					result = col;
+				}
+			} else if (qfp.getFieldQRI() instanceof RelQRI) {
+				RelQRI qri = (RelQRI) qfp.getFieldQRI();
+				if (qri.getRelationshipInfo().getType().equals(DBRelationshipInfo.RelationshipType.OneToMany)) {
+					result = -1;
+					break;
+				}
+			}
+			if (qfp.isForDisplay()) {
+				col++;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getRecordIdCol() {
+		return getRecordIdCol(queryFieldItems);
+	}
+	/**
+	 * @return
+	 */
+	public static int getRecordIdCol(List<QueryFieldPanel> qfps) {
+		int col = 0;
+		for (QueryFieldPanel qfp : qfps) {
+			if (qfp.isForDisplay()) {
+				col++;
+			}
+		}
+		return col;
+	}
 }
 
 
