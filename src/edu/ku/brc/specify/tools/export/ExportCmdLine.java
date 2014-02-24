@@ -89,7 +89,11 @@ public class ExportCmdLine {
 	 */
 	protected String checkArg(Pair<String, String> arg) {
 		if (arg.getSecond() == null) {
-			if (!arg.getFirst().equals("-l") && !arg.getFirst().equals("-h")) {
+			if (arg.getFirst().equals("-o")) {
+				if (!"update".equalsIgnoreCase(getArg("-a"))) {
+					return "missing argument: " + arg.getFirst();
+				}
+			} else if (!arg.getFirst().equals("-l") && !arg.getFirst().equals("-h")) {
 				return "missing argument: " + arg.getFirst();
 			}
 		}
@@ -394,7 +398,9 @@ public class ExportCmdLine {
 	 */
 	protected void exitLog() throws IOException {
 		out(getLogExitText());
-		out.close();
+		if (out != null) {
+			out.close();
+		}
 	}
 	
 	/**
