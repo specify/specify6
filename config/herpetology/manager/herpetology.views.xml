@@ -461,7 +461,7 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="13" initialize="btn=true;icon=CollectingEventAttachment"/>
                 </row>
                 <!--<row>
-                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="collectingEventAttribute" colspan="13"/>
+                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="10"/>

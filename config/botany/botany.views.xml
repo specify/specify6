@@ -205,7 +205,9 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="subview" id="exsiccataitem" viewname="ExsiccataItem" name="exsiccataItems" initialize="align=right;btn=true" colspan="1"/>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5" readonly="true"/>
+                    <cell type="subview" id="exsiccataitem" viewname="ExsiccataItem" name="exsiccataItems" initialize="align=right;btn=true"/>
                 </row>
                 
                 <!--<row>
@@ -526,7 +528,7 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="8" initialize="btn=true;icon=CollectingEventAttachment"/>
                 </row>
                 <!--<row>
-                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="collectingEventAttribute" colspan="13"/>
+                 <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="10"/>
