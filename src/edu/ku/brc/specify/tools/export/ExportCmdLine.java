@@ -326,10 +326,16 @@ public class ExportCmdLine {
 		hostName = "localhost";
 	}
 	
+	/**
+	 * 
+	 */
 	public void loadDrivers() {
 		dbDrivers = DatabaseDriverInfo.getDriversList();
 	}
 	
+    /**
+     * @return
+     */
     protected String getConnectionStr() {
     	
     	return dbDrivers.get(dbDriverIdx).getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, 
@@ -377,6 +383,9 @@ public class ExportCmdLine {
 		out(getLogInitText(args));
 	}
 	
+	/**
+	 * @throws IOException
+	 */
 	protected void flushLog() throws IOException {
 		out.flush();
 	}
@@ -494,7 +503,7 @@ public class ExportCmdLine {
 	 * @throws Exception
 	 */
 	public boolean processAction() throws Exception {
-		if ("update".equals(action)) {
+		if ("update".equalsIgnoreCase(action)) {
 			return true; //update is required for any action and, currently, will already be done.
 		} else {
 			boolean result = false;
