@@ -133,10 +133,10 @@ public class ExportCmdLine {
 		if (arg.getSecond() == null) {
 			if (arg.getFirst().equals("-o")) {
 				if (!"update".equalsIgnoreCase(getArg("-a"))) {
-					return "missing argument: " + arg.getFirst();
+					return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), arg.getFirst());
 				}
 			} else if (!arg.getFirst().equals("-l") && !arg.getFirst().equals("-h")) {
-				return "missing argument: " + arg.getFirst();
+				return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), arg.getFirst());
 			}
 		}
 		return "";
@@ -412,14 +412,14 @@ public class ExportCmdLine {
 		for (String arg : args) {
 			argStr += " " + arg;
 		}
-		return "starting with args [" + argStr + "]...";
+		return String.format(UIRegistry.getResourceString("ExportCmdLine.LogInitTxt"), argStr);
 	}
 	
 	/**
 	 * @return
 	 */
 	protected String getLogExitText() {
-		return "...exiting " + (success ? "" : "UN-") + "successfully.";
+		return String.format(UIRegistry.getResourceString("ExportCmdLine.LogExitTxt"), (success ? "" : "UN-") + "successfully.");
 	}
 	
 	/**
@@ -555,17 +555,20 @@ public class ExportCmdLine {
 			return true; //update is required for any action and, currently, will already be done.
 		} else {
 			boolean result = false;
-			out("performing " + action + "...");
+			//out("performing " + action + "...");
+			out(String.format(UIRegistry.getResourceString("ExportCmdLine.PerformingAction"), action));
 			if ("ExportForWebPortal".equalsIgnoreCase(action)) {
 				result = exportForWebPortal();
 			} else if ("ExportToTabDelim".equalsIgnoreCase(action)) {
 				result = exportToTabDelim();
 			} else {
 				//really oughta catch this when args are first read...
-				throw new Exception("Unrecognized action: " + action);
+				//throw new Exception("Unrecognized action: " + action);
+				throw new Exception(String.format(UIRegistry.getResourceString("ExportCmdLine.UnrecognizedAction"), action));
 			}
 			if (result) {
-				out("..." + action + " completed.");
+				//out("..." + action + " completed.");
+				out(String.format(UIRegistry.getResourceString("ExportCmdLine.ActionCompleted"), action));
 			}
 			return result;
 		}
@@ -622,68 +625,93 @@ public class ExportCmdLine {
 					ecl.loadDrivers();
 					
 					if (ecl.hasMasterKey()) {
-						ecl.out("Master key set");
+						//ecl.out("Master key set");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.MasterKeySet"));
 					} else {
-						throw new Exception("Master Key not set");
+						//throw new Exception("Master Key not set");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.MasterKeyNotSet"));
 					}
 					if (ecl.getMaster()) {
-						ecl.out("Got master");
+						//ecl.out("Got master");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.GotMaster"));
 					} else {
-						throw new Exception("Got not the master");
+						//throw new Exception("Got not the master");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.GotNotMaster"));
 					}
 					if (ecl.login()) {
-						ecl.out("logged in");
+						//ecl.out("logged in");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.LoggedIn"));
 					} else {
-						throw new Exception("Login failed.");
+						//throw new Exception("Login failed.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.LoginFailed"));
 					}
 					if (ecl.checkVersion()) {
-						ecl.out("Versions OK");
+						//ecl.out("Versions OK");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.VersionsOK"));
 					} else {
-						throw new Exception("Schema or application version mismatch.");
+						//throw new Exception("Schema or application version mismatch.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.VersionsMismatched"));
 					}
                 	TaskMgr.register(new QueryTask(), false);
 					if (ecl.goodUser()) {
-						ecl.out("good user");
+						//ecl.out("good user");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.GoodUser"));
 					} else {
-						throw new Exception("user is not a manager.");
+						//throw new Exception("user is not a manager.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.UserNotAMgr"));
 					}
 					if (ecl.retrieveMappingId()) {
-						ecl.out("got mapping id");
+						//ecl.out("got mapping id");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.GotMappingId"));
 					} else {
-						throw new Exception("couldn't find mapping.");
+						//throw new Exception("couldn't find mapping.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.CouldNotFindMapping"));
 					}
 					if (ecl.retrieveCollectionName()) {
-						ecl.out("got collection name");
+						//ecl.out("got collection name");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.GotCollectionName"));
 					} else {
-						throw new Exception("couldn't find collection name.");
+						//throw new Exception("couldn't find collection name.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.CouldNotFindCollectionName"));
 					}
 					if (ecl.setContext()) {
-						ecl.out("context established");
+						//ecl.out("context established");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.ContextEstablished"));
 					} else {
-						throw new Exception("unable to establish context.");
+						//throw new Exception("unable to establish context.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.CouldNotEstablishContext"));
 					}
 					if (!ecl.mappingNeedsRebuild()) {
-						ecl.out("mapping can be processed");
+						//ecl.out("mapping can be processed");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.CanProcessMapping"));
 					} else {
-						throw new Exception("mapping must be rebuilt.");
+						//throw new Exception("mapping must be rebuilt.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.MappingMustBeRebuilt"));
 					}
 					MappingUpdateStatus st = ecl.getMappingUpdateStatus();
 					if (st != null) {
-						ecl.out("Got mapping status: Records deleted=" + st.getRecsToDelete() + ". Records added or updated=" + (st.getTotalRecsChanged() - st.getRecsToDelete()));
+						//ecl.out("Got mapping status: Records deleted=" + st.getRecsToDelete() + ". Records added or updated=" + (st.getTotalRecsChanged() - st.getRecsToDelete()));
+						ecl.out(String.format(UIRegistry.getResourceString("ExportCmdLine.MappingStatus"), st.getRecsToDelete(),(st.getTotalRecsChanged() - st.getRecsToDelete())));
+						
 					} else {
-						throw new Exception("failed to get mapping status.");
+						//throw new Exception("failed to get mapping status.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.FailedToGetMappingStatus"));
 					}
 					if (st.getTotalRecsChanged() != 0) {
-						ecl.out("Updating cache...");
+						//ecl.out("Updating cache...");
+						ecl.out(UIRegistry.getResourceString("ExportCmdLine.UpdatingCache"));
 						ecl.flushLog();
 						if (ecl.updateMappingCache(st)) {
-							ecl.out("...updated cache.");
+							//ecl.out("...updated cache.");
+							ecl.out(UIRegistry.getResourceString("ExportCmdLine.UpdatedCache"));
 						} else {
-							throw new Exception("failed to update cache.");
+							//throw new Exception("failed to update cache.");
+							throw new Exception(UIRegistry.getResourceString("ExportCmdLine.FailedToUpdateCache"));
 						}
 					}
 					if (!ecl.processAction()) {
-						throw new Exception("action not completed.");
+						//throw new Exception("action not completed.");
+						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.ActionNotCompleted"));
 					}
 					ecl.setSuccess(true);
 				} catch (Exception ex) {
