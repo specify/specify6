@@ -4,6 +4,8 @@
 package edu.ku.brc.specify.tools.export;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,6 +19,7 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.af.auth.SecurityMgr;
@@ -29,6 +32,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -48,6 +52,8 @@ import edu.ku.brc.util.Pair;
  *
  */
 public class ExportCmdLine {
+
+    private static final String SCHEMA_VERSION_FILENAME = "schema_version.xml";
 
 	private static String[] argkeys = {"-u", "-p", "-d", "-m", "-a", "-l", "-h", "-o", "-w"};
 	
@@ -81,6 +87,42 @@ public class ExportCmdLine {
 			result.add(new Pair<String, String>(key, null));
 		}
 		return result;
+	}
+	
+    /**
+     * @return
+     */
+    public String getDBSchemaVersionFromXML()
+    {
+        String dbVersion = null;
+        Element root;
+        try
+        {
+            root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(SCHEMA_VERSION_FILENAME)));//$NON-NLS-1$
+            if (root != null)
+            {
+                dbVersion = ((Element)root).getTextTrim();
+            }
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+            
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return dbVersion;
+    }
+
+	/**
+	 * @return
+	 */
+	protected boolean checkVersion() {
+        String schemaVersion = getDBSchemaVersionFromXML();
+        String appVersion = UIRegistry.getAppVersion();
+        String schemaVersionFromDb = BasicSQLUtils.querySingleObj("select SchemaVersion from spversion");
+        String appVersionFromDb = BasicSQLUtils.querySingleObj("select AppVersion from spversion");
+        return (schemaVersion.equals(schemaVersionFromDb) && appVersion.equals(appVersionFromDb));
 	}
 	
 	/**
@@ -593,6 +635,11 @@ public class ExportCmdLine {
 						ecl.out("logged in");
 					} else {
 						throw new Exception("Login failed.");
+					}
+					if (ecl.checkVersion()) {
+						ecl.out("Versions OK");
+					} else {
+						throw new Exception("Schema or application version mismatch.");
 					}
                 	TaskMgr.register(new QueryTask(), false);
 					if (ecl.goodUser()) {
