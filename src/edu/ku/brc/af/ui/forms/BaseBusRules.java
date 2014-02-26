@@ -196,7 +196,10 @@ public class BaseBusRules implements BusinessRulesIFace
     public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
     {
         if (AppContextMgr.isSecurityOn() && !checkSavePermission(dataObj)) {
-        	reasonList.add(String.format(UIRegistry.getResourceString("DET_NO_MOD_PERM"), getDataObjDesc(dataObj)));
+        	String msg = String.format(UIRegistry.getResourceString("DET_NO_MOD_PERM"), getDataObjDesc(dataObj));
+        	if (!reasonList.contains(msg)) {
+        		reasonList.add(String.format(UIRegistry.getResourceString("DET_NO_MOD_PERM"), getDataObjDesc(dataObj)));
+        	}
         	return false;
         }
     	return true;
