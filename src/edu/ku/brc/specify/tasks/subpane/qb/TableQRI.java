@@ -122,6 +122,7 @@ public class TableQRI extends ExpandableQRI
     public void addFieldClone(final FieldQRI fieldQRI) throws CloneNotSupportedException
     {
         FieldQRI newField = (FieldQRI)fieldQRI.clone();
+        newField.setIsInUse(false);
         newField.setTable(this);
         fields.add(newField);
     }
