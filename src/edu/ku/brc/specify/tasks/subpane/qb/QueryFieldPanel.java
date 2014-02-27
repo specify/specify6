@@ -1292,6 +1292,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         	return nullCond;
         }
 
+        
         if (hasCriteria())
         {
             boolean addNullConjunction = false;
@@ -1402,6 +1403,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                             	strs.add(critter.toString());
                             } else {
                             	//seriesPresent = true;
+                            	if (!operStr.equals(SpQueryField.OperatorType
+                                    .getOp(SpQueryField.OperatorType.IN.getOrdinal()))) {
+                                    throw new ParseException(getLabel()
+                                            + " - "
+                                            + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1);
+                            	}
                             	strs.add(((Pair<String, String>)critter).getFirst());
                             	strs.add(((Pair<String, String>)critter).getSecond());
                             }
