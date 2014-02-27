@@ -248,8 +248,57 @@ public class Scriptlet extends JRDefaultScriptlet
         return UIRegistry.getResourceString(key);
     }
     
-    
+    /**
+     * @param collectionObjectID
+     * @param joiner 
+     * @param separator
+     * @param extender
+     * @param maxItems
+     * @return a string listing the preparation counts for a collectionobject by preparation type.
+     *E.g. PrepType1[joiner]PrepType1Count[separator]PrepType2[joiner]PrepType2Count...
+     *At most maxItems will be included in the result. If the number of types exceeds maxItems then extender
+     *is appended to the end. 
+     */
+    public String aggregatePrepCounts(final Integer collectionObjectID, final String joiner, final String separator,
+    		final String extender, final int maxItems) {
+    	String result = "";
+    	if (collectionObjectID != null) {
+    		String sql = "select Name, sum(CountAmt) from preparation p inner join preptype pt " +
+    				"on pt.preptypeid = p.preptypeid where p.CollectionObjectID = " +
+    				collectionObjectID + "group by 1 order by 1";
+    		List<Object[]> preps = BasicSQLUtils.query(sql);
+    		int items = 0;
+    		for (Object[] prep : preps) {
+    			if (maxItems >= 0 && items == maxItems) {
+    				result += extender;
+    				break;
+    			}
+    			String prepName = (String)prep[0];
+    			Integer prepCnt = (Integer)prep[1];
+    			if (items > 0) {
+    				result += extender;
+    			}
+    			result += prepName + joiner + (prepCnt == null ? " " : prepCnt);
+    			items++;
+    		}
+    	}
+    	return result;
+    }
 
+    /**
+     * @param collectionObjectID
+     * @return a sum of the countAmt for all preps of a collection object
+     */
+    public String sumPrepCounts(final Integer collectionObjectID) {
+    	String result = "";
+    	if (collectionObjectID != null) {
+    		String sql = "select sum(CountAmt) from preparation where CollectionObjectID = " +
+    				collectionObjectID;
+    		result = BasicSQLUtils.querySingleObj(sql);
+    	}
+    	return result;
+    }
+    
     /**
      * Formats a BigDecimal to a string with "N","S","E", "W".
      * @param bdValue the float value
