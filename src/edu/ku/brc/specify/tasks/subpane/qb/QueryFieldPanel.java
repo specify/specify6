@@ -1292,8 +1292,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         	return nullCond;
         }
 
-        boolean seriesPresent = false;
-
         if (hasCriteria())
         {
             boolean addNullConjunction = false;
@@ -1403,7 +1401,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                             if (critter instanceof String) {
                             	strs.add(critter.toString());
                             } else {
-                            	seriesPresent = true;
+                            	//seriesPresent = true;
                             	strs.add(((Pair<String, String>)critter).getFirst());
                             	strs.add(((Pair<String, String>)critter).getSecond());
                             }
@@ -1509,13 +1507,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 StringBuilder str = new StringBuilder();
 
                 str.append(isNotCheckbox.isSelected() ? "(NOT " : "");
-                if (!seriesPresent) {
+                if (!operStr.equals(SpQueryField.OperatorType
+                        .getOp(SpQueryField.OperatorType.IN.getOrdinal()))) {
                 	str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " ");
                 }
                 if (nullPick && "=".equals(operStr))
                 {
                 	str.append(" is null ");
-                } else if (!seriesPresent) {
+                } else if (!operStr.equals(SpQueryField.OperatorType
+                        .getOp(SpQueryField.OperatorType.IN.getOrdinal()))) {
                 	str.append(operStr);
                 }
                 str.append(" ");
