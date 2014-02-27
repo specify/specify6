@@ -122,12 +122,16 @@ public class FullImagePane extends BaseSubPane implements ImageLoaderListener
             menuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    try
+                    File file = (imageFile != null && imageFile.exists()) ? imageFile : imgDataItem.getLocalFile();
+                    if (file != null)
                     {
-                        AttachmentUtils.openFile(imageFile);
-                    } catch (Exception ex)
-                    {
-                        UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                        try
+                        {
+                            AttachmentUtils.openFile(file);
+                        } catch (Exception ex)
+                        {
+                            UIRegistry.showLocalizedMsg("AttachmentUtils.NEV_TITLE", "AttachmentUtils.NEV_MSG");
+                        }
                     }
                 }
             });
@@ -146,6 +150,7 @@ public class FullImagePane extends BaseSubPane implements ImageLoaderListener
                              final File      localFile)
     {
         imgDisp.setImage(imageIcon);
+        imageFile = localFile;
         repaint();
     }
 
