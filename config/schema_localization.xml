@@ -12244,7 +12244,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         <names>
           <str language="en">
             <version>0</version>
-            <text>Guid</text>
+            <text>GUID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -14338,7 +14338,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         <names>
           <str language="en">
             <version>0</version>
-            <text>Guid</text>
+            <text>GUID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -24469,11 +24469,11 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         <names>
           <str language="en">
             <version>0</version>
-            <text>Groups</text>
+            <text>Members</text>
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Grupos</text>
+            <text>Membros</text>
           </str>
         </names>
         <descs/>
@@ -28739,7 +28739,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="scope" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="scope" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -29196,7 +29196,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="isEmbeddedCollectingEvent" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="isEmbeddedCollectingEvent" isHidden="false" isUIFormatter="false" isRequired="true">
         <version>0</version>
         <names>
           <str language="pt">
@@ -29317,7 +29317,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Guid</text>
+            <text>GUID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -29486,7 +29486,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="isaNumber" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="isaNumber" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -37360,7 +37360,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Guid</text>
+            <text>GUID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
