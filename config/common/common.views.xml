@@ -5301,7 +5301,7 @@
                 </row>
                  <row>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" name="guid" uitype="text" colspan="7" readonly="true"/> 
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="6" readonly="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -5555,7 +5555,7 @@
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>100px,2px,180px,5px,85px,2px,180px,5px,86px,2px,180px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,195px,5px,92px,2px,200px,5px,96px,2px,p:g,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,195px,5px,92px,2px,200px,5px,96px,2px,203px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,218px,5px,112px,2px,220px,5px,116px,2px,220px,15px,p:g</columnDef>
             <columnDef os="exp">100px,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
@@ -5584,9 +5584,9 @@
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
             <columnDef>115px,2px,299px,5px,120px,2px,284px,10px,p:g</columnDef>
-            <columnDef os="lnx">135px,2px,200,15px,560px,10px,p:g</columnDef>
-            <columnDef os="mac">135px,2px,300px,15px,400px,10px,p:g</columnDef>
-            <columnDef os="exp">p,2px,p:g(2),5px,p:g(2),2px,p:g,10px</columnDef>
+            <columnDef os="lnx">135px,2px,305px,15px,120px,2px,338px,10px,p:g</columnDef>
+            <columnDef os="mac">135px,2px,382px,15px,140px,2px,348px,10px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px,p:g,2px,p:g(2),10px</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
@@ -5727,8 +5727,8 @@
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
             <columnDef>115px,2px,299px,5px,120px,2px,284px,15px,p:g</columnDef>
-            <columnDef os="lnx">135px,2px,200px,15px,555px,15px,p:g</columnDef>
-            <columnDef os="mac">135px,2px,300px,15px,580px,15px,p:g</columnDef>
+            <columnDef os="lnx">135px,2px,300px,15px,150px,2px,303px,15px,p:g</columnDef>
+            <columnDef os="mac">135px,2px,300px,15px,150px,2px,430px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px,p:g,2px,p:g(2),15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
