@@ -475,7 +475,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                     
                                     if (cnt > 0)
                                     {
-                                        strBuf.append(" OR ");
+                                        strBuf.append(" AND ");
                                     }
                                     
                                     String clause = null;
