@@ -293,7 +293,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         int index = list.getSelectedIndex();
         if (index > -1)
         {
-            list.remove(index);
+        	((DefaultListModel<String>)list.getModel()).remove(index);
             setHasChanged(true);
             list.repaint();
         }
