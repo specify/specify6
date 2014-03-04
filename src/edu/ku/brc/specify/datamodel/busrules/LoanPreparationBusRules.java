@@ -183,7 +183,6 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 loanRetBtn = (SubViewBtn)comp;
                 loanRetBtn.getBtn().setIcon(null);
                 loanRetBtn.getBtn().setText(UIRegistry.getResourceString("LOAN_RET_PREP"));
-                loanRetBtn.getBtn().setEnabled(formViewObj.isEditing());
             }
             
         } else if (viewableArg instanceof TableViewObj)
@@ -247,11 +246,6 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         {
             LoanPreparation loanPrep = (LoanPreparation)dataObj;
             Preparation     prep     = loanPrep.getPreparation();
-            
-            if (loanRetBtn != null)
-            {
-                loanRetBtn.setEnabled(loanPrep.getId() != null && !loanPrep.getIsResolved());
-            }
             
             Component comp    = formViewObj.getControlByName("quantityResolved");
             Component qtyComp = formViewObj.getControlByName("quantity");

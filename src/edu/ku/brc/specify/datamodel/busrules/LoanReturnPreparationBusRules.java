@@ -30,6 +30,7 @@ import javax.swing.event.ChangeListener;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -310,9 +311,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     loan.setIsClosed(qQnt == qQntRes);
                 }
             }
-        } else
+        } else if (formViewObj == null || formViewObj.getAltView().getMode() != CreationMode.VIEW)
         {
-            UIRegistry.showError("The formViewObj or or the formViewObj's validator was null and shouldn't been!");
+            UIRegistry.showError("The formViewObj or or the formViewObj's validator was null and shouldn't have been!");
         }
     }
     
