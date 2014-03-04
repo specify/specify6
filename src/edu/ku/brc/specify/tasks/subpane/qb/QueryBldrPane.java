@@ -3489,14 +3489,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         UIRegistry.getStatusBar().setErrorMessage(
                                 getResourceString("QB_NAME_TOO_LONG"));
+                        UIRegistry.displayErrorDlg(getResourceString("QB_NAME_TOO_LONG"));
                     }
                     else if (StringUtils.isEmpty(newQueryName))
                     {
                         UIRegistry.getStatusBar().setErrorMessage(
                                 getResourceString("QB_ENTER_A_NAME"));
+                        UIRegistry.displayErrorDlg(getResourceString("QB_ENTER_A_NAME"));
                     }
                     else if (!UIHelper.isValidNameForDB(newQueryName))
                     {
+                        UIRegistry.displayErrorDlg(getResourceString("INVALID_CHARS_NAME"));
                         UIRegistry.displayLocalizedStatusBarError("INVALID_CHARS_NAME");
                         Toolkit.getDefaultToolkit().beep();
                     }
@@ -3509,6 +3512,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             UIRegistry.getStatusBar().setErrorMessage(
                                     String.format(getResourceString("QB_QUERY_EXISTS"),
                                             newQueryName));
+                            UIRegistry.displayErrorDlg(String.format(getResourceString("QB_QUERY_EXISTS"), newQueryName));
                         }
                         else
                         {

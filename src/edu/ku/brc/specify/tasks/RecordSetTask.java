@@ -1101,6 +1101,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             if (!UIHelper.isValidNameForDB(rsName))
             {
                 UIRegistry.displayLocalizedStatusBarError("INVALID_CHARS_NAME");
+                UIRegistry.displayErrorDlgLocalized("INVALID_CHARS_NAME");
                 Toolkit.getDefaultToolkit().beep();
                 continue;
             }
@@ -1127,6 +1128,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 {
                     throw new RuntimeException("Return value should have been an Integer!");
                 }
+                UIRegistry.displayErrorDlg(String.format(getResourceString("RecordSetTask.RS_NAME_DUP"), rsName));
                 UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("RecordSetTask.RS_NAME_DUP"), rsName));
                 Toolkit.getDefaultToolkit().beep();
                 
