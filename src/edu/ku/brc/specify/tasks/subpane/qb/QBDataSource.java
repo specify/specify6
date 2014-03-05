@@ -555,11 +555,21 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     public Object getRecordId()
     {
         //XXX what if processed???? does this EVER get called??
-        if (!recordIdsIncluded || processed)
-        {
+        if (!recordIdsIncluded) {
             return super.getRecordId();
+        } else {
+        	Object result = null;
+            if (Vector.class.isAssignableFrom(rowVals.getClass())) {
+            	result = ((List<?>)rowVals).get(0);
+            } else {
+            	result = ((Object[])rowVals)[0];
+            }
+        	if (result instanceof List<?>) {
+        		return ((List<?>)result).get(0);
+        	} else {
+        		return result;
+        	}
         }
-        return ((Object[] )rowVals)[0];
     }
 
     /* (non-Javadoc)

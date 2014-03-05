@@ -265,7 +265,7 @@ public class Scriptlet extends JRDefaultScriptlet
     	if (collectionObjectID != null) {
     		String sql = "select Name, sum(CountAmt) from preparation p inner join preptype pt " +
     				"on pt.preptypeid = p.preptypeid where p.CollectionObjectID = " +
-    				collectionObjectID + "group by 1 order by 1";
+    				collectionObjectID + " group by 1 order by 1";
     		List<Object[]> preps = BasicSQLUtils.query(sql);
     		int items = 0;
     		for (Object[] prep : preps) {
@@ -273,10 +273,13 @@ public class Scriptlet extends JRDefaultScriptlet
     				result += extender;
     				break;
     			}
-    			String prepName = (String)prep[0];
-    			Integer prepCnt = (Integer)prep[1];
+    			String prepName = (String)prep[0];    			
+    			Integer prepCnt = 0;
+    			if (prep[1] != null) {
+    				prepCnt = Integer.valueOf(prep[1].toString());
+    			}
     			if (items > 0) {
-    				result += extender;
+    				result += separator;
     			}
     			result += prepName + joiner + (prepCnt == null ? " " : prepCnt);
     			items++;
