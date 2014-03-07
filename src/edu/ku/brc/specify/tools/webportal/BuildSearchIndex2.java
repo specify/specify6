@@ -626,14 +626,14 @@ public class BuildSearchIndex2
         System.out.println();
 
         List<String> myCopy = new ArrayList<String>(portalJson);
-        File f = new File(writeToDir + File.separator + mapping.getMappingName() + "_flds.json");
+        File f = new File(writeToDir + File.separator + "flds.json");
         FileUtils.writeLines(f, myCopy);
     }
     
     protected void writePortalInstanceJsonToFile() throws IOException
     {
     	String portalInstance = UUID.randomUUID().toString();
-    	File f = new File(writeToDir + File.separator + mapping.getMappingName() + "_PortalInstanceSetting.json");
+    	File f = new File(writeToDir + File.separator + "PortalInstanceSetting.json");
         JSONObject json = new JSONObject();
         json.accumulate("portalInstance", portalInstance);
         json.accumulate("collectionName", collectionName);
@@ -658,6 +658,7 @@ public class BuildSearchIndex2
         long totalRecs = 0;
         List<String> solrFldXml = null;
         List<String> portalFldJson = null;
+
         try
         {
             for (int i=0;i<analyzers.length;i++)
