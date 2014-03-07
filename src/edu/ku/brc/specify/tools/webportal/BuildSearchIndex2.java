@@ -17,7 +17,10 @@
  */
 package edu.ku.brc.specify.tools.webportal;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -35,24 +38,25 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import net.sf.json.JSONObject;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
+import org.apache.lucene.document.FloatField;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -106,7 +110,7 @@ public class BuildSearchIndex2
     protected Analyzer[]    analyzers;
     protected IndexReader[] readers;
 
-    protected Searcher     searcher;
+    //protected Searcher     searcher;
     protected String       dbName;
     
     protected final SpExportSchemaMapping mapping;
@@ -496,16 +500,6 @@ public class BuildSearchIndex2
     	return "string";
     }
 
-    private Field.Index getSolrIdxType(ExportMappingInfo info) 
-    {
-    	if (info.isAdvancedSearch())
-    	{
-    		return Field.Index.ANALYZED;
-    	} else 
-    	{
-    		return Field.Index.NO;
-    	}
-    }
     
     /*private String getSolrFldTypeForSchema(DBFieldInfo  fld)
     {
@@ -664,7 +658,7 @@ public class BuildSearchIndex2
             for (int i=0;i<analyzers.length;i++)
             {
                 files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
+                analyzers[i] = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
                 FileUtils.deleteDirectory(files[i]);
             }
 
@@ -690,7 +684,7 @@ public class BuildSearchIndex2
                 writers = new IndexWriter[analyzers.length];
                 for (int i=0;i<files.length;i++)
                 {
-                    writers[i] = new IndexWriter(FSDirectory.open(files[i]), analyzers[i], true, IndexWriter.MaxFieldLength.LIMITED);
+                    writers[i] = new IndexWriter(FSDirectory.open(files[i]), new IndexWriterConfig(Version.LUCENE_47, analyzers[i]));
                 }
                 
                 System.out.println("Total Records: "+totalRecs);
@@ -739,79 +733,60 @@ public class BuildSearchIndex2
                     		}
                     		if (c == 1)
                     		{
-                    			doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
-                    		} else 
-                    		{
+                    			//doc.add(new Field("spid", value, Field.Store.YES, Field.Index.ANALYZED));
+                    			doc.add(new StringField("spid", value, Field.Store.YES));
+                    		} else {
 								if (value != null) {
 									ExportMappingInfo info = map
 											.getMappingByColIdx(c - 2);
-									//if (info != null) {
-										String fldType = getSolrFldType(info);
-										Field.Index solrIdxType = getSolrIdxType(info);
-										if (fldType.equals("string")) {
-											doc.add(new Field(shortNames
-													.get(c - 2), value,
-													Field.Store.YES,
-													solrIdxType));
-										} else if (fldType.equals("boolean")) {
-											doc.add(new Field(shortNames
-													.get(c - 2), value,
-													Field.Store.YES,
-													solrIdxType));
+									String fldType = getSolrFldType(info);
+									if (fldType.equals("string")) {
+										if (info.isFullTextSearch()) {
+											doc.add(new TextField(shortNames.get(c - 2), value,
+													Field.Store.YES));
 										} else {
-											NumericField f = new NumericField(
-													shortNames.get(c - 2),
-													Field.Store.YES, true);
-											if (fldType.endsWith("int")) {
-												f.setIntValue(rs.getInt(c));
-											} else if (fldType
-													.endsWith("double")) {
-												f.setDoubleValue(rs
-														.getDouble(c));
-											} else if (fldType.endsWith("long")) {
-												f.setLongValue(rs.getLong(c));
-											} else if (fldType
-													.endsWith("float")) {
-												f.setFloatValue(rs.getFloat(c));
-											}
-											doc.add(f);
+											doc.add(new StringField(shortNames.get(c - 2), value,
+													Field.Store.YES));
 										}
-										contents.append(StringUtils
-												.isNotEmpty(value) ? value
-												: " ");
-										contents.append('\t');
-										if ("latitude1".equalsIgnoreCase(map
-												.getMappingByColIdx(c - 2)
-												.getSpFldName())) {
-											lat1 = value;
-										} else if ("latitude2"
-												.equalsIgnoreCase(map
-														.getMappingByColIdx(
-																c - 2)
-														.getSpFldName())) {
-											lat2 = value;
-										} else if ("longitude1"
-												.equalsIgnoreCase(map
-														.getMappingByColIdx(
-																c - 2)
-														.getSpFldName())) {
-											lng1 = value;
-										} else if ("longitude2"
-												.equalsIgnoreCase(map
-														.getMappingByColIdx(
-																c - 2)
-														.getSpFldName())) {
-											lng2 = value;
+									} else if (fldType.equals("boolean")) {
+										doc.add(new StringField(shortNames.get(c - 2), value,
+												Field.Store.YES));
+									} else {
+										if (fldType.endsWith("int")) {
+											doc.add(new IntField(shortNames.get(c - 2), rs.getInt(c),
+													Field.Store.YES));
+										} else if (fldType.endsWith("double")) {
+											doc.add(new DoubleField(shortNames.get(c - 2), rs.getDouble(c),
+													Field.Store.YES));
+										} else if (fldType.endsWith("long")) {
+											doc.add(new LongField(shortNames.get(c - 2), rs.getLong(c),
+													Field.Store.YES));
+										} else if (fldType.endsWith("float")) {
+											doc.add(new FloatField(shortNames.get(c - 2), rs.getFloat(c),
+													Field.Store.YES));
 										}
-									//}
+									}
+									contents.append(StringUtils.isNotEmpty(value) ? value : " ");
+									contents.append('\t');
+									if ("latitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+										lat1 = value;
+									} else if ("latitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+										lat2 = value;
+									} else if ("longitude1".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+										lng1 = value;
+									} else if ("longitude2".equalsIgnoreCase(map.getMappingByColIdx(c - 2).getSpFldName())) {
+										lng2 = value;
+									}
 								}
 							}
 						}
-                    }
+					}
                     indexStr.append(contents);
 
-                    doc.add(new Field("cs", indexStr.toString(), Field.Store.NO, Field.Index.ANALYZED));
-                    doc.add(new Field("contents", contents.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                    //XXX what, exactly, are the reasons for the store/tokenize settings on these 2?
+                    //Ditto for store setting for geoc and img below?
+                    doc.add(new TextField("cs", indexStr.toString(), Field.Store.NO));
+                    doc.add(new StringField("contents", contents.toString(), Field.Store.YES));
                     
                     if (lat1 != null && lng1 != null)
                     {
@@ -820,13 +795,13 @@ public class BuildSearchIndex2
                     	{
                     		geoc += " " + lat2 + " " + lng2;
                     	}
-                        doc.add(new Field("geoc", geoc, Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        doc.add(new StringField("geoc", geoc, Field.Store.NO));
                     }
                     
                     String attachments = getAttachments(dbConn2, "collectionobject", rs.getInt(1), false);
                     if (attachments != null && attachments.length() > 0)
                     {
-                    	doc.add(new Field("img", attachments, Field.Store.YES, Field.Index.NOT_ANALYZED));
+                    	doc.add(new StringField("img", attachments, Field.Store.YES));
                     }
                     writers[0].addDocument(doc);
                     
@@ -844,7 +819,7 @@ public class BuildSearchIndex2
                     if (procRecs % 100000 == 0)
                     {
                         System.out.println("Optimizing...");
-                        writers[0].optimize();
+                        //writers[0].optimize();
                     }
                 }
                 rs.close();
@@ -898,7 +873,7 @@ public class BuildSearchIndex2
                 try
                 {
                     System.out.println("Optimizing...");
-                    writer.optimize();
+                    //writer.optimize();
                     writer.close();
                     System.out.println("Done Optimizing.");
                     
@@ -953,17 +928,6 @@ public class BuildSearchIndex2
         }
     }
 
-    /**
-     * @param mapping
-     * @return
-     */
-    private boolean isGeoCoord(ExportMappingInfo mapping)
-    {
-    	String fldName = mapping.getSpFldName().toLowerCase();
-    	return "latitude1".equals(fldName) || "latitude2".equals(fldName)
-    			|| "longitude1".equals(fldName) || "longitude2".equals(fldName);
-    }
-    
     
     /**
      * 
@@ -1107,82 +1071,82 @@ public class BuildSearchIndex2
         }
     }*/
     
-    public void testSearch()
-    {
-        Statement stmt = null;
-        
-        String querystr = "23033";//(Pengelly) OR (Castilleja AND applegatei)";
-        String term     = "1";//"contents"
-        try
-        {
-            //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-            
-            analyzers = new Analyzer[fileNames.length];
-            for (int i=0;i<analyzers.length;i++)
-            {
-                files[i]     = new File(fileNames[i]);
-                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
-                readers[i]   = IndexReader.open(FSDirectory.open(files[i]), true);
-            }
-            
-            //HashMap<Integer, Integer> tblIdHash = new HashMap<Integer, Integer>();
-            
-            for (int inx=0;inx<analyzers.length;inx++)
-            {
-                long  startTime   = System.currentTimeMillis();
-                QueryParser queryParser = new QueryParser(Version.LUCENE_30, term, analyzers[inx]);
-                Query query = queryParser.parse(querystr);
-                
-                int   hitsPerPage = 10;
-                searcher = new IndexSearcher(readers[inx]);
-                
-                TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
-                searcher.search(query, collector);
-                ScoreDoc[] hits = collector.topDocs().scoreDocs;
-                
-                System.out.println("\n------------- "+fileNames[inx] + " - Found: " + hits.length + " hits.");
-                
-                for (int i=0;i<hits.length;++i) 
-                {
-                    int docId = hits[i].doc;
-                    Document d = searcher.doc(docId);
-                    System.out.println((i + 1) + ". " + d.get("1"));
-                    
-                    //tblIdHacssh.clear();
-                }
-                    
-                System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis() - startTime) / 1000.0));
-                searcher.close();
-            }
-            
-            
-            for (int i=0;i<analyzers.length;i++)
-            {
-                readers[i].close();
-                analyzers[i].close();
-            }
-            
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-            
-        } catch (ParseException e)
-        {
-            e.printStackTrace();
-        } finally
-        {
-            if (stmt != null)
-            {
-                try
-                {
-                    stmt.close();
-                } catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+//    public void testSearch()
+//    {
+//        Statement stmt = null;
+//        
+//        String querystr = "23033";//(Pengelly) OR (Castilleja AND applegatei)";
+//        String term     = "1";//"contents"
+//        try
+//        {
+//            //stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+//            
+//            analyzers = new Analyzer[fileNames.length];
+//            for (int i=0;i<analyzers.length;i++)
+//            {
+//                files[i]     = new File(fileNames[i]);
+//                analyzers[i] = new StandardAnalyzer(Version.LUCENE_30);
+//                readers[i]   = IndexReader.open(FSDirectory.open(files[i]), true);
+//            }
+//            
+//            //HashMap<Integer, Integer> tblIdHash = new HashMap<Integer, Integer>();
+//            
+//            for (int inx=0;inx<analyzers.length;inx++)
+//            {
+//                long  startTime   = System.currentTimeMillis();
+//                QueryParser queryParser = new QueryParser(Version.LUCENE_30, term, analyzers[inx]);
+//                Query query = queryParser.parse(querystr);
+//                
+//                int   hitsPerPage = 10;
+//                searcher = new IndexSearcher(readers[inx]);
+//                
+//                TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+//                searcher.search(query, collector);
+//                ScoreDoc[] hits = collector.topDocs().scoreDocs;
+//                
+//                System.out.println("\n------------- "+fileNames[inx] + " - Found: " + hits.length + " hits.");
+//                
+//                for (int i=0;i<hits.length;++i) 
+//                {
+//                    int docId = hits[i].doc;
+//                    Document d = searcher.doc(docId);
+//                    System.out.println((i + 1) + ". " + d.get("1"));
+//                    
+//                    //tblIdHacssh.clear();
+//                }
+//                    
+//                System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis() - startTime) / 1000.0));
+//                searcher.close();
+//            }
+//            
+//            
+//            for (int i=0;i<analyzers.length;i++)
+//            {
+//                readers[i].close();
+//                analyzers[i].close();
+//            }
+//            
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//            
+//        } catch (ParseException e)
+//        {
+//            e.printStackTrace();
+//        } finally
+//        {
+//            if (stmt != null)
+//            {
+//                try
+//                {
+//                    stmt.close();
+//                } catch (SQLException e)
+//                {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
     /**
      * @param args

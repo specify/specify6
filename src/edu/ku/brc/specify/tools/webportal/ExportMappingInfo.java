@@ -52,7 +52,7 @@ public class ExportMappingInfo
 			}
 		}
 
-		public boolean isAdvancedSearch()
+		public boolean isFullTextSearch()
 		{
 			//XXX need to add a way to configure this, and other stuff
 			return true;

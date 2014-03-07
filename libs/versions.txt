@@ -76,9 +76,9 @@ Spell Check
 jazzy-swing                             0.5.2
 jazzy-core                              0.5.2
 
-lucene-core.jar                         3.6.1
-lucene-queryparser.jar                  3.6.1
-
+lucene-core.jar                         4.7.0
+lucene-queryparser.jar                  4.7.0
+lucene-analyzors-common.jar             4.7.0
 metadata-extractor.jar                  2.6.4
 
 Missing information:
