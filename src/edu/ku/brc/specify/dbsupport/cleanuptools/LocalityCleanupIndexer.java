@@ -45,13 +45,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -169,8 +170,8 @@ public class LocalityCleanupIndexer
         System.out.println();*/
         
         searcher = new IndexSearcher(reader);
-        analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-        parser   = new QueryParser(Version.LUCENE_36, "loc", analyzer);
+        analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+        parser   = new QueryParser(Version.LUCENE_47, "loc", analyzer);
     }
     
     /**
@@ -209,8 +210,8 @@ public class LocalityCleanupIndexer
                 // error
             }
             
-            analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-            IndexWriterConfig config        = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+            analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+            IndexWriterConfig config        = new IndexWriterConfig(Version.LUCENE_47, analyzer);
             writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), config);
             
             log.debug("Indexing to directory '" + FILE_INDEX_DIR + "'...");
@@ -751,14 +752,14 @@ public class LocalityCleanupIndexer
      */
     public void shtudown()
     {
-        try
-        {
-            if (searcher != null) searcher.close();
+//        try
+//        {
+//            if (searcher != null) searcher.close();
             if (analyzer != null) analyzer.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
     }
     
     //----------------------------------------------------------------------

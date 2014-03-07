@@ -49,6 +49,7 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
@@ -166,8 +167,8 @@ public class AgentCleanupIndexer extends LuceneHelperBase
                 // error
             }
             
-            analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+            analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_47, analyzer);
             writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), config);
             
             log.debug("Indexing to directory '" + FILE_INDEX_DIR + "'...");
@@ -715,14 +716,14 @@ public class AgentCleanupIndexer extends LuceneHelperBase
      */
     public void shtudown()
     {
-        try
-        {
-            if (searcher != null) searcher.close();
+//        try
+//        {
+            //if (searcher != null) searcher.close();
             if (analyzer != null) analyzer.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
     }
     
     //----------------------------------------------------------------------

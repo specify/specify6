@@ -28,11 +28,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -83,8 +84,8 @@ public class LuceneHelperBase
                 // error
             }
             
-            analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+            analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_47, analyzer);
             writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), config);
             
             log.debug("Indexing to directory '" + FILE_INDEX_DIR + "'...");
@@ -127,8 +128,8 @@ public class LuceneHelperBase
         System.out.println();*/
         
         searcher = new IndexSearcher(reader);
-        analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-        parser   = new QueryParser(Version.LUCENE_36, fieldName, analyzer);
+        analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+        parser   = new QueryParser(Version.LUCENE_47, fieldName, analyzer);
     }
 
 }

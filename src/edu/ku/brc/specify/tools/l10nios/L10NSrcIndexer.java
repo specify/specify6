@@ -19,50 +19,23 @@
 */
 package edu.ku.brc.specify.tools.l10nios;
 
-import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
-import static org.apache.commons.lang.StringUtils.countMatches;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.dbsupport.cleanuptools.FirstLastVerifier;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -156,8 +129,8 @@ public class L10NSrcIndexer
                 return;
             }
             
-            analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+            analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_47, analyzer);
             writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), config);
             
             log.debug("Indexing to directory '" + FILE_INDEX_DIR + "'...");
@@ -342,8 +315,8 @@ public class L10NSrcIndexer
             e.printStackTrace();
         }
         searcher = new IndexSearcher(reader);
-        analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-        parser   = new QueryParser(Version.LUCENE_36, "s", analyzer);
+        analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+        parser   = new QueryParser(Version.LUCENE_47, "s", analyzer);
     }
     
     /**
@@ -389,14 +362,14 @@ public class L10NSrcIndexer
      */
     public void shutdown()
     {
-        try
-        {
-            if (searcher != null) searcher.close();
+//        try
+//        {
+//            if (searcher != null) searcher.close();
             if (analyzer != null) analyzer.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
     }
 
 

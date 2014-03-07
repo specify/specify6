@@ -178,16 +178,16 @@ public class FirstLastVerifier extends LuceneHelperBase
     public void shutdown()
     {
         if (analyzer != null) analyzer.close();
-        if (searcher != null)
-        {
-            try
-            {
-                searcher.close();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+//        if (searcher != null)
+//        {
+//            try
+//            {
+//                searcher.close();
+//            } catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//        }
     }
     
     /**

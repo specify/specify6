@@ -38,17 +38,19 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -79,7 +81,7 @@ public class LocalizerSearchHelper
     protected File         FILE_INDEX_DIR;
     
     protected IndexReader  reader;
-    protected Searcher     searcher;
+    protected IndexSearcher     searcher;
     protected Analyzer     analyzer;
     
     protected Directory    memIndexer = null;
@@ -122,7 +124,7 @@ public class LocalizerSearchHelper
                 // error
             }*/
             
-            reader = IndexReader.open(FSDirectory.open(FILE_INDEX_DIR), true);
+            reader = DirectoryReader.open(FSDirectory.open(FILE_INDEX_DIR));
             
         } catch (CorruptIndexException e)
         {
@@ -133,7 +135,7 @@ public class LocalizerSearchHelper
             e.printStackTrace();
         }
         searcher = new IndexSearcher(reader);
-        analyzer = new StandardAnalyzer(Version.LUCENE_36);
+        analyzer = new StandardAnalyzer(Version.LUCENE_47);
     }
     
     /**
@@ -347,11 +349,12 @@ public class LocalizerSearchHelper
         Date start = new Date();
         try
         {
-            IndexWriter writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), new StandardAnalyzer(Version.LUCENE_36), true, IndexWriter.MaxFieldLength.LIMITED);
+            IndexWriter writer = new IndexWriter(FSDirectory.open(FILE_INDEX_DIR), new IndexWriterConfig(Version.LUCENE_47, 
+            		new StandardAnalyzer(Version.LUCENE_47)));
             log.debug("Indexing to directory '" + FILE_INDEX_DIR + "'...");
             indexDocs(writer, srcCodeFilesDir);
-            log.debug("Optimizing...");
-            writer.optimize();
+            //log.debug("Optimizing...");
+            //writer.optimize();
             writer.close();
 
             Date end = new Date();
@@ -377,7 +380,7 @@ public class LocalizerSearchHelper
         memIndexer = new RAMDirectory();
         try
         {
-            IndexWriter w = new IndexWriter(memIndexer, analyzer, true,  IndexWriter.MaxFieldLength.UNLIMITED);
+            IndexWriter w = new IndexWriter(memIndexer, new IndexWriterConfig(Version.LUCENE_47, analyzer));
             int i = 0;
             for (StrLocaleEntry entry : entries)
             {
@@ -413,11 +416,11 @@ public class LocalizerSearchHelper
     {
         try
         {
-            QueryParser parser = new QueryParser(Version.LUCENE_36, fieldName, analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_47, fieldName, analyzer);
             Query       query  = parser.parse(searchText.toLowerCase());
             //System.out.println("Searching for: " + query.toString(fieldName));
             
-            IndexSearcher memSearcher = new IndexSearcher(memIndexer, true);
+            IndexSearcher memSearcher = new IndexSearcher(DirectoryReader.open(memIndexer));
             TopScoreDocCollector collector = TopScoreDocCollector.create(50000, true);
             memSearcher.search(query, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
@@ -508,12 +511,21 @@ public class LocalizerSearchHelper
      *  This simulates the streaming search use case, where all hits are supposed to
      *  be processed, regardless of their relevance.
      */
-    public void doStreamingSearch(final Searcher searcher, final Query query) throws IOException
+    public void doStreamingSearch(final IndexSearcher searcher, final Query query) throws IOException
     {
         Collector streamingHitCollector = new Collector()
         {
             private Scorer scorer;
-            private int    docBase;
+            /* (non-Javadoc)
+			 * @see org.apache.lucene.search.Collector#setNextReader(org.apache.lucene.index.AtomicReaderContext)
+			 */
+			@Override
+			public void setNextReader(AtomicReaderContext arg0)
+					throws IOException {
+				this.docBase = arg0.docBase;
+			}
+
+			private int    docBase;
 
             // simply print docId and score of every matching document
             @Override
@@ -526,12 +538,6 @@ public class LocalizerSearchHelper
             public boolean acceptsDocsOutOfOrder()
             {
                 return true;
-            }
-
-            @Override
-            public void setNextReader(final IndexReader reader, final int docBase) throws IOException
-            {
-                this.docBase = docBase;
             }
 
             @Override

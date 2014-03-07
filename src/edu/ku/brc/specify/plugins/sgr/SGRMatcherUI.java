@@ -39,6 +39,10 @@ import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.search.Query;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -59,11 +63,6 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.core.QueryNodeException;
-import org.apache.lucene.queryParser.standard.StandardQueryParser;
-import org.apache.lucene.search.Query;
 /**
  * @author ben
  *

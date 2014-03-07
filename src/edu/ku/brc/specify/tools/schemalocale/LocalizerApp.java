@@ -42,17 +42,19 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -82,7 +84,7 @@ public class LocalizerApp extends LocalizableBaseApp
     protected File         INDEX_DIR = new File("index");
     
     protected IndexReader  reader;
-    protected Searcher     searcher;
+    protected IndexSearcher     searcher;
     protected Analyzer     analyzer;
     /**
      * 
@@ -139,7 +141,7 @@ public class LocalizerApp extends LocalizableBaseApp
     {
         try
         {
-            reader = IndexReader.open(FSDirectory.open(INDEX_DIR), true);
+            reader = DirectoryReader.open(FSDirectory.open(INDEX_DIR));
             
         } catch (CorruptIndexException e)
         {
@@ -274,11 +276,11 @@ public class LocalizerApp extends LocalizableBaseApp
         Date start = new Date();
         try
         {
-            IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), new StandardAnalyzer(Version.LUCENE_CURRENT), true, IndexWriter.MaxFieldLength.LIMITED);
+            IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), new IndexWriterConfig(Version.LUCENE_47, new StandardAnalyzer(Version.LUCENE_47)));
             System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
             indexDocs(writer, SRC_DIR);
-            System.out.println("Optimizing...");
-            writer.optimize();
+            //System.out.println("Optimizing...");
+            //writer.optimize();
             writer.close();
 
             Date end = new Date();
@@ -389,7 +391,7 @@ public class LocalizerApp extends LocalizableBaseApp
      * 
      */
     public static void doPagingSearch(BufferedReader in,
-                                      Searcher searcher,
+                                      IndexSearcher searcher,
                                       Query query,
                                       int hitsPerPage,
                                       boolean raw,
@@ -519,7 +521,7 @@ public class LocalizerApp extends LocalizableBaseApp
      *  This simulates the streaming search use case, where all hits are supposed to
      *  be processed, regardless of their relevance.
      */
-    public void doStreamingSearch(final Searcher searcher, Query query) throws IOException
+    public void doStreamingSearch(final IndexSearcher searcher, Query query) throws IOException
     {
         Collector streamingHitCollector = new Collector()
         {
@@ -533,17 +535,21 @@ public class LocalizerApp extends LocalizableBaseApp
                 System.out.println("doc=" + doc + docBase + " score=" + scorer.score());
             }
 
-            @Override
+            /* (non-Javadoc)
+			 * @see org.apache.lucene.search.Collector#setNextReader(org.apache.lucene.index.AtomicReaderContext)
+			 */
+			@Override
+			public void setNextReader(AtomicReaderContext arg0)
+					throws IOException {
+				this.docBase = arg0.docBase;
+			}
+
+			@Override
             public boolean acceptsDocsOutOfOrder()
             {
                 return true;
             }
 
-            @Override
-            public void setNextReader(IndexReader reader, int docBase) throws IOException
-            {
-                this.docBase = docBase;
-            }
 
             @Override
             public void setScorer(Scorer scorer) throws IOException

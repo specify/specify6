@@ -65,6 +65,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
@@ -72,7 +73,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -923,8 +924,8 @@ public class GeographyAssignISOs
         System.out.println();*/
         
         searcher = new IndexSearcher(reader);
-        analyzer = new StandardAnalyzer(Version.LUCENE_36, new HashSet<Object>());
-        parser   = new QueryParser(Version.LUCENE_36, "name", analyzer);
+        analyzer = new StandardAnalyzer(Version.LUCENE_47, CharArraySet.EMPTY_SET);
+        parser   = new QueryParser(Version.LUCENE_47, "name", analyzer);
         
         return true;
     }
@@ -996,8 +997,8 @@ public class GeographyAssignISOs
         try
         {
             analyzer.close();
-            searcher.close();
-            reader.clone();
+            //searcher.close();
+            reader.close();
             
             analyzer = null;
             searcher = null;
