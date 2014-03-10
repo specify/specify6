@@ -1216,7 +1216,9 @@ public class ViewFactory
         bi.compToReg      = null;
         bi.doAddToValidator = true;
         bi.doRegControl     = true;
-        
+
+        DBRelationshipInfo relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
+
         if (isEditOnCreateOnly)
         {
             EditViewCompSwitcherPanel evcsp = new EditViewCompSwitcherPanel(cell);
@@ -1317,7 +1319,6 @@ public class ViewFactory
             
             bi.isRequired = bi.isRequired || cellField.isRequired() || (childInfo != null && childInfo.isRequired());
             
-            DBRelationshipInfo relInfo   = null;
             DBFieldInfo        fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
             if (fieldInfo != null && fieldInfo.isHidden())
             {
@@ -1325,7 +1326,6 @@ public class ViewFactory
             } else
             {
                 
-                relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
                 if (fieldInfo != null && fieldInfo.isHidden())
                 {
                     FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_REL_HIDDEN", cellField.getIdent(), cellField.getName(), viewDef.getName());
@@ -1861,8 +1861,9 @@ public class ViewFactory
                         }
                         
                         boolean useNoScrollbars = UIHelper.getProperty(props, "noscrollbars", false);
-                        
-                        int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
+                        //Assume RecsetController will always be handled correctly for one-to-one
+                        boolean useNoRecsetController = relInfo == null ? false : relInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne);
+                        int options = (isACollection && !isSingle && !useNoRecsetController ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
                         (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
                         (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
