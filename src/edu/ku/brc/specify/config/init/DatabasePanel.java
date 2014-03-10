@@ -116,12 +116,12 @@ public class DatabasePanel extends BaseSetupPanel
     
     public final int[] SKIP_DB_CREATE_PERMS = {DBMSUserMgr.PERM_SELECT, DBMSUserMgr.PERM_UPDATE, DBMSUserMgr.PERM_DELETE, 
     		DBMSUserMgr.PERM_INSERT, DBMSUserMgr.PERM_LOCK_TABLES, DBMSUserMgr.PERM_ALTER_TABLE, 
-    		DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_GRANT, DBMSUserMgr.PERM_RELOAD};
+    		DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_GRANT/*, DBMSUserMgr.PERM_RELOAD only check for RELOAD when "Create Master" is attempted*/};
     
     public final int[] CREATE_DB_PERMS = {DBMSUserMgr.PERM_SELECT, DBMSUserMgr.PERM_UPDATE, DBMSUserMgr.PERM_DELETE, 
     		DBMSUserMgr.PERM_INSERT, DBMSUserMgr.PERM_LOCK_TABLES, DBMSUserMgr.PERM_ALTER_TABLE, 
-    		DBMSUserMgr.PERM_CREATE, DBMSUserMgr.PERM_DROP, DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_GRANT,
-    		DBMSUserMgr.PERM_RELOAD};
+    		DBMSUserMgr.PERM_CREATE, DBMSUserMgr.PERM_DROP, DBMSUserMgr.PERM_INDEX, DBMSUserMgr.PERM_GRANT/*
+    		DBMSUserMgr.PERM_RELOAD only check for RELOAD when "Create Master" is attempted*/};
     
 	 
     final int PERM_SKIP_DB_CREATE;

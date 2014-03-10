@@ -471,6 +471,8 @@ public class MasterUserPanel extends GenericFormPanel
                                 if (!mgr.setPermissions(saUserName, dbName, DBMSUserMgr.PERM_ALL_BASIC))
                                 {
                                     errorKey = "ERR_SET_PERM";
+                                } else {
+                                	isOK = true;
                                 }
                             }
                             

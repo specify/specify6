@@ -542,7 +542,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public boolean doesUserExists(String userName)
     {
-        Integer count = BasicSQLUtils.getCount(connection, String.format("SELECT count(*) FROM mysql.user WHERE User = '%s' AND Host = '%s')", 
+        Integer count = BasicSQLUtils.getCount(connection, String.format("SELECT count(*) FROM mysql.user WHERE User = '%s' AND Host = '%s'", 
         		userName, hostName));
         return count == null ? false : count == 1;
     }
