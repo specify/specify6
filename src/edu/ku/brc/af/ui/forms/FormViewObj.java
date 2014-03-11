@@ -347,6 +347,8 @@ public class FormViewObj implements Viewable,
         this.bgColor     = bgColor;
 
         businessRules    = view.createBusinessRule();
+        
+        //XXX bug #9497: isEditing        = altView.getMode() == AltViewIFace.CreationMode.EDIT && MultiView.isOptionOn(options, MultiView.IS_EDITTING);
         isEditing        = altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
         boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
@@ -5275,7 +5277,12 @@ public class FormViewObj implements Viewable,
         {
             businessRules.afterFillForm(dataObj);
         }
-
+        
+        if (AppContextMgr.isSecurityOn() && mvParent.isEditable())
+        {
+        	processControlsForSecurity(dataObj);
+        }    
+        
         //if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditing)
         //{
         //    saveControl.setEnabled(false);
@@ -5301,6 +5308,25 @@ public class FormViewObj implements Viewable,
         }
     }
 
+    protected void processControlsForSecurity(Object dataObj) {
+    	boolean editable = checkEditPermission(dataObj);
+    	for (String id : controlsById.keySet()) {
+    			getControlById(id).setEnabled(editable);
+    	}
+    }
+
+    /**
+     * @param dataObj
+     * @return true if current user has permission to save.
+     */
+    protected boolean checkEditPermission(Object dataObj) {
+        if (dataObj instanceof DataModelObjBase) {
+        	return (perm.canModify() || (perm.canAdd() && ((DataModelObjBase)dataObj).getId() == null)); 
+        }
+    	return true;
+    }
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getDataFromUI()
      */

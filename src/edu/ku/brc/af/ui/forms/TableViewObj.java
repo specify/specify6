@@ -271,6 +271,7 @@ public class TableViewObj implements Viewable,
         this.cellName      = cellName;
         this.dataClass     = dataClass;
 
+        
         businessRules    = view.createBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
@@ -574,7 +575,8 @@ public class TableViewObj implements Viewable,
      */
     private void setPermsFromTableInfo(final String className)
     {
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(className);
+        //DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(className);
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(className);
         if (tableInfo != null)
         {
             perm = SecurityMgr.getInstance().getPermission("DO."+tableInfo.getShortClassName().toLowerCase());
@@ -1051,6 +1053,15 @@ public class TableViewObj implements Viewable,
     }
 
     /**
+     * @param dObj
+     * @return
+     */
+    /* XXX bug #9497:
+    protected boolean isNewObj(FormDataObjIFace dObj) {
+    	return dObj != null && dObj.getId() == null;
+    } */
+    
+    /**
      * Can create a new item or edit an existing it; or view and existing item.
      * @param rowIndex the index tho be editted
      * @param isEdit whether we are editing or view
@@ -1067,6 +1078,10 @@ public class TableViewObj implements Viewable,
         {
             parentDataObj.addReference(dObj, dataSetFieldName);
         }
+        
+        /* XXX bug #9497:
+        boolean editable = isEditing && (perm.canModify() || (perm.canAdd() && (isNew || isNewObj(dObj))));
+        final ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, dObj, editable, isNew);*/
         
         final ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, dObj, isEditing, isNew);
         if (dialog != null)

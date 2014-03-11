@@ -1219,7 +1219,7 @@ public class ViewFactory
 
         DBRelationshipInfo relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
 
-        if (isEditOnCreateOnly)
+        if (isEditOnCreateOnly && relInfo == null)
         {
             EditViewCompSwitcherPanel evcsp = new EditViewCompSwitcherPanel(cell);
             bi.compToAdd =  evcsp;
@@ -1863,11 +1863,31 @@ public class ViewFactory
                         boolean useNoScrollbars = UIHelper.getProperty(props, "noscrollbars", false);
                         //Assume RecsetController will always be handled correctly for one-to-one
                         boolean useNoRecsetController = relInfo == null ? false : relInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne);
+                        /*XXX bug #9497: boolean canEdit = true;
+                        boolean addAddBtn = isEditOnCreateOnly && relInfo != null;
+                        if (AppContextMgr.isSecurityOn()) {
+                            DBTableInfo tblInfo = childInfo != null ? DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName()) : null;
+                            if (tblInfo != null) {
+                                PermissionSettings perm = tblInfo.getPermissions();
+                                if (perm != null) {
+                                    //XXX whoa. What about view perms???
+                                	//if (perm.isViewOnly() || !perm.canView()) {
+                                    if (!perm.canModify()) {
+                                    	canEdit = false;
+                                    }
+                                }
+                            }
+                        }*/
+
                         int options = (isACollection && !isSingle && !useNoRecsetController ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
                         (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
+                        /* XXX bug #9497:(mode == AltViewIFace.CreationMode.EDIT && canEdit ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
+                        (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS)
+                        //| (addAddBtn ? MultiView.INCLUDE_ADD_BTN : MultiView.NO_OPTIONS)
+                        ; */
+
                         (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
-                        
                         //MultiView.printCreateOptions("HERE", options);
                         
                         options |= cellSubView.getPropertyAsBoolean("nosep", false) ? MultiView.DONT_USE_EMBEDDED_SEP : 0;
@@ -2123,10 +2143,28 @@ public class ViewFactory
                 }
                 
                 boolean isEditOnCreateOnly = false;
-                if (mode == AltViewIFace.CreationMode.EDIT && cell.getType() == FormCellIFace.CellType.field)
+                //XXX bug #9497: if (mode == AltViewIFace.CreationMode.EDIT)
+                if	(mode == AltViewIFace.CreationMode.EDIT && cell.getType() == FormCellIFace.CellType.field)
                 {
-                    isEditOnCreateOnly = ((FormCellField)cell).getPropertyAsBoolean("editoncreate", false);
-                    ((FormCellField)cell).setEditOnCreate(true);
+                    // XXX bug #9497: if (cell.getType() == FormCellIFace.CellType.field) {
+                    	isEditOnCreateOnly = ((FormCellField)cell).getPropertyAsBoolean("editoncreate", false);
+                    	((FormCellField)cell).setEditOnCreate(true);
+                    /* XXX bug #9497:} else if (childInfo instanceof DBRelationshipInfo) {
+                        if (AppContextMgr.isSecurityOn()) {
+                            DBTableInfo tblInfo = childInfo != null ? DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName()) : null;
+                            if (tblInfo != null) {
+                                PermissionSettings perm = tblInfo.getPermissions();
+                                if (perm != null) {
+                                    //XXX whoa. What about view perms???
+                                	//if (perm.isViewOnly() || !perm.canView()) {
+                                    if (perm.canAdd() && !perm.canModify()) {
+                                    	isEditOnCreateOnly = true;
+                                    }
+                                }
+                            }
+                        }
+                    	
+                    }*/
                 }
                 
                 if (!createItem(tableInfo, childInfo, parent, viewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi))
@@ -2150,6 +2188,7 @@ public class ViewFactory
                     }
                 }
                 
+                //XXX bug #9497: if (isEditOnCreateOnly && cell.getType() == FormCellIFace.CellType.field)
                 if (isEditOnCreateOnly)
                 {
                     EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)bi.compToReg;
@@ -2529,8 +2568,14 @@ public class ViewFactory
 
             Object currDataObj = formViewObj.getCurrentDataObj();
             
+/* XXX bug #9497:            AltViewIFace.CreationMode processMode = altView.getMode();
+//            if (processMode == AltViewIFace.CreationMode.EDIT && (!formViewObj.isEditing() || !MultiView.isOptionOn(options, MultiView.IS_EDITTING))) {
+//            	processMode = AltViewIFace.CreationMode.VIEW;
+//            }
+            processRows(tableInfo, parentView, formViewDef, validator, formViewObj, processMode, labelsForHash, currDataObj, formViewDef.getRows());
+*/
             processRows(tableInfo, parentView, formViewDef, validator, formViewObj, altView.getMode(), labelsForHash, currDataObj, formViewDef.getRows());
-
+            
             formViewObj.addUsageNotes();
             
             if (validatedPanel != null)

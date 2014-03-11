@@ -816,6 +816,15 @@ public class MultiView extends JPanel
         
         Vector<ViewState> viewStateList = null;
         
+        /* XXX bug #9497:
+        boolean userCanModify = true;
+        if (AppContextMgr.isSecurityOn())
+        {
+        	DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(getView().getClassName());
+        	if (tableInfo != null && tableInfo.getPermissions() != null) {
+        		userCanModify = tableInfo.getPermissions().canModify();
+        	}
+        } */
         if (viewable != null)
         {
             if (currentViewable != null)
@@ -827,6 +836,7 @@ public class MultiView extends JPanel
                 }
                 
                 currentViewable.aboutToShow(false);
+                //XXX bug #9497: if (currentViewable.getAltView().getMode() == AltViewIFace.CreationMode.EDIT && userCanModify)
                 if (currentViewable.getAltView().getMode() == AltViewIFace.CreationMode.EDIT)
                 {
                     currentViewable.getDataFromUI();
@@ -844,52 +854,59 @@ public class MultiView extends JPanel
             currentViewable.setParentDataObj(parentDataObj);
             currentValidator = currentViewable.getValidator();
             
+            //XXX bug #9497: createWithMode = userCanModify ? currentViewable.getAltView().getMode() : AltViewIFace.CreationMode.VIEW;
             createWithMode = currentViewable.getAltView().getMode();
             editable       = createWithMode == AltViewIFace.CreationMode.EDIT;
+            /* XXX bug #9497:
+            //don't switch views if userpermissions are not consistent with the requested view
+            //if (currentViewable.getAltView().getMode() == AltViewIFace.CreationMode.EDIT && userCanModify) { */
+            	setData(data, false);
             
-            setData(data, false);
+            	setFormForSelector();
             
-            setFormForSelector();
+            	if (viewStateList != null)
+            	{
+            		FormViewObj fvo = getCurrentViewAsFormViewObj();
+            		if (fvo != null)
+            		{
+            			setViewState(viewStateList, createWithMode, 0);
+            		} 
+            	}
             
-            if (viewStateList != null)
-            {
-                FormViewObj fvo = getCurrentViewAsFormViewObj();
-                if (fvo != null)
-                {
-                    setViewState(viewStateList, createWithMode, 0);
-                } 
-            }
-            
-            if (separator != null)
-            {
-                cardLayout.show(cardPanel, name);
-                separator.showSubPanel(name);
+            	if (separator != null)
+            	{
+            		cardLayout.show(cardPanel, name);
+            		separator.showSubPanel(name);
                 
-            } else
-            {
-                cardLayout.show(this, name);
-            }
+            	} else
+            	{
+            		cardLayout.show(this, name);
+            	}
             
-            if (currentValidator != null)
-            {
-                if (mvParent != null && mvParent.getCurrentValidator() != null)
-                {
-                    adjustValidationTree(mvParent, mvParent.getCurrentValidator(), true);
-                    //mvParent.getCurrentValidator().dumpState(true, 0);
+            	if (currentValidator != null)
+            	{
+            		if (mvParent != null && mvParent.getCurrentValidator() != null)
+            		{
+            			adjustValidationTree(mvParent, mvParent.getCurrentValidator(), true);
+            			//mvParent.getCurrentValidator().dumpState(true, 0);
                     
-                } else
-                {
-                    adjustValidationTree(this, currentValidator, true);
-                    //currentValidator.dumpState(true, 0);
-                }
-            }
+            		} else
+            		{
+            			adjustValidationTree(this, currentValidator, true);
+            			//currentValidator.dumpState(true, 0);
+            		}
+            	}
             
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                    CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", currentViewable));
+            	SwingUtilities.invokeLater(new Runnable() {
+            		public void run()
+            		{
+            			CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", currentViewable));
+            		}
+            	});
+                if (currentViewable instanceof FormViewObj && !editable) {
+                	((FormViewObj)currentViewable).setFormEnabled(false);
                 }
-            });
+           //XXX bug #9497: }
             
         } else
         {

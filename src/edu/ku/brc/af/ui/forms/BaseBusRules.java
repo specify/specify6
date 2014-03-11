@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -107,7 +108,9 @@ public class BaseBusRules implements BusinessRulesIFace
     {
     }
     
-    /* (non-Javadoc)
+    
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#addChildrenToNewDataObjects(java.lang.Object)
      */
     @Override
@@ -166,9 +169,9 @@ public class BaseBusRules implements BusinessRulesIFace
 
     /**
      * @param dataObj
-     * @return true if current user has permission to save.
+     * @return true if current user has permission to edit.
      */
-    protected boolean checkSavePermission(Object dataObj) {
+    protected boolean checkEditPermission(Object dataObj) {
         if (dataObj instanceof DataModelObjBase) {
         	DBTableInfo info = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)dataObj).getTableId());
         	return info != null && (info.getPermissions().canModify() || (info.getPermissions().canAdd() && ((DataModelObjBase)dataObj).getId() == null)); 
@@ -195,7 +198,7 @@ public class BaseBusRules implements BusinessRulesIFace
     @Override
     public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
     {
-        if (AppContextMgr.isSecurityOn() && !checkSavePermission(dataObj)) {
+        if (AppContextMgr.isSecurityOn() && !checkEditPermission(dataObj)) {
         	String msg = String.format(UIRegistry.getResourceString("DET_NO_MOD_PERM"), getDataObjDesc(dataObj));
         	if (!reasonList.contains(msg)) {
         		reasonList.add(String.format(UIRegistry.getResourceString("DET_NO_MOD_PERM"), getDataObjDesc(dataObj)));
@@ -205,6 +208,18 @@ public class BaseBusRules implements BusinessRulesIFace
     	return true;
     }
 
+    /* XXX bug #9497. A method similar to this is being performed in formViewObj
+    protected void processControlsForSecurity(Object dataObj) {
+    	List<String> ids = new ArrayList<String>();
+    	viewable.getFieldIds(ids);
+    	boolean editable = checkEditPermission(dataObj);
+    	//if (!editable) {
+    		for (String id : ids) {
+    			formViewObj.getControlById(id).setEnabled(editable);
+    		}
+    	//}
+    }*/
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#canCreateNewDataObject()
      */
