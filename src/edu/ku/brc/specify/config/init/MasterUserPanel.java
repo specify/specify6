@@ -358,6 +358,7 @@ public class MasterUserPanel extends GenericFormPanel
 			boolean hasCreateUser = false;
 			boolean hasGrant = false;
 			boolean hasSelectOnMysql = false;
+			boolean hasReload = false;
 			String dbName = properties.getProperty(DBNAME);
 			String dbUserName = properties.getProperty(DBUSERNAME);
 			
@@ -372,8 +373,10 @@ public class MasterUserPanel extends GenericFormPanel
 						&& (pi.getDb().equals("*") || pi.getDb()
 								.equals("mysql"))) {
 					hasSelectOnMysql = true;
-				}
-				if (hasCreateUser && hasGrant && hasSelectOnMysql) {
+				} else if (pi.getPerm() == DBMSUserMgr.PERM_RELOAD) {
+					hasReload = true;
+				}	
+				if (hasCreateUser && hasGrant && hasSelectOnMysql && hasReload) {
 					break;
 				}
 			}
@@ -396,7 +399,7 @@ public class MasterUserPanel extends GenericFormPanel
                 }
 
 			}
-			result = hasCreateUser && hasGrant && hasSelectOnMysql;
+			result = hasCreateUser && hasGrant && hasSelectOnMysql && hasReload;
 			if (!result) {
 				List<PermissionInfo> missingPerms = new ArrayList<PermissionInfo>();
 				if (!hasCreateUser) {
@@ -407,6 +410,9 @@ public class MasterUserPanel extends GenericFormPanel
 				}
 				if (!hasSelectOnMysql) {
 					missingPerms.add(new PermissionInfo("mysql", "", DBMSUserMgr.PERM_SELECT, false));
+				}
+				if (!hasReload) {
+					missingPerms.add(new PermissionInfo("mysql", "", DBMSUserMgr.PERM_RELOAD, false));
 				}
 				String missingPermStr = PermissionInfo.getMissingPermissionString(DBMSUserMgr.getInstance(), missingPerms, dbName);
 				UIRegistry.showLocalizedError("SEC_MISSING_PERMS", dbUserName, missingPermStr);	
