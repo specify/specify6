@@ -81,6 +81,10 @@ lucene-queryparser.jar                  4.7.0
 lucene-analyzors-common.jar             4.7.0
 metadata-extractor.jar                  2.6.4
 
+
+wwlibs
+	worldwind package					2.0.0 (beta daily 964.1862)						
+	
 Missing information:
 --------------------
 
