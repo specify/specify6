@@ -5278,7 +5278,7 @@ public class FormViewObj implements Viewable,
             businessRules.afterFillForm(dataObj);
         }
         
-        if (AppContextMgr.isSecurityOn() && mvParent.isEditable())
+        if (AppContextMgr.isSecurityOn() && dataObj != null && mvParent.isEditable())
         {
         	processControlsForSecurity(dataObj);
         }    

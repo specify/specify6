@@ -2189,7 +2189,7 @@ public class ViewFactory
                 }
                 
                 //XXX bug #9497: if (isEditOnCreateOnly && cell.getType() == FormCellIFace.CellType.field)
-                if (isEditOnCreateOnly)
+                if (isEditOnCreateOnly && cell.getType() == FormCellIFace.CellType.field)
                 {
                     EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)bi.compToReg;
                     evcsp.setParentValidator(validator);
