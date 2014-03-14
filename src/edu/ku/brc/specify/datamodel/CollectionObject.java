@@ -71,6 +71,7 @@ import edu.ku.brc.dbsupport.AttributeProviderIFace;
         @Index (name="ColObjGuidIDX", columnNames={"GUID"}),
         @Index (name="COColMemIDX", columnNames={"CollectionmemberID"})
     })
+@SuppressWarnings("serial")
 public class CollectionObject extends CollectionMember implements AttachmentOwnerIFace<CollectionObjectAttachment>, 
                                                                   java.io.Serializable, 
                                                                   AttributeProviderIFace, 
@@ -355,7 +356,10 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.number1 = number1;
     }
 
-    /**
+    
+    
+
+	/**
      *      * User definable
      */
     @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
@@ -1302,7 +1306,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         CollectingEvent ce = getCollectingEvent();
         if (ce != null)// && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
-            ce.forceLoad();
+            ce.forceLoad(AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
         }
         
         for (Project prj : projects)

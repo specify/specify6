@@ -62,6 +62,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
         @Index (name="CEEndDateIDX", columnNames={"EndDate"}),
         @Index (name="CEGuidIDX", columnNames={"GUID"})
     })
+@SuppressWarnings("serial")
 public class CollectingEvent extends DisciplineMember implements AttachmentOwnerIFace<CollectingEventAttachment>, 
                                                                  AttributeProviderIFace, 
                                                                  java.io.Serializable,
@@ -558,18 +559,26 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         return null;
     }
 
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
      */
     @Override
-    public void forceLoad()
+    public void forceLoad() {
+    	forceLoad(false);
+    }
+    
+    public void forceLoad(boolean loadCOs)
     {
         if (collectingEventAttribute != null)
         {
             collectingEventAttribute.getId();
         }
         collectingEventAttachments.size();
-        //collectionObjects.size();
+        if (loadCOs) {
+        	collectionObjects.size();
+        }
         collectors.size();
         collectingEventAttrs.size();
     }
