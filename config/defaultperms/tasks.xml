@@ -420,6 +420,48 @@
     </hashtable>
   </entry>
   <entry>
+    <string>ATTACHMENTS</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="ATTACHMENTS" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="ATTACHMENTS" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="ATTACHMENTS" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="ATTACHMENTS" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>SGR</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="SGR" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="SGR" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="SGR" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="SGR" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>Labels</string>
     <hashtable>
       <entry>

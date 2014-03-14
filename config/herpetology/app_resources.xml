@@ -8,9 +8,8 @@
     <file level="3" mimetype="text/xml" name="QueryExtraList" description="QueryExtraList" file="queryextralist.xml"/>
     <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>    
     
-    <!-- removing sample loan and specimen reports
     <!-- Labels -->  
-        
+    <!-- removing sample loan and specimen reports
     <file level="3" mimetype="jrxml/label" name="herpetology_label.jrxml" description="Herpetology Labels" file="herpetology_label.jrxml" 
           metadata="tableid=1;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>    
         
