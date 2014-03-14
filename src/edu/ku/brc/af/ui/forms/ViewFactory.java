@@ -1219,7 +1219,7 @@ public class ViewFactory
 
         DBRelationshipInfo relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
 
-        if (isEditOnCreateOnly && relInfo == null)
+        if (isEditOnCreateOnly)
         {
             EditViewCompSwitcherPanel evcsp = new EditViewCompSwitcherPanel(cell);
             bi.compToAdd =  evcsp;
