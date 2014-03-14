@@ -9,7 +9,7 @@
     <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>    
     
     <!-- Labels -->  
-        
+    <!-- removing sample loan and specimen reports        
     <file level="3" mimetype="jrxml/label" name="reptile_label.jrxml" description="Reptile Labels" file="reptile_label.jrxml" 
           metadata="tableid=1;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>    
         
@@ -18,6 +18,7 @@
         
     <file level="3" mimetype="jrxml/subreport" name="reptile_LoanInvoice_subreport1.jrxml" description="LoanInvoice SubReport" 
         file="reptile_LoanInvoice_subreport1.jrxml" metadata=""/>
+    -->
     
     <!-- Although DataSet Summary is a Report the Workbench groups the labels and reports together -->
     <file level="3" mimetype="jrxml/report" name="wb_items.jrxml" description="Data Set Summary" file="wb_items.jrxml" 

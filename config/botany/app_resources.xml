@@ -8,6 +8,7 @@
     <file level="3" mimetype="text/xml" name="QueryExtraList" description="QueryExtraList" file="queryextralist.xml"/>
     <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>    
     
+    <!-- removing sample loan and specimen reports    
     <!-- Labels -->  
     <file level="3" mimetype="jrxml/label" name="botany_label.jrxml" description="Botany Labels" file="botany_label.jrxml" 
           metadata="tableid=1;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>    
@@ -17,6 +18,7 @@
         
     <file level="3" mimetype="jrxml/subreport" name="botany_LoanInvoice_subreport1.jrxml" description="LoanInvoice SubReport" 
         file="botany_LoanInvoice_subreport1.jrxml" metadata=""/>
+    -->
     
     <!-- Although DataSet Summary is a Report the Workbench groups the labels and reports together -->
     <file level="3" mimetype="jrxml/report" name="wb_items.jrxml" description="Data Set Summary" file="wb_items.jrxml" 
