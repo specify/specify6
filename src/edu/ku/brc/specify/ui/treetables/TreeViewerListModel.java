@@ -33,7 +33,7 @@ import javax.swing.AbstractListModel;
  * @code_status Alpha
  */
 @SuppressWarnings("serial")
-public class TreeViewerListModel extends AbstractListModel
+public class TreeViewerListModel extends AbstractListModel<TreeNode>
 {
     /** Logger for all messages emitted. */
     //private static final Logger log = Logger.getLogger(TreeViewerListModel.class);

@@ -379,7 +379,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean updateAllFullNames(DataModelObjBase rootObj, final boolean useProgDlg,
             final boolean lockedByCaller, int minRank) throws Exception 
     {
-        return treeTraversal(rootObj, useProgDlg, lockedByCaller, minRank, TreeRebuilder.RebuildMode.FullNames);
+        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, minRank, TreeRebuilder.RebuildMode.FullNames);
      }
 
     protected boolean checkForOtherLoginsBeforeNodeNumberUpdate()
@@ -446,19 +446,30 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
             final boolean lockedByCaller) throws Exception
     {
-        return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, TreeRebuilder.RebuildMode.Full);
+        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, 0, TreeRebuilder.RebuildMode.Full);
     }
     
-    @Override
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefIface#updateAllNodes(edu.ku.brc.specify.datamodel.DataModelObjBase, boolean, boolean, boolean, boolean)
+	 */
+	@Override
+	public boolean updateAllNodes(DataModelObjBase rootObj, boolean useProgDlg,
+			boolean lockedByCaller, boolean traversalLockedByCaller,
+			boolean checkForOtherLogins) throws Exception {
+		return treeTraversal(rootObj, useProgDlg, lockedByCaller, traversalLockedByCaller, checkForOtherLogins, 0, TreeRebuilder.RebuildMode.Full);
+	}
+
+	@Override
     public boolean updateAllNodeNumbers(DataModelObjBase rootObj,
             boolean useProgDlg, boolean lockedByCaller) throws Exception {
-        return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, TreeRebuilder.RebuildMode.NodeNumbers);
+        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, 0, TreeRebuilder.RebuildMode.NodeNumbers);
     }
 
     /**
      * @param rootObj
      * @param useProgDlg
-     * @param lockedByCaller
+     * @param treeLockedByCaller
      * @param minRank
      * @param rebuildMode
      * @return
@@ -467,7 +478,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     @SuppressWarnings("unchecked")
     public boolean treeTraversal(final DataModelObjBase rootObj, 
                                  final boolean useProgDlg, 
-                                 final boolean lockedByCaller, 
+                                 final boolean treeLockedByCaller, 
+                                 final boolean traversalLockedByCaller,
+                                 final boolean checkForOtherLogins,
                                  final int minRank, 
                                  final TreeRebuilder.RebuildMode rebuildMode) throws Exception
     {       
@@ -534,30 +547,31 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     }
                 });
 
-        boolean ok = checkForOtherLoginsBeforeNodeNumberUpdate();
-        if (!ok)
-        {
+        boolean ok = checkForOtherLogins ? checkForOtherLoginsBeforeNodeNumberUpdate() : true;
+        if (!ok) {
             return false;
         }
 
+        
         boolean wasUpToDate = TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);
-        
-        setRenumberingNodes(true);
-        setNodeNumbersAreUpToDate(false);
-        
-        if (!TreeDefStatusMgr.isRenumberingNodes(this) || TreeDefStatusMgr.isNodeNumbersAreUpToDate(this))
-        {
-            //locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
-            showLocalizedError("BaseTreeDef.UnableToUpdate");
-            setRenumberingNodes(false);
-            setNodeNumbersAreUpToDate(wasUpToDate);
-            return false;
+        if (!traversalLockedByCaller) {
+        	setRenumberingNodes(true);
+        	setNodeNumbersAreUpToDate(false);
         }
+        //If locks above were unsuccessful, or if traversalLockedByCaller, but locks are not set, fail
+        if (!TreeDefStatusMgr.isRenumberingNodes(this) || TreeDefStatusMgr.isNodeNumbersAreUpToDate(this))	{
+        	//locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
+        	showLocalizedError("BaseTreeDef.UnableToUpdate");
+        	setRenumberingNodes(false);
+        	setNodeNumbersAreUpToDate(wasUpToDate);
+        	return false;
+        }
+
             
         //useGlassPane avoids issues when simpleglasspane is already displayed. no help for normal glass pane yet.
         boolean useGlassPane = !isShowingGlassPane() && nStatusBar != null;
         
-        if (isOnUIThread && !lockedByCaller) 
+        if (isOnUIThread && !treeLockedByCaller) 
         {
             if (!TreeDefStatusMgr.lockTree(this, new TaskSemaphoreMgrCallerIFace() {
                         @Override
@@ -621,7 +635,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             finally
             {
                 setRenumberingNodes(false);
-                if (!lockedByCaller) 
+                if (!treeLockedByCaller) 
                 {
                     if (!TreeDefStatusMgr.unlockTree(this)) 
                     {

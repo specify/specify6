@@ -68,6 +68,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
+import edu.ku.brc.specify.dbsupport.TreeDefStatusMgr;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
@@ -1088,9 +1089,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
+		if (dataObj != null && !StringUtils.contains(formViewObj.getView().getName(), "TreeDef") && 
+				BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 		{
-			return getRequiredLocks();
+			return getRequiredLocks(dataObj);
 		}
 		else
 		{
@@ -1470,9 +1472,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
 	{
 		boolean result = super.isOkToSave(dataObj, session);
-		if (result && BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		if (result && dataObj != null && !StringUtils.contains(formViewObj.getView().getName(), "TreeDef") 
+				&& BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
 		{
-			if (!getRequiredLocks())
+			if (!getRequiredLocks(dataObj))
 			{
 				result = false;
 				reasonList.add(getUnableToLockMsg());
@@ -1487,9 +1490,20 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	 * Locks necessary tables prior to a save.
 	 * Only used when ALLOW_CONCURRENT_FORM_ACCESS is true.
 	 */
-	protected boolean getRequiredLocks()
+	protected boolean getRequiredLocks(Object dataObj)
 	{
-		TaskSemaphoreMgr.USER_ACTION result = TaskSemaphoreMgr.lock(getFormSaveLockTitle(), getFormSaveLockName(), "save", 
+		TreeDefIface<?,?,?> treeDef = ((Treeable<?,?,?>)dataObj).getDefinition();
+		boolean result = !TreeDefStatusMgr.isRenumberingNodes(treeDef) && TreeDefStatusMgr.isNodeNumbersAreUpToDate(treeDef); 
+		if (!result) {
+			try {
+				Thread.sleep(1500);
+				result = !TreeDefStatusMgr.isRenumberingNodes(treeDef) && TreeDefStatusMgr.isNodeNumbersAreUpToDate(treeDef);
+			} catch (Exception e) {
+				result = false;
+			}
+		} 
+		if (result) {
+			TaskSemaphoreMgr.USER_ACTION r = TaskSemaphoreMgr.lock(getFormSaveLockTitle(), getFormSaveLockName(), "save", 
 				TaskSemaphoreMgr.SCOPE.Discipline, false, new TaskSemaphoreMgrCallerIFace(){
 
 					/* (non-Javadoc)
@@ -1510,8 +1524,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 						}
 					}
 			
-		}, false);
-		return result == TaskSemaphoreMgr.USER_ACTION.OK;
+			}, false);
+			result = r == TaskSemaphoreMgr.USER_ACTION.OK;
+		}
+		return result;
 	}
 	
 	/**

@@ -52,7 +52,7 @@ public class TreeDataGhostDropJList extends DragDropJList
 	 * @param dragDropCallback
 	 * @param isDraggable
 	 */
-	public TreeDataGhostDropJList(final ListModel model, final DragDropCallback dragDropCallback, final boolean isDraggable)
+	public TreeDataGhostDropJList(final ListModel<?> model, final DragDropCallback dragDropCallback, final boolean isDraggable)
 	{
 		super(model, dragDropCallback, isDraggable);
 		clickOnText = false;

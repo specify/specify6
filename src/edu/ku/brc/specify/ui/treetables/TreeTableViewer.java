@@ -112,7 +112,9 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.dbsupport.TreeDefStatusMgr;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.tasks.TreeTaskMgr;
 import edu.ku.brc.specify.treeutils.ChildNodeCounter;
@@ -2413,7 +2415,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      * @return
      */
     private NODE_DROPTYPE askForDropAction(final T        draggedRecord,
-                                           @SuppressWarnings("unused") final T droppedOnRecord,
+                                           final T droppedOnRecord,
                                            final TreeNode droppedOnNode, 
                                            final TreeNode draggedNode)
     {
@@ -2893,6 +2895,45 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 	
 	/**
+	 * @return the title for the form save lock.
+	 */
+	protected String getFormSaveLockTitle()
+	{
+		return String.format(UIRegistry.getResourceString("BaseTreeBusRules.SaveLockTitle"), getNodeClass().getSimpleName());
+	}
+	
+	/**
+	 * @return the name for the form save lock.
+	 */
+	protected String getFormSaveLockName()
+	{
+		return getNodeClass().getSimpleName() + "Save";
+	}
+
+	/**
+	 * @return
+	 */
+	protected Class<?> getNodeClass() {
+		return treeDef.getNodeClass();
+	}
+
+	/**
+	 * @return
+	 */
+	protected boolean checkFormSaveLockForMerge() {
+		boolean result = true;
+		if (TaskSemaphoreMgr.isLocked(getFormSaveLockTitle(), getFormSaveLockName(), TaskSemaphoreMgr.SCOPE.Discipline)) {
+			try {
+				Thread.sleep(1500);
+				result = !TaskSemaphoreMgr.isLocked(getFormSaveLockTitle(), getFormSaveLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
+			} catch (Exception e) {
+				result = false;
+			}
+		}
+		return result; 
+	}
+	
+	/**
 	 * @param draggedNode
 	 * @param droppedOnNode
 	 * @param oldParentNode
@@ -2903,6 +2944,32 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	                           final TreeNode oldParentNode, 
                                final TreeNode newParentNode)
 	{
+		
+    	//setNodeNumbersAreUptoDate(false);
+    	//treeDef.setRenumberingNodes(true);
+    	
+		if (!TreeDefStatusMgr.isNodeNumbersAreUpToDate(treeDef) || TreeDefStatusMgr.isRenumberingNodes(treeDef)) {
+			UIRegistry.showError(UIRegistry.getResourceString("TreeTableViewer.UnableToLockTreeForMerge"));
+			return;
+		}
+		
+		
+    	TreeDefStatusMgr.setRenumberingNodes(treeDef, true);
+    	TreeDefStatusMgr.setNodeNumbersAreUpToDate(treeDef, false);
+    	//Make sure the locks worked
+    	if (TreeDefStatusMgr.isNodeNumbersAreUpToDate(treeDef) || !TreeDefStatusMgr.isRenumberingNodes(treeDef)) {
+			UIRegistry.showError(UIRegistry.getResourceString("TreeTableViewer.UnableToLockTreeForMerge"));
+			return;
+    	}
+
+    	if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && !checkFormSaveLockForMerge()) {
+    		//Check form save lock.
+    		TreeDefStatusMgr.setRenumberingNodes(treeDef, false);
+    		TreeDefStatusMgr.setNodeNumbersAreUpToDate(treeDef, true);
+			UIRegistry.showError(UIRegistry.getResourceString("TreeTableViewer.UnableToLockTreeForMerge"));
+    		return;
+    	}
+    	
         final TreeMergerUIIFace<T,D,I> face = new TreeMergerUIIFace<T,D,I>() {
             @Override
             public Integer choose(List<Integer> choices, boolean mustChoose)
@@ -2949,32 +3016,25 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         final TreeMerger<T, D, I> merger = new TreeMerger<T, D, I>(treeDef);
         merger.addListener(face);
-        new javax.swing.SwingWorker<Object, Object>() 
-        {
+        new javax.swing.SwingWorker<Object, Object>() {
             Boolean   result = false;
             Exception killer = null;
 
             @Override
-            protected Object doInBackground() throws Exception
-            {
-                SwingUtilities.invokeLater(new Runnable() 
-                {
+            protected Object doInBackground() throws Exception {
+                SwingUtilities.invokeLater(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         writeGlassPaneMsg(getResourceString("TreeTableViewer.Merging"), 24);
                         hideChildren(oldParentNode);
                         hideChildren(droppedOnNode);
                     }
                 });
                 
-                try
-                {
+                try {
                     merger.mergeTrees(draggedNode.getId(), droppedOnNode.getId());
                     result = true;
-                    
-                } catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     log.error(ex);
                     result = false;
                     killer = ex;
@@ -2998,14 +3058,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     try
                     {
-                        treeDef.updateAllNodes(null, true, true);
+                        treeDef.updateAllNodes(null, true, true, true, false);
                     } catch (Exception ex)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
                     }
                 }
-                
+
+            	TreeDefStatusMgr.setRenumberingNodes(treeDef, false);
+            	TreeDefStatusMgr.setNodeNumbersAreUpToDate(treeDef, true);
+
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {

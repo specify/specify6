@@ -110,6 +110,23 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	public boolean updateAllNodes(DataModelObjBase rootObj, final boolean useProgDlg, 
 			final boolean lockedByCaller) throws Exception;
 	
+    /**
+     * @param rootObj
+     * @param useProgDlg
+     * @param lockedByCaller
+     * @param traversalLockedByCaller  true if tree traversal locks are already set.
+     * @param checkForOtherLogins   if true, require user to confirm update if other users are logged in.
+     * 
+     * @return true if update completes without errors, else false
+     * 
+     * Walks the entire tree and assigns node numbers and fullname for every item.
+     * 
+     * @throws Exception
+     */
+    public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
+            final boolean lockedByCaller, final boolean traversalLockedByCaller, 
+            final boolean checkForOtherLogins) throws Exception;
+
 	/**
 	 * @return true if node numbers are to be kept up to date at all times.
 	 * (i.e. updated in business rule execution.)
