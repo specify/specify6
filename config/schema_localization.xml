@@ -20970,7 +20970,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="guid" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="guid" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
