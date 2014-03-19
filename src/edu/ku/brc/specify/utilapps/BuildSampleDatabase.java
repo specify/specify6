@@ -1460,6 +1460,7 @@ public class BuildSampleDatabase
                         tx.setFullName(tx.getName());
                         tx.setNodeNumber(1);
                         tx.setHighestChildNodeNumber(1);
+                        //tx.setIsAccepted(true);
                         
                         txRoot = tx;
                     }
@@ -3673,7 +3674,6 @@ public class BuildSampleDatabase
      * @param treeDef
      * @return
      */
-    @SuppressWarnings("unchecked")
     public LithoStrat convertLithoStratFromCSV(final LithoStratTreeDef treeDef)
     {
         Hashtable<String, LithoStrat> lithoStratHash = new Hashtable<String, LithoStrat>();
@@ -9461,7 +9461,7 @@ public class BuildSampleDatabase
                                                     final String[]   levelNames) throws SQLException
     {
         gSQLStr.setLength(0);
-        gSQLStr.append("INSERT INTO taxon (Name, TaxonTreeDefID, FullName, TaxonTreeDefItemID, RankID, ParentID, TimestampCreated, Version");
+        gSQLStr.append("INSERT INTO taxon (Name, TaxonTreeDefID, FullName, TaxonTreeDefItemID, RankID, ParentID, TimestampCreated, Version, IsAccepted, IsHybrid");
         addExtraColumns(gSQLStr, tdi.getRankId(), levelNames, true);
         gSQLStr.append(") VALUES (");
         gSQLStr.append("\"");
@@ -9487,7 +9487,7 @@ public class BuildSampleDatabase
         gSQLStr.append(parentId);
         gSQLStr.append(',');
         gSQLStr.append(nowStr);
-        gSQLStr.append(",1");
+        gSQLStr.append(",1,true,false");
         addExtraColumns(gSQLStr, tdi.getRankId(), levelNames, false);
         gSQLStr.append(")");
 

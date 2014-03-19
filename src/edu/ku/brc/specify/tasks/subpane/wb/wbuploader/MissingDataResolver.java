@@ -59,8 +59,8 @@ import edu.ku.brc.specify.datamodel.CollectionMember;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DisciplineMember;
-import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -90,7 +90,7 @@ public class MissingDataResolver implements ActionListener
     /**
      * Lists of available values for each missingClass and missingFld.
      */
-    protected Vector<ComboBoxModel> lists;
+    protected Vector<ComboBoxModel<?>> lists;
 
     /**
      * huh?
@@ -145,7 +145,7 @@ public class MissingDataResolver implements ActionListener
         }
         else if (a.getSource().getClass().equals(JComboBox.class))
         {
-            JComboBox jbox = (JComboBox)a.getSource();
+            JComboBox<?> jbox = (JComboBox<?>)a.getSource();
             setFldOrClass(jbox.getSelectedItem());
         }
     }
@@ -444,7 +444,7 @@ public class MissingDataResolver implements ActionListener
         {
             if (dfe.getFldName().equalsIgnoreCase("IsCurrent"))
             {
-                log.debug("setting IsCurrent to true");
+                log.debug("setting determination.IsCurrent to true");
                 dfe.setDefaultValue(true);
                 return true;
             }
@@ -453,8 +453,26 @@ public class MissingDataResolver implements ActionListener
         {
             if (dfe.getFldName().equalsIgnoreCase("SrcLatLongUnit"))
             {
-                log.debug("setting SrcLatLongUnit to 0");
+                log.debug("setting Locality.SrcLatLongUnit to 0");
                 dfe.setDefaultValue(new Byte("0"));
+                return true;
+            }
+        }
+        if (Treeable.class.isAssignableFrom(dfe.getUploadTbl().getTblClass()))
+        {
+            if (dfe.getFldName().equalsIgnoreCase("isAccepted"))
+            {
+                log.debug("setting " + dfe.getUploadTbl().getTblTitle() + ".isAccepted to true");
+                dfe.setDefaultValue(new Boolean("true"));
+                return true;
+            }        	
+        }
+        if (dfe.getUploadTbl().getTblClass() == edu.ku.brc.specify.datamodel.Taxon.class)
+        {
+            if (dfe.getFldName().equalsIgnoreCase("isHybrid"))
+            {
+                log.debug("setting Taxon.isHybrid to false");
+                dfe.setDefaultValue(new Boolean("false"));
                 return true;
             }
         }
@@ -502,6 +520,7 @@ public class MissingDataResolver implements ActionListener
      * @param readOnly
      * @return TableModel for UI.
      */
+	@SuppressWarnings("serial")
     protected TableModel bldModel(boolean readOnly)
     {
         Vector<String> headers = new Vector<String>();
@@ -510,7 +529,7 @@ public class MissingDataResolver implements ActionListener
         headers.add("Data"); //i18n
         headers.add("Value"); //i18n
         
-        lists = new Vector<ComboBoxModel>();
+        lists = new Vector<ComboBoxModel<?>>();
         
         Vector<Vector<String>> rows = new Vector<Vector<String>>();
         for (RelatedClassSetter rce : missingClasses)
@@ -538,7 +557,7 @@ public class MissingDataResolver implements ActionListener
             }
             rows.add(row);
             tblObjects.add(rce);
-            DefaultComboBoxModel list = new DefaultComboBoxModel();
+            DefaultComboBoxModel<Pair<String,Object>> list = new DefaultComboBoxModel<Pair<String,Object>>();
             //list.addElement(row.get(3));
             Vector<Pair<String, Object>> chcs = this.getReqClassChcs(rce);
             Pair<String, Object> currChc = null;
@@ -579,7 +598,7 @@ public class MissingDataResolver implements ActionListener
             }
             rows.add(row);
             tblObjects.add(dfe);
-            DefaultComboBoxModel list = new DefaultComboBoxModel();
+            DefaultComboBoxModel<LabelledObject<String, Object>> list = new DefaultComboBoxModel<LabelledObject<String, Object>>();
             Vector<LabelledObject<String, Object>> chcs = this.getReqFldChcs(dfe);
             LabelledObject<String, Object> currChc = null;
             for (LabelledObject<String, Object> chc : chcs)
@@ -612,7 +631,7 @@ public class MissingDataResolver implements ActionListener
 			@Override
 			public boolean isCellEditable(int row, int col)
 			{
-				JComboBox jBox = createComboBox(lists.get(row));
+				JComboBox<?> jBox = createComboBox(lists.get(row));
 				jBox.addActionListener(myself);
 
 				uiTbl.setDefaultEditor(uiTbl.getColumnClass(col),

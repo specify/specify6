@@ -392,7 +392,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         this.remarks = remarks;
     }
     
-    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    @Column(name="IsAccepted", unique=false, nullable=false, insertable=true, updatable=true)
     public Boolean getIsAccepted()
     {
         return this.isAccepted;

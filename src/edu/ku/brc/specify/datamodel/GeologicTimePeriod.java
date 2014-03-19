@@ -375,7 +375,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.text2 = text2;
     }
 
-    @Column(name="IsAccepted")
+    @Column(name="IsAccepted", nullable=false)
     public Boolean getIsAccepted()
     {
         return this.isAccepted;

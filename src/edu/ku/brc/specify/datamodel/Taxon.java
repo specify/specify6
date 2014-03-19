@@ -215,6 +215,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         groupNumber                   = null;
         visibility                    = null;
         visibilitySetBy               = null;
+        isHybrid                      = false;
         hybridParent1                 = null;
         hybridParent2                 = null;
         hybridChildren1               = new HashSet<Taxon>();
@@ -660,7 +661,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-    @Column(name="IsAccepted")
+    @Column(name="IsAccepted", nullable=false)
     public Boolean getIsAccepted()
 	{
 		return this.isAccepted == null ? true : this.isAccepted; //see comment in initialize() for isAccecpted 
@@ -711,7 +712,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         return true;
     }
     
-    @Column(name="IsHybrid")
+    @Column(name="IsHybrid", nullable=false)
     public Boolean getIsHybrid()
     {
         return isHybrid;

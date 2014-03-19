@@ -432,7 +432,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.isCurrent = isCurrent;
 	}
 
-    @Column(name="IsAccepted")
+    @Column(name="IsAccepted", nullable=false)
     public Boolean getIsAccepted()
     {
         return this.isAccepted;

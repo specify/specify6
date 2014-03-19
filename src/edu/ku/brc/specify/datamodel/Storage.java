@@ -307,7 +307,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         this.timestampVersion = timestampVersion;
     }
     
-    @Column(name="IsAccepted")
+    @Column(name="IsAccepted", nullable=false)
     public Boolean getIsAccepted()
     {
         return this.isAccepted;
