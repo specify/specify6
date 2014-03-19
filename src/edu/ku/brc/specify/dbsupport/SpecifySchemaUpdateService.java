@@ -670,15 +670,72 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private Integer getFieldLength(final Connection conn, final String databaseName, final String tableName, final String fieldName)
     {
         //XXX portability. This is MySQL -specific.
-        Vector<Object[]> rows = query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+    	Object prop = getFieldProp(conn, databaseName, tableName, fieldName, "CHARACTER_MAXIMUM_LENGTH");
+        if (prop == null)
+        {
+            return null; //the field doesn't even exits
+        } else 
+        {
+            return((Number )prop).intValue();
+        }
+    }
+    
+    /**
+     * @param conn
+     * @param databaseName
+     * @param tableName
+     * @param fieldName
+     * @param propToGet
+     * @return
+     */
+    private Object getFieldProp(final Connection conn, final String databaseName, final String tableName, final String fieldName, 
+    		final String propToGet)
+    {
+        // XXX portability. This is MySQL -specific.
+        List<Object[]> rows = query(conn, "SELECT " + propToGet + " FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
                 databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
         if (rows.size() == 0)
         {
             return null; //the field doesn't even exits
         } else 
         {
-            return((Number )rows.get(0)[0]).intValue();
+            return rows.get(0)[0];
         }
+    }
+
+    /**
+     * @param conn
+     * @param databaseName
+     * @param tableName
+     * @param fieldName
+     * @return length of field or null if field does not exist.
+     */
+    private Boolean getFieldNullability(final Connection conn, final String databaseName, final String tableName, final String fieldName)
+    {
+        // XXX portability. This is MySQL -specific.
+        Object prop = getFieldProp(conn, databaseName, tableName, fieldName, "IS_NULLABLE");                   
+        if (prop == null)
+        {
+            return null; //the field doesn't even exits
+        } else 
+        {
+            return "YES".equalsIgnoreCase(prop.toString()) ? true : false;
+        }
+    }
+
+    /**
+     * @param conn
+     * @param databaseName
+     * @param tableName
+     * @param constraintName
+     * @return
+     */
+    private Boolean doesConstraintExist(final Connection conn, final String databaseName, final String tableName, 
+    		final String constraintName) {
+        // XXX portability. This is MySQL -specific.
+        List<Object[]> rows = query(conn, "SELECT * FROM `information_schema`.`TABLE_CONSTRAINTS` where CONSTRAINT_SCHEMA = '" +
+                databaseName + "' and TABLE_NAME = '" + tableName + "' and CONSTRAINT_NAME = '" + constraintName + "'");                    
+        return rows.size() > 0;
     }
     
     /**
@@ -691,16 +748,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private String getFieldColumnType(final Connection conn, final String databaseName, final String tableName, final String fieldName)
     {
         // XXX portability. This is MySQL -specific.
-        Vector<Object[]> rows = query(conn, "SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
-                databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
-        if (rows.size() == 0)
+        Object prop = getFieldProp(conn, databaseName, tableName, fieldName, "COLUMN_TYPE");                   
+        if (prop == null)
         {
             return null; //the field doesn't even exits
         } else 
         {
-            return rows.get(0)[0].toString();
+            return prop.toString();
         }
     }
+    
+    
     /**
      * @param dbdriverInfo
      * @param hostname
@@ -1324,7 +1382,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //                                                                                                              //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
-                    BasicSQLUtils.update(conn, "UPDATE agent SET Title='mr' WHERE AgentType = 1 AND Title is NULL OR Title = ''");
+                    //BasicSQLUtils.update(conn, "UPDATE agent SET Title='mr' WHERE AgentType = 1 AND Title is NULL OR Title = ''");
                     
 
                     //-----------------------------------------------------------------------------
@@ -1826,15 +1884,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-------------------------------------------------------------------
                     // spreport -- fix for bug #9414. 
                     //-------------------------------------------------------------------
+                    if (!getFieldNullability(conn, databaseName, "spreport", "SpQueryID")) {
                     
-                    frame.setDesc("Fixing workbench-based reports...");
-                    String usql = "ALTER TABLE " + databaseName + 
+                    	frame.setDesc("Fixing workbench-based reports...");
+                    	String usql = "ALTER TABLE " + databaseName + 
                     		".spreport CHANGE COLUMN SpQueryID SpQueryID INT(11) NULL";
-                    if (update(conn, usql) == -1) {
-                        errMsgList.add("update error: " + usql);
-                        return false;
+                    	if (update(conn, usql) == -1) {
+                    		errMsgList.add("update error: " + usql);
+                    		return false;
+                    	}
                     }
-                    
                     frame.incOverall(); 
                     
                     //-------------------------------------------------------------------
@@ -1917,13 +1976,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- bug #9454. 
                     //-------------------------------------------------------------------
                     
-                    sql = "ALTER TABLE " + databaseName + ".author " +
+                    if (doesConstraintExist(conn, databaseName, "author", "OrderNumber")) {
+                    	sql = "ALTER TABLE " + databaseName + ".author " +
                     		"DROP INDEX OrderNumber " + 
                     		", ADD UNIQUE INDEX AgentIDX (ReferenceWorkID ASC, AgentID ASC)";
-                    frame.setDesc("Fixing ReferenceWork Author index...");
-                    if (update(conn, sql) == -1) {
-                        errMsgList.add("update error: " + sql);
-                        return false;
+                    	frame.setDesc("Fixing ReferenceWork Author index...");
+                    	if (update(conn, sql) == -1) {
+                    		errMsgList.add("update error: " + sql);
+                    		return false;
+                    	}
                     }
                     frame.incOverall();
 
@@ -1954,37 +2015,40 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     		"taxonattachment"
                     };
                     for (String tbl : attObjTbls) {
-                        frame.setDesc("Fixing " + tbl + " Ordinal field requirement setting...");
-                        String objTbl = tbl.replace("attachment", "");
-                        String objTblKey = "dnasequencerun".equals(objTbl) ? "dnasequencingrunid" : objTbl + "ID";
-                        String attObjTblKey = "dnasequencerun".equals(objTbl) ? "dnasequencingrunattachmentid" : tbl + "ID";
-                    	String q = "select " + objTblKey + ", " + attObjTblKey + " from " + 
+                    	if (getFieldNullability(conn, databaseName, tbl, "Ordinal")) {
+                    		frame.setDesc("Fixing " + tbl + " Ordinal field requirement setting...");
+                    		String objTbl = tbl.replace("attachment", "");
+                    		String objTblKey = "dnasequencerun".equals(objTbl) ? "dnasequencingrunid" : objTbl + "ID";
+                    		String attObjTblKey = "dnasequencerun".equals(objTbl) ? "dnasequencingrunattachmentid" : tbl + "ID";
+                    		String q = "select " + objTblKey + ", " + attObjTblKey + " from " + 
                     			databaseName + "." + tbl + " where Ordinal is null";
-                    	List<Object[]> nulls = BasicSQLUtils.query(conn, q);
-                    	if (nulls != null && nulls.size() > 0) {
-                    		for (Object[] row : nulls) {
-                    			q = "select max(Ordinal) from " + databaseName + "." + tbl 
+                    		List<Object[]> nulls = BasicSQLUtils.query(conn, q);
+                    		if (nulls != null && nulls.size() > 0) {
+                    			for (Object[] row : nulls) {
+                    				q = "select max(Ordinal) from " + databaseName + "." + tbl 
                     					+ " where " + objTblKey + "=" + row[0].toString();
-                    			Integer max = BasicSQLUtils.getCount(conn, q);
-                    			if (max == null) {
-                    				max = -1;
-                    			}
-                    			max += 1;
-                    			q = "update " + databaseName + "." + tbl + " set Ordinal=" + max +
+                    				Integer max = BasicSQLUtils.getCount(conn, q);
+                    				if (max == null) {
+                    					max = -1;
+                    				}
+                    				max += 1;
+                    				q = "update " + databaseName + "." + tbl + " set Ordinal=" + max +
                     					" where " + attObjTblKey + "=" + row[1].toString();
-                    			if (-1 == update(conn, q)) {
-                                    errMsgList.add("update error: " + q);
-                                    return false;
+                    				if (-1 == update(conn, q)) {
+                    					errMsgList.add("update error: " + q);
+                    					return false;
+                    				}
                     			}
                     		}
-                    	}
-                        q = "ALTER TABLE " + databaseName + "." + tbl + 
+                    		q = "ALTER TABLE " + databaseName + "." + tbl + 
                         		" CHANGE COLUMN `Ordinal` `Ordinal` INT(11) NOT NULL";
-            			if (-1 == update(conn, q)) {
-                            errMsgList.add("update error: " + q);
-                            return false;
-            			}
+                    		if (-1 == update(conn, q)) {
+                    			errMsgList.add("update error: " + q);
+                    			return false;
+                    		}
+                    	}
                     }
+                    
                     frame.setProcess(0, 100);
                     frame.incOverall(); 
                     
