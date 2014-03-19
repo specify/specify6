@@ -182,7 +182,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 37;
+    private final int OVERALL_TOTAL = 52; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -512,7 +512,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 frame.getProcessProgress().setIndeterminate(true);
                                 frame.setDesc(UIRegistry.getLocalizedMessage("UPDATE_SCHEMA", dbVersion));
                                 
-                                frame.setOverall(0, OVERALL_TOTAL);
+                                //frame.setOverall(0, OVERALL_TOTAL);
                                 
                                 UIHelper.centerAndShow(frame);
                                 
@@ -591,7 +591,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     /**
      * @param e
      */
-    private static void processUnhandledException(@SuppressWarnings("unused") final Throwable throwable)
+    private static void processUnhandledException(final Throwable throwable)
     {
         /*if (UIHelper.isExceptionOKToThrow(throwable))
         {
@@ -716,7 +716,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                   final String             userName,
                                   final String             password) throws SQLException
     {
-        frame.setOverall(0, 30); // 23 + 7 
+        frame.setOverall(0, OVERALL_TOTAL); // 23 + 7 + 
         
         String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, true, true,
                                                              userName, password, dbdriverInfo.getName());
@@ -1316,7 +1316,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         alterFieldLength(conn, databaseName, tblName, prepAttrFld, 10, 50);
                     }
-                    frame.incOverall(); // #19
+                    frame.incOverall(); 
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     //                                                                                                              //
@@ -1399,7 +1399,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
-                    frame.incOverall(); // #23
+                    frame.incOverall(); 
                     
                     //-----------------------------------------------------------------------------
                     //-- DNASequencingRun
@@ -1437,7 +1437,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     
-                    frame.incOverall(); // #24
+                    frame.incOverall(); 
                     
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1448,7 +1448,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                     
                     createSGRTables(conn, databaseName);
-                    frame.incOverall(); // #25
+                    frame.incOverall();
                     
                     if (!miscSchema16Updates(conn, databaseName)) // Steps 26 - 28
                     {
@@ -1471,7 +1471,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }                       
                     
-                    frame.incOverall(); // #29
+                    frame.incOverall();
                     frame.setProcess(0, 100);
                     //-----------------------------------------------------------------------------
                     //-- Determination fix
@@ -1503,7 +1503,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     BasicSQLUtils.update(updateStr);
                     
                     frame.setProcess(0, 100);
-                    frame.incOverall(); // #30
+                    frame.incOverall(); 
                     
                     //-----------------------------------------------------------------------------
                     // Adds new OCR field to CollectionObject
@@ -1519,12 +1519,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.setProcess(0, 100);
-                    frame.incOverall(); // #31
+                    frame.incOverall(); 
                     
                     updateDNAAttachments(conn);
                     
                     frame.setProcess(0, 100);
-                    frame.incOverall(); // #32
+                    frame.incOverall(); 
                     
                     // Fix indexes
                     
@@ -1539,12 +1539,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         update(conn, "DROP INDEX DescriptionOfMaterialIDX on exchangeout");
                         update(conn, "CREATE INDEX DescriptionOfMaterialIDX2 ON exchangeout(DescriptionOfMaterial)");
                     }
-                    frame.incOverall(); // #33
+                    frame.incOverall(); 
 
                     frame.setProcess(0, 100);
                     fixCollectorOrder(conn); // fixes the Ordinal number of Collectors
                     
-                    frame.incOverall(); // #34
+                    frame.incOverall();
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     //                                                                                                              //
@@ -1588,7 +1588,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.setProcess(0, 100);
-                    frame.incOverall(); // #35
+                    frame.incOverall(); 
 
                     frame.setDesc("Updating Permits..."); // I18N
                     tblName = getTableNameAndTitleForFrame(Permit.getClassTableId());
@@ -1605,7 +1605,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.setProcess(0, 100);
-                    frame.incOverall(); // #35
+                    frame.incOverall(); 
 
                     //-----------------------------------------------------------------------------
                     //-- LocalityDetail
@@ -1728,7 +1728,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
                     frame.setProcess(0, 100);
-                    frame.incOverall(); // #36
+                    frame.incOverall(); 
                     
                     Integer[] sgrTblIds = new Integer[] {CollectionObject.getClassTableId(), CollectingEvent.getClassTableId(), 
                                                          Locality.getClassTableId(), WorkbenchRow.getClassTableId()};
@@ -1798,6 +1798,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     generateMissingGUIDs(frame);
+                    frame.incOverall();
                     
                     // Setting new Field Length for QueryFields
                     String startValue = "StartValue";
@@ -1814,7 +1815,178 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         alterFieldLength(conn, databaseName, tblName, endValue, 64, 255);
                     }
 
-                    frame.incOverall(); // #37
+                    frame.incOverall();
+
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //                                                                                                              //
+                    // Schema Changes 1.9                                                                                           //
+                    //                                                                                                              //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    //-------------------------------------------------------------------
+                    // spreport -- fix for bug #9414. 
+                    //-------------------------------------------------------------------
+                    
+                    frame.setDesc("Fixing workbench-based reports...");
+                    String usql = "ALTER TABLE " + databaseName + 
+                    		".spreport CHANGE COLUMN SpQueryID SpQueryID INT(11) NULL";
+                    if (update(conn, usql) == -1) {
+                        errMsgList.add("update error: " + usql);
+                        return false;
+                    }
+                    
+                    frame.incOverall(); 
+                    
+                    //-------------------------------------------------------------------
+                    // loan -- bug #9492. 
+                    //-------------------------------------------------------------------
+                    
+                    frame.setDesc("Stretching SrcGeography and SrcGeography fields for loans and gifts...");
+                    alterFieldLength(conn, databaseName, "loan", "SrcGeography",  32, 500);
+                    alterFieldLength(conn, databaseName, "loan", "SrcTaxonomy",  32, 500);
+
+                    //-------------------------------------------------------------------
+                    // gift -- bug #9492. 
+                    //-------------------------------------------------------------------
+                    alterFieldLength(conn, databaseName, "gift", "SrcGeography",  32, 500);
+                    alterFieldLength(conn, databaseName, "gift", "SrcTaxonomy",  32, 500);
+
+                    frame.incOverall();
+
+                    //-------------------------------------------------------------------
+                    //-- Change long strings that were created as text in earlier dbs and
+                    //-- as varchar in newer versions.
+                    //
+                    //-- bug #9457. 
+                    //-------------------------------------------------------------------
+                    String[][] toFix = {
+                    		{"accession", "Text1,Text2,Text3"},
+                    		{"borrow", "Text1,Text2"},
+                    		{"collectionobject", "Text1,Text2"},
+                    		{"collectionobjectattribute", "Text1,Text2,Text3"},                    		
+                    		{"collectingeventattribute", "Text1,Text2,Text3"},
+                    		{"commonnametxcitation", "Text1,Text2"},
+                    		{"deaccession", "Text1,Text2"},
+                    		{"determination", "Text1,Text2"},
+                    		{"dnasequencingruncitation", "Text1,Text2"},
+                    		{"exchangein", "Text1,Text2"},
+                    		{"exchangeout", "Text1,Text2"},
+                    		{"gift", "Text1,Text2"},
+                    		{"lithostrat", "Text1,Text2"},
+                    		{"loan", "Text1,Text2"},
+                    		{"locality", "Text1,Text2"},
+                    		{"localitydetail", "Text1,Text2"},
+                    		{"permit", "Text1,Text2"},
+                    		{"preparation", "Text1,Text2"},
+                    		{"preparationattribute", "Text1,Text2,Text10"},
+                    		{"project", "Text1,Text2"},
+                    		{"referencework", "Text1,Text2"},
+                    		{"shipment", "Text1,Text2"},
+                    		{"taxoncitation", "Text1,Text2"},
+                    };
+                    
+                    for (String[] fldToFix : toFix) {
+                    	String tbl = fldToFix[0];
+                        frame.setDesc("Fixing " + tbl + " user-defined Text field types...");
+                    	String[] flds = fldToFix[1].split(",");
+                    	List<String> fldsToFix = new ArrayList<String>(flds.length);
+                    	for (String fld : flds) {
+                    		if (!"text".equals(getFieldColumnType(conn, databaseName, tbl, fld))) {
+                    			fldsToFix.add(fld);
+                    		}
+                    	}
+                    	String fldFixSql = "alter table " + databaseName + "." + tbl;
+                    	boolean comma = false;
+                    	for (String fld : fldsToFix) {
+                    		if (comma) {
+                    			fldFixSql += ",";
+                    		} else {
+                    			comma = true;
+                    		}
+                    		fldFixSql += " change column " + fld + " " + fld + " text";
+                    	}
+                        if (update(conn, fldFixSql) == -1) {
+                            errMsgList.add("update error: " + fldFixSql);
+                            return false;
+                        }
+                    }
+                    frame.incOverall(); 
+                    
+                    //-------------------------------------------------------------------
+                    // Fixing unique constraint on author
+                    //-- bug #9454. 
+                    //-------------------------------------------------------------------
+                    
+                    sql = "ALTER TABLE " + databaseName + ".author " +
+                    		"DROP INDEX OrderNumber " + 
+                    		", ADD UNIQUE INDEX AgentIDX (ReferenceWorkID ASC, AgentID ASC)";
+                    frame.setDesc("Fixing ReferenceWork Author index...");
+                    if (update(conn, sql) == -1) {
+                        errMsgList.add("update error: " + sql);
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-------------------------------------------------------------------
+                    // Ordinal in AttachmentObject tables made non-nullable
+                    //-- bug #9423. 
+                    //-------------------------------------------------------------------
+
+                    String[] attObjTbls = {"accessionattachment",
+                    		"agentattachment",
+                    		"borrowattachment",
+                    		"collectingeventattachment",
+                    		"collectionobjectattachment",
+                    		"conservdescriptionattachment",
+                    		"conserveventattachment",
+                    		"dnasequenceattachment",
+                    		"dnasequencerunattachment",
+                    		"fieldnotebookattachment",
+                    		"fieldnotebookpageattachment",
+                    		"fieldnotebookpagesetattachment",
+                    		"giftattachment",
+                    		"loanattachment",
+                    		"localityattachment",
+                    		"permitattachment",
+                    		"preparationattachment",
+                    		"referenceworkattachment",
+                    		"repositoryagreementattachment",
+                    		"taxonattachment"
+                    };
+                    for (String tbl : attObjTbls) {
+                        frame.setDesc("Fixing " + tbl + " Ordinal field requirement setting...");
+                        String objTbl = tbl.replace("attachment", "");
+                        String objTblKey = "dnasequencerun".equals(objTbl) ? "dnasequencingrunid" : objTbl + "ID";
+                        String attObjTblKey = "dnasequencerun".equals(objTbl) ? "dnasequencingrunattachmentid" : tbl + "ID";
+                    	String q = "select " + objTblKey + ", " + attObjTblKey + " from " + 
+                    			databaseName + "." + tbl + " where Ordinal is null";
+                    	List<Object[]> nulls = BasicSQLUtils.query(conn, q);
+                    	if (nulls != null && nulls.size() > 0) {
+                    		for (Object[] row : nulls) {
+                    			q = "select max(Ordinal) from " + databaseName + "." + tbl 
+                    					+ " where " + objTblKey + "=" + row[0].toString();
+                    			Integer max = BasicSQLUtils.getCount(conn, q);
+                    			if (max == null) {
+                    				max = -1;
+                    			}
+                    			max += 1;
+                    			q = "update " + databaseName + "." + tbl + " set Ordinal=" + max +
+                    					" where " + attObjTblKey + "=" + row[1].toString();
+                    			if (-1 == update(conn, q)) {
+                                    errMsgList.add("update error: " + q);
+                                    return false;
+                    			}
+                    		}
+                    	}
+                        q = "ALTER TABLE " + databaseName + "." + tbl + 
+                        		" CHANGE COLUMN `Ordinal` `Ordinal` INT(11) NOT NULL";
+            			if (-1 == update(conn, q)) {
+                            errMsgList.add("update error: " + q);
+                            return false;
+            			}
+                    }
+                    frame.setProcess(0, 100);
+                    frame.incOverall(); 
                     
                     return true;
                     
@@ -1863,7 +2035,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (divId != null)
             {
                 sql = "UPDATE conservdescription SET DivisionID = "+divId + " WHERE ConservDescriptionID="+csId;
-                int rv = BasicSQLUtils.update(sql);
+                /*int rv = */BasicSQLUtils.update(sql);
                 //System.out.println("rv= "+rv+"  "+sql);
             }
         }
@@ -2348,7 +2520,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 return false;
             }
         }
-        frame.incOverall(); // #26
+        frame.incOverall();
 
         //-----------------------------------------------------------------------------
         //-- GeoCoordDetail
@@ -2363,11 +2535,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 return false;
             }
         }
-        frame.incOverall(); // #27
+        frame.incOverall(); 
 
         frame.setDesc("Fixing SrcLatLonUnit in Locality");
         fixSrcLatLongUnit(conn);
-        frame.incOverall(); // #28
+        frame.incOverall(); 
         frame.setDesc("Processing...");
 
         return true;
@@ -3568,7 +3740,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 return false;
             }
         }
-        frame.incOverall();
+        frame.incOverall(); 
         
         DBConnection dbc = DBConnection.getInstance();
 
@@ -3582,7 +3754,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             alterFieldLength(conn, databaseName, "fieldnotebookpage", "PageNumber", 16, 32);
             update(conn, "ALTER TABLE fieldnotebookpage ALTER COLUMN ScanDate DROP DEFAULT");
         }
-        frame.incOverall();
+        frame.incOverall(); 
 
         /////////////////////////////
         // Project Table

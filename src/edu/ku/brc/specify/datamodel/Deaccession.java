@@ -51,6 +51,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="DeaccessionNumberIDX", columnNames={"DeaccessionNumber"}),
         @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
     })
+@SuppressWarnings("serial")
 public class Deaccession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -194,7 +195,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() {
         return this.text1;
     }
@@ -206,7 +208,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() {
         return this.text2;
     }

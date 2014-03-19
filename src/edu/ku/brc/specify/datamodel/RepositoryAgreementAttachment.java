@@ -46,6 +46,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "repositoryagreementattachment")
+@SuppressWarnings("serial")
 public class RepositoryAgreementAttachment extends DataModelObjBase implements ObjectAttachmentIFace<RepositoryAgreement>, 
                                                                                Orderable,
                                                                                Serializable,

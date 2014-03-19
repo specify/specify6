@@ -66,6 +66,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
         @Index (name="AttchScopeTypeIDX", columnNames={"ScopeType"}),
         @Index (name="AttchmentGuidIDX", columnNames={"GUID"}),
     })
+@SuppressWarnings("serial")
 public class Attachment extends DataModelObjBase implements Serializable
 {
     private static final HashMap<Integer, Byte> tblIdToScopeType = createTblScopeMapping();

@@ -24,8 +24,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
@@ -137,7 +135,9 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
     {
         if (frame != null) frame.setDesc(getResourceString("SpecifyGUIDGeneratorFactory.UPDATING_GUIDS"));
 
-        setProgressValue(true, false, 0, CATEGORY_TYPE.values().length); // Sets Overall Progress to 0 -> 100
+        if (pcl != null) {
+        	setProgressValue(true, false, 0, CATEGORY_TYPE.values().length); // Sets Overall Progress to 0 -> 100
+        }
         
         Connection conn = DBConnection.getInstance().getConnection();
                 
@@ -165,7 +165,9 @@ public class SpecifyGUIDGeneratorFactory extends GenericGUIDGeneratorFactory
                 }
 
             }
-            setProgressValue(true, false, count++);
+            if (pcl != null) {
+            	setProgressValue(true, false, count++);
+            }
         }
     }
     

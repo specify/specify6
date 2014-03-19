@@ -94,6 +94,14 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected CollectingTrip        collectingTrip;
     protected Byte					sgrStatus;
     protected String                guid;
+    protected Integer				integer1;
+    protected Integer				integer2;
+    protected Integer				reservedInteger3;
+    protected Integer				reservedInteger4;
+    protected String				text1;
+    protected String				text2;
+    protected String				reservedText1;
+    protected String                reservedText2;
     
     protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
@@ -139,7 +147,14 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         visibility = null;
         sgrStatus  = null;
         guid       = null;
-        
+        integer1			  = null;
+        integer2			  = null;
+        reservedInteger3	  = null;
+        reservedInteger4	  = null;
+        text1				  = null;
+        text2                 = null;
+        reservedText1         = null;
+        reservedText2         = null;
         collectionObjects            = new HashSet<CollectionObject>();
         collectors                   = new HashSet<Collector>();
         locality                     = null;
@@ -216,7 +231,132 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         this.guid = guid;
     }
 
-    @Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
+    
+	/**
+	 * @return the integer1
+	 */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger1() {
+		return integer1;
+	}
+
+	/**
+	 * @param integer1 the integer1 to set
+	 */
+	public void setInteger1(Integer integer1) {
+		this.integer1 = integer1;
+	}
+
+	/**
+	 * @return the integer2
+	 */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger2() {
+		return integer2;
+	}
+
+	/**
+	 * @param integer2 the integer2 to set
+	 */
+	public void setInteger2(Integer integer2) {
+		this.integer2 = integer2;
+	}
+
+	/**
+	 * @return the reservedInteger3
+	 */
+    @Column(name = "ReservedInteger3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getReservedInteger3() {
+		return reservedInteger3;
+	}
+
+	/**
+	 * @param reservedInteger3 the reservedInteger3 to set
+	 */
+	public void setReservedInteger3(Integer reservedInteger3) {
+		this.reservedInteger3 = reservedInteger3;
+	}
+
+	/**
+	 * @return the reservedInteger4
+	 */
+    @Column(name = "ReservedInteger4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getReservedInteger4() {
+		return reservedInteger4;
+	}
+
+	/**
+	 * @param reservedInteger4 the reservedInteger4 to set
+	 */
+	public void setReservedInteger4(Integer reservedInteger4) {
+		this.reservedInteger4 = reservedInteger4;
+	}
+
+
+    /**
+	 * @return the text1
+	 */
+    @Lob
+    @Column(name = "Text1", length = 65535)
+	public String getText1() {
+		return text1;
+	}
+
+	/**
+	 * @param text1 the text1 to set
+	 */
+	public void setText1(String text1) {
+		this.text1 = text1;
+	}
+
+	/**
+	 * @return the text2
+	 */
+    @Lob
+    @Column(name = "Text2", length = 65535)
+	public String getText2() {
+		return text2;
+	}
+
+	/**
+	 * @param text2 the Text2 to set
+	 */
+	public void settext2(String text2) {
+		this.text2 = text2;
+	}
+
+	
+    /**
+	 * @return the reservedText1
+	 */
+	   @Column(name = "ReservedText1", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+	public String getReservedText1() {
+		return reservedText1;
+	}
+
+	/**
+	 * @param reservedText1 the reservedText1 to set
+	 */
+	public void setReservedText1(String reservedText1) {
+		this.reservedText1 = reservedText1;
+	}
+
+	/**
+	 * @return the reservedText2
+	 */
+	   @Column(name = "ReservedText2", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+	public String getReservedText2() {
+		return reservedText2;
+	}
+
+	/**
+	 * @param reservedText2 the reservedText2 to set
+	 */
+	public void setReservedText2(String reservedText2) {
+		this.reservedText2 = reservedText2;
+	}
+
+	@Column(name = "SGRStatus", unique = false, nullable = true, insertable = true, updatable = true)
 	public Byte getSgrStatus() 
 	{
 		return sgrStatus;

@@ -41,7 +41,8 @@ import edu.ku.brc.util.Orderable;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "author", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "ReferenceWorkID" }) })
+@Table(name = "author", uniqueConstraints = { @UniqueConstraint(columnNames = { "ReferenceWorkID", "AgentID" }) })
+@SuppressWarnings("serial")
 public class Author extends DataModelObjBase implements java.io.Serializable,
                                                         Orderable,
                                                         Comparable<Author>

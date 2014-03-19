@@ -54,6 +54,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="CommonNameTxNameIDX", columnNames={"Name"}),
         @Index (name="CommonNameTxCountryIDX", columnNames={"Country"})
     })
+@SuppressWarnings("serial")
 public class CommonNameTx extends DataModelObjBase implements Serializable, Cloneable
 {
     protected Integer					commonNameTxId;

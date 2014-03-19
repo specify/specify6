@@ -46,6 +46,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "referenceworkattachment")
+@SuppressWarnings("serial")
 public class ReferenceWorkAttachment extends DataModelObjBase implements ObjectAttachmentIFace<ReferenceWork>, 
                                                                                Orderable,
                                                                                Serializable,
@@ -120,7 +121,7 @@ public class ReferenceWorkAttachment extends DataModelObjBase implements ObjectA
         this.attachment = attachment;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return ordinal;

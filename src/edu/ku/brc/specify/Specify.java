@@ -2751,7 +2751,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
                                      "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "FixedGTPTreeDefParents",
-                                     "FixAttachmentOrdinal"};
+                                     "FixNullTreeableFields"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
         boolean anyNeededToBeFixed = false;
@@ -2829,13 +2829,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                     inx++;
                     
+//                    if (!isFixed[inx])
+//                    {
+//                        FixDBAfterLogin.fixAttachmentOrdinal();
+//                        globalPrefs.putBoolean(prefNames[inx], true);
+//                    }
+//                    inx++;
+ 
                     if (!isFixed[inx])
                     {
-                        FixDBAfterLogin.fixAttachmentOrdinal();
-                        globalPrefs.putBoolean(prefNames[inx], true);
+                        if (FixDBAfterLogin.fixNullTreeableFields()) {
+                        	globalPrefs.putBoolean(prefNames[inx], true);
+                        }
                     }
                     inx++;
-                    
+
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.checkMultipleLocalities();
                     

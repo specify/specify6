@@ -52,6 +52,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
         @Index (name="DeterminationGuidIDX", columnNames={"GUID"}),
         @Index (name="TypeStatusNameIDX", columnNames={"TypeStatusName"})
     })
+@SuppressWarnings("serial")
 public class Determination extends CollectionMember implements java.io.Serializable, 
                                                                Comparable<Determination>,
                                                                Cloneable
@@ -415,7 +416,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() 
     {
         return this.text1;
@@ -429,7 +431,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() 
     {
         return this.text2;

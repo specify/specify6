@@ -51,6 +51,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="ProjectNameIDX", columnNames={"ProjectName"}),
         @Index (name="ProjectNumberIDX", columnNames={"ProjectNumber"}) 
     })
+@SuppressWarnings("serial")
 public class Project extends CollectionMember implements java.io.Serializable {
 
     // Fields    
@@ -298,7 +299,8 @@ public class Project extends CollectionMember implements java.io.Serializable {
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() {
         return this.text1;
     }
@@ -310,7 +312,8 @@ public class Project extends CollectionMember implements java.io.Serializable {
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() {
         return this.text2;
     }

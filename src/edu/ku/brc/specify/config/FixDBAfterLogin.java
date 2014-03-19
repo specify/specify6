@@ -74,8 +74,6 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAttachment;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
@@ -93,7 +91,6 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftAttachment;
 import edu.ku.brc.specify.datamodel.Loan;
@@ -205,6 +202,35 @@ public class FixDBAfterLogin
         }
     }
     
+    /**
+     * Set IsAccepted and IsHybrid to true or false
+     */
+    public static boolean fixNullTreeableFields() 
+    {
+    	String[] treeables = {"taxon", "taxon.IsHybrid", "geography", "geologictimeperiod", "lithostrat", "storage"};
+    	boolean allDone = true; 
+    	for (int idx = 0; idx < treeables.length; idx++)
+    	{
+    		String tree = treeables[idx];
+    		if (!AppPreferences.getGlobalPrefs().getBoolean("FixNull" + tree + "Fields", false))
+    		{
+				String fldName = "taxon.IsHybrid".equals(tree) ? "IsHybrid" : "IsAccepted";
+				String setToValue =  "taxon.IsHybrid".equals(tree) ? "HybridParent1ID IS NOT NULL AND HybridParent2ID IS NOT NULL" 
+						: "AcceptedID IS NULL";
+				String treeTblName = "taxon.IsHybrid".equals(tree) ? "taxon" : tree;
+    			int cnt = getCountAsInt("SELECT COUNT(*) FROM " + treeTblName + " WHERE " + fldName + " IS NULL");
+    			boolean updated = true;
+    			if (cnt > 0) 
+    			{
+    				String updateSql = "UPDATE " + treeTblName + " SET " + fldName + " = " + setToValue + " WHERE " + fldName + " IS NULL";
+    				updated = BasicSQLUtils.update(updateSql) == cnt;
+    			}
+    			allDone &= updated;
+    		}
+    	}
+    	return allDone;
+    }
+
     /**
      * @param pStmt
      * @param locId

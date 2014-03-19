@@ -65,6 +65,7 @@ import edu.ku.brc.ui.UIRegistry;
         @Index (name="NamedPlaceIDX", columnNames={"NamedPlace"}),
         @Index (name="RelationToNamedPlaceIDX", columnNames={"RelationToNamedPlace"})
     })
+@SuppressWarnings("serial")
 public class Locality extends DisciplineMember implements AttachmentOwnerIFace<LocalityAttachment>, 
                                                           java.io.Serializable, 
                                                           MapLocationIFace,
@@ -80,6 +81,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                originalElevationUnit;
     protected Double                minElevation;
     protected Double                maxElevation;
+    protected String			    verbatimLatitude;
+    protected String                verbatimLongitude;
     protected String                elevationMethod;
     protected Double                elevationAccuracy;
     protected Integer               originalLatLongUnit;
@@ -152,6 +155,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         elevationMethod = null;
         elevationAccuracy = null;
         originalLatLongUnit = null;
+        verbatimLatitude = null;
+        verbatimLongitude = null;
         latLongType = null;
         latitude1 = null;
         longitude1 = null;
@@ -607,7 +612,38 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         this.long2text = long2text;
     }
 
+    
     /**
+	 * @return the verbatimLatitude
+	 */
+    @Column(name = "VerbatimLatitude", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+	public String getVerbatimLatitude() {
+		return verbatimLatitude;
+	}
+
+	/**
+	 * @param verbatimLatitude the verbatimLatitude to set
+	 */
+	public void setVerbatimLatitude(String verbatimLatitude) {
+		this.verbatimLatitude = verbatimLatitude;
+	}
+
+	/**
+	 * @return the verbatimLongitude
+	 */
+    @Column(name = "VerbatimLongitude", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+	public String getVerbatimLongitude() {
+		return verbatimLongitude;
+	}
+
+	/**
+	 * @param verbatimLongitude the verbatimLongitude to set
+	 */
+	public void setVerbatimLongitude(String verbatimLongitude) {
+		this.verbatimLongitude = verbatimLongitude;
+	}
+
+	/**
      * @return the guid
      */
     @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
@@ -644,7 +680,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * @return the text1
      */
-    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1()
     {
         return text1;
@@ -661,7 +698,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * @return the text2
      */
-    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2()
     {
         return text2;
@@ -809,7 +847,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     @Transient
     public List<CollectingEvent> getCollectingEvents()
     {

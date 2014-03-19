@@ -46,6 +46,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "conserveventattachment")
+@SuppressWarnings("serial")
 public class ConservEventAttachment extends DataModelObjBase implements ObjectAttachmentIFace<ConservEvent>, 
                                                                         Orderable, 
                                                                         Serializable, Comparable<ConservEventAttachment>
@@ -119,7 +120,7 @@ public class ConservEventAttachment extends DataModelObjBase implements ObjectAt
         this.attachment = attachment;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return ordinal;

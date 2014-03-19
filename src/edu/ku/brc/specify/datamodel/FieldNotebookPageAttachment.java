@@ -45,6 +45,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "fieldnotebookpageattachment")
+@SuppressWarnings("serial")
 public class FieldNotebookPageAttachment extends DataModelObjBase implements ObjectAttachmentIFace<FieldNotebookPage>, 
                                                                              Orderable, 
                                                                              Serializable,
@@ -91,7 +92,7 @@ public class FieldNotebookPageAttachment extends DataModelObjBase implements Obj
         this.fieldNotebookPageAttachmentId = fieldNotebookPageAttachmentId;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return ordinal;

@@ -51,6 +51,7 @@ import edu.ku.brc.util.Orderable;
 {
         @Index (name="CEAColMemIDX", columnNames={"CollectionMemberID"})
 })
+@SuppressWarnings("serial")
 public class CollectingEventAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectingEvent>, 
                                                                            Orderable, 
                                                                            Serializable,
@@ -125,7 +126,7 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
         this.attachment = attachment;
     }
 
-    @Column(name = "Ordinal", nullable = false)
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return ordinal;

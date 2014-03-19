@@ -46,6 +46,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "localityattachment")
+@SuppressWarnings("serial")
 public class LocalityAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Locality>, 
                                                                     Orderable, 
                                                                     Serializable,
@@ -121,7 +122,7 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
         this.attachment = attachment;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return ordinal;

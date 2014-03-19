@@ -64,6 +64,7 @@ import edu.ku.brc.dbsupport.DBConnection;
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
         @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"})
     })
+@SuppressWarnings("serial")
 public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, 
                                                              AttributeProviderIFace, 
                                                              java.io.Serializable, 
@@ -87,6 +88,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     
     protected Float                       number1;
     protected Float                       number2;
+    protected Integer					  integer1;
+    protected Integer					  integer2;
+    protected Integer					  reservedInteger3;
+    protected Integer					  reservedInteger4;
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
     protected Boolean                     yesNo3;
@@ -145,6 +150,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         
         number1      = null;
         number2      = null;
+        integer1			  = null;
+        integer2			  = null;
+        reservedInteger3	  = null;
+        reservedInteger4	  = null;
         yesNo1       = null;
         yesNo2       = null;
         yesNo3       = null;
@@ -206,7 +215,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() {
         return this.text1;
     }
@@ -218,7 +228,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() {
         return this.text2;
     }
@@ -498,6 +509,67 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     {
         this.number2 = number2;
     }
+
+	/**
+	 * @return the integer1
+	 */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger1() {
+		return integer1;
+	}
+
+	/**
+	 * @param integer1 the integer1 to set
+	 */
+	public void setInteger1(Integer integer1) {
+		this.integer1 = integer1;
+	}
+
+	/**
+	 * @return the integer2
+	 */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger2() {
+		return integer2;
+	}
+
+	/**
+	 * @param integer2 the integer2 to set
+	 */
+	public void setInteger2(Integer integer2) {
+		this.integer2 = integer2;
+	}
+
+	/**
+	 * @return the reservedInteger3
+	 */
+    @Column(name = "ReservedInteger3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getReservedInteger3() {
+		return reservedInteger3;
+	}
+
+	/**
+	 * @param reservedInteger3 the reservedInteger3 to set
+	 */
+	public void setReservedInteger3(Integer reservedInteger3) {
+		this.reservedInteger3 = reservedInteger3;
+	}
+
+	/**
+	 * @return the reservedInteger4
+	 */
+    @Column(name = "ReservedInteger4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getReservedInteger4() {
+		return reservedInteger4;
+	}
+
+	/**
+	 * @param reservedInteger4 the reservedInteger4 to set
+	 */
+	public void setReservedInteger4(Integer reservedInteger4) {
+		this.reservedInteger4 = reservedInteger4;
+	}
+
 
     /**
      * @return the yesNo1

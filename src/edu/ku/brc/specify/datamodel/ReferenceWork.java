@@ -61,6 +61,7 @@ import edu.ku.brc.ui.UIRegistry;
         @Index (name="RefWrkGuidIDX", columnNames={"GUID"}),
         @Index (name="ISBNIDX", columnNames={"ISBN"})
     })
+@SuppressWarnings("serial")
 public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIFace<ReferenceWorkAttachment>,
                                                                java.io.Serializable 
 {
@@ -406,7 +407,8 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() {
         return this.text1;
     }
@@ -418,7 +420,8 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() {
         return this.text2;
     }

@@ -41,6 +41,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "dnasequencerunattachment")
+@SuppressWarnings("serial")
 public class DNASequencingRunAttachment extends DataModelObjBase implements ObjectAttachmentIFace<DNASequencingRun>, 
                                                                        Orderable, 
                                                                        Serializable,
@@ -82,7 +83,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
         remarks                 = null;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return this.ordinal;

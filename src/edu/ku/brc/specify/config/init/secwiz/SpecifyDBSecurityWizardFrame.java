@@ -47,30 +47,13 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
-import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.MacOSAppHandler;
-import edu.ku.brc.af.core.RecordSetFactory;
-import edu.ku.brc.af.core.SchemaI18NService;
-import edu.ku.brc.af.core.db.BackupServiceFactory;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.af.ui.forms.ViewFactory;
-import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
-import edu.ku.brc.af.ui.weblink.WebLinkMgr;
-import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
-import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -78,9 +61,9 @@ import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * @author rod
@@ -90,6 +73,7 @@ import edu.ku.brc.ui.IconManager.IconSize;
  * Mar 8, 2009
  *
  */
+@SuppressWarnings("serial")
 public class SpecifyDBSecurityWizardFrame extends JFrame implements FrameworkAppIFace
 {
     //private static final Logger  log = Logger.getLogger(SpecifyDBSecurityWizardFrame.class);

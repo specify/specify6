@@ -53,6 +53,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="GiftNumberIDX", columnNames={"GiftNumber"}),
         @Index (name="GiftDateIDX", columnNames={"GiftDate"})
     })
+@SuppressWarnings("serial")
 public class Gift extends DisciplineMember implements java.io.Serializable, PreparationsProviderIFace, AttachmentOwnerIFace<GiftAttachment>
 {
     // Fields    
@@ -70,6 +71,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     protected String                  srcTaxonomy;
     
     protected String                  remarks;
+    protected String				  contents;
     protected String                  text1;
     protected String                  text2;
     protected Float                   number1;
@@ -119,6 +121,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
         srcTaxonomy         = null;
         
         remarks         = null;
+        contents        = null;
         text1           = null;
         text2           = null;
         number1         = null;
@@ -199,7 +202,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     /**
      * @return the srcGeography
      */
-    @Column(name = "SrcGeography", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "SrcGeography", unique = false, nullable = true, insertable = true, updatable = true, length = 500)
     public String getSrcGeography()
     {
         return srcGeography;
@@ -216,7 +219,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     /**
      * @return the srcTaxonomy
      */
-    @Column(name = "SrcTaxonomy", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "SrcTaxonomy", unique = false, nullable = true, insertable = true, updatable = true, length = 500)
     public String getSrcTaxonomy()
     {
         return srcTaxonomy;
@@ -244,9 +247,26 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     }
 
     /**
+     * 
+     */
+    @Lob
+    @Column(name = "Contents", length = 4096)
+    public String getContents() {
+        return this.contents;
+    }
+    
+    /**
+     * @param contents
+     */
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() {
         return this.text1;
     }
@@ -258,7 +278,8 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() {
         return this.text2;
     }

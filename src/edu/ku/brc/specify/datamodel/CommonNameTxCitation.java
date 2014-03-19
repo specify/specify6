@@ -38,6 +38,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "commonnametxcitation")
+@SuppressWarnings("serial")
 public class CommonNameTxCitation extends DataModelObjBase implements java.io.Serializable, Cloneable
 {
     protected Integer commonNameTxCitationId;
@@ -89,7 +90,8 @@ public class CommonNameTxCitation extends DataModelObjBase implements java.io.Se
 	/**
 	 * @return the text1
 	 */
-    @Column(name = "Text1", unique = false,nullable = true, insertable = true, updatable = true, length = 300)
+    @Lob
+    @Column(name = "Text1", length = 65535)
 	public String getText1()
 	{
 		return text1;
@@ -100,7 +102,8 @@ public class CommonNameTxCitation extends DataModelObjBase implements java.io.Se
 	/**
 	 * @return the text2
 	 */
-    @Column(name = "Text2", unique = false,nullable = true, insertable = true, updatable = true, length = 300)
+    @Lob
+    @Column(name = "Text2", length = 65535)
 	public String getText2()
 	{
 		return text2;

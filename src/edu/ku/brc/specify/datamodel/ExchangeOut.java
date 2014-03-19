@@ -52,6 +52,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="ExchangeOutdateIDX", columnNames={"ExchangeDate"}),
 		@Index (name="DescriptionOfMaterialIDX2", columnNames={"DescriptionOfMaterial"})
     })
+@SuppressWarnings("serial")
 public class ExchangeOut extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -65,6 +66,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     protected String          srcTaxonomy;
 
     protected String          remarks;
+    protected String				  contents;
     protected String          text1;
     protected String          text2;
     protected Float           number1;
@@ -106,6 +108,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         srcGeography     = null;
         srcTaxonomy      = null;
         remarks          = null;
+        contents         = null;
         text1            = null;
         text2            = null;
         number1          = null;
@@ -254,9 +257,26 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     }
 
     /**
+     * 
+     */
+    @Lob
+    @Column(name = "Contents", length = 4096)
+    public String getContents() {
+        return this.contents;
+    }
+    
+    /**
+     * @param contents
+     */
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1()
     {
         return this.text1;
@@ -270,7 +290,8 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2()
     {
         return this.text2;

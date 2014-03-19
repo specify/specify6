@@ -57,6 +57,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
     {   @Index (name="PermitNumberIDX", columnNames={"PermitNumber"}),
         @Index (name="IssuedDateIDX", columnNames={"IssuedDate"})
     })
+@SuppressWarnings("serial")
 public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<PermitAttachment>, java.io.Serializable {
 
     // Fields
@@ -260,7 +261,8 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text1", length = 65535)
     public String getText1() {
         return this.text1;
     }
@@ -272,7 +274,8 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "Text2", length = 65535)
     public String getText2() {
         return this.text2;
     }

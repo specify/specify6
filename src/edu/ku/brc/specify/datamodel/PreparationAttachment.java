@@ -50,6 +50,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Table(appliesTo="preparationattachment", indexes =
     {   @Index (name="PrepAttColMemIDX", columnNames={"CollectionMemberID"})
     })
+@SuppressWarnings("serial")
 public class PreparationAttachment extends CollectionMember implements ObjectAttachmentIFace<Preparation>, 
                                                                        Orderable,
                                                                        Serializable,
@@ -124,7 +125,7 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
         this.attachment = attachment;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable=false)
     public Integer getOrdinal()
     {
         return ordinal;
