@@ -578,13 +578,11 @@ public class BuildSearchIndex2
     }
     
     protected List<String> getModelInJson(ExportMappingHelper map, 
-    		Map<Integer, String> shortNames) throws IllegalAccessException
-    {
+    		Map<Integer, String> shortNames) throws IllegalAccessException {
     	List<String> result = new ArrayList<String>();
     	result.add("[");
     	result.add("{\"colname\":\"spid\", \"solrname\":\"spid\", \"solrtype\":\"int\"},");
-    	for (ExportMappingInfo m : map.getMappings()) 
-    	{
+    	for (ExportMappingInfo m : map.getMappings()) {
     		WebPortalFieldDef def = new WebPortalFieldDef(m, shortNames.get(m.getColIdx()),
     				getSolrFldType(m));
     		result.add(def.toJson() + (result.size() > 0 ? "," : "")); 
@@ -596,12 +594,12 @@ public class BuildSearchIndex2
 
     protected void writeSolrFldXmlToFile(List<String> solrFldXml) throws IOException
     {
-        System.out.println("\nFlds:");
-        for (String fld : solrFldXml)
-        {
-        	System.out.println(fld);
-        }
-        System.out.println();
+//        System.out.println("\nFlds:");
+//        for (String fld : solrFldXml)
+//        {
+//        	System.out.println(fld);
+//        }
+//        System.out.println();
 
         List<String> myCopy = new ArrayList<String>(solrFldXml);
         myCopy.add(0, "<!-- solr field definitions for " + mapping.getMappingName() + " web portal -->");
@@ -612,12 +610,12 @@ public class BuildSearchIndex2
     
     protected void writePortalJsonToFile(List<String> portalJson) throws IOException
     {
-        System.out.println("\nJson:");
-        for (String fld : portalJson)
-        {
-        	System.out.println(fld);
-        }
-        System.out.println();
+//        System.out.println("\nJson:");
+//        for (String fld : portalJson)
+//        {
+//        	System.out.println(fld);
+//        }
+//        System.out.println();
 
         List<String> myCopy = new ArrayList<String>(portalJson);
         File f = new File(writeToDir + File.separator + "flds.json");

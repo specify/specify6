@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 
 /**
@@ -141,7 +143,8 @@ public class ExportMappingHelper
 	protected String getFldsSql()
 	{
 		return "select mi.SpExportSchemaItemMappingID, si.FieldName as Concept, s.Description, " 
-			+ "qf.ContextTableIdent as SpTblID, qf.FieldName as SpFldName, qf.StringId as FieldID "
+			+ "qf.ContextTableIdent as SpTblID, qf.FieldName as SpFldName, qf.StringId as FieldID, "
+			+ "mi.ExportedFieldName as ExportedFieldName "
 			+ "from spexportschemamapping m inner join spexportschemaitemmapping mi "
 			+ "on mi.SpExportSchemaMappingID = m.SpExportSchemaMappingID "
 			+ "left join spexportschemaitem si on si.SpExportSchemaItemID = mi.ExportSchemaItemID "
@@ -153,15 +156,15 @@ public class ExportMappingHelper
 	 * @param stmt
 	 * @throws SQLException
 	 */
-	protected void fillFields(Statement stmt) throws SQLException 
-	{
-		try 
-		{
+	protected void fillFields(Statement stmt) throws SQLException {
+		try {
 			ResultSet rs = stmt.executeQuery(getFldsSql());
 			int pos = 0;
-			while (rs.next()) 
-			{
-				fields.add(new ExportMappingInfo(rs.getInt("SpExportSchemaItemMappingID"), rs.getString("Concept"), rs.getString("Description"),
+			while (rs.next()) {
+				String customFieldName = rs.getString("ExportedFieldName");
+				fields.add(new ExportMappingInfo(rs.getInt("SpExportSchemaItemMappingID"), 
+						(StringUtils.isNotBlank(customFieldName) ? customFieldName : rs.getString("Concept")), 
+						rs.getString("Description"),
 						rs.getInt("SpTblID"), rs.getString("SpFldName"), rs.getString("FieldID"), pos++));
 			}
 		} finally {
