@@ -89,6 +89,7 @@ public class MultiView extends JPanel
     public static final int NO_MORE_BTN_FOR_SEP    = 2048; // doesn't include the separator's 'more' btn
     public static final int COLLAPSE_SEPARATOR     = 4096; // Make the Collapse Separator collapsed
     public static final int INCLUDE_ADD_BTN        = 8192; // Includes the add btn even if the search btn has been added
+    public static final int HIDE_RESULTSET_CONTROLLER   = 16384; //Make the ResultSet Controller invisible. 
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);

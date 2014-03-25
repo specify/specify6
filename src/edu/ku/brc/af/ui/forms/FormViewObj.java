@@ -387,6 +387,7 @@ public class FormViewObj implements Viewable,
         this.options = options;
         boolean isSingleObj                = MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ);
         boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
+        boolean hideResultSetController    = MultiView.isOptionOn(options, MultiView.HIDE_RESULTSET_CONTROLLER);
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         //boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
@@ -576,7 +577,9 @@ public class FormViewObj implements Viewable,
         if (createResultSetController)
         {
             addRSController(addSearch);
-            
+            if (hideResultSetController) {
+            	rsController.getPanel().setVisible(false);
+            }
             if (addSearch)
             {
                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
@@ -6473,6 +6476,22 @@ public class FormViewObj implements Viewable,
             } else
             {
                 dataObj = listDO;    
+//                DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+//                try
+//                {
+//                	tmpSession.attach(dataObj);
+//                	((FormDataObjIFace)dataObj).forceLoad();
+//                	
+//                } catch (Exception ex)
+//                {
+//                	ex.printStackTrace();
+//                	edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
+//                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
+//                	
+//                } finally
+//                {
+//                	tmpSession.close();
+//                }
             }
         }
         

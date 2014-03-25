@@ -1862,7 +1862,7 @@ public class ViewFactory
                         
                         boolean useNoScrollbars = UIHelper.getProperty(props, "noscrollbars", false);
                         //Assume RecsetController will always be handled correctly for one-to-one
-                        boolean useNoRecsetController = relInfo == null ? false : relInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne);
+                        boolean hideResultSetController = relInfo == null ? false : relInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne);
                         /*XXX bug #9497: boolean canEdit = true;
                         boolean addAddBtn = isEditOnCreateOnly && relInfo != null;
                         if (AppContextMgr.isSecurityOn()) {
@@ -1879,15 +1879,16 @@ public class ViewFactory
                             }
                         }*/
 
-                        int options = (isACollection && !isSingle && !useNoRecsetController ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
-                        (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
+                        int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
+                        		(MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
                         /* XXX bug #9497:(mode == AltViewIFace.CreationMode.EDIT && canEdit ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS)
                         //| (addAddBtn ? MultiView.INCLUDE_ADD_BTN : MultiView.NO_OPTIONS)
                         ; */
 
-                        (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
-                        (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
+                        		(mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
+                        		(useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS) | 
+                        		(hideResultSetController ? MultiView.HIDE_RESULTSET_CONTROLLER : MultiView.NO_OPTIONS);
                         //MultiView.printCreateOptions("HERE", options);
                         
                         options |= cellSubView.getPropertyAsBoolean("nosep", false) ? MultiView.DONT_USE_EMBEDDED_SEP : 0;
