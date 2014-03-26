@@ -270,7 +270,18 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
                     if (qtyRes == loanPrep.getQuantity() != isResolved.isSelected())
                     {
-                        isResolved.doClick();
+                        final ValCheckBox isResolved2 = isResolved;
+                    	SwingUtilities.invokeLater(new Runnable() {
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run() {
+		                    	isResolved2.doClick();
+							}
+                        	
+                        });
                     }
             
                     comp = loanPrepFVO.getControlByName("quantityResolved");
