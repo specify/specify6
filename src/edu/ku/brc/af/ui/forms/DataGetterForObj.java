@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.collection.PersistentSet;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 
@@ -169,6 +170,16 @@ public class DataGetterForObj implements DataObjectGettable
                         if (getter != null)
                         {
                             value = getter.invoke(dataObj, (Object[])null);
+                            if (value instanceof PersistentSet) {
+                            	PersistentSet vSet = (PersistentSet)value;
+                            	if (vSet.getSession() != null && !vSet.isDirty()) {
+                            		for (Object v : vSet) {
+                            			if (v instanceof FormDataObjIFace) {
+                            				((FormDataObjIFace)v).forceLoad();
+                            			}
+                            		}
+                            	}
+                            }
                         }
                     } else if (showErrors)
                     {
