@@ -805,78 +805,79 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
     {
         Class<?> cls = formatter.getDataClass();
         
-        try
-        {
-            if (cls == Long.class)
-            {
-                Number num  = numIntFormatter.parse(value);
-                Long  val = num.longValue();
-                return !isMinMaxOK(val) || (val > Long.MAX_VALUE || val < -(Long.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-                
-            } else if (cls == Integer.class)
-            {
-                Number num  = numIntFormatter.parse(value);
-                Integer  val = num.intValue();
-                return !isMinMaxOK(val) || (val > Integer.MAX_VALUE || val < -(Integer.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-    
-            } else if (cls == Short.class)
-            {
-                Number num  = numIntFormatter.parse(value);
-                Short  val = num.shortValue();
-                return !isMinMaxOK(val) || (val > Short.MAX_VALUE || val < -(Short.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-    
-            } else if (cls == Byte.class)
-            {
-                Number num  = numIntFormatter.parse(value);
-                Byte  val = num.byteValue();
-                return !isMinMaxOK(val) || (val > Byte.MAX_VALUE || val < -(Byte.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-    
-            } else if (cls == Double.class)
-            {
-                Number num  = numberFormatter.parse(value);
-                Double val = num.doubleValue();
-                return !isMinMaxOK(val) || (val > Double.MAX_VALUE || val < -(Double.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-    
-            } else if (cls == Float.class)
-            {
-                Number num  = numberFormatter.parse(value);
-                Float  val = num.floatValue();
-                return !isMinMaxOK(val) || (val.floatValue() > Float.MAX_VALUE || val < -(Float.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-    
-            } else if (cls == BigDecimal.class)
-            {
-                if (bdValidator == null)
-                {
-                    bdValidator = CurrencyValidator.getInstance();
-                }
-                
-                Number maxVal = formatter.getMaxValue();
-                Number minVal = formatter.getMinValue();
+		try {
+			if (cls == BigDecimal.class) {
+				if (bdValidator == null) {
+					bdValidator = CurrencyValidator.getInstance();
+				}
 
-                BigDecimal fooAmount = bdValidator.validate(value, Locale.getDefault());  // XXX FINAL RELEASE
-                if (fooAmount == null) 
-                {
-                    // error...not a valid currency amount
-                    return UIValidatable.ErrorType.Error;
-                }
+				Number maxVal = formatter.getMaxValue();
+				Number minVal = formatter.getMinValue();
 
-                if (!bdValidator.minValue(fooAmount, minVal) || !bdValidator.maxValue(fooAmount, maxVal))
-                {
-                    // valid...in the specified range
-                    return UIValidatable.ErrorType.Error;
-                }
-                
-                return  UIValidatable.ErrorType.Valid;
-    
-            } else
-            {
-                throw new RuntimeException("Missing case for numeric class ["+cls.getName()+"]");        
-            }
-        } catch (Exception ex) {}
-        
-        return UIValidatable.ErrorType.Error;
-    }
+				BigDecimal fooAmount = bdValidator.validate(value,
+						Locale.getDefault()); // XXX FINAL RELEASE
+				if (fooAmount == null) {
+					// error...not a valid currency amount
+					return UIValidatable.ErrorType.Error;
+				}
 
+				if (!bdValidator.minValue(fooAmount, minVal)
+						|| !bdValidator.maxValue(fooAmount, maxVal)) {
+					// valid...in the specified range
+					return UIValidatable.ErrorType.Error;
+				}
+
+				return UIValidatable.ErrorType.Valid;
+
+			} else {
+				try {
+					if (cls == Long.class) {
+						Number num = numIntFormatter.parse(value);
+						Long val = Long.valueOf(num.toString());
+						return !isMinMaxOK(val) ? UIValidatable.ErrorType.Error
+								: UIValidatable.ErrorType.Valid;
+
+					} else if (cls == Integer.class) {
+						Number num = numIntFormatter.parse(value);
+						Integer val = Integer.valueOf(num.toString());
+						return !isMinMaxOK(val) ? UIValidatable.ErrorType.Error
+								: UIValidatable.ErrorType.Valid;
+					} else if (cls == Short.class) {
+						Number num = numIntFormatter.parse(value);
+						Short val = Short.valueOf(num.toString());
+						return !isMinMaxOK(val) ? UIValidatable.ErrorType.Error
+								: UIValidatable.ErrorType.Valid;
+
+					} else if (cls == Byte.class) {
+						Number num = numIntFormatter.parse(value);
+						Byte val = Byte.valueOf(num.toString());
+						return !isMinMaxOK(val) ? UIValidatable.ErrorType.Error
+								: UIValidatable.ErrorType.Valid;
+
+					} else if (cls == Double.class) {
+						Number num = numberFormatter.parse(value);
+						Double val = Double.valueOf(num.toString());
+						return !isMinMaxOK(val) ? UIValidatable.ErrorType.Error
+								: UIValidatable.ErrorType.Valid;
+
+					} else if (cls == Float.class) {
+						Number num = numberFormatter.parse(value);
+						Float val = Float.valueOf(num.toString());
+						return !isMinMaxOK(val) ? UIValidatable.ErrorType.Error
+								: UIValidatable.ErrorType.Valid;
+
+					} else {
+						throw new RuntimeException("Missing case for numeric class [" + cls.getName() + "]");
+					}
+				} catch (NumberFormatException fex) {
+					return UIValidatable.ErrorType.Error;
+				}
+			}
+		} catch (Exception ex) {
+		}
+
+		return UIValidatable.ErrorType.Error;
+	}
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
