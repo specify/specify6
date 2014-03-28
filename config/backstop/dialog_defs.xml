@@ -95,6 +95,7 @@
     <dialog type="display" view="ObjectAttachment" name="PreparationAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.PreparationAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="ReferenceWorkAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.ReferenceWorkAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="StorageAttachmentDisplay"              class="edu.ku.brc.specify.datamodel.StorageAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="TaxonAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.TaxonAttachment" helpcontext="CBXQViewEdit"/>
 	
 

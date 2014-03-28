@@ -100,6 +100,8 @@ import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageAttachment;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
@@ -157,6 +159,7 @@ public class CollectionDataFetcher
                 Preparation.class,        PreparationAttachment.class,
                 ReferenceWork.class,      ReferenceWorkAttachment.class,
                 RepositoryAgreement.class, RepositoryAgreementAttachment.class,
+                Storage.class,            StorageAttachment.class,
                 Taxon.class,              TaxonAttachment.class,
             };
         CollectionDataFetcher.attachmentClasses = new Class<?>[CollectionDataFetcher.attachmentClassesForMap.length/2];

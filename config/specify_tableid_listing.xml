@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 147 or 532
+    Last used ID is 148 or 532
     
     [0] are available
     
@@ -302,17 +302,6 @@
         <table name="edu.ku.brc.specify.datamodel.MorphBankView" abbrev="mbvw" id="138" searchable="true">
             <display view="MorphBankView" searchdlg="MorphBankViewSearch" newobjdlg="MorphBankViewDisplay"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Storage" abbrev="lcn" id="58" searchable="true">
-            <display view="Storage" dataobjformatter="Storage" searchdlg="StorageSearch" newobjdlg="StorageDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
-            <fieldaliases>
-                <field vname="acceptedParent" aname="acceptedStorage"/>
-            </fieldaliases>                                            
-        </table>
-        <table name="edu.ku.brc.specify.datamodel.StorageTreeDef" abbrev="lntd" id="59"/>
-        <table name="edu.ku.brc.specify.datamodel.StorageTreeDefItem" abbrev="lntdi" id="60">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
-		</table>
         <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" abbrev="oi" id="61" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.PaleoContext" abbrev="pc" id="32" searchable="true">
             <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg=""/>            
@@ -411,6 +400,22 @@
       	<table name="edu.ku.brc.specify.datamodel.SpVersion" abbrev="spvrn" id="529"/>
 		
         <!--  Done Internal Specify Tables -->
+        
+        <table name="edu.ku.brc.specify.datamodel.Storage" abbrev="lcn" id="58" searchable="true">
+            <display view="Storage" dataobjformatter="Storage" searchdlg="StorageSearch" newobjdlg="StorageDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedStorage"/>
+            </fieldaliases>                                            
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.StorageAttachment" abbrev="lcnat" id="148" searchable="true">
+        	<display view="ObjectAttachment" newobjdlg="StorageAttachmentDisplay"/>
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.StorageTreeDef" abbrev="lntd" id="59"/>
+        <table name="edu.ku.brc.specify.datamodel.StorageTreeDefItem" abbrev="lntdi" id="60">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
+		</table>
         
         <table name="edu.ku.brc.specify.datamodel.Taxon" abbrev="tx" id="4" workbench="true" searchable="true">
             <display view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>

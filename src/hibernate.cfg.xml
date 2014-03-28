@@ -199,6 +199,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewSet"/>
 		  -->
 		<mapping class="edu.ku.brc.specify.datamodel.Storage"/>
+		<mapping class="edu.ku.brc.specify.datamodel.StorageAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>

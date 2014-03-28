@@ -69,6 +69,10 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected String                protocol; 
     protected String                source; 
     
+    protected String                text1;
+    protected String                text2;
+    protected String                text3;
+    
     protected Locality              locality;
     
     /**
@@ -109,6 +113,11 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         validation            = null;  
         protocol              = null;  
         source                = null;  
+        
+        text1                 = null;
+        text2                 = null;
+        text3                 = null;
+        
         locality              = null;
     }
 
@@ -416,6 +425,60 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     public void setProtocol(String protocol)
     {
         this.protocol = protocol;
+    }
+
+    /**
+     * @return the text1
+     */
+    @Lob
+    @Column(name = "Text1", length = 65535)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * @return the text2
+     */
+    @Lob
+    @Column(name = "Text2", length = 65535)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    /**
+     * @param text2 the text2 to set
+     */
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+
+    /**
+     * @return the text3
+     */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3()
+    {
+        return text3;
+    }
+
+    /**
+     * @param text3 the text3 to set
+     */
+    public void setText3(String text3)
+    {
+        this.text3 = text3;
     }
 
     /**

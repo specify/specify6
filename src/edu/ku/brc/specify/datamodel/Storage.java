@@ -55,7 +55,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
     {   @Index (name="StorNameIDX", columnNames={"Name"}),
         @Index (name="StorFullNameIDX", columnNames={"FullName"})
     })
-public class Storage extends DataModelObjBase implements Serializable, Treeable<Storage,StorageTreeDef, StorageTreeDefItem>
+public class Storage extends DataModelObjBase implements AttachmentOwnerIFace<StorageAttachment>, 
+	Serializable, Treeable<Storage,StorageTreeDef, StorageTreeDefItem>
 {
 
     /**
@@ -89,6 +90,8 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
     protected Storage            acceptedStorage;
     protected Set<Storage>       acceptedChildren;
 
+
+    private Set<StorageAttachment> storageAttachments;
 
     /** default constructor */
     public Storage()
@@ -129,6 +132,26 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         isAccepted       = true;
         acceptedStorage  = null;
         acceptedChildren = new HashSet<Storage>();
+        
+        storageAttachments = new HashSet<StorageAttachment>();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<StorageAttachment> getAttachmentReferences() {
+        return storageAttachments;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId() {
+        return getClassTableId();
     }
 
     @Id

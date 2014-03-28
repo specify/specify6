@@ -202,6 +202,7 @@ import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageAttachment;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.prefs.SystemPrefs;
@@ -490,6 +491,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             PreparationAttachment.class,
             ReferenceWorkAttachment.class,
             RepositoryAgreementAttachment.class,
+            StorageAttachment.class,
             TaxonAttachment.class,
         };
 

@@ -105,6 +105,9 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                guid;
     protected String                text1;
     protected String                text2;
+    protected String                text3;
+    protected String                text4;
+    protected String                text5;
     protected Byte                  sgrStatus;
     
     // Source Data used for formatting
@@ -176,6 +179,9 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         guid       = null;
         text1      = null;
         text2      = null;
+        text3	   = null;
+        text4      = null;
+        text5      = null;
         
         // Source Data for Formatting
         srcLatLongUnit = 0;          // matches LATLON.DDDDDD
@@ -711,6 +717,60 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setText2(String text2)
     {
         this.text2 = text2;
+    }
+
+    /**
+     * @return the text3
+     */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3()
+    {
+        return text3;
+    }
+
+    /**
+     * @param text3 the text3 to set
+     */
+    public void setText3(String text3)
+    {
+        this.text3 = text3;
+    }
+
+    /**
+     * @return the text4
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4()
+    {
+        return text4;
+    }
+
+    /**
+     * @param text4 the text4 to set
+     */
+    public void setText4(String text4)
+    {
+        this.text4 = text4;
+    }
+
+    /**
+     * @return the text5
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5()
+    {
+        return text5;
+    }
+
+    /**
+     * @param text5 the text5 to set
+     */
+    public void setText5(String text5)
+    {
+        this.text5 = text5;
     }
 
     /**
