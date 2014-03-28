@@ -321,7 +321,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 	/**
 	 * @param text2 the Text2 to set
 	 */
-	public void settext2(String text2) {
+	public void setText2(String text2) {
 		this.text2 = text2;
 	}
 
