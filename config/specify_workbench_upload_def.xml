@@ -277,6 +277,12 @@
     <field table="Determination" name="determinerTitle1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks1" actualname="remarks" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="text11" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="text21" actualname="text2" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="number11" actualname="number1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="number21" actualname="number2" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="confidence1" actualname="confidence" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="method1" actualname="method" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="qualifier1" actualname="qualifier" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="subspQualifier1" actualname="subspQualifier" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="varQualifier1" actualname="varQualifier" onetomanysequence="0" relationshipname="collectionObject"/>
@@ -336,6 +342,12 @@
     <field table="Determination" name="determinerTitle2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks2" actualname="remarks" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="text12" actualname="text1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="text22" actualname="text2" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="number12" actualname="number1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="number22" actualname="number2" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="confidence2" actualname="confidence" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="method2" actualname="method" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="qualifier2" actualname="qualifier" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="subspQualifier2" actualname="subspQualifier" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="varQualifier2" actualname="varQualifier" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -395,6 +407,12 @@
     <field table="Determination" name="determinerTitle3" onetomanysequence="2" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent3" actualname="isCurrent" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks3" actualname="remarks" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="text13" actualname="text1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="text23" actualname="text2" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="number13" actualname="number1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="number23" actualname="number2" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="confidence3" actualname="confidence" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="method3" actualname="method" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="qualifier3" actualname="qualifier" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="subspQualifier3" actualname="subspQualifier" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="varQualifier3" actualname="varQualifier" onetomanysequence="2" relationshipname="collectionObject"/>
@@ -582,6 +600,10 @@
     <field table="Preparation" name="prepYesNo1" actualname="yesNo1" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep1Text1" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep1Text2" actualname="text2" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep1Integer1" actualname="integer1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep1Integer2" actualname="integer2" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep1Number1" actualname="number1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep1Number2" actualname="number2" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription1" actualname="description" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="count1" actualname="countAmt" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
@@ -605,6 +627,10 @@
     <field table="Preparation" name="prepYesNo2" actualname="yesNo1" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep2Text1" actualname="text1" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep2Text2" actualname="text2" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep2Integer1" actualname="integer1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep2Integer2" actualname="integer2" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep2Number1" actualname="number1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep2Number2" actualname="number2" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription2" actualname="description" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="count2" actualname="countAmt" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -628,6 +654,10 @@
     <field table="Preparation" name="prepYesNo3" actualname="yesNo1" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep3Text1" actualname="text1" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep3Text2" actualname="text2" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep3Integer1" actualname="integer1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep3Integer2" actualname="integer2" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep3Number1" actualname="number1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep3Number2" actualname="number2" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription3" actualname="description" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="count3" actualname="countAmt" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation3" actualname="storageLocation" onetomanysequence="2" relationshipname="collectionObject"/>
@@ -651,6 +681,10 @@
     <field table="Preparation" name="prepYesNo4" actualname="yesNo1" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep4Text1" actualname="text1" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep4Text2" actualname="text2" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep4Integer1" actualname="integer1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep4Integer2" actualname="integer2" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep4Number1" actualname="number1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep4Number2" actualname="number2" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription4" actualname="description" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="count4" actualname="countAmt" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation4" actualname="storageLocation" onetomanysequence="3" relationshipname="collectionObject"/>
@@ -674,6 +708,10 @@
     <field table="Preparation" name="prepYesNo5" actualname="yesNo1" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep5Text1" actualname="text1" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep5Text2" actualname="text2" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep5Integer1" actualname="integer1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep5Integer2" actualname="integer2" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep5Number1" actualname="number1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep5Number2" actualname="number2" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription5" actualname="description" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="count5" actualname="countAmt" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation5" actualname="storageLocation" onetomanysequence="4" relationshipname="collectionObject"/>
@@ -697,6 +735,10 @@
     <field table="Preparation" name="prepYesNo6" actualname="yesNo1" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep6Text1" actualname="text1" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep6Text2" actualname="text2" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep6Integer1" actualname="integer1" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep6Integer2" actualname="integer2" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep6Number1" actualname="number1" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep6Number2" actualname="number2" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription6" actualname="description" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="count6" actualname="countAmt" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation6" actualname="storageLocation" onetomanysequence="5" relationshipname="collectionObject"/>
@@ -720,6 +762,10 @@
     <field table="Preparation" name="prepYesNo7" actualname="yesNo1" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep7Text1" actualname="text1" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep7Text2" actualname="text2" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep7Integer1" actualname="integer1" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep7Integer2" actualname="integer2" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep7Number1" actualname="number1" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep7Number2" actualname="number2" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription7" actualname="description" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="count7" actualname="countAmt" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation7" actualname="storageLocation" onetomanysequence="6" relationshipname="collectionObject"/>
@@ -743,6 +789,10 @@
     <field table="Preparation" name="prepYesNo8" actualname="yesNo1" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep8Text1" actualname="text1" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep8Text2" actualname="text2" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep8Integer1" actualname="integer1" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep8Integer2" actualname="integer2" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep8Number1" actualname="number1" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep8Number2" actualname="number2" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription8" actualname="description" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="count8" actualname="countAmt" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation8" actualname="storageLocation" onetomanysequence="7" relationshipname="collectionObject"/>
