@@ -123,6 +123,8 @@
         
         <alias name="PaleoContext" field="paleoContext" />
    	
+   		<alias name="ExsiccataItem" field="exsiccataItems" />
+   		
         <alias name="Preparation" field="preparations"/>
       	<alias name="Appraisal" field="appraisal" />
       	<alias name="Agent" field="cataloger" />
@@ -259,6 +261,20 @@
         </table>
    </table>
     
+    <table name="Exsiccata" >
+	    <alias name="ExsiccataItem" field="exsiccataItems" />
+    	<alias name="ReferenceWork"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />    	
+    </table>
+
+    <table name="ExsiccataItem" >
+    	<alias name="CollectionObject"/>
+    	<alias name="Exsiccata" />
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />    	
+    </table>
+    	
     <table name="FieldNotebook" >
     	<table name="FieldNotebookAttachment" field="attachments" >	
       		<alias name="Attachment"/>
