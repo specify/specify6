@@ -58,6 +58,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     // Fields    
 
     protected Integer         exchangeInId;
+    protected String          exchangeInNumber;
     protected Calendar        exchangeDate;
     protected Short           quantityExchanged;
     protected String          descriptionOfMaterial;
@@ -102,6 +103,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     {
         super.init();
         exchangeInId = null;
+        exchangeInNumber = null;
         exchangeDate = null;
         quantityExchanged = null;
         descriptionOfMaterial = null;
@@ -158,6 +160,18 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     
     public void setExchangeInId(Integer exchangeInId) {
         this.exchangeInId = exchangeInId;
+    }
+
+    /**
+     *      * Invoice number
+     */
+    @Column(name = "ExchangeInNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
+    public String getExchangeInNumber() {
+        return this.exchangeInNumber;
+    }
+    
+    public void setExchangeInNumber(String exchangeInNumber) {
+        this.exchangeInNumber = exchangeInNumber;
     }
 
     /**

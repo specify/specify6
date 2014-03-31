@@ -15,25 +15,13 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>SVL</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Tail Length</text>
+            <text>Stage</text>
           </str>
         </names>
         <descs/>
@@ -51,13 +39,25 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Total Length</text>
+            <text>Tail Length</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>SVL</text>
           </str>
         </names>
         <descs/>
@@ -87,13 +87,13 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
+      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Stage</text>
+            <text>Total Length</text>
           </str>
         </names>
         <descs/>

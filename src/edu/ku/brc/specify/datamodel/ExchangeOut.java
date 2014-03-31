@@ -58,6 +58,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     // Fields    
 
     protected Integer         exchangeOutId;
+    protected String          exchangeOutNumber;
     protected Calendar        exchangeDate;
     protected Short           quantityExchanged;
     protected String          descriptionOfMaterial;
@@ -102,6 +103,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         super.init();
         
         exchangeOutId    = null;
+        exchangeOutNumber = null;
         exchangeDate     = null;
         quantityExchanged = null;
         descriptionOfMaterial = null;
@@ -147,6 +149,18 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     public Integer getId()
     {
         return this.exchangeOutId;
+    }
+
+    /**
+     *      * Invoice number
+     */
+    @Column(name = "ExchangeOutNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
+    public String getExchangeOutNumber() {
+        return this.exchangeOutNumber;
+    }
+    
+    public void setExchangeOutNumber(String exchangeOutNumber) {
+        this.exchangeOutNumber = exchangeOutNumber;
     }
 
     /* (non-Javadoc)
