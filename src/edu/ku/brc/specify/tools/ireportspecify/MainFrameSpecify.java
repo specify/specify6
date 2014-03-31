@@ -1980,7 +1980,7 @@ public class MainFrameSpecify extends MainFrame
         UIRegistry.setRelease(true);
         UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), 
                          IconManager.makeIconName("SPIReports"), nameAndTitle, nameAndTitle, 
-                         IconManager.makeIconName("SpecifyWhite32"), "iReport"); // true means do auto login if it can, 
+                         IconManager.makeIconName("SpecifyWhite32"), "iReport", false); // true means do auto login if it can, 
                                                        // second bool means use dialog instead of frame
         
         localPrefs.load();

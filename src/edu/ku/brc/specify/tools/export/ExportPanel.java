@@ -49,10 +49,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import edu.ku.brc.helpers.UIFileFilter;
-import edu.ku.brc.specify.tasks.StartUpTask;
-import edu.ku.brc.util.AttachmentManagerIface;
-import edu.ku.brc.util.WebStoreAttachmentMgr;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.FileUtils;
@@ -79,6 +75,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -90,6 +87,7 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.HQLSpecs;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
@@ -108,8 +106,10 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.WebStoreAttachmentMgr;
 
 
 /**
@@ -1856,7 +1856,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         };
         String nameAndTitle = UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"); // I18N
         UIRegistry.setRelease(true);
-        UIHelper.doLogin(usrPwdProvider, true, false, false, new SchemaExportLauncher(), Specify.getLargeIconName(), nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); 
+        UIHelper.doLogin(usrPwdProvider, true, false, false, new SchemaExportLauncher(), 
+        		Specify.getLargeIconName(), 
+        		nameAndTitle, nameAndTitle, "SpecifyWhite32", "login", false); 
         
         localPrefs.load();
 
@@ -1948,6 +1950,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }
         
-    }
+
+		
+	}
+    
     
 }

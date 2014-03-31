@@ -123,6 +123,7 @@ import edu.ku.brc.util.Pair;
  * @author rods
  * 
  */
+@SuppressWarnings("serial")
 public class DatabaseLoginPanel extends JTiledPanel
 {
     private static final Logger          log            = Logger.getLogger(DatabaseLoginPanel.class);
@@ -162,7 +163,8 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected boolean                    doLoginWithDB  = true;
     protected boolean                    engageUPPrefs  = false;
     protected boolean                    shouldCheckForSchemaUpdate = true;
-
+    protected boolean                    appCanUpdateSchema = false;
+    
     protected DatabaseLoginListener      dbListener;
     protected JaasContext                jaasContext;
     protected Window                     window;
@@ -1077,6 +1079,12 @@ public class DatabaseLoginPanel extends JTiledPanel
     }
 
     /**
+     * @param value
+     */
+    public void setAppCanUpdateSchema(final boolean value) {
+    	this.appCanUpdateSchema = value;
+    }
+    /**
      * Helper to enable all the UI components.
      * @param enable true or false
      */
@@ -1305,6 +1313,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         if (shouldCheckForSchemaUpdate)
                         {
                             // This needs to be done before Hibernate starts up
+                        	SchemaUpdateService.getInstance().setAppCanUpdateSchema(appCanUpdateSchema);
                             SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIRegistry.getAppVersion(), getUserName());
                             if (status == SchemaUpdateType.Error)
                             {
@@ -1316,7 +1325,10 @@ public class DatabaseLoginPanel extends JTiledPanel
                                 }
                                 sb.append(getResourceString("APP_EXIT")); // 18N
                                 UIRegistry.showError(sb.toString());
-                                
+                                if (!appCanUpdateSchema) {
+                                    isLoginCancelled = true; //works when the app is not the main specify app
+                                	isLoggedIn = false; //so as not to have to meddle with SwingWorker finished() method
+                                }
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
                                 
                             } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
@@ -1397,6 +1409,10 @@ public class DatabaseLoginPanel extends JTiledPanel
                         {
                             doCheckPermissions(usrPwd);
                         }
+                    } else { 
+                    	if (dbListener != null) {
+                    		dbListener.cancelled();
+                    	}
                     }
                     
                     enableUI(true);

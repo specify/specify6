@@ -60,6 +60,8 @@ public abstract class SchemaUpdateService
 
     protected static SchemaUpdateService instance = null;
     
+    protected boolean appCanUpdateSchema = true; 
+    
     /**
      * 
      */
@@ -84,6 +86,21 @@ public abstract class SchemaUpdateService
      */
     public abstract SchemaUpdateType updateSchema(String versionNumber, String username);
     
+    /**
+     * @param value
+     * 
+     * 
+     */
+    public void setAppCanUpdateSchema(boolean value) {
+    	this.appCanUpdateSchema = value;
+    }
+    
+    /**
+     * @return
+     */
+    public boolean getAppCanUpdateSchema() {
+    	return this.appCanUpdateSchema;
+    }
     
     /**
      * @return a string with the version number for the database schema

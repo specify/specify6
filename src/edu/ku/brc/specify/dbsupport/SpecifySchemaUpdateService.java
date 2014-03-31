@@ -446,8 +446,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     if (doSchemaUpdate || doInsert || doUpdateAppVer)
                     {
+                        if (!appCanUpdateSchema) {
+                        	UIRegistry.showLocalizedError("SpecifySchemaUpdateService.AppLacksUpdatePermission");
+                        	return SchemaUpdateType.Error;
+                        }
                         
-                        fixDuplicatedPaleoContexts(dbConn.getConnection());
+                    	fixDuplicatedPaleoContexts(dbConn.getConnection());
                         
                         fixLatLonMethodGEOLocate(dbConn.getConnection());
                         

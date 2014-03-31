@@ -74,6 +74,7 @@ import java.io.Reader;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -825,6 +826,10 @@ public final class UIHelper
             if (cls == Integer.class)
             {
                 return StringUtils.isNotEmpty(dataStr) ? Integer.parseInt(dataStr) : null;
+                
+            } else if (cls == BigInteger.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? BigInteger.valueOf(Long.parseLong(dataStr)) : null;
                 
             } else if (cls == Float.class)
             {
@@ -1714,9 +1719,26 @@ public final class UIHelper
                                              final String  appIconName,
                                              final String  helpContext)
     {     
-        return doLogin(null, null, engageUPPrefs, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext); 
+        return doLogin(null, null, engageUPPrefs, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext, true); 
     }
     
+    public static DatabaseLoginPanel doLogin(final MasterPasswordProviderIFace usrPwdProvider,
+            final boolean engageUPPrefs,
+            final boolean doAutoClose,
+            final boolean useDialog,
+            final DatabaseLoginListener listener,
+            final String  iconName,
+            final String  title,
+            final String  appName,
+            final String  appIconName,
+            final String  helpContext,
+            final boolean appCanUpdateSchema)
+{     
+return doLogin(null, null, engageUPPrefs, usrPwdProvider, doAutoClose, 
+		useDialog, listener, iconName, title, appName, appIconName, 
+		helpContext, appCanUpdateSchema); 
+}
+
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
@@ -1745,7 +1767,7 @@ public final class UIHelper
                                              final String  appIconName,
                                              final String  helpContext)
     {     
-        return doLogin(userName, password, engageUPPrefs, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext);
+        return doLogin(userName, password, engageUPPrefs, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext, true);
     }
     
     /**
@@ -1776,7 +1798,8 @@ public final class UIHelper
                                              final String  title,
                                              final String  appName,
                                              final String  appIconName,
-                                             final String  helpContext) //frame's icon name
+                                             final String  helpContext,
+                                             final boolean appCanUpdateSchema) //frame's icon name
     {  
         
         ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std32);
@@ -1850,6 +1873,7 @@ public final class UIHelper
                                           false, true, null, null, iconName, helpContext);
         }
         
+        panel.setAppCanUpdateSchema(appCanUpdateSchema);
         panel.setAutoClose(doAutoClose);
         panel.setWindow(frame);
         frame.setContentPane(panel);
