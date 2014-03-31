@@ -360,7 +360,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="agent" type="ManyToOne" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="agent" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -926,7 +926,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="collectionObject" type="ManyToOne" isHidden="false" isRequired="false">
+      <desc name="collectionObject" type="ManyToOne" isHidden="true" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -954,7 +954,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="identifier" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="identifier" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="true">
         <version>0</version>
         <names>
           <str language="en">
@@ -982,7 +982,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="institution" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="institution" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -1033,7 +1033,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="remarks" type="text" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -1109,7 +1109,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="uncertaintyPolygon" isHidden="false" isRequired="false">
+      <desc name="uncertaintyPolygon" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -1192,7 +1192,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="errorPolygon" isHidden="false" isRequired="false">
+      <desc name="errorPolygon" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -1261,7 +1261,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text1" isHidden="false" isRequired="false">
+      <desc name="text1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -1288,7 +1288,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="locality" isHidden="false" isRequired="false">
+      <desc name="locality" isHidden="true" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -1400,7 +1400,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="geoRefAccuracy" isHidden="false" isRequired="false">
+      <desc name="geoRefAccuracy" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -1427,7 +1427,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -1440,7 +1440,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text2" isHidden="false" isRequired="false">
+      <desc name="text2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -2263,7 +2263,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="guid" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="guid" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -2534,7 +2534,7 @@
   <container name="loanagent" isHidden="false" format="LoanAgent">
     <version>1</version>
     <items>
-      <desc name="loan" type="ManyToOne" isHidden="false" isUIFormatter="false" isRequired="true">
+      <desc name="loan" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="true">
         <version>0</version>
         <names>
           <str language="pt">
@@ -4095,7 +4095,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="contents" isHidden="false" isRequired="false">
+      <desc name="contents" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -4108,7 +4108,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="exchangeOutPreps" isHidden="false" isRequired="false">
+      <desc name="exchangeOutPreps" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -7032,7 +7032,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -7087,7 +7087,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="exchangeOutPreps" isHidden="false" isRequired="false">
+      <desc name="exchangeOutPreps" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -7114,7 +7114,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="exchangeInPreps" isHidden="false" isRequired="false">
+      <desc name="exchangeInPreps" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -7243,7 +7243,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="preparedDatePrecision" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="preparedDatePrecision" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -7438,7 +7438,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="reservedInteger3" isHidden="false" isRequired="false">
+      <desc name="reservedInteger3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -7529,7 +7529,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="reservedInteger4" isHidden="false" isRequired="false">
+      <desc name="reservedInteger4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -8952,7 +8952,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="specialtyName" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="specialtyName" isHidden="fakse" isUIFormatter="false" isRequired="true">
         <version>0</version>
         <names>
           <str language="pt">
@@ -9313,7 +9313,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
   <container name="accession" isHidden="false" format="Accession">
     <version>1</version>
     <items>
-      <desc name="division" isHidden="false" isUIFormatter="false" pickListName="Division" isRequired="false">
+      <desc name="division" isHidden="true" isUIFormatter="false" pickListName="Division" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -9341,7 +9341,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="verbatimDate" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="verbatimDate" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -9424,7 +9424,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="appraisals" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="appraisals" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -12106,7 +12106,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
   <container name="collectingevent" isHidden="false" format="CollectingEvent">
     <version>2</version>
     <items>
-      <desc name="text2" isHidden="false" isRequired="false">
+      <desc name="text2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12156,7 +12156,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12220,7 +12220,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="sgrStatus" isHidden="false" isRequired="false">
+      <desc name="sgrStatus" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12256,7 +12256,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12283,7 +12283,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="startDatePrecision" type="java.lang.Short" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="startDatePrecision" type="java.lang.Short" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -12297,7 +12297,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="endDatePrecision" type="java.lang.Short" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="endDatePrecision" type="java.lang.Short" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -12325,7 +12325,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="reservedInteger4" isHidden="false" isRequired="false">
+      <desc name="reservedInteger4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12352,7 +12352,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="text1" isHidden="false" isRequired="false">
+      <desc name="text1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12402,7 +12402,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="reservedText1" isHidden="false" isRequired="false">
+      <desc name="reservedText1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12548,7 +12548,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="reservedInteger3" isHidden="false" isRequired="false">
+      <desc name="reservedInteger3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12649,7 +12649,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="reservedText2" isHidden="false" isRequired="false">
+      <desc name="reservedText2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20178,7 +20178,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="contents" isHidden="false" isRequired="false">
+      <desc name="contents" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20191,7 +20191,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="exchangeInPreps" isHidden="false" isRequired="false">
+      <desc name="exchangeInPreps" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20396,7 +20396,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="text4" isHidden="false" isRequired="false">
+      <desc name="text4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20492,7 +20492,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="discipline" isHidden="false" isRequired="false">
+      <desc name="discipline" isHidden="true" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -20621,7 +20621,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="verbatimLongitude" isHidden="false" isRequired="false">
+      <desc name="verbatimLongitude" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20671,7 +20671,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="verbatimLatitude" isHidden="false" isRequired="false">
+      <desc name="verbatimLatitude" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20707,7 +20707,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="text5" isHidden="false" isRequired="false">
+      <desc name="text5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -20799,7 +20799,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -21135,7 +21135,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="sgrStatus" isHidden="false" isRequired="false">
+      <desc name="sgrStatus" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -24767,7 +24767,7 @@ O Specify fornece uma ampla gama de utilidades para a gestão curatorial de prep
           </str>
         </descs>
       </desc>
-      <desc name="guid" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="guid" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -30991,7 +30991,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="endDatePrecision" isHidden="false" isRequired="false">
+      <desc name="endDatePrecision" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31067,7 +31067,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="startDatePrecision" isHidden="false" isRequired="false">
+      <desc name="startDatePrecision" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -33058,7 +33058,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="geographyCode" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="geographyCode" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -35401,7 +35401,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="reservedInteger4" isHidden="false" isRequired="false">
+      <desc name="reservedInteger4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35558,7 +35558,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="reservedText3" isHidden="false" isRequired="false">
+      <desc name="reservedText3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35608,7 +35608,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35825,7 +35825,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="sgrStatus" isHidden="false" isRequired="false">
+      <desc name="sgrStatus" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35954,7 +35954,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="reservedInteger3" isHidden="false" isRequired="false">
+      <desc name="reservedInteger3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35967,7 +35967,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="ocr" isHidden="false" isRequired="false">
+      <desc name="ocr" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -36040,7 +36040,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="catalogedDatePrecision" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="catalogedDatePrecision" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -36151,7 +36151,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="reservedText2" isHidden="false" isRequired="false">
+      <desc name="reservedText2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -36164,7 +36164,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -36353,7 +36353,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="reservedText" isHidden="false" isRequired="false">
+      <desc name="reservedText" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -36445,7 +36445,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -37720,7 +37720,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="determinedDatePrecision" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="determinedDatePrecision" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
