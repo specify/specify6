@@ -2,6 +2,8 @@ package edu.ku.brc.specify.tools.webportal;
 
 import java.lang.reflect.Field;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
@@ -50,15 +52,15 @@ public class WebPortalFieldDef
 
 		DBTableChildIFace dbInfo = mapInfo.getInfo();
 		
-		if (dbInfo != null) 
+		if (dbInfo != null && conceptUrl != null) 
 		{
 			this.spFldTitle = dbInfo.getTitle();
 			this.title = this.spFldTitle;
 			this.spDescription = dbInfo.getDescription();
-		} else
+		} else 
 		{
 			this.spFldTitle = mapInfo.getSpFldName();
-			this.title = this.spFldTitle;
+			this.title = conceptUrl != null ? this.spFldTitle : (StringUtils.isNotBlank(mapInfo.getConcept()) ? mapInfo.getConcept() : this.spFldTitle);
 			this.spDescription = null;
 		}
 		

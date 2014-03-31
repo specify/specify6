@@ -4593,7 +4593,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return
      */
     public static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container, 
-            final Set<SpQueryField> fields, final TableTree tblTree, 
+            Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash, final Component saveBtn,
             SpExportSchemaMapping schemaMapping, List<String> missingFlds,
             Map<String, Vector<MappedFieldInfo>> autoMaps)
