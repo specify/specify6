@@ -194,6 +194,11 @@
         	<table name="ConservEventAttachment" field="conservEventAttachments">
         		<alias name="Attachment"/>
         	</table>
+      		<alias name="Agent" field="createdByAgent" />
+      		<alias name="Agent" field="modifiedByAgent" />
+      		<alias name="Agent" field="curator" />
+      		<alias name="Agent" field="treatedByAgent" />
+      		<alias name="Agent" field="examinedByAgent" />
     	</table>
     </table>
     
