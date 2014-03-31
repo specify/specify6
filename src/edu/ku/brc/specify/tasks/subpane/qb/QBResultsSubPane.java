@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.awt.BorderLayout;
+import java.awt.LayoutManager;
 import java.util.concurrent.atomic.AtomicReference;
 
 import edu.ku.brc.af.core.Taskable;
@@ -88,4 +90,11 @@ public class QBResultsSubPane extends ESResultsSubPane
 		return result;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.ESResultsSubPane#createLayoutManager()
+	 */
+	@Override
+	protected LayoutManager createLayoutManager() {
+		return new BorderLayout();
+	}
 }

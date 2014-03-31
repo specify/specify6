@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -78,7 +79,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     private static final Logger log = Logger.getLogger(ESResultsSubPane.class);
 
     protected JPanel               contentPanel;
-    protected NavBoxLayoutManager  layoutMgr;
+//    protected NavBoxLayoutManager  layoutMgr;
+    protected LayoutManager  layoutMgr;
     protected JScrollPane          scrollPane;
     protected ImageIcon            icon        = null;
     
@@ -115,7 +117,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         setPreferredSize(new Dimension(600,600));
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-        contentPanel = new JPanel(layoutMgr = new NavBoxLayoutManager(0, 2));
+        contentPanel = new JPanel(layoutMgr = createLayoutManager());
 
         scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);
@@ -248,6 +250,13 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         scrollPane.repaint();
     }
 
+	/**
+	 * @return
+	 */
+	protected LayoutManager createLayoutManager() {
+		return new NavBoxLayoutManager(0,2);
+	}
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
@@ -272,19 +281,30 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         
         for (ESResultsTablePanelIFace etr : expTblResults)
         {
-            contentPanel.add(etr.getUIComponent()); 
+            if (layoutMgr instanceof BorderLayout) {
+            	contentPanel.add(etr.getUIComponent(), BorderLayout.CENTER);
+            } else {
+            	contentPanel.add(etr.getUIComponent());
+            }
         }
         
-        layoutMgr.removeAll();
-        for (ESResultsTablePanelIFace etr : expTblResults)
-        {
-            layoutMgr.addLayoutComponent(etr.getUIComponent(), null); 
-        }
+        if (layoutMgr instanceof NavBoxLayoutManager) {
+        	((NavBoxLayoutManager)layoutMgr).removeAll();
+
+        	for (ESResultsTablePanelIFace etr : expTblResults)
+        	{
+        		((NavBoxLayoutManager)layoutMgr).addLayoutComponent(etr.getUIComponent(), null); 
+        	}
+        } 
         
         
         if (explainPanel != null)
         {
-            contentPanel.add(explainPanel);
+            if (layoutMgr instanceof BorderLayout) {
+            	contentPanel.add(explainPanel, BorderLayout.SOUTH);
+            } else {
+            	contentPanel.add(explainPanel);
+            }
         }            
             
         validate();

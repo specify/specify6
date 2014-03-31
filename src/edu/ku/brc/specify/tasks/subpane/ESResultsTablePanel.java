@@ -104,10 +104,15 @@ import edu.ku.brc.ui.dnd.GhostActionable;
  * @author rods
  *
  */
+/**
+ * @author timo
+ *
+ */
+@SuppressWarnings("serial")
 public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIFace
 {
 	private static final Logger log = Logger.getLogger(ESResultsTablePanel.class);
-
+    
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
@@ -158,6 +163,16 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         this(esrPane, results, installServices, isExpandedAtStartUp, true);
     }
      
+    /**
+     * 
+     */
+    protected void setupTablePane() {
+        tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        
+        Component comp = table.getColumnCount() > 3 ?new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) : table;
+        tablePane.add(comp, BorderLayout.CENTER);
+
+    }
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent
@@ -280,11 +295,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         add(builder.getPanel(), BorderLayout.NORTH);
 
         tablePane = new JPanel(new BorderLayout());
-        tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
-        
-        Component comp = table.getColumnCount() > 3 ?new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) : table;
-        tablePane.add(comp, BorderLayout.CENTER);
-        
+        setupTablePane();
+         
         if (isEditable)
         {
             //delRSItems = UIHelper.createI18NButton("RESTBL_DEL_ITEMS");
@@ -902,7 +914,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      * @param table
      * @param model
      */
-    private void autoResizeColWidth(final JTable table, final DefaultTableModel model)
+    protected void autoResizeColWidth(final JTable table, final DefaultTableModel model)
     {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setModel(model);
@@ -973,9 +985,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                 if (renderer != null)
                 {
                     ((JLabel)renderer).setHorizontalAlignment(strWidths[i] > 20 ? SwingConstants.LEFT : SwingConstants.CENTER);
+                    //((JLabel)renderer).setHorizontalAlignment(SwingConstants.LEFT);
                 }
                 
-                if (model.getColumnCount() > 3)
+                if (model.getColumnCount() > 3 && renderedWidthTotal > preferredWidthTotal)
                 {
                     col.setPreferredWidth(colWidths[i]);
                 }

@@ -19,6 +19,19 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -33,6 +46,8 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 @SuppressWarnings("serial")
 public class QBResultsTablePanel extends ESResultsTablePanel
 {
+    private static final int MAX_COL_STR_WIDTH = 50;
+    
     public QBResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
                                final QueryForIdResultsIFace    results,
                                final boolean                   installServices,
@@ -57,4 +72,121 @@ public class QBResultsTablePanel extends ESResultsTablePanel
     {
     	return (QBResultSetTableModel )resultSetTableModel;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel#setupTablePane()
+	 */
+	@Override
+	protected void setupTablePane() {
+        Component comp = new JScrollPane(table);
+        tablePane.add(comp, BorderLayout.CENTER);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel#autoResizeColWidth(javax.swing.JTable, javax.swing.table.DefaultTableModel)
+	 */
+	@Override
+	protected void autoResizeColWidth(JTable table, DefaultTableModel model) {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setModel(model);
+
+        int margin = 5;
+        
+        DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
+        
+        int   preferredWidthTotal = 0;
+        int   renderedWidthTotal  = 0;
+        int[] colWidths           = new int[table.getColumnCount()];
+        int[] strWidths          = new int[table.getColumnCount()];
+        for (int i = 0; i < table.getColumnCount(); i++)
+        {
+            int                     vColIndex = i;
+            TableColumn             col       = colModel.getColumn(vColIndex);
+            int                     width     = 0;
+
+            TableCellRenderer headerRenderer = col.getHeaderRenderer();
+            if (headerRenderer instanceof JLabel)
+            {
+                ((JLabel)headerRenderer).setHorizontalAlignment(SwingConstants.CENTER);
+            }
+
+            // Get width of column header
+            TableCellRenderer renderer = col.getCellRenderer();
+            if (renderer == null)
+            {
+                renderer = table.getTableHeader().getDefaultRenderer();
+            }
+
+            Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(),
+                                                                    false, false, 0, 0);
+
+            width = comp.getPreferredSize().width;
+
+            // Get maximum width of column data
+            int     strWidth = 0;
+            boolean isString = model.getColumnClass(i) == String.class;
+            for (int r=0;r<table.getRowCount();r++)
+            {
+                renderer = table.getCellRenderer(r, vColIndex);
+                Object objVal = table.getValueAt(r, vColIndex);
+                if (isString && objVal != null)
+                {
+                    strWidth = Math.max(strWidth, ((String)objVal).length());
+                }
+                comp = renderer.getTableCellRendererComponent(table, objVal, false, false, r, vColIndex);
+                width = Math.max(width, comp.getPreferredSize().width);
+            }
+
+            // Add margin
+            width += 2 * margin;
+
+            preferredWidthTotal += col.getPreferredWidth();
+            colWidths[i] = width;
+            strWidths[i] = strWidth;
+            
+            renderedWidthTotal += width;
+        }
+        
+        String maxWidthStr = "";
+        for (int i = 0; i < MAX_COL_STR_WIDTH; i++) {
+        	maxWidthStr += "x";
+        }
+        
+        if (renderedWidthTotal > preferredWidthTotal)
+        {
+            for (int i = 0; i < table.getColumnCount(); i++)
+            {
+                TableColumn       col      = colModel.getColumn(i);
+                TableCellRenderer renderer = col.getCellRenderer();
+                if (renderer != null)
+                {
+                    //((JLabel)renderer).setHorizontalAlignment(strWidths[i] > 20 ? SwingConstants.LEFT : SwingConstants.CENTER);
+                    ((JLabel)renderer).setHorizontalAlignment(SwingConstants.LEFT);
+                }
+                
+                Component comp = renderer.getTableCellRendererComponent(table, 
+                			maxWidthStr, false, false, 1, i);
+                col.setPreferredWidth(Math.min(colWidths[i], comp.getPreferredSize().width));
+            }
+        }
+
+        int sumWidths = 0;
+        for (int i = 0; i < colWidths.length; i++) {
+        	sumWidths += colWidths[i];
+        }
+        if (sumWidths < table.getWidth()) {
+        	int addWidth = table.getWidth() - sumWidths;
+        	TableColumn col = colModel.getColumn(colWidths.length - 1);
+        	col.setPreferredWidth(col.getPreferredWidth() + addWidth);
+            //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        }
+        
+
+        ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+
+        // table.setAutoCreateRowSorter(true);
+        table.getTableHeader().setReorderingAllowed(false);
+	}
+    
+    
 }
