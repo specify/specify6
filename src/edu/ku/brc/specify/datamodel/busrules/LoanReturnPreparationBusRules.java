@@ -268,9 +268,11 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     
                     // We need to do a 'doClick' so the form thinks the user clicked it.
                     ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
-                    if (qtyRes == loanPrep.getQuantity() != isResolved.isSelected())
+                    if (qtyRes == loanPrep.getQuantity() != isResolved.isSelected() )
                     {
-                        final ValCheckBox isResolved2 = isResolved;
+                        //System.out.println("Clicking isResolved");
+                        //loanPrep.setIsResolved(qtyRes == loanPrep.getQuantity());
+                    	final ValCheckBox isResolved2 = isResolved;
                     	SwingUtilities.invokeLater(new Runnable() {
 
 							/* (non-Javadoc)
@@ -305,20 +307,20 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                         qQntRes += getInt(lp.getQuantityResolved());
                     }
                     
-                    isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
-                    isResolved.setSelected(qQnt == qQntRes);
+//                    //isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
+//                    //isResolved.setSelected(qQnt == qQntRes);
+//                    
+//                    qQnt   = 0;
+//                    qtyRes = 0;
+//                    
+//                    for (LoanPreparation lp : loan.getLoanPreparations())
+//                    {
+//                        qQnt   += getInt(lp.getQuantity());
+//                        qtyRes += getInt(lp.getQuantityResolved());
+//                    }
                     
-                    qQnt   = 0;
-                    qtyRes = 0;
-                    
-                    for (LoanPreparation lp : loan.getLoanPreparations())
-                    {
-                        qQnt   += getInt(lp.getQuantity());
-                        qtyRes += getInt(lp.getQuantityResolved());
-                    }
-                    
-                    isResolved = (ValCheckBox)loanFVO.getControlByName("isClosed");
-                    isResolved.setSelected(qQnt == qQntRes);
+                    //isResolved = (ValCheckBox)loanFVO.getControlByName("isClosed");
+                    //isResolved.setSelected(qQnt == qQntRes);
                     loan.setIsClosed(qQnt == qQntRes);
                 }
             }
