@@ -185,7 +185,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                 for (String fldStr : toks)
                 {
                     String numToken = fldStr.trim();
-                    if (formatter != null && StringUtils.contains(numToken, rangeSeparator))
+                    if (formatter != null && formatter.isNumeric() && StringUtils.contains(numToken, rangeSeparator))
                     {
                         String   fldNum    = null;
                         String   endFldNum = null;
