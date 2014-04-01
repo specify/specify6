@@ -1061,7 +1061,9 @@ public class SecurityAdminPane extends BaseSubPane
         tabbedPane.addTab(getResourceString("SEC_GENERAL"), generalEditor);
         //tabbedPane.addTab("Objects", objEditor);     // I18N
         
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
+        //final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
+        //setting min size for generalEditor (only px settings work.)
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:[400px,p]:g,2dlu,p"), infoPanel);
         
         // lay out controls on panel
         int y = 1;
@@ -1121,14 +1123,18 @@ public class SecurityAdminPane extends BaseSubPane
         JButton deselectAllBtn = createI18NButton("DESELECTALL");
 
         final PermissionPanelEditor generalEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
+        
         generalEditor.addPanel(new IndvPanelPermEditor("SEC_TOOLS", "SEC_TOOLS_DSC", new TaskPermissionEnumerator(), infoPanel));
+        
         generalEditor.addPanel(new PermissionEditor("SEC_TABLES", new TablePermissionEnumerator(), infoPanel)); // I18N
         generalEditor.addPanel(new PermissionEditor("SEC_PREFS", new PrefsPermissionEnumerator(),   infoPanel));
         
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup(infoPanel);
         
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
+        //final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
+        //setting min size for generalEditor (only px settings work.)
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:[400px,p]:g,2dlu,p"), infoPanel);
         
         // lay out controls on panel
         int y = 1;
@@ -1136,6 +1142,7 @@ public class SecurityAdminPane extends BaseSubPane
         mainPB.addSeparator(getResourceString("SEC_PERMS"), cc.xy(1, y)); y += 2;
         mainPB.add(generalEditor,          cc.xy(1, y)); y += 2;
 
+        
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p,2px,p", "p"));
         
         Viewable viewable = panel.getMultiView().getCurrentView();
