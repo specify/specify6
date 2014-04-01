@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 /**
@@ -62,6 +64,17 @@ public class TreeMapElements
     public TreeMapElements(Vector<TreeMapElement> elements) throws Exception
     {
         this.elements = elements;
+        Collections.sort(elements, new Comparator<TreeMapElement>() {
+
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(TreeMapElement o1, TreeMapElement o2) {
+				
+				return o1.getSequence().compareTo(o2.getSequence());
+			}            	
+        });
         if (!validateRank())
         {
             throw new Exception("TreeMapElements: inconsistent ranks");
