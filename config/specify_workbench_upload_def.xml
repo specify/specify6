@@ -126,6 +126,7 @@
 	<!-- collectionobject -->
 	<field table="CollectionObject" name="collectionObjectText1" actualname="Text1" />
 	<field table="CollectionObject" name="collectionObjectText2" actualname="Text2" />
+	<field table="CollectionObject" name="collectionObjectText3" actualname="Text3" />
 	<field table="CollectionObject" name="collectionObjectYesNo1" actualname="YesNo1" />
 	<field table="CollectionObject" name="collectionObjectYesNo2" actualname="YesNo2" />
 	<field table="CollectionObject" name="collectionObjectYesNo3" actualname="YesNo3" />

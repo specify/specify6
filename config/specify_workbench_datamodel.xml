@@ -192,6 +192,7 @@
     <field column="Citation Remarks 2" name="citationCORemarks2" type="text" length="4096"/>
     <field column="Text 1 (CollectionObject)" name="collectionObjectText1" type="text" length="300"/>
     <field column="Text 2 (CollectionObject)" name="collectionObjectText2" type="text" length="300"/>
+    <field column="Text 3 (CollectionObject)" name="collectionObjectText3" type="text"/>
     <field column="Integer 1" name="integer1" type="java.lang.Integer" length="10"/>
     <field column="Integer 2" name="integer2" type="java.lang.Integer" length="10"/>
     <field column="Number 1 (CollectionObject)" name="collectionObjectNumber1" type="java.lang.Float" length="24"/>
