@@ -538,6 +538,9 @@
    	<field table="Locality" name="localityRemarks" actualname="Remarks"/>
     <field table="Locality" name="localityText1" actualname="Text1" />
     <field table="Locality" name="localityText2" actualname="Text2" />
+    <field table="Locality" name="localityText3" actualname="Text3" />
+    <field table="Locality" name="localityText4" actualname="Text4" />
+    <field table="Locality" name="localityText5" actualname="Text5" />
     <field table="Locality" name="localityDetailText1" actualname="Text1" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityDetailText2" actualname="Text2" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityNumber1" actualname="Number1" actualtable="LocalityDetail" relationshipname="locality"/>
