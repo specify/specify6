@@ -152,34 +152,32 @@ public class QBResultsTablePanel extends ESResultsTablePanel
         	maxWidthStr += "x";
         }
         
-        if (renderedWidthTotal > preferredWidthTotal)
-        {
-            for (int i = 0; i < table.getColumnCount(); i++)
-            {
-                TableColumn       col      = colModel.getColumn(i);
-                TableCellRenderer renderer = col.getCellRenderer();
-                if (renderer != null)
-                {
-                    //((JLabel)renderer).setHorizontalAlignment(strWidths[i] > 20 ? SwingConstants.LEFT : SwingConstants.CENTER);
-                    ((JLabel)renderer).setHorizontalAlignment(SwingConstants.LEFT);
-                }
-                
-                Component comp = renderer.getTableCellRendererComponent(table, 
-                			maxWidthStr, false, false, 1, i);
-                col.setPreferredWidth(Math.min(colWidths[i], comp.getPreferredSize().width));
-            }
-        }
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			TableColumn col = colModel.getColumn(i);
+			TableCellRenderer renderer = col.getCellRenderer();
+			if (renderer != null) {
+				((JLabel) renderer).setHorizontalAlignment(SwingConstants.LEFT);
+			}
 
-        int sumWidths = 0;
-        for (int i = 0; i < colWidths.length; i++) {
-        	sumWidths += colWidths[i];
-        }
-        if (sumWidths < table.getWidth()) {
-        	int addWidth = table.getWidth() - sumWidths;
-        	TableColumn col = colModel.getColumn(colWidths.length - 1);
-        	col.setPreferredWidth(col.getPreferredWidth() + addWidth);
-            //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        }
+			if (renderedWidthTotal > preferredWidthTotal) {
+				Component comp = renderer.getTableCellRendererComponent(table,
+						maxWidthStr, false, false, 1, i);
+				col.setPreferredWidth(Math.min(colWidths[i],
+						comp.getPreferredSize().width));
+			}
+		}
+
+		//Attempt to stretch rightmost col to fill empty space to right
+//        int sumWidths = 0;
+//        for (int i = 0; i < colWidths.length; i++) {
+//        	sumWidths += colWidths[i];
+//        }
+//        if (sumWidths < getWidth()) {
+//        	int addWidth = getWidth() - sumWidths;
+//        	TableColumn col = colModel.getColumn(colWidths.length - 1);
+//        	col.setWidth(col.getWidth() + addWidth);
+//            //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+//        }
         
 
         ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
