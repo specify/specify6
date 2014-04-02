@@ -1793,6 +1793,12 @@
                 <row>
                     <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="9"/>
                 </row>
+		            <row>
+			              <cell type="separator" label="ATTACHMENTS" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="storageAttachments" colspan="10" initialize="btn=true;icon=StorageAttachment"/>
+                </row>
                 <!--<row>
                     <cell type="label" labelfor="abb"/>
                     <cell type="field" id="abb" name="abbrev" uitype="text"/>

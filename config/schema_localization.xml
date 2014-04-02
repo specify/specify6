@@ -7293,7 +7293,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -11748,7 +11748,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
       </str>
     </descs>
   </container>
-  <container name="exsiccata" isHidden="true">
+  <container name="exsiccata" isHidden="false">
     <version>1</version>
     <items>
       <desc name="createdByAgent" isHidden="true" isUIFormatter="false" isRequired="false">
@@ -11793,7 +11793,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="title" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="title" isHidden="false" isUIFormatter="false" isRequired="true">
         <version>0</version>
         <names>
           <str language="en">
@@ -11816,7 +11816,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="referenceWork" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="referenceWork" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -11867,7 +11867,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="exsiccataItems" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -37976,7 +37976,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
     </descs>
     <aggregator>Determination</aggregator>
   </container>
-  <container name="exsiccataitem" isHidden="true">
+  <container name="exsiccataitem" isHidden="false">
     <version>1</version>
     <items>
       <desc name="modifiedByAgent" isHidden="true" isUIFormatter="false" isRequired="false">
