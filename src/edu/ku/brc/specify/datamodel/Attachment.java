@@ -463,6 +463,7 @@ public class Attachment extends DataModelObjBase implements Serializable
             Preparation.getClassTableId(), Attachment.COLLECTION_SCOPE,
             ReferenceWork.getClassTableId(), Attachment.INSTITUTION_SCOPE,
             RepositoryAgreement.getClassTableId(), Attachment.DIVISION_SCOPE,
+            Storage.getClassTableId(), Attachment.INSTITUTION_SCOPE,
             Taxon.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
         };
         HashMap<Integer, Byte> map = new HashMap<Integer, Byte>();
