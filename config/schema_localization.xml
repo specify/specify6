@@ -38021,7 +38021,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="fascicle" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="fascicle" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -38086,7 +38086,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="exsiccata" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="exsiccata" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -38109,7 +38109,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="number" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="number" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
