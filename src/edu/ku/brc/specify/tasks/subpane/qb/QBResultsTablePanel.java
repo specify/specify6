@@ -88,6 +88,7 @@ public class QBResultsTablePanel extends ESResultsTablePanel
 	@Override
 	protected void autoResizeColWidth(JTable table, DefaultTableModel model) {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         table.setModel(model);
 
         int margin = 5;
@@ -152,6 +153,7 @@ public class QBResultsTablePanel extends ESResultsTablePanel
         	maxWidthStr += "x";
         }
         
+        int sumWidths = 0;
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			TableColumn col = colModel.getColumn(i);
 			TableCellRenderer renderer = col.getCellRenderer();
@@ -164,20 +166,23 @@ public class QBResultsTablePanel extends ESResultsTablePanel
 						maxWidthStr, false, false, 1, i);
 				col.setPreferredWidth(Math.min(colWidths[i],
 						comp.getPreferredSize().width));
+				col.setWidth(Math.min(colWidths[i],
+						comp.getPreferredSize().width));
 			}
+			sumWidths += col.getPreferredWidth();
 		}
 
 		//Attempt to stretch rightmost col to fill empty space to right
-//        int sumWidths = 0;
-//        for (int i = 0; i < colWidths.length; i++) {
-//        	sumWidths += colWidths[i];
-//        }
-//        if (sumWidths < getWidth()) {
-//        	int addWidth = getWidth() - sumWidths;
-//        	TableColumn col = colModel.getColumn(colWidths.length - 1);
-//        	col.setWidth(col.getWidth() + addWidth);
-//            //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-//        }
+//		if (renderedWidthTotal <= preferredWidthTotal) {
+//	        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);			
+//		}
+		//System.out.println(sumWidths + " < " + tablePane.getWidth() + "?");
+        if (sumWidths  < tablePane.getWidth()) {
+        	int addWidth = tablePane.getWidth() - sumWidths;
+        	TableColumn col = colModel.getColumn(colWidths.length - 1);
+        	col.setPreferredWidth(col.getPreferredWidth() + addWidth);
+            //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        }
         
 
         ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
