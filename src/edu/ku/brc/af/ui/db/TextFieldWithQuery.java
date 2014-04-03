@@ -1003,7 +1003,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                             
                         } else if (StringUtils.isNotEmpty(format))
                         {
-                            value = UIHelper.getFormattedValue(format, value);
+                            Object oldVal = builder == null ? null : value;
+                        	value = UIHelper.getFormattedValue(format, value);
+                        	if (builder != null && value == null && oldVal != null) {
+                        		//customized qbx format interfering with builder's selected field(s).
+                        		value = oldVal;
+                        	}
                         }
                     list.addElement(value != null ? value.toString() : "xxx");
                         
