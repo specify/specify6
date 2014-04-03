@@ -4163,13 +4163,13 @@
         </names>
         <descs/>
       </desc>
-      <desc name="exchangeOutNumber" isHidden="false" isRequired="true">
+      <desc name="exchangeOutNumber" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Exchange Out Number</text>
+            <text>Exchange Out #</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -20254,13 +20254,13 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="exchangeInNumber" isHidden="false" isRequired="true">
+      <desc name="exchangeInNumber" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Exchange In Number</text>
+            <text>Exchange In #</text>
             <itemName reference="../../.."/>
           </str>
         </names>

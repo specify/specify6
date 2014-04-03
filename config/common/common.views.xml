@@ -2856,27 +2856,31 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[ExchangeIn viewing form.]]></desc>
             
-            <columnDef>105px,2px,120px,5px,95px,2px,195px,5px,106px,2px,195px,0px,15px,p,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,125px,5px,120px,2px,210px,5px,121px,2px,210px,0px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,160px,5px,140px,2px,220px,5px,146px,2px,220px,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,170px,5px,105px,2px,170px,5px,96px,2px,170px,0px,15px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,185px,5px,130px,2px,185px,5px,101px,2px,185px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,204px,5px,150px,2px,203px,5px,126px,2px,203px,0px,15px,p,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent"/>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agentReceivedFrom" uitype="querycbx" initialize="name=Agent"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="5"/>
+                    <cell type="field" id="1" name="exchangeInNumber" uitype="formattedtext"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                </row>                
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="9"/>
+                </row>                
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
@@ -2999,26 +3003,30 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[ExchangeOut viewing form.]]></desc>
             
-            <columnDef>105px,2px,120px,5px,105px,2px,195px,5px,96px,2px,195px,0px,15px,p,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,135px,5px,130px,2px,210px,5px,101px,2px,210px,0px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,170px,5px,150px,2px,220px,5px,126px,2px,220px,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,170px,5px,105px,2px,170px,5px,96px,2px,170px,0px,15px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,185px,5px,130px,2px,185px,5px,101px,2px,185px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,204px,5px,150px,2px,203px,5px,126px,2px,203px,0px,15px,p,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent"/>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="5"/>
+                    <cell type="field" id="1" name="exchangeOutNumber" uitype="formattedtext"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                </row>                
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="9"/>
                 </row>                
                 <row>
                     <cell type="label" labelfor="5"/>
