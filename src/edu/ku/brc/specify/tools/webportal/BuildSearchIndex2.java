@@ -605,7 +605,7 @@ public class BuildSearchIndex2
         myCopy.add(0, "<!-- solr field definitions for " + mapping.getMappingName() + " web portal -->");
         myCopy.add(1, "<!-- Paste the contents of this file into the solr/conf/schema.xml file. -->");
         File f = new File(writeToDir + File.separator + "SolrFldSchema.xml");
-        FileUtils.writeLines(f, myCopy);
+        FileUtils.writeLines(f, myCopy, "utf8");
     }
     
     protected void writePortalJsonToFile(List<String> portalJson) throws IOException
@@ -619,7 +619,7 @@ public class BuildSearchIndex2
 
         List<String> myCopy = new ArrayList<String>(portalJson);
         File f = new File(writeToDir + File.separator + "flds.json");
-        FileUtils.writeLines(f, myCopy);
+        FileUtils.writeLines(f, myCopy, "utf8");
     }
     
     protected void writePortalInstanceJsonToFile() throws IOException
@@ -630,7 +630,7 @@ public class BuildSearchIndex2
         json.accumulate("portalInstance", portalInstance);
         json.accumulate("collectionName", collectionName);
         json.accumulate("imageBaseUrl", StringUtils.replace(attachmentURL, "/web_asset_store.xml", ""));
-        FileUtils.writeStringToFile(f, json.toString(2));
+        FileUtils.writeStringToFile(f, json.toString(2), "utf8");
     }
     	
     /**
