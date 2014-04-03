@@ -154,7 +154,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Invoice number
      */
-    @Column(name = "ExchangeOutNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "ExchangeOutNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getExchangeOutNumber() {
         return this.exchangeOutNumber;
     }

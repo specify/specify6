@@ -165,7 +165,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Invoice number
      */
-    @Column(name = "ExchangeInNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "ExchangeInNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getExchangeInNumber() {
         return this.exchangeInNumber;
     }
