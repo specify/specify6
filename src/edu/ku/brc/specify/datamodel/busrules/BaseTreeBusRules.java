@@ -1089,7 +1089,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		if (dataObj != null && !StringUtils.contains(formViewObj.getView().getName(), "TreeDef") && 
+		if (dataObj != null && (formViewObj == null || !StringUtils.contains(formViewObj.getView().getName(), "TreeDef")) && 
 				BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 		{
 			return getRequiredLocks(dataObj);
