@@ -966,7 +966,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         
         UsageTracker.incrUsageCount("LM.OccurSearch");
         
-        final String lmURL = String.format("http://www.lifemapper.org/services/occurrences/%s/json?format=specify&fillPoints=true", occurrenceId);
+        final String lmURL = String.format("http://www.lifemapper.org/services/sdm/occurrences/%s/json?format=specify&fillPoints=true", occurrenceId);
         //System.out.println(lmURL);
         
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
