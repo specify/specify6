@@ -2696,7 +2696,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
                 		return;
                 	}
-                    int smushedCol = (report.getQuery().getSmushed() != null && report.getQuery().getSmushed()) ? getSmushedCol(qfps)+1 : 0;
+                    int smushedCol = (report.getQuery().getSmushed() != null && report.getQuery().getSmushed()) ? getSmushedCol(qfps)+1 : -1;
                 	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                         .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false),
                         includeRecordIds, report.getRepeats(), smushedCol,
