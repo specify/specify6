@@ -239,7 +239,12 @@ public class ReportsBaseTask extends BaseTask
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
         	Properties params = ap.getMetaDataMap();
-
+        	
+        	Integer appId = ap instanceof SpAppResource ? ((SpAppResource)ap).getId() : null;
+        	if (appId != null) {
+        		params.put("spappresourceid", appId);
+        	}
+        	
             String tableid = params.getProperty("tableid"); //$NON-NLS-1$
             
             if (StringUtils.isNotEmpty(tableid))
@@ -383,13 +388,19 @@ public class ReportsBaseTask extends BaseTask
         String spRepName = cmdAction.getProperties().getProperty("name").replace(".jrxml", "");
         RecordSet repRS = null;
         Integer tblContext = null;
+        Integer appId = Integer.class.cast(cmdAction.getProperties().get("spappresourceid"));
+        Boolean isDatabased = appId != null;
         if (spRepName != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance()
             .createSession();
             try
             {
-                SpReport rep = (SpReport)session.getData("from SpReport where name = '" + StringEscapeUtils.escapeSql(spRepName) + "'");
+                String hql = "from SpReport where name = '" + StringEscapeUtils.escapeSql(spRepName) + "'";
+                if (isDatabased) {
+                	hql += " and appResourceId = " + appId;
+                }
+            	SpReport rep = (SpReport)session.getData(hql);
                 if (rep != null)
                 {
                     rep.forceLoad();
@@ -416,7 +427,7 @@ public class ReportsBaseTask extends BaseTask
                     repRS.set(rep.getAppResource().getDescription(), SpReport.getClassTableId(), RecordSet.GLOBAL);
                     repRS.addItem(rep.getId());
                     cmdAction.setProperty("spreport", repRS);
-                }
+                }            
             }
             finally
             {
@@ -425,17 +436,14 @@ public class ReportsBaseTask extends BaseTask
         }
         
         CommandAction delCmd = null;
-        if (repRS != null || cmdAction.getProperties().get("isimport") != null)
+        if (isDatabased || repRS != null || cmdAction.getProperties().get("isimport") != null)
         {
             if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
             {
                 delCmd = new CommandAction(REPORTS, DELETE_CMD_ACT, repRS);
-                if (cmdAction.getProperties().get("isimport") != null)
-                {
-                    delCmd.getProperties().put("name", cmdAction.getProperties().getProperty("name"));
-                    delCmd.getProperties().put("appresource", cmdAction.getProperties().get("appresource"));
-                    cmdAction.getProperties().remove("appresource");
-                }
+                delCmd.getProperties().put("name", cmdAction.getProperties().getProperty("name"));
+                delCmd.getProperties().put("spappresourceid", appId);
+                delCmd.getProperties().put("title", tcd.getName());
             }
         }
         
@@ -989,7 +997,8 @@ public class ReportsBaseTask extends BaseTask
                 {
                     theName = cmdAction.getProperties().getProperty("name");
                     //currently the description of the appResource is used as the 'title' for the command button.
-                    theTitle = ((AppResourceIFace)cmdAction.getProperties().get("appresource")).getDescription();
+                    //theTitle = ((AppResourceIFace)cmdAction.getProperties().get("appresource")).getDescription();
+                    theTitle = cmdAction.getProperties().getProperty("title");
                 }
                 int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
                         String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), theName),
@@ -998,23 +1007,20 @@ public class ReportsBaseTask extends BaseTask
                 
                 if (option == JOptionPane.YES_OPTION)
                 {
-                    SpAppResource res = (SpAppResource)cmdAction.getProperty("appresource");
+                    Integer resId = Integer.class.cast(cmdAction.getProperty("spappresourceid"));
                     Integer resOrRepId = null;
                     Integer repId = null;
-                    if (res != null)
+                    if (resId != null)
                     {
-                        resOrRepId = res.getId();
+                        resOrRepId = resId;
                     }
-                    else
+                    RecordSetItemIFace item = recordSet == null ? null : recordSet.getOnlyItem();
+                    if (item != null)
                     {
-                        RecordSetItemIFace item = recordSet.getOnlyItem();
-                        if (item != null)
-                        {
-                            repId = item.getRecordId();
-                            resOrRepId = repId;
-                        }
+                        repId = item.getRecordId();
+                        resOrRepId = repId;
                     }
-                    deleteReportAndResource(repId, (AppResourceIFace)cmdAction.getProperty("appresource"));
+                    deleteReportAndResource(repId, resId);
                     deleteReportFromUI(theTitle);
                     if (resOrRepId != null)
                     {
@@ -1276,13 +1282,13 @@ public class ReportsBaseTask extends BaseTask
      * @param reportId
      * @param appRes
      */
-    public static void deleteReportAndResource(final Integer reportId, final AppResourceIFace appRes)
+    public static void deleteReportAndResource(final Integer reportId, final Integer appResourceId)
     {
         Integer resourceId = null;
 
         if (reportId == null)
         {
-            resourceId = ((SpAppResource) appRes).getId();
+            resourceId = appResourceId;
         }
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 		boolean transOpen = false;
