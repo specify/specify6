@@ -515,6 +515,34 @@
           </screen>
         </startup>
         <screens>
+        <screen name="" id="2215" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
+                  <void property="displayedText">
+                    <string>Specify 6 requires Java 7 run-time environment (JRE) software in order to run.  As of this release the Java JRE is no longer installed by the Specify Updater within the Specify program files, it must be installed externally by you or by a system administrator, at the system level on your computer by downloading the Java 7 JRE from the Oracle Corp web site. See http://docs.oracle.com/javase/7/docs/webnotes/install/ for instructions on downloading and installing Java for your workstation. If you do not have a system-level installation of the Java 7 JRE installed, this updater will update your copy of Specify, but you will not be able to run the updated Specify release.
+ 
+You will see an error message similar to this if you attempt to run Specify without the system-level Java 7 JRE installed:</string>
+                  </void>
+                  <void property="subTitle">
+                    <string>Java Installation</string>
+                  </void>
+                  <void property="textSource">
+                    <object class="com.install4j.runtime.beans.screens.components.TextSource" field="DIRECT" />
+                  </void>
+                  <void property="title">
+                    <string>Warning</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition />
+            <validation />
+            <preActivation />
+            <postActivation />
+            <actions />
+            <formComponents />
+          </screen>
           <screen name="" id="2" customizedId="" beanClass="com.install4j.runtime.beans.screens.WelcomeScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
