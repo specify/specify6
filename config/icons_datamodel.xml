@@ -106,6 +106,7 @@
 	<icon name="PreparationAttachment"           file="preparation_attachment.png" sizes="NonStd"/>
     <icon name="ReferenceWorkAttachment"         file="refwork_attachment.png" sizes="NonStd"/>
 	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="NonStd"/>
+	<icon name="StorageAttachment"               file="storage_attachment.png" sizes="NonStd"/> 
 	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="NonStd"/> 
 	
     <!--  Extra Icons -->
