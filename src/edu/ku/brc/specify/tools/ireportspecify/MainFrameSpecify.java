@@ -956,7 +956,7 @@ public class MainFrameSpecify extends MainFrame
                  */
                 
                 //delete match
-                Integer matchId = null;
+                Integer matchRepId = null;
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try
                 {
@@ -967,15 +967,15 @@ public class MainFrameSpecify extends MainFrame
                                 UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
-                    matchId = matchRep.getId();
+                    matchRepId = matchRep.getId();
                 }
                 finally
                 {
                     session.close();
                     session = null;
                 }
-                ReportsBaseTask.deleteReportAndResource(matchId, match);
-                overwrittenReportId = matchId;
+                ReportsBaseTask.deleteReportAndResource(matchRepId, match.getId());
+                overwrittenReportId = matchRepId;
             }
             
             AppResourceIFace modifiedRes = null;

@@ -1393,7 +1393,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                         {
                                             if (isSpReportRes)
                                             {
-                                                ReportsBaseTask.deleteReportAndResource(null, fndAppRes);
+                                                ReportsBaseTask.deleteReportAndResource(null, fndAppRes.getId());
                                             }
                                             else
                                             {
