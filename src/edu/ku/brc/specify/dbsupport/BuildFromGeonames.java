@@ -713,7 +713,7 @@ public class BuildFromGeonames
             if (dbMgr == null) return false;
             
             String               dbName = currDBConn.getDatabaseName();
-            DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword); // opens and closes connection
+            //DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword); // opens and closes connection
             
             if (!dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName(), dbName, currDBConn.isEmbedded()))
             {
@@ -721,22 +721,30 @@ public class BuildFromGeonames
                 return false;
             }
 
-            boolean isDBOk           = false;
+            boolean isDBOk = true;
+            //boolean isDBOk           = false;
             boolean isGeoNameTableOK = false;
-            if (status == DBMSUserMgr.DBSTATUS.missingDB)
-            {
-                if (!dbMgr.createDatabase(dbName))
-                {
-                    UIRegistry.showLocalizedError("ERROR_CRE_GEODB", dbName);
-                } else
-                {
-                    isDBOk = true;
-                }
-                    
-            } else
-            {
-                isDBOk = true;
-            }
+            
+            //XXX
+            //For unknown reasons, on Windows 8, the checkForDB call above fails because the embedded-db directory structure appears to have not yet been created.
+            //Currently, this method is not called from a context in which it would make sense for it to create the db the geonames are being added to if it did not already exist.
+            //So it is probably safe to assume, that if we are here, the db exists, and this code is not necessary.
+            //Removing fixes the Windows 8 issue.
+            
+            //if (status == DBMSUserMgr.DBSTATUS.missingDB)
+           //{
+            //    if (!dbMgr.createDatabase(dbName))
+            //    {
+            //        UIRegistry.showLocalizedError("ERROR_CRE_GEODB", dbName);
+            //    } else
+            //    {
+            //        isDBOk = true;
+            //    }
+            //        
+            //} else
+            //{
+            //    isDBOk = true;
+            //}
             
             if (isDBOk)
             {
