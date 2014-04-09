@@ -746,7 +746,10 @@ You will see an error message similar to this if you attempt to run Specify with
                 </object>
               </java>
             </serializedBean>
-            <condition />
+            <condition>// This expression only evalutes to true if the installer is run on Windows.
+// Otherwise, it will return false, and the current element will be skipped.
+// Note that the Util class has many other utility methods for determining the operating system.
+Util.isWindows()</condition>
             <validation />
             <preActivation />
             <postActivation />

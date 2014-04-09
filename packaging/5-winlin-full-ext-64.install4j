@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="5.1.7" transformSequenceNumber="4">
+<install4j version="5.1.11" transformSequenceNumber="4">
   <directoryPresets config="../InstallerFiles/images" />
   <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../ExtMedia" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_64" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.5.04" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.7" javaMaxVersion="1.7" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
@@ -515,12 +515,12 @@
           </screen>
         </startup>
         <screens>
-        <screen name="" id="2215" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+          <screen name="" id="2215" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
                   <void property="displayedText">
-                   <string>Specify 6 requires Java 7 run-time environment (JRE) software in order to run.  As of this release the Java JRE is no longer installed by the Specify Updater within the Specify program files, it must be installed externally by you or by a system administrator, at the system level on your computer by downloading the Java 7 JRE from the Oracle Corp web site. See http://docs.oracle.com/javase/7/docs/webnotes/install/ for instructions on downloading and installing Java for your workstation. If you do not have a system-level installation of the Java 7 JRE installed, this updater will update your copy of Specify, but you will not be able to run the updated Specify release.
+                    <string>Specify 6 requires Java 7 run-time environment (JRE) software in order to run.  As of this release the Java JRE is no longer installed by the Specify Updater within the Specify program files, it must be installed externally by you or by a system administrator, at the system level on your computer by downloading the Java 7 JRE from the Oracle Corp web site. See http://docs.oracle.com/javase/7/docs/webnotes/install/ for instructions on downloading and installing Java for your workstation. If you do not have a system-level installation of the Java 7 JRE installed, this updater will update your copy of Specify, but you will not be able to run the updated Specify release.
  
 You will see an error message similar to this if you attempt to run Specify without the system-level Java 7 JRE installed:
 
@@ -538,7 +538,10 @@ You will see an error message similar to this if you attempt to run Specify with
                 </object>
               </java>
             </serializedBean>
-            <condition />
+            <condition>// This expression only evalutes to true if the installer is run on Windows.
+// Otherwise, it will return false, and the current element will be skipped.
+// Note that the Util class has many other utility methods for determining the operating system.
+Util.isWindows()</condition>
             <validation />
             <preActivation />
             <postActivation />
@@ -778,7 +781,7 @@ You will see an error message similar to this if you attempt to run Specify with
                     </object>
                   </java>
                 </serializedBean>
-                <condition></condition>
+                <condition />
               </action>
             </actions>
             <formComponents />
@@ -1781,8 +1784,8 @@ if (wizardContext != null) {
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="176" />
-    <mediaSet refId="179" />
+    <mediaSet refId="1873" />
+    <mediaSet refId="1965" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" debug="false" />
 </install4j>
