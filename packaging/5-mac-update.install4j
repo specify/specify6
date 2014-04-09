@@ -793,7 +793,7 @@ else
  
 You will see an error message similar to this if you attempt to run Specify without the system-level Java 7 JRE installed:
 
-"The install4j wizard could not find a Java(TM) Runtime Environment on your system. Please locate a suitable 32-bit JRE. (minimum version: 1.7, maximum version: 1.7)"</string>
+"No JVM could be found on your system. Please define EXE4J_JAVA_HOME to point to an installed 32-bit JDK or JRE or download a JRE from www.java.com."</string>
                   </void>
                   <void property="subTitle">
                     <string>Java Installation</string>
