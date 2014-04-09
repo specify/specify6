@@ -658,9 +658,11 @@
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
                   <void property="displayedText">
-                    <string>Specify 6 requires Java 7 run-time environment (JRE) software in order to run.  As of this release the Java JRE is no longer installed by the Specify Updater within the Specify program files, it must be installed externally by you or by a system administrator, at the system level on your computer by downloading the Java 7 JRE from the Oracle Corp web site. See http://docs.oracle.com/javase/7/docs/webnotes/install/ for instructions on downloading and installing Java for your workstation. If you do not have a system-level installation of the Java 7 JRE installed, this updater will update your copy of Specify, but you will not be able to run the updated Specify release.
+                   <string>Specify 6 requires Java 7 run-time environment (JRE) software in order to run.  As of this release the Java JRE is no longer installed by the Specify Updater within the Specify program files, it must be installed externally by you or by a system administrator, at the system level on your computer by downloading the Java 7 JRE from the Oracle Corp web site. See http://docs.oracle.com/javase/7/docs/webnotes/install/ for instructions on downloading and installing Java for your workstation. If you do not have a system-level installation of the Java 7 JRE installed, this updater will update your copy of Specify, but you will not be able to run the updated Specify release.
  
-You will see an error message similar to this if you attempt to run Specify without the system-level Java 7 JRE installed:</string>
+You will see an error message similar to this if you attempt to run Specify without the system-level Java 7 JRE installed:
+
+"The install4j wizard could not find a Java(TM) Runtime Environment on your system. Please locate a suitable 32-bit JRE. (minimum version: 1.7, maximum version: 1.7)"</string>
                   </void>
                   <void property="subTitle">
                     <string>Java Installation</string>
