@@ -148,7 +148,7 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
     {
         //System.out.println(qri);
         //System.out.println(title+"]["+qri.getTitle());
-        return title.compareTo(qri.getTitle());
+        return getTitle().compareTo(qri.getTitle());
     }
     
 
