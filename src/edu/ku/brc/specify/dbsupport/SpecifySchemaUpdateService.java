@@ -3562,7 +3562,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
             
             String relName = fldName.toLowerCase().substring(0, fldName.length()-2);
-            if (ti.getRelationshipByName(relName) != null)
+            if (BasicSQLUtils.doesTableExist(DBConnection.getInstance().getConnection(), ti.getName()) 
+            		&& ti.getRelationshipByName(relName) != null)
             {
                 String sql = String.format("SELECT COUNT(*) FROM %s %s", ti.getName(), fullInClause);
                 log.debug(sql);
