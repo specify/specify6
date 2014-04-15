@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -462,5 +463,15 @@ public class LatLonPolygonPnt implements FormDataObjIFace, Cloneable
         
         return p;
     }
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#shouldForceLoadChildSet(java.lang.reflect.Method)
+	 */
+	@Override
+	public int shouldForceLoadChildSet(Method getter) {
+		return -1;
+	}
+    
     
 }

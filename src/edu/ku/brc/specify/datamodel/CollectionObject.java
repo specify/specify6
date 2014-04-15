@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -80,7 +81,21 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
 
     // Fields
 
-    protected Integer                       collectionObjectId;
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#shouldForceLoadChildSet(java.lang.reflect.Method)
+	 */
+	@Override
+	public int shouldForceLoadChildSet(Method getter) {
+		if ("getProjects".equals(getter.getName())) {
+			return 0;
+		} else {
+			return super.shouldForceLoadChildSet(getter);
+		}
+	}
+
+
+
+	protected Integer                       collectionObjectId;
     protected String                        fieldNumber;
     protected String                        description;
     protected String                        projectNumber;
@@ -1396,7 +1411,6 @@ public void setReservedText3(String reservedText3) {
         }
         collectionObjectAttachments.size();
         collectionObjectCitations.size();
-        projects.size();
         if (collection != null)
         {
             collection.getId();
@@ -1414,6 +1428,7 @@ public void setReservedText3(String reservedText3) {
             ce.forceLoad(AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
         }
         
+        //projects.size();
         for (Project prj : projects)
         {
         	//get something harmless, don't load collectionobjects

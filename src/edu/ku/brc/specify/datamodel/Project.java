@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -145,7 +146,20 @@ public class Project extends CollectionMember implements java.io.Serializable {
         }
     }
 
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#shouldForceLoadChildSet(java.lang.reflect.Method)
+	 */
+	@Override
+	public int shouldForceLoadChildSet(Method getter) {
+		if ("getCollectionObjects".equals(getter.getName())) {
+			return 0;
+		} else {
+			return super.shouldForceLoadChildSet(getter);
+		}
+	}
+
+	/**
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */

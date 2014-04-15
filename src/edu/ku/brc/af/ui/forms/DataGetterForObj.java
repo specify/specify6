@@ -173,11 +173,21 @@ public class DataGetterForObj implements DataObjectGettable
                             if (value instanceof PersistentSet) {
                             	PersistentSet vSet = (PersistentSet)value;
                             	if (vSet.getSession() != null && !vSet.isDirty()) {
-                            		for (Object v : vSet) {
-                            			if (v instanceof FormDataObjIFace) {
-                            				((FormDataObjIFace)v).forceLoad();
-                            			}
-                            		}
+                                	int loadCode = dataObj instanceof FormDataObjIFace 
+                                			? ((FormDataObjIFace)dataObj).shouldForceLoadChildSet(getter)
+                                			: -1;
+                                	if (loadCode != 0) {
+                                		int max = loadCode == -1 ? vSet.size() : loadCode + 1;
+                                		int i = 0;
+                                		for (Object v : vSet) {
+                                			if (v instanceof FormDataObjIFace) {
+                                				((FormDataObjIFace)v).forceLoad();
+                                			}
+                                			if (++i == max) {
+                                				break;
+                                			}
+                                		}
+                                	}
                             	}
                             }
                         }

@@ -20,6 +20,7 @@
 package edu.ku.brc.af.ui.forms;
 
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 
 import edu.ku.brc.specify.datamodel.Agent;
@@ -175,6 +176,15 @@ public interface FormDataObjIFace
      * Asks the object to force load any children object while in the context of a session.
      */
     public abstract void forceLoad();
+    
+    /**
+     * 
+     * @param getter
+     * @return 0 if set members should not be forceLoaded
+     * 	       -1 if all set members should be forceLoaded
+     * 			n if at most n set members should be forceLoaded  
+     */
+    public abstract int shouldForceLoadChildSet(Method getter);
     
     /**
      * @return

@@ -853,11 +853,20 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         
     }
     
+    
     //-------------------------------------------------------------------
     //-- WebLinkProviderIFace
     //-------------------------------------------------------------------
 
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#forceLoadChildSet(java.lang.reflect.Method)
+	 */
+	@Override
+	public int shouldForceLoadChildSet(Method getter) {
+		return -1;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.weblink.WebLinkDataProviderIFace#getWebLinkData(java.lang.String)
      */
     public String getWebLinkData(final String dataName)
