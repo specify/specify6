@@ -1220,7 +1220,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             		sers.add(ser);
             	}
             }
-            if (!"".equals(result)) {
+            if (!"".equals(result) && !(fieldQRI instanceof TreeLevelQRI)) {
             	result = fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()) + " " + operatorStr + "(" + result + ")";
             }
             for (Pair<String, String> ser : sers) {
