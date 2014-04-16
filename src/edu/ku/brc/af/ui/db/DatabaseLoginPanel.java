@@ -1228,6 +1228,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             boolean isLoggedIn       = false;
             boolean timeOK           = false;
             boolean isLoginCancelled = false;
+            boolean isLoginFailed    = false;
             
             Pair<String, String> usrPwd = null;
 
@@ -1280,6 +1281,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                 } else if (usrPwd == null)
                 {
                     isLoginCancelled = true;
+                    isLoginFailed = true;
                     return null;
                 }
 
@@ -1409,7 +1411,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         {
                             doCheckPermissions(usrPwd);
                         }
-                    } else { 
+                    } else if (!isLoginFailed) { 
                     	if (dbListener != null) {
                     		dbListener.cancelled();
                     	}
