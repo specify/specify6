@@ -141,8 +141,6 @@ public class ImageSetupDlg extends CustomDialog
         
         super.createUI();
         
-        okBtn.setEnabled(isValidInput(textfield.getText()));
-        
         ButtonGroup group = new ButtonGroup();
         group.add(useAttchmentMgrRB);
         group.add(useDirectUrlRB);
@@ -164,6 +162,10 @@ public class ImageSetupDlg extends CustomDialog
         // Set Data into form or initialize it
         String typeStr     = AppPreferences.getRemote().get(getRemoteImageURLTypePrefName(), null);
         String imgURLPath  = AppPreferences.getRemote().get(getRemoteImageURLPrefName(), null);
+        
+        //System.out.println(String.format("%s=%s", getRemoteImageURLTypePrefName(), typeStr));
+        //System.out.println(String.format("%s=%s", getRemoteImageURLPrefName(), imgURLPath));
+
         if (isNotEmpty(typeStr) && isNotEmpty(imgURLPath))
         {
             textfield.setText(imgURLPath);
@@ -175,7 +177,8 @@ public class ImageSetupDlg extends CustomDialog
         {
             fillWithDefaultAttMgr();
         }
-
+        
+        okBtn.setEnabled(isValidInput(textfield.getText()));
     }
     
     private void fillWithDefaultAttMgr()
@@ -331,10 +334,10 @@ public class ImageSetupDlg extends CustomDialog
     {
         if (!textfield.getText().isEmpty())
         {
-            System.out.println(String.format("%s=%s", getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT));
-            System.out.println(String.format("%s=%s", getRemoteImageURLPrefName(), textfield.getText()));
-            AppPreferences.getGlobalPrefs().put(getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT);
-            AppPreferences.getGlobalPrefs().put(getRemoteImageURLPrefName(),     textfield.getText());
+            //System.out.println(String.format("%s=%s", getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT));
+            //System.out.println(String.format("%s=%s", getRemoteImageURLPrefName(), textfield.getText()));
+            AppPreferences.getRemote().put(getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT);
+            AppPreferences.getRemote().put(getRemoteImageURLPrefName(),     textfield.getText());
             statusLbl.setText("");
             super.okButtonPressed();   
          }

@@ -29,6 +29,32 @@ CREATE TABLE `geo` (
 `TotalCOCnt` INTEGER,
 `NumObjs` INTEGER,
 `NodeNum` INTEGER,
+`HighNodeNum` INTEGER,
+`ContinentId` INTEGER,
+`CountryId` INTEGER,
+`Latitude` REAL,
+`Longitude` REAL
+);
+
+CREATE TABLE `litho` (
+`_id` INTEGER PRIMARY KEY, 
+`FullName` TEXT,
+`RankID` INTEGER,
+`ParentID` INTEGER,
+`TotalCOCnt` INTEGER,
+`NumObjs` INTEGER,
+`NodeNum` INTEGER,
+`HighNodeNum` INTEGER
+);
+
+CREATE TABLE `gtp` (
+`_id` INTEGER PRIMARY KEY, 
+`FullName` TEXT,
+`RankID` INTEGER,
+`ParentID` INTEGER,
+`TotalCOCnt` INTEGER,
+`NumObjs` INTEGER,
+`NodeNum` INTEGER,
 `HighNodeNum` INTEGER
 );
 
@@ -77,10 +103,19 @@ CREATE TABLE `colobj` (
 `LocID` INTEGER,
 `CollectorID` INTEGER,
 `CountryID` INTEGER,
+`ContinentID` INTEGER,
 `FamilyID` INTEGER,
 `GeoID` INTEGER,
 `StateID` INTEGER
 );
+
+CREATE TABLE `paleo` (
+`_id` INTEGER PRIMARY KEY,
+`LithoID` INTEGER,
+`ChronosID` INTEGER,
+`BioStratID` INTEGER
+);
+
 
 CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US');
 INSERT INTO "android_metadata" VALUES('en_US');

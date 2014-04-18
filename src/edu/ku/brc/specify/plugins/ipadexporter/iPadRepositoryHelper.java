@@ -104,7 +104,7 @@ public class iPadRepositoryHelper
     private String                  writeURLStr = baseURLStr + "handler.php";
     //private String                  delURLStr   = null;
     
-    private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", "colmgr", "icon", "curator"};
+    private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", "colmgr", "icon", "curator", "disptype"};
     private String[]                values  = new String[symbols.length];
     
     static
@@ -358,6 +358,7 @@ public class iPadRepositoryHelper
             values[6] = StringUtils.isEmpty(names.second) ? agent.toString() : names.second;//colMgr != null ? colMgr.toString() : values[5];
             values[7] = iconName;
             values[8] = StringUtils.isEmpty(names.first) ? agent.toString() : names.first;
+            values[9] = disp.getType();
             
             for (int i=0;i<values.length;i++)
             {

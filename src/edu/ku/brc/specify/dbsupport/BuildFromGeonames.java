@@ -31,7 +31,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
+import java.util.prefs.BackingStoreException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -687,7 +690,7 @@ public class BuildFromGeonames
      * @param doAsynchronously whether it is done asynchronously in the background
      * @return true if build correctly.
      */
-    public boolean loadGeoNamesDB()
+    public boolean loadGeoNamesDB(final String databaseName)
     {
         // See if date of file matches the last time the file was restored
         boolean isDatesMatch = true;
@@ -712,12 +715,12 @@ public class BuildFromGeonames
             dbMgr = DBMSUserMgr.getInstance();
             if (dbMgr == null) return false;
             
-            String               dbName = currDBConn.getDatabaseName();
+            String dbName = databaseName != null ? databaseName : currDBConn.getDatabaseName();
             //DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword); // opens and closes connection
             
             if (!dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName(), dbName, currDBConn.isEmbedded()))
             {
-                UIRegistry.showError("Unable to login as IT user.");
+                UIRegistry.showError("Unable to login as IT user. ");
                 return false;
             }
 
@@ -748,9 +751,9 @@ public class BuildFromGeonames
             
             if (isDBOk)
             {
-                if (dbMgr.doesDBHaveTable("geoname"))
+                if (dbMgr.doesDBHaveTable(dbName, "geoname"))
                 {
-                    isGeoNameTableOK = BasicSQLUtils.getCountAsInt(CNT_SQL) > 30000;
+                    isGeoNameTableOK = BasicSQLUtils.getCountAsInt(currDBConn.getConnection(), CNT_SQL) > 30000;
                 }
                 shouldLoadGeoNames = !isGeoNameTableOK || !isDatesMatch;
             } else
@@ -775,14 +778,29 @@ public class BuildFromGeonames
             BackupServiceFactory bsf = BackupServiceFactory.getInstance();
             bsf.setUsernamePassword(itUsername, itPassword);
             
-            String  dbName = DBConnection.getInstance().getDatabaseName();
+            //String  dbName = DBConnection.getInstance().getDatabaseName();
             
             // 2nd to last 'true' - does it synchronously, last boolean 'false' means drop database
-            boolean status = bsf.doRestoreBulkDataInBackground(dbName, null, file.getAbsolutePath(), null, null, null, true, false);
+            DBConnection currDBConn = DBConnection.getInstance();
+            String       dbName     = databaseName != null ? databaseName : currDBConn.getDatabaseName();
+            boolean      status     = bsf.doRestoreBulkDataInBackground(dbName, null, file.getAbsolutePath(), null, null, null, true, false);
+            if (status)
+            {
+            	//File createFile = bsf.getUnzippedFileByName("continentCodes.txt");
+            	buildISOCodes();
+            }
             
             AppPreferences appPrefs = getGlobalPrefs();
-            if (appPrefs != null) appPrefs.getGlobalPrefs().putLong(GEONAMES_DATE_PREF, status ? file.lastModified() : 0);
-            
+            if (appPrefs != null)
+            {
+            	appPrefs.putLong(GEONAMES_DATE_PREF, status ? file.lastModified() : 0);
+            	try 
+            	{
+					appPrefs.flush();
+				} catch (BackingStoreException e) {
+					e.printStackTrace();
+				}
+            }
             // Clear IT Username and Password
             bsf.setUsernamePassword(null, null);
             
@@ -822,21 +840,58 @@ public class BuildFromGeonames
                             {
                                 isFieldOK = false;
                             }
+                        } else 
+                        {
+                        	int numMissingISOCodes = BasicSQLUtils.getCountAsInt(currDBConn.getConnection(), "SELECT COUNT(*) FROM geoname WHERE ISOCode IS NULL");
+                        	if (numMissingISOCodes == 0)
+                        	{
+                                dbMgr.close();
+                                return;
+                        	}
                         }
                         
                         if (isFieldOK)
                         {
-                            // Do Continents
-                            String[] contCodes = {"AF", "Africa", "AS", "Asia", "EU", "Europe", "NA", "North America", "SA", "South America", "OC", "Oceania", "AN", "Antarctica"};
-                            for (int i=0;i<contCodes.length;i++)
+                        	Vector<Object[]> rowData = BasicSQLUtils.query("SELECT code, name, geonameId FROM continentCodes");
+                        	// Do Continents and Oceans
+                            for (Object[] cols : rowData)
                             {
-                                BasicSQLUtils.update(String.format("UPDATE geoname SET ISOCode='%s' WHERE asciiname = '%s'", contCodes[i], contCodes[i+1]));
-                                i += 1;
+                            	String iso  = cols[0].toString();
+                            	String name = cols[1].toString();
+                            	StringBuilder str = new StringBuilder(String.format("UPDATE geoname SET ISOCode='%s' WHERE ", iso));
+                            	String sql = "";
+                            	if (name.contains("Ocean") && !name.contains("Oceania"))
+                            	{
+                            		str.append(String.format("asciiname LIKE '|%s' AND fcode = 'OCN'", name));
+                            		sql = str.toString().replace("|", "%"); 
+                            	} else
+                            	{
+                            		str.append("geonameId = " + cols[2]);
+                            		sql = str.toString();
+                            	}
+                            	System.out.println(sql);
+                                int rv = BasicSQLUtils.update(sql);
+                                if (rv < 1)
+                                {
+                                	log.error("Can't update geoname: "+sql);
+                                }
                             }
-                            if (true) { dbMgr.close(); return;}
+                            String sql = "SELECT geonameId, country FROM geoname WHERE fcode = 'GULF' AND country IS NOT NULL AND LENGTH(country) > 0";
+                            for (Object[] cols : BasicSQLUtils.query(sql))
+                            {
+                            	String id  = cols[0].toString();
+                            	String iso = cols[1].toString();
+                            	sql        = String.format("UPDATE geoname SET ISOCode='%s' WHERE geonameId = %s", iso, id);
+                            	System.out.println(sql);
+                                int rv = BasicSQLUtils.update(sql);
+                                if (rv < 1)
+                                {
+                                	log.error("Can't update geoname: "+sql);
+                                }
+                            }
                             
-                            String sql = "SELECT g.geonameId, g.fcode, g.country, g.admin1, g.admin2 FROM geoname g " +
-                                         "ORDER BY g.country ASC, g.fcode DESC, g.admin1 ASC, g.admin2 ASC";
+                            sql = "SELECT g.geonameId, g.fcode, g.country, g.admin1, g.admin2 FROM geoname g WHERE ISOCode IS NULL " +
+                                  "ORDER BY g.country ASC, g.fcode DESC, g.admin1 ASC, g.admin2 ASC";
                             pStmt = conn.prepareStatement("UPDATE geoname SET ISOCode=? WHERE geonameId = ?");
                             stmt  = conn.createStatement();
                             rs    = stmt.executeQuery(sql);

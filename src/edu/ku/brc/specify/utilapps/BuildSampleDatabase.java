@@ -3832,7 +3832,7 @@ public class BuildSampleDatabase
             
             try
             {
-                if (bldGeoNames.loadGeoNamesDB()) // done synchronously
+                if (bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog())) // done synchronously
                 {
                     bldGeoNames.build(earth.getId());
                 }

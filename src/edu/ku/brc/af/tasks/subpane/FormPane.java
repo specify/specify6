@@ -300,8 +300,10 @@ public class FormPane extends DroppableTaskPane
         this.recordSet = recordSet;
         
         UsageTracker.incrUsageCount("DE.VIEW."+viewName+".RS");
-        
-        multiView.getCurrentView().setRecordSet(recordSet);
+        if (multiView != null && multiView.getCurrentView() != null)
+        {
+        	multiView.getCurrentView().setRecordSet(recordSet);
+        }
     }
 
     /* (non-Javadoc)

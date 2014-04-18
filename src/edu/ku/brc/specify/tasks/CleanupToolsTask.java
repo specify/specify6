@@ -453,7 +453,7 @@ public class CleanupToolsTask extends BaseTask
             discipline = session.get(Discipline.class, discipline.getId());
             BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, "root", "root", frame);
             
-            if (bldGeoNames.loadGeoNamesDB()) // done synchronously
+            if (bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog())) // done synchronously
             {
                 int earthId = BasicSQLUtils.getCountAsInt("SELECT GeographyID FROM geography WHERE RankID = 0 AND GeographyTreeDefID = "+discipline.getGeographyTreeDef().getId());
                 

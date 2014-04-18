@@ -162,8 +162,13 @@ public class GeoChooserDlg extends CustomDialog
         this.countryCount = countryCount;
         this.countryTotal = countryTotal;
         
-        String sql = "SELECT Name FROM geographytreedefitem WHERE RankID IN (200,300,400) AND GeographyTreeDefID = GEOTREEDEFID ORDER BY RankID ASC";
+        String sql = "SELECT Name FROM geographytreedefitem WHERE RankID IN (100,200,300,400) AND GeographyTreeDefID = GEOTREEDEFID ORDER BY RankID ASC";
         i18NLabels = querySingleCol(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
+        int rankInx = rankId / 100;
+        if (rankInx > 0 && rankInx < 4)
+        {
+        	setTitle("Choose "+i18NLabels.get(rankInx - 1));
+        }
     }
 
     /* (non-Javadoc)
@@ -197,10 +202,14 @@ public class GeoChooserDlg extends CustomDialog
             
             switch (rankId)
             {
+            	case 100:
+            		whereStr  = String.format("WHERE fcode = 'CONT'");
+            		break;
+            		
                 case 200:
                     selectStr = "SELECT geonameId, name, iso_alpha2 FROM countryinfo ";
-                    orderStr = "ORDER BY name";
-                    geoName = parentNames[level];
+                    orderStr  = "ORDER BY name";
+                    geoName   = parentNames[level];
                     break;
                     
                 case 300: {
@@ -232,23 +241,29 @@ public class GeoChooserDlg extends CustomDialog
             char   firstChar = nameStr.charAt(0);
             String twoChars  = nameStr.substring(0, 2);
             
-            labels.add(i18NLabels.get(0).toString());
-            switch (rankId)
+            if (rankId == 100)
             {
-                case 200:   // Country
-                    break;
-                    
-                case 300:   // State 
-                    labels.add(parentNames[0]);
-                    labels.add(i18NLabels.get(1).toString());
-                    break;
-                    
-                case 400: { // County
-                    labels.add(parentNames[0]);
-                    labels.add(i18NLabels.get(1).toString());
-                    labels.add(!isMissingState ? parentNames[1] : "(Missing)");
-                    labels.add(i18NLabels.get(2).toString());
-                } break;
+            	labels.add(i18NLabels.get(0).toString());
+            } else
+            {
+	            labels.add(i18NLabels.get(1).toString());
+	            switch (rankId)
+	            {
+		            case 200:   // Country
+		                break;
+	                
+	                case 300:   // State 
+	                    labels.add(parentNames[0]);
+	                    labels.add(i18NLabels.get(2).toString());
+	                    break;
+	                    
+	                case 400: { // County
+	                    labels.add(parentNames[0]);
+	                    labels.add(i18NLabels.get(2).toString());
+	                    labels.add(!isMissingState ? parentNames[1] : "(Missing)");
+	                    labels.add(i18NLabels.get(3).toString());
+	                } break;
+	            }
             }
             
             setCloseOnHelpClk(true);
@@ -261,7 +276,7 @@ public class GeoChooserDlg extends CustomDialog
             dlm      = new DefaultListModel();
             mainList = new JList(dlm);
     
-            if (rankId > 200)
+            if (rankId == 100 || rankId > 200)
             {
                 Statement stmt = readConn.createStatement();
                 coInfoList = new Vector<Triple<String, Integer, String>>();
