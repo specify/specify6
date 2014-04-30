@@ -362,12 +362,13 @@ public class BuildSearchIndex2
      */
     private String getAbbreviation(String inStr, int len, List<String> used)
     {
-    	String[] bad = {"°", ",", " ", "°","\\","{","}","[","]",";",":","\"","'","!","@","#","$","%","^","&","*","(",")","+","=","|","/","?","<",">","~","`","."};
+    	String[] bad = {"°", ",", "°","\\","{","}","[","]",";",":","\"","'","!","@","#","$","%","^","&","*","(",")","+","=","|","/","?","<",">","~","`","."};
     	String str = inStr;
     	for (String b : bad) 
     	{
-    		str.replace(b, "_");
+    		str = str.replace(b, "_");
     	}
+    	str = str.replace(" ", "");
     	String abbr = str.substring(0, 1).toLowerCase();
     	int c = 1;
     	int lastUsed = 1;
