@@ -38,6 +38,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
 import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
+import edu.ku.brc.specify.tasks.subpane.wb.WBJRIReportConnection;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -94,7 +95,7 @@ public class ReportRepeatPanel extends JPanel
         for (int f = 0; f < connection.getFields(); f++)
         {
         	JRConnectionFieldDef fld = connection.getField(f);
-            if (Number.class.isAssignableFrom(fld.getFldClass()))
+            if (isValidRepeatFld(connection, fld))
             {
                 result.add(fld);
             }
@@ -102,6 +103,22 @@ public class ReportRepeatPanel extends JPanel
         return result;
     }
 
+    /**
+     * @param connection
+     * @param fld
+     * @return
+     */
+    protected boolean isValidRepeatFld(final SpJRIReportConnection connection, final JRConnectionFieldDef fld) {
+    	if (connection instanceof WBJRIReportConnection) {
+    		return true;
+    	} else {
+    		return Number.class.isAssignableFrom(fld.getFldClass());
+    	}
+    }
+    
+    /**
+     * @return
+     */
     protected String[] getTypeChoices()
     {
         if (validFields.size() > 0)

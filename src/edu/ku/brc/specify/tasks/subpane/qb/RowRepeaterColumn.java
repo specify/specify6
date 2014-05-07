@@ -50,7 +50,14 @@ public class RowRepeaterColumn implements RowRepeater
             int numVal = ((Number )val).intValue();
             //if <=0 then just return 1. No erasing or backing up or whatever-
             return numVal <= 0 ? 1 : numVal;
+        } 
+        try {
+        	int numVal = Integer.valueOf(val.toString()).intValue();
+            return numVal <= 0 ? 1 : numVal;
+        } catch (NumberFormatException fex) {
+        		//just return 1 below
         }
+        
         return 1; // Or 0?? Or blow up??
     }
 
