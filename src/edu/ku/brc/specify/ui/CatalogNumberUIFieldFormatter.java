@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.Vector;
 
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
@@ -45,11 +47,17 @@ public class CatalogNumberUIFieldFormatter extends BaseUIFieldFormatter implemen
      */
     public CatalogNumberUIFieldFormatter()
     {
+    	//this(14);
+    	this(9);
+    }
+
+    public CatalogNumberUIFieldFormatter(int length)
+    {
         super();
         this.name          = "NumericCatalogFormatter"; //$NON-NLS-1$
         this.title         = UIRegistry.getResourceString("CatalogNumberUIFieldFormatter.NumericCatalogFormatter"); //$NON-NLS-1$;
         this.isIncrementer = true;
-        this.length        = 9;
+        this.length        = length;
         this.uiLength      = length;
         this.isNumericCatalogNumber = true;
         this.autoNumber    = null;
@@ -64,7 +72,23 @@ public class CatalogNumberUIFieldFormatter extends BaseUIFieldFormatter implemen
             incPos     = new Pair<Integer, Integer>(0, length);
         }
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.BaseUIFieldFormatter#setLength(int)
+     */
+    public void setLength(int length)
+    {
+    	this.length = length;
+        pattern = UIFieldFormatterMgr.getFormatterPattern(isIncrementer, UIFieldFormatterField.FieldType.numeric, length);
+        if (isNumericCatalogNumber)
+        {
+            field      = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, length, pattern, isIncrementer, false); 
+            fields     = new Vector<UIFieldFormatterField>();
+            fields.add(field);
+            incPos     = new Pair<Integer, Integer>(0, length);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.BaseUIFieldFormatter#getDataClass()
      */
@@ -73,6 +97,16 @@ public class CatalogNumberUIFieldFormatter extends BaseUIFieldFormatter implemen
     {
         return CollectionObject.class;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.ui.BaseUIFieldFormatter#addAttrToXML(java.lang.StringBuilder)
+	 */
+	@Override
+	protected void addAttrToXML(StringBuilder sb) {
+		super.addAttrToXML(sb);
+        xmlAttr(sb, "length", getLength()); //$NON-NLS-1$
+
+	}
     
     
 }

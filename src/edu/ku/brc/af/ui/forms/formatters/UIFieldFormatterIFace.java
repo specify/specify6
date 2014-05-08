@@ -135,6 +135,11 @@ public interface UIFieldFormatterIFace
     public abstract int getLength();
     
     /**
+     * @param length
+     */
+    public abstract void setLength(int length);
+    
+    /**
      * Return true if the length is ok, for some formatters the length may not matter.
      * @param lengthOfData the length of the data string
      * @return true if it is ok (even though it may not be equal), false if it isn't ok.

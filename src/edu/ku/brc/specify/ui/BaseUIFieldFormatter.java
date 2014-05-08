@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
+import java.math.BigInteger;
 import java.text.DecimalFormatSymbols;
 import java.util.Vector;
 
@@ -230,7 +231,15 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         return length;
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setLength(int)
+	 */
+	@Override
+	public void setLength(int length) {
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#resetLength()
      */
     @Override
@@ -359,9 +368,12 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                     	return String.format(fmtStr, Float.parseFloat((String)data));
                     }
                     
+                    //String fmtStr = "%0" + length + "d"; //$NON-NLS-1$ //$NON-NLS-2$
+                    //return String.format(fmtStr, Integer.parseInt((String)data));
+
                     String fmtStr = "%0" + length + "d"; //$NON-NLS-1$ //$NON-NLS-2$
-                    return String.format(fmtStr, Integer.parseInt((String)data));
-                    
+                    return String.format(fmtStr, new BigInteger((String)data));
+
                 }
             }
         }
@@ -578,6 +590,18 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         return UIFieldFormatter.isValid(this, value, false);
     }
 
+    /**
+     * @param sb
+     */
+    protected void addAttrToXML(final StringBuilder sb) {
+        xmlAttr(sb, "system", true); //$NON-NLS-1$
+        xmlAttr(sb, "name", name); //$NON-NLS-1$
+        xmlAttr(sb, "class", CollectionObject.class.getName()); //$NON-NLS-1$
+        xmlAttr(sb, "fieldname", getFieldName()); //$NON-NLS-1$
+        xmlAttr(sb, "default", isDefault); //$NON-NLS-1$
+    }
+    
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toXML(java.lang.StringBuilder)
      */
@@ -585,11 +609,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     public void toXML(final StringBuilder sb)
     {
         sb.append("  <format"); //$NON-NLS-1$
-        xmlAttr(sb, "system", true); //$NON-NLS-1$
-        xmlAttr(sb, "name", name); //$NON-NLS-1$
-        xmlAttr(sb, "class", CollectionObject.class.getName()); //$NON-NLS-1$
-        xmlAttr(sb, "fieldname", getFieldName()); //$NON-NLS-1$
-        xmlAttr(sb, "default", isDefault); //$NON-NLS-1$
+        addAttrToXML(sb);
         sb.append(">\n"); //$NON-NLS-1$
         if (autoNumber != null)
         {

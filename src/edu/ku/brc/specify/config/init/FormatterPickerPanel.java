@@ -38,8 +38,12 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -75,6 +79,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected JLabel    isNumericLbl    = createLabel(" ");
     protected JLabel    patternLbl      = createLabel(" ");
     protected JLabel    autoIncLbl      = createLabel(" ");
+    protected JSpinner  lenSpin         = new JSpinner(new SpinnerNumberModel(9,9,20,1));
+    protected JLabel	lenTitleLbl     = null;
     
     protected boolean                     doingCatNums;
     protected List<UIFieldFormatterIFace> fmtList;
@@ -112,7 +118,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
         loadFormatCbx(null);
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p,2px,p"), this);
         
         int y = 1;
         String label = getResourceString(doingCatNums ? "CHOOSE_FMT_CAT" : "CHOOSE_FMT_ACC");
@@ -129,6 +135,37 @@ public class FormatterPickerPanel extends BaseSetupPanel
         {
             pb.add(createI18NFormLabel("IS_NUM", SwingConstants.RIGHT), cc.xy(1, y));
             pb.add(isNumericLbl, cc.xy(3, y));
+            y +=2;
+            lenTitleLbl = createI18NFormLabel("NUM_LEN", SwingConstants.RIGHT);
+            pb.add(lenTitleLbl, cc.xy(1, y));
+            UIHelper.setControlSize(lenSpin);
+            lenSpin.addChangeListener(new ChangeListener() {
+
+				/* (non-Javadoc)
+				 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+				 */
+				@Override
+				public void stateChanged(ChangeEvent e) {
+	                int index = formatterCBX.getSelectedIndex();
+	                UIFieldFormatterIFace fmt = null;
+	                if (index > (doingCatNums ? 0 : 1))
+	                {
+	                    fmt = fmtList.get(index - (doingCatNums ? 1 : 2));
+	                    //condition should be the only possibility but...
+	                    if (fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
+	                    {
+	                    	fmt.setLength((Integer)lenSpin.getValue());
+	                        lenSpin.setValue(fmt.getLength());
+	                        patternLbl.setText(fmt.toPattern());
+	                    }
+	                }
+	                lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
+				}
+            	
+            });
+            pb.add(lenSpin, cc.xy(3, y));
+            lenSpin.setVisible(false);
+            lenTitleLbl.setVisible(false);
             y +=2;
         }
         
@@ -198,17 +235,20 @@ public class FormatterPickerPanel extends BaseSetupPanel
             public void actionPerformed(ActionEvent e)
             {
                 int index = formatterCBX.getSelectedIndex();
+                UIFieldFormatterIFace fmt = null;
                 if (index > (doingCatNums ? 0 : 1))
                 {
-                    UIFieldFormatterIFace fmt = fmtList.get(index - (doingCatNums ? 1 : 2));
+                    fmt = fmtList.get(index - (doingCatNums ? 1 : 2));
                     if (fmt != null)
                     {
                         isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "YES" : "NO"));
+                        lenSpin.setValue(fmt.getLength());
                         patternLbl.setText(fmt.toPattern());
                         autoIncLbl.setText(getResourceString(fmt.isIncrementer() ? "YES" : "NO"));
                     }
                 }
-                
+                lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
+                lenTitleLbl.setVisible(lenSpin.isVisible());
                 if (formatterCBX.getSelectedIndex() == newFmtInx)
                 {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -247,7 +287,6 @@ public class FormatterPickerPanel extends BaseSetupPanel
         {
             fmtList.add(newFormatter);
         }
-        
         Collections.sort(fmtList, new Comparator<UIFieldFormatterIFace>() {
             @Override
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
@@ -296,6 +335,17 @@ public class FormatterPickerPanel extends BaseSetupPanel
         wasUsed = true;
     }
     
+    private boolean needToGetFormatterObject(UIFieldFormatterIFace f) {
+    	boolean result = true;
+    	if (f != newFormatter) {
+    		result = false;
+    		if (doingCatNums) {
+    			result = f != null && f.getName().equals("CatalogNumberNumeric") && f.getLength() != 9;
+    		}
+    	}
+    	return result;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues()
      */
@@ -304,13 +354,25 @@ public class FormatterPickerPanel extends BaseSetupPanel
     {
         if (wasUsed)
         {
-            if (doingCatNums)
+            String selectedFormatName = (String)formatterCBX.getSelectedItem();
+            UIFieldFormatterIFace selectedFormat = newFormatter;
+            if (selectedFormatName != null) {
+            	for (UIFieldFormatterIFace f : fmtList) {
+            		if (selectedFormatName.equals(f.getName())) {
+            			if (needToGetFormatterObject(f)) {
+            				selectedFormat = f;
+            			}             			
+            			break;
+            		}
+            	}
+            }
+        	if (doingCatNums)
             {
-                props.put("catnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
+                props.put("catnumfmt", selectedFormat != null ? selectedFormat : formatterCBX.getSelectedItem());
                 
             } else if (formatterCBX.getSelectedIndex() > 1)
             {
-                props.put("accnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
+                props.put("accnumfmt", selectedFormat != null ? selectedFormat : formatterCBX.getSelectedItem());
             } else
             {
                 props.remove("accnumfmt");

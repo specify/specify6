@@ -574,6 +574,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         String  dataClassName = formatElement .attributeValue("class");
         int     precision = XMLHelper.getAttr(formatElement, "precision", 12);
         int     scale     = XMLHelper.getAttr(formatElement, "scale", 2);
+        String length    = XMLHelper.getAttr(formatElement, "length", null);
         boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
         boolean isSystem  = XMLHelper.getAttr(formatElement, "system", false);
 
@@ -589,7 +590,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                     formatter.setName(name);
                     formatter.setAutoNumber(createAutoNum(formatElement, name, dataClassName, fieldName, formatter.getFields().size() == 1));
                     formatter.setDefault(isDefault);
-                    
+                    if (length != null) {
+                    	formatter.setLength(Integer.valueOf(length));
+                    }
                     hash.put(name, formatter);
 
                 } catch (Exception ex)

@@ -476,7 +476,15 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         return getLength();
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setLength(int)
+	 */
+	@Override
+	public void setLength(int length) {
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getIncPosition()
      */
     @Override
