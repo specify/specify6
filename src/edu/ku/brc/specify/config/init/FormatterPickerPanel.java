@@ -118,7 +118,9 @@ public class FormatterPickerPanel extends BaseSetupPanel
         loadFormatCbx(null);
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p,2px,p"), this);
+        //removing wiz changes for #9604
+        //PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p,2px,p"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p"), this);
         
         int y = 1;
         String label = getResourceString(doingCatNums ? "CHOOSE_FMT_CAT" : "CHOOSE_FMT_ACC");
@@ -136,14 +138,13 @@ public class FormatterPickerPanel extends BaseSetupPanel
             pb.add(createI18NFormLabel("IS_NUM", SwingConstants.RIGHT), cc.xy(1, y));
             pb.add(isNumericLbl, cc.xy(3, y));
             y +=2;
+            
+            /* removing wiz changes for #9604...
             lenTitleLbl = createI18NFormLabel("NUM_LEN", SwingConstants.RIGHT);
             pb.add(lenTitleLbl, cc.xy(1, y));
             UIHelper.setControlSize(lenSpin);
             lenSpin.addChangeListener(new ChangeListener() {
 
-				/* (non-Javadoc)
-				 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-				 */
 				@Override
 				public void stateChanged(ChangeEvent e) {
 	                int index = formatterCBX.getSelectedIndex();
@@ -166,7 +167,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
             pb.add(lenSpin, cc.xy(3, y));
             lenSpin.setVisible(false);
             lenTitleLbl.setVisible(false);
-            y +=2;
+            y +=2; */
         }
         
         pb.add(createI18NFormLabel("PATTERN", SwingConstants.RIGHT), cc.xy(1, y));
@@ -242,13 +243,19 @@ public class FormatterPickerPanel extends BaseSetupPanel
                     if (fmt != null)
                     {
                         isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "YES" : "NO"));
-                        lenSpin.setValue(fmt.getLength());
+                        
+                        //removing wiz changes for #9604
+                        //lenSpin.setValue(fmt.getLength());
+                        
                         patternLbl.setText(fmt.toPattern());
                         autoIncLbl.setText(getResourceString(fmt.isIncrementer() ? "YES" : "NO"));
                     }
                 }
+                
+                /* removing wiz changes for #9604
                 lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
-                lenTitleLbl.setVisible(lenSpin.isVisible());
+                lenTitleLbl.setVisible(lenSpin.isVisible()); */
+                
                 if (formatterCBX.getSelectedIndex() == newFmtInx)
                 {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -335,6 +342,10 @@ public class FormatterPickerPanel extends BaseSetupPanel
         wasUsed = true;
     }
     
+    /**
+     * @param f
+     * @return
+     */
     private boolean needToGetFormatterObject(UIFieldFormatterIFace f) {
     	boolean result = true;
     	if (f != newFormatter) {
