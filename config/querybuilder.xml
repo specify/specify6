@@ -80,7 +80,9 @@
         <table name="BorrowAttachment" field="borrowAttachments">
             <alias name="Attachment"/>
         </table>
-        <table name="BorrowMaterial" field="borrowMaterials"/>
+        <table name="BorrowMaterial" field="borrowMaterials">
+        	<table name="BorrowReturnMaterial" field="borrowReturnMaterials"/>
+        </table>
         <alias name="Shipment" field="shipments"/>
     </table>
     
