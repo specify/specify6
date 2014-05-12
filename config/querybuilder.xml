@@ -418,6 +418,7 @@
     <table name="PaleoContext" flags="paleo">
     	<alias name="GeologicTimePeriod" field="bioStrat"/>
     	<alias name="GeologicTimePeriod" field="chronosStrat"/>
+    	<alias name="GeologicTimePeriod" field="chronosStratEnd"/>
     	<alias name="LithoStrat"/>
     </table>
     	
