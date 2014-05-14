@@ -49,8 +49,6 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
@@ -62,6 +60,7 @@ import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -1089,6 +1088,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     public String getUniqueRecordSetName(final String intialName)
     {
         String rsName = null;
+        DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(RecordSet.getClassTableId()).getFieldByColumnName("Name");
+        int maxLen = fi == null ? 64 : fi.getLength();
         do 
         {
             rsName = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("RecordSetTask.ASKFORNAME")+":", intialName);
@@ -1102,6 +1103,13 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             {
                 UIRegistry.displayLocalizedStatusBarError("INVALID_CHARS_NAME");
                 UIRegistry.displayErrorDlgLocalized("INVALID_CHARS_NAME");
+                Toolkit.getDefaultToolkit().beep();
+                continue;
+            }
+            
+            if (rsName.length() > maxLen) {
+                UIRegistry.displayStatusBarErrMsg(String.format(UIRegistry.getResourceString("RecordSetTask.RS_NAME_TOO_LONG"), maxLen));
+                UIRegistry.displayErrorDlg(String.format(UIRegistry.getResourceString("RecordSetTask.RS_NAME_TOO_LONG"), maxLen));
                 Toolkit.getDefaultToolkit().beep();
                 continue;
             }
