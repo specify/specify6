@@ -1,5 +1,8 @@
 package edu.ku.brc.specify.tools.webportal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
@@ -21,6 +24,7 @@ public class ExportMappingInfo
 		final String fldId;
 		final Integer colIdx;
 		final String colName;
+		Boolean recordTyper = null;
 		
 		
 		/**
@@ -197,4 +201,31 @@ public class ExportMappingInfo
 		{
 			return DBTableIdMgr.getInstance().getInfoById(getSpTblId());
 		}
+		
+	    /**
+	     * @return
+	     */
+	    public boolean isRecordTyper() {
+	    	if (recordTyper == null) {
+	    		recordTyper = false;
+	    		DBFieldInfo fi = getFldInfo();
+	    		if (fi != null) {
+	    			Class<?> tblClass = fi.getTableInfo().getClassObj();
+	    			try {
+	    				Method m = tblClass.getMethod("getSpSystemTypeCodeFlds", (Class<?>[])null);
+	    				String[] typerFlds = (String[])m.invoke(null, (Object[])null);
+	    				for (String typerFld : typerFlds) {
+	    					if (typerFld.equalsIgnoreCase(fi.getName())) {
+	    						recordTyper = true;
+	    						break;
+	    					}
+	    				}
+	    			} catch (InvocationTargetException|IllegalAccessException|NoSuchMethodException mex) {
+	    				//must not be a recordTyper
+	    			}
+	    		}
+	    	}
+	    	return recordTyper;
+	    }
+
 	}

@@ -452,12 +452,16 @@ public class BuildSearchIndex2
     		+ "/>";
     }
     
+    
     private String getSolrFldType(ExportMappingInfo info)
     {
     	DBFieldInfo fld = info.getFldInfo();
     	if (fld != null)
     	{
-            if (fld.getTableInfo().getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"))
+            if (info.isRecordTyper()) {
+            	return "string";
+            }
+    		if (fld.getTableInfo().getTableId() == CollectionObject.getClassTableId() && fld.getName().equalsIgnoreCase("catalognumber"))
             {
             	//XXX ouch. What happens if there are multiple collections in a single portal, some with numeric catnums and some string???
             	UIFieldFormatterIFace formatter = fld.getFormatter();

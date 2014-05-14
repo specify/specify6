@@ -68,8 +68,13 @@ public class WebPortalFieldDef
 		
 		if (dbInfo instanceof DBFieldInfo)
 		{
-			this.type = ((DBFieldInfo) dbInfo).getType();
-			this.width = ((DBFieldInfo) dbInfo).getLength();
+			if (mapInfo.isRecordTyper()) {
+				this.type = "java.lang.String";
+				this.width = 60;
+			} else {
+				this.type = ((DBFieldInfo) dbInfo).getType();
+				this.width = ((DBFieldInfo) dbInfo).getLength();
+			}
 
 		} else if (dbInfo instanceof DBRelationshipInfo)
 		{
