@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -339,22 +338,22 @@ public class Scriptlet extends JRDefaultScriptlet
     /**
      * Formats a BigDecimal into a lat/lon with "N","S","E", "W".
      * @param value
-     * @param originalLatLongUnit
+     * @param latLngUnit
      * @param isLat
      * @return
      * @throws JRScriptletException
      */
     public String formatLatLon(final BigDecimal value, 
-                               final Integer    originalLatLongUnit, 
+                               final Integer    latLngUnit, 
                                final boolean    isLat) throws JRScriptletException
     {
         if (value != null) 
         { 
             return LatLonConverter.format(value, 
                                    isLat ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude, 
-                                   LatLonConverter.convertIntToFORMAT(originalLatLongUnit), 
+                                   LatLonConverter.convertIntToFORMAT(latLngUnit), 
                                    LatLonConverter.DEGREES_FORMAT.Symbol, 
-                                   LatLonConverter.DECIMAL_SIZES[originalLatLongUnit]);
+                                   LatLonConverter.DECIMAL_SIZES[latLngUnit]);
         }
         return "";
         //return null;
