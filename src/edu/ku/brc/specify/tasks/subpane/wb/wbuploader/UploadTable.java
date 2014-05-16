@@ -1899,6 +1899,10 @@ public class UploadTable implements Comparable<UploadTable>
                     	}
                     }
                     BigDecimal val = UIHelper.parseDoubleToBigDecimal(fldStr);
+                    if (StringUtils.isNotEmpty(fldStr) && val == null) {
+                    	throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"),
+                    			UploaderException.INVALID_DATA);
+                    }
                     if (isLatLongFld(ufld))
                     {
                     	Double maxVal =  isLatFld(ufld) ? new Double("90") : new Double("180");
