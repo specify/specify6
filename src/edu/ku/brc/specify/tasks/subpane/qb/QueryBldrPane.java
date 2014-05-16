@@ -327,7 +327,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
  
         createUI();
 
-        setupUI();
+        setupUI(false);
         
         CommandDispatcher.register(ReportsBaseTask.REPORTS, this);
     }
@@ -524,6 +524,35 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (saveQuery(false))
                 {
+                	try {
+                		String selId = null;
+                		if (selectedQFP != null && selectedQFP.getQueryField() != null) {
+                			selId = selectedQFP.getQueryField().getStringId();
+                		}
+                		final String selectedFldId = selId;
+                		setupUI(true);
+                		SwingUtilities.invokeLater(new Runnable() {
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run() {
+		                		if (selectedFldId != null) {
+		                			for (QueryFieldPanel qfp : queryFieldItems) {
+		                				if (qfp.getQueryField() != null && selectedFldId.equals(qfp.getQueryField().getStringId())) {
+		                					selectQFP(qfp);
+		                					return;
+		                				}
+		                			}
+		                			selectQFP(queryFieldItems.get(0));
+		                		}
+							}
+                			
+                		});
+                	} catch (Exception ex) {
+                		
+                	}
                 	saveBtn.setEnabled(false);
                 }
             }
@@ -1068,7 +1097,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * 
      */
-    protected void setupUI() throws QueryTask.QueryBuilderContextException
+    protected void setupUI(final boolean isPostSave) throws QueryTask.QueryBuilderContextException
     {
         if (!isHeadless && !SwingUtilities.isEventDispatchThread()) 
         { 
@@ -1236,12 +1265,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 public void run()
                 {
-                    adjustPanelUI(saveBtnEnabled);
+                    adjustPanelUI(saveBtnEnabled, isPostSave);
                 }
             });
         } else
         {
-            adjustPanelUI(saveBtnEnabled);
+            adjustPanelUI(saveBtnEnabled, isPostSave);
         }
     }
     
@@ -1305,11 +1334,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * 
      */
-    protected void adjustPanelUI(boolean saveBtnEnabled)
+    /**
+     * @param saveBtnEnabled
+     * @param selected
+     */
+    protected void adjustPanelUI(boolean saveBtnEnabled, boolean isPostSave)
     {
         //Sorry, but a new context can't be selected if any fields are selected from the current context.
         tableList.setEnabled(queryFieldItems.size() == 0);
-        if (queryFieldItems.size() > 0)
+        if (queryFieldItems.size() > 0 && !isPostSave)
         {
             selectQFP(queryFieldItems.get(0));
         }
@@ -3317,15 +3350,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                                                                 // navbtn
 
                 query.setNamed(true); //XXX this isn't getting persisted!!!!!!!!!
-                if (query.getSpQueryId() != null && saveAs)
-                {
-                    try 
-                    {
-                    	this.setupUI();
-                    } catch (QueryTask.QueryBuilderContextException e) {
-                    	//It can't happen here. 
-                    }
-                }   
+//                if (query.getSpQueryId() != null && saveAs)
+//                {
+//                    try 
+//                    {
+//                    	this.setupUI();
+//                    } catch (QueryTask.QueryBuilderContextException e) {
+//                    	//It can't happen here. 
+//                    }
+//                }   
                 
                 SubPaneMgr.getInstance().renamePane(this, query.getName());
                 
@@ -4942,7 +4975,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 selectedQFP.setSelected(true);
                 selectedQFP.repaint();
-                scrollQueryFieldsToRect(selectedQFP.getBounds());
+                //scrollQueryFieldsToRect(selectedQFP.getBounds());
             }
             updateMoverBtns();
             if (qfp != null)
@@ -5237,7 +5270,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 queryFieldsPanel.doLayout();
                 queryFieldsPanel.validate();
-                scrollQueryFieldsToRect(toMove.getBounds());
+                //scrollQueryFieldsToRect(toMove.getBounds());
                 queryFieldsPanel.repaint();
                 updateMoverBtns();
                 saveBtn.setEnabled(canSave());
@@ -5258,11 +5291,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //        {
 //            queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
 //        }
-        queryFieldsScroll.getViewport().scrollRectToVisible(rect);
+       
+    	queryFieldsScroll.getViewport().scrollRectToVisible(rect);
         
         //scrollRectToVisible doesn't work when newBounds is above the viewport.
         //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
-        if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
+        
+    	if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
         {
             queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
         }
