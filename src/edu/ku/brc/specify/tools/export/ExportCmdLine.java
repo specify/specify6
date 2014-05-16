@@ -22,10 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.auth.JaasContext;
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -135,7 +133,7 @@ public class ExportCmdLine {
 				if (!"update".equalsIgnoreCase(getArg("-a"))) {
 					return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), arg.getFirst());
 				}
-			} else if (!arg.getFirst().equals("-l") && !arg.getFirst().equals("-h")) {
+			} else if (!arg.getFirst().equals("-l") && !arg.getFirst().equals("-h") && !arg.getFirst().equals("-w")) {
 				return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), arg.getFirst());
 			}
 		}
@@ -514,6 +512,9 @@ public class ExportCmdLine {
         return false;
     }
 
+	/**
+	 * @return true if ContextManager initializes successfully for collection.
+	 */
 	protected boolean setContext() {
         Specify.setUpSystemProperties();
         AppPreferences.shutdownRemotePrefs();
@@ -533,17 +534,7 @@ public class ExportCmdLine {
 		}
 		// ...end specify.restartApp snatch
 
-		boolean canOpen = true;
-		if (AppContextMgr.isSecurityOn()) {
-			PermissionIFace permissions = SecurityMgr.getInstance()
-					.getPermission("Task.ExportMappingTask");
-			canOpen = permissions.canView();
-		}
-		if (canOpen) {
-			return true;
-		} else {
-			return false;
-		}
+		return true;
 	}
 	
 	/**
