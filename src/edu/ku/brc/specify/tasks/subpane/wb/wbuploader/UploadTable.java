@@ -3249,22 +3249,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj(recNum)));
         }
-        if (!tblClass.equals(ReferenceWork.class))
-        {
-        	for (DefaultFieldEntry dfe : missingRequiredFlds)
-        	{
-        		if (dfe.isMultiValued())
-        		{
-        			critter.add(Restrictions.in(deCapitalize(dfe.getFldName()), dfe
-						.getDefaultValues(recNum)));
-        		}
-        		else
-        		{
-        			critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
-        					.getDefaultValue(recNum)));
-        		}
-        	}
-        }
+        addMissingRequiredFieldsToMatchCriteria(critter, recNum);
         addDomainCriteria(critter);
         
         Collections.sort(restrictedVals);
@@ -3272,6 +3257,31 @@ public class UploadTable implements Comparable<UploadTable>
         return ignoringBlankCell;
     }
     
+    /**
+     * @param critter
+     * @param recNum
+     */
+    protected void addMissingRequiredFieldsToMatchCriteria(CriteriaIFace critter, int recNum) {
+    	for (DefaultFieldEntry dfe : missingRequiredFlds) {
+    		if (shouldAddMissingReqFldToMatchCriteria(dfe)) {
+    			if (dfe.isMultiValued()) {
+    				critter.add(Restrictions.in(deCapitalize(dfe.getFldName()), dfe
+    						.getDefaultValues(recNum)));
+    			} else {
+    				critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+    					.getDefaultValue(recNum)));
+    			}
+    		}
+    	}
+    }
+    
+    /**
+     * @param dfe
+     * @return
+     */
+    protected boolean shouldAddMissingReqFldToMatchCriteria(DefaultFieldEntry dfe) {
+    	return !tblClass.equals(ReferenceWork.class);
+    }
 //    /**
 //     * 
 //     * 

@@ -1243,6 +1243,20 @@ public class UploadTableTree extends UploadTable
 		return result;
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shouldAddMissingReqFldToMatchCriteria(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DefaultFieldEntry)
+	 */
+	@Override
+	protected boolean shouldAddMissingReqFldToMatchCriteria(
+			DefaultFieldEntry dfe) {
+		boolean result = super.shouldAddMissingReqFldToMatchCriteria(dfe);
+		if (result) {
+			result = !"isaccepted".equalsIgnoreCase(dfe.getFldName());
+		}
+		return result;
+	}
+
 	/**
 	 * @return the parent
 	 */
