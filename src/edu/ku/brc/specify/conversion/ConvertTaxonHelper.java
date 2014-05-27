@@ -918,6 +918,7 @@ public class ConvertTaxonHelper
             }
             
             pStmtTx.setInt(fieldToColHash.get("Version"), 0);
+            pStmtTx.setInt(fieldToColHash.get("IsHybrid"), 0); //IsHybrid can't be null. I think this fixes it.
             try
             {
                 //System.out.println("----------------------------------------");
