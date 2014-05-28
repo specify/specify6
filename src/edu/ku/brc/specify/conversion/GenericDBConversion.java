@@ -5088,16 +5088,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             oldMappedColName = newFieldName;
                         }
 
+                        Object data;
                         if (index == null)
                         {
                             String msg = "convertLoanRecords - Couldn't find new field name[" + newFieldName  + "] in old field name in index Map";
-                            log.error(msg);
-                            stmt.close();
-                            throw new RuntimeException(msg);
+                            log.warn(msg);
+//                            stmt.close();
+//                            throw new RuntimeException(msg);
+                            data = null;
+                        } else {
+
+                            data = rs.getObject(index);
                         }
-
-                        Object data = rs.getObject(index);
-
                         if (data != null)
                         {
                             int idInx = newFieldName.lastIndexOf("ID");
@@ -5862,16 +5864,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     } else
                     {
                         Integer index = oldNameIndex.get(newFieldName);
+                        Object data;
                         if (index == null)
                         {
                         	// convertPreparationRecords
                             String msg = "convertPreparationRecords - Couldn't find new field name[" + newFieldName  + "] in old field name in index Map";
-                            log.error(msg);
-                            stmt.close();
-                            throw new RuntimeException(msg);
+                            log.warn(msg);
+                            //stmt.close();
+                            //throw new RuntimeException(msg);
+                            data = null;
+                        } else 
+                        {
+                           data = rs.getObject(index);
                         }
-                        Object data = rs.getObject(index);
-
                         if (idMapperMgr != null && mappedName.endsWith("ID"))
                         {
                             //log.debug(mappedName);
@@ -6374,16 +6379,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             oldMappedColName = newFieldName;
                         }
 
+                        Object data;
                         if (index == null)
                         {
                             String msg = "convertDeterminationRecords - Couldn't find new field name[" + newFieldName  + "] in old field name in index Map";
-                            log.error(msg);
-                            stmt.close();
-                            tblWriter.logError(msg);
-                            throw new RuntimeException(msg);
+                            log.warn(msg);
+//                            stmt.close();
+//                            tblWriter.logError(msg);
+//                            throw new RuntimeException(msg);
+                            data = null;
+                        } else {
+                            data = rs.getObject(index);
                         }
-
-                        Object data = rs.getObject(index);
 
                         if (data != null)
                         {
@@ -7039,22 +7046,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     } else
                     {
                         Integer index = oldNameIndex.get(newFieldName);
+                        Object data;
                         if (index == null)
                         {
                             msg = "convertCollectionObjects - Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
-                            log.error(msg);
-                            tblWriter.logError(msg);
-                            showError(msg);
-                            
+                            log.warn(msg);
+//                            tblWriter.logError(msg);
+//                            showError(msg);
+                            data = null;
                             // for (String key : oldNameIndex.keySet())
                             // {
                             // log.info("["+key+"]["+oldNameIndex.get(key)+"]");
                             // }
-                            stmt.close();
-                            throw new RuntimeException(msg);
+                            //stmt.close();
+                            //throw new RuntimeException(msg);
+                        } else {
+                            
+                            data = rs.getObject(index);
                         }
-                        Object data = rs.getObject(index);
-
                         if (data != null)
                         {
                             int idInx = newFieldName.lastIndexOf("ID");
@@ -7415,17 +7424,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             oldMappedColName = newFieldName;
                         }
 
+                        Object data;
                         if (index == null)
                         {
                             String msg = "convertLoanPreparations - Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
-                            log.error(msg);
-                            stmt.close();
-                            tblWriter.logError(msg);
-                            showError(msg);
-                            throw new RuntimeException(msg);
+                            log.warn(msg);
+//                            stmt.close();
+//                            tblWriter.logError(msg);
+//                            showError(msg);
+//                            throw new RuntimeException(msg);
+                            data = null;
+                        } else {
+                           data = rs.getObject(index);
                         }
-                        
-                        Object data = rs.getObject(index);
                         if (data != null)
                         {
                             int idInx = newFieldName.lastIndexOf("ID");
@@ -7718,18 +7729,21 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             index = oldNameIndex.get(newFieldName);
                             oldMappedColName = newFieldName;
                         }
+                        
+                        Object data;
 
                         if (index == null)
                         {
                             String msg = "convertGiftPreparations - Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
-                            log.error(msg);
-                            stmt.close();
-                            tblWriter.logError(msg);
-                            showError(msg);
-                            throw new RuntimeException(msg);
+                            log.warn(msg);
+//                            stmt.close();
+//                            tblWriter.logError(msg);
+//                            showError(msg);
+//                            throw new RuntimeException(msg);
+                            data = null;
+                        } else {
+                            data = rs.getObject(index);
                         }
-                        Object data = rs.getObject(index);
-
                         if (data != null)
                         {
                         	if (newFieldName.equalsIgnoreCase("GiftID"))
