@@ -391,15 +391,10 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
         }
     	
     	if (queryBuilder.isSmushed()) {
-    		
     		Smusher s = new Smusher(cacheData, queryBuilder.getSmushedCol(), queryBuilder.getRecordIdCol());
     		this.cache = s.smush();
-//    		for (Vector<Object> row : this.cache) {
-//			for (Object o : row) {
-//				System.out.print(o + " | ");
-//			}
-//			System.out.println();
-//		}
+    	} else {
+    		this.cache = cacheData;
     	}
     }
 
