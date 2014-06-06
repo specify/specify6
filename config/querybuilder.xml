@@ -95,7 +95,17 @@
             <alias name="Attachment"/>
         </table>
         <table name="CollectingEventAttribute">
-        	<alias name="Taxon" field="hostTaxon"/>
+        	<!--alias name="Taxon" field="hostTaxon"/-->
+    		<table name="Taxon" field="hostTaxon">
+        		<table name="CommonNameTx" field="commonNames" >
+        			<table name="CommonNameTxCitation" field="citations">
+        				<alias name="ReferenceWork"/>
+        			</table>
+        		</table>
+        		<table name="TaxonTreeDefItem" field="definitionItem"/>
+      			<alias name="Agent" field="createdByAgent" />
+      			<alias name="Agent" field="modifiedByAgent" />
+    		</table>
         </table>
         <alias name="CollectingTrip"/>
         <alias name="CollectionObject" field="collectionObjects"/>
