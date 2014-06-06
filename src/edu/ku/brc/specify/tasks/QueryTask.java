@@ -92,6 +92,8 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
@@ -100,6 +102,7 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -1755,61 +1758,89 @@ public class QueryTask extends BaseTask
     }
 
     /**
+     * @return
+     */
+    protected Integer getHostTaxonTreeDefId() {
+        String hostTaxRelName = AppPreferences.getRemote().get("HostTaxonRelationshipName", null);
+        if (hostTaxRelName != null) {
+        	String sql = "select RightSideCollectionID from collectionreltype where name='" + hostTaxRelName + "' and "
+        			+ "LeftSideCollectionID=" + AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+        	Integer rightSideCollectionID = BasicSQLUtils.querySingleObj(sql);
+        	if (rightSideCollectionID != null) {
+        		sql = "select TaxonTreeDefID from discipline d inner join collection c on c.disciplineid=d.disciplineid " +
+        				" where c.collectionid=" + rightSideCollectionID;
+        		Integer result = BasicSQLUtils.querySingleObj(sql);
+        		if (result != null) {
+        			return result;
+        		}
+        	}
+        }
+        log.warn("using current collection's treedef for host taxononmy.");
+        SpecifyAppContextMgr mgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        return mgr.getTreeDefForClass(Taxon.class).getTreeDefId();
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected TreeDefIface<?, ?, ?> getTreeDefForTreeLevelQRI(String fieldName, TableTree parentTT, DBTableInfo tableInfo) {
+    	if (tableInfo.getClassObj().equals(Taxon.class) && "hostTaxon".equals(fieldName)) {
+            DataProviderSessionIFace session = null;
+            try {
+                session = DataProviderFactory.getInstance().createSession();
+            	return session.get(TaxonTreeDef.class, getHostTaxonTreeDefId());
+            } finally {
+            	if (session != null) {
+            		session.close();
+            	}
+            }
+    		
+    	} else {
+            SpecifyAppContextMgr mgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+            return mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
+    	}
+    }
+    
+    /**
      * @param parent
      * @param parentTT
      * 
      * Recursively constructs tableTree defined by "querybuilder.xml" schema.
      */
-    @SuppressWarnings("unchecked")
-    protected void processForTables(final Element parent, final TableTree parentTT)
-    {
+    protected void processForTables(final Element parent, final TableTree parentTT) {
         String tableName = XMLHelper.getAttr(parent, "name", null);
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
-        if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView()))
-        {
+        if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())) {
             String fieldName = XMLHelper.getAttr(parent, "field", null);
-            if (StringUtils.isEmpty(fieldName))
-            {
+            if (StringUtils.isEmpty(fieldName)) {
                 fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
             }
 
             String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
             TableTree newTreeNode = parentTT.addKid(new TableTree(tableName, fieldName, abbrev,
                     tableInfo));
-            if (Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
-            {
-                try
-                {
-                   SpecifyAppContextMgr mgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
-                   TreeDefIface<?, ?, ?> treeDef = mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
+            if (Treeable.class.isAssignableFrom(tableInfo.getClassObj())) {
+                try {
+                   TreeDefIface<?, ?, ?> treeDef = getTreeDefForTreeLevelQRI(fieldName, parentTT, tableInfo);
                    
                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
-                            new Comparator<TreeDefItemIface<?, ?, ?>>()
-                            {
+                            new Comparator<TreeDefItemIface<?, ?, ?>>() {
                                 public int compare(TreeDefItemIface<?, ?, ?> o1,
-                                                   TreeDefItemIface<?, ?, ?> o2)
-                                {
+                                                   TreeDefItemIface<?, ?, ?> o2) {
                                     Integer r1 = o1.getRankId();
                                     Integer r2 = o2.getRankId();
                                     return r1.compareTo(r2);
                                 }
-
                             });
                     defItems.addAll(treeDef.getTreeDefItems());
-                    for (TreeDefItemIface<?, ?, ?> defItem : defItems)
-                    {
-                        if (defItem.getRankId() > 0)//skip root, just because.
-                        {
-                            try
-                            {
+                    for (TreeDefItemIface<?, ?, ?> defItem : defItems) {
+                        if (defItem.getRankId() > 0) { //skip root, just because. 
+                            try {
                                 //newTreeNode.getTableQRI().addField(
                                 //        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
                                 //                .getRankId()));
                                 newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
                                                 .getRankId(), "name", treeDef));
-                                if (defItem instanceof TaxonTreeDefItem)
-                                {
+                                if (defItem instanceof TaxonTreeDefItem) {
                                 	DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getFieldByName("author");
                                 	if (fi != null && !fi.isHidden()) {
                                 		newTreeNode.getTableQRI().addField(
@@ -1824,16 +1855,13 @@ public class QueryTask extends BaseTask
                                 	}
                                 }
                             }
-                            catch (Exception ex)
-                            {
+                            catch (Exception ex) {
                                 // if there is no TreeDefItem for the rank then just skip it.
-                                if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
-                                {
+                                if (ex instanceof TreeLevelQRI.NoTreeDefItemException) {
                                     log.error(ex);
                                 }
                                 // else something is really messed up
-                                else
-                                {
+                                else {
                                     UsageTracker.incrHandledUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
                                     ex.printStackTrace();
