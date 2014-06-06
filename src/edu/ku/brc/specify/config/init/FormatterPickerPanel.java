@@ -118,9 +118,9 @@ public class FormatterPickerPanel extends BaseSetupPanel
         loadFormatCbx(null);
 
         CellConstraints cc = new CellConstraints();
-        //removing wiz changes for #9604
-        //PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p,2px,p"), this);
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p"), this);
+        // wiz changes for #9604
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p,2px,p"), this);
+        //PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p"), this);
         
         int y = 1;
         String label = getResourceString(doingCatNums ? "CHOOSE_FMT_CAT" : "CHOOSE_FMT_ACC");
@@ -139,7 +139,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
             pb.add(isNumericLbl, cc.xy(3, y));
             y +=2;
             
-            /* removing wiz changes for #9604...
+            /* wiz changes for #9604...*/
             lenTitleLbl = createI18NFormLabel("NUM_LEN", SwingConstants.RIGHT);
             pb.add(lenTitleLbl, cc.xy(1, y));
             UIHelper.setControlSize(lenSpin);
@@ -167,7 +167,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
             pb.add(lenSpin, cc.xy(3, y));
             lenSpin.setVisible(false);
             lenTitleLbl.setVisible(false);
-            y +=2; */
+            y +=2; 
+            /* end wiz changes for #9604 */
         }
         
         pb.add(createI18NFormLabel("PATTERN", SwingConstants.RIGHT), cc.xy(1, y));
@@ -244,17 +245,17 @@ public class FormatterPickerPanel extends BaseSetupPanel
                     {
                         isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "YES" : "NO"));
                         
-                        //removing wiz changes for #9604
-                        //lenSpin.setValue(fmt.getLength());
+                        // wiz changes for #9604
+                        lenSpin.setValue(fmt.getLength());
                         
                         patternLbl.setText(fmt.toPattern());
                         autoIncLbl.setText(getResourceString(fmt.isIncrementer() ? "YES" : "NO"));
                     }
                 }
                 
-                /* removing wiz changes for #9604
+                /* wiz changes for #9604 */
                 lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
-                lenTitleLbl.setVisible(lenSpin.isVisible()); */
+                lenTitleLbl.setVisible(lenSpin.isVisible()); /* end wiz changes */
                 
                 if (formatterCBX.getSelectedIndex() == newFmtInx)
                 {
