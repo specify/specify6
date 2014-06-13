@@ -33,6 +33,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +62,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
@@ -820,7 +824,26 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                         localSession = DataProviderFactory.getInstance().createSession();
                         localSession.attach(dataObj);
                         newDataObj = (FormDataObjIFace) dataObj.clone();
-                        
+                        MultiView mv = frame.getMultiView();
+						if (mv != null) {
+							FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+							if (fvo != null && fvo.isAutoNumberOn()) {
+		                        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(newDataObj.getClass().getName());
+		                        if (tblInfo != null) {
+		                        	for (DBFieldInfo fldInfo : tblInfo.getFields()) {
+		                        		if (!fldInfo.isHidden() && fldInfo.getFormatter() != null && fldInfo.getFormatter().isIncrementer()) {
+		                        			//clear the field to get format mask to display correctly on form. bug #9619
+		                        			try {
+		                        				Method m = newDataObj.getClass().getMethod("set" + fldInfo.getColumn(), fldInfo.getDataClass());
+		                        				m.invoke(newDataObj, newDataObj.getClass().cast(null));
+		                        			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+		                        				//we tried and failed and move on
+		                        			}
+		                        		}
+		                        	}
+		                        }
+							}
+						}                    
                     } catch (CloneNotSupportedException e)
                     {
                         e.printStackTrace();
