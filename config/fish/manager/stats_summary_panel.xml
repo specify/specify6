@@ -10,6 +10,12 @@
                 </statement>
             </sql>
         </item>
+        <item title="PREPS">
+        	<sql>
+        		<tables><id>63</id></tables>
+        		<statement><![CDATA[SELECT count(*) FROM PREPARATION WHERE CollectionMemberID=COLMEMID]]></statement>
+        	</sql>
+        </item>
         <item title="TYP_SPEC">
             <sql>
                 <tables><id>1</id><id>9</id></tables>            
@@ -59,6 +65,14 @@
         </box>
   </row>
   <row>
+      <box title="PREP_BY_TYPE" desccol="1" valcol="2" desctitle="PREP" valtitle="COUNT" noresults="NO_PREP">
+      	<sql>
+            <tables><id>63</id></tables>            
+            <statement><![CDATA[SELECT pt.Name, trim(cast(concat(count(PreparationID), ' / ',  sum(countAmt)) as char(50))) FROM preparation p INNER JOIN preptype pt ON pt.PrepTypeID = p.PrepTypeID  WHERE CollectionMemberID = COLMEMID group by pt.Name]]></statement>
+        </sql>
+      </box>
+  </row>
+  <row>
       <box title="LOANS">
         <item title="ITMS_LOAN">
             <sql>
@@ -95,6 +109,12 @@
             <sql>
                 <tables><id>2</id><id>3</id></tables>            
                 <statement><![CDATA[SELECT count(Name) FROM (SELECT DISTINCT Name FROM (SELECT g.GeographyID,g.nodenumber FROM locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g WHERE g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement>
+            </sql>
+        </item>
+        <item title="NUMBER_GEOREF">
+            <sql>
+                <tables><id>2</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID and not latitude1 is null]]></statement>
             </sql>
         </item>
         <item title="PRCNT_GEOREF">
@@ -144,7 +164,7 @@
             <tables><id>9</id></tables>            
             <statement><![CDATA[SELECT TypeStatusName, count(DeterminationID) AS DeterminationCount FROM determination WHERE CollectionMemberID = COLMEMID AND TypeStatusName is not null group by TypeStatusName]]></statement>
         </sql>
-    </box>
+      </box>
   </row>
 </panel>
 
