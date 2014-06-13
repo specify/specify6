@@ -838,6 +838,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 		                        				m.invoke(newDataObj, newDataObj.getClass().cast(null));
 		                        			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 		                        				//we tried and failed and move on
+		                        				log.warn("couldn't clear autonumbered clone field: " + fldInfo.getName());
 		                        			}
 		                        		}
 		                        	}
