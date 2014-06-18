@@ -22,6 +22,9 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -29,6 +32,10 @@ import net.sf.jasperreports.engine.JRField;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceBase;
+import edu.ku.brc.specify.tasks.subpane.qb.RowRepeater;
+import edu.ku.brc.specify.tasks.subpane.qb.RowRepeaterColumn;
+import edu.ku.brc.specify.tasks.subpane.qb.RowRepeaterConst;
 
 /**
  * JaperReports Custom DataSource for WorkbenchRows.
@@ -42,20 +49,51 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  */
 public class WorkbenchJRDataSource implements JRDataSource
 {
+    private static final Logger log = Logger.getLogger(WorkbenchJRDataSource.class);
+
     private Hashtable<String, Short> map      = new Hashtable<String, Short>();
     private Workbench                workbench;
     private int                      rowIndex = -1;
     private List<WorkbenchRow>       workbenchRows;
- 
+    /**
+     * Sends repeats of rows to consumer of this source.
+     */
+    protected final RowRepeater repeater;
+    /**
+     * Number of repeats of the currently row.
+     */
+    protected int currentRowRepeats = 0;
+
+    protected Object[] rowArray;
+    
+    protected RowRepeater buildRepeater(final Object repeats) {
+        if (repeats == null) {
+            return null;
+        }
+        else if (repeats instanceof String) {
+            //assuming repeatColumnName does not refer to a formatted or aggregated column-
+            //also assuming valid columnName-
+            return new RowRepeaterColumn(map.get((String )repeats));
+        }
+        else if (repeats instanceof Integer) {
+            return new RowRepeaterConst((Integer )repeats);
+        }
+        else {
+            log.error("invalid repeats parameter: " + repeats);
+            return null;
+        }
+
+    }
     /**
      * Constructor with Workbench.
      * @param workbench the workbench
      */
-    public WorkbenchJRDataSource(final Workbench workbench, final boolean useLongFieldNames)
-    {
+    public WorkbenchJRDataSource(final Workbench workbench, final boolean useLongFieldNames, final Object repeats) {
         this.workbench = workbench;
         workbenchRows = workbench.getWorkbenchRowsAsList();
         createMap(useLongFieldNames);
+        this.repeater = buildRepeater(repeats);
+        rowArray = new Object[map.size()];
     }
 
     /**
@@ -64,13 +102,13 @@ public class WorkbenchJRDataSource implements JRDataSource
      * @param workbenchRows the rows to use
      */
     public WorkbenchJRDataSource(final Workbench workbench, final List<WorkbenchRow> workbenchRows,
-    		final boolean useLongFieldNames)
-    {
+    		final boolean useLongFieldNames, final Object repeats) {
         this.workbench = workbench;
         this.workbenchRows = workbenchRows;
         Collections.sort(workbenchRows);
-
         createMap(useLongFieldNames);
+        this.repeater = buildRepeater(repeats);
+        rowArray = new Object[map.size()];
     }
 
     /**
@@ -117,15 +155,34 @@ public class WorkbenchJRDataSource implements JRDataSource
      * (non-Javadoc)
      * @see net.sf.jasperreports.engine.JRDataSource#next()
      */
-    public boolean next() throws JRException
-    {
-        if (rowIndex >= workbenchRows.size() - 1)
-        {
+    public boolean next() throws JRException {
+       if (currentRowRepeats > 0) {
+            currentRowRepeats--;
+            return true;
+        }
+        if (rowIndex >= workbenchRows.size() - 1) {
             return false;
         }
         rowIndex++;
+        if (repeater != null) {
+            currentRowRepeats = repeater.repeats(getRepeaterRowVals()) - 1;
+        }
+        else {
+            currentRowRepeats = 0;
+        }
         return true;
     }
-    
+
+    /**
+     * @return
+     */
+    protected Object[] getRepeaterRowVals() {
+    	WorkbenchRow row = workbench.getRow(rowIndex);
+    	for (int i = 0; i < rowArray.length; i++) {
+    		rowArray[i] = row.getData(i);
+    	}
+    	return rowArray;
+    }
+
     
 }

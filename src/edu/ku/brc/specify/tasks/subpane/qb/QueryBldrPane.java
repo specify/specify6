@@ -2748,7 +2748,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 			if (wb != null)
                 			{
                 				wb.forceLoad();
-                				src = new WorkbenchJRDataSource(wb, true);
+                				src = new WorkbenchJRDataSource(wb, true, report.getRepeats());
                 				loadedWB = true;
                 			}
                 		}
