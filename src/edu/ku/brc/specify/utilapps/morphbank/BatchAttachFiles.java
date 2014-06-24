@@ -242,11 +242,11 @@ public class BatchAttachFiles
                     if (upFile.exists())
                     {
                         String mappingValue = cols[0].trim();
-                        ArrayList<String> catNumList = mapFileNameToCatNum.get(fileName);
+                        ArrayList<String> catNumList = mapFileNameToCatNum.get(upFile.getName());
                         if (catNumList == null)
                         {
                             catNumList = new ArrayList<String>();
-                            mapFileNameToCatNum.put(fileName, catNumList);
+                            mapFileNameToCatNum.put(upFile.getName(), catNumList);
                             dirFiles.add(upFile);
                             
                         } else if (catNumList.contains(mappingValue))
