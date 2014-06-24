@@ -2472,7 +2472,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
-        final WorkbenchTask thisTask = this;
         
         final SwingWorker worker = new SwingWorker()
         {
@@ -2675,7 +2674,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 session.attach(workbench);
 
                 workbench.forceLoad();
-                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList(), !isBasicLabel);
+                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList(), !isBasicLabel, null);
                 session.close();
 
                 final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, dataSrc);
@@ -4314,7 +4313,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             }
         }
 
-        throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
+        //throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
+        return null;
     }
     
     /* (non-Javadoc)
