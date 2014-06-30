@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -439,44 +440,70 @@ public class CleanupToolsTask extends BaseTask
     private void doGeographyISOCodes()
     {
         final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();;
-        try
-        {
-            Timestamp now = new Timestamp(System .currentTimeMillis());
-            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
+            final Timestamp  now        = new Timestamp(System .currentTimeMillis());
+            final Discipline disp       = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
 
-            ProgressFrame frame = new ProgressFrame("Building Geography Authority...");
+            final ProgressFrame frame   = new ProgressFrame("Building Geography Authority...");
             frame.getCloseBtn().setVisible(false);
+            frame.turnOffOverAll();
+            frame.setDesc("Loading Geonames data...");
             frame.pack();
             frame.setSize(450, frame.getBounds().height+10);
+            UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
             
-            discipline = session.get(Discipline.class, discipline.getId());
-            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, "root", "root", frame);
+            final Discipline discipline = session.get(Discipline.class, disp.getId());
             
-            if (bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog())) // done synchronously
+            final SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
             {
-                int earthId = BasicSQLUtils.getCountAsInt("SELECT GeographyID FROM geography WHERE RankID = 0 AND GeographyTreeDefID = "+discipline.getGeographyTreeDef().getId());
-                
-                GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent, frame);
-                geoAssignISOCodes.buildAsync(earthId, new ChangeListener()
+                @Override
+                protected Boolean doInBackground() throws Exception
                 {
-                    @Override
-                    public void stateChanged(ChangeEvent e)
+                    try
                     {
-                        if (session != null) session.close();
+                        BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, "root", "root", frame);    
+                        return bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog());
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
                     }
-                });
-            } else
-            {
-                UIRegistry.showError("There was an error loading the Geography reference file.");
-            }
-            
-        } catch (Exception ex)
-        {
-            //log.error(ex);
-            ex.printStackTrace();
-        }
-    }
+                    return false;
+                }
+
+                @Override
+                protected void done()
+                {
+                    try
+                    {
+                        if (this.get()) // done synchronously
+                        {
+                            int earthId = BasicSQLUtils.getCountAsInt("SELECT GeographyID FROM geography WHERE RankID = 0 AND GeographyTreeDefID = "+discipline.getGeographyTreeDef().getId());
+                            
+                            frame.setVisible(false);
+                            
+                            GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent, frame);
+                            geoAssignISOCodes.buildAsync(earthId, new ChangeListener()
+                            {
+                                @Override
+                                public void stateChanged(ChangeEvent e)
+                                {
+                                    if (session != null) session.close();
+                                    
+                                }
+                            });
+                        } else
+                        {
+                            UIRegistry.showError("There was an error loading the Geography reference file.");
+                        }
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+            worker.execute();
+     }
     
     /**
      * 

@@ -17,13 +17,7 @@
  */
 package edu.ku.brc.specify.plugins.ipadexporter;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
-import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
-
 import java.awt.Frame;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -41,10 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.prefs.BackingStoreException;
-
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -54,10 +44,6 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.StringUtils;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -73,7 +59,6 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -92,7 +77,8 @@ public class iPadRepositoryHelper
 {
     private static MessageDigest sha1       = null;
     //public static final String  baseURLStr = "http://anza.nhm.ku.edu/ipad/";
-    public static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
+    //public static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
+    public static final String  baseURLStr = "http://192.168.1.113/ipad/";
 
     private boolean                 networkConnError   = false;
     private byte[]                  bytes              = new byte[100*1024];
@@ -194,61 +180,12 @@ public class iPadRepositoryHelper
      */
     private Pair<String, String> getCuratorName(final Collection collection)
     {
-        loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);   
-        
         AppPreferences  remotePrefs = AppPreferences.getRemote();
         String          curatorPref = "IPAD_CURATOR_NAME_" + collection.getId();
         String          colMgrPref  = "IPAD_COLMGR_NAME_" + collection.getId();
         String          curatorName = remotePrefs.get(curatorPref, "");
         String          colMgrName  = remotePrefs.get(colMgrPref, "");
-        CellConstraints cc          = new CellConstraints();
-        PanelBuilder    pb          = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p"));
-        
-        final JTextField crTextFld = UIHelper.createTextField(curatorName);
-        final JTextField cmTextFld = UIHelper.createTextField(colMgrName);
-        pb.add(UIHelper.createI18NFormLabel("Curator"), cc.xy(1, 1));
-        pb.add(crTextFld, cc.xy(3, 1));
-        
-        pb.add(UIHelper.createI18NFormLabel("COLMGR"), cc.xy(1, 3));
-        pb.add(cmTextFld, cc.xy(3, 3));
-        
-        pb.setDefaultDialogBorder();
-        
-        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("CURATOR_NM"), true, CustomDialog.OKCANCEL, pb.getPanel());
-        dlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        
-        popResourceBundle();
-
-        KeyAdapter ka = new KeyAdapter()
-        {
-            @Override
-            public void keyReleased(KeyEvent e)
-            {
-                //System.out.println(!crTextFld.getText().isEmpty() && !cmTextFld.getText().isEmpty());
-                dlg.getOkBtn().setEnabled(!crTextFld.getText().isEmpty() && !cmTextFld.getText().isEmpty());
-            }
-        };
-        crTextFld.addKeyListener(ka);
-        cmTextFld.addKeyListener(ka);
-        dlg.createUI();
-        dlg.getOkBtn().setEnabled(!crTextFld.getText().isEmpty() && !cmTextFld.getText().isEmpty());
-        UIHelper.centerAndShow(dlg, 500, null);
-        
-        if (!dlg.isCancelled())
-        {
-            curatorName = crTextFld.getText();
-            remotePrefs.put(curatorPref, curatorName);
-            
-            colMgrName = cmTextFld.getText();
-            remotePrefs.put(colMgrPref, colMgrName);
-            
-            try {
-                remotePrefs.flush();
-            } catch (BackingStoreException e1){}
-            
-            return new Pair<String, String>(curatorName, colMgrName);
-        }
-        return null;
+        return new Pair<String, String>(curatorName, colMgrName);
     }
     
     /**

@@ -260,6 +260,7 @@ public class GeographyAssignISOs
     {
     	if (!isUniquenessOK())
     	{
+            if (cl != null) cl.stateChanged(new ChangeEvent(GeographyAssignISOs.this));
     		return false;
     	}
     	
@@ -391,6 +392,7 @@ public class GeographyAssignISOs
         centerAndShow(dlg);
         if (dlg.isCancelled())
         {
+            if (cl != null) cl.stateChanged(new ChangeEvent(GeographyAssignISOs.this));
             return false;
         }
         
@@ -428,6 +430,7 @@ public class GeographyAssignISOs
         } else
         {
             showError("Specify cannot prceed the geonames table is missing."); // shouldn't happen
+            if (cl != null) cl.stateChanged(new ChangeEvent(GeographyAssignISOs.this));
             return false;
         }
 
@@ -443,7 +446,7 @@ public class GeographyAssignISOs
                 countryInfo.add(new Triple<String, Integer, String>((String)row[0], (Integer)row[1], (String)row[2]));
             }
             startTraversal();
-            cl.stateChanged(new ChangeEvent(GeographyAssignISOs.this));
+            if (cl != null) cl.stateChanged(new ChangeEvent(GeographyAssignISOs.this));
         }
         
         return true;

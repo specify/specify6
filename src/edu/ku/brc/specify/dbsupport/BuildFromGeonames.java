@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
-import org.apache.commons.io.FileUtils;
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -160,6 +161,8 @@ public class BuildFromGeonames
         return null;
     }
     
+
+    
     /**
      * Builds the Geography tree from the geonames table.
      * @param earthId the id of the root.
@@ -182,11 +185,7 @@ public class BuildFromGeonames
             stmt = readConn.createStatement();
             
             Integer count = BasicSQLUtils.getCount(readConn, CNT_SQL);
-            if (frame != null)
-            {
-                frame.setProcess(0, count);
-                frame.setDesc("Creating Geography...");
-            }
+            doProgress(0, count, "Creating Geography...");
             
             Hashtable<String, String> continentCodeFromName = new Hashtable<String, String>();
             ResultSet rs = stmt.executeQuery("SELECT code, name from continentCodes");
@@ -209,10 +208,7 @@ public class BuildFromGeonames
                 log.debug("Deleted "+delCnt+" geography records.");
             }*/
             
-            if (frame != null)
-            {
-                frame.setDesc("Creating Continents..."); // I18N
-            }
+            doProgress("Creating Continents..."); // I18N
             
             int cnt = 0;
             
@@ -223,10 +219,7 @@ public class BuildFromGeonames
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
-                if (frame != null)
-                {
-                    frame.setProcess(cnt);
-                }
+                doProgress(cnt);
                 
                 if (buildInsert(rs, 100, earthId))
                 {
@@ -236,9 +229,9 @@ public class BuildFromGeonames
                 }
                 
                 cnt++;
-                if (frame != null && cnt % 100 == 0)
+                if (cnt % 100 == 0)
                 {
-                    frame.setProcess(cnt);
+                    doProgress(cnt);
                 }
             }
             rs.close();
@@ -256,10 +249,7 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            if (frame != null)
-            {
-                frame.setDesc("Creating Countries...");
-            }
+            doProgress("Creating Countries...");
             
             // First map all Countries to Continents
             rs = stmt.executeQuery("SELECT name, iso_alpha2 AS CountryCode, continent FROM countryinfo ORDER BY continent, iso_alpha2");
@@ -287,7 +277,7 @@ public class BuildFromGeonames
                 cnt++;
                 if (frame != null && cnt % 100 == 0)
                 {
-                    frame.setProcess(cnt);
+                    doProgress(cnt);
                 }
 
             }
@@ -315,10 +305,7 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            if (frame != null)
-            {
-                frame.setDesc("Creating States...");
-            }
+            doProgress("Creating States...");
             
             //////////////////////
             // States
@@ -350,7 +337,7 @@ public class BuildFromGeonames
                 cnt++;
                 if (frame != null && cnt % 100 == 0)
                 {
-                    frame.setProcess(cnt);
+                    doProgress(cnt);
                 }
 
             }
@@ -389,15 +376,13 @@ public class BuildFromGeonames
                 /*cnt++;
                 if (frame != null && cnt % 100 == 0)
                 {
-                    frame.setProcess(cnt);
+                    doProgress(cnt);
                 }*/
 
             }
             rs.close();
-            if (frame != null)
-            {
-                frame.setDesc("Creating Counties...");
-            }
+            
+            doProgress("Creating Counties...");
             
             //////////////////////
             // County
@@ -414,15 +399,12 @@ public class BuildFromGeonames
                 cnt++;
                 if (frame != null && cnt % 100 == 0)
                 {
-                    frame.setProcess(cnt);
+                    doProgress(cnt);
                 }
             }
             rs.close();
             
-            if (frame != null)
-            {
-                frame.setProcess(count);
-            }
+            doProgress(count);
             
             return true;
             
@@ -466,6 +448,10 @@ public class BuildFromGeonames
             }
         }
         
+        if (frame != null)
+        {
+            frame.setVisible(false);
+        }
         return false;
     }
     
@@ -695,7 +681,7 @@ public class BuildFromGeonames
         // See if date of file matches the last time the file was restored
         boolean isDatesMatch = true;
         final File file = new File(XMLHelper.getConfigDirPath("geonames.sql.zip"));
-        System.out.println(file.getAbsolutePath());
+        //System.out.println(file.getAbsolutePath());
         if (file.exists())
         {
             Long lastModLong = getLastGeonamesBuiltTime();
@@ -876,7 +862,16 @@ public class BuildFromGeonames
                                 	log.error("Can't update geoname: "+sql);
                                 }
                             }
-                            String sql = "SELECT geonameId, country FROM geoname WHERE fcode = 'GULF' AND country IS NOT NULL AND LENGTH(country) > 0";
+                            
+                            int    cnt      = 0; 
+                            String countStr = "SELECT COUNT(*) ";
+                            String post     = " FROM geoname WHERE fcode = 'GULF' AND country IS NOT NULL AND LENGTH(country) > 0";
+                            String pre      = "SELECT geonameId, country";
+                            String sql      = pre + post;
+                            
+                            double totalCnt = BasicSQLUtils.getCountAsInt(conn, countStr + post);
+                            doProgress(0, 100, "Updating Water ISO Codes");
+                            
                             for (Object[] cols : BasicSQLUtils.query(sql))
                             {
                             	String id  = cols[0].toString();
@@ -888,14 +883,22 @@ public class BuildFromGeonames
                                 {
                                 	log.error("Can't update geoname: "+sql);
                                 }
+                                cnt++;
+                                doProgress((int)((double)cnt / totalCnt * 100.0));
                             }
                             
-                            sql = "SELECT g.geonameId, g.fcode, g.country, g.admin1, g.admin2 FROM geoname g WHERE ISOCode IS NULL " +
-                                  "ORDER BY g.country ASC, g.fcode DESC, g.admin1 ASC, g.admin2 ASC";
+                            post = " FROM geoname g WHERE ISOCode IS NULL ORDER BY g.country ASC, g.fcode DESC, g.admin1 ASC, g.admin2 ASC";
+                            pre  = "SELECT g.geonameId, g.fcode, g.country, g.admin1, g.admin2";
+                            sql  = pre + post;
+                            
+                            totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*) "+post);
+                            doProgress(0, 100, "Updating ISO Codes");
+                            
                             pStmt = conn.prepareStatement("UPDATE geoname SET ISOCode=? WHERE geonameId = ?");
                             stmt  = conn.createStatement();
                             rs    = stmt.executeQuery(sql);
                             
+                            cnt        = 0;
                             boolean hasCountry = false;
                             boolean isOK       = true;
                             StringBuilder sb = new StringBuilder();
@@ -934,7 +937,13 @@ public class BuildFromGeonames
                                         pStmt.setInt(2, rs.getInt(1));
                                         isOK = pStmt.executeUpdate() == 1;
                                     }
-                               }
+                                }
+                                cnt++;
+                                if (cnt % 2000 == 0)
+                                {
+                                    doProgress((int)((double)cnt / totalCnt * 100.0));
+                                    //doProgress(cnt);
+                                }
                             }
                         } else
                         {
@@ -972,5 +981,69 @@ public class BuildFromGeonames
         }
 
     }
-
+    
+    private void doProgress(final int startProgress, final int endProgress, final String msg)
+    {
+        if (frame != null)
+        {
+            if (SwingUtilities.isEventDispatchThread())
+            {
+                frame.setProcess(startProgress, endProgress);
+                frame.setDesc(msg);
+                
+            } else
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        frame.setProcess(startProgress, endProgress);
+                        frame.setDesc(msg);
+                    }
+                });
+            }
+        }
+    }
+    
+    private void doProgress(final int progress)
+    {
+        if (frame != null)
+        {
+            if (SwingUtilities.isEventDispatchThread())
+            {
+                frame.setProcess(progress);
+                
+            } else
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        frame.setProcess(progress);
+                    }
+                });
+            }
+        }
+    }
+    
+    private void doProgress(final String msg)
+    {
+        if (frame != null)
+        {
+            if (SwingUtilities.isEventDispatchThread())
+            {
+                frame.setDesc(msg);
+                
+            } else
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        frame.setDesc(msg);
+                    }
+                });
+            }
+        }
+    }
 }

@@ -90,7 +90,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -125,8 +124,8 @@ public class iPadDBExporterPlugin extends BaseTask
     private Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     private ToolBarDropDownBtn      toolBarBtn       = null;
     
-    private RolloverCommand         manageDataSetsBtn;
-    private RolloverCommand         imageSetupBtn;
+    //private RolloverCommand         manageDataSetsBtn;
+    private RolloverCommand         iPadInfoSetupBtn;
     private RolloverCommand         removeAccountBtn;
     private RolloverCommand         loginBtn;
     private RolloverCommand         logoutBtn;
@@ -183,8 +182,8 @@ public class iPadDBExporterPlugin extends BaseTask
             loadAndPushResourceBundle(RES_NAME);
             
             loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     "image", null, null);
-            manageDataSetsBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("MGR_DS"),    "image", null, null);
-            imageSetupBtn     = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("IMG_SETUP"), "image", null, null);
+            //manageDataSetsBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("MGR_DS"),    "image", null, null);
+            iPadInfoSetupBtn     = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("IPAD_SETUP"), "image", null, null);
             removeAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_ACCT"),  "image", null, null);
             logoutBtn         = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGOUT"),    "image", null, null);
             exportBtn         = createI18NButton("EXPORT_TO_IPAD");
@@ -192,14 +191,14 @@ public class iPadDBExporterPlugin extends BaseTask
             setUIEnabled(false);
             popResourceBundle();
 
-            manageDataSetsBtn.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    manageDataSets();
-                }
-            });
+//            manageDataSetsBtn.addActionListener(new ActionListener()
+//            {
+//                @Override
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    manageDataSets();
+//                }
+//            });
             
             removeAccountBtn.addActionListener(new ActionListener()
             {
@@ -231,27 +230,15 @@ public class iPadDBExporterPlugin extends BaseTask
                     }
                 }
             });
-            imageSetupBtn.addActionListener(new ActionListener()
+            iPadInfoSetupBtn.addActionListener(new ActionListener()
             {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    remoteImageSetup(true);
+                    checkInstitutionInfo();
                 }
             });
             exportBtn.setEnabled(false);
-        }
-    }
-    
-    /**
-     * @param forceDisplay
-     */
-    private void remoteImageSetup(final boolean forceDisplay)
-    {
-        ImageSetupDlg dlg = new ImageSetupDlg();
-        if (forceDisplay || AppPreferences.getRemote().get(dlg.getRemoteImageURLTypePrefName(), null) == null)
-        {
-            UIHelper.centerAndShow(dlg);
         }
     }
     
@@ -260,9 +247,9 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void setUIEnabled(final boolean enabled)
     {
-        manageDataSetsBtn.setEnabled(enabled);
+        //manageDataSetsBtn.setEnabled(enabled);
         removeAccountBtn.setEnabled(enabled);
-        imageSetupBtn.setEnabled(enabled);
+        iPadInfoSetupBtn.setEnabled(enabled);
         loginBtn.setEnabled(!enabled);
         logoutBtn.setEnabled(enabled);
         if (exportBtn != null) exportBtn.setEnabled(enabled);
@@ -292,13 +279,16 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private boolean checkInstitutionInfo()
     {
-        InstDlg dlg = new InstDlg(iPadCloud);
-        if (!dlg.isInstOK())
+        //if (!iPadDBExporter.IS_TESTING) // ZZZ       
         {
-            dlg.createUI();
-            dlg.pack();
-            centerAndShow(dlg, 600, null);
-            return !dlg.isCancelled();
+            ImageSetupDlg dlg = new ImageSetupDlg(iPadCloud);
+            if (!dlg.isInstOK())
+            {
+                dlg.createUI();
+                dlg.pack();
+                centerAndShow(dlg, 800, null);
+                return !dlg.isCancelled();
+            }
         }
         return true;
     }
@@ -328,15 +318,22 @@ public class iPadDBExporterPlugin extends BaseTask
             Pair<String, String> loginInfo = getExportLoginCreds(userName, wasInError);
             if (loginInfo != null)
             {
-                userName = loginInfo.first;
-                if (iPadCloud.login(loginInfo.first, loginInfo.second))
+            	loggedIn(loginInfo);
+                if (!iPadDBExporter.IS_TESTING) // ZZZ  
                 {
-                    remotePrefs.put(prefName, loginInfo.first);
-                    loggedIn(loginInfo);
-                    break;
+                    userName = loginInfo.first;
+                    if (iPadCloud.login(loginInfo.first, loginInfo.second))
+                    {
+                        remotePrefs.put(prefName, loginInfo.first);
+                        loggedIn(loginInfo);
+                        break;
+                    } else
+                    {
+                        wasInError = true;
+                    }
                 } else
                 {
-                    wasInError = true;
+                    break; // testing
                 }
             } else
             {
@@ -403,60 +400,62 @@ public class iPadDBExporterPlugin extends BaseTask
             
             ImageIcon imgIcon    = new ImageIcon(this.getClass().getResource("SpecifySmalliPad128x128.png"));
             JPanel    loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
-            
-            if (checkInstitutionInfo())
+            if (!iPadDBExporter.IS_TESTING) // ZZZ
             {
-                while (true)
+                if (checkInstitutionInfo())
                 {
-                    userNameTF.setText(userName);
-                    CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
-                            getResourceString("iPad Cloud Login"), true, CustomDialog.OKCANCELAPPLY, loginPanel)
+                    while (true)
                     {
-                        @Override
-                        protected void applyButtonPressed()
+                        userNameTF.setText(userName);
+                        CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
+                                getResourceString("iPad Cloud Login"), true, CustomDialog.OKCANCELAPPLY, loginPanel)
                         {
+                            @Override
+                            protected void applyButtonPressed()
+                            {
+                                String uName = userNameTF.getText();
+                                
+                                if (!iPadCloud.isUserNameOK(uName))
+                                {
+                                    super.applyButtonPressed();
+                                } else
+                                {
+                                    setErrorMsg(statusLbl, getFormattedResStr("USRNM_IS_TAKEN", uName));
+                                }
+                            }
+                        };
+                        dlg.setCloseOnApplyClk(true);
+                        dlg.setApplyLabel(getResourceString("NEW_USER"));
+                        dlg.setOkLabel(getResourceString("LOGIN"));
+                        
+                        centerAndShow(dlg);
+                        
+                        if (!dlg.isCancelled())
+                        {
+                            boolean isOK = true;
                             String uName = userNameTF.getText();
-                            
-                            if (!iPadCloud.isUserNameOK(uName))
+                            String pwd   = new String(passwordTF.getPassword());
+                            if (dlg.getBtnPressed() == CustomDialog.APPLY_BTN)
                             {
-                                super.applyButtonPressed();
-                            } else
-                            {
-                                setErrorMsg(statusLbl, getFormattedResStr("USRNM_IS_TAKEN", uName));
+                                Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                                if (!iPadCloud.addNewUser(uName, pwd, inst.getUri()))
+                                {
+                                    setErrorMsg(statusLbl, getResourceString("ERROR_CREAT_ACCOUNT"));
+                                    isOK = false;
+                                }
                             }
-                        }
-                    };
-                    dlg.setCloseOnApplyClk(true);
-                    dlg.setApplyLabel(getResourceString("NEW_USER"));
-                    dlg.setOkLabel(getResourceString("LOGIN"));
-                    
-                    centerAndShow(dlg);
-                    
-                    if (!dlg.isCancelled())
-                    {
-                        boolean isOK = true;
-                        String uName = userNameTF.getText();
-                        String pwd   = new String(passwordTF.getPassword());
-                        if (dlg.getBtnPressed() == CustomDialog.APPLY_BTN)
-                        {
-                            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-                            if (!iPadCloud.addNewUser(uName, pwd, inst.getUri()))
+                            if (isOK)
                             {
-                                setErrorMsg(statusLbl, getResourceString("ERROR_CREAT_ACCOUNT"));
-                                isOK = false;
+                                return new Pair<String, String>(uName, pwd);
                             }
-                        }
-                        if (isOK)
+                        } else
                         {
-                            return new Pair<String, String>(uName, pwd);
+                            return null;
                         }
-                    } else
-                    {
-                        return null;
                     }
                 }
             }
-            
+            return new Pair<String, String>("testuser@ku.edu", "testuser@ku.edu");
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -675,8 +674,14 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void processDB()
     {
-        remoteImageSetup(false); // only show if not set
-        
+//        if (!remoteImageSetup(true)) // always show
+//        {
+//            return;
+//        }
+        if (!checkInstitutionInfo())
+        {
+            return;
+        }
         try
         {
             loadAndPushResourceBundle(RES_NAME);

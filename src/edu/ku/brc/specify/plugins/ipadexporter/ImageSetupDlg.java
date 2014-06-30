@@ -29,28 +29,61 @@ import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.prefs.BackingStoreException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.util.FileUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.ImageDisplay;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 
 
@@ -64,16 +97,37 @@ import edu.ku.brc.util.AttachmentUtils;
  */
 public class ImageSetupDlg extends CustomDialog
 {
+    private IPadCloudIFace cloudHelper;
+    
+    private Institution inst;
+    private Collection  collection;
+    
+    // Institution
+    private JTextField  instTextField;
+    private int         instNameLen;
+    private String      instGUID;
+    
+    // Institution on Cloud
+    private Integer cloudInstId = null;
+    
+    // Curator
+    private JTextField    crTextFld;
+    private JTextField    cmTextFld;
+    private String        curatorPref;
+    private String        colMgrPref;
+
+    // URL Data Members
     protected static final String ATTMGR       = "attmgr";
     protected static final String DIRECT       = "direct";
     
     protected static final String IPAD_REMOTE_IMAGE_URL      = "IPAD_REMOTE_IMAGE_URL";
     protected static final String IPAD_REMOTE_IMAGE_URL_TYPE = "IPAD_REMOTE_IMAGE_URL_TYPE";
+    protected static final String IPAD_PICTURE_LOCATION      = "IPAD_PICTURE_LOCATION";
     
     
     private JRadioButton  useAttchmentMgrRB;
     private JRadioButton  useDirectUrlRB;
-    private ValTextField  textfield;
+    private ValTextField  urlTextField;
     private JLabel        label;
     private JLabel        statusLbl;
     
@@ -83,13 +137,52 @@ public class ImageSetupDlg extends CustomDialog
     private String        cachedAttMgrURL = null;
     private String        cachedDirectURL = null;
     
+    // Picture Selection
+    private ImageDisplay   imageView;
+    
     /**
-     * @param cloudHelper
      * @throws HeadlessException
      */
-    public ImageSetupDlg() throws HeadlessException
+    public ImageSetupDlg(final IPadCloudIFace cloudHelper) throws HeadlessException
     {
         super((Frame)getTopWindow(), "", true, OKCANCEL, null);
+        
+        collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        inst       = AppContextMgr.getInstance().getClassObject(Institution.class);
+        instGUID   = inst.getGuid();
+        
+        this.cloudHelper = cloudHelper;
+        
+        retrieveInstData();
+    }
+    
+    
+    private void retrieveInstData()
+    {
+        boolean doDebug = false;
+        if (doDebug)
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                inst = session.get(Institution.class, inst.getId());
+                AppContextMgr.getInstance().setClassObject(Institution.class, inst);
+            }
+            catch (Exception e)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
+                e.printStackTrace();
+            }
+            finally
+            {
+                if (session != null) session.close();
+            }
+        }
+        
+        cloudInstId = cloudHelper != null ? (StringUtils.isNotEmpty(instGUID) ? cloudHelper.getInstId(instGUID) : null) : null;
     }
 
     /* (non-Javadoc)
@@ -98,9 +191,248 @@ public class ImageSetupDlg extends CustomDialog
     @Override
     public void createUI()
     {
+        super.createUI();
+        
         loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
         
         setTitle(getResourceString("IMAGE_SRC_TITLE"));
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px"));
+
+        int y = 1;
+        pb.addSeparator(getResourceString("INST_INFO"), cc.xy(1, y)); y+= 2;
+        pb.add(createInstitutionPanel(), cc.xy(1, y)); y+= 2;
+        
+        pb.addSeparator(getResourceString("CURATOR_NM"), cc.xy(1, y)); y+= 2;
+        pb.add(createCuratorPanel(), cc.xy(1, y)); y+= 2;
+        
+        pb.addSeparator(getResourceString("IMAGE_SRC_TITLE"), cc.xy(1, y));  y+= 2;
+        pb.add(createURLPanel(), cc.xy(1, y)); y+= 2;
+        
+        pb.addSeparator(getResourceString("PICTURE_TITLE"), cc.xy(1, y));  y+= 2;
+        pb.add(createPicturePanel(), cc.xy(1, y)); y+= 2;
+        
+        popResourceBundle();
+        
+        updateOKBtn();
+        
+        pb.setDefaultDialogBorder();
+        
+        contentPanel = pb.getPanel();
+        
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+        instGUID = inst.getGuid();
+
+    }
+    
+    /**
+     * @return
+     */
+    private JPanel createPicturePanel()
+    {
+        AppPreferences  remotePrefs = AppPreferences.getRemote();
+        
+        String          picturelocation = remotePrefs.get(getRemotePicturePrefName(), "");
+        JTextArea       explainTextArea = UIHelper.createTextArea(); 
+        
+        explainTextArea.setEditable(false);
+        explainTextArea.setText(getResourceString("PICTURE_EXPLAIN"));
+        explainTextArea.setOpaque(false);
+        
+        final String thumbnailPicMsg = getResourceString("THUMBNAIL_PIC");
+        imageView = new ImageDisplay(200, 200, true, true);
+        imageView.setThumbnailMsg(thumbnailPicMsg);
+
+        if (StringUtils.isNotEmpty(picturelocation))
+        {
+            String fullPath = UIRegistry.getAppDataDir() + File.separator + picturelocation;
+            File   urlFile  = new File(fullPath);
+            if (urlFile.exists())
+            {
+                imageView.setValue(urlFile.toURI().toASCIIString(), null);
+            }
+        }
+        
+        JButton clearBtn = UIHelper.createI18NButton("CLEAR_PICTURE");
+        clearBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                imageView.setValue(null, null);
+                imageView.setThumbnailMsg(thumbnailPicMsg);
+                imageView.repaint();
+            }
+        });
+        CellConstraints cc = new CellConstraints();
+        
+        PanelBuilder epb = new PanelBuilder(new FormLayout("f:p:g", "top:p:g,4px,p"));
+        epb.add(explainTextArea, cc.xy(1,1));
+        
+        PanelBuilder bpb = new PanelBuilder(new FormLayout("p", "f:p:g,p"));
+        bpb.add(clearBtn, cc.xy(1,2));
+        epb.add(bpb.getPanel(), cc.xy(1, 3));
+        
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,8px,f:p:g", "f:p:g"));
+        pb.add(imageView, cc.xy(1, 1));
+        pb.add(epb.getPanel(), cc.xy(3, 1));
+
+        return pb.getPanel();
+    }
+    
+    /**
+     * @return
+     */
+    private JPanel createInstitutionPanel()
+    {
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,8px"));
+        DBTableInfo     ti = DBTableIdMgr.getInstance().getInfoById(Institution.getClassTableId());
+        
+        DBFieldInfo fi = ti.getFieldByName("name");
+        JLabel nmLabel = UIHelper.createFormLabel(fi.getTitle());
+        instNameLen    = fi.getLength();
+        instTextField  = new ValTextField();
+        
+        int y = 1;
+        pb.add(nmLabel,       cc.xy(1, y)); 
+        pb.add(instTextField, cc.xy(3, y)); y+= 2;
+        
+        KeyAdapter ka = new KeyAdapter()
+        {
+            @Override
+            public void keyReleased(KeyEvent e)
+            {
+                updateOKBtn();
+            }
+        };
+        instTextField.addKeyListener(ka);
+        
+        String title = cloudInstId == null ? inst.getName() : "";
+        instTextField.setText(title);
+        return pb.getPanel();
+    }
+    
+    /**
+     * @return
+     */
+    private JPanel createCuratorPanel()
+    {
+        AppPreferences  remotePrefs = AppPreferences.getRemote();
+        curatorPref     = "IPAD_CURATOR_NAME_" + collection.getId();
+        colMgrPref      = "IPAD_COLMGR_NAME_" + collection.getId();
+        
+        String          curatorName = remotePrefs.get(curatorPref, "");
+        String          colMgrName  = remotePrefs.get(colMgrPref, "");
+        
+        CellConstraints cc          = new CellConstraints();
+        PanelBuilder    pb          = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p"));
+        
+        crTextFld = UIHelper.createTextField(curatorName);
+        cmTextFld = UIHelper.createTextField(colMgrName);
+        
+        pb.add(UIHelper.createI18NFormLabel("Curator"), cc.xy(1, 1));
+        pb.add(crTextFld, cc.xy(3, 1));
+        
+        pb.add(UIHelper.createI18NFormLabel("COLMGR"), cc.xy(1, 3));
+        pb.add(cmTextFld, cc.xy(3, 3));
+        
+        KeyAdapter ka = new KeyAdapter()
+        {
+            @Override
+            public void keyReleased(KeyEvent e)
+            {
+                updateOKBtn();
+            }
+        };
+        crTextFld.addKeyListener(ka);
+        cmTextFld.addKeyListener(ka);
+        return pb.getPanel();
+    }
+ 
+    /**
+     * @return
+     */
+    public boolean isInstOK()
+    {
+        return cloudInstId != null;
+    }
+    
+    /**
+     * @return the instId
+     */
+    public Integer getInstId()
+    {
+        return cloudInstId;
+    }
+    
+    /**
+     * @param title
+     * @param uri
+     * @param code
+     * @return
+     */
+    private boolean saveToLocalDB(final String title)
+    {
+        boolean           isOK  = false;
+        Connection        conn  = DBConnection.getInstance().getConnection();
+        PreparedStatement pStmt = null;
+        try
+        {
+            String sql = "UPDATE institution SET Name=?, TimestampModified=? WHERE InstitutionID=?";
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, title);
+            pStmt.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+            pStmt.setInt(3, inst.getId());
+
+            isOK =  pStmt.executeUpdate() == 1;
+            pStmt.close();
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                inst = session.get(Institution.class, inst.getId());
+                AppContextMgr.getInstance().setClassObject(Institution.class, inst);
+            }
+            catch (Exception e)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
+                e.printStackTrace();
+            }
+            finally
+            {
+                if (session != null) session.close();
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return isOK;
+    }
+    
+    /**
+     * 
+     */
+    private void updateOKBtn()
+    {
+        boolean isInstOK     = !instTextField.getText().isEmpty();
+        boolean isCurratorOK = !crTextFld.getText().isEmpty() && !cmTextFld.getText().isEmpty();
+        boolean isURLOK      = isImageURLValidInput(urlTextField.getText());
+        
+        getOkBtn().setEnabled(isCurratorOK && isURLOK && isInstOK);
+    }
+    
+    private JPanel createURLPanel()
+    {
+        setTitle(getResourceString("IMAGE_SRC_TITLE"));
+
         useAttachTitle = getResourceString("ATTCH_MGR");   
         useDirectTitle = getResourceString("DIR_URL");  
 
@@ -108,13 +440,11 @@ public class ImageSetupDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,p,4px,p,4px"));
         
         label             = createLabel(useAttachTitle+":");
-        textfield         = new ValTextField(40);
+        urlTextField         = new ValTextField(40);
         statusLbl         = createLabel("");
         useAttchmentMgrRB = createI18NRadioButton("USE_ATT_MGR");
         useDirectUrlRB    = createI18NRadioButton("USE_DIR_URL");
         
-        contentPanel = pb.getPanel();
-
         int y = 1;
         pb.add(createI18NLabel("HOW_IMG_ACCESS"), cc.xy(1, y)); y+= 2;
         pb.add(useAttchmentMgrRB,            cc.xyw(1, y, 4)); y+= 2;
@@ -122,7 +452,7 @@ public class ImageSetupDlg extends CustomDialog
         
         PanelBuilder    pbInner = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p"));
         pbInner.add(label,     cc.xy(1, 1)); 
-        pbInner.add(textfield, cc.xy(3, 1));
+        pbInner.add(urlTextField, cc.xy(3, 1));
         
         pb.add(pbInner.getPanel(), cc.xyw(1, y, 4)); y+= 2;
         pb.add(statusLbl,          cc.xyw(1, y, 4)); y+= 2;
@@ -134,10 +464,10 @@ public class ImageSetupDlg extends CustomDialog
             @Override
             public void keyReleased(KeyEvent e)
             {
-                okBtn.setEnabled(isValidInput(textfield.getText()));
+                updateOKBtn();
             }
         };
-        textfield.addKeyListener(ka);
+        urlTextField.addKeyListener(ka);
         
         super.createUI();
         
@@ -157,8 +487,6 @@ public class ImageSetupDlg extends CustomDialog
         useAttchmentMgrRB.addActionListener(al);
         useDirectUrlRB.addActionListener(al);
         
-        popResourceBundle();
-        
         // Set Data into form or initialize it
         String typeStr     = AppPreferences.getRemote().get(getRemoteImageURLTypePrefName(), null);
         String imgURLPath  = AppPreferences.getRemote().get(getRemoteImageURLPrefName(), null);
@@ -168,7 +496,7 @@ public class ImageSetupDlg extends CustomDialog
 
         if (isNotEmpty(typeStr) && isNotEmpty(imgURLPath))
         {
-            textfield.setText(imgURLPath);
+            urlTextField.setText(imgURLPath);
             
             boolean isAttachMgr = isNotEmpty(typeStr) && typeStr.equals(ATTMGR);
             useAttchmentMgrRB.setSelected(isAttachMgr);
@@ -177,8 +505,8 @@ public class ImageSetupDlg extends CustomDialog
         {
             fillWithDefaultAttMgr();
         }
-        
-        okBtn.setEnabled(isValidInput(textfield.getText()));
+
+        return pb.getPanel();
     }
     
     private void fillWithDefaultAttMgr()
@@ -203,7 +531,7 @@ public class ImageSetupDlg extends CustomDialog
                 radBtnSelected();
             }
         }
-        textfield.setText(cachedAttMgrURL);
+        urlTextField.setText(cachedAttMgrURL);
     }
     
     /**
@@ -214,12 +542,12 @@ public class ImageSetupDlg extends CustomDialog
         boolean isUsingAttMgr = useAttchmentMgrRB.isSelected();
         if (isUsingAttMgr)
         {
-            cachedDirectURL = textfield.getText();
+            cachedDirectURL = urlTextField.getText();
             fillWithDefaultAttMgr();
         } else
         {
-            cachedAttMgrURL = textfield.getText();
-            textfield.setText(cachedDirectURL);
+            cachedAttMgrURL = urlTextField.getText();
+            urlTextField.setText(cachedDirectURL);
         }
         
         label.setText((isUsingAttMgr ? useAttachTitle : useDirectTitle)+":");
@@ -242,11 +570,10 @@ public class ImageSetupDlg extends CustomDialog
 //    }
     
     /**
-     * @param title
-     * @param webSite
+     * @param imageURL
      * @return
      */
-    private boolean isValidInput(final String imageURL)
+    private boolean isImageURLValidInput(final String imageURL)
     {
         if (useDirectUrlRB.isSelected())
         {
@@ -270,7 +597,7 @@ public class ImageSetupDlg extends CustomDialog
      */
     public String getImageURL()
     {
-        return textfield.getText();
+        return urlTextField.getText();
     }
 
     /**
@@ -317,7 +644,6 @@ public class ImageSetupDlg extends CustomDialog
         return getPrefName(IPAD_REMOTE_IMAGE_URL);
     }
     
-
     /**
      * @return return Collection unique Prefname for storing Image URL
      */
@@ -326,20 +652,164 @@ public class ImageSetupDlg extends CustomDialog
         return getPrefName(IPAD_REMOTE_IMAGE_URL_TYPE);
     }
 
+    /**
+     * @return return Collection unique Prefname for storing Image URL
+     */
+    protected String getRemotePicturePrefName()
+    {
+        return getPrefName(IPAD_PICTURE_LOCATION);
+    }
+
+    /**
+     * @return the institution guid
+     */
+    public String getInstGuid()
+    {
+        return instGUID;
+    }
+    
+    public static BufferedImage toBufferedImage(final Image img)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
+    
+    private String copyInstImage()
+    {
+        // These are form the iPad app
+        final int kWidth  = 770;
+        final int kHeight = 435;
+        
+        String filePath = (String)imageView.getValue();
+        if (StringUtils.isNotEmpty(filePath))
+        {
+            try
+            {
+                File srcFile;
+                if (filePath.startsWith("file:"))
+                {
+                    URL url = new URL(filePath);
+                    srcFile = new File(url.toURI());
+                } else
+                {
+                    srcFile  = new File(filePath);
+                }
+                String baseName = FilenameUtils.getBaseName(filePath);
+                String fileName = baseName + ".png";
+                File   destFile = new File(UIRegistry.getAppDataDir() + File.separator + fileName);
+                
+                if (!srcFile.getAbsolutePath().equals(destFile.getAbsolutePath()))
+                {
+                    ImageIcon img = new ImageIcon(srcFile.getAbsolutePath());
+                    if (img.getIconWidth() > kWidth || img.getIconHeight() > kHeight)
+                    {
+                        Image image = GraphicsUtils.getScaledImage(img, kWidth, kHeight, true);
+                        try
+                        {
+                            ImageIO.write(toBufferedImage(image), "PNG", destFile); //$NON-NLS-1$
+                        } catch (Exception ex){}
+                    } else
+                    {
+                        FileUtils.copyFile(srcFile, destFile);
+                    }
+                }
+                return fileName;
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
      */
     @Override
     protected void okButtonPressed()
     {
-        if (!textfield.getText().isEmpty())
+        String nmStr  = instTextField.getText();
+        if (nmStr.length() > instNameLen)
         {
-            //System.out.println(String.format("%s=%s", getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT));
-            //System.out.println(String.format("%s=%s", getRemoteImageURLPrefName(), textfield.getText()));
-            AppPreferences.getRemote().put(getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT);
-            AppPreferences.getRemote().put(getRemoteImageURLPrefName(),     textfield.getText());
+            nmStr = nmStr.substring(0, instNameLen);
+        }
+        if (saveToLocalDB(nmStr))
+        {
             statusLbl.setText("");
-            super.okButtonPressed();   
-         }
+            
+            boolean isOK           = false;
+            if (!iPadDBExporter.IS_TESTING) // ZZZ  
+            {            
+                Integer existingInstId = cloudHelper.getInstId(instGUID);
+                if ((cloudInstId == null && existingInstId != null) || (cloudInstId != null && existingInstId != null && cloudInstId.equals(existingInstId)))
+                {
+                    isOK = true;
+                    cloudInstId = existingInstId;
+                } else
+                {
+                    Integer newInstId = cloudHelper.saveInstitutionInfo(cloudInstId, nmStr, "", "", instGUID);
+                    if ((cloudInstId == null && newInstId != null) || (cloudInstId != null && newInstId != null && cloudInstId.equals(newInstId)))
+                    {
+                        isOK = true;
+                        cloudInstId = newInstId;
+                    }
+                }
+            } else 
+            {
+                isOK = true;
+            }
+            
+            if (isOK)
+            {
+                //System.out.println(String.format("%s=%s", getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT));
+                //System.out.println(String.format("%s=%s", getRemoteImageURLPrefName(), textfield.getText()));
+                
+                AppPreferences remotePrefs = AppPreferences.getRemote();
+                remotePrefs.put(getRemoteImageURLTypePrefName(), useAttchmentMgrRB.isSelected() ? ATTMGR : DIRECT);
+                remotePrefs.put(getRemoteImageURLPrefName(),     urlTextField.getText());
+                
+                remotePrefs.put(curatorPref, crTextFld.getText());
+                remotePrefs.put(colMgrPref, cmTextFld.getText());
+
+                String fileName = copyInstImage();
+                if (fileName != null)
+                {
+                    remotePrefs.put(getRemotePicturePrefName(), fileName);
+                }
+                
+                try 
+                {
+                    remotePrefs.flush();
+                } catch (BackingStoreException e1){}
+                
+                statusLbl.setText("");
+                
+                super.okButtonPressed();
+                
+                return;
+  
+            } else
+            {
+                statusLbl.setText("Unable to save the Institution Information.");
+            }
+        } else
+        {
+            statusLbl.setText("Unable to save the Institution Information to local database.");
+        }
+        okBtn.setEnabled(false);
+
     }
 }

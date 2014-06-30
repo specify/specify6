@@ -122,6 +122,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		
 		setDoubleBuffered(true);
 	}
+	
+	/**
+	 * @param msg
+	 */
+	public void setThumbnailMsg(final String msg)
+	{
+	    noThumnailStr = StringUtils.split(msg, ' ');
+	}
 
 	/**
 	 * Constructor with ImageIcon.
@@ -382,8 +390,11 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 					{
 					    Image img = ImageIO.read(f);
 					    setImage(img);
+                        status = kImageOK;
+					} else
+					{
+					    status = kError;
 					}
-					status = kError;
                     done();
 					return;
 					
@@ -574,6 +585,12 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace, ImageLoade
 		{
 			url = (String) value;
 			ImageLoaderExector.getInstance().loadImage(this);
+		}
+		if (value == null)
+		{
+		    url = null;
+		    image = null;
+		    isNoAttachment = true;
 		}
 	}
 

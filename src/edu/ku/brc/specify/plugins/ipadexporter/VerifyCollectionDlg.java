@@ -25,14 +25,12 @@ import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -40,7 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JEditorPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 
@@ -268,6 +265,9 @@ public class VerifyCollectionDlg extends CustomDialog
                         String  stop      = fieldNode.attributeValue("stop");
                         boolean doStop    = stop != null && stop.equals("true");
                         
+                        String  display   = fieldNode.attributeValue("display");
+                        boolean doDsp    = display == null || display.equals("true");
+                        
                         String  paleo     = fieldNode.attributeValue("isPaleo");
                         boolean isPaleo   = paleo != null && paleo.equals("true");
                         
@@ -329,7 +329,8 @@ public class VerifyCollectionDlg extends CustomDialog
                         		warnMsgs.add(fullMsg);
                         	}
                         	hasErrors = true;
-                        } else
+                        	
+                        } else if (doDsp)
                         {
                         	okMsgs.add(fullMsg);
                         }

@@ -34,7 +34,7 @@
        <eval name="TaxonParentedWrong" desc="%d Genus Taxonomy record(s) not parented to a Family" fmt="true" cond=">" val="0">
           <![CDATA[SELECT COUNT(*) FROM taxon t1 INNER JOIN taxon t2 ON t1.ParentID = t2.TaxonID WHERE t1.RankID = 180 AND t2.RankID < 140 AND t1.TaxonTreeDefID = TAXTREEDEFID]]>
        </eval>
-       <eval name="DuplicateFamilyNames" desc="%d - Number of sets of duplicate family names." fmt="true" cond=">" val="0" stop="true">
+       <eval name="DuplicateFamilyNames" desc="%d - Number of sets of duplicate family names." fmt="true" cond=">" val="0" stop="false">
           <![CDATA[SELECT COUNT(*) FROM (SELECT COUNT(FullName) CNT FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND RankID = 140 GROUP BY FullName) T1 WHERE CNT > 1]]>
        </eval> 
        <eval name="LocalityMissingLatLon" desc="%d percent of Locality records that are missing their Latitude, Longitude." fmt="true" cond=">" val="0">
@@ -54,6 +54,9 @@
        </eval>
        <eval name="Missing PaleoInformation" desc="%d percent of Paleo Context records have no information." fmt="true" cond=">" val="0" isPaleo="true">
           <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(PaleoContextID) CN FROM paleocontext WHERE ChronosStratID IS NULL AND LithoStratID IS NULL AND BioStratID IS NULL) T1, (SELECT COUNT(*) SM FROM paleocontext) T2]]>
+       </eval> 
+       <eval name="Missing InstGUID" desc="The Institution GUID field must have a value." fmt="false" cond=">" val="1" stop="true" display="false">
+          <![CDATA[SELECT COUNT(*) FROM institution WHERE GUID IS NULL]]>
        </eval> 
        <!-- Example on how to return a boolean 
        <eval name="Paleo" desc="Missing Paleo Information" cond="true">

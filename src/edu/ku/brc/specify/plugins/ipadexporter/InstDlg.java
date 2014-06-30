@@ -188,7 +188,7 @@ public class InstDlg extends CustomDialog
         PreparedStatement pStmt = null;
         try
         {
-            String sql = "UPDATE institution SET Name=? TimestampModified=? WHERE InstitutionID=?";
+            String sql = "UPDATE institution SET Name=?, TimestampModified=? WHERE InstitutionID=?";
             pStmt = conn.prepareStatement(sql);
             pStmt.setString(1, title);
             pStmt.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));

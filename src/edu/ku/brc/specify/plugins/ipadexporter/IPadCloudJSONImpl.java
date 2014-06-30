@@ -423,6 +423,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             int i = 0;
             for (String key : valuesMap.keySet())
             {
+                System.out.println("key["+key+"] val["+valuesMap.get(key)+"]");
                 parts[i++] = new StringPart(key, valuesMap.get(key));
             }
 
@@ -436,7 +437,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             {
                 System.err.println("HTTP Status: OK");
                 String outStr = post.getResponseBodyAsString();
-                System.out.println("["+outStr+"]");
+                System.out.println("outStr["+outStr+"]");
                 
                 return JSONObject.fromObject(outStr);
             }
@@ -528,9 +529,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#saveInstitutionInfo(java.lang.Integer, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Integer saveInstitutionInfo(Integer instId, String title, String webSite, String code, final String guid)
+    public Integer saveInstitutionInfo(final Integer instId, final String title, final String webSite, final String code, final String guid)
     {
-        HashMap<String, String> map = createHashMap(kTitle, title, kWebSite, webSite, kCode, code, kAction, "addinst");
+        HashMap<String, String> map = createHashMap(kTitle, title, kWebSite, webSite, kCode, code, kGUID, guid, kAction, "addinst");
         if (instId != null)
         {
             map.put(kId, instId.toString());
