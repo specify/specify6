@@ -58,7 +58,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     private static final String kUserName    = "usrname";
     private static final String kPassword    = "pwd";
     private static final String kDirName     = "dirname";
-    private static final String kCurator    = "curator";
+    private static final String kCurator     = "curator";
+    private static final String kCollGUID    = "collguid";
     private static final String kIcon        = "icon";
     private static final String kAction      = "action";
     
@@ -239,7 +240,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
                                  final String coll,
                                  final Boolean isGlobal,
                                  final String iconName,
-                                 final String curator)
+                                 final String curator,
+                                 final String collGuid)
     {
         HashMap<String, String> map = createHashMap(kUserName,    userName,
                                                     kCollection,  coll, 
@@ -250,6 +252,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
                                                     kIsGlobal,    isGlobal != null ? isGlobal.toString() : "false", 
                                                     kIcon,        iconName, 
                                                     kCurator,     curator, 
+                                                    kCollGUID,    collGuid,
                                                     kAction,      "adddataset");
         JSONObject data = sendPost(map);
         

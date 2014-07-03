@@ -4217,7 +4217,8 @@ public class iPadDBExporter implements VerifyCollectionListener
                         String collectionName = col.getCollectionName();
                         isDataSetSaved = ipadCloud.addNewDataSet(collectionName, dirName, inst.getGuid(), 
                                                                  div.getName(), dsp.getName(), collectionName, 
-                                                                 false, auxInfoMap.get("icon"), auxInfoMap.get("curator"));
+                                                                 false, auxInfoMap.get("icon"), auxInfoMap.get("curator"),
+                                                                 col.getGuid());
                     }
                 }
                 if (stopTrying)
@@ -4226,12 +4227,15 @@ public class iPadDBExporter implements VerifyCollectionListener
                 }
             }
             
-            if (!stopTrying && isDataSetSaved)
+            if (progressDelegate != null)
             {
-                progressDelegate.setDesc("The Collection information was uploaded successfully.");
-            } else
-            {
-                progressDelegate.setDesc("The Collection information upload was stopped.");
+                if (!stopTrying && isDataSetSaved)
+                {
+                    progressDelegate.setDesc("The Collection information was uploaded successfully.");
+                } else
+                {
+                    progressDelegate.setDesc("The Collection information upload was stopped.");
+                }
             }
             if (tmp.exists()) tmp.delete();
             
@@ -4366,9 +4370,12 @@ public class iPadDBExporter implements VerifyCollectionListener
         
         // Copy institution picture
         String picFileName = prefs.get(dlg.getRemotePicturePrefName(), null);
-        File   srcPicFile  = new File(UIRegistry.getAppDataDir() + File.separator + picFileName);
-        FileUtils.copyFileToDirectory(srcPicFile, cacheDir);
-        fileNamesForExport.add(new ChartFileInfo(picFileName, "Institution Picture", "en"));
+        if (StringUtils.isNotEmpty(picFileName))
+        {
+            File   srcPicFile  = new File(UIRegistry.getAppDataDir() + File.separator + picFileName);
+            FileUtils.copyFileToDirectory(srcPicFile, cacheDir);
+            fileNamesForExport.add(new ChartFileInfo(picFileName, "Institution Picture", "en"));
+        }
         
         // XXX Testing for testing
         //imageURL = "http://anza.nhm.ku.edu/getfileref.php?type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>&scale=<scale>";

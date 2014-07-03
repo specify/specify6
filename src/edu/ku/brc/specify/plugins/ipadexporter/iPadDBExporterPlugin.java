@@ -279,7 +279,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private boolean checkInstitutionInfo()
     {
-        //if (!iPadDBExporter.IS_TESTING) // ZZZ       
+        if (!iPadDBExporter.IS_TESTING) // ZZZ       
         {
             ImageSetupDlg dlg = new ImageSetupDlg(iPadCloud);
             if (!dlg.isInstOK())
@@ -682,6 +682,7 @@ public class iPadDBExporterPlugin extends BaseTask
         {
             return;
         }
+        
         try
         {
             loadAndPushResourceBundle(RES_NAME);

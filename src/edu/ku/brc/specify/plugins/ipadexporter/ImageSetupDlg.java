@@ -151,6 +151,9 @@ public class ImageSetupDlg extends CustomDialog
         inst       = AppContextMgr.getInstance().getClassObject(Institution.class);
         instGUID   = inst.getGuid();
         
+        curatorPref     = "IPAD_CURATOR_NAME_" + collection.getId();
+        colMgrPref      = "IPAD_COLMGR_NAME_" + collection.getId();
+        
         this.cloudHelper = cloudHelper;
         
         retrieveInstData();
@@ -322,8 +325,6 @@ public class ImageSetupDlg extends CustomDialog
     private JPanel createCuratorPanel()
     {
         AppPreferences  remotePrefs = AppPreferences.getRemote();
-        curatorPref     = "IPAD_CURATOR_NAME_" + collection.getId();
-        colMgrPref      = "IPAD_COLMGR_NAME_" + collection.getId();
         
         String          curatorName = remotePrefs.get(curatorPref, "");
         String          colMgrName  = remotePrefs.get(colMgrPref, "");
@@ -358,7 +359,12 @@ public class ImageSetupDlg extends CustomDialog
      */
     public boolean isInstOK()
     {
-        return cloudInstId != null;
+        AppPreferences  remotePrefs = AppPreferences.getRemote();
+        String          picturelocation = remotePrefs.get(getRemotePicturePrefName(), "");
+        String          curatorName = remotePrefs.get(curatorPref, "");
+        String          colMgrName  = remotePrefs.get(colMgrPref, "");
+
+        return cloudInstId != null && StringUtils.isNotEmpty(picturelocation) && StringUtils.isNotEmpty(curatorName) && StringUtils.isNotEmpty(colMgrName);
     }
     
     /**

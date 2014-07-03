@@ -98,7 +98,8 @@ public interface IPadCloudIFace
                                           String coll,
                                           Boolean isGlobal,
                                           String iconName,
-                                          String curator);
+                                          String curator,
+                                          String collGuid);
 
     /**
      * @param dsName

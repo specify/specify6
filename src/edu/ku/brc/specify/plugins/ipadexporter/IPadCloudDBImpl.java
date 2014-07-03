@@ -312,9 +312,10 @@ public class IPadCloudDBImpl implements IPadCloudIFace
                                  final String coll,
                                  final Boolean isGlobal,
                                  final String iconName,
-                                 final String curator)
+                                 final String curator,
+                                 final String collGuid)
     {
-        return createDataSet(connection, dsName, dirName, inst, div, disp, coll, false) != -1;
+        return createDataSet(connection, dsName, dirName, inst, div, disp, coll, curator, collGuid, false) != -1;
     }
     
     /* (non-Javadoc)
@@ -565,6 +566,8 @@ public class IPadCloudDBImpl implements IPadCloudIFace
                               final String div,
                               final String disp,
                               final String coll,
+                              final String curator,
+                              final String collGuid,
                               final boolean isGlobal)
     {
         PreparedStatement pStmt = null;
@@ -712,11 +715,13 @@ public class IPadCloudDBImpl implements IPadCloudIFace
             String[] divData   = {"Fish", "Bugs", "Birds", "Fossils"};
             String[] dispData  = {"Icthy", "Ento", "Orno", "Paleo"};
             String[] collData  = {"KU Icthy", "KU Ento", "ISU Orno", "MSU Paleo"};
+            String[] curaData  = {"Andy1", "Andy2", "Andy3", "Andy4"};
+            String[] colGuidData = {"001", "002", "003", "004", };
             boolean[] isGlob   = {true, false, false, true};
             int[]    dsIds     = new int[dsNames.length];
             for (int i=0;i<dsNames.length;i++)
             {
-                dsIds[i] = createDataSet(conn, dsNames[i], dsDirs[i], instData2[i], divData[i], dispData[i], collData[i], isGlob[i]);
+                dsIds[i] = createDataSet(conn, dsNames[i], dsDirs[i], instData2[i], divData[i], dispData[i], collData[i], curaData[i], colGuidData[i], isGlob[i]);
             }
             
             assignOwner(conn, userIds[0], dsIds[0]);

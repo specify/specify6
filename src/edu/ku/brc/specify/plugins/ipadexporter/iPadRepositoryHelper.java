@@ -77,8 +77,8 @@ public class iPadRepositoryHelper
 {
     private static MessageDigest sha1       = null;
     //public static final String  baseURLStr = "http://anza.nhm.ku.edu/ipad/";
-    //public static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
-    public static final String  baseURLStr = "http://192.168.1.113/ipad/";
+    public static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
+    //public static final String  baseURLStr = "http://192.168.1.113/ipad/";
 
     private boolean                 networkConnError   = false;
     private byte[]                  bytes              = new byte[100*1024];
@@ -90,7 +90,8 @@ public class iPadRepositoryHelper
     private String                  writeURLStr = baseURLStr + "handler.php";
     //private String                  delURLStr   = null;
     
-    private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", "colmgr", "icon", "curator", "disptype"};
+    private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", 
+                                               "colmgr", "icon", "curator", "disptype", "instguid", "collguid"};
     private String[]                values  = new String[symbols.length];
     
     static
@@ -296,6 +297,8 @@ public class iPadRepositoryHelper
             values[7] = iconName;
             values[8] = StringUtils.isEmpty(names.first) ? agent.toString() : names.first;
             values[9] = disp.getType();
+            values[10] = inst.getGuid();
+            values[11] = coll.getGuid();
             
             for (int i=0;i<values.length;i++)
             {
@@ -355,17 +358,6 @@ public class iPadRepositoryHelper
     /**
      * @param targetFile
      * @param fileName
-     * @return
-     */
-    public synchronized boolean sendFile(final File targetFile, 
-                                         final String fileName)
-    {
-        return sendFile(targetFile, fileName, "");
-    }
-    
-    /**
-     * @param targetFile
-     * @param fileName
      * @param dirName
      * @return
      */
@@ -398,7 +390,7 @@ public class iPadRepositoryHelper
 
             int status = client.executeMethod(filePost);
             
-            //System.out.println(filePost.getResponseBodyAsString());
+            System.out.println(filePost.getResponseBodyAsString());
 
             if (status == HttpStatus.SC_OK)
             {
