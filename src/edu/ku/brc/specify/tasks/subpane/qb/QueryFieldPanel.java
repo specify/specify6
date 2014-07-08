@@ -704,6 +704,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      */
     public void setQueryFieldForAutomapping(SpQueryField queryField)
     {
+    	justSetTheQueryField(queryField);
+    }
+    
+    /**
+     * @param queryField
+     */
+    public void justSetTheQueryField(SpQueryField queryField) {
     	this.queryField = queryField;
     }
     

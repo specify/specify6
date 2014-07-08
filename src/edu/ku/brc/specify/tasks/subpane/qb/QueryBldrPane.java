@@ -3196,7 +3196,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	newQf.initialize();
             	newQf.setFieldName(qf.getFieldName());
             	newQf.setPosition(qf.getPosition());
-            	qfp.setQueryFieldForAutomapping(newQf); //actually just sets the field
+            	qfp.justSetTheQueryField(newQf); 
             	qfp.updateQueryField(newQf);
             	result.addReference(newQf, "fields");
             }
