@@ -511,6 +511,26 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
+     * @param enabled
+     */
+    protected void setSaveBtnEnabled(boolean enabled) {
+    	if (!enabled) {
+    		saveBtn.setEnabled(false);
+    	} else {
+    		saveBtn.setEnabled(enabled);
+    		/* Since leaving 'Save As' enabled all the time doesn't hurt anything, 
+    		 * don't worry about its enablement
+    		 
+    		//Disable 'Save As' if nothing has been saved.
+    		List<JComponent> items = saveBtn.getMenus();
+    		if (items.size() == 2) {
+    			items.get(1).setEnabled(query != null && query.getId() != null);
+    		}
+    		*/
+    	}
+    }
+    
+    /**
      * create the query builder UI.
      */
     protected void createUI()
@@ -553,7 +573,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	} catch (Exception ex) {
                 		
                 	}
-                	saveBtn.setEnabled(false);
+                	setSaveBtnEnabled(false);
                 }
             }
         };
@@ -566,7 +586,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (saveQuery(true))
                 {
-                    saveBtn.setEnabled(false);
+                    setSaveBtnEnabled(false);
                 }
             }
         };
@@ -760,7 +780,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         					}
         					query.setCountOnly(countOnly);
         					query.setSelectDistinct(distinctChk.isSelected());
-        					saveBtn.setEnabled(thereAreItems());
+        					setSaveBtnEnabled(thereAreItems());
         					return null;
         				}
         			}.start();
@@ -806,7 +826,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         }
                         query.setCountOnly(countOnly);
                         query.setSelectDistinct(distinctChk.isSelected());
-                        saveBtn.setEnabled(thereAreItems());
+                        setSaveBtnEnabled(thereAreItems());
                         return null;
                     }
                 }.start();
@@ -842,7 +862,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     						countOnly = false;
     					}
                         query.setSearchSynonymy(searchSynonymy);
-                        saveBtn.setEnabled(thereAreItems());
+                        setSaveBtnEnabled(thereAreItems());
                         return null;
                     }
                 }.start();
@@ -875,7 +895,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 								UsageTracker.incrUsageCount("QB.SmushedOn");
 							}
 							query.setSmushed(smushed);
-							saveBtn.setEnabled(thereAreItems());
+							setSaveBtnEnabled(thereAreItems());
 							return null;
 						}
 					}.start();
@@ -1350,7 +1370,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             list.repaint();
         }
-        saveBtn.setEnabled(saveBtnEnabled);
+        setSaveBtnEnabled(saveBtnEnabled);
         saveBtn.setVisible(canSave());
         updateSearchBtn();
         QueryBldrPane.this.validate();
@@ -3176,6 +3196,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	newQf.initialize();
             	newQf.setFieldName(qf.getFieldName());
             	newQf.setPosition(qf.getPosition());
+            	qfp.setQueryFieldForAutomapping(newQf); //actually just sets the field
             	qfp.updateQueryField(newQf);
             	result.addReference(newQf, "fields");
             }
@@ -3250,7 +3271,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      	boolean result = false;
      	if (!canSave(true))
      	{
-     		saveBtn.setEnabled(false);
+     		setSaveBtnEnabled(false);
      		return false;
      	}
      	
@@ -3296,7 +3317,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             Set<Integer> queryFldsWithoutPanels = new HashSet<Integer>();
             for (SpQueryField qf : query.getFields())
             {
-            	System.out.println(qf.getFieldName());
+            	//System.out.println(qf.getFieldName());
             	queryFldsWithoutPanels.add(qf.getId());
             }
             
@@ -4334,7 +4355,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					log.error(ex);
 				}
 				queryFieldsPanel.repaint();
-				saveBtn.setEnabled(thereAreItems()
+				setSaveBtnEnabled(thereAreItems()
 								&& canSave());
 				updateSearchBtn();
 				updateSmushBtn();
@@ -4904,7 +4925,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     queryFieldsPanel.repaint();
                     if (!loading)
                     {
-                        saveBtn.setEnabled(canSave(isSchemaMapping));
+                        setSaveBtnEnabled(canSave(isSchemaMapping));
                         updateSearchBtn();
                     }
                     //Sorry, but a new context can't be selected if any fields are selected from the current context.
@@ -5143,7 +5164,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         if (saveBtn != null && saveBtn.isEnabled())
         {
-            saveBtn.setEnabled(false);
+            setSaveBtnEnabled(false);
         }
 
         if (runningResults.get() != null)
@@ -5273,7 +5294,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 //scrollQueryFieldsToRect(toMove.getBounds());
                 queryFieldsPanel.repaint();
                 updateMoverBtns();
-                saveBtn.setEnabled(canSave());
+                setSaveBtnEnabled(canSave());
             }
         });
     }
