@@ -4728,11 +4728,7 @@ public class UploadTable implements Comparable<UploadTable>
 					}
 					
 				}
-				isBlank = isBlankSequence(isBlank, uploadData, row, seq/*
-																		 * ,
-																		 * getSequedParentClasses
-																		 * ()
-																		 */);
+				isBlank = isBlankSequence(isBlank, uploadData, row, seq, null);
 				if (isBlank)
 				/*
 				 * Disallow situations where 1-many lists have 'holes' - eg.
@@ -5025,7 +5021,7 @@ public class UploadTable implements Comparable<UploadTable>
      * Checks relationships and datatype to see if table data for row and sequence is really blank and/or
      * if it is not OK for it to be blank.
      */
-    protected boolean isBlankSequence(final boolean blank, final UploadData uploadData, final int row, final int seq/*, final Set<Class<?>> parentClasses*/)
+    protected boolean isBlankSequence(final boolean blank, final UploadData uploadData, final int row, final int seq, final UploadTable childCaller)
     {
 		if (!blank)
 		{
@@ -5041,7 +5037,7 @@ public class UploadTable implements Comparable<UploadTable>
 					if (pte.getImportTable().isSequenced)
 //					if (parentClasses.contains(pte.getImportTable().getTblClass()))
 					{
-						if (!pte.getImportTable().isBlankSequence(blank, uploadData, row, seq))
+						if (!pte.getImportTable().isBlankSequence(blank, uploadData, row, seq, this))
 						{
 							return false;
 						}
@@ -5051,7 +5047,7 @@ public class UploadTable implements Comparable<UploadTable>
 			return true;
 		}
 		
-		return !hasChildren;
+		return childCaller == null || !hasChildren;
     }
     
     
