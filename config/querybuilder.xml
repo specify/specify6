@@ -519,6 +519,9 @@
       	<alias name="Agent" field="modifiedByAgent" />
       	<alias name="Preparation" field="preparations" />
         <table name="StorageTreeDefItem" field="definitionItem"/>
+        <table name="StorageAttachment" field="storageAttachments">
+            <alias name="Attachment"/>
+        </table>
     </table>
     
     <table name="Taxon">
