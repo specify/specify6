@@ -141,11 +141,11 @@ public class iPadDBExporter implements VerifyCollectionListener
     private iPadRepositoryHelper                     helper             = new iPadRepositoryHelper();
     private String                                   dbName;
     private HashMap<String, Integer>                 idMapper           = new HashMap<String, Integer>();
-    private HashMap<Integer, Pair<Integer, Integer>> taxMapper          = new HashMap<Integer, Pair<Integer, Integer>>();
-    private HashMap<Pair<Integer, Integer>, Integer> revMapper          = new HashMap<Pair<Integer, Integer>, Integer>();
-    private int[]                                    array              = null;
-    private int                                      largestVal         = 0;
-    private Vector<Pair<Integer, Integer>>           familyIdList       = null;
+//    private HashMap<Integer, Pair<Integer, Integer>> taxMapper          = new HashMap<Integer, Pair<Integer, Integer>>();
+//    private HashMap<Pair<Integer, Integer>, Integer> revMapper          = new HashMap<Pair<Integer, Integer>, Integer>();
+//    private int[]                                    array              = null;
+//    private int                                      largestVal         = 0;
+//    private Vector<Pair<Integer, Integer>>           familyIdList       = null;
 
 
     private ProgressDialog                           progressDelegate;
@@ -172,6 +172,7 @@ public class iPadDBExporter implements VerifyCollectionListener
     private boolean                                  doZipFile          = true; 
     private boolean                                  doUpload           = true; 
     private ArrayList<ChartFileInfo>                 fileNamesForExport = new ArrayList<ChartFileInfo>();
+    private String                                   institutionImageName  = null;
     
     private int continentIdCnt = 0;
     private int countryIdCnt   = 0;
@@ -4369,12 +4370,12 @@ public class iPadDBExporter implements VerifyCollectionListener
         }
         
         // Copy institution picture
-        String picFileName = prefs.get(dlg.getRemotePicturePrefName(), null);
-        if (StringUtils.isNotEmpty(picFileName))
+        institutionImageName = prefs.get(dlg.getRemotePicturePrefName(), null);
+        if (StringUtils.isNotEmpty(institutionImageName))
         {
-            File   srcPicFile  = new File(UIRegistry.getAppDataDir() + File.separator + picFileName);
+            File   srcPicFile  = new File(UIRegistry.getAppDataDir() + File.separator + institutionImageName);
             FileUtils.copyFileToDirectory(srcPicFile, cacheDir);
-            fileNamesForExport.add(new ChartFileInfo(picFileName, "Institution Picture", "en"));
+            fileNamesForExport.add(new ChartFileInfo(institutionImageName, "Institution Picture", "en"));
         }
         
         // XXX Testing for testing
@@ -4411,7 +4412,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         }
         
         iPadRepositoryHelper h = new iPadRepositoryHelper();
-        auxInfoMap = h.getAuxilaryInfo();
+        auxInfoMap = h.getAuxilaryInfo(institutionImageName);
         if (auxInfoMap == null)
         {
             popResourceBundle();

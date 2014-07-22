@@ -53,8 +53,6 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     private static final String kCollection  = "col";
     private static final String kDiscipline  = "dsp";
     private static final String kDivision    = "div";
-    //private static final String kInstitution = "inst";
-    private static final String kDataSetName = "dsname";
     private static final String kUserName    = "usrname";
     private static final String kPassword    = "pwd";
     private static final String kDirName     = "dirname";
@@ -73,6 +71,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     private boolean                 isLoggedIn = false;
     private Integer                 currUserID = null;
     private String                  userName   = null;
+    
+    private boolean                 isNetworkError = false;
     
 
     /**
@@ -103,6 +103,11 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
         return data != null && isStatusOK(data);
     }
     
+    public boolean isNetworkError()
+    {
+        return isNetworkError;
+    }
+    
     /**
      * @param data
      * @return
@@ -124,7 +129,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
         String md5Pwd = org.apache.commons.codec.digest.DigestUtils.md5Hex(pwd);
         
         //org.apache.commons.codec.digest.DigestUtils.md5Hex(data)
-        System.out.println(String.format("[%s][%s]", pwd, md5Pwd));
+        //System.out.println(String.format("[%s][%s]", pwd, md5Pwd));
         
         HashMap<String, String> map = createHashMap(kUserName, usrName, kPassword, md5Pwd, kAction, "login");
         JSONObject data = sendPost(map);
@@ -167,9 +172,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#addUserAccessToDataSet(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean addUserAccessToDataSet(final String usrName, final String dataSetName)
+    public boolean addUserAccessToDataSet(final String usrName, final String collGuid)
     {
-        HashMap<String, String> map = createHashMap(kUserName, usrName, kDataSetName, dataSetName, kAction, "addaccess");
+        HashMap<String, String> map = createHashMap(kUserName, usrName, kCollGUID, collGuid, kAction, "addaccess");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);
@@ -179,9 +184,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#addDataSetToUser(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean addDataSetToUser(final String usrName, final String dataSetName)
+    public boolean addDataSetToUser(final String usrName, final String collGuid)
     {
-        HashMap<String, String> map = createHashMap(kUserName, usrName, kDataSetName, dataSetName, kAction, "addowner");
+        HashMap<String, String> map = createHashMap(kUserName, usrName, kCollGUID, collGuid, kAction, "addowner");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);
@@ -191,9 +196,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#doesDataSetExist(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean doesDataSetExist(final String dsName, final String guid)
+    public boolean doesDataSetExist(final String collGuid, final String guid)
     {
-        HashMap<String, String> map = createHashMap(kDataSetName, dsName, kGUID, guid, kAction, "dsexists");
+        HashMap<String, String> map = createHashMap(kCollGUID, collGuid, kGUID, guid, kAction, "dsexists");
         JSONObject data = sendPost(map);
         
         if (data != null && isStatusOK(data))
@@ -208,9 +213,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeUserAccessFromDataSet(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean removeUserAccessFromDataSet(final String usrName, final String dataSetName)
+    public boolean removeUserAccessFromDataSet(final String usrName, final String collGuid)
     {
-        HashMap<String, String> map = createHashMap(kUserName, usrName, kDataSetName, dataSetName, kAction, "delaccess");
+        HashMap<String, String> map = createHashMap(kUserName, usrName, kCollGUID, collGuid, kAction, "delaccess");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);
@@ -220,9 +225,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeDataSetFromUser(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean removeDataSetFromUser(final String usrName, final String dataSetName)
+    public boolean removeDataSetFromUser(final String usrName, final String collGuid)
     {
-        HashMap<String, String> map = createHashMap(kUserName, usrName, kDataSetName, dataSetName, kAction, "delowner");
+        HashMap<String, String> map = createHashMap(kUserName, usrName, kCollGUID, collGuid, kAction, "delowner");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);
@@ -263,11 +268,11 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeDataSet(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean removeDataSet(final String dsName, final String guid)
+    public boolean removeDataSet(final String collGuid, final String guid)
     {
         HashMap<String, String> map = createHashMap(
                 kGUID,     guid, 
-                kDataSetName, dsName, 
+                kCollGUID,  collGuid, 
                 kAction,      "deldataset");
         JSONObject data = sendPost(map);
 
@@ -290,9 +295,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#getAccessList(java.lang.String)
      */
     @Override
-    public List<String> getAccessList(final String dataSetName)
+    public List<String> getAccessList(final String collGuid)
     {
-        HashMap<String, String> map = createHashMap(kDataSetName, dataSetName, kAction, "getaccesslist");
+        HashMap<String, String> map = createHashMap(kCollGUID, collGuid, kAction, "getaccesslist");
         JSONObject data = sendPost(map);
         
         if (data != null && isStatusOK(data))
@@ -312,9 +317,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#makeDataSetGlobal(java.lang.String, boolean)
      */
     @Override
-    public boolean makeDataSetGlobal(final String dataSetName, final boolean isGlobal)
+    public boolean makeDataSetGlobal(final String collGuid, final boolean isGlobal)
     {
-        HashMap<String, String> map = createHashMap(kDataSetName, dataSetName, kIsGlobal, isGlobal ? "0" : "1", kAction, "setglobal");
+        HashMap<String, String> map = createHashMap(kCollGUID, collGuid, kIsGlobal, isGlobal ? "0" : "1", kAction, "setglobal");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);
@@ -378,8 +383,9 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
                     String dsp    = jds.getString("dsp");
                     String col    = jds.getString("col");
                     String isglob = jds.getString("isglob");
+                    String collGuid = jds.getString("collguid");
                     Integer id = Integer.parseInt(idStr);
-                    DataSetInfo dsi = new DataSetInfo(id, dsname, inst, div, dsp, col, isglob.equals("1"));
+                    DataSetInfo dsi = new DataSetInfo(id, dsname, inst, div, dsp, col, collGuid, isglob.equals("1"));
                     dsList.add(dsi);
                 }
             }
@@ -413,6 +419,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      */
     private synchronized JSONObject sendPost(final HashMap<String, String> valuesMap)
     {
+        isNetworkError = false;
+        
         System.out.println("\n------------------------ ");
         for (String k : valuesMap.keySet())
         {
@@ -450,12 +458,13 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             
         } catch (java.net.UnknownHostException uex)
         {
-            //networkConnError = true;
+            isNetworkError = true;
             
         } catch (Exception ex)
         {
             System.out.println("Error:  " + ex.getMessage());
             ex.printStackTrace();
+            isNetworkError = true;
             
         } finally
         {

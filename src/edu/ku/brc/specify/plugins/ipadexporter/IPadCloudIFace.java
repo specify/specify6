@@ -51,32 +51,32 @@ public interface IPadCloudIFace
 
     /**
      * @param usrName
-     * @param dataSetName
+     * @param collGuid
      * @return
      */
-    public abstract boolean addUserAccessToDataSet(String usrName, String dataSetName);
+    public abstract boolean addUserAccessToDataSet(String usrName, String collGuid);
 
     /**
      * @param usrName
-     * @param dataSetName
+     * @param collGuid
      * @return
      */
-    public abstract boolean addDataSetToUser(String usrName, String dataSetName);
+    public abstract boolean addDataSetToUser(String usrName, String collGuid);
 
     /**
      * @param usrName
-     * @param dataSetName
+     * @param collGuid
      * @return
      */
     public abstract boolean removeUserAccessFromDataSet(String usrName,
-                                                        String dataSetName);
+                                                        String collGuid);
 
     /**
      * @param usrName
-     * @param dataSetName
+     * @param collGuid
      * @return
      */
-    public abstract boolean removeDataSetFromUser(String usrName, String dataSetName);
+    public abstract boolean removeDataSetFromUser(String usrName, String collGuid);
 
     /**
      * @param dsName
@@ -88,6 +88,7 @@ public interface IPadCloudIFace
      * @param isGlobal
      * @param iconName
      * @param curator
+     * @param collGuid
      * @return
      */
     public abstract boolean addNewDataSet(String dsName,
@@ -102,14 +103,14 @@ public interface IPadCloudIFace
                                           String collGuid);
 
     /**
-     * @param dsName
+     * @param guid
      * @param website
      * @return
      */
     public abstract boolean doesDataSetExist(String dsName, String guid);
     
     /**
-     * @param dsName
+     * @param guid
      * @param guid
      * @return
      */
@@ -124,17 +125,17 @@ public interface IPadCloudIFace
     public abstract boolean addNewUser(String usrName, String pwd, String guid);
 
     /**
-     * @param dataSetName
+     * @param collGuid
      * @return
      */
-    public abstract List<String> getAccessList(String dataSetName);
+    public abstract List<String> getAccessList(String collGuid);
     
     /**
-     * @param dataSetName
+     * @param collGuid
      * @param isGlobal
      * @return
      */
-    public abstract boolean makeDataSetGlobal(String dataSetName, boolean isGlobal);
+    public abstract boolean makeDataSetGlobal(String collGuid, boolean isGlobal);
 
     /**
      * @return
@@ -157,6 +158,11 @@ public interface IPadCloudIFace
      * @return
      */
     public abstract Vector<DataSetInfo> getOwnerList();
+    
+    /**
+     * @return
+     */
+    public abstract boolean isNetworkError();
     
     //---------------------------------------------------------
     // Institution Methods
@@ -184,7 +190,7 @@ public interface IPadCloudIFace
      * @param name name of Institution
      * @param webSiteURI unique URI of Institution
      * @param code the Institution code
-     * @return the excisting or new Inst ID
+     * @return the existing or new Inst ID
      */
     public abstract Integer saveInstitutionInfo(Integer instId, String name, String webSiteURI, String code, String guid);
 

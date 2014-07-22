@@ -35,6 +35,7 @@ public class DataSetInfo
     private String  div;
     private String  disp;
     private String  coll;
+    private String  collGuid;
     private boolean isGlobal;
 
 
@@ -45,9 +46,10 @@ public class DataSetInfo
      * @param div
      * @param disp
      * @param coll
+     * @param collGuid
      * @param isGlobal
      */
-    public DataSetInfo(int id, String name, String inst, String div, String disp, String coll,
+    public DataSetInfo(int id, String name, String inst, String div, String disp, String coll, String collGuid,
                        boolean isGlobal)
     {
         super();
@@ -57,6 +59,7 @@ public class DataSetInfo
         this.div = div;
         this.disp = disp;
         this.coll = coll;
+        this.collGuid = collGuid;
         this.isGlobal = isGlobal;
     }
 
@@ -184,6 +187,24 @@ public class DataSetInfo
     public void setGlobal(boolean isGlobal)
     {
         this.isGlobal = isGlobal;
+    }
+
+
+    /**
+     * @return the collGuid
+     */
+    public String getCollGuid()
+    {
+        return collGuid;
+    }
+
+
+    /**
+     * @param collGuid the collGuid to set
+     */
+    public void setCollGuid(String collGuid)
+    {
+        this.collGuid = collGuid;
     }
     
     

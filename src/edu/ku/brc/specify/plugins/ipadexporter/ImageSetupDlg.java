@@ -152,15 +152,13 @@ public class ImageSetupDlg extends CustomDialog
         instGUID   = inst.getGuid();
         
         curatorPref     = "IPAD_CURATOR_NAME_" + collection.getId();
-        colMgrPref      = "IPAD_COLMGR_NAME_" + collection.getId();
+        colMgrPref      = "IPAD_COLMGR_NAME_"  + collection.getId();
         
         this.cloudHelper = cloudHelper;
-        
-        retrieveInstData();
     }
     
     
-    private void retrieveInstData()
+    public boolean initializeInstitutionData()
     {
         boolean doDebug = false;
         if (doDebug)
@@ -185,7 +183,13 @@ public class ImageSetupDlg extends CustomDialog
             }
         }
         
-        cloudInstId = cloudHelper != null ? (StringUtils.isNotEmpty(instGUID) ? cloudHelper.getInstId(instGUID) : null) : null;
+        if (cloudHelper != null && StringUtils.isNotEmpty(instGUID))
+        {
+            cloudInstId = cloudHelper.getInstId(instGUID);
+            return cloudInstId != null;
+        }
+        
+        return false;
     }
 
     /* (non-Javadoc)
@@ -198,7 +202,7 @@ public class ImageSetupDlg extends CustomDialog
         
         loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
         
-        setTitle(getResourceString("IMAGE_SRC_TITLE"));
+        setTitle(getResourceString("IPAD_CONFIG_TITLE"));
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px"));
@@ -314,7 +318,7 @@ public class ImageSetupDlg extends CustomDialog
         };
         instTextField.addKeyListener(ka);
         
-        String title = cloudInstId == null ? inst.getName() : "";
+        String title = inst != null ? inst.getName() : "";
         instTextField.setText(title);
         return pb.getPanel();
     }
@@ -437,7 +441,7 @@ public class ImageSetupDlg extends CustomDialog
     
     private JPanel createURLPanel()
     {
-        setTitle(getResourceString("IMAGE_SRC_TITLE"));
+        //setTitle(getResourceString("IMAGE_SRC_TITLE"));
 
         useAttachTitle = getResourceString("ATTCH_MGR");   
         useDirectTitle = getResourceString("DIR_URL");  

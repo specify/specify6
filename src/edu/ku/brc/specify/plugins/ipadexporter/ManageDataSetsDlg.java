@@ -40,6 +40,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -79,6 +80,7 @@ public class ManageDataSetsDlg extends CustomDialog
     
     private JList                 dataSetList;
     private DefaultListModel      dataSetModel;
+    private ArrayList<String>     datasetGUIDList;
     private EditDeleteAddPanel    dsEDAPanel;
     
     private JList                 usrList;
@@ -94,7 +96,8 @@ public class ManageDataSetsDlg extends CustomDialog
     {
         super((Frame)getTopWindow(), "MNG_DS", true, OKCANCEL, null);
         
-        this.cloudHelper = cloudHelper;
+        this.cloudHelper     = cloudHelper;
+        this.datasetGUIDList = new ArrayList<String>();
     }
 
     /* (non-Javadoc)
@@ -217,6 +220,7 @@ public class ManageDataSetsDlg extends CustomDialog
         for (DataSetInfo dsi : cloudHelper.getOwnerList())
         {
             dataSetModel.addElement(dsi.getName());
+            datasetGUIDList.add(dsi.getCollGuid());
         }
         if (dataSetModel.getSize() == 1)
         {
@@ -238,10 +242,10 @@ public class ManageDataSetsDlg extends CustomDialog
     private void loadUsersForDataSetsIntoJList()
     {
         usrModel.clear();
-        String dsName = (String)dataSetList.getSelectedValue();
-        if (dsName != null)
+        String collGuid = datasetGUIDList.get(dataSetList.getSelectedIndex());
+        if (collGuid != null)
         {
-            for (String usrName : cloudHelper.getAccessList(dsName))
+            for (String usrName : cloudHelper.getAccessList(collGuid))
             {
                 usrModel.addElement(usrName);
             }
@@ -253,17 +257,17 @@ public class ManageDataSetsDlg extends CustomDialog
      */
     private void removeUserFromDS()
     {
-        String dsName  = (String)dataSetList.getSelectedValue();
+        String collGuid = datasetGUIDList.get(dataSetList.getSelectedIndex());
         String usrName = (String)usrList.getSelectedValue();
-        if (StringUtils.isNotEmpty(dsName) &&
+        if (StringUtils.isNotEmpty(collGuid) &&
             StringUtils.isNotEmpty(usrName))
         {
-            if (cloudHelper.removeUserAccessFromDataSet(usrName, dsName))
+            if (cloudHelper.removeUserAccessFromDataSet(usrName, collGuid))
             {
                 loadUsersForDataSetsIntoJList();
             } else
             {
-                UIRegistry.showError("Error Removing "+usrName+" from "+dsName);
+                UIRegistry.showError("Error Removing "+usrName+" from "+collGuid);
             }
         }
     }
@@ -328,13 +332,13 @@ public class ManageDataSetsDlg extends CustomDialog
                 String usrName = userNameTF.getText();
                 if (cloudHelper.isUserNameOK(usrName))
                 {
-                    String dsName = (String)dataSetList.getSelectedValue();
-                    if (cloudHelper.addUserAccessToDataSet(usrName, dsName))
+                    String collGuid = datasetGUIDList.get(dataSetList.getSelectedIndex());
+                    if (cloudHelper.addUserAccessToDataSet(usrName, collGuid))
                     {
                         super.okButtonPressed();
                     } else
                     {
-                        iPadDBExporterPlugin.setErrorMsg(statusLbl, String.format("Unable to add%s to the DataSet %s", usrName, dsName));
+                        iPadDBExporterPlugin.setErrorMsg(statusLbl, String.format("Unable to add usr: %s to the DataSet guid: %s", usrName, collGuid));
                     }
                 } else if (isNewUser.isSelected())
                 {
@@ -362,20 +366,20 @@ public class ManageDataSetsDlg extends CustomDialog
                     
                     if (guid != null)
                     {
-                        String dsName = (String)dataSetList.getSelectedValue();
+                        String collGuid = datasetGUIDList.get(dataSetList.getSelectedIndex());
                         if (cloudHelper.addNewUser(usrName, pwdStr, guid))
                         {
-                            if (cloudHelper.addUserAccessToDataSet(usrName, dsName))
+                            if (cloudHelper.addUserAccessToDataSet(usrName, collGuid))
                             {
                                 ManageDataSetsDlg.this.loadUsersForDataSetsIntoJList();
                                 super.okButtonPressed();
                             } else
                             {
-                                iPadDBExporterPlugin.setErrorMsg(statusLbl, String.format("Unable to add%s to the DataSet %s", usrName, dsName));
+                                iPadDBExporterPlugin.setErrorMsg(statusLbl, String.format("Unable to add%s to the DataSet %s", usrName, collGuid));
                             }
                         } else
                         {
-                            iPadDBExporterPlugin.setErrorMsg(statusLbl, String.format("Unable to add%s to the DataSet %s", usrName, dsName));
+                            iPadDBExporterPlugin.setErrorMsg(statusLbl, String.format("Unable to add%s to the DataSet %s", usrName, collGuid));
                         }
                     } else
                     {

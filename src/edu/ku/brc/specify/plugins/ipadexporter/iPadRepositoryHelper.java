@@ -91,7 +91,7 @@ public class iPadRepositoryHelper
     //private String                  delURLStr   = null;
     
     private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", 
-                                               "colmgr", "icon", "curator", "disptype", "instguid", "collguid"};
+                                               "colmgr", "icon", "curator", "disptype", "instguid", "collguid", "instimg"};
     private String[]                values  = new String[symbols.length];
     
     static
@@ -248,7 +248,7 @@ public class iPadRepositoryHelper
     /**
      * 
      */
-    public Map<String, String> getAuxilaryInfo()
+    public Map<String, String> getAuxilaryInfo(final String instImageName)
     {
         AppContextMgr appMgr = AppContextMgr.getInstance();
         
@@ -270,8 +270,6 @@ public class iPadRepositoryHelper
             coll = appMgr.getClassObject(Collection.class);
             
             String curator = colMgr.toString();*/
-            
-            
             
             String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
             if (iconName.startsWith("Collection") || !iconName.endsWith("png"))
@@ -299,6 +297,7 @@ public class iPadRepositoryHelper
             values[9] = disp.getType();
             values[10] = inst.getGuid();
             values[11] = coll.getGuid();
+            values[12] = instImageName;
             
             for (int i=0;i<values.length;i++)
             {

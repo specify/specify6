@@ -90,6 +90,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -235,7 +236,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    checkInstitutionInfo();
+                    checkInstitutionInfo(true);
                 }
             });
             exportBtn.setEnabled(false);
@@ -277,17 +278,26 @@ public class iPadDBExporterPlugin extends BaseTask
     /**
      * @return
      */
-    private boolean checkInstitutionInfo()
+    private boolean checkInstitutionInfo(final boolean forceShow)
     {
         if (!iPadDBExporter.IS_TESTING) // ZZZ       
         {
             ImageSetupDlg dlg = new ImageSetupDlg(iPadCloud);
-            if (!dlg.isInstOK())
+            if (dlg.initializeInstitutionData())
             {
-                dlg.createUI();
-                dlg.pack();
-                centerAndShow(dlg, 800, null);
-                return !dlg.isCancelled();
+                if (forceShow || !dlg.isInstOK())
+                {
+                    dlg.createUI();
+                    dlg.pack();
+                    centerAndShow(dlg, 800, null);
+                    return !dlg.isCancelled();
+                }
+            } else
+            {
+                //loadAndPushResourceBundle(RES_NAME);
+                UIRegistry.showLocalizedError("POSSIBLE_NETWORK_ERROR");
+                //popResourceBundle();
+                return false;
             }
         }
         return true;
@@ -318,7 +328,10 @@ public class iPadDBExporterPlugin extends BaseTask
             Pair<String, String> loginInfo = getExportLoginCreds(userName, wasInError);
             if (loginInfo != null)
             {
-            	loggedIn(loginInfo);
+                if (!iPadCloud.isNetworkError())
+                {
+                    loggedIn(loginInfo);
+                }
                 if (!iPadDBExporter.IS_TESTING) // ZZZ  
                 {
                     userName = loginInfo.first;
@@ -402,7 +415,7 @@ public class iPadDBExporterPlugin extends BaseTask
             JPanel    loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
             if (!iPadDBExporter.IS_TESTING) // ZZZ
             {
-                if (checkInstitutionInfo())
+                if (checkInstitutionInfo(false))
                 {
                     while (true)
                     {
@@ -455,7 +468,8 @@ public class iPadDBExporterPlugin extends BaseTask
                     }
                 }
             }
-            return new Pair<String, String>("testuser@ku.edu", "testuser@ku.edu");
+            return null;//new Pair<String, String>("testuser@ku.edu", "testuser@ku.edu");
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -678,7 +692,7 @@ public class iPadDBExporterPlugin extends BaseTask
 //        {
 //            return;
 //        }
-        if (!checkInstitutionInfo())
+        if (!checkInstitutionInfo(false))
         {
             return;
         }
