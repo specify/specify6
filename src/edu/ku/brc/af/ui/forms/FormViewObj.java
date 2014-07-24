@@ -4857,6 +4857,12 @@ public class FormViewObj implements Viewable,
                     shortClassName = classToCreate.getSimpleName();
                 }
             }
+            if ("ObjectAttachmentIFace".equals(shortClassName)) {
+                // This is a kludge. The attachment form specifies the above interface for its class,
+                // but we probably want to use the permissions for the actual table. Especially since there
+                // are no permissions defined for the interface!
+                shortClassName = dataObj.getClass().getSimpleName();
+            }
             perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName.toLowerCase());
         }
     }
