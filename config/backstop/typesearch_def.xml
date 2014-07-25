@@ -10,7 +10,7 @@
     <typesearch tableid="7"   name="AccessionCO"              searchfield="accessionNumber" displaycols="accessionNumber"    format="%s"     dataobjformatter="">
         SELECT %s1 FROM Accession ac JOIN ac.division as dv WHERE dv.divisionId = DIVID AND %s2 ORDER BY accessionNumber
     </typesearch>
-    <typesearch tableid="5"   name="Agent"                  searchfield="lastName"        displaycols="lastName,firstName" format="%s, %s" dataobjformatter="Agent">
+    <typesearch tableid="5"   name="Agent"                  searchfield="lastName"        displaycols="lastName,firstName,middleInitial" format="%s, %s %s" dataobjformatter="Agent">
         SELECT %s1 FROM Agent ag WHERE ag.division.id = DIVID AND %s2 ORDER BY ag.lastName,ag.firstName
     </typesearch>
     <typesearch tableid="5"   name="AgentSSPU"              searchfield="lastName"        displaycols="lastName,firstName" format="%s, %s" dataobjformatter="Agent">
