@@ -95,7 +95,7 @@ import edu.ku.brc.util.AttachmentUtils;
  * Sep 26, 2012
  *
  */
-public class ImageSetupDlg extends CustomDialog
+public class InstitutionConfigDlg extends CustomDialog
 {
     private IPadCloudIFace cloudHelper;
     
@@ -143,7 +143,7 @@ public class ImageSetupDlg extends CustomDialog
     /**
      * @throws HeadlessException
      */
-    public ImageSetupDlg(final IPadCloudIFace cloudHelper) throws HeadlessException
+    public InstitutionConfigDlg(final IPadCloudIFace cloudHelper, final Integer cloudInstId) throws HeadlessException
     {
         super((Frame)getTopWindow(), "", true, OKCANCEL, null);
         
@@ -155,43 +155,9 @@ public class ImageSetupDlg extends CustomDialog
         colMgrPref      = "IPAD_COLMGR_NAME_"  + collection.getId();
         
         this.cloudHelper = cloudHelper;
+        this.cloudInstId = cloudInstId;
     }
     
-    
-    public boolean initializeInstitutionData()
-    {
-        boolean doDebug = false;
-        if (doDebug)
-        {
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                
-                inst = session.get(Institution.class, inst.getId());
-                AppContextMgr.getInstance().setClassObject(Institution.class, inst);
-            }
-            catch (Exception e)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
-                e.printStackTrace();
-            }
-            finally
-            {
-                if (session != null) session.close();
-            }
-        }
-        
-        if (cloudHelper != null && StringUtils.isNotEmpty(instGUID))
-        {
-            cloudInstId = cloudHelper.getInstId(instGUID);
-            return cloudInstId != null;
-        }
-        
-        return false;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
@@ -229,10 +195,6 @@ public class ImageSetupDlg extends CustomDialog
         contentPanel = pb.getPanel();
         
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
-        inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-        instGUID = inst.getGuid();
-
     }
     
     /**
@@ -756,6 +718,7 @@ public class ImageSetupDlg extends CustomDialog
         {
             nmStr = nmStr.substring(0, instNameLen);
         }
+        
         if (saveToLocalDB(nmStr))
         {
             statusLbl.setText("");
@@ -763,20 +726,7 @@ public class ImageSetupDlg extends CustomDialog
             boolean isOK           = false;
             if (!iPadDBExporter.IS_TESTING) // ZZZ  
             {            
-                Integer existingInstId = cloudHelper.getInstId(instGUID);
-                if ((cloudInstId == null && existingInstId != null) || (cloudInstId != null && existingInstId != null && cloudInstId.equals(existingInstId)))
-                {
-                    isOK = true;
-                    cloudInstId = existingInstId;
-                } else
-                {
-                    Integer newInstId = cloudHelper.saveInstitutionInfo(cloudInstId, nmStr, "", "", instGUID);
-                    if ((cloudInstId == null && newInstId != null) || (cloudInstId != null && newInstId != null && cloudInstId.equals(newInstId)))
-                    {
-                        isOK = true;
-                        cloudInstId = newInstId;
-                    }
-                }
+                isOK = cloudHelper.updateInstitution(cloudInstId, nmStr, inst.getUri());
             } else 
             {
                 isOK = true;

@@ -346,18 +346,18 @@ public class ManageDataSetsDlg extends CustomDialog
                     String guid   = null;
                     if (instCmbx.getSelectedIndex() == 0)
                     {
-                        InstDlg instDlg = new InstDlg(cloudHelper);
-                        if (!instDlg.isInstOK())
-                        {
-                            instDlg.createUI();
-                            instDlg.pack();
-                            centerAndShow(instDlg, 600, null);
-                            if (instDlg.isCancelled())
-                            {
-                                return;
-                            }
-                            //guid = instDlg.getGuid()();
-                        }
+//                        InstDlg instDlg = new InstDlg(cloudHelper);
+//                        if (!instDlg.isInstOK())
+//                        {
+//                            instDlg.createUI();
+//                            instDlg.pack();
+//                            centerAndShow(instDlg, 600, null);
+//                            if (instDlg.isCancelled())
+//                            {
+//                                return;
+//                            }
+//                            //guid = instDlg.getGuid()();
+//                        }
                     } else
                     {
                         //webSite = wsList.get(instCmbx.getSelectedIndex());

@@ -326,15 +326,18 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeAccount()
+     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeAccount(int, java.lang.String)
      */
     @Override
-    public boolean removeAccount()
+    public boolean removeAccount(final Integer instId, final String instGUID)
     {
-        HashMap<String, String> map = createHashMap(kId, currUserID.toString(), kAction, "deluser");
-        JSONObject data = sendPost(map);
-        
-        return data != null && isStatusOK(data);
+        if (instId != null && StringUtils.isNotEmpty(instGUID))
+        {
+            HashMap<String, String> map = createHashMap(kId, instId.toString(), kGUID, instGUID, kAction, "delinst");
+            JSONObject data = sendPost(map);
+            return data != null && isStatusOK(data);
+        }
+        return false;
     }
 
     /* (non-Javadoc)
@@ -538,33 +541,34 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#saveInstitutionInfo(java.lang.Integer, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#createInstitution(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Integer saveInstitutionInfo(final Integer instId, final String title, final String webSite, final String code, final String guid)
+    public Integer createInstitution(final String title, final String webSite, final String code, final String guid)
     {
-        HashMap<String, String> map = createHashMap(kTitle, title, kWebSite, webSite, kCode, code, kGUID, guid, kAction, "addinst");
-        if (instId != null)
-        {
-            map.put(kId, instId.toString());
-        }
-        
+        HashMap<String, String> map = createHashMap(kTitle, title, kWebSite, webSite, kCode, code, kGUID, guid, kAction, "createinst");
         JSONObject data = sendPost(map);
         
         if (data != null && isStatusOK(data))
         {
-            if (instId == null)
+            Integer newInstId = data.getInt("newid");
+            if (newInstId != null)
             {
-                Integer newInstId = data.getInt("newid");
-                if (newInstId != null)
-                {
-                    return newInstId;
-                }
-            } else
-            {
-                return instId;
+                return newInstId;
             }
         }
         return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#updateInstitution(java.lang.Integer, java.lang.String, java.lang.String)
+     */
+    @Override
+    public boolean updateInstitution(final Integer instId, final String title, final String webSite)
+    {
+        HashMap<String, String> map = createHashMap(kId, instId.toString(), kTitle, title, kWebSite, webSite, kAction, "updateinst");
+        JSONObject data = sendPost(map);
+        
+        return data != null && isStatusOK(data);
     }
 }

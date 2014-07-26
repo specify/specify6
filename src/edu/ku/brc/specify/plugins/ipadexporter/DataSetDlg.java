@@ -237,6 +237,7 @@ public class DataSetDlg extends CustomDialog
      * @param uri
      * @return
      */
+    @SuppressWarnings("unused")
     private boolean doesWebSiteExists(final String uri)
     {
         try
@@ -314,12 +315,13 @@ public class DataSetDlg extends CustomDialog
                 cloudInstId = existingInstId;
             } else
             {
-                Integer newInstId = cloudHelper.saveInstitutionInfo(cloudInstId, nmStr, "", "", guid);
-                if ((cloudInstId == null && newInstId != null) || (cloudInstId != null && newInstId != null && cloudInstId.equals(newInstId)))
-                {
-                    isOK = true;
-                    cloudInstId = newInstId;
-                }
+                // Needs to be fixed
+//                Integer newInstId = cloudHelper.saveInstitutionInfo(cloudInstId, nmStr, "", "", guid);
+//                if ((cloudInstId == null && newInstId != null) || (cloudInstId != null && newInstId != null && cloudInstId.equals(newInstId)))
+//                {
+//                    isOK = true;
+//                    cloudInstId = newInstId;
+//                }
             }
             
             if (isOK)

@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -81,7 +80,7 @@ import edu.ku.brc.util.Pair;
 /**
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Jul 12, 2011
  *
@@ -91,10 +90,8 @@ public class iPadDBExporter implements VerifyCollectionListener
     public static final boolean IS_TESTING = false;
     private static final Logger  log                  = Logger.getLogger(iPadDBExporter.class);
     
-    private static final Locale[] locales             = {Locale.ENGLISH, Locale.GERMAN, };
-
-    protected static final String  PROGRESS             = "progress";
-    private static final String  MSG                  = "msg";
+    protected static final String PROGRESS            = "progress";
+    private static final String   MSG                 = "msg";
 
     private static final boolean doAll                = true;
     private static final boolean doRebuildDB          = false;
@@ -573,6 +570,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                 });
     }
     
+    @SuppressWarnings("unused")
     private void doBuildTaxonMappings() throws SQLException
     {
         int cnt = 0;
@@ -2095,6 +2093,7 @@ public class iPadDBExporter implements VerifyCollectionListener
     /**
      * @throws SQLException
      */
+    @SuppressWarnings("unused")
     private void doBuildGeography() throws SQLException
     {
         //doBuildColObjToGeoMapping();
@@ -3614,7 +3613,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     s3Stmt.setInt(2, 1);
                     s3Stmt.setInt(3, 8);
                     s3Stmt.setString(4, "img_url_type");
-                    s3Stmt.setString(5, isUsingDirectURLArg ? ImageSetupDlg.DIRECT : ImageSetupDlg.ATTMGR);
+                    s3Stmt.setString(5, isUsingDirectURLArg ? InstitutionConfigDlg.DIRECT : InstitutionConfigDlg.ATTMGR);
                     if (s3Stmt.executeUpdate() != 1)
                     {
                         //System.out.println("Error updating ColObjID: "+colObjId+"  AttID: "+attID);
@@ -4361,12 +4360,12 @@ public class iPadDBExporter implements VerifyCollectionListener
         AppPreferences prefs = AppPreferences.getRemote();
         
         isUsingDirectURL  = true;
-        ImageSetupDlg dlg = new ImageSetupDlg(null);
+        InstitutionConfigDlg dlg = new InstitutionConfigDlg(null, null);
         imageURL    = prefs.get(dlg.getRemoteImageURLPrefName(), null);
         String type = prefs.get(dlg.getRemoteImageURLTypePrefName(), null);
         if (StringUtils.isNotEmpty(imageURL) && StringUtils.isNotEmpty(type))
         {
-            isUsingDirectURL = type.equals(ImageSetupDlg.DIRECT);
+            isUsingDirectURL = type.equals(InstitutionConfigDlg.DIRECT);
         }
         
         // Copy institution picture

@@ -140,7 +140,7 @@ public interface IPadCloudIFace
     /**
      * @return
      */
-    public abstract boolean removeAccount();
+    public abstract boolean removeAccount(Integer instId, String instGUID);
 
     /**
      * @param newPwd
@@ -186,12 +186,22 @@ public interface IPadCloudIFace
     public abstract HashMap<String, Object> getInstitutionInfo(int instId);
     
     /**
-     * @param instId null if new Inst, or must have a valid Inst ID
-     * @param name name of Institution
+     * Creates a new Institution
+     * @param title title of Institution
      * @param webSiteURI unique URI of Institution
      * @param code the Institution code
+     * @param guid the Institution GUID
      * @return the existing or new Inst ID
      */
-    public abstract Integer saveInstitutionInfo(Integer instId, String name, String webSiteURI, String code, String guid);
+    public abstract Integer createInstitution(String title, String webSiteURI, String code, String guid);
+
+    /**
+     * Updates an Institution
+     * @param instId null if new Inst, or must have a valid Inst ID
+     * @param title title of Institution
+     * @param webSiteURI unique URI of Institution
+     * @return the existing or new Inst ID
+     */
+    public abstract boolean updateInstitution(Integer instId, String title, String webSiteURI);
 
 }
