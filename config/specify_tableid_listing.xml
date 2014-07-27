@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 148 or 532
+    Last used ID is 148 or 533
     
     [0] are available
     
@@ -304,7 +304,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" abbrev="oi" id="61" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.PaleoContext" abbrev="pc" id="32" searchable="true">
-            <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg=""/>            
+            <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg="PaleoContextDisplay"/>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.Permit" abbrev="pr" id="6" searchable="true">
             <display view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
@@ -396,6 +396,7 @@
         <table name="edu.ku.brc.specify.datamodel.SpPermission"  abbrev="spper" id="521"/>
         <table name="edu.ku.brc.specify.datamodel.SpPrincipal" abbrev="spprin" id="522"/>
 		<table name="edu.ku.brc.specify.datamodel.SpPrincipalSpPermissionType" abbrev="spspt" id="523"/>
+		<table name="edu.ku.brc.specify.datamodel.SpSymbiotaInstance" abbrev="spsyi" id="533"/>
         <table name="edu.ku.brc.specify.datamodel.SpTaskSemaphore" abbrev="spts" id="526"/>
       	<table name="edu.ku.brc.specify.datamodel.SpVersion" abbrev="spvrn" id="529"/>
 		

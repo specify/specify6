@@ -102,11 +102,13 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected String				text2;
     protected String				reservedText1;
     protected String                reservedText2;
+    protected PaleoContext			paleoContext;
     
     protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
     protected Set<CollectingEventAttachment>    collectingEventAttachments;
 
+    
 
     private static String ceCOSQL = " FROM collectingevent ce INNER JOIN collectionobject c ON ce.CollectingEventID = c.CollectingEventID WHERE c.CollectingEventID = ";
 
@@ -158,6 +160,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         collectionObjects            = new HashSet<CollectionObject>();
         collectors                   = new HashSet<Collector>();
         locality                     = null;
+        paleoContext          = null;
         
         collectingEventAttribute     = null;
         collectingEventAttrs         = new HashSet<CollectingEventAttr>();
@@ -325,7 +328,22 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 		this.text2 = text2;
 	}
 
-	
+    /**
+    *
+    */
+   @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+   @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
+   public PaleoContext getPaleoContext()
+   {
+       return this.paleoContext;
+   }
+
+   public void setPaleoContext(PaleoContext paleoContext)
+   {
+       this.paleoContext = paleoContext;
+   }
+
     /**
 	 * @return the reservedText1
 	 */

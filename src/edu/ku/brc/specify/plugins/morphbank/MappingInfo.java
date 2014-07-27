@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -24,6 +26,7 @@ import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 public class MappingInfo implements Comparable<MappingInfo>
 {
 	protected final String name;
+	protected final String term;
 	protected final Class<?> dataType;
 	protected final String mapping; //provides a path from the root context to the Specify field associated with the concept
 	protected final int contextTableId; // the root specify table
@@ -36,11 +39,13 @@ public class MappingInfo implements Comparable<MappingInfo>
 	 * @param conceptMapping
 	 * @param conceptContext
 	 */
-	public MappingInfo(String name, String dwcType, String mapping,
+	public MappingInfo(String name, String termBaseUri, String dwcType, String mapping,
 			int contextTableId, boolean isFormatted) 
 	{
 		super();
 		this.name = name;
+		String slash = termBaseUri.endsWith("/") ? "" : "/";
+		this.term = StringUtils.isEmpty(termBaseUri) ? name : termBaseUri + slash + name; 
 		this.mapping = mapping;
 		this.contextTableId = contextTableId;
 		this.dataType = getClassForDwcType(dwcType, name);
@@ -55,6 +60,7 @@ public class MappingInfo implements Comparable<MappingInfo>
 	{
 		super();
 		this.name = name;
+		this.term = mfi.getTerm();
 		this.mapping = mfi.getStringId();
 		this.contextTableId = mfi.getContextTableId();
 		this.dataType = mfi.getDataType();
@@ -222,6 +228,15 @@ public class MappingInfo implements Comparable<MappingInfo>
 		return chunks[chunks.length-1];
 	}
 	
+	
+	/**
+	 * @return the term
+	 */
+	public String getTerm() 
+	{
+		return term;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */

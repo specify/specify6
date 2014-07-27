@@ -532,6 +532,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 frame.setProcess(0, 100);
                                 frame.setDesc("Updating Schema...");
                                 ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first, itUserNamePassword.second);
+                                if (ok) {
+                                	ok &= finishSchemaUpdate(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first,itUserNamePassword.second);
+                                }
                                 if (!ok)
                                 {
                                     errMsgList.add("There was an error updating the schema.");
@@ -590,6 +593,120 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         }
         return SchemaUpdateType.Error;
+    }
+    
+    /* paleo model change finalization ... */
+    
+    private boolean moveDataFromHereToHere(String move) {
+    	String from = move.split("\\|")[0];
+    	String to = move.split("\\|")[1];
+    	System.out.println("moving from " + from + " to " + to);
+    	String fromTable = from.split("\\.")[0];
+    	String fromField = from.split("\\.")[1];
+    	String toTable = to.split("\\.")[0];
+    	String toField = to.split("\\.")[1];
+   	    //assuming fromTable is paleoContext
+    	//also assuming toTable is collectionObjectAttribute
+    	int recsToMove = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM " + fromTable + " WHERE " + fromField + " IS NOT NULL");
+    	if (recsToMove > 0) {
+    		String sql = "SELECT count(*) FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
+    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID WHERE pc." + fromField + " IS NOT NULL";
+    		int recsToMoveTo = BasicSQLUtils.getCountAsInt(sql);
+    		if (recsToMoveTo < recsToMove) {
+    			sql = "INSERT INTO collectionobjectattribute(TimestampCreated, TimestampModified, Version, CollectionMemberID," + toField + ") "
+    				+ "SELECT pc.TimestampCreated, pc.TimestampModified, 0, co.CollectionMemberID, co.CollectionObjectID FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID "
+    				+ "WHERE pc." + fromField + " IS NOT NULL AND co.CollectionObjectAttributeID IS NULL";
+    			BasicSQLUtils.update(sql);
+    			sql = "UPDATE collectionobject co INNER JOIN collectionobjectattribute coa ON coa." + toField + "=co.CollectionObjectID SET co.CollectionObjectAttributeID=coa.CollectionObjectAttributeID";
+    			BasicSQLUtils.update(sql);
+    		}
+    	
+    		sql = "UPDATE paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
+    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID SET coa." + toField + "=pc." + fromField + " WHERE pc." + fromField + " IS NOT NULL";
+    		int recsUpdated = BasicSQLUtils.update(sql);
+    		if (recsUpdated != recsToMove) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
+    private boolean removeField(String toDrop, Connection conn) {
+    	//System.out.println("removing " + toDrop);
+    	String tbl = toDrop.split("\\.")[0];
+    	String fld = toDrop.split("\\.")[1];
+    	String sql = "SELECT COUNT(*) FROM " + tbl;
+    	int cnt = BasicSQLUtils.getCountAsInt(sql);
+    	sql = "ALTER TABLE " + tbl + " DROP " + fld;
+    	if (BasicSQLUtils.update(conn, sql) != cnt) {
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public boolean fixPaleoModelAftermath(Connection itConn) {
+    	//update collection.PaleoContextChildTable and IsPaleoContextEmbedded.
+    	//It is safe to do this for all collections, though it is only applicable to paleo collections.
+    	if (BasicSQLUtils.update("UPDATE collection SET PaleoContextChildTable='collectionobject', IsPaleoContextEmbedded=true") != 1) {
+    		return false;
+    	}
+    	
+    	//move data to new fields
+    	String[] moves = {
+    			"paleocontext.positionState|collectionobjectattribute.positionState",
+    			"paleocontext.topDistance|collectionobjectattribute.topDistance",
+    			"paleocontext.bottomDistance|collectionobjectattribute.bottomDistance",
+    			"paleocontext.distanceUnits|collectionobjectattribute.distanceUnits",
+    			"paleocontext.direction|collectionobjectattribute.direction"
+    	};
+    	for (int i = 0; i < moves.length; i++) {
+    		if (!moveDataFromHereToHere(moves[i])) {
+    			return false;
+    		}
+    	}
+    	//delete old fields
+    	for (int i = 0; i < moves.length; i++) {
+    		if (!removeField(moves[i].split("\\|")[0], itConn)) {
+    			return false;
+    		}
+    	}
+
+
+    	return true;
+    }
+
+    /* end paleo model finalization */
+    
+    private boolean finishSchemaUpdate(final DatabaseDriverInfo dbdriverInfo, 
+            final String             hostname,
+            final String             databaseName,
+            final String             userName,
+            final String             password) {
+        String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, true, true,
+                userName, password, dbdriverInfo.getName());
+        log.debug("generateSchema connectionStr: " + connectionStr);
+
+        log.debug("Creating database connection to: " + connectionStr);
+        DBConnection dbConn = null;
+        try {
+        	dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), 
+        			databaseName, connectionStr, userName, password);
+        	boolean result = false;
+        	if (dbConn != null && dbConn.getConnection() != null) {
+        		Connection conn = dbConn.getConnection();
+        		result = true;
+        		if (!AppPreferences.getGlobalPrefs().getBoolean("PaleoAftermathCleanup", false)) {
+        			if (fixPaleoModelAftermath(conn)) {
+        				AppPreferences.getGlobalPrefs().putBoolean("PaleoAftermathCleanup", true);
+        			} else {
+        				result = false;
+        			}
+        		}
+        	}
+        	return result;
+        } finally {
+            if (dbConn != null) dbConn.close();
+        }
     }
     
     /**
@@ -1105,7 +1222,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 String  formatName = innerRow[3].toString();
                                 Integer dsid       = (Integer)innerRow[1];
                                 if (formatNames.get(formatName) == null)
-                                {
+                                {        		
                                     formatNames.put(formatName, dsid);
                                     namesList.add(formatName);
                                 }

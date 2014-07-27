@@ -70,17 +70,29 @@ public class LocalityDetail extends DataModelObjBase
     protected Double                endDepth;
     protected Byte                  endDepthUnit;
     protected String                endDepthVerbatim;
-    
+
+    protected BigDecimal            paleoLatitude;
+    protected BigDecimal            paleoLongitude;
+
     // HUC Code for fishes
     protected String                hucCode;
     
     protected String                text1;
     protected String                text2;
+    protected String                text3;
+    protected String                text4;
+    protected String                text5;
     protected Double                number1;
     protected Double                number2;
+    protected Float				    number3;
+    protected Float                 number4;
+    protected Float                 number5;
+    
     protected Boolean               yesNo1;
     protected Boolean               yesNo2;
-
+    protected Boolean				yesNo3;
+    protected Boolean				yesNo4;
+    protected Boolean				yesNo5;
     
     // UTM Fields
     protected BigDecimal            utmEasting;
@@ -139,6 +151,8 @@ public class LocalityDetail extends DataModelObjBase
         endDepth           = null;
         endDepthUnit       = null;
         endDepthVerbatim   = null;
+        paleoLatitude      = null;
+        paleoLongitude     = null;
         
         locality    = null;
         
@@ -155,10 +169,22 @@ public class LocalityDetail extends DataModelObjBase
         
         text1 = null;
         text2 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
+        
         number1 = null;
         number2 = null;
+        number3 = null;
+        number4 = null;
+        number5 = null;
+        
         yesNo1 = null;
         yesNo2 = null;
+        yesNo3 = null;
+        yesNo4 = null;
+        yesNo5 = null;
+        
     }
     // End Initializer
 
@@ -498,6 +524,52 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * * User definable
      */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+    public String getText3()
+    {
+        return this.text3;
+    }
+
+    public void setText3(String text3)
+    {
+        this.text3 = text3;
+    }
+
+    /**
+     * * User definable
+     */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+    public String getText4()
+    {
+        return this.text4;
+    }
+
+    public void setText4(String text4)
+    {
+        this.text4 = text4;
+    }
+
+    /**
+     * * User definable
+     */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+    public String getText5()
+    {
+        return this.text5;
+    }
+
+    public void setText5(String text5)
+    {
+        this.text5 = text5;
+    }
+
+    
+    /**
+     * * User definable
+     */
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getNumber1()
     {
@@ -521,6 +593,74 @@ public class LocalityDetail extends DataModelObjBase
     public void setNumber2(Double number2)
     {
         this.number2 = number2;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber3()
+    {
+        return this.number3;
+    }
+
+    public void setNumber3(Float number3)
+    {
+        this.number3 = number3;
+    }
+    /**
+     * * User definable
+     */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber4()
+    {
+        return this.number4;
+    }
+
+    public void setNumber4(Float number4)
+    {
+        this.number4 = number4;
+    }
+    /**
+     * * User definable
+     */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber5()
+    {
+        return this.number5;
+    }
+
+    public void setNumber5(Float number5)
+    {
+        this.number5 = number5;
+    }
+
+    /**
+     * * paleo latitude
+     */
+    @Column(name = "PaleoLatitude", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
+    public BigDecimal getPaleoLatitude()
+    {
+        return this.paleoLatitude;
+    }
+
+    public void setPaleoLatitude(BigDecimal paleoLatitude)
+    {
+        this.paleoLatitude = paleoLatitude;
+    }
+
+    /**
+     * * Paleo longitude 
+     */
+    @Column(name = "PaleoLongitude", unique = false, nullable = true, insertable = true, updatable = true, precision = 13, scale = 10)
+    public BigDecimal getPaleoLongitude()
+    {
+        return this.paleoLongitude;
+    }
+
+    public void setPaleoLongitude(BigDecimal paleoLongitude)
+    {
+        this.paleoLongitude = paleoLongitude;
     }
 
     /**
@@ -550,7 +690,46 @@ public class LocalityDetail extends DataModelObjBase
     {
         this.yesNo2 = yesNo2;
     }
-    
+    /**
+     * * User definable
+     */
+    @Column(name = "YesNo3", unique = false, nullable = true, updatable = true, insertable = true)
+    public Boolean getYesNo3()
+    {
+        return this.yesNo3;
+    }
+
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+    /**
+     * * User definable
+     */
+    @Column(name = "YesNo4", unique = false, nullable = true, updatable = true, insertable = true)
+    public Boolean getYesNo4()
+    {
+        return this.yesNo4;
+    }
+
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+    /**
+     * * User definable
+     */
+    @Column(name = "YesNo5", unique = false, nullable = true, updatable = true, insertable = true)
+    public Boolean getYesNo5()
+    {
+        return this.yesNo5;
+    }
+
+    public void setYesNo5(Boolean yesNo5)
+    {
+        this.yesNo5 = yesNo5;
+    }
+
     /**
      * @return the hucCode
      */

@@ -101,6 +101,8 @@ public class ExportMappingTask extends QueryTask
 	
 	protected static final String	DEF_IMP_PREF	= "ExportSchemaMapping.SchemaImportDir";
 	
+	protected boolean includeMappingsForCurrCollOnly = true;
+	
 	//protected static final String[] unSupportedsubstitutionGroups = {"dwc"
 	
 	/**
@@ -111,6 +113,14 @@ public class ExportMappingTask extends QueryTask
 		super("ExportMappingTask", getResStr("TaskTitle"));
 	}
 
+	/**
+	 * @param name
+	 * @param title
+	 */
+	protected ExportMappingTask(String name, String title) {
+		super(name, title);
+	}
+	
     /**
      * @param key
      * @return
@@ -323,8 +333,17 @@ public class ExportMappingTask extends QueryTask
 	}
 
 	/**
-	 * @return a list of all the mappings associated with the current
-	 *         discipline.
+	 * @param m
+	 * @param collIds
+	 * @return true if m should be added to mappings list
+	 */
+	protected boolean includeMapping(SpExportSchemaMapping m, List<Integer> collIds) {
+		return collIds.indexOf(m.getCollectionMemberId()) != -1;
+	}
+	
+	/**
+	 * @return a list of the mapping(s) associated with the current
+	 *         discipline/collection.
 	 */
 	protected Vector<SpExportSchemaMapping> getMappings()
 	{
@@ -340,13 +359,14 @@ public class ExportMappingTask extends QueryTask
 			List<Integer> collIds = new ArrayList<Integer>();
 			for (Collection c : collections)
 			{
+				if (!includeMappingsForCurrCollOnly || c.getCollectionId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId()))
 				collIds.add(c.getCollectionId());
 			}
 			List<SpExportSchemaMapping> mappings = session
 					.getDataList(SpExportSchemaMapping.class);
 			for (SpExportSchemaMapping mapping : mappings)
 			{
-				if (collIds.indexOf(mapping.getCollectionMemberId()) != -1)
+				if (includeMapping(mapping, collIds))
 				{
 					mapping.forceLoad();
 					result.add(mapping);
@@ -362,7 +382,7 @@ public class ExportMappingTask extends QueryTask
 	/**
 	 * @return prompts user to choose from list of existing export schemas.
 	 */
-	protected SpExportSchema chooseExportSchema()
+	protected List<SpExportSchema> chooseExportSchema()
 	{
 		List<SpExportSchema> schemas = getExportSchemas();
 		SpExportSchema noSchema = new SpExportSchema();
@@ -373,9 +393,11 @@ public class ExportMappingTask extends QueryTask
 				UIRegistry
 						.getResourceString("ExportSchemaMapEditor.ChooseSchemaTitle"),
 				schemas);
+		dlg.setMultiSelect(true);
 		centerAndShow(dlg);
 		if (dlg.isCancelled()) return null;
-		return dlg.getSelectedObject();
+		return dlg.getSelectedObjects();
+		//return dlg.getSelectedObject();
 	}
 
 	/**
@@ -502,9 +524,11 @@ public class ExportMappingTask extends QueryTask
 	{
 		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
 		{
-			SpExportSchema selectedSchema = chooseExportSchema();
-			if (selectedSchema != null) 
+			List<SpExportSchema> selectedSchemas = chooseExportSchema();
+			if (selectedSchemas != null) 
 			{
+				SpExportSchema selectedSchema = selectedSchemas.get(0);
+				
 				if (selectedSchema.getSpExportSchemaId() == null)
 				{
 					exportSchema = null;

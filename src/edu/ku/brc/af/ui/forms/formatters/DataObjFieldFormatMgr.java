@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -81,7 +82,8 @@ public class DataObjFieldFormatMgr
     
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     
-    protected static DataObjFieldFormatMgr instance   = null;
+    protected static AtomicReference<DataObjFieldFormatMgr> instance   = new AtomicReference<DataObjFieldFormatMgr>(null);
+    
     protected static boolean               doingLocal = false;
 
     protected boolean domFound = false;
@@ -122,11 +124,11 @@ public class DataObjFieldFormatMgr
      */
     public void reset()
     {
-        if (instance != null)
+        if (instance.get() != null)
         {
-            instance.save();
+            instance.get().save();
         }
-        instance = null;
+        instance.set(null);
     }
     
     /**
@@ -469,13 +471,13 @@ public class DataObjFieldFormatMgr
             
             // This needs to be refactored so we don't have to do this here
             // I think it is because 'load' is being called from the constructor.
-            if (instance == null)
+            if (instance.get() == null)
             {
-                instance = this;
+                instance.set(this);
             }
             // now that all formats have been loaded, set table/field/formatter info\
             // must be executed after the instance is set
-            for ( DataObjSwitchFormatter format : instance.formatHash.values() )
+            for ( DataObjSwitchFormatter format : instance.get().formatHash.values() )
             {
                 format.setTableAndFieldInfo();
             }
@@ -573,7 +575,7 @@ public class DataObjFieldFormatMgr
         // save resource back to database
         if (doingLocal)
         {
-            File outFile = XMLHelper.getConfigDir(instance.getLocalFileName());
+            File outFile = XMLHelper.getConfigDir(instance.get().getLocalFileName());
             try
             {
                 FileUtils.writeStringToFile(outFile, xml);
@@ -1290,55 +1292,56 @@ public class DataObjFieldFormatMgr
      */
     public static DataObjFieldFormatMgr getInstance()
     {
-        if (instance != null)
+        if (instance.get() != null)
         {
-            return instance;
+            return instance.get();
         }
         
-        if (StringUtils.isEmpty(factoryName))
-        {
-            instance = new DataObjFieldFormatMgr();
-            
-        } else
-        {
-            
-            // else
-            String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
-                    public String run() {
-                        return System.getProperty(factoryName);
-                        }
-                    });
-                
-            if (StringUtils.isNotEmpty(factoryNameStr)) 
-            {
-                try 
-                {
-                    instance = (DataObjFieldFormatMgr)Class.forName(factoryNameStr).newInstance();
-                     
-                } catch (Exception e) 
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, e);
-                    InternalError error = new InternalError("Can't instantiate DataObjFieldFormatMgr factory " + factoryNameStr);
-                    error.initCause(e);
-                    throw error;
-                }
-            }
-            
-            if (instance == null)
-            {
-                instance = new DataObjFieldFormatMgr();
-            }
-        }
-        
-        // now that all formats have been loaded, set table/field/formatter info\
-        // must be executed after the instance is set
-        for ( DataObjSwitchFormatter format : instance.formatHash.values() )
-        {
-            format.setTableAndFieldInfo();
-        }
+		synchronized (instance) {
+			if (StringUtils.isEmpty(factoryName)) {
+				instance.set(new DataObjFieldFormatMgr());
 
-        return instance;
+			} else {
+
+				// else
+				String factoryNameStr = AccessController
+						.doPrivileged(new java.security.PrivilegedAction<String>() {
+							public String run() {
+								return System.getProperty(factoryName);
+							}
+						});
+
+				if (StringUtils.isNotEmpty(factoryNameStr)) {
+					try {
+						instance.set((DataObjFieldFormatMgr) Class.forName(
+								factoryNameStr).newInstance());
+
+					} catch (Exception e) {
+						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+								.capture(DataObjFieldFormatMgr.class, e);
+						InternalError error = new InternalError(
+								"Can't instantiate DataObjFieldFormatMgr factory "
+										+ factoryNameStr);
+						error.initCause(e);
+						throw error;
+					}
+				}
+
+				if (instance.get() == null) {
+					instance.set(new DataObjFieldFormatMgr());
+				}
+			}
+
+			// now that all formats have been loaded, set table/field/formatter
+			// info\
+			// must be executed after the instance is set
+			for (DataObjSwitchFormatter format : instance.get().formatHash
+					.values()) {
+				format.setTableAndFieldInfo();
+			}
+		}
+        return instance.get();
     }
 
     public Hashtable<String, DataObjSwitchFormatter> getFormatHash()

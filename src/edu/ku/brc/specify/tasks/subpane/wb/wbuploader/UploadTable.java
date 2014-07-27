@@ -418,7 +418,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         return isOneToOneChild() 
         	|| (tblClass.equals(CollectingEvent.class) &&  AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
-        	|| tblClass.equals(PaleoContext.class) /*&& isEmbeddedPaleoContext???*/;
+        	|| (tblClass.equals(PaleoContext.class) && AppContextMgr.getInstance().getClassObject(Collection.class).getIsPaleoContextEmbedded());
     }
     
     /**

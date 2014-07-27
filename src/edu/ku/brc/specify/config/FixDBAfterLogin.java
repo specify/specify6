@@ -85,6 +85,7 @@ import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
@@ -106,6 +107,7 @@ import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.ReferenceWorkAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.QueryTask;
@@ -508,7 +510,6 @@ public class FixDBAfterLogin
         // for each one
         
         TreeSet<String> nameSet = new TreeSet<String>();
-
         sql = "SELECT su.Name, su.SpecifyUserID, p.userGroupScopeID, p.SpPrincipalID FROM specifyuser su " +
         	  "INNER JOIN specifyuser_spprincipal sp ON su.SpecifyUserID = sp.SpecifyUserID " +
               "INNER JOIN spprincipal p ON sp.SpPrincipalID = p.SpPrincipalID " +
@@ -642,6 +643,7 @@ public class FixDBAfterLogin
             UIHelper.centerAndShow(dlg);
         }
     }
+    
     
     /**
      * 
@@ -931,6 +933,249 @@ public class FixDBAfterLogin
         }
     }
 
+    /**
+     * @param counter
+     * @param updater
+     * @return
+     */
+    public static boolean checkAndUpdate(String counter, String updater) {
+    	int cnt = BasicSQLUtils.getCountAsInt(counter);
+    	if (cnt > 0 && BasicSQLUtils.update(updater) != cnt) {
+    		return false;
+    	}
+    	return true;
+    }
+    
+    /**
+     * @return
+     */
+    public static boolean fixNullDatePrecisions() {
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM collectingevent WHERE EndDatePrecision IS NULL", 
+    		"UPDATE `collectingevent` SET `EndDatePrecision`=1 WHERE `EndDatePrecision` IS NULL")) {
+    		return false;
+    	}
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM collectingevent WHERE StartDatePrecision IS NULL", 
+        		"UPDATE `collectingevent` SET `StartDatePrecision`=1 WHERE `StartDatePrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM collectingtrip WHERE EndDatePrecision IS NULL", 
+        		"UPDATE `collectingtrip` SET `EndDatePrecision`=1 WHERE `EndDatePrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM collectingtrip WHERE StartDatePrecision IS NULL", 
+        		"UPDATE `collectingtrip` SET `StartDatePrecision`=1 WHERE `StartDatePrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM collectionobject WHERE CatalogedDatePrecision IS NULL", 
+        		"UPDATE `collectionobject` SET `CatalogedDatePrecision`=1 WHERE `CatalogedDatePrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM determination WHERE DeterminedDatePrecision IS NULL", 
+        		"UPDATE `determination` SET `DeterminedDatePrecision`=1 WHERE `DeterminedDatePrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM preparation WHERE PreparedDatePrecision IS NULL", 
+        		"UPDATE `preparation` SET `PreparedDatePrecision`=1 WHERE `PreparedDatePrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM agent WHERE DateOfBirthPrecision IS NULL", 
+        		"UPDATE `agent` SET `DateOfBirthPrecision`=1 WHERE `DateOfBirthPrecision` IS NULL")) {
+        		return false;
+        }
+    	if (!checkAndUpdate("SELECT COUNT(*) FROM agent WHERE DateOfDeathPrecision IS NULL", 
+        		"UPDATE `agent` SET `DateOfDeathPrecision`=1 WHERE `DateOfDeathPrecision` IS NULL")) {
+        		return false;
+        }
+    	return true;
+    }
+    
+    /**
+     * @return
+     */
+    public static boolean fixSchemaAfterPaleoModelUpdate() {
+    	//remove old fields from schema
+    	String sql = "SELECT COUNT(*) FROM splocaleitemstr WHERE splocalecontaineritemdescid IN(SELECT splocalecontaineritemid FROM splocalecontaineritem WHERE splocalecontainerid IN"
+    			+ "(SELECT splocalecontainerid FROM splocalecontainer WHERE name='paleocontext') AND name IN('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+    	int cnt = BasicSQLUtils.getCountAsInt(sql);
+    	sql = "DELETE FROM splocaleitemstr WHERE splocalecontaineritemdescid IN(SELECT splocalecontaineritemid FROM splocalecontaineritem WHERE splocalecontainerid IN"
+    			+ "(SELECT splocalecontainerid FROM splocalecontainer WHERE name='paleocontext') AND name IN('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+    	if (BasicSQLUtils.update(sql) != cnt) {
+    		return false;
+    	}
+    	
+    	sql = "SELECT COUNT(*) from splocaleitemstr where splocalecontaineritemnameid in (select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in"
+    			+ "(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+    	cnt = BasicSQLUtils.getCountAsInt(sql);
+    	sql = "delete from splocaleitemstr where splocalecontaineritemnameid in (select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in"
+    			+ "(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+    	if (BasicSQLUtils.update(sql) != cnt) {
+    		return false;
+    	}
+    	
+    	sql = "SELECT COUNT(*) from splocalecontaineritem where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance')";
+    	cnt = BasicSQLUtils.getCountAsInt(sql);
+    	sql = "delete from splocalecontaineritem where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance')";
+    	if (BasicSQLUtils.update(sql) != cnt) {
+    		return false;
+    	}
+
+    	//hide PaleoContext.Collectingevents
+		BasicSQLUtils.update("update splocalecontaineritem set ishidden=true where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name='collectingevents'");
+		
+		//show PaleoContext.CollectionObjects
+		BasicSQLUtils.update("update splocalecontaineritem set ishidden=false where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name='collectionobjects'");	
+
+		//hide collectingevent.PaleoContextID
+		BasicSQLUtils.update("update splocalecontaineritem set ishidden=true where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='collectingevent') and name='paleocontext'");
+
+		//show collectionobject.PaleoContextID ...just in case
+		BasicSQLUtils.update("update splocalecontaineritem set ishidden=false where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='collectionobject') and name='paleocontext'");
+
+		return true;
+    }
+    
+    /**
+     * @return
+     */
+    public static boolean fixSymbiotaExportSchema() {
+    	String sql = "select disciplineid from discipline";
+    	List<Object> disciplines = BasicSQLUtils.querySingleCol(sql);
+    	List<Integer> added = new ArrayList<Integer>();
+    	try {
+    		for (Object discipline : disciplines) {
+    			Integer esId = addSymbiotaExportSchema(Integer.class.cast(discipline));
+    			if (esId == null) {
+    				return false;
+    			} else {
+    				added.add(esId);
+    			}
+    		}
+    		return true;
+    	} catch (SQLException e) {
+    		for (Integer esId : added) {
+    			BasicSQLUtils.update("DELETE FROM spexportschemaitem WHERE SpExportSchemaID=" + esId);
+				BasicSQLUtils.update("DELETE FROM spexportschema WHERE SpExportSchemaID=" + esId);
+    		}
+    		return false;
+    	}
+    }
+    
+    /**
+     * @param sql
+     * @throws SQLException
+     */
+    public static void insertThis(String sql) throws SQLException {
+    	if (BasicSQLUtils.update(sql) != 1) {
+    		throw new SQLException();
+    	}
+    }
+    
+    /**
+     * @param disciplineId
+     * @return
+     * @throws SQLException
+     */
+    public static Integer addSymbiotaExportSchema(Integer disciplineId) throws SQLException {
+		Statement stmt = DBConnection.getInstance().getConnection().createStatement();
+		Integer schemaId = null;
+		try {
+			String sql = "insert into spexportschema(TimestampCreated,Version,Description,SchemaName,SchemaVersion,DisciplineID,CreatedByAgentID) "
+	    			+ "values(now(),0,'http://rs.tdwg.org/dwc/terms','SymbiotaDwc','1.0'," + disciplineId + ","
+	    			+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId() + ")";
+			stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			ResultSet key = stmt.getGeneratedKeys();
+			key.next();
+			schemaId = key.getInt(1);
+			Integer spuId = AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId();
+			//XXX This is so stoopid.
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','created'," + schemaId + "," + spuId + ")");                             
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','description'," + schemaId + "," + spuId + ")");                         
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','identifier'," + schemaId + "," + spuId + ")");                          
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','language'," + schemaId + "," + spuId + ")");                            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','license'," + schemaId + "," + spuId + ")");                             
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','modified'," + schemaId + "," + spuId + ")");                            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','publisher'," + schemaId + "," + spuId + ")");                           
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','references'," + schemaId + "," + spuId + ")");                          
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','title'," + schemaId + "," + spuId + ")");                               
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','accessRights'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','associatedTaxa'," + schemaId + "," + spuId + ")");                      
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','basisOfRecord'," + schemaId + "," + spuId + ")");                       
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','catalogNumber'," + schemaId + "," + spuId + ")");                       
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','collectionCode'," + schemaId + "," + spuId + ")");                      
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:double','coordinateUncertaintyInMeters'," + schemaId + "," + spuId + ")");       
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','country'," + schemaId + "," + spuId + ")");                             
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','county'," + schemaId + "," + spuId + ")");                              
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:dateTimeISO','dateIdentified'," + schemaId + "," + spuId + ")");                
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:gDay','day'," + schemaId + "," + spuId + ")");                                   
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:decimalLatitudeDataType','decimalLatitude'," + schemaId + "," + spuId + ")");   
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:decimalLongitudeDataType','decimalLongitude'," + schemaId + "," + spuId + ")"); 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','disposition'," + schemaId + "," + spuId + ")");                         
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','dynamicProperties'," + schemaId + "," + spuId + ")");                   
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:dayOfYearDataType','endDayOfYear'," + schemaId + "," + spuId + ")");            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','establishmentMeans'," + schemaId + "," + spuId + ")");                  
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:dateTimeISO','eventDate'," + schemaId + "," + spuId + ")");                     
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','family'," + schemaId + "," + spuId + ")");                              
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','fieldNotes'," + schemaId + "," + spuId + ")");                          
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','fieldNumber'," + schemaId + "," + spuId + ")");                         
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','footprintWKT'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','genus'," + schemaId + "," + spuId + ")");                               
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','geodeticDatum'," + schemaId + "," + spuId + ")");                       
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','georeferenceProtocol'," + schemaId + "," + spuId + ")");                
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','georeferenceRemarks'," + schemaId + "," + spuId + ")");                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','georeferenceSources'," + schemaId + "," + spuId + ")");                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','georeferenceVerificationStatus'," + schemaId + "," + spuId + ")");      
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','georeferencedBy'," + schemaId + "," + spuId + ")");                     
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','habitat'," + schemaId + "," + spuId + ")");                             
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:nonEmptyString','identificationID'," + schemaId + "," + spuId + ")");           
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','identificationQualifier'," + schemaId + "," + spuId + ")");             
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','identificationReferences'," + schemaId + "," + spuId + ")");            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','identificationRemarks'," + schemaId + "," + spuId + ")");               
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','identifiedBy'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:positiveInteger','individualCount'," + schemaId + "," + spuId + ")");            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','informationWithheld'," + schemaId + "," + spuId + ")");                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','infraspecificEpithet'," + schemaId + "," + spuId + ")");                
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','institutionCode'," + schemaId + "," + spuId + ")");                     
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','lifeStage'," + schemaId + "," + spuId + ")");                           
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','locality'," + schemaId + "," + spuId + ")");                            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:nonEmptyString','locationID'," + schemaId + "," + spuId + ")");                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:double','maximumElevationInMeters'," + schemaId + "," + spuId + ")");            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:double','minimumElevationInMeters'," + schemaId + "," + spuId + ")");            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:gMonth','month'," + schemaId + "," + spuId + ")");                               
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','municipality'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','occurrenceRemarks'," + schemaId + "," + spuId + ")");                   
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','otherCatalogNumbers'," + schemaId + "," + spuId + ")");                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','ownerInstitutionCode'," + schemaId + "," + spuId + ")");                
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','preparations'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','recordNumber'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','recordedBy'," + schemaId + "," + spuId + ")");                          
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','reproductiveCondition'," + schemaId + "," + spuId + ")");               
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','rights'," + schemaId + "," + spuId + ")");                              
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','rightsHolder'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','samplingProtocol'," + schemaId + "," + spuId + ")");                    
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','scientificName'," + schemaId + "," + spuId + ")");                      
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','scientificNameAuthorship'," + schemaId + "," + spuId + ")");            
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','sex'," + schemaId + "," + spuId + ")");                                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','specificEpithet'," + schemaId + "," + spuId + ")");                     
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'dwc:dayOfYearDataType','startDayOfYear'," + schemaId + "," + spuId + ")");          
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','stateProvince'," + schemaId + "," + spuId + ")");                       
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','taxonRank'," + schemaId + "," + spuId + ")");                           
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','taxonRemarks'," + schemaId + "," + spuId + ")");                        
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','typeStatus'," + schemaId + "," + spuId + ")");                          
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','verbatimCoordinates'," + schemaId + "," + spuId + ")");                 
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','verbatimElevation'," + schemaId + "," + spuId + ")");                   
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:string','verbatimEventDate'," + schemaId + "," + spuId + ")");                   
+			insertThis("insert into spexportschemaitem(TimestampCreated,Version,DataType,FieldName,SpExportschemaId,CreatedByAgentID) values(now(),0,'xs:gYear','year'," + schemaId + "," + spuId + ")");
+			return schemaId;
+		} catch (SQLException e) {
+				if (schemaId != null) {
+					stmt.executeUpdate("DELETE FROM spexportschemaitem WHERE SpExportSchemaID=" + schemaId);
+					stmt.executeUpdate("DELETE FROM spexportschema WHERE SpExportSchemaID=" + schemaId);
+				}
+				throw e;
+		} finally {
+			stmt.close();
+		}
+    }
     /**
      * 
      */

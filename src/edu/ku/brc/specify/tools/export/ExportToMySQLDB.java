@@ -343,7 +343,7 @@ public class ExportToMySQLDB
 			{
 				DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(baseTableId);
 	    	
-				deletedRows = deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
+				deletedRows = deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId(), listeners);
 			}
 	    
 			//System.out.println("deleted deleted recs");
@@ -418,18 +418,56 @@ public class ExportToMySQLDB
 	 * @param collMemId
 	 * @throws Exception
 	 */
-	protected static long deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId) throws Exception
+	protected static long deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId, List<QBDataSourceListenerIFace> listeners) throws Exception
 	{
-		String sql = "delete from " + tblName + " where " + keyFld + " not in(select " + spKeyFld + " from " + spTblName;
+		boolean notifyListener = false;
+		for (QBDataSourceListenerIFace l : listeners) {
+			if (l.doTellAll()) {
+				notifyListener = true;
+				break;
+			}
+		}
+		
+		String where = " where " + keyFld + " not in(select " + spKeyFld + " from " + spTblName;
 		if (collMemId != -1)
 		{
-			sql += " where CollectionMemberId = " + collMemId;
+			where += " where CollectionMemberId = " + collMemId;
 		}
-		sql += ")";
+		where += ")";
+		
+		List<Integer> ids = null;
+		if (notifyListener) {
+			Statement statement = connection.createStatement();
+			try {
+				String selector = "select " + keyFld + " from " + tblName + where;
+				ResultSet rs = statement.executeQuery(selector);
+				ids = new ArrayList<Integer>();
+				while (rs.next()) {
+					ids.add(rs.getInt(1));
+				}
+			} finally {
+				statement.close();
+			}
+		}
+		
+		String sql = "delete from " + tblName + where;
+		long result = 0;
 		Statement statement = connection.createStatement();
-		statement.execute(sql);
-		long result = statement.getUpdateCount();
-		statement.close();
+		try {
+			statement.execute(sql);
+			result = statement.getUpdateCount();
+		} finally {
+			statement.close();
+		}
+		
+		if (notifyListener && ids != null && ids.size() > 0) {
+			//could test to see if result matches ids.size() and do something if not but what?
+			for (QBDataSourceListenerIFace l : listeners) {
+				if (l.doTellAll()) {
+					l.deletedRecs(ids);
+				}
+			}			
+		}
 		return result;
 	}
 	
@@ -604,10 +642,14 @@ public class ExportToMySQLDB
 					listener.currentRow(currentRow);
 				}
 				currentRow++;
+				boolean isAdd = true;
 				if (update && !newTable) 
 				{
 					stmt.execute("delete from " + tblName + " where "
 							+ getIdFieldName(tblName) + " = " + row.get(0).get());
+					if (stmt.getUpdateCount() != 0) {
+						isAdd = false;
+					}
 				}
 				if (doBulk)
 				{
@@ -621,6 +663,17 @@ public class ExportToMySQLDB
 				{
 					stmt.execute(getInsertSql(row, tblName));
 				}
+				for (QBDataSourceListenerIFace listener : listeners) {
+					if (listener.doTellAll()) {
+						if (isAdd) {
+							listener.addedRec(Integer.class.cast(row.get(0).get()));
+						} else {
+							listener.updatedRec(Integer.class.cast(row.get(0).get()));
+						}
+					}
+				}
+				
+				
 			}
 			//System.out.println("returning " + currentRow);
         	for (QBDataSourceListenerIFace listener : listeners)

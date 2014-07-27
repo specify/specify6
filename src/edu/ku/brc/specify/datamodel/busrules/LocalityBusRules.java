@@ -28,16 +28,14 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.LocalityDetail;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -49,7 +47,8 @@ import edu.ku.brc.specify.datamodel.LocalityDetail;
  */
 public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements ListSelectionListener
 {
-    protected ValComboBoxFromQuery geographyCBX = null;
+   private Component	     paleoContextCmp  = null;
+   protected ValComboBoxFromQuery geographyCBX = null;
     /**
      * 
      */
@@ -111,6 +110,18 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
     {
         super.afterFillForm(dataObj);
         
+        if (formViewObj != null)
+        {
+            Pair<Component, FormViewObj> paleoContext = formViewObj.getControlWithFormViewObjByName("paleoContext");
+            if (paleoContext != null && paleoContextCmp == null && paleoContext.getSecond() == this.formViewObj) {
+            	paleoContextCmp = paleoContext.getFirst();
+            	Collection coll = (AppContextMgr.getInstance().getClassObject(Collection.class));
+            	if (!"locality".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
+            		UIRegistry.showLocalizedMsg("LocalityBusRules.PaleoRelationshipDisabled");
+            		paleoContextCmp.setEnabled(false);
+            	}
+            }
+        }
         if (viewable instanceof FormViewObj)
         {
             Locality locality = (Locality)dataObj;

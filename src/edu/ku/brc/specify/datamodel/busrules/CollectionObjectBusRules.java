@@ -59,9 +59,10 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
@@ -130,7 +131,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private CollectingEvent  cachedColEve     = null;
     private JButton          generateLabelBtn = null;
     private JCheckBox        generateLabelChk = null;
-    
+    private Component	     paleoContextCmp  = null;
     private AtomicBoolean    processingSeries = new AtomicBoolean(false);
     
     private Integer          defaultPrepTypeId    = null;
@@ -200,23 +201,36 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        if (formViewObj != null && formViewObj.getDataObj() instanceof CollectionObject)
+        if (formViewObj != null) 
         {
-            CollectionObject colObj = (CollectionObject)dataObj;
+        	if (formViewObj.getDataObj() instanceof CollectionObject)
+        	{
+        		CollectionObject colObj = (CollectionObject)dataObj;
             
-            MultiView mvParent = formViewObj.getMVParent();
-            boolean   isNewObj = colObj.getId() == null;
-            boolean   isEdit   = mvParent.isEditable();
+        		MultiView mvParent = formViewObj.getMVParent();
+        		boolean   isNewObj = colObj.getId() == null;
+        		boolean   isEdit   = mvParent.isEditable();
 
-            if (generateLabelChk != null)
-            {
-                generateLabelChk.setVisible(isEdit);
-            }
+        		if (generateLabelChk != null)
+        		{
+        			generateLabelChk.setVisible(isEdit);
+        		}
             
-            if (generateLabelBtn != null)
-            {
-                generateLabelBtn.setVisible(isEdit);
-                generateLabelBtn.setEnabled(!isNewObj);
+        		if (generateLabelBtn != null)
+        		{
+        			generateLabelBtn.setVisible(isEdit);
+        			generateLabelBtn.setEnabled(!isNewObj);
+        		}
+        	}
+        	
+            Pair<Component, FormViewObj> paleoContext = formViewObj.getControlWithFormViewObjByName("paleoContext");
+            if (paleoContext != null && paleoContextCmp == null && paleoContext.getSecond() == this.formViewObj) {
+            	paleoContextCmp = paleoContext.getFirst();
+            	Collection coll = (AppContextMgr.getInstance().getClassObject(Collection.class));
+            	if (!"collectionobject".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
+            		UIRegistry.showLocalizedMsg("CollectionObjectBusRules.PaleoRelationshipDisabled");
+            		paleoContextCmp.setEnabled(false);
+            	}
             }
         }
     }
@@ -1259,7 +1273,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             
         }
         
-        if (fieldName.equals("paleoContext"))
+        if (fieldName.equals("paleoContext") && AppContextMgr.getInstance().getClassObject(Collection.class).getIsPaleoContextEmbedded())
         {
             Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             if (discipline != null)

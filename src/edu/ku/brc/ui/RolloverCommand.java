@@ -125,7 +125,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
     protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
     protected boolean                isActive     = false;
-
+    protected boolean			     isAccented   = false;
+    protected Color				     backupColor  = null;
     // DndDeletable
     protected CommandAction          deleteCmdAction = null;
 
@@ -231,6 +232,23 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         });
     }
 
+    public boolean isAccented() {
+    	return isAccented;
+    }
+    
+    public void setIsAccented(boolean val) {
+    	if (isAccented != val) {
+    		isAccented = val;
+    		if (isAccented) {
+    			if (backupColor == null) {
+    				backupColor = getForeground();
+    			}
+    			setForeground(getFocusColor());
+    		} else {
+    			setForeground(backupColor);
+    		}
+    	}
+    }
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setBackground(java.awt.Color)
      */

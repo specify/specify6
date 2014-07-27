@@ -49,6 +49,10 @@
     <typesearch tableid="69"  name="ReferenceWork"          searchfield="title"           displaycols="title"              format="%s"     dataobjformatter=""/>
     <typesearch tableid="70"  name="RepositoryAgreement"    searchfield="repositoryAgreementNumber" displaycols="repositoryAgreementNumber" format="%s"     dataobjformatter=""/>
     <typesearch tableid="58"  name="Storage"                searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>
+    <typesearch tableid="32"  name="PaleoContext"           searchfield="paleoContextName,cs.fullName,ls.fullName" displaycols="paleoContextName,cs.fullName,cse.fullName,ls.fullName" format="%s, %s, %s, %s"     
+    	dataobjformatter="PaleoContext">
+    	SELECT %s1 FROM PaleoContext pc LEFT JOIN pc.chronosStrat cs JOIN cs.definition csd LEFT JOIN pc.chronosStratEnd cse LEFT JOIN cse.definition csed LEFT JOIN pc.lithoStrat ls LEFT JOIN ls.definition lsd WHERE pc.collectionMemberId = COLMEMID AND (pc.chronosStrat IS NULL OR csd.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.chronosStratEnd IS NULL OR csed.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.lithoStrat IS NULL OR lsd.lithoStratTreeDefId=LITHOTREEDEFID) AND %s2 ORDER BY pc.paleoContextName,cs.fullName,cse.fullName,ls.fullName
+    </typesearch>
     <typesearch tableid="6"   name="Permit"                 searchfield="permitNumber"    displaycols="permitNumber"       format="%s"     dataobjformatter=""/>
     <typesearch tableid="65"  name="PrepType"               searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="4"   name="Taxon"                  searchfield="fullName"        displaycols="fullName"           format="%s"     dataobjformatter="Taxon"/>

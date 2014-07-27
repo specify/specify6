@@ -4,9 +4,13 @@
 package edu.ku.brc.specify.plugins.morphbank;
 
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.util.Pair;
@@ -20,17 +24,26 @@ import edu.ku.brc.util.Pair;
  */
 public class DarwinCoreSpecimen
 {
+    protected static final Logger     log = Logger.getLogger(DarwinCoreSpecimen.class);
 	final protected DwcMapper mapper;
 	protected Integer collectionObjectId;
 	protected CollectionObject collectionObject;
 	protected Map<String, Pair<String, Object>> concepts = new HashMap<String, Pair<String, Object>>();
 	
+	/**
+	 * @param mapper
+	 * @throws Exception
+	 */
 	public DarwinCoreSpecimen(DwcMapper mapper) throws Exception
 	{
 		this.mapper = mapper;
 		mapper.setDarwinCoreConcepts(this);
 	}
 	
+	/**
+	 * @param collectionObjectId
+	 * @throws Exception
+	 */
 	public void setCollectionObjectId(Integer collectionObjectId) throws Exception
 	{
 		this.collectionObjectId = collectionObjectId;
@@ -38,46 +51,140 @@ public class DarwinCoreSpecimen
 		mapper.setDarwinCoreValues(this);
 	}
 	
+	/**
+	 * 
+	 */
 	protected void clearConcepts()
 	{
 		concepts.clear();
 	}
 	
-	protected void add(String fieldName, String value) throws Exception
+	/**
+	 * @param term
+	 * @param value
+	 * @throws Exception
+	 */
+	protected void add(String term, String value) throws Exception
 	{
-		if (concepts.containsKey(fieldName.toLowerCase()))
+		if (concepts.containsKey(term))
 		{
-			throw new Exception(fieldName + " concept is already mapped.");
+			throw new Exception(term + " concept is already mapped.");
 		}
 		
-		concepts.put(fieldName.toLowerCase(), new Pair<String, Object>(fieldName, value));		
+		concepts.put(term, new Pair<String, Object>(term, value));		
 	}
 	
-	protected void set(String fieldName, Object value) throws Exception
+	
+	/**
+	 * @param term
+	 * @param value
+	 * @throws Exception
+	 */
+	protected void set(String term, Object value) throws Exception
 	{
-		if (!concepts.containsKey(fieldName.toLowerCase()))
+		String fullTerm = term;
+		if (!concepts.containsKey(term))
 		{
-			throw new Exception(fieldName + " concept is not mapped.");
-		}
+			//throw new Exception(fieldName + " concept is not mapped.");
+			Map.Entry<String, Pair<String, Object>> m = getMappingByName(term);
+			if (m == null) {
+				log.warn(term + " concept is not mapped.");
+				return;
+			}
+			fullTerm = m.getKey();
+		} 
 		
-		concepts.put(fieldName.toLowerCase(), new Pair<String, Object>(fieldName, value));
+		concepts.put(fullTerm, new Pair<String, Object>(fullTerm, value));
 	}
 	
-	public Object get(String fieldName)
+	/**
+	 * @param termName
+	 * @return
+	 */
+	public Object get(String termName)
 	{
-		return concepts.get(fieldName.toLowerCase()).getSecond();
+		//System.out.println("DarwinCoreSpecimen.get(" + termName + ")");
+		return concepts.get(termName).getSecond();
 	}
 	
-	public boolean isMapped(String conceptName)
+	/**
+	 * @param conceptName
+	 * @return
+	 */
+	public Object getByName(String conceptName)
 	{
-		return concepts.containsKey(conceptName.toLowerCase());
+		Map.Entry<String, Pair<String, Object>> mapping = getMappingByName(conceptName);
+		if (mapping != null)
+		{
+			return mapping.getValue().getSecond();
+		}
+		return null;
 	}
 	
+	/**
+	 * @param termName
+	 * @return
+	 */
+	public boolean isMapped(String termName)
+	{
+		return concepts.containsKey(termName);
+	}
+	
+	/**
+	 * @param conceptName
+	 * @return
+	 */
+	public boolean isMappedByName(String conceptName)
+	{
+		return getMappingByName(conceptName) != null;
+	}
+	
+	/**
+	 * @param fldName
+	 * @return
+	 */
+	protected Map.Entry<String, Pair<String, Object>> getMappingByName(String fldName)
+	{
+		List<Map.Entry<String, Pair<String, Object>>> results = getMappingsByName(fldName);
+		if (results.size() == 0) {
+			return null;
+		} else {
+			if (results.size() > 1) {
+				log.warn("more than one mapping for term with name: " + fldName);
+			}
+			return results.get(0);
+		}
+	}
+	
+	/**
+	 * @param fldName
+	 * @return
+	 */
+	protected List<Map.Entry<String, Pair<String, Object>>> getMappingsByName(String fldName)
+	{
+		List<Map.Entry<String, Pair<String, Object>>> result = new ArrayList<Map.Entry<String, Pair<String, Object>>>();
+		for (Map.Entry<String, Pair<String, Object>> entry : concepts.entrySet())
+		{
+			String key = entry.getKey();
+			if (fldName.equalsIgnoreCase(key.substring(key.lastIndexOf("/")+1)))
+			{
+				result.add(entry);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
 	public int getFieldCount()
 	{
 		return concepts.size();
 	}
 	
+	/**
+	 * @return
+	 */
 	public Vector<Pair<String, Object>> getFieldValues()
 	{
 		Vector<Pair<String, Object>> result = new Vector<Pair<String, Object>>();
@@ -97,18 +204,24 @@ public class DarwinCoreSpecimen
 	}
 
 	/**
+	 * @return
+	 */
+	public String getCollectionObjectGUID() {
+		return collectionObject.getGuid();
+	}
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) 
 	{
 		try
 		{
-			String connStr = "jdbc:mysql://localhost/lsusmollusca?characterEncoding=UTF-8&autoReconnect=true"; 
+			String connStr = "jdbc:mysql://localhost/creac?characterEncoding=UTF-8&autoReconnect=true"; 
 			DwcMapper.connection = DriverManager.getConnection(connStr, "Master", "Master");
 
-			DwcMapper mapper = new DwcMapper(1);
+			DwcMapper mapper = new DwcMapper(1, true);
 			DarwinCoreSpecimen spec = new DarwinCoreSpecimen(mapper);
-			spec.setCollectionObjectId(1);
+			spec.setCollectionObjectId(10911);
 			for (Pair<String, Object> fld : spec.getFieldValues())
 			{
 				System.out.println(fld.getFirst() + " = " + fld.getSecond());

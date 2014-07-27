@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.List;
+
 /**
  * @author Administrator
  *
@@ -66,4 +68,24 @@ public interface QBDataSourceListenerIFace
 	 * @return true if listener wants to hear about currentRow changes and the done() event.
 	 */
 	public boolean isListeningClosely();
+	
+	/**
+	 * @return true if listener wants to know about deletes, updates, and additions as well.
+	 */
+	public boolean doTellAll();
+	
+	/**
+	 * @param keysDeleted list of keys deleted
+	 */
+	public void deletedRecs(List<Integer> keysDeleted);
+	
+	/**
+	 * @param key of updated rec
+	 */
+	public void updatedRec(Integer key);
+	
+	/**
+	 * @param key of added rec
+	 */
+	public void addedRec(Integer key);
 }

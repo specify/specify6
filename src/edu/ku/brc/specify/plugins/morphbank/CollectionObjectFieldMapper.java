@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
@@ -168,17 +167,17 @@ public class CollectionObjectFieldMapper
 	public Object getSpecNumber(DarwinCoreSpecimen aSpec)
 	{
 		DarwinCoreSpecimen dws = aSpec == null ? spec : aSpec;
-		if (dws.isMapped("CatalogNumberNumeric"))
+		if (dws.isMappedByName("CatalogNumberNumeric"))
 		{
-			return dws.get("CatalogNumberNumeric");
+			return dws.getByName("CatalogNumberNumeric");
 		}		
-		if (dws.isMapped("CatalogNumberText"))
+		if (dws.isMappedByName("CatalogNumberText"))
 		{
-			return dws.get("CatalogNumberText");
+			return dws.getByName("CatalogNumberText");
 		}
-		if (dws.isMapped("CatalogNumber"))
+		if (dws.isMappedByName("CatalogNumber"))
 		{
-			return dws.get("CatalogNumber");
+			return dws.getByName("CatalogNumber");
 		}
 	
 		return dws.getCollectionObjectId();
@@ -199,9 +198,9 @@ public class CollectionObjectFieldMapper
 		String result = "";
 		if (!isImage)
 		{
-			if (spec.isMapped("InstitutionCode") && spec.isMapped("CollectionCode"))
+			if (spec.isMappedByName("InstitutionCode") && spec.isMappedByName("CollectionCode"))
 			{
-				result = spec.get("InstitutionCode") + "-" + spec.get("CollectionCode");
+				result = spec.getByName("InstitutionCode") + "-" + spec.getByName("CollectionCode");
 			}
 			else 
 			{
@@ -286,7 +285,7 @@ public class CollectionObjectFieldMapper
 				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": unrecognized data type.");
 				continue;
 			}
-			Object val = spec.get(mi.getName());
+			Object val = spec.get(mi.getTerm());
 			try
 			{
 				if (redactor.isRedacted(spec, mi))
@@ -360,12 +359,12 @@ public class CollectionObjectFieldMapper
 	{
 		xmlSpec.setId(MapFsuHerbSpreadsheetToXml.getXmlExternalId(getSpecId(spec, false)));
 		
-		if (spec.isMapped("ScientificName"))
+		if (spec.isMappedByName("ScientificName"))
 		{
-			String sciNameAuthor = spec.isMapped("ScientificNameAuthor") ? (String )spec.get("ScientificNameAuthor") : null;
+			String sciNameAuthor = spec.isMappedByName("ScientificNameAuthor") ? (String )spec.getByName("ScientificNameAuthor") : null;
 			if (sciNameAuthor == null)
 			{
-				 sciNameAuthor = spec.isMapped("AuthorYearOfScientificName") ? (String)spec.get("AuthorYearOfScientificName") : null;
+				 sciNameAuthor = spec.isMappedByName("AuthorYearOfScientificName") ? (String)spec.getByName("AuthorYearOfScientificName") : null;
 			}
 			if (StringUtils.isNotBlank(sciNameAuthor))
 			{
@@ -374,12 +373,12 @@ public class CollectionObjectFieldMapper
 				//				XmlTaxonNameUtilities.getTaxonSciNameAuthorExtId((String )spec.get("ScientificName"), 
 				//						(String )spec.get("ScientificNameAuthor"))));				
 				xmlSpec.setDetermination(
-						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_AUTHOR_PREFIX + spec.get("ScientificName") + "|" + sciNameAuthor));				
+						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_AUTHOR_PREFIX + spec.getByName("ScientificName") + "|" + sciNameAuthor));				
 			}
 			else
 			{
 				xmlSpec.setDetermination(
-						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_PREFIX + spec.get("ScientificName")));				
+						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_PREFIX + spec.getByName("ScientificName")));				
 			}
 		}
 		

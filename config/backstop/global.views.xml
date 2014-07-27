@@ -464,6 +464,15 @@
                 <altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" mode="edit" validated="true"/>
             </altviews>
         </view>
+
+        <view name="SpSymbiotaInstance"
+            class="edu.ku.brc.specify.datamodel.SpSymbiotaInstance"
+            resourcelabels="false">
+            <desc><![CDATA[Symbiota Instance Data Entry Form]]></desc>
+            <altviews>
+                <altview name="SymbiotaInstanceDataEntry" viewdef="SymbiotaInstanceDataEntry" mode="edit" validated="true"/>
+            </altviews>
+        </view>
         
         <view name="ObjectAttachment"
             class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
@@ -2544,6 +2553,37 @@
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="SymbiotaInstanceDataEntry"
+            class="edu.ku.brc.specify.datamodel.SpSymbiotaInstance"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Symbiota Instance Data Entry Form]]></desc>
+            
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Instance Name"/>
+                    <cell type="field" id="1" name="instanceName" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Symbiota Key"/>
+                    <cell type="field" id="2" name="symbiotaKey" uitype="text" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Description"/>
+                    <cell type="field" id="4" name="description" uitype="text" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="3"/>
                 </row>
             </rows>
         </viewdef>

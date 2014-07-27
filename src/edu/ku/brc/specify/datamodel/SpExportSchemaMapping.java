@@ -21,6 +21,8 @@ import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.helpers.XMLHelper;
@@ -48,6 +50,7 @@ public class SpExportSchemaMapping extends CollectionMember
 	protected String							description;
 	protected Timestamp							timestampExported;
 	protected Set<SpExportSchemaItemMapping>	mappings;
+	protected Set<SpSymbiotaInstance>           symbiotaInstances;
 
 	/**
 	 * Default constructor.
@@ -214,6 +217,23 @@ public class SpExportSchemaMapping extends CollectionMember
     }
 	
     /**
+     * @return the symbiotaInstances
+     */
+    @OneToMany(mappedBy = "schemaMapping")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Set<SpSymbiotaInstance> getSymbiotaInstances() {
+        return this.symbiotaInstances;
+    }
+    
+    
+    /**
+     * @param symbiotaInstances
+     */
+    public void setSymbiotaInstances(Set<SpSymbiotaInstance> symbiotaInstances) {
+        this.symbiotaInstances = symbiotaInstances;
+    }
+
+    /**
      * @return the mappings.
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exportSchemaMapping")
@@ -327,6 +347,7 @@ public class SpExportSchemaMapping extends CollectionMember
 		description = null;
 		timestampExported = null;
 		mappings = new HashSet<SpExportSchemaItemMapping>();
+		symbiotaInstances = new HashSet<SpSymbiotaInstance>();
 	}
 
 	/* (non-Javadoc)
@@ -363,6 +384,15 @@ public class SpExportSchemaMapping extends CollectionMember
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+	 */
+	@Override
+	public String toString() {
+		return getMappingName();
+	}
+
+	
 	
 //	/**
 //	 * @param mapping

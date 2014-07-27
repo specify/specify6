@@ -109,6 +109,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Dec 8, 2007
  *
  */
+@SuppressWarnings("serial")
 public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(TextFieldWithQuery.class);
@@ -802,10 +803,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         int cnt = 0;
         for (String keyCol : keyColumns)
         {
-            if (cnt > 0) whereSB.append(" OR "); //$NON-NLS-1$
+            String [] colParts = keyCol.split("\\.");
+            String abbrev = colParts.length > 1 ? colParts[0] : tableInfo.getAbbrev();
+            String fld = colParts.length > 1 ? colParts[1] : keyCol;
+        	if (cnt > 0) whereSB.append(" OR "); //$NON-NLS-1$
             whereSB.append(" LOWER("); //$NON-NLS-1$
-            whereSB.append(tableInfo.getAbbrev() + "." + keyCol);
+            whereSB.append(abbrev + "." + fld);
             whereSB.append(") LIKE '"); //$NON-NLS-1$
+            //The following condition is added specifically for catalog number lookups. Probably.
             if (uiFieldFormatter != null && uiFieldFormatter.isNumeric())
             {
                 whereSB.append("%"); //$NON-NLS-1$
@@ -1125,7 +1130,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void showDialog()
     {
-        DefaultListModel model = new DefaultListModel();
+        DefaultListModel<String> model = new DefaultListModel<String>();
         if (doAddAddItem)
         {
             model.addElement(UIRegistry.getResourceString("TFWQ_ADD_LABEL")); //$NON-NLS-1$
@@ -1136,7 +1141,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             model.addElement(val);
         }
         
-        final JList listBox = new JList(model);
+        final JList<String> listBox = new JList<String>(model);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH); //$NON-NLS-1$
         panel.add(UIHelper.createScrollPane(listBox, true), BorderLayout.CENTER);
@@ -1146,12 +1151,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         // before being shown
         class PopUpDialog extends CustomDialog
         {
-            protected JList pListBox;
+            protected JList<String> pListBox;
             
             public PopUpDialog(final Frame     frame, 
                                final boolean   isModal,
                                final Component contentPanel,
-                               JList pListBoxArg) throws HeadlessException
+                               JList<String> pListBoxArg) throws HeadlessException
             {
                 super(frame, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, contentPanel); //$NON-NLS-1$
                 this.pListBox = pListBoxArg;
@@ -1161,7 +1166,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             public PopUpDialog(final Dialog     dialog, 
                                final boolean   isModal,
                                final Component contentPanel,
-                               JList pListBoxArg) throws HeadlessException
+                               JList<String> pListBoxArg) throws HeadlessException
             {
                 super(dialog, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, OK_BTN | CANCEL_BTN, contentPanel); //$NON-NLS-1$
                 this.pListBox = pListBoxArg;

@@ -57,6 +57,15 @@
         </view>
 
         <view
+            name="Symbiota"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Symbiota Preference Form.]]></desc>
+            <altviews>
+                <altview name="Symbiota" viewdef="Symbiota" label="V_Symbiota" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view
             name="GoogleEarth"
             class="java.util.prefs.Preferences">
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
@@ -602,6 +611,29 @@
                 </row>
                 <row>
                     <cell type="field" id="9" name="morphbank.groupid" cols="30" uitype="text" colspan="4"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Symbiota"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[Symbiota Preference Form.]]></desc>
+            
+            <columnDef>p,4px,p,f:p:g</columnDef>
+            <rowDef>p,2px,p,10px </rowDef>
+               
+            <rows>
+                <row>
+                    <cell type="separator" label="SymbiotaBaseURL" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="1" name="symbiota.baseurl" cols="100" uitype="text" colspan="4"/>
                 </row>
             </rows>
         </viewdef>

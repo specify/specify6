@@ -41,8 +41,8 @@ public class MorphbankPrefsPanel extends GenericPrefsPanel
 	public void createForm(String viewSetName, String viewName)
 	{
 		super.createForm(viewSetName, viewName);
-		JComboBox maps = ((ValComboBox )form.getCompById("7")).getComboBox();
-		maps.setModel(new DefaultComboBoxModel(getExistingExportMappings()));
+		JComboBox<Object> maps = ((ValComboBox )form.getCompById("7")).getComboBox();
+		maps.setModel(new DefaultComboBoxModel<Object>(getExistingExportMappings()));
 		String pref = AppPreferences.getRemote().get("morphbank.dwcmapping", null);
 		if (maps.getModel().getSize() > 1 && pref != null)
 		{

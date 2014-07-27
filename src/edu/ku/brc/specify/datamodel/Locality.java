@@ -109,6 +109,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                text4;
     protected String                text5;
     protected Byte                  sgrStatus;
+    protected PaleoContext			paleoContext;
+    
     
     // Source Data used for formatting
     // XXX.XXXXXXXX N    Decimal Degrees
@@ -170,6 +172,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         datum = null;
         remarks = null;
         sgrStatus = null;
+        paleoContext = null;
         
         lat1text   = null;
         lat2text   = null;
@@ -270,6 +273,22 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         this.shortName = shortName;
     }
+
+    /**
+    *
+    */
+   @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+   @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
+   public PaleoContext getPaleoContext()
+   {
+       return this.paleoContext;
+   }
+
+   public void setPaleoContext(PaleoContext paleoContext)
+   {
+       this.paleoContext = paleoContext;
+   }
 
     /**
      * * Relation of the locality to the named place

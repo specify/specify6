@@ -13,6 +13,8 @@ public class MappingUpdateStatus
 	protected final long recsUpdated;
 	protected final long recsAdded;
 	protected final long totalRecsChanged;
+	protected final boolean needsRebuild;
+	
 	/**
 	 * @param recsToDelete
 	 * @param recsUpdated
@@ -20,14 +22,23 @@ public class MappingUpdateStatus
 	 * @param totalRecsChanged
 	 */
 	public MappingUpdateStatus(long recsToDelete, long recsUpdated,
-			long recsAdded, long totalRecsChanged)
+			long recsAdded, long totalRecsChanged, boolean needsRebuild)
 	{
 		super();
 		this.recsToDelete = recsToDelete;
 		this.recsUpdated = recsUpdated;
 		this.recsAdded = recsAdded;
 		this.totalRecsChanged = totalRecsChanged;
+		this.needsRebuild = needsRebuild;
 	}
+	
+	/**
+	 * @return
+	 */
+	public boolean isNeedsRebuild() {
+		return needsRebuild;
+	}
+	
 	/**
 	 * @return the recsToDelete
 	 */

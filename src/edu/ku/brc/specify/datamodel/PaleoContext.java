@@ -52,25 +52,39 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="paleocontext")
 @org.hibernate.annotations.Table(appliesTo="paleocontext", indexes =
-    {   @Index (name="PaleoCxtColMemIDX", columnNames={"CollectionMemberID"})
+    {   @Index (name="PaleoCxtNameIDX", columnNames={"PaleoContextName"}),
+		@Index (name="PaleoCxtColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class PaleoContext extends CollectionMember implements Cloneable
 {
     protected Integer paleoContextId;
-    protected Float   topDistance;
-    protected Float   bottomDistance;
-    protected String  distanceUnits; // "ft" or "m"
-    protected String  direction;     // "up" or "down"
-    protected String  positionState; // float or in-situ
+    
+    protected String paleoContextName;
+    
     
     protected String  remarks;
     
     protected String  text1;
     protected String  text2;
+    protected String  text3;
+    protected String  text4;
+    protected String  text5;
+    
     protected Boolean yesNo1;
     protected Boolean yesNo2;
+    protected Boolean yesNo3;
+    protected Boolean yesNo4;
+    protected Boolean yesNo5;
+    
+    protected Double number1;
+    protected Double number2;
+    protected Double number3;
+    protected Double number4;
+    protected Double number5;
     
     protected Set<CollectionObject> collectionObjects;
+    protected Set<CollectingEvent> collectingEvents;
+    protected Set<Locality> localities;
     
     protected LithoStrat            lithoStrat;
     protected GeologicTimePeriod    bioStrat;
@@ -114,11 +128,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
         super.init();
         
         paleoContextId = null;
-        topDistance    = null;
-        bottomDistance = null;
-        distanceUnits  = null;
-        direction      = null;
-        positionState  = null;
+        paleoContextName = null;
         
         remarks        = null;
         text1          = null;
@@ -127,6 +137,8 @@ public class PaleoContext extends CollectionMember implements Cloneable
         yesNo2         = null;
         
         collectionObjects = new HashSet<CollectionObject>();
+        collectingEvents = new HashSet<CollectingEvent>();
+        localities = new HashSet<Locality>();
         
         lithoStrat       = null;
         bioStrat         = null;
@@ -136,95 +148,45 @@ public class PaleoContext extends CollectionMember implements Cloneable
     }
 
     /**
-     * @return the direction
+     * @return the paleoContextName
      */
-    @Column(name="Direction", unique=false, nullable=true, insertable=true, updatable=true, length=32)
-    public String getDirection()
-    {
-        return direction;
+    @Column(name="PaleoContextName", unique=false, nullable=true, insertable=true, updatable=true, length=80)
+    public String getPaleoContextName() {
+        return paleoContextName;
     }
 
     /**
-     * @param direction the direction to set
+     * @param paleoContextName the paleoContextName to set
      */
-    public void setDirection(String direction)
-    {
-        this.direction = direction;
+    public void setPaleoContextName(String paleoContextName) {
+    	this.paleoContextName = paleoContextName;
     }
+    
 
     /**
-     * @return the distanceUnits
+     * @param collectionObjects
      */
-    @Column(name="DistanceUnits", unique=false, nullable=true, insertable=true, updatable=true, length=16)
-    public String getDistanceUnits()
-    {
-        return distanceUnits;
-    }
-
-    /**
-     * @param distanceUnits the distanceUnits to set
-     */
-    public void setDistanceUnits(String distanceUnits)
-    {
-        this.distanceUnits = distanceUnits;
-    }
-
-    /**
-     * @return the topDistance
-     */
-    @Column(name="TopDistance", unique=false, nullable=true, insertable=true, updatable=true)
-    public Float getTopDistance()
-    {
-        return topDistance;
-    }
-
-    /**
-     * @param topDistance the topDistance to set
-     */
-    public void setTopDistance(Float topDistance)
-    {
-        this.topDistance = topDistance;
-    }
-
-    /**
-     * @return the bottomDistance
-     */
-    @Column(name="BottomDistance", unique=false, nullable=true, insertable=true, updatable=true)
-    public Float getBottomDistance()
-    {
-        return bottomDistance;
-    }
-
-    /**
-     * @param bottomDistance the bottomDistance to set
-     */
-    public void setBottomDistance(Float bottomDistance)
-    {
-        this.bottomDistance = bottomDistance;
-    }
-
-    /**
-     * @return the positionState
-     */
-    @Column(name="PositionState", unique=false, nullable=true, insertable=true, updatable=true, length=32)
-    public String getPositionState()
-    {
-        return positionState;
-    }
-
-    /**
-     * @param positionState the positionState to set
-     */
-    public void setPositionState(String positionState)
-    {
-        this.positionState = positionState;
-    }
-
     public void setCollectionObjects(Set<CollectionObject> collectionObjects) 
     {
         this.collectionObjects = collectionObjects;
     }
+ 
+    /**
+     * @param collectingEvents
+     */
+    public void setCollectingEvents(Set<CollectingEvent> collectingEvents) 
+    {
+        this.collectingEvents = collectingEvents;
+    }
     
+    /**
+     * @param collectionObjects
+     */
+    public void setLocalities(Set<Locality> localities) 
+    {
+        this.localities = localities;
+    }
+
     /**
      * 
      */
@@ -271,6 +233,56 @@ public class PaleoContext extends CollectionMember implements Cloneable
     {
         this.text2 = text2;
     }
+    
+    /**
+     * @return the text3
+     */
+    @Column(name="Text3", unique=false, nullable=true, insertable=true, updatable=true, length=500)
+    public String getText3()
+    {
+        return text3;
+    }
+
+    /**
+     * @param text3 the text3 to set
+     */
+    public void setText3(String text3)
+    {
+        this.text3 = text3;
+    }
+    /**
+     * @return the text4
+     */
+    @Column(name="Text4", unique=false, nullable=true, insertable=true, updatable=true, length=500)
+    public String getText4()
+    {
+        return text4;
+    }
+
+    /**
+     * @param text4 the text4 to set
+     */
+    public void setText4(String text4)
+    {
+        this.text4 = text4;
+    }
+    /**
+     * @return the text1
+     */
+    @Column(name="Text5", unique=false, nullable=true, insertable=true, updatable=true, length=500)
+    public String getText5()
+    {
+        return text5;
+    }
+
+    /**
+     * @param text5 the text5 to set
+     */
+    public void setText5(String text5)
+    {
+        this.text5 = text5;
+    }
+
 
     /**
      * @return the yesNo1
@@ -305,14 +317,159 @@ public class PaleoContext extends CollectionMember implements Cloneable
     {
         this.yesNo2 = yesNo2;
     }
+   
+    /**
+     * @return the yesNo3
+     */
+    @Column(name="YesNo3", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getYesNo3()
+    {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+
+    /**
+     * @return the yesNo4
+     */
+    @Column(name="YesNo4", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getYesNo4()
+    {
+        return yesNo4;
+    }
+
+    /**
+     * @param yesNo4 the yesNo4 to set
+     */
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+    /**
+     * @return the yesNo5
+     */
+    @Column(name="YesNo5", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getYesNo5()
+    {
+        return yesNo5;
+    }
+
+    /**
+     * @param yesNo5 the yesNo5 to set
+     */
+    public void setYesNo5(Boolean yesNo5)
+    {
+        this.yesNo5 = yesNo5;
+    }
+
+    
     
     /**
+	 * @return the number1
+	 */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Double getNumber1() {
+		return number1;
+	}
+
+	/**
+	 * @param number1 the number1 to set
+	 */
+	public void setNumber1(Double number1) {
+		this.number1 = number1;
+	}
+
+	/**
+	 * @return the number2
+	 */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Double getNumber2() {
+		return number2;
+	}
+
+	/**
+	 * @param number2 the number2 to set
+	 */
+	public void setNumber2(Double number2) {
+		this.number2 = number2;
+	}
+
+	/**
+	 * @return the number3
+	 */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Double getNumber3() {
+		return number3;
+	}
+
+	/**
+	 * @param number3 the number3 to set
+	 */
+	public void setNumber3(Double number3) {
+		this.number3 = number3;
+	}
+
+	/**
+	 * @return the number4
+	 */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Double getNumber4() {
+		return number4;
+	}
+
+	/**
+	 * @param number4 the number4 to set
+	 */
+	public void setNumber4(Double number4) {
+		this.number4 = number4;
+	}
+
+	/**
+	 * @return the number5
+	 */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
+	public Double getNumber5() {
+		return number5;
+	}
+
+	/**
+	 * @param number5 the number5 to set
+	 */
+	public void setNumber5(Double number5) {
+		this.number5 = number5;
+	}
+
+	/**
      *
      */
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
     public Set<CollectionObject> getCollectionObjects() 
     {
         return this.collectionObjects;
+    }
+
+    /**
+     * @return
+     */
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    public Set<CollectingEvent> getCollectingEvents() 
+    {
+        return this.collectingEvents;
+    }
+
+    /**
+     * @return
+     */
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    public Set<Locality> getLocalities() 
+    {
+        return this.localities;
     }
 
     /**

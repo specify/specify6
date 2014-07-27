@@ -45,7 +45,7 @@ import edu.ku.brc.ui.IconManager;
  * Oct 18, 2007
  *
  */
-public class QryListRenderer implements ListCellRenderer
+public class QryListRenderer implements ListCellRenderer<QryListRendererIFace>
 {
     protected IconManager.IconSize iconSize;
     protected JPanel               panel;
@@ -94,7 +94,7 @@ public class QryListRenderer implements ListCellRenderer
         this.displayKidIndicator = displayKidIndicator;
     }
 
-    public Component getListCellRendererComponent(JList list, Object value, // value to display
+    public Component getListCellRendererComponent(JList<? extends QryListRendererIFace> list, QryListRendererIFace value, // value to display
                                                   int index, // cell index
                                                   boolean iss, // is the cell selected
                                                   boolean chf) // the list and the cell have the

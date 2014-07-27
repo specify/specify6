@@ -21,6 +21,7 @@ public class MappedFieldInfo
 {
 	protected final String stringId; //gives unique 'path' from root object to the field
 	protected final String fieldName; 
+	protected final String term;
 	protected final String tableIds; //list of tableids in the path from root to the field
 	protected final boolean isRel; //basically equivalent to is aggregated
 	protected final boolean isActive; //should the mapping be automatically applied
@@ -32,11 +33,12 @@ public class MappedFieldInfo
 	 * @param isRel
 	 * @param isActive
 	 */
-	public MappedFieldInfo(String stringId, String fieldName, String tableIds, boolean isRel, boolean isActive) 
+	public MappedFieldInfo(String stringId, String fieldName, String term, String tableIds, boolean isRel, boolean isActive) 
 	{
 		super();
 		this.stringId = stringId;
 		this.fieldName = fieldName;
+		this.term = term;
 		this.tableIds = tableIds;
 		this.isRel = isRel;
 		this.isActive = isActive;
@@ -48,9 +50,9 @@ public class MappedFieldInfo
 	 * @param tableIds
 	 * @param isRel
 	 */
-	public MappedFieldInfo(String stringId, String fieldName, String tableIds, boolean isRel) 
+	public MappedFieldInfo(String stringId, String fieldName, String term, String tableIds, boolean isRel) 
 	{
-		this(stringId, fieldName, tableIds, isRel, true);
+		this(stringId, fieldName, term, tableIds, isRel, true);
 	}
 
 	/**
@@ -60,6 +62,7 @@ public class MappedFieldInfo
 	{
 		this(XMLHelper.getAttr(def, "specify_field", null), 
 				XMLHelper.getAttr(def, "fieldname", null),
+				XMLHelper.getAttr(def, "term", null),
 				XMLHelper.getAttr(def, "table_path", null),
 				XMLHelper.getAttr(def, "is_relationship", false),
 				XMLHelper.getAttr(def, "active", true));
@@ -147,5 +150,14 @@ public class MappedFieldInfo
 	{
 		return "(" + stringId + ", " + fieldName + ", " + tableIds + ", " + isRel + ", " + isActive + ")";
 	}
+
+	/**
+	 * @return the term
+	 */
+	public String getTerm() 
+	{
+		return term;
+	}
+	
 	
 }

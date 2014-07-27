@@ -65,6 +65,15 @@
         </pref>
     </section>
     -->
+ 
+     <section title="SYMBIOTA">
+        <pref name="SYMBIOTA" title="SYMBIOTA" icon="Symbiota" panelClass="edu.ku.brc.specify.prefs.SymbiotaPrefsPanel" viewsetname="Preferences" viewname="Symbiota" help="PrefsSymbiota">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="false,false,false,false"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
     
     <section title="MySQL">
         <pref name="MYSQL" title="MYSQL" icon="MySQL" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQL">

@@ -19,15 +19,19 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Component;
+
 import javax.swing.JButton;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod 
@@ -41,6 +45,7 @@ import edu.ku.brc.specify.datamodel.Locality;
  */
 public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
 {
+    private Component	     paleoContextCmp  = null;
     /**
      * 
      */
@@ -79,19 +84,6 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
     public void addChildrenToNewDataObjects(final Object newDataObj)
     {
         super.addChildrenToNewDataObjects(newDataObj);
-        
-        if (false)
-        {
-            CollectingEvent ce = (CollectingEvent)newDataObj;
-            
-            if (ce.getLocality() == null)
-            {
-                Locality locality = new Locality();
-                locality.initialize();
-                
-                ce.addReference(locality, "locality");
-            }
-        }
     }
     
     /* (non-Javadoc)
@@ -128,6 +120,28 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+        
+        if (formViewObj != null)
+        {
+            Pair<Component, FormViewObj> paleoContext = formViewObj.getControlWithFormViewObjByName("paleoContext");
+            if (paleoContext != null && paleoContextCmp == null && paleoContext.getSecond() == this.formViewObj) {
+            	paleoContextCmp = paleoContext.getFirst();
+            	Collection coll = (AppContextMgr.getInstance().getClassObject(Collection.class));
+            	if (!"collectingevent".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
+            		UIRegistry.showLocalizedMsg("CollectingEventBusRules.PaleoRelationshipDisabled");
+            		paleoContextCmp.setEnabled(false);
+            	}
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#shouldCloneField(java.lang.String)
      */

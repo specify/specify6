@@ -35,6 +35,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -746,4 +747,38 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     {
         return true;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#doTellAll()
+	 */
+	@Override
+	public boolean doTellAll() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#deletedRecs(java.util.List)
+	 */
+	@Override
+	public void deletedRecs(List<Integer> keysDeleted) {
+		//nuthin
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#updatedRec(java.lang.Integer)
+	 */
+	@Override
+	public void updatedRec(Integer key) {
+		//nuthin
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#addedRec(java.lang.Integer)
+	 */
+	@Override
+	public void addedRec(Integer key) {
+		//whatever
+	}
+    
+    
 }

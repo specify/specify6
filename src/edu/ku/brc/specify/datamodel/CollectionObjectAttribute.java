@@ -124,6 +124,12 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected Boolean yesNo6;
     protected Boolean yesNo7;
     
+    protected Float   topDistance;
+    protected Float   bottomDistance;
+    protected String  distanceUnits; // "ft" or "m"
+    protected String  direction;     // "up" or "down"
+    protected String  positionState; // float or in-situ
+
     protected Set<CollectionObject> collectionObjects;
     
     // Constructors
@@ -211,6 +217,14 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         yesNo5 = null;
         yesNo6 = null;
         yesNo7 = null;
+        
+        topDistance    = null;
+        bottomDistance = null;
+        distanceUnits  = null;
+        direction      = null;
+        positionState  = null;
+        
+
         collectionObjects = new HashSet<CollectionObject>();
     }
     // End Initializer
@@ -968,6 +982,92 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         this.yesNo7 = yesNo7;
     }
     
+    
+    /**
+     * @return the direction
+     */
+    @Column(name="Direction", unique=false, nullable=true, insertable=true, updatable=true, length=32)
+    public String getDirection()
+    {
+        return direction;
+    }
+
+    /**
+     * @param direction the direction to set
+     */
+    public void setDirection(String direction)
+    {
+        this.direction = direction;
+    }
+
+    /**
+     * @return the distanceUnits
+     */
+    @Column(name="DistanceUnits", unique=false, nullable=true, insertable=true, updatable=true, length=16)
+    public String getDistanceUnits()
+    {
+        return distanceUnits;
+    }
+
+    /**
+     * @param distanceUnits the distanceUnits to set
+     */
+    public void setDistanceUnits(String distanceUnits)
+    {
+        this.distanceUnits = distanceUnits;
+    }
+
+    /**
+     * @return the topDistance
+     */
+    @Column(name="TopDistance", unique=false, nullable=true, insertable=true, updatable=true)
+    public Float getTopDistance()
+    {
+        return topDistance;
+    }
+
+    /**
+     * @param topDistance the topDistance to set
+     */
+    public void setTopDistance(Float topDistance)
+    {
+        this.topDistance = topDistance;
+    }
+
+    /**
+     * @return the bottomDistance
+     */
+    @Column(name="BottomDistance", unique=false, nullable=true, insertable=true, updatable=true)
+    public Float getBottomDistance()
+    {
+        return bottomDistance;
+    }
+
+    /**
+     * @param bottomDistance the bottomDistance to set
+     */
+    public void setBottomDistance(Float bottomDistance)
+    {
+        this.bottomDistance = bottomDistance;
+    }
+
+    /**
+     * @return the positionState
+     */
+    @Column(name="PositionState", unique=false, nullable=true, insertable=true, updatable=true, length=32)
+    public String getPositionState()
+    {
+        return positionState;
+    }
+
+    /**
+     * @param positionState the positionState to set
+     */
+    public void setPositionState(String positionState)
+    {
+        this.positionState = positionState;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
      */

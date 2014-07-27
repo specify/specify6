@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
@@ -84,6 +85,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
@@ -940,6 +942,30 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         return true;
 	}
 	
+	protected static Pair<TableTree, Hashtable<String, TableTree>> treeStruct = new Pair<TableTree, Hashtable<String, TableTree>>(null, null);
+		
+	
+	/**
+	 * @return
+	 */
+	protected static Pair<TableTree, Hashtable<String, TableTree>> getTreeStruct() {
+		synchronized(treeStruct) {
+			if (treeStruct.getFirst() == null) {
+				QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+				if (qt != null) {
+					Pair<TableTree, Hashtable<String, TableTree>> tts = qt.getTableTrees();
+					treeStruct.setFirst(tts.getFirst());
+					treeStruct.setSecond(tts.getSecond());
+				} else {
+					log.error("Cound not find the Query task when exporting mapping");
+					//blow up
+					throw new RuntimeException("Cound not find the Query task when exporting mapping");
+				}
+			}
+		}
+		return treeStruct;
+	}
+	
 	/**
 	 * @param theMapping
 	 * @param includeRecordIds
@@ -949,22 +975,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected static List<Specs> getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
 			boolean getColInfo, boolean rebuildExistingTbl, QBDataSourceListenerIFace listener)
 	{
-        UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
-        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
-        final TableTree tblTree;
-        final Hashtable<String, TableTree> ttHash;
-        if (qt != null)
-        {
-            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
-            tblTree = trees.getFirst();
-            ttHash = trees.getSecond();
-        }
-        else
-        {
-            log.error("Cound not find the Query task when exporting mapping");
-            //blow up
-            throw new RuntimeException("Cound not find the Query task when exporting mapping");
-        }
+        final TableTree tblTree = getTreeStruct().getFirst();
+        final Hashtable<String, TableTree> ttHash = getTreeStruct().getSecond();
         TableQRI rootQRI = null;
 		final Vector<QBDataSourceListenerIFace> dataSrcListeners = new Vector<QBDataSourceListenerIFace>();
 		if (listener != null) {
@@ -1063,7 +1075,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	//XXX exportToTable(). It is used by ExportCmdLine. It would probably be better to make
 	//XXX this function callable from exportToTable()'s swing worker. But, for now,
 	//XXX changes to cache updating may have to be applied to this method AND exportToTable().
-	protected static Boolean updateInBackground(
+	public static Boolean updateInBackground(
 			final boolean includeRecordIds,
 			final boolean useBulkLoad, final String bulkFileDir,
 			final SpExportSchemaMapping theMapping,
@@ -1322,9 +1334,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			        {
 			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
 			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
+			        	Calendar nowzTheTime = Calendar.getInstance();
+			        	Integer symId = BasicSQLUtils.querySingleObj(conn, "SELECT SpSymbiotaInstanceID FROM spsymbiotainstance WHERE SchemaMappingID=" + mergedMap.getId());
+			        	SpSymbiotaInstance symInstance = null;
+			        	if (symId != null) {
+			        		symInstance = theSession.get(SpSymbiotaInstance.class, symId);
+			        		symInstance.setLastCacheBuild(nowzTheTime);
+			        	}
 			        	theSession.beginTransaction();
 			        	transOpen = true;
 			        	theSession.saveOrUpdate(mergedMap);
+			        	if (symInstance != null) {
+			        		theSession.saveOrUpdate(symInstance);
+			        	}
 			        	theSession.commit();
 			        	transOpen = false;
 			        }
@@ -1411,6 +1433,39 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                                                           it.getFirst(), 
                                                           it.getSecond());
     }
+
+    
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#doTellAll()
+	 */
+	@Override
+	public boolean doTellAll() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#deletedRecs(java.util.List)
+	 */
+	@Override
+	public void deletedRecs(List<Integer> keysDeleted) {
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#updatedRec(java.lang.Integer)
+	 */
+	@Override
+	public void updatedRec(Integer key) {
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#addedRec(java.lang.Integer)
+	 */
+	@Override
+	public void addedRec(Integer key) {
+		
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
@@ -1608,64 +1663,58 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @return
 	 */
 	public static MappingUpdateStatus retrieveMappingStatus(final SpExportSchemaMapping map) {
-		try
-		{
-			Connection conn = DBConnection.getInstance().createConnection();
-			Statement stmt = conn.createStatement();
-			try
-			{
-				MappingUpdateStatus result = null;
-				String tbl = getCacheTableName(map.getMappingName());
-				String keyFld = tbl + "Id";
-				SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
-				DBTableInfo rootTbl = DBTableIdMgr.getInstance().getInfoById(q.getContextTableId());
-				String spTbl = rootTbl.getName();
-				String spKeyFld = rootTbl.getIdColumnName();
-				String sql = "select count(*) from " + tbl + " where " + keyFld 
-					+ " not in(select " + spKeyFld + " from " + spTbl;
+		try {
+			if (needsToBeRebuilt(map)) {
+				return new MappingUpdateStatus(0, 0, 0, 0, true);
+			} else {
+				Connection conn = DBConnection.getInstance().createConnection();
+				Statement stmt = conn.createStatement();
+				try {
+					String tbl = getCacheTableName(map.getMappingName());
+					String keyFld = tbl + "Id";
+					SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
+					DBTableInfo rootTbl = DBTableIdMgr.getInstance().getInfoById(q.getContextTableId());
+					String spTbl = rootTbl.getName();
+					String spKeyFld = rootTbl.getIdColumnName();
+					String sql = "select count(*) from " + tbl + " where " + keyFld 
+							+ " not in(select " + spKeyFld + " from " + spTbl;
 				
-				//XXX Collection Scoping Issue???
-				if (rootTbl.getFieldByName("collectionMemberId") != null)
-				{
-					sql += " where CollectionMemberId = " 
-						+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+					//XXX Collection Scoping Issue???
+					if (rootTbl.getFieldByName("collectionMemberId") != null) {
+						sql += " where CollectionMemberId = " 
+								+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+					}
+				
+					sql += ")";
+					int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
+					int otherRecs = 0; 
+				
+					HQLSpecs hql = getSpecs(map, true, false, false, null).get(0).getSpecs();
+					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
+					try {
+						//QueryIFace query = theSession.createQuery(hql.getHql(), false);
+						QueryIFace query = theSession.createQuery(QueryBldrPane.getCountDistinctHql(hql.getHql()), false);
+						if (hql.getArgs() != null) {
+							for (Pair<String, Object> param : hql.getArgs()) {
+								query.setParameter(param.getFirst(), param.getSecond());
+							}
+						}
+						//otherRecs = query.list().size();
+						otherRecs = (Integer)query.list().get(0);
+					} finally {
+						theSession.close();
+					}
+					return new MappingUpdateStatus(deletedRecs, 0, 0, deletedRecs + otherRecs, false);
+				} finally {
+					stmt.close();
+					conn.close();
 				}
-				
-				sql += ")";
-				int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
-				int otherRecs = 0; 
-				
-				HQLSpecs hql = getSpecs(map, true, false, false, null).get(0).getSpecs();
-				DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
-		        try
-		        {
-		        	QueryIFace query = theSession.createQuery(hql.getHql(), false);
-	                if (hql.getArgs() != null)
-	                {
-	                    for (Pair<String, Object> param : hql.getArgs())
-	                    {
-	                    	query.setParameter(param.getFirst(), param.getSecond());
-	                    }
-	                }
-	                otherRecs = query.list().size();
-		        } finally
-		        {
-		        	theSession.close();
-		        }
-		        result = new MappingUpdateStatus(deletedRecs, 0, 0, deletedRecs + otherRecs);
-				return result;
-			} finally
-			{
-				stmt.close();
-				conn.close();
 			}
-		} catch (Exception ex)
-		{
+		} catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
             throw new RuntimeException(ex);
 		}
-		
 	}
 	
 	protected void getMappingStatus(final SpExportSchemaMapping map)

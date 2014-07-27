@@ -164,6 +164,7 @@ import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Orderable;
+import edu.ku.brc.util.Pair;
 
 /**
  * This implements a Form and is "owed" by a MultiView.<br>
@@ -6233,6 +6234,19 @@ public class FormViewObj implements Viewable,
      */
     public Component getControlByName(final String name)
     {
+    	Pair<Component, FormViewObj> result = this.getControlWithFormViewObjByName(name);
+    	if (result != null) {
+    		return result.getFirst();
+    	} else {
+    		return null;
+    	}
+    }
+
+    /**
+     * @param name
+     * @return
+     */
+    public Pair<Component, FormViewObj> getControlWithFormViewObjByName(final String name) {
         FVOFieldInfo fieldInfo = controlsByName.get(name);
         // If it wasn't found in the immediate form then 
         // recurse through all the SubViews
@@ -6248,7 +6262,7 @@ public class FormViewObj implements Viewable,
                         Component comp = fvo.getControlByName(name);
                         if (comp != null)
                         {
-                            return comp;
+                            return new Pair<Component, FormViewObj>(comp, fvo);
                         }
                     }
                 }
@@ -6257,13 +6271,14 @@ public class FormViewObj implements Viewable,
         {
             if (fieldInfo.comp instanceof EditViewCompSwitcherPanel)
             {
-                return ((EditViewCompSwitcherPanel)fieldInfo.comp).getCurrentComp();
+                return new Pair<Component, FormViewObj>(((EditViewCompSwitcherPanel)fieldInfo.comp).getCurrentComp(), this);
             }
-            return fieldInfo.comp;
+            return new Pair<Component, FormViewObj>(fieldInfo.comp, this);
         }
         return null;
     }
-
+    
+    
     /**
      * Returns the FormViewObj for the control with the name passed in.
      * @param name the name of the control

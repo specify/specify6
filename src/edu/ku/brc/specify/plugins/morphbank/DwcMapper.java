@@ -8,15 +8,24 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -46,6 +55,9 @@ public class DwcMapper
 	final String schemaName;
 	final Integer mappingContextTableId;
 	final String schemaURL;
+	final Boolean getAllManies;
+	
+	private static boolean debugging = false;
 	
 	final Vector<MappingInfo> concepts = new Vector<MappingInfo>();
 	
@@ -56,8 +68,24 @@ public class DwcMapper
 	 */
 	public DwcMapper(Integer mappingId)
 	{
+		this(mappingId, false);
+	}
+	
+	/**
+	 * @return
+	 */
+	protected Connection getConnection() {
+		if (connection == null) {
+			connection = DBConnection.getInstance().getConnection();
+		}
+		return connection;
+	}
+	
+	public DwcMapper(Integer mappingId, boolean getAllManies)
+	{
 		this.mappingId = mappingId;
-		Vector<Object[]> rec = BasicSQLUtils.query(connection, getMappingQuery(mappingId));
+		this.getAllManies = getAllManies;
+		Vector<Object[]> rec = BasicSQLUtils.query(getConnection(), getMappingQuery(mappingId));
 		mappingName = (String )rec.get(0)[0];
 		schemaName = (String )rec.get(0)[1];
 		mappingContextTableId = (Integer )rec.get(0)[2];
@@ -76,6 +104,7 @@ public class DwcMapper
 	public DwcMapper()
 	{
 		mappingId = null;
+		getAllManies = false;
 		mappingName = UIRegistry.getResourceString("DwcMapper.Default");
 		schemaName = null;
 		mappingContextTableId = CollectionObject.getClassTableId();
@@ -92,7 +121,7 @@ public class DwcMapper
 	{
 		return "select esm.MappingName, es.SchemaName, q.ContextTableId, es.Description from spexportschemamapping esm inner join "
 			+ "spexportschemaitemmapping esim on esim.SpExportSchemaMappingID = esm.SpExportSchemaMappingID "
-			+ "inner join spexportschemaitem esi on esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join " 
+			+ "left join spexportschemaitem esi on esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join " 
 			+ "spexportschema es on es.SpExportSchemaID = esi.SpExportSchemaID inner join spqueryfield qf on "
 			+ "qf.SpQueryFieldID = esim.SpQueryFieldID inner join spquery q on q.SpQueryID = qf.SpQueryID where "
 			+ "esm.SpExportSchemaMappingID = " + mappingId;
@@ -107,8 +136,11 @@ public class DwcMapper
 		concepts.clear();
 		for (Object[] concept : cpts)
 		{
-			concepts.add(new MappingInfo((String )concept[0], (String )concept[1], (String )concept[2], 
+			if (concept[1] != null) //DwC concept mapping is required 
+			{
+				concepts.add(new MappingInfo((String )concept[0], (String )concept[4], (String )concept[1], (String )concept[2], 
 					mappingContextTableId, (Boolean )concept[3]));
+			}
 		}	
 	}
 	
@@ -140,8 +172,9 @@ public class DwcMapper
 	 */
 	protected String getConceptQuery()
 	{
-		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
-			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where esim.SpExportSchemaMappingID = "
+		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld, es.description from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
+			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spexportschema es on es.spexportschemaid = esi.spexportschemaid "
+			+ "inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where esim.SpExportSchemaMappingID = "
 			+ mappingId;
 	}
 	
@@ -154,7 +187,7 @@ public class DwcMapper
 		spec.clearConcepts();
 		for (MappingInfo mi : concepts)
 		{
-			spec.add(mi.getName(), null);
+			spec.add(mi.getTerm(), null);
 		}
 	}
 	
@@ -210,7 +243,7 @@ public class DwcMapper
 		ResultSet rs = null;
 		try
 		{
-			stmt = connection.createStatement();
+			stmt = getConnection().createStatement();
 			rs = stmt.executeQuery(getValuesQuery(spec.getCollectionObjectId()));
 			if (!rs.next())
 			{
@@ -218,7 +251,7 @@ public class DwcMapper
 						spec.getCollectionObjectId(), mappingName);
 			}
 			ResultSetMetaData metaData = rs.getMetaData();
-			for (int c = 2; c < metaData.getColumnCount(); c++)
+			for (int c = 2; c <= metaData.getColumnCount(); c++)
 			{
 				String colName = metaData.getColumnLabel(c);
 				spec.set(colName, rs.getObject(colName));
@@ -242,8 +275,13 @@ public class DwcMapper
 		//Using hibernate objects and reflection ...
 		for (MappingInfo mi : concepts)
 		{
-			//System.out.println("DwcMapper.setDarwinCoreValuesForObj -- setting " + mi.getName() + " : " + mi.getMappedFieldName());
-			spec.set(mi.getName(), getMappedValue(mi, spec.getCollectionObject()));
+			if (debugging) {
+				System.out.println("DwcMapper.setDarwinCoreValuesForObj -- setting " + mi.getName() + " : " + mi.getMappedFieldName() + ", isFormatted: " + mi.isFormatted());
+				if (mi.getName().equals("dateIdentified")) {
+					System.out.println("stop");
+				}
+			}
+			spec.set(mi.getTerm(), getMappedValue(mi, spec.getCollectionObject()));
 		}
 		
 		//But maybe it is easier to construct a query or to create and save a query for this purpose into SpQuery.SqlStr (even though it will have to be hql for now)
@@ -266,11 +304,11 @@ public class DwcMapper
 			
 			if (mapSegments.length == 1)
 			{
-				return getValueFromObject(currentObject, mapSegments[0], mi
-						.isFormatted(), mi.isTreeRank(), session);
+				return getValueFromObject(currentObject, mapSegments[0], mi.isFormatted(), mi.isTreeRank(), session);
 			}
 			
-			for (int s = 1; s < mapSegments.length; s++)
+			return getMappedValue2(mi, mapSegments, 1, currentObject, getAllManies, session);
+			/*for (int s = 1; s < mapSegments.length; s++)
 			{
 				//System.out.println(mapSegments[s]);
 
@@ -295,12 +333,85 @@ public class DwcMapper
 					return getValueFromObject(currentObject, mapSegments[s], mi
 							.isFormatted(), mi.isTreeRank(), session);
 				}
-			}
+			}*/
 		} finally
 		{
 			session.close();
 		}
-		return null;
+		//return null;
+	}
+	
+	
+	protected Object getMappedValue2(MappingInfo mi, String[] mapSegments, int segIdx, DataModelObjBase currentObj, boolean getManies,
+			DataProviderSessionIFace session) throws Exception
+	{
+		DataModelObjBase currentObject = currentObj;
+			//System.out.println(mapSegments[s]);
+		List<DataModelObjBase> currentObjects = new ArrayList<DataModelObjBase>();
+		List<Object> results = new ArrayList<Object>();
+		boolean returnFirstResult = true;
+		if (currentObject != null
+				&& (segIdx < mapSegments.length - 1 || !mi.isFormatted()))
+		{
+			if (getManies) 
+			{
+				Object objs = getRelatedObjects(currentObject, mapSegments[segIdx]);
+				if (objs != null)
+				{
+					if (!Collection.class.isAssignableFrom(objs.getClass()))
+					{
+						currentObjects.add((DataModelObjBase )objs);
+					} else
+					{
+						returnFirstResult = false;
+						currentObjects.addAll((Collection<? extends DataModelObjBase>)objs);
+					}
+				}
+			} else
+			{
+				currentObject = getRelatedObject(currentObject,
+					mapSegments[segIdx]);
+				if (currentObject != null)
+				{
+					currentObjects.add(currentObject);
+				}
+			}
+			if (currentObjects.size() == 0)
+			{
+				return null;
+			}
+			
+			for (DataModelObjBase obj : currentObjects)
+			{
+				session.attach(obj); //shouldn't have to do this explicitly???
+				
+				//System.out.println("   "
+				//		+ currentObject.getClass().getSimpleName());
+
+				if (segIdx == mapSegments.length - 1)
+				{
+					results.add(getValueFromObject(obj, mapSegments[segIdx], mi
+						.isFormatted(), mi.isTreeRank(), session));
+				} else
+				{
+					results.add(getMappedValue2(mi, mapSegments, segIdx+1, obj, false /*NO manies off manies!*/, session));
+				}
+			}
+		} else if (mi.isFormatted())
+		{
+			return getValueFromObject(currentObj, mapSegments[segIdx], mi
+					.isFormatted(), mi.isTreeRank(), session);
+		}
+		if (results.size() == 0)
+		{
+			return null;
+		} else if (results.size() == 1 && returnFirstResult)
+		{
+			return results.get(0); 
+		} else 
+		{
+			return results;
+		}
 	}
 	
 	/**
@@ -439,6 +550,20 @@ public class DwcMapper
 		throw new Exception("DwcMapper.getDatePart: unable to process " + methodName);
 	}
 	
+	protected DBFieldInfo getFieldInfo(DataModelObjBase object, String fieldName)
+	{
+		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(object.getTableId());
+		return tbl.getFieldByName(fieldName);
+	}
+	/**
+	 * @param object
+	 * @param mapping
+	 * @param isFormatted
+	 * @param isTreeRank
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
 	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted, 
 			boolean isTreeRank, DataProviderSessionIFace session) throws Exception
 	{
@@ -472,6 +597,51 @@ public class DwcMapper
 			}
 			//System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
 			Object result = method.invoke(object);
+			DBFieldInfo fi = getFieldInfo(object, fieldName);
+			if (fi != null && !useDatePartAccessor)
+			{
+				if (fi.getFormatter() != null)
+				{
+					result = fi.getFormatter().formatToUI(result);
+				} else if (Calendar.class.equals(fi.getDataClass()))
+	            {
+	            	Object date = result;
+	            	if (date != null)
+	            	{
+	    				UIFieldFormatterIFace.PartialDateEnum precision = UIFieldFormatterIFace.PartialDateEnum.Full;
+	    				
+	    				if (fi.isPartialDate())
+	    				{
+	    					String methodName = "get" + StringUtils.capitalize(fi.getDatePrecisionName());
+	    					Method precMethod = object.getClass().getMethod(methodName);
+	    					Byte rawPrec = (Byte)precMethod.invoke(object);
+	    		            if (rawPrec != null)
+	    		            {
+	    		            	precision = UIFieldFormatterIFace.PartialDateEnum.values()[rawPrec];
+	    		            }
+	    				}
+	    				boolean isPartial = false;
+	    				String formatName = "Date";
+	    				if (precision.equals(UIFieldFormatterIFace.PartialDateEnum.Month))
+	    				{
+	    					isPartial = true;
+	    					formatName = "PartialDateMonth";
+	    				} else if (precision.equals(UIFieldFormatterIFace.PartialDateEnum.Year))
+	    				{
+	    					isPartial = true;
+	    					formatName = "PartialDateYear";
+	    				}
+	    				for (UIFieldFormatterIFace formatter : UIFieldFormatterMgr.getInstance().getDateFormatterList(isPartial))
+	    				{
+	    					if (formatter.getName().equals(formatName))
+	    					{
+	    						result = formatter.getDateWrapper().format(((Calendar)date).getTime());
+	    						break;
+	    					}
+	    				}
+	            	}
+	            }
+			}
 			if (useDatePartAccessor && result != null)
 			{
 				result = getDatePart((Calendar )result, methNames.get(0));

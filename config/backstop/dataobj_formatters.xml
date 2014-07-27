@@ -552,6 +552,20 @@
     </format>
 
     <format
+        name="PaleoContext"
+        title="PaleoContext"
+        class="edu.ku.brc.specify.datamodel.PaleoContext"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="GeologicTimePeriod">chronosStrat</field>
+                <field sep=", " formatter="LithoStrat">lithoStrat</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="Permit"
         title="Permit"
         class="edu.ku.brc.specify.datamodel.Permit"
