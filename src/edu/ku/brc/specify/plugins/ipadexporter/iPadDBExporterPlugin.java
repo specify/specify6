@@ -365,7 +365,7 @@ public class iPadDBExporterPlugin extends BaseTask
         if (!iPadDBExporter.IS_TESTING) // ZZZ       
         {
             InstitutionConfigDlg dlg = new InstitutionConfigDlg(iPadCloud, cloudInstId);
-            if (!dlg.isInstOK())
+            //if (!dlg.isInstOK())
             {
                 dlg.createUI();
                 dlg.pack();

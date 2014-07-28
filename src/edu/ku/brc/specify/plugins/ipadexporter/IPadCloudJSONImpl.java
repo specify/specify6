@@ -566,7 +566,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     @Override
     public boolean updateInstitution(final Integer instId, final String title, final String webSite)
     {
-        HashMap<String, String> map = createHashMap(kId, instId.toString(), kTitle, title, kWebSite, webSite, kAction, "updateinst");
+        String ws = StringUtils.isNotEmpty(webSite) ? webSite : "";
+        HashMap<String, String> map = createHashMap(kId, instId.toString(), kTitle, title, kWebSite, ws, kAction, "updateinst");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);

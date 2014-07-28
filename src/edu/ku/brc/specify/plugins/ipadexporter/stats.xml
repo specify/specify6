@@ -38,10 +38,10 @@
        <stat tbl="100" grp="3" name="num_lithou" desc="Litho Stratigraphy Used">
           <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM paleocontext p INNER JOIN lithostrat l ON l.LithoStratID = p.LithoStratID WHERE p.CollectionMemberID = COLMEMID AND l.IsAccepted <> 0]]>
        </stat>
-       <stat tbl="46" grp="3" name="num_gtp" desc="Litho Chronosstratigraphy">
+       <stat tbl="46" grp="3" name="num_gtp" desc="Chronosstratigraphy">
           <![CDATA[SELECT COUNT(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID]]>
        </stat>
-       <stat tbl="46" grp="3" name="num_gtpu" desc="Litho Chronosstratigraphy Used">
+       <stat tbl="46" grp="3" name="num_gtpu" desc="Chronosstratigraphy Used">
           <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM paleocontext p INNER JOIN geologictimeperiod g ON g.GeologicTimePeriodID = p.ChronosStratID WHERE p.CollectionMemberID = COLMEMID AND g.IsAccepted <> 0]]>
        </stat>
        <stat tbl="23" grp="4" name="Collection" desc="Collection">
