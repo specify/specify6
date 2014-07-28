@@ -725,11 +725,31 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         				result = false;
         			}
         		}
+        		if (!AppPreferences.getGlobalPrefs().getBoolean("InvalidPermissionCleanup", false)) {
+        			if (cleanupInvalidPermissions()) {
+        				AppPreferences.getGlobalPrefs().putBoolean("InvalidPermissionCleanup", true);
+        			} else {
+        				result = false;
+        			}
+        		}
         	}
         	return result;
         } finally {
             if (dbConn != null) dbConn.close();
         }
+    }
+    
+    /**
+     * @return
+     */
+    private boolean cleanupInvalidPermissions() {
+    	String sql = "SELECT COUNT(*) FROM sppermission WHERE PermissionClass='edu.ku.brc.specify.datamodel.SpPermission'";
+    	int cnt = BasicSQLUtils.getCountAsInt(sql);
+    	sql = "UPDATE sppermission SET PermissionClass='edu.ku.brc.af.auth.specify.permission.BasicSpPermission' WHERE PermissionClass='edu.ku.brc.specify.datamodel.SpPermission'";
+    	if (cnt != BasicSQLUtils.update(sql)) {
+    		return false;
+    	} 
+    	return true;
     }
     
     /**
