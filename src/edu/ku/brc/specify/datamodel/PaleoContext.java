@@ -133,8 +133,19 @@ public class PaleoContext extends CollectionMember implements Cloneable
         remarks        = null;
         text1          = null;
         text2          = null;
+        text3	       = null;
+        text4		   = null;
+        text5          = null;
         yesNo1         = null;
         yesNo2         = null;
+        yesNo3         = null;
+        yesNo4         = null;
+        yesNo5         = null;
+        number1        = null;
+        number2        = null;
+        number3        = null;
+        number4        = null;
+        number5        = null;
         
         collectionObjects = new HashSet<CollectionObject>();
         collectingEvents = new HashSet<CollectingEvent>();
