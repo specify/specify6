@@ -671,7 +671,30 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     		}
     	}
 
+    	if (!fixTypeSearchDefResourcesAfterPaleoModelUpdate()) {
+    		return false;
+    	}
+    	return true;
+    }
 
+    /**
+     * @return
+     */
+    private boolean fixTypeSearchDefResourcesAfterPaleoModelUpdate() {
+    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='TypeSearches'";
+    	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+    	if (resources != null && resources.size() > 0) {
+    		String pcSearch = "    <typesearch tableid=\"32\"  name=\"PaleoContext\"           searchfield=\"paleoContextName,cs.fullName,ls.fullName\" displaycols=\"paleoContextName,cs.fullName,cse.fullName,ls.fullName\" format=\"%s, %s, %s, %s\"\n"     
+    		    	+ "        dataobjformatter=\"PaleoContext\">\n"
+    		    	+ "        SELECT %s1 FROM PaleoContext pc LEFT JOIN pc.chronosStrat cs JOIN cs.definition csd LEFT JOIN pc.chronosStratEnd cse LEFT JOIN cse.definition csed LEFT JOIN pc.lithoStrat ls LEFT JOIN ls.definition lsd WHERE pc.collectionMemberId = COLMEMID AND (pc.chronosStrat IS NULL OR csd.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.chronosStratEnd IS NULL OR csed.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.lithoStrat IS NULL OR lsd.lithoStratTreeDefId=LITHOTREEDEFID) AND %s2 ORDER BY pc.paleoContextName,cs.fullName,cse.fullName,ls.fullName\n"
+    		    	+ "    </typesearch>\n";
+    		for (Object resource : resources) {
+    			sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '</typesearches>','" + pcSearch + "</typesearches>') WHERE SpAppResourceID=" + resource;
+    			if (1 != BasicSQLUtils.update(sql)) {
+    				return false;
+    			}
+    		}
+    	}
     	return true;
     }
 
