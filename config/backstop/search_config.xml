@@ -1909,11 +1909,12 @@ SELECT cn.ContainerID,
         <table id="112" tableid="32" name="PaleoContextSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT PaleoContextID, gtps.FullName, ls.FullName FROM paleocontext pc LEFT JOIN geologictimeperiod gtps ON gtps.GeologicTimePeriodID = pc.ChronosStratID 
+                    <![CDATA[SELECT PaleoContextID, pc.PaleoContextName, gtps.FullName, ls.FullName FROM paleocontext pc LEFT JOIN geologictimeperiod gtps ON gtps.GeologicTimePeriodID = pc.ChronosStratID 
 LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (CollectionMemberID = COLMEMID) AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="32" col="PaleoContextID" visible="false"/>
+                    <caption tableid="32" col="PaleoContextName"/>
                     <caption tableid="46" col="FullName"/>
                     <caption tableid="100" col="FullName"/>
                 </captions>
