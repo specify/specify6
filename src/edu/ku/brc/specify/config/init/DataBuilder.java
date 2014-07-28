@@ -45,6 +45,7 @@ import org.hibernate.Session;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.SecurityOptionIFace;
+import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
@@ -2855,6 +2856,7 @@ public class DataBuilder
                         pstmt1.setString(1, spPerm.getActions());
                         pstmt1.setString(2, spPerm.getName());
                         pstmt1.setString(3, spPerm.getClass().getName());
+                        pstmt1.setString(3, BasicSpPermission.class.getCanonicalName());
                         pstmt1.executeUpdate();
                         
                         Integer newPermId = BasicSQLUtils.getInsertedId(pstmt1);
