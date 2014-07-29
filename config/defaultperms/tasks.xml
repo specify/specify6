@@ -315,6 +315,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>Symbiota</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="Symbiota" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="Symbiota" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="Symbiota" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="Symbiota" type="FullAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>Data_Entry</string>
     <hashtable>
       <entry>

@@ -84,6 +84,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>SYMBIOTA</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="SYMBIOTA" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="SYMBIOTA" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="SYMBIOTA" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="SYMBIOTA" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>MISC</string>
     <hashtable>
       <entry>
