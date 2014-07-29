@@ -72,10 +72,11 @@ import edu.ku.brc.util.Pair;
  * Jan 18, 2008
  *
  */
+@SuppressWarnings("serial")
 public class FormatterPickerPanel extends BaseSetupPanel
 {
     protected JCheckBox isNumericChk    = UIHelper.createCheckBox(getResourceString("IS_NUM_CHK"));
-    protected JComboBox formatterCBX    = createComboBox(new DefaultComboBoxModel());
+    protected JComboBox<String> formatterCBX    = (JComboBox<String>)createComboBox(new DefaultComboBoxModel<String>());
     protected JLabel    isNumericLbl    = createLabel(" ");
     protected JLabel    patternLbl      = createLabel(" ");
     protected JLabel    autoIncLbl      = createLabel(" ");
@@ -149,17 +150,25 @@ public class FormatterPickerPanel extends BaseSetupPanel
 				public void stateChanged(ChangeEvent e) {
 	                int index = formatterCBX.getSelectedIndex();
 	                UIFieldFormatterIFace fmt = null;
-	                if (index > (doingCatNums ? 0 : 1))
-	                {
+	                if (index > (doingCatNums ? 0 : 1)) {
 	                    fmt = fmtList.get(index - (doingCatNums ? 1 : 2));
 	                    //condition should be the only possibility but...
-	                    if (fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
-	                    {
-	                    	fmt.setLength((Integer)lenSpin.getValue());
-	                        lenSpin.setValue(fmt.getLength());
+	                    if (fmt != null) { 
+	                    	if (fmt.getName().equals("CatalogNumberNumeric")) {
+		                    	fmt.setLength((Integer)lenSpin.getValue());
+		                        lenSpin.setValue(fmt.getLength());
+	                    	}	
 	                        patternLbl.setText(fmt.toPattern());
-	                    }
-	                }
+	                    }	                
+	                }  else if (fmt == null) {
+                    	if (patternLbl != null) {
+                    		patternLbl.setText(null);
+                    	}
+                    	if (autoIncLbl != null) {
+                    		autoIncLbl.setText(getResourceString("NO"));
+                    	}
+                    }
+
 	                lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
 				}
             	
@@ -250,12 +259,21 @@ public class FormatterPickerPanel extends BaseSetupPanel
                         
                         patternLbl.setText(fmt.toPattern());
                         autoIncLbl.setText(getResourceString(fmt.isIncrementer() ? "YES" : "NO"));
-                    }
-                }
+                    }                 
+				} else {
+					if (patternLbl != null) {
+						patternLbl.setText(null);
+					}
+					if (autoIncLbl != null) {
+						autoIncLbl.setText(getResourceString("NO"));
+					}
+				}
                 
                 /* wiz changes for #9604 */
-                lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
-                lenTitleLbl.setVisible(lenSpin.isVisible()); /* end wiz changes */
+                if (doingCatNums && lenSpin != null && lenTitleLbl != null) {
+                	lenSpin.setVisible(fmt != null && fmt.getName().equals("CatalogNumberNumeric"));
+                	lenTitleLbl.setVisible(lenSpin.isVisible()); /* end wiz changes */
+                }
                 
                 if (formatterCBX.getSelectedIndex() == newFmtInx)
                 {
@@ -278,7 +296,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
      */
     protected void loadFormatCbx(final UIFieldFormatterIFace selectedFmt)
     {
-        ((DefaultComboBoxModel)formatterCBX.getModel()).removeAllElements();
+        ((DefaultComboBoxModel<String>)formatterCBX.getModel()).removeAllElements();
         
         //Vector<ActionListener> alList = new Vector<ActionListener>();
         //alList.addAll(formatterCBX.getActionListeners());
@@ -305,14 +323,14 @@ public class FormatterPickerPanel extends BaseSetupPanel
         
         if (!doingCatNums)
         {
-            ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("NONE"));
+            ((DefaultComboBoxModel<String>)formatterCBX.getModel()).addElement(getResourceString("NONE"));
             newFmtInx = 1;
         }
-        ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("CREATE"));
+        ((DefaultComboBoxModel<String>)formatterCBX.getModel()).addElement(getResourceString("CREATE"));
 
         for (UIFieldFormatterIFace fmt : fmtList)
         {
-            ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(fmt.getName());
+            ((DefaultComboBoxModel<String>)formatterCBX.getModel()).addElement(fmt.getName());
         }
 
         if (currFormatter != null)
@@ -373,7 +391,9 @@ public class FormatterPickerPanel extends BaseSetupPanel
             		if (selectedFormatName.equals(f.getName())) {
             			if (needToGetFormatterObject(f)) {
             				selectedFormat = f;
-            			}             			
+            			} else {
+            				selectedFormat = null;
+            			}
             			break;
             		}
             	}
