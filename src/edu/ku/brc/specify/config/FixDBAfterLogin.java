@@ -85,7 +85,6 @@ import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
@@ -1034,6 +1033,7 @@ public class FixDBAfterLogin
 		return true;
     }
     
+    	
     /**
      * @return
      */

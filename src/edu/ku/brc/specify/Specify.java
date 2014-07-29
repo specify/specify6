@@ -2870,7 +2870,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     	}
                     }
                     inx++;
-
                     
                     FixDBAfterLogin fixer = new FixDBAfterLogin();
                     fixer.checkMultipleLocalities();

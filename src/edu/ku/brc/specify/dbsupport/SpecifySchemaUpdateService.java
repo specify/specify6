@@ -647,9 +647,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     public boolean fixPaleoModelAftermath(Connection itConn) {
     	//update collection.PaleoContextChildTable and IsPaleoContextEmbedded.
     	//It is safe to do this for all collections, though it is only applicable to paleo collections.
-    	if (BasicSQLUtils.update("UPDATE collection SET PaleoContextChildTable='collectionobject', IsPaleoContextEmbedded=true") != 1) {
-    		return false;
-    	}
+    	BasicSQLUtils.update("UPDATE collection SET PaleoContextChildTable='collectionobject', IsPaleoContextEmbedded=true");    		
     	
     	//move data to new fields
     	String[] moves = {
