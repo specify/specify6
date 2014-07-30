@@ -68,8 +68,9 @@ public class SymbiotaTask extends BaseTask {
     private static final String SELECT_INSTANCE  = "SelectSymbiotaInstance";
     private static final String  SYMBIOTA_TITLE     = "SYMBIOTA_TITLE";
  
-    public static final String BASE_URL_PREF = "SymbioTask.BaseUrlPref";
+    public static final String BASE_URL_PREF = "SymbiotaTask.BaseUrlPref";
     public static final String BASE_URL_DEFAULT = "http://pinkava.asu.edu/symbiota/sandbox/webservices/dwc/dwcaingesthandler.php";
+    public static final String SHOW_TASK_PREF = "SymbiotaTask.SHOW_TASK_PREF";
     
     public static final DataFlavor SYMBIOTA_FLAVOR = new DataFlavor(SymbiotaTask.class, SYMBIOTA);
 

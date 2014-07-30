@@ -3,17 +3,11 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static edu.ku.brc.specify.datamodel.busrules.LoanBusRules.DUEINMONTHS;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.validation.ValComboBox;
-import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
-import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.tasks.SymbiotaTask;
 
 /**
@@ -49,6 +43,11 @@ public class SymbiotaPrefsPanel extends GenericPrefsPanel {
         	comp.setText(baseUrl);
         }
         
+        Boolean showTask = AppPreferences.getLocalPrefs().getBoolean(SymbiotaTask.SHOW_TASK_PREF, false);
+        ValCheckBox chk = fvo.getCompById("showtask");
+        if (chk != null) {
+        	chk.setValue(showTask, null);
+        }
 	}
 
 	/* (non-Javadoc)
@@ -61,14 +60,20 @@ public class SymbiotaPrefsPanel extends GenericPrefsPanel {
         FormViewObj fvo = (FormViewObj)form;
         
         ValTextField comp = fvo.getCompById("1");
-        if (comp != null)
-        {
+        if (comp != null) {
             String val = comp.getText();
-            if (val != null)
-            {
+            if (val != null) {
                 prefs.put(SymbiotaTask.BASE_URL_PREF, val);
             }
         }
+        ValCheckBox chk = fvo.getCompById("showtask");
+        if (chk != null) {
+        	Object value = chk.getValue();
+        	if (value instanceof Boolean) {
+        		AppPreferences.getLocalPrefs().putBoolean(SymbiotaTask.SHOW_TASK_PREF, Boolean.class.cast(value));
+        	}
+        }
+        		
 	}
 	
 	

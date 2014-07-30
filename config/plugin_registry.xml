@@ -18,7 +18,7 @@
 		<plugin name="QueryTask" class="edu.ku.brc.specify.tasks.QueryTask" addui="true"/>
 		
 		<plugin name="ExportMappingTask" class="edu.ku.brc.specify.tasks.ExportMappingTask" addui="true"/>
-		<plugin name="SymbiotaTask" class="edu.ku.brc.specify.tasks.SymbiotaTask" addui="true"/>
+		<plugin name="SymbiotaTask" class="edu.ku.brc.specify.tasks.SymbiotaTask" addui="true" prefname="SymbiotaTask.SHOW_TASK_PREF"/>
 		
 		<plugin name="RecordSetTask" class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
 		
