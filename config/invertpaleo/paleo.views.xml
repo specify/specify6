@@ -503,6 +503,9 @@
                     <cell type="field" id="13" name="verbatimDate" uitype="text" colspan="2"/>   
                 </row>
                 <row>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
+                </row> 
+                <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality;clonebtn=true" colspan="10"/> 
                 </row>
@@ -680,9 +683,9 @@
                         </rows>
                     </cell>
                 </row>
-                <row>
+                <!--row>
                     <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
-                </row> 
+                </row--> 
                 <row>
                     <cell type="separator" label="Attachments" colspan="17"/>
                 </row>
@@ -767,9 +770,9 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="geography" uitype="querycbx" initialize="name=Geography"/>
                 </row>
-                <row>
+                <!--row>
                     <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
-                </row> 
+                </row--> 
             </rows>
         </viewdef>
                  

@@ -679,9 +679,9 @@
                         </rows>
                     </cell>
                 </row>
-                <row>
+                <!--row>
                     <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
-                </row> 
+                </row--> 
                 <row>
                     <cell type="separator" label="Attachments" colspan="17"/>
                 </row>
@@ -766,9 +766,9 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="geography" uitype="querycbx" initialize="name=Geography"/>
                 </row>
-                <row>
+                <!--row>
                     <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
-                </row> 
+                </row--> 
             </rows>
         </viewdef>
                  
