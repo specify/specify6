@@ -28,8 +28,10 @@ import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -152,7 +154,23 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
         {
             return true;
         }
-        
+
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);        
+        if (fieldName.equals("paleoContext") && collection.getIsPaleoContextEmbedded()
+        		&& collection.getPaleoContextChildTable().equalsIgnoreCase("collectingevent"))
+        {
+            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            if (discipline != null)
+            {
+                DisciplineType dt = DisciplineType.getByName(discipline.getType());
+                if (dt != null && dt.isPaleo())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         return false;
     }
 }

@@ -1266,14 +1266,16 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         // Or it acts like a OneToOne where each CE acts as if it is "embedded" or is
         // a part of the CO.
         //System.err.println(fieldName);
-        if (fieldName.equals("collectingEvent"))
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+    	if (fieldName.equals("collectingEvent"))
         {
             // So we need to clone it make a full copy when it is embedded.
-            return AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
+            return collection.getIsEmbeddedCollectingEvent();
             
         }
         
-        if (fieldName.equals("paleoContext") && AppContextMgr.getInstance().getClassObject(Collection.class).getIsPaleoContextEmbedded())
+        if (fieldName.equals("paleoContext") && collection.getIsPaleoContextEmbedded()
+        		&& collection.getPaleoContextChildTable().equalsIgnoreCase("collectionobject"))
         {
             Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             if (discipline != null)
