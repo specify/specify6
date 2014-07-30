@@ -133,7 +133,6 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
         super(name, task);
         symTask = (SymbiotaTask)task;
         createUI();
-        instanceSelected();
 	}
 	
 	protected JPanel buildInfoPanel() {

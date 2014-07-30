@@ -105,6 +105,9 @@ public class SymbiotaTask extends BaseTask {
 		}
         SymbiotaPane pane = new SymbiotaPane(name, this);
         starterPane = pane;
+        if (theInstance != null) {
+        	pane.instanceSelected();
+        }
         return starterPane;
 	}
 
