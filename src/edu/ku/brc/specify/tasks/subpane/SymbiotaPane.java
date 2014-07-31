@@ -22,10 +22,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -139,11 +138,11 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
         PanelBuilder tpb = new PanelBuilder(new FormLayout("f:p:g", "p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,5dlu"));
         CellConstraints cc = new CellConstraints();
         
-		Icon icon = new ImageIcon("/home/timo/Downloads/3D_hand.gif");
-		JLabel iconLbl = new JLabel(icon);
-		loadingIcons.add(iconLbl);
+		//Icon icon = new ImageIcon("/home/timo/Downloads/3D_hand.gif");
+		//JLabel iconLbl = new JLabel(icon);
+		//loadingIcons.add(iconLbl);
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaTask.InstanceName")),
-        		instanceName, iconLbl),  
+        		instanceName, /*iconLbl*/null),  
         		cc.xy(1, 1));
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaPane.OverallStatusLbl")),
         		overallStatus, null),
@@ -303,9 +302,18 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				try {
 					//System.out.println("Done getting stats");
 					updateStats(get());
-					if (updateCacheAfterStatusUpdate.get()) {
+					if (getVerificationFromUserIfNecessary()) {
+						if (updateCacheAfterStatusUpdate.get()) {
+							updateCacheAfterStatusUpdate.set(false);
+							updateAndBuildArchive();
+						}
+					} else {
 						updateCacheAfterStatusUpdate.set(false);
-						updateAndBuildArchive();
+						buildArchiveAfterCacheUpdate.set(false);
+						sendAfterArchiveBuild.set(false);
+						hideProgDlg();
+						instanceSelected();
+						setUIEnabled(true);	
 					}
 				} catch (Exception ignore) {					
 				}
@@ -316,6 +324,15 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		worker.execute();
 	}
 	
+	
+	protected boolean getVerificationFromUserIfNecessary() {
+		boolean result = true;
+		OverallStatusAlert al = getOverallStatusAlertLevel(getOverallStatus(mapStatus, symTask.getTheInstance()));
+		if (sendAfterArchiveBuild.get() && al.equals(OverallStatusAlert.GREEN)) {
+			result = UIRegistry.displayConfirmLocalized("SymbiotaPane.ConfirmSend", "SymbiotaPane.ConfirmSendAllWhenNoneToSend",	 "Yes", "No", JOptionPane.QUESTION_MESSAGE);
+		} 
+		return result;
+	}
 	/**
 	 * @param stats
 	 */
@@ -858,7 +875,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 					Part[] parts = {new StringPart("uploadtype", "6"), 
 						new StringPart("key", symTask.getTheInstance().getSymbiotaKey()),
 						new FilePart("uploadfile", fileName, new File(fileName)),
-						/*new StringPart("importident", "1"), new StringPart("importimage", "1")*/};
+						new StringPart("importident", "1")/*, new StringPart("importimage", "1")*/};
 					RequestEntity entity = new MultipartRequestEntity(parts, post.getParams());
 					post.setRequestEntity(entity);
 
