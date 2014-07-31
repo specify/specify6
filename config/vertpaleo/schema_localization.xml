@@ -3,39 +3,13 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="distanceUnits" isHidden="false" isRequired="false">
+      <desc name="direction" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Distance Units</text>
-            <itemName reference="../../.."/>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="bottomDistance" isHidden="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Bottom Distance</text>
-            <itemName reference="../../.."/>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="positionState" isHidden="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Position State</text>
+            <text>Direction</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -55,13 +29,39 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="direction" isHidden="false" isRequired="false">
+      <desc name="distanceUnits" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Direction</text>
+            <text>Distance Units</text>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="positionState" isHidden="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Position State</text>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="bottomDistance" isHidden="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Bottom Distance</text>
             <itemName reference="../../.."/>
           </str>
         </names>

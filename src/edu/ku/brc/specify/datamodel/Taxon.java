@@ -132,8 +132,19 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     
     protected String               text1;
     protected String               text2;
+    protected String               text3;
+    protected String               text4;
+    protected String               text5;
+    
     protected Integer              number1;
     protected Integer              number2;
+    protected Float				   number3;
+    protected Float                number4;
+    protected Float                number5;
+    
+    protected Boolean              yesNo1;
+    protected Boolean              yesNo2;
+    protected Boolean              yesNo3;
     
     // relationships with other tables
 	protected Set<Determination>   determinations;
@@ -235,8 +246,17 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         acceptedTaxon                 = null;
         number1						  = null;
         number2                       = null;
+        number3                       = null;
+        number4                       = null;
+        number5                       = null;
         text1                         = null;
         text2                         = null;
+        text3                         = null;
+        text4                         = null;
+        text5                         = null;
+        yesNo1                        = null;
+        yesNo2                        = null;
+        yesNo3                        = null;
         
         acceptedChildren              = new HashSet<Taxon>();
         
@@ -628,7 +648,146 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.text2 = text2;
     }
 
-    @Column(name="UsfwsCode", length = 16)
+    
+    /**
+	 * @return the text3
+	 */
+    @Lob
+    @Column(name = "Text3")
+	public String getText3() {
+		return text3;
+	}
+
+	/**
+	 * @param text3 the text3 to set
+	 */
+	public void setText3(String text3) {
+		this.text3 = text3;
+	}
+
+	/**
+	 * @return the text4
+	 */
+    @Lob
+    @Column(name = "Text4")
+	public String getText4() {
+		return text4;
+	}
+
+	/**
+	 * @param text4 the text4 to set
+	 */
+	public void setText4(String text4) {
+		this.text4 = text4;
+	}
+
+	/**
+	 * @return the text5
+	 */
+    @Lob
+    @Column(name = "Text5")
+	public String getText5() {
+		return text5;
+	}
+
+	/**
+	 * @param text5 the text5 to set
+	 */
+	public void setText5(String text5) {
+		this.text5 = text5;
+	}
+
+	/**
+	 * @return the number3
+	 */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber3() {
+		return number3;
+	}
+
+	/**
+	 * @param number3 the number3 to set
+	 */
+	public void setNumber3(Float number3) {
+		this.number3 = number3;
+	}
+
+	/**
+	 * @return the number4
+	 */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber4() {
+		return number4;
+	}
+
+	/**
+	 * @param number4 the number4 to set
+	 */
+	public void setNumber4(Float number4) {
+		this.number4 = number4;
+	}
+
+	/**
+	 * @return the number5
+	 */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber5() {
+		return number5;
+	}
+
+	/**
+	 * @param number5 the number5 to set
+	 */
+	public void setNumber5(Float number5) {
+		this.number5 = number5;
+	}
+
+	/**
+	 * @return the yesNo1
+	 */
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo1() {
+		return yesNo1;
+	}
+
+	/**
+	 * @param yesNo1 the yesNo1 to set
+	 */
+	public void setYesNo1(Boolean yesNo1) {
+		this.yesNo1 = yesNo1;
+	}
+
+	/**
+	 * @return the yesNo2
+	 */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo2() {
+		return yesNo2;
+	}
+
+	/**
+	 * @param yesNo2 the yesNo2 to set
+	 */
+	public void setYesNo2(Boolean yesNo2) {
+		this.yesNo2 = yesNo2;
+	}
+
+	/**
+	 * @return the yesNo3
+	 */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo3() {
+		return yesNo3;
+	}
+
+	/**
+	 * @param yesNo3 the yesNo3 to set
+	 */
+	public void setYesNo3(Boolean yesNo3) {
+		this.yesNo3 = yesNo3;
+	}
+
+	@Column(name="UsfwsCode", length = 16)
     public String getUsfwsCode()
     {
         return usfwsCode;
