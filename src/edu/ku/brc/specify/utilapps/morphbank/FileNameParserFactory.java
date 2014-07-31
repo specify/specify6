@@ -47,12 +47,14 @@ public class FileNameParserFactory
                                                CollectionObject.class, 
                                                CollectionObject.class, 
                                                CollectingEvent.class,
+                                               CollectingEvent.class,
                                                Taxon.class};
     
     private static final String[]   fields  = {"catalogNumber", 
                                                "fieldNumber",
                                                "altCatalogNumber",
                                                "stationFieldNumber",
+                                               "guid",
                                                "fullName"};
     
     private static final FileNameParserFactory instance = new FileNameParserFactory();

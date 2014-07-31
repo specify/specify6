@@ -288,7 +288,6 @@ public class BatchAttachFiles
     /**
      * @return
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static FileNameParserIFace chooseFileNameParser(final String helpContext)
     {
         final List<FileNameParserIFace> items = FileNameParserFactory.getInstance().getList();
@@ -750,7 +749,6 @@ public class BatchAttachFiles
      * 
      * Attaches f to the object with key attachTo
      */
-    @SuppressWarnings("unchecked")
     protected boolean attachFileTo(final File f, final Integer attachTo)
     {
         return attachFileTo(f, attachTo, null);
