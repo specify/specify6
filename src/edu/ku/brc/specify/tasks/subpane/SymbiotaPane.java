@@ -105,7 +105,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
     
     
     protected SymbiotaTask symTask;
-    protected MappingUpdateStatus mapStatus;
+    protected MappingUpdateStatus mapStatus = null;
     protected boolean useCache = true;
     
     protected List<Integer> deletedRecsForCurrentUpdate = new ArrayList<Integer>();
@@ -201,6 +201,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		});
 	}
 	
+	/**
+	 * 
+	 */
 	protected void setSelection() {
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -291,7 +294,11 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			 */
 			@Override
 			protected MappingUpdateStatus doInBackground() throws Exception {
-				return ExportPanel.retrieveMappingStatus(symTask.getSchemaMapping());
+				if (symTask.getSchemaMapping() != null) {
+					return ExportPanel.retrieveMappingStatus(symTask.getSchemaMapping());
+				} else {
+					return null;
+				}
 			}
 
 			/* (non-Javadoc)
@@ -306,7 +313,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 						if (updateCacheAfterStatusUpdate.get()) {
 							updateCacheAfterStatusUpdate.set(false);
 							updateAndBuildArchive();
-						}
+						} 
 					} else {
 						updateCacheAfterStatusUpdate.set(false);
 						buildArchiveAfterCacheUpdate.set(false);
@@ -317,14 +324,16 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 					}
 				} catch (Exception ignore) {					
 				}
-			}
-			
+			}			
 		};	
 		statsGetter = worker;
 		worker.execute();
 	}
 	
 	
+	/**
+	 * @return
+	 */
 	protected boolean getVerificationFromUserIfNecessary() {
 		boolean result = true;
 		OverallStatusAlert al = getOverallStatusAlertLevel(getOverallStatus(mapStatus, symTask.getTheInstance()));
@@ -338,7 +347,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void updateStats(MappingUpdateStatus stats) {
 		mapStatus = stats;
-		updateStatsDisplay();		
+		if (mapStatus != null) {
+			updateStatsDisplay();
+		}
 	}
 	
 	/**
