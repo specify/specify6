@@ -430,7 +430,6 @@ public class SymbiotaTask extends BaseTask {
 	        SpSymbiotaInstance spym = new SpSymbiotaInstance();
 	        spym.initialize();
 	        spym.setSchemaMapping(instanceMapping);
-	        
 	        dialog.setModal(true);
 	        dialog.setData(spym);
 	        dialog.preCreateUI();
@@ -438,7 +437,7 @@ public class SymbiotaTask extends BaseTask {
 	        
 	        // the dialog has been dismissed by the user
 	        if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN) {
-	        	System.out.println("Hey. It's Ok.");
+	        	//System.out.println("Hey. It's Ok.");
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try {
                 	session.beginTransaction();

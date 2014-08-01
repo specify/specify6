@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
@@ -85,7 +84,6 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
-import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
@@ -1334,19 +1332,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			        {
 			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
 			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
-			        	Calendar nowzTheTime = Calendar.getInstance();
-			        	Integer symId = BasicSQLUtils.querySingleObj(conn, "SELECT SpSymbiotaInstanceID FROM spsymbiotainstance WHERE SchemaMappingID=" + mergedMap.getId());
-			        	SpSymbiotaInstance symInstance = null;
-			        	if (symId != null) {
-			        		symInstance = theSession.get(SpSymbiotaInstance.class, symId);
-			        		symInstance.setLastCacheBuild(nowzTheTime);
-			        	}
+//			        	Calendar nowzTheTime = Calendar.getInstance();
+//			        	Integer symId = BasicSQLUtils.querySingleObj(conn, "SELECT SpSymbiotaInstanceID FROM spsymbiotainstance WHERE SchemaMappingID=" + mergedMap.getId());
+//			        	SpSymbiotaInstance symInstance = null;
+//			        	if (symId != null) {
+//			        		symInstance = theSession.get(SpSymbiotaInstance.class, symId);
+//			        		symInstance.setLastCacheBuild(nowzTheTime);
+//			        	}
 			        	theSession.beginTransaction();
 			        	transOpen = true;
 			        	theSession.saveOrUpdate(mergedMap);
-			        	if (symInstance != null) {
-			        		theSession.saveOrUpdate(symInstance);
-			        	}
+//			        	if (symInstance != null) {
+//			        		theSession.saveOrUpdate(symInstance);
+//			        	}
 			        	theSession.commit();
 			        	transOpen = false;
 			        }

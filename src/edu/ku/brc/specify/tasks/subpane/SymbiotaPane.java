@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -361,8 +362,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		boolean neverPushed = instance.getLastPush() == null;
 		boolean needsRebuild = status.isNeedsRebuild();
 		boolean builtSinceLastPush = needsRebuild || 
-				instance.getLastCacheBuild() == null || 
-				instance.getLastCacheBuild().after(instance.getLastPush());
+				instance.getSchemaMapping().getTimestampExported() == null || 
+				(neverPushed && instance.getSchemaMapping().getTimestampExported() != null) ||
+				(!neverPushed && instance.getSchemaMapping().getTimestampExported().after(new Timestamp(instance.getLastPush().getTimeInMillis())));
 		return neverPushed || needsRebuild || builtSinceLastPush;
 	}
 	
@@ -381,8 +383,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				updateOverallStatus(mapStatus, instance);
 				dbCacheStatus.setText(mapStatus.isNeedsRebuild() ? UIRegistry.getResourceString("SymbiotaPane.CacheNeedsRebuild") 
 						: UIRegistry.getResourceString("SymbiotaPane.CacheOK"));
-				dbCacheCreated.setText(mapStatus.isNeedsRebuild() || instance.getLastCacheBuild() == null ? UIRegistry.getResourceString("SymbiotaPane.CacheNotCreated") 
-						: UIFieldFormatterMgr.getInstance().getDateFormatter(PartialDateEnum.Full).formatToUI(instance.getLastCacheBuild()).toString());
+				dbCacheCreated.setText(mapStatus.isNeedsRebuild() || instance.getSchemaMapping().getTimestampExported() == null ? UIRegistry.getResourceString("SymbiotaPane.CacheNotCreated") 
+						: UIFieldFormatterMgr.getInstance().getDateFormatter(PartialDateEnum.Full).formatToUI(instance.getSchemaMapping().getTimestampExported()).toString());
 				boolean needToSendAll = needToSendAllRecs(instance, mapStatus); 
 				String totalRecsInCache = needToSendAll ? mapStatus.isNeedsRebuild() ? "?" : String.valueOf(getTotalNumberOfRecsInCache(instance)) : "Aucune importance";
 				unsentTotalChanges.setText(needToSendAll ? totalRecsInCache : String.valueOf(mapStatus.getTotalRecsChanged()));
@@ -403,7 +405,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected OverallStatuses getOverallStatus(MappingUpdateStatus mapStatus, SpSymbiotaInstance instance) {
 		OverallStatuses os = OverallStatuses.Good;
-		if (instance.getLastCacheBuild() == null) {
+		if (instance.getSchemaMapping().getTimestampExported() == null) {
 			os = OverallStatuses.CacheNotCreated;
 		} else if (mapStatus.isNeedsRebuild()) {
 			os = OverallStatuses.CacheNeedsRebuild;
