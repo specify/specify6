@@ -1914,9 +1914,9 @@ LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (CollectionMe
                 </sql>
                 <captions>
                     <caption tableid="32" col="PaleoContextID" visible="false"/>
-                    <caption tableid="32" col="PaleoContextName"/>
-                    <caption tableid="46" col="FullName"/>
-                    <caption tableid="100" col="FullName"/>
+                    <caption tableid="32" col="pc.PaleoContextName"/>
+                    <caption tableid="46" col="gtps.FullName"/>
+                    <caption tableid="100" col="ls.FullName"/>
                 </captions>
             </detailView>
         </table>

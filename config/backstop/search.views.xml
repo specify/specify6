@@ -1036,16 +1036,20 @@ Good: <cell type="field" name="FieldNum" ...>
             <enableRules/>
             
             <columnDef>p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p, 2dlu, p</rowDef>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="Distance" label="Distance"/>
-                    <cell type="field" id="Distance" name="Distance" isrequired="true" uitype="text"/>
+                    <cell type="label" labelfor="pcn" label="PaleoContext Name"/>
+                    <cell type="field" id="pcn" name="pc.PaleoContextName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="DistanceUnits" label="Distance Units"/>
-                    <cell type="field" id="DistanceUnits" name="DistanceUnits" isrequired="true" uitype="text"/>
+                    <cell type="label" labelfor="cs" label="Chronostrat Fullname"/>
+                    <cell type="field" id="cs" name="gtps.FullName" isrequired="false" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ls" label="Lithostrat Fullname"/>
+                    <cell type="field" id="ls" name="ls.FullName" isrequired="false" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
