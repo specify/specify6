@@ -653,7 +653,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	 * @return the text3
 	 */
     @Lob
-    @Column(name = "Text3")
+    @Column(name = "Text3", length = 65535)
 	public String getText3() {
 		return text3;
 	}
@@ -669,7 +669,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	 * @return the text4
 	 */
     @Lob
-    @Column(name = "Text4")
+    @Column(name = "Text4", length = 65535)
 	public String getText4() {
 		return text4;
 	}
@@ -685,7 +685,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	 * @return the text5
 	 */
     @Lob
-    @Column(name = "Text5")
+    @Column(name = "Text5", length = 65535)
 	public String getText5() {
 		return text5;
 	}
