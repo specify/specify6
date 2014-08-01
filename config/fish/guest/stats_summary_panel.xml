@@ -65,14 +65,12 @@
         </box>
   </row>
   <row>
-      <box title="PREP_BY_TYPE" desccol="1" valcol="2" desctitle="PREP" valtitle="COUNT" noresults="NO_PREP">
+      <box title="PREP_BY_TYPE_LOTS" desccol="1" valcol="2" desctitle="PREP" valtitle="LOTS_TOTAL" noresults="NO_PREP" cols="2">
       	<sql>
             <tables><id>63</id></tables>            
             <statement><![CDATA[SELECT pt.Name, trim(cast(concat(count(PreparationID), ' / ',  sum(countAmt)) as char(50))) FROM preparation p INNER JOIN preptype pt ON pt.PrepTypeID = p.PrepTypeID  WHERE CollectionMemberID = COLMEMID group by pt.Name]]></statement>
         </sql>
       </box>
-  </row>
-  <row>
       <box title="LOANS">
         <item title="ITMS_LOAN">
             <sql>
@@ -92,6 +90,8 @@
             <link>OpenLoans</link>
         </item>
       </box>
+  </row>
+  <row>
       <box title="LOC_GEO">
         <item title="LOCS">
             <sql>
@@ -125,8 +125,6 @@
             </sql>
         </item>
     </box>
-  </row>
-  <row>
     <box title="TAX_TREE">
         <item title="CLASSES">
             <sql>
@@ -159,6 +157,8 @@
             </sql>
         </item>
     </box>
+  </row>
+  <row>
       <box title="TYP_SPEC_CNT" desccol="1" valcol="2" desctitle="TAXON" valtitle="COUNT" noresults="NO_TYP_SPEC">
         <sql>
             <tables><id>9</id></tables>            
