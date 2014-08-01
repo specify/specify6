@@ -42,6 +42,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
 import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
@@ -68,9 +69,11 @@ public class SymbiotaTask extends BaseTask {
     private static final String SELECT_INSTANCE  = "SelectSymbiotaInstance";
     private static final String  SYMBIOTA_TITLE     = "SYMBIOTA_TITLE";
  
+    
     public static final String BASE_URL_PREF = "SymbiotaTask.BaseUrlPref";
     public static final String BASE_URL_DEFAULT = "http://pinkava.asu.edu/symbiota/sandbox/webservices/dwc/dwcaingesthandler.php";
-    public static final String SHOW_TASK_PREF = "SymbiotaTask.SHOW_TASK_PREF";
+    //public static final String SHOW_TASK_PREF = "SymbiotaTask.SHOW_TASK_PREF";
+    public static final String IS_USING_SYMBIOTA_PREFNAME = "SymbiotaTask.SHOW_TASK_PREF";
     
     public static final DataFlavor SYMBIOTA_FLAVOR = new DataFlavor(SymbiotaTask.class, SYMBIOTA);
 
@@ -83,6 +86,7 @@ public class SymbiotaTask extends BaseTask {
     protected NavBoxItemIFace 		sendToSymAction;
     protected NavBoxItemIFace		sendToArchiveAction;
     protected NavBoxItemIFace		getFromSymAction;
+    
     
     /**
      * 
@@ -581,8 +585,12 @@ public class SymbiotaTask extends BaseTask {
         String localIconName = name;
         String hint     = UIRegistry.getResourceString("search_hint");
         ToolBarDropDownBtn btn = createToolbarButton(label,localIconName,hint,null);
-        toolbarItems.add(new ToolBarItemDesc(btn));
 
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
+        if (remotePrefs.getBoolean(IS_USING_SYMBIOTA_PREFNAME+"."+ds, false)) {
+        	toolbarItems.add(new ToolBarItemDesc(btn));
+        }
         return toolbarItems;
 
 	}

@@ -30,6 +30,8 @@ import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.tasks.SGRTask;
+import edu.ku.brc.specify.tasks.SymbiotaTask;
 
 /**
  * @author rods
@@ -54,6 +56,8 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         setCheckbox("3", "StartupTask.OnTaskbar", true);
         setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS");
         //setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
+        setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false);
+        setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
     }
     
     /**
@@ -165,7 +169,8 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             getCheckbox("3", "StartupTask.OnTaskbar");
             getCheckbox("4", "ImagesTask.OnTaskbar");
             getCheckbox("5", "CleanupToolsTask.OnTaskbar");
-
+            getCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME);
+            getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
         }
     }
     

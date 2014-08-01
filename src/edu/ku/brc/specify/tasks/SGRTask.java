@@ -110,7 +110,7 @@ public class SGRTask extends BaseTask
                                                                    "SGR Matcher");
 
     public static final String        SGR                  = "SGR";
-
+    public static final String        IS_USING_SGR_PREFNAME = "SGR_SHOW_TASK_PREF";
     public static final String        EXPORT_RS            = "ExportRecordSet";
     public static final String        EXPORT_LIST          = "ExportList";
     public static final String        EXPORT_JTABLE        = "ExportJTable";
@@ -400,7 +400,13 @@ public class SGRTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
+        
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
+        if (remotePrefs.getBoolean(IS_USING_SGR_PREFNAME+"."+ds, true)) {
+        	toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
+        }
+        
         return toolbarItems;
     }
 

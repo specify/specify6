@@ -380,6 +380,12 @@
                 <!-- <row>
                     <cell type="field" id="5" name="CleanupToolsTask.OnTaskbar" uitype="checkbox" label="ADD_CLEANUP" colspan="4"/>
                 </row>  -->
+                <row>
+                    <cell type="field" id="6" name="SymbiotaTask.OnTaskbar" uitype="checkbox" label="ADD_SYMBIOTA" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="7" name="SGRTask.OnTaskbar" uitype="checkbox" label="ADD_SGR" colspan="4"/>
+                </row>
             </rows>
             
         </viewdef>
@@ -634,10 +640,6 @@
                 </row>
                 <row>
                     <cell type="field" id="1" name="symbiota.baseurl" cols="100" uitype="text" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="showtask" label=""/>
-                    <cell type="field" id="showtask" name="symbiota.showtask" uitype="checkbox" label="SYMBIOTA_SHOW_TASK" colspan="2"/> 
                 </row>
             </rows>
         </viewdef>
