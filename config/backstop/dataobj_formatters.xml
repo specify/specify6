@@ -559,7 +559,8 @@
         >
         <switch single="true">
             <fields>
-                <field formatter="GeologicTimePeriod">chronosStrat</field>
+            	<field>paleoContextName</field>
+                <field sep=", " formatter="GeologicTimePeriod">chronosStrat</field>
                 <field sep=", " formatter="LithoStrat">lithoStrat</field>
             </fields>
         </switch>
