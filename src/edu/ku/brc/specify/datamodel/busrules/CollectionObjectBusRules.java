@@ -51,6 +51,7 @@ import javax.swing.border.SoftBevelBorder;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -230,6 +231,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             	if (!"collectionobject".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
             		UIRegistry.showLocalizedMsg("CollectionObjectBusRules.PaleoRelationshipDisabled");
             		paleoContextCmp.setEnabled(false);
+            	} else {
+            		UsageTracker.incrUsageCount("CollectionObjectBusRules.AfterFillForm.PaleoRelationshipDisplayed");
             	}
             }
         }

@@ -27,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -121,6 +122,8 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
             	if (!"locality".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
             		UIRegistry.showLocalizedMsg("LocalityBusRules.PaleoRelationshipDisabled");
             		paleoContextCmp.setEnabled(false);
+            	} else {
+             		UsageTracker.incrUsageCount("LocalitytBusRules.AfterFillForm.PaleoRelationshipDisplayed");
             	}
             }
         }

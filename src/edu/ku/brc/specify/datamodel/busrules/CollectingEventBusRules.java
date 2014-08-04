@@ -24,6 +24,7 @@ import java.awt.Component;
 import javax.swing.JButton;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -139,7 +140,9 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
             	if (!"collectingevent".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
             		UIRegistry.showLocalizedMsg("CollectingEventBusRules.PaleoRelationshipDisabled");
             		paleoContextCmp.setEnabled(false);
-            	}
+            	} else {
+                 		UsageTracker.incrUsageCount("CollectionEventBusRules.AfterFillForm.PaleoRelationshipDisplayed");
+                }
             }
         }
     }

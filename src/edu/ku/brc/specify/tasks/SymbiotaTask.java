@@ -202,6 +202,7 @@ public class SymbiotaTask extends BaseTask {
 	 */
 	public void sendToSym() {
 		if (theInstance != null) {
+			UsageTracker.incrUsageCount(SYMBIOTA + "." + "SaveToSymbiota");
 			SymbiotaPane.class.cast(starterPane).startSend(null);
 		}
 	}
@@ -211,6 +212,9 @@ public class SymbiotaTask extends BaseTask {
 	 */
 	public void sendToArchive() {
 		if (theInstance != null) {
+			
+			UsageTracker.incrUsageCount(SYMBIOTA + "." + "SaveAsArchive");
+			
 	        String path = AppPreferences.getLocalPrefs().get("DwcArchive_PATH", null);
 	        
 	        FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), UIRegistry.getResourceString("SAVE"), FileDialog.SAVE);
@@ -418,6 +422,7 @@ public class SymbiotaTask extends BaseTask {
 	 */
 	protected void makeNewInstance() {
 		//System.out.println("makeNewInstance()");
+		UsageTracker.incrUsageCount(SYMBIOTA + "." + "MakeNewInstance");
 		SpExportSchemaMapping instanceMapping = pickSchemaMapping();
 		if (instanceMapping != null) {
 			System.out.println("selected: " + instanceMapping.getMappingName());
