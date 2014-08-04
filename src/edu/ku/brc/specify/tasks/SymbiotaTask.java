@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
@@ -45,6 +46,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -284,7 +286,20 @@ public class SymbiotaTask extends BaseTask {
 				});
 	        roc.addDragDataFlavor(new DataFlavorTableExt(getClass(), "Symbiota", SpSymbiotaInstance.getClassTableId()));
 			roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-			
+
+			final SymbiotaTask symTask = this;
+	        JPopupMenu popupMenu = new JPopupMenu();
+	        String menuTitle = "SymbiotaTask.EditPropertiesMenu";
+	        String mneu = "SymbiotaTask.EditPropertiesMneu";
+	        UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	            	symTask.editInstanceProps(nbi);
+	                UsageTracker.incrUsageCount("SymbiotaTask.EditInstanceProps");
+	            }
+	        });
+	        roc.setPopupMenu(popupMenu);
+	        
 //			navBox.add(NavBox.createBtnWithTT(
 //				symInstance.getInstanceName(),
 //				"Symbiota",
@@ -298,6 +313,41 @@ public class SymbiotaTask extends BaseTask {
 		}
 	}
 
+	/**
+	 * @param item
+	 */
+	protected void editInstanceProps(final NavBoxItemIFace item) {
+		System.out.println(item.getData());
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try {
+        	SpSymbiotaInstance spym = session.get(SpSymbiotaInstance.class, Integer.class.cast(item.getData()));
+        	if (editInstance(spym)) {
+        		session.beginTransaction();
+        		session.save(spym);
+        		session.commit();
+        		final Integer spymId = spym.getId();
+        		SwingUtilities.invokeLater(new Runnable() {
+
+        			/* (non-Javadoc)
+        			 * @see java.lang.Runnable#run()
+        			 */
+        			@Override
+        			public void run() {
+        				addInstances();
+        				selectInstance(spymId, getNavBottomItemForInstance(spymId), false);
+        			}
+        		
+        		});
+        	}
+        } catch (Exception ex) {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SymbiotaTask.class, ex);
+        } finally {
+        	session.close();
+        }
+
+	}
+	
 	/**
 	 * 
 	 */
@@ -416,6 +466,31 @@ public class SymbiotaTask extends BaseTask {
 		return result;
 	}
 	
+	/**
+	 * @param spym
+	 * @return
+	 */
+	protected boolean editInstance(SpSymbiotaInstance spym) {
+        Frame   parentFrame  = (Frame)UIRegistry.get(UIRegistry.FRAME);
+        String  displayName  = "SYM_INSTANCE_DISPLAY_NAME"; 	        
+        boolean isEdit       = true;
+        String  closeBtnText = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE"); 
+        String  className    = SpSymbiotaInstance.class.getName();
+        DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(SpSymbiotaInstance.getClassTableId());
+        String  idFieldName  = nodeTableInfo.getIdFieldName();
+        int     options      = MultiView.HIDE_SAVE_BTN;
+        	        
+        // create the form dialog
+        String title = getResourceString("SymbiotaTask.DataEntryFormTitle"); 
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, "SpSymbiotaInstance", displayName, title, 
+                                                                   closeBtnText, className, idFieldName, isEdit, options);
+        dialog.setModal(true);
+        dialog.setData(spym);
+        dialog.preCreateUI();
+        dialog.setVisible(true);
+        return dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN;
+	}
+	
 	
 	/**
 	 * 
@@ -425,30 +500,10 @@ public class SymbiotaTask extends BaseTask {
 		UsageTracker.incrUsageCount(SYMBIOTA + "." + "MakeNewInstance");
 		SpExportSchemaMapping instanceMapping = pickSchemaMapping();
 		if (instanceMapping != null) {
-			System.out.println("selected: " + instanceMapping.getMappingName());
-	        Frame   parentFrame  = (Frame)UIRegistry.get(UIRegistry.FRAME);
-	        String  displayName  = "SYM_INSTANCE_DISPLAY_NAME"; 	        
-	        boolean isEdit       = true;
-	        String  closeBtnText = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE"); 
-	        String  className    = SpSymbiotaInstance.class.getName();
-	        DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(SpSymbiotaInstance.getClassTableId());
-	        String  idFieldName  = nodeTableInfo.getIdFieldName();
-	        int     options      = MultiView.HIDE_SAVE_BTN;
-	        	        
-	        // create the form dialog
-	        String title = getResourceString("SymbiotaTask.DataEntryFormTitle"); 
-	        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, "SpSymbiotaInstance", displayName, title, 
-	                                                                   closeBtnText, className, idFieldName, isEdit, options);
 	        SpSymbiotaInstance spym = new SpSymbiotaInstance();
 	        spym.initialize();
 	        spym.setSchemaMapping(instanceMapping);
-	        dialog.setModal(true);
-	        dialog.setData(spym);
-	        dialog.preCreateUI();
-	        dialog.setVisible(true);
-	        
-	        // the dialog has been dismissed by the user
-	        if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN) {
+	        if (editInstance(spym)) {
 	        	//System.out.println("Hey. It's Ok.");
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try {
