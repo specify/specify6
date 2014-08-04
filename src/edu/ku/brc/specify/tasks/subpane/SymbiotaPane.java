@@ -158,6 +158,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 //        {
 //            log.error("Couldn't load form with name ["+SymbiotaViewSetName+"] Id ["+SymbiotaViewName+"]");
 //        }
+		UsageTracker.incrUsageCount(symTask.getName() + "." + "CreateStartPane");
         createUI();
 	}
 	
@@ -682,6 +683,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		JPanel btnPane = new JPanel();
 		btnPane.setLayout(new BoxLayout(btnPane, BoxLayout.X_AXIS));
 		pushBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.SendToSymBtn"));
+		pushBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaTask.SendToSymBtnTT"));
 		pushBtn.addActionListener(new ActionListener() {
 
 			/* (non-Javadoc)
@@ -694,6 +696,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			
 		});
 		archiveBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtn"));
+		archiveBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtnTT"));
 		archiveBtn.addActionListener(new ActionListener() {
 
 			/* (non-Javadoc)
@@ -706,6 +709,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			
 		});
 		pullBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtn"));
+		pullBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtnTT"));
 		pullBtn.addActionListener(new ActionListener() {
 
 			/* (non-Javadoc)
@@ -946,7 +950,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 
 		    	Charset utf8 = Charset.forName("utf8");
 		    	
-		    	zout.putNextEntry(new ZipEntry(metaFile.getName()));
+		    	zout.putNextEntry(new ZipEntry("meta.xml"));
 		    	zout.write(FileUtils.readFileToString(metaFile, utf8).getBytes(utf8));
 		    	zout.closeEntry();
 		    	int size = 0;
