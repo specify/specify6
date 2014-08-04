@@ -6,7 +6,10 @@ package edu.ku.brc.specify.tasks.subpane;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
@@ -23,10 +26,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -37,6 +42,7 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -73,9 +79,18 @@ import edu.ku.brc.util.Pair;
 @SuppressWarnings("serial")
 public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFace
 {
-    protected enum OverallStatuses{Good, CacheNotCreated, CacheNeedsRebuild, DataToPush, DataToPull};
-    protected enum OverallStatusAlert{GREEN, YELLOW, RED};
+    private static final Logger log  = Logger.getLogger(SymbiotaPane.class);
     
+    protected static String SymbiotaViewSetName = "SystemSetup";
+	protected static String SymbiotaViewName = "SymbiotaPane";
+    
+	protected enum OverallStatuses{Good, CacheNotCreated, CacheNeedsRebuild, DataToPush, DataToPull};
+    protected enum OverallStatusAlert{GREEN, YELLOW, RED};
+
+//    protected ViewIFace formView = null;
+//    protected Viewable form = null;
+//    protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
+
 	protected JLabel instanceName;
     protected JLabel overallStatus;
     protected JLabel instanceMapping;
@@ -103,7 +118,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
     
     protected JPanel statsPanel;
     protected JPanel cmdPanel;
-    
+    protected JButton pushBtn;
+    protected JButton archiveBtn;
+    protected JButton pullBtn;
     
     protected SymbiotaTask symTask;
     protected MappingUpdateStatus mapStatus = null;
@@ -132,50 +149,81 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	public SymbiotaPane(final String name, final Taskable task) {
         super(name, task);
         symTask = (SymbiotaTask)task;
+//        formView = AppContextMgr.getInstance().getView(SymbiotaViewSetName, SymbiotaViewName);
+//        if (formView != null)
+//        {
+//            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS, null);
+//
+//        } else
+//        {
+//            log.error("Couldn't load form with name ["+SymbiotaViewSetName+"] Id ["+SymbiotaViewName+"]");
+//        }
         createUI();
 	}
 	
 	protected JPanel buildInfoPanel() {
-        PanelBuilder tpb = new PanelBuilder(new FormLayout("f:p:g", "p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,5dlu"));
+        PanelBuilder tpb = new PanelBuilder(new FormLayout("f:p:g", "p, 3dlu, p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,5dlu"));
         CellConstraints cc = new CellConstraints();
         
 		//Icon icon = new ImageIcon("/home/timo/Downloads/3D_hand.gif");
 		//JLabel iconLbl = new JLabel(icon);
 		//loadingIcons.add(iconLbl);
+        tpb.add(tpb.getComponentFactory().createSeparator("Symbiota Instance", SwingConstants.LEFT), cc.xy(1, 1));
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaTask.InstanceName")),
         		instanceName, /*iconLbl*/null),  
-        		cc.xy(1, 1));
+        		cc.xy(1, 3));
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaPane.OverallStatusLbl")),
         		overallStatus, null),
-        		cc.xy(1, 3));
+        		cc.xy(1, 5));
         
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaPane.InstanceDescription")),  
         		description, null),  
-        		cc.xy(1, 5));
+        		cc.xy(1, 7));
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaPane.InstanceKey")),
         		key, null),  
-        		cc.xy(1, 7));
+        		cc.xy(1, 9));
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaPane.MappingName")),
         		instanceMapping, null),  
-        		cc.xy(1, 9));
+        		cc.xy(1, 11));
 		
         return tpb.getPanel();
 	}
 	
 	protected JPanel buildStatsPanel() {
-        PanelBuilder bpb = new PanelBuilder(new FormLayout("f:p:g","p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu"));
+        PanelBuilder bpb = new PanelBuilder(new FormLayout("f:p:g","p, 3dlu, p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu"));
         CellConstraints cc = new CellConstraints();
         		
-		bpb.add(getStatPane(lastSendToSymLbl, lastSendToSym, null), cc.xy(1,1));
-		bpb.add(getStatPane(lastGetFromSymLbl, lastGetFromSym, null), cc.xy(1,3));
-		bpb.add(getStatPane(dbCacheStatusLbl, dbCacheStatus, null), cc.xy(1,5));
-		bpb.add(getStatPane(dbCacheCreatedLbl, dbCacheCreated, null), cc.xy(1,7));
-		bpb.add(getStatPane(unsentTotalChangesLbl, unsentTotalChanges, null), cc.xy(1,9));
-		bpb.add(getStatPane(unsentNewOrEditedRecsLbl, unsentNewOrEditedRecs, null), cc.xy(1,11));
-		bpb.add(getStatPane(unsentDelRecsLbl, unsentDelRecs, null), cc.xy(1,13));
+        bpb.add(bpb.getComponentFactory().createSeparator("Current Status", SwingConstants.LEFT), cc.xy(1, 1));
+        
+		bpb.add(getStatPane(lastSendToSymLbl, lastSendToSym, null), cc.xy(1,3));
+		bpb.add(getStatPane(lastGetFromSymLbl, lastGetFromSym, null), cc.xy(1,5));
+		bpb.add(getStatPane(dbCacheStatusLbl, dbCacheStatus, null), cc.xy(1,7));
+		bpb.add(getStatPane(dbCacheCreatedLbl, dbCacheCreated, null), cc.xy(1,9));
+		bpb.add(getStatPane(unsentTotalChangesLbl, unsentTotalChanges, null), cc.xy(1,11));
+		bpb.add(getStatPane(unsentNewOrEditedRecsLbl, unsentNewOrEditedRecs, null), cc.xy(1,13));
+		bpb.add(getStatPane(unsentDelRecsLbl, unsentDelRecs, null), cc.xy(1,15));
 		
 		return bpb.getPanel();
 	}
+	
+
+	/**
+	 * 
+	 */
+//	protected void initDataMap() {
+//		dataMap.put("instanceName", "?");
+//		dataMap.put("overallStatus", "?");
+//		dataMap.put("instanceMapping", "?");
+//		dataMap.put("description", "?");
+//		dataMap.put("key", "?");
+//		dataMap.put("lastSendToSym", "?");
+//		dataMap.put("lastGetFromSym", "?");
+//		dataMap.put("dbCacheStatus", "?");
+//		dataMap.put("dbCacheCreated", "?");
+//		dataMap.put("unsentTotalChanges", "?");
+//		dataMap.put("unsentNewOrEditedRecs", "?");
+//		dataMap.put("unsentDelRecs", "?");
+//	}
 	
 	protected void clearSelection() {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -197,10 +245,37 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			    unsentTotalChanges.setText("?");
 			    unsentNewOrEditedRecs.setText("?");
 			    unsentDelRecs.setText("?");
+			    
+//			    initDataMap();
+//			    form.setDataIntoUI();
 			}
 			
 		});
 	}
+	
+	/**
+	 * 
+	 */
+//	protected void setSelectionToDataMap() {
+//		SpSymbiotaInstance sym = symTask.getTheInstance();
+//		if (sym != null) {
+//			dataMap.put("instanceName", sym.getInstanceName());
+//			dataMap.put("instanceMapping", sym.getSchemaMapping().getMappingName());
+//			dataMap.put("description", sym.getDescription() == null ? "" : sym.getDescription());
+//			dataMap.put("key", sym.getSymbiotaKey());
+//			UIFieldFormatterIFace dateFormatter = UIFieldFormatterMgr.getInstance().getDateFormatter(PartialDateEnum.Full);
+//			if (sym.getLastPush() != null) {
+//				dataMap.put("lastSendToSym", dateFormatter.formatToUI(sym.getLastPush()).toString());
+//			} else {
+//				dataMap.put("lastSendToSym", UIRegistry.getResourceString("SymbiotaPane.Never"));
+//			}
+//			if (sym.getLastPull() != null) {
+//				dataMap.put("lastGetFromSym", dateFormatter.formatToUI(sym.getLastPull()).toString());
+//			} else {
+//				dataMap.put("lastGetFromSym", UIRegistry.getResourceString("SymbiotaPane.Never"));
+//			}
+//		}
+//	}
 	
 	/**
 	 * 
@@ -231,6 +306,10 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 					} else {
 						lastGetFromSym.setText(UIRegistry.getResourceString("SymbiotaPane.Never"));
 					}
+					
+//					setSelectionToDataMap();
+//					form.setDataIntoUI();
+					
 				} else {
 					showPane(introPane);
 				}
@@ -368,6 +447,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		return neverPushed || needsRebuild || builtSinceLastPush;
 	}
 	
+	protected void updateStatsToDataMap() {
+		
+	}
 	/**
 	 * 
 	 */
@@ -453,15 +535,23 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * @param instance
 	 */
 	protected void updateOverallStatus(MappingUpdateStatus mapStatus, SpSymbiotaInstance instance) {
+		overallStatus.setText(getOverallStatusText(mapStatus, instance));
+	}
+	
+	/**
+	 * @param mapStatus
+	 * @param instance
+	 * @return
+	 */
+	protected String getOverallStatusText(MappingUpdateStatus mapStatus, SpSymbiotaInstance instance) {
 		OverallStatuses os = getOverallStatus(mapStatus, instance);
 		OverallStatusAlert al = getOverallStatusAlertLevel(os);
 		String statusText = getOverallStatusText(os);
 		String fontColor = al == OverallStatusAlert.GREEN ? "blue"
 				: al == OverallStatusAlert.RED ? "red" : "green";
 		String html = "<html><font color=\"" + fontColor + "\">" + statusText + "</font></html>";
-		overallStatus.setText(html);
+		return html;
 	}
-	
 	
 	/**
 	 * @return
@@ -481,9 +571,15 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * @return
 	 */
 	protected JPanel getStatPane(JLabel lbl, JLabel val, JLabel iconLbl) {
+        PanelBuilder pb = new PanelBuilder(new FormLayout("20dlu, f:p:g", "p"));
+		
 		JPanel result = new JPanel(new BorderLayout());
+		
 		lbl.setText(lbl.getText() + ": ");
 		result.add(lbl, BorderLayout.WEST);
+		Font newFont = val.getFont();
+		val.setFont(newFont.deriveFont(Font.BOLD));
+		//val.getFont().
 		result.add(val, BorderLayout.CENTER);
 		if (iconLbl != null) {
 			result.add(iconLbl, BorderLayout.EAST);
@@ -491,7 +587,11 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		Rectangle b = result.getBounds();
 		b.setSize(b.width, 30);
 		result.setBounds(b);
-		return result;
+		
+		//return result;
+		CellConstraints cc = new CellConstraints();
+		pb.add(result, cc.xy(2, 1));
+		return pb.getPanel();
 	}
 	
 	
@@ -577,16 +677,68 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		unsentDelRecs = UIHelper.createLabel("?");
 				
 				
-		cmdPanel = new JPanel();
-		cmdPanel.setLayout(new BoxLayout(cmdPanel, BoxLayout.X_AXIS));
+		cmdPanel = new JPanel(new BorderLayout());
+		JPanel btnPane = new JPanel();
+		btnPane.setLayout(new BoxLayout(btnPane, BoxLayout.X_AXIS));
+		pushBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.SendToSymBtn"));
+		pushBtn.addActionListener(new ActionListener() {
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				symTask.sendToSym();
+			}
+			
+		});
+		archiveBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtn"));
+		archiveBtn.addActionListener(new ActionListener() {
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				symTask.sendToArchive();
+			}
+			
+		});
+		pullBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtn"));
+		pullBtn.addActionListener(new ActionListener() {
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				symTask.getFromSym();
+			}
+			
+		});
+		btnPane.add(pullBtn);
+		btnPane.add(pushBtn);
+		btnPane.add(archiveBtn);
+		cmdPanel.add(btnPane, BorderLayout.EAST);
 		
 		mainStatsPane = new JPanel(new BorderLayout());
 		mainStatsPane.add(buildInfoPanel(), BorderLayout.NORTH);
 		mainStatsPane.add(buildStatsPanel(), BorderLayout.CENTER);
+		
+		//mainStatsPane.add(form.getUIComponent(), BorderLayout.WEST);
+		
 		mainStatsPane.add(cmdPanel, BorderLayout.SOUTH);
 		
 	}
 	
+	/**
+	 * 
+	 */
+	public void updateActionEnablement() {
+		pushBtn.setEnabled(symTask.getTheInstance() != null);
+		pullBtn.setEnabled(symTask.getTheInstance() != null);
+		archiveBtn.setEnabled(symTask.getTheInstance() != null);		
+	}
 	/**
 	 * 
 	 */
