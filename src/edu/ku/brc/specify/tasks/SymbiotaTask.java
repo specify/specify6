@@ -159,48 +159,48 @@ public class SymbiotaTask extends BaseTask {
 					}
 				}));
 
-		sendToArchiveAction = NavBox.createBtnWithTT(
-				UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtn"),
-				"Symbiota",
-				UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtnTT"),
-				IconManager.STD_ICON_SIZE, 
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						sendToArchive();
-					}
-				});
-		actionNavBox.add(sendToArchiveAction);
+//		sendToArchiveAction = NavBox.createBtnWithTT(
+//				UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtn"),
+//				"Symbiota",
+//				UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtnTT"),
+//				IconManager.STD_ICON_SIZE, 
+//				new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						sendToArchive();
+//					}
+//				});
+//		actionNavBox.add(sendToArchiveAction);
 		
-		sendToSymAction = NavBox.createBtnWithTT(
-				UIRegistry.getResourceString("SymbiotaTask.SendToSymBtn"),
-				"Symbiota",
-				UIRegistry.getResourceString("SymbiotaTask.SendToSymBtnTT"),
-				IconManager.STD_ICON_SIZE, 
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						sendToSym();
-					}
-				});
-		actionNavBox.add(sendToSymAction);
+//		sendToSymAction = NavBox.createBtnWithTT(
+//				UIRegistry.getResourceString("SymbiotaTask.SendToSymBtn"),
+//				"Symbiota",
+//				UIRegistry.getResourceString("SymbiotaTask.SendToSymBtnTT"),
+//				IconManager.STD_ICON_SIZE, 
+//				new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						sendToSym();
+//					}
+//				});
+//		actionNavBox.add(sendToSymAction);
 
-		getFromSymAction = NavBox.createBtnWithTT(
-				UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtn"),
-				"Symbiota",
-				UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtnTT"),
-				IconManager.STD_ICON_SIZE, 
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						getFromSym();
-					}
-				});
-		actionNavBox.add(getFromSymAction);
+//		getFromSymAction = NavBox.createBtnWithTT(
+//				UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtn"),
+//				"Symbiota",
+//				UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtnTT"),
+//				IconManager.STD_ICON_SIZE, 
+//				new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						getFromSym();
+//					}
+//				});
+//		actionNavBox.add(getFromSymAction);
 
 	}
 
 	/**
 	 * 
 	 */
-	protected void sendToSym() {
+	public void sendToSym() {
 		if (theInstance != null) {
 			SymbiotaPane.class.cast(starterPane).startSend(null);
 		}
@@ -209,7 +209,7 @@ public class SymbiotaTask extends BaseTask {
 	/**
 	 * 
 	 */
-	protected void sendToArchive() {
+	public void sendToArchive() {
 		if (theInstance != null) {
 	        String path = AppPreferences.getLocalPrefs().get("DwcArchive_PATH", null);
 	        
@@ -241,7 +241,7 @@ public class SymbiotaTask extends BaseTask {
 	/**
 	 * 
 	 */
-	protected void getFromSym() {
+	public void getFromSym() {
 		if (theInstance != null) {
 			SymbiotaPane.class.cast(starterPane).getFromSym();
 		}
@@ -298,9 +298,12 @@ public class SymbiotaTask extends BaseTask {
 	 * 
 	 */
 	protected void updateActionEnablement() {
-		sendToArchiveAction.setEnabled(theInstance != null);
-		sendToSymAction.setEnabled(theInstance != null);
-		getFromSymAction.setEnabled(theInstance != null);
+		//sendToArchiveAction.setEnabled(theInstance != null);
+		//sendToSymAction.setEnabled(theInstance != null);
+		//getFromSymAction.setEnabled(theInstance != null);
+		if (starterPane != null) {
+			SymbiotaPane.class.cast(starterPane).updateActionEnablement();
+		}
 	}
 	
 	/**
