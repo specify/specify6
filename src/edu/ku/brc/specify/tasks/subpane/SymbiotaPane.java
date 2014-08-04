@@ -168,7 +168,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		//Icon icon = new ImageIcon("/home/timo/Downloads/3D_hand.gif");
 		//JLabel iconLbl = new JLabel(icon);
 		//loadingIcons.add(iconLbl);
-        tpb.add(tpb.getComponentFactory().createSeparator("Symbiota Instance", SwingConstants.LEFT), cc.xy(1, 1));
+        tpb.add(tpb.getComponentFactory().createSeparator(UIRegistry.getResourceString("SymbiotaPane.SymbiotaInstance"), 
+        		SwingConstants.LEFT), cc.xy(1, 1));
         tpb.add(getStatPane(UIHelper.createLabel(UIRegistry.getResourceString("SymbiotaTask.InstanceName")),
         		instanceName, /*iconLbl*/null),  
         		cc.xy(1, 3));
@@ -190,18 +191,18 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	}
 	
 	protected JPanel buildStatsPanel() {
-        PanelBuilder bpb = new PanelBuilder(new FormLayout("f:p:g","p, 3dlu, p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu"));
+        PanelBuilder bpb = new PanelBuilder(new FormLayout("f:p:g","p, 3dlu, p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu"));
         CellConstraints cc = new CellConstraints();
         		
         bpb.add(bpb.getComponentFactory().createSeparator("Current Status", SwingConstants.LEFT), cc.xy(1, 1));
         
 		bpb.add(getStatPane(lastSendToSymLbl, lastSendToSym, null), cc.xy(1,3));
-		bpb.add(getStatPane(lastGetFromSymLbl, lastGetFromSym, null), cc.xy(1,5));
-		bpb.add(getStatPane(dbCacheStatusLbl, dbCacheStatus, null), cc.xy(1,7));
-		bpb.add(getStatPane(dbCacheCreatedLbl, dbCacheCreated, null), cc.xy(1,9));
-		bpb.add(getStatPane(unsentTotalChangesLbl, unsentTotalChanges, null), cc.xy(1,11));
-		bpb.add(getStatPane(unsentNewOrEditedRecsLbl, unsentNewOrEditedRecs, null), cc.xy(1,13));
-		bpb.add(getStatPane(unsentDelRecsLbl, unsentDelRecs, null), cc.xy(1,15));
+		//bpb.add(getStatPane(lastGetFromSymLbl, lastGetFromSym, null), cc.xy(1,5));
+		bpb.add(getStatPane(dbCacheStatusLbl, dbCacheStatus, null), cc.xy(1,5));
+		bpb.add(getStatPane(dbCacheCreatedLbl, dbCacheCreated, null), cc.xy(1,7));
+		bpb.add(getStatPane(unsentTotalChangesLbl, unsentTotalChanges, null), cc.xy(1,9));
+		bpb.add(getStatPane(unsentNewOrEditedRecsLbl, unsentNewOrEditedRecs, null), cc.xy(1,11));
+		bpb.add(getStatPane(unsentDelRecsLbl, unsentDelRecs, null), cc.xy(1,13));
 		
 		return bpb.getPanel();
 	}
@@ -716,7 +717,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			}
 			
 		});
-		btnPane.add(pullBtn);
+		//btnPane.add(pullBtn);
 		btnPane.add(pushBtn);
 		btnPane.add(archiveBtn);
 		cmdPanel.add(btnPane, BorderLayout.EAST);
@@ -743,7 +744,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * 
 	 */
 	protected void createIntroPane() {
-		JLabel text = UIHelper.createLabel("<html><p><p><b>Welcome to the Symbiota Task</b><p><p>blah...<p><p>Before you can use this task you need to create a schema mapping and create a new Symbiota instance.<p><p>blah blah blah...</html>");
+		JLabel text = UIHelper.createLabel("<html><p><p><b>Welcome to the Symbiota Task</b><p><p>blah...<p><p>Before you can use this task you need to create a schema mapping and create a new Symbiota connector.<p><p>blah blah blah...</html>");
 		introPane = new JPanel(new BorderLayout());
 		introPane.add(text, BorderLayout.NORTH);
 	}
