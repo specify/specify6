@@ -32,6 +32,7 @@ import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.specify.tasks.SymbiotaTask;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -171,6 +172,8 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             getCheckbox("5", "CleanupToolsTask.OnTaskbar");
             getCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME);
             getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
+            
+            UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
         }
     }
     
