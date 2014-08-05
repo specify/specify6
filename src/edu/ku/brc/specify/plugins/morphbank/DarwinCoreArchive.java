@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import javax.swing.JProgressBar;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -40,9 +41,12 @@ import edu.ku.brc.util.Pair;
  */
 public class DarwinCoreArchive 
 {
+    private static final Logger log  = Logger.getLogger(DarwinCoreArchive.class);
+    
 	protected List<DarwinCoreArchiveFile> files;
 	protected DwcMapper mapper;
 	protected final boolean useCache;
+	protected Statement stmt = null;
 	
 	/**
 	 * @param file
@@ -236,7 +240,7 @@ public class DarwinCoreArchive
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Pair<String, List<String>>> getExportText(int collectionObjectID) throws Exception
+	protected List<Pair<String, List<String>>> getExportText(int collectionObjectID) throws Exception
 	{
 		List<Pair<String, List<String>>> result = new ArrayList<Pair<String, List<String>>>();
 		DarwinCoreSpecimen spec = new DarwinCoreSpecimen(mapper);
@@ -311,7 +315,7 @@ public class DarwinCoreArchive
 	 * @return
 	 * @throws Exception
 	 */
-	public void getExportText(int collectionObjectID, List<Pair<String, List<String>>> archiveData) throws Exception
+	protected void getExportText(int collectionObjectID, List<Pair<String, List<String>>> archiveData) throws Exception
 	{
 		DarwinCoreSpecimen spec = new DarwinCoreSpecimen(mapper);
 		if (useCache) {
@@ -386,15 +390,24 @@ public class DarwinCoreArchive
 		if (records.getDbTableId() != CollectionObject.getClassTableId()) {
 			throw new Exception("Unsupported Table " + records.getTableId());
 		}
+		
+		stmt = DBConnection.getInstance().getConnection().createStatement();
 		List<Pair<String, List<String>>> result = buildExportDataStruct();
-		for (Pair<String, List<String>> f : result) {
-			f.getSecond().add(getFileByName(f.getFirst()).getHeader());
-		}
-		int n = 0;
-		for (RecordSetItem rec : records.getRecordSetItems()) {
-			getExportText(rec.getRecordId(), result);
-			if (prog != null) {
-				prog.setValue(++n);
+		try {
+			for (Pair<String, List<String>> f : result) {
+				f.getSecond().add(getFileByName(f.getFirst()).getHeader());
+			}
+			int n = 0;
+			for (RecordSetItem rec : records.getRecordSetItems()) {
+				getExportText(rec.getRecordId(), result);
+				if (prog != null) {
+					prog.setValue(++n);
+				}
+			}
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+				stmt = null;
 			}
 		}
 		return result;
@@ -405,7 +418,20 @@ public class DarwinCoreArchive
 	 * @return
 	 */
 	protected String getGUID(Integer coID) {
-		return BasicSQLUtils.querySingleObj("select GUID from collectionobject where CollectionObjectID = " + coID);
+		String sql = "select GUID from collectionobject where CollectionObjectID = " + coID;
+		if (stmt == null) {
+			return BasicSQLUtils.querySingleObj(sql);
+		} else {
+			try {
+				ResultSet rs = stmt.executeQuery(sql);
+				if (rs.next()) {
+					return rs.getString(1);
+				}		
+			} catch (SQLException ex) {
+				log.error(ex.getMessage());
+			}
+		}
+		return null;
 	}
 	/**
 	 * @param line

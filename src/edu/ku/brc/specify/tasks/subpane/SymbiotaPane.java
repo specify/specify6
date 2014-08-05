@@ -826,13 +826,13 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * @param desc
 	 */
 	protected void showProgDlg(final String title, final String desc) {
-//		SwingUtilities.invokeLater(new Runnable() {
-//
-//			/* (non-Javadoc)
-//			 * @see java.lang.Runnable#run()
-//			 */
-//			@Override
-//			public void run() {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run() {
 				if (progDlg == null) {
 		        	progDlg = new ProgressDialog(title, false, false);
 		            progDlg.setResizable(false);
@@ -843,11 +843,14 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		       progDlg.getProcessProgress().setStringPainted(false);
 		       progDlg.setDesc(desc);
 		       progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		       progDlg.setModal(false);
+		       
+		       //progDlg.setModal(false);
+		       progDlg.setModal(true);
+
 		       progDlg.setAlwaysOnTop(true);
 		       UIHelper.centerAndShow(progDlg);
-//			}
-//		});
+			}
+		});
 	}
 	
 	/**
