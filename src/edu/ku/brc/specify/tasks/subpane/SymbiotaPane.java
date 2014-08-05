@@ -123,7 +123,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
     protected JButton pullBtn;
     
     protected SymbiotaTask symTask;
-    protected MappingUpdateStatus mapStatus = null;
+    protected AtomicReference<MappingUpdateStatus> mapStatus = new AtomicReference<MappingUpdateStatus>(null);
     protected boolean useCache = true;
     
     protected List<Integer> deletedRecsForCurrentUpdate = new ArrayList<Integer>();
@@ -418,7 +418,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected boolean getVerificationFromUserIfNecessary() {
 		boolean result = true;
-		OverallStatusAlert al = getOverallStatusAlertLevel(getOverallStatus(mapStatus, symTask.getTheInstance()));
+		OverallStatusAlert al = getOverallStatusAlertLevel(getOverallStatus(mapStatus.get(), symTask.getTheInstance()));
 		if (sendAfterArchiveBuild.get() && al.equals(OverallStatusAlert.GREEN)) {
 			result = UIRegistry.displayConfirmLocalized("SymbiotaPane.ConfirmSend", "SymbiotaPane.ConfirmSendAllWhenNoneToSend",	 "Yes", "No", JOptionPane.QUESTION_MESSAGE);
 		} 
@@ -428,8 +428,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * @param stats
 	 */
 	protected void updateStats(MappingUpdateStatus stats) {
-		mapStatus = stats;
-		if (mapStatus != null) {
+		mapStatus.set(stats);
+		if (mapStatus.get() != null) {
 			updateStatsDisplay();
 		}
 	}
@@ -464,16 +464,17 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			@Override
 			public void run() {
 				SpSymbiotaInstance instance = symTask.getTheInstance();
-				updateOverallStatus(mapStatus, instance);
-				dbCacheStatus.setText(mapStatus.isNeedsRebuild() ? UIRegistry.getResourceString("SymbiotaPane.CacheNeedsRebuild") 
+				MappingUpdateStatus ms = mapStatus.get();
+				updateOverallStatus(ms, instance);
+				dbCacheStatus.setText(ms.isNeedsRebuild() ? UIRegistry.getResourceString("SymbiotaPane.CacheNeedsRebuild") 
 						: UIRegistry.getResourceString("SymbiotaPane.CacheOK"));
-				dbCacheCreated.setText(mapStatus.isNeedsRebuild() || instance.getSchemaMapping().getTimestampExported() == null ? UIRegistry.getResourceString("SymbiotaPane.CacheNotCreated") 
+				dbCacheCreated.setText(ms.isNeedsRebuild() || instance.getSchemaMapping().getTimestampExported() == null ? UIRegistry.getResourceString("SymbiotaPane.CacheNotCreated") 
 						: UIFieldFormatterMgr.getInstance().getDateFormatter(PartialDateEnum.Full).formatToUI(instance.getSchemaMapping().getTimestampExported()).toString());
-				boolean needToSendAll = needToSendAllRecs(instance, mapStatus); 
-				String totalRecsInCache = needToSendAll ? mapStatus.isNeedsRebuild() ? "?" : String.valueOf(getTotalNumberOfRecsInCache(instance)) : "Aucune importance";
-				unsentTotalChanges.setText(needToSendAll ? totalRecsInCache : String.valueOf(mapStatus.getTotalRecsChanged()));
-				unsentNewOrEditedRecs.setText(needToSendAll ? totalRecsInCache : String.valueOf(mapStatus.getTotalRecsChanged() - mapStatus.getRecsToDelete()));
-				unsentDelRecs.setText(mapStatus.isNeedsRebuild() ? "?" : String.valueOf(mapStatus.getRecsToDelete()));
+				boolean needToSendAll = needToSendAllRecs(instance, ms); 
+				String totalRecsInCache = needToSendAll ? ms.isNeedsRebuild() ? "?" : String.valueOf(getTotalNumberOfRecsInCache(instance)) : "Aucune importance";
+				unsentTotalChanges.setText(needToSendAll ? totalRecsInCache : String.valueOf(ms.getTotalRecsChanged()));
+				unsentNewOrEditedRecs.setText(needToSendAll ? totalRecsInCache : String.valueOf(ms.getTotalRecsChanged() - ms.getRecsToDelete()));
+				unsentDelRecs.setText(ms.isNeedsRebuild() ? "?" : String.valueOf(ms.getRecsToDelete()));
 				for (JLabel l : loadingIcons) {
 					l.setVisible(false);
 				}
@@ -614,7 +615,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				String bulkFileDir = null;
 				QBDataSourceListenerIFace listener = SymbiotaPane.this; 
 				Connection conn = DBConnection.getInstance().getConnection();
-				final long cacheRowCount = mapStatus.getTotalRecsChanged() - mapStatus.getRecsToDelete();
+				final long cacheRowCount = mapStatus.get().getTotalRecsChanged() - mapStatus.get().getRecsToDelete();
 				deletedRecsForCurrentUpdate.clear();
 				newOrChangedRecsForCurrentUpdate.clear();
 		        return ExportPanel.updateInBackground(includeRecordIds, useBulkLoad, bulkFileDir, 
@@ -884,6 +885,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		symTask.refreshInstance();
 		updateCacheAfterStatusUpdate.set(true);
 		buildArchiveAfterCacheUpdate.set(true);
+		deletedRecsForCurrentUpdate.clear();
+		newOrChangedRecsForCurrentUpdate.clear();
 		this.archiveFileName.set(archiveFileName);
 		sendAfterArchiveBuild.set(archiveFileName == null);
 		progDlgTitleKey = archiveFileName == null ? "SymbiotaPane.SENDING_DLG" : "SymbiotaPane.ARCHIVING_DLG";
@@ -894,12 +897,13 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * 
 	 */
 	protected void updateAndBuildArchive() {
-		if (mapStatus.isNeedsRebuild()) {
+		MappingUpdateStatus ms = mapStatus.get();
+		if (ms.isNeedsRebuild()) {
 			hideProgDlg();
 			UIRegistry.displayInfoMsgDlgLocalized("SymbiotaPane.UseExporterAppToRebuildMsg", Object[].class.cast(null));
 			setUIEnabled(true);
 		} else {
-			if (mapStatus.getTotalRecsChanged() != 0) {
+			if (ms.getTotalRecsChanged() != 0) {
 				updateCache();
 			} else {
 				buildDwCArchive();
@@ -934,7 +938,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			 * @return
 			 */
 			private Pair<Integer, Iterator<?>> getSizeAndIterator() {
-				if (newOrChangedRecsForCurrentUpdate.size() != 0) {
+				if (!needToSendAllRecs(symTask.getTheInstance(), mapStatus.get()) && newOrChangedRecsForCurrentUpdate.size() != 0) {
 					return new Pair<Integer, Iterator<?>>(newOrChangedRecsForCurrentUpdate.size(), newOrChangedRecsForCurrentUpdate.iterator());
 				} else {
 					List<?> ids = BasicSQLUtils.querySingleCol(getIdSqlForSend());
