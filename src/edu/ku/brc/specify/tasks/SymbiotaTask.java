@@ -317,27 +317,42 @@ public class SymbiotaTask extends BaseTask {
 	 * @param item
 	 */
 	protected void editInstanceProps(final NavBoxItemIFace item) {
-		System.out.println(item.getData());
+		//System.out.println(item.getData());
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try {
         	SpSymbiotaInstance spym = session.get(SpSymbiotaInstance.class, Integer.class.cast(item.getData()));
-        	if (editInstance(spym)) {
-        		session.beginTransaction();
-        		session.save(spym);
-        		session.commit();
-        		final Integer spymId = spym.getId();
-        		SwingUtilities.invokeLater(new Runnable() {
+        	if (spym != null) {
+        		if (editInstance(spym)) {
+        			session.beginTransaction();
+        			session.save(spym);
+        			session.commit();
+        			final Integer spymId = spym.getId();
+        			SwingUtilities.invokeLater(new Runnable() {
 
-        			/* (non-Javadoc)
-        			 * @see java.lang.Runnable#run()
-        			 */
-        			@Override
-        			public void run() {
-        				addInstances();
-        				selectInstance(spymId, getNavBottomItemForInstance(spymId), false);
-        			}
+        				/* (non-Javadoc)
+        				 * @see java.lang.Runnable#run()
+        				 */
+        				@Override
+        				public void run() {
+        					addInstances();
+        					selectInstance(spymId, getNavBottomItemForInstance(spymId), false);
+        				}
         		
-        		});
+        			});
+        		}
+        	} else {
+        		//the instance was deleted by another user???
+    			SwingUtilities.invokeLater(new Runnable() {
+
+    				/* (non-Javadoc)
+    				 * @see java.lang.Runnable#run()
+    				 */
+    				@Override
+    				public void run() {
+    					addInstances();
+    				}
+    		
+    			});
         	}
         } catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -345,7 +360,6 @@ public class SymbiotaTask extends BaseTask {
         } finally {
         	session.close();
         }
-
 	}
 	
 	/**
