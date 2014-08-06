@@ -5,9 +5,10 @@
 	    <view sidebar="true"  title="Collection Object"  view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
 	    <view sidebar="false"  title="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
 		<view sidebar="true"  title="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
-	    <view sidebar="true"  title="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
-	    <view sidebar="true"  title="LithoStrat"         view="LithoStrat"         iconname="LithoStrat"         tooltip=""/> 
 	    <view sidebar="true"  title="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
+	    <view sidebar="true"  title="LithoStrat"         view="LithoStrat"         iconname="LithoStrat"         tooltip=""/> 
+		<view sidebar="true"  title="PaleoContext"       view="PaleoContext"       iconname="PaleoContext"       tooltip=""/> 
+	    <view sidebar="true"  title="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
 		<view sidebar="true"  title="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
         <view sidebar="true"  title="Taxon"              view="Taxon"              iconname="Taxon"              tooltip=""/> 
 	</std>
