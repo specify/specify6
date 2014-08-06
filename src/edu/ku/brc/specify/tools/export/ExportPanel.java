@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
@@ -84,6 +85,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
@@ -1056,6 +1058,15 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return result;
 	}
 	
+	public static Boolean updateInBackground(
+			final boolean includeRecordIds,
+			final boolean useBulkLoad, final String bulkFileDir,
+			final SpExportSchemaMapping theMapping,
+			final QBDataSourceListenerIFace listener, final Connection conn,
+			final long cacheRowCount) throws Exception {
+		return updateInBackground(includeRecordIds, useBulkLoad, bulkFileDir, theMapping, listener, conn, cacheRowCount, null);
+	}
+	
 	/**
 	 * @param includeRecordIds
 	 * @param useBulkLoad
@@ -1078,9 +1089,21 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			final boolean useBulkLoad, final String bulkFileDir,
 			final SpExportSchemaMapping theMapping,
 			final QBDataSourceListenerIFace listener, final Connection conn,
-			final long cacheRowCount) throws Exception {
-		List<Specs> specs = getSpecs(theMapping, includeRecordIds, true,
+			final long cacheRowCount,
+			final Timestamp overrideTimestamp) throws Exception {
+		Timestamp originalTimestamp = theMapping.getTimestampExported();
+		List<Specs> specs = null;
+		if (overrideTimestamp != null) {
+			theMapping.setTimestampExported(overrideTimestamp);
+		}
+		try {
+			specs = getSpecs(theMapping, includeRecordIds, true,
 				false, listener);
+		} finally {
+			if (overrideTimestamp != null) {
+				theMapping.setTimestampExported(originalTimestamp);
+			}
+		}
 		if (specs == null) {
 			return false;
 		}
@@ -1332,19 +1355,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			        {
 			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
 			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
-//			        	Calendar nowzTheTime = Calendar.getInstance();
-//			        	Integer symId = BasicSQLUtils.querySingleObj(conn, "SELECT SpSymbiotaInstanceID FROM spsymbiotainstance WHERE SchemaMappingID=" + mergedMap.getId());
-//			        	SpSymbiotaInstance symInstance = null;
-//			        	if (symId != null) {
-//			        		symInstance = theSession.get(SpSymbiotaInstance.class, symId);
-//			        		symInstance.setLastCacheBuild(nowzTheTime);
-//			        	}
+			        	Calendar nowzTheTime = Calendar.getInstance();
+			        	Integer symId = BasicSQLUtils.querySingleObj(conn, "SELECT SpSymbiotaInstanceID FROM spsymbiotainstance WHERE SchemaMappingID=" + mergedMap.getId());
+			        	SpSymbiotaInstance symInstance = null;
+			        	if (symId != null) {
+			        		symInstance = theSession.get(SpSymbiotaInstance.class, symId);
+			        		symInstance.setLastCacheBuild(nowzTheTime);
+			        	}
 			        	theSession.beginTransaction();
 			        	transOpen = true;
 			        	theSession.saveOrUpdate(mergedMap);
-//			        	if (symInstance != null) {
-//			        		theSession.saveOrUpdate(symInstance);
-//			        	}
+			        	if (symInstance != null) {
+			        		theSession.saveOrUpdate(symInstance);
+			        	}
 			        	theSession.commit();
 			        	transOpen = false;
 			        }
@@ -1661,13 +1684,25 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @return
 	 */
 	public static MappingUpdateStatus retrieveMappingStatus(final SpExportSchemaMapping map) {
+		return retrieveMappingStatus(map, null);
+	}
+
+	/**
+	 * @param map
+	 * @return
+	 */
+	public static MappingUpdateStatus retrieveMappingStatus(final SpExportSchemaMapping map, final Timestamp overrideTimestamp) {
 		try {
 			if (needsToBeRebuilt(map)) {
 				return new MappingUpdateStatus(0, 0, 0, 0, true);
 			} else {
 				Connection conn = DBConnection.getInstance().createConnection();
 				Statement stmt = conn.createStatement();
+				Timestamp originalTimestamp = map.getTimestampExported();
 				try {
+					if (overrideTimestamp != null) {
+						map.setTimestampExported(overrideTimestamp);
+					}
 					String tbl = getCacheTableName(map.getMappingName());
 					String keyFld = tbl + "Id";
 					SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
@@ -1704,6 +1739,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					}
 					return new MappingUpdateStatus(deletedRecs, 0, 0, deletedRecs + otherRecs, false);
 				} finally {
+					if (overrideTimestamp != null) {
+						map.setTimestampExported(originalTimestamp);
+					}
 					stmt.close();
 					conn.close();
 				}

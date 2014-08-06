@@ -118,6 +118,20 @@ public class SymbiotaTask extends BaseTask {
         return starterPane;
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT)) {
+        	isInitialized = false;
+            initialize();
+        }
+    }
+
 	/**
 	 * 
 	 */
