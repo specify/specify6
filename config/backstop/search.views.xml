@@ -1044,11 +1044,11 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="pcn" name="pc.PaleoContextName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="cs" label="Chronostrat Fullname"/>
+                    <cell type="label" labelfor="cs" label="Chronostrat Full Name"/>
                     <cell type="field" id="cs" name="gtps.FullName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="ls" label="Lithostrat Fullname"/>
+                    <cell type="label" labelfor="ls" label="Lithostrat Full Name"/>
                     <cell type="field" id="ls" name="ls.FullName" isrequired="false" uitype="text"/>
                 </row>
             </rows>
