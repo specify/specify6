@@ -107,6 +107,7 @@
       			<alias name="Agent" field="modifiedByAgent" />
     		</table>
         </table>
+        <alias name="PaleoContext" field="paleoContext" />
         <alias name="CollectingTrip"/>
         <alias name="CollectionObject" field="collectionObjects"/>
         <alias name="Agent" field="createdByAgent" />
@@ -417,6 +418,7 @@
         <table name="LocalityCitation" field="localityCitations">
             <alias name="ReferenceWork"/>
         </table>
+        <alias name="PaleoContext" field="paleoContext" />
         <table name="GeoCoordDetail" field="geoCoordDetails">
         	<alias name="Agent" field="geoRefDetBy"/>
        		<alias name="Agent" field="createdByAgent" />
