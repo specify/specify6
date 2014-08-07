@@ -672,6 +672,16 @@
                 <altview name="LocalityDetail Edit" viewdef="LocalityDetail" mode="edit" default="true"/>
             </altviews>
         </view>
+
+        <view name="LocalityNameAlias"
+            class="edu.ku.brc.specify.datamodel.LocalityNameAlias"
+            resourcelabels="false">
+            <desc><![CDATA[Locality Name Alias subform for the Locality form.]]></desc>
+            <altviews>
+                <altview name="LocalityNameAlias View" viewdef="LocalityNameAlias" mode="view"/>
+                <altview name="LocalityNameAlias Edit" viewdef="LocalityNameAlias" mode="edit" default="true"/>
+            </altviews>
+        </view>
                 
         <view name="LocalitySubForm"
             class="edu.ku.brc.specify.datamodel.Locality"
@@ -692,6 +702,17 @@
             <altviews>
                 <altview name="LocalityMapper View" viewdef="LocalityMapper" mode="view" default="true"/>
            </altviews>
+        </view>
+
+        <view name="PaleoContext"
+            class="edu.ku.brc.specify.datamodel.PaleoContext"
+            isinternal="true"
+            resourcelabels="false">
+            <desc><![CDATA[PaleoContext form.]]></desc>
+            <altviews>
+                <altview name="PaleoContext View" viewdef="PaleoContext" mode="view"/>
+                <altview name="PaleoContext Edit" viewdef="PaleoContext" mode="edit" default="true"/>
+            </altviews>
         </view>
 
         <view name="Permit"
@@ -4097,6 +4118,9 @@
                     <cell type="field" id="oeu" name="originalElevationUnit" uitype="text"/>
                 </row>
                 <row>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
+                </row> 
+                <row>
                     <cell type="label" labelfor="rem"/>
                     <cell type="field" id="rem" name="remarks" uitype="textareabrief" rows="2" colspan="14"/>
                     <cell type="label" labelfor="sn"/>
@@ -4282,6 +4306,29 @@
                 </row>-->
             </rows>
         </viewdef>
+       
+        <viewdef
+            type="form"
+            name="LocalityNameAlias"
+            class="edu.ku.brc.specify.datamodel.LocalityNameAlias"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Locality]]></desc>
+            
+            <columnDef>89px,2px,100px,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true" colspan="6"/>  
+                </row>    
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="source" uitype="text" isrequired="true" colspan="6"/>  
+                </row>
+            </rows>
+        </viewdef>
                 
         <viewdef
             type="form"
@@ -4408,7 +4455,85 @@
                 </row>-->
             </rows>
         </viewdef>
-
+  
+        <viewdef
+            name="PaleoContext"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.PaleoContext"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Paleocontext form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,2px,295px,5px,120px,2px,295px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,324px,5px,145px,2px,324px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,365px,5px,163px,2px,365px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),0px</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="chronosStrat" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="chronosStratEnd" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>                    
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="bioStrat" uitype="querycbx" initialize="name=BioStrat;displaydlg=BioStratDisplay;searchdlg=BioStratSearch" isrequired="false"/>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="n2"/>
+                    <cell type="field" id="n2" name="number2" uitype="text"/>
+                    <cell type="label" labelfor="n3"/>
+                    <cell type="field" id="n3" name="number3" uitype="text"/>
+                    <cell type="label" labelfor="n4"/>
+                    <cell type="field" id="n4" name="number4" uitype="text"/>
+                    <cell type="label" labelfor="n5"/>
+                    <cell type="field" id="n5" name="number5" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text"/>
+                    <cell type="label" labelfor="t3"/>
+                    <cell type="field" id="t3" name="text3" uitype="text"/>
+                    <cell type="label" labelfor="t4"/>
+                    <cell type="field" id="t4" name="text4" uitype="text"/>
+                    <cell type="label" labelfor="t5"/>
+                    <cell type="field" id="t5" name="text5" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="field" id="yn1" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn2" name="yesNo2" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn3" name="yesNo3" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn4" name="yesNo4" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn5" name="yesNo5" uitype="checkbox" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+                
         <viewdef
             type="form"
             name="Permit"
