@@ -735,16 +735,16 @@
             
             <rows>
                 <row>
+                    <cell type="label" labelfor="pcn"/>
+                    <cell type="field" id="pcn" name="paleoContextName" uitype="text"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
+                </row>
+                <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="chronosStrat" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="chronosStratEnd" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
-                    <cell type="label" labelfor="t1"/>
-                    <cell type="field" id="t1" name="text1" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>

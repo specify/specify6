@@ -5361,7 +5361,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo5" isHidden="false" isRequired="false">
+      <desc name="yesNo5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5374,7 +5374,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="number2" isHidden="false" isRequired="false">
+      <desc name="number2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5401,7 +5401,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5450,7 +5450,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="number1" isHidden="false" isRequired="false">
+      <desc name="number1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5463,7 +5463,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="bioStrat" type="ManyToOne" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="bioStrat" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -5477,7 +5477,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo4" isHidden="false" isRequired="false">
+      <desc name="yesNo4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5518,7 +5518,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="number4" isHidden="false" isRequired="false">
+      <desc name="number4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5579,7 +5579,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Paleo Context Name</text>
+            <text>Context Name</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -5600,7 +5600,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="number5" isHidden="false" isRequired="false">
+      <desc name="number5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5664,7 +5664,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="text5" isHidden="false" isRequired="false">
+      <desc name="text5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5677,12 +5677,12 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="chronosStratEnd" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="chronosStratEnd" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Chronos Strat End</text>
+            <text>Chrono Strat End</text>
           </str>
           <str language="pt">
             <version>1</version>
@@ -5691,7 +5691,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="number3" isHidden="false" isRequired="false">
+      <desc name="number3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5704,7 +5704,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo3" isHidden="false" isRequired="false">
+      <desc name="yesNo3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5717,7 +5717,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text4" isHidden="false" isRequired="false">
+      <desc name="text4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -5730,7 +5730,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="collectingEvents" isHidden="false" isRequired="false">
+      <desc name="collectingEvents" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12447,6 +12447,20 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="en">
             <version>0</version>
             <text>Visibility</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="paleoContext" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Paleo Context</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Contexto Paleo</text>
           </str>
         </names>
         <descs/>
@@ -20938,6 +20952,20 @@ Specify provides an extensive array of utilities for curatorial management of sp
           <str language="pt">
             <version>1</version>
             <text>Citações Localidade</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="paleoContext" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Paleo Context</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Contexto Paleo</text>
           </str>
         </names>
         <descs/>

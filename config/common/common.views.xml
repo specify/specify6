@@ -3232,7 +3232,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
             
-            <columnDef>100px,2px,131px,5px,63px,2px,103px,5px,416px,0px,10px,p:g</columnDef>
+            <columnDef>100px,2px,131px,5px,63px,2px,103px,2px,328px,5px,86px,0px,10px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,125px,5px,105px,2px,100px,5px,458px,0px,10px,p:g</columnDef>
             <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,5px,524px,0px,10px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),p:g(2),p:g(2),0px,10px</columnDef>
@@ -3244,17 +3244,13 @@
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="endDate" uitype="formattedtext" uifieldformatter="Date"  initialize="align=right"/>
+                    <cell type="label" label=""/>
                     <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageSetAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="description" uitype="textareabrief" rows="2" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" defaulttype="table" colspan="11"/>
-                </row>
-                <row>
-                    <cell type="separator" label="" colspan="11"/>
+                    <cell type="field" id="1" name="description" uitype="textareabrief" rows="2" colspan="7"/>
+                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage"  initialize="align=right;btn=true"/>
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="1"/>
@@ -4473,16 +4469,16 @@
             
             <rows>
                 <row>
+                    <cell type="label" labelfor="pcn"/>
+                    <cell type="field" id="pcn" name="paleoContextName" uitype="text"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
+                </row>
+                <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="chronosStrat" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="chronosStratEnd" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
-                    <cell type="label" labelfor="t1"/>
-                    <cell type="field" id="t1" name="text1" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
