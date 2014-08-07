@@ -631,6 +631,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	return true;
     }
     
+    /**
+     * @param toDrop
+     * @param conn
+     * @return
+     */
     private boolean removeField(String toDrop, Connection conn) {
     	//System.out.println("removing " + toDrop);
     	String tbl = toDrop.split("\\.")[0];
@@ -644,10 +649,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	return true;
     }
     
-    public boolean fixPaleoModelAftermath(Connection itConn) {
+    /**
+     * @param itConn
+     * @param databaseName
+     * @return
+     */
+    public boolean fixPaleoModelAftermath(Connection itConn, String databaseName) {
     	//update collection.PaleoContextChildTable and IsPaleoContextEmbedded.
     	//It is safe to do this for all collections, though it is only applicable to paleo collections.
-    	BasicSQLUtils.update("UPDATE collection SET PaleoContextChildTable='collectionobject', IsPaleoContextEmbedded=true");    		
+    	BasicSQLUtils.update("UPDATE discipline SET PaleoContextChildTable='collectionobject', IsPaleoContextEmbedded=true");    		
     	
     	//move data to new fields
     	String[] moves = {
@@ -672,9 +682,34 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	if (!fixTypeSearchDefResourcesAfterPaleoModelUpdate()) {
     		return false;
     	}
+    	
+    	if (!rescopePaleoContext(databaseName, itConn)) {
+    		return false;
+    	}
     	return true;
     }
 
+    /**
+     * @param databaseName
+     * @return
+     */
+    protected boolean rescopePaleoContext(String databaseName, Connection itConn) {
+    	boolean result = true;
+    	if (doesColumnExist(databaseName, "PaleoContext", "CollectionMemberID")) {
+    		int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM paleocontext");
+    		if (cnt > 0) {
+        		String sql = "UPDATE paleocontext pc INNER JOIN collection cn ON cn.CollectionID = pc.CollectionMemberID "
+        				+ "SET pc.DisciplineID=cn.DisciplineID";
+    			result = cnt == BasicSQLUtils.update(sql);
+    		}
+    		if (result) {
+    			//kind of assuming itConn's dbname is the same as databaseName.
+    			result = removeField("paleocontext.CollectionMemberID", itConn);
+    		}
+    	}
+    	return result;
+    }
+    
     /**
      * @return
      */
@@ -717,7 +752,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         		Connection conn = dbConn.getConnection();
         		result = true;
         		if (!AppPreferences.getGlobalPrefs().getBoolean("PaleoAftermathCleanup", false)) {
-        			if (fixPaleoModelAftermath(conn)) {
+        			if (fixPaleoModelAftermath(conn, databaseName)) {
         				AppPreferences.getGlobalPrefs().putBoolean("PaleoAftermathCleanup", true);
         			} else {
         				result = false;

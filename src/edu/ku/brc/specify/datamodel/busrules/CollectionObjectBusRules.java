@@ -227,8 +227,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             Pair<Component, FormViewObj> paleoContext = formViewObj.getControlWithFormViewObjByName("paleoContext");
             if (paleoContext != null && paleoContextCmp == null && paleoContext.getSecond() == this.formViewObj) {
             	paleoContextCmp = paleoContext.getFirst();
-            	Collection coll = (AppContextMgr.getInstance().getClassObject(Collection.class));
-            	if (!"collectionobject".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
+            	Discipline disc = (AppContextMgr.getInstance().getClassObject(Discipline.class));
+            	if (!"collectionobject".equalsIgnoreCase(disc.getPaleoContextChildTable())) {
             		UIRegistry.showLocalizedMsg("CollectionObjectBusRules.PaleoRelationshipDisabled");
             		paleoContextCmp.setEnabled(false);
             	} else {
@@ -1277,10 +1277,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             
         }
         
-        if (fieldName.equals("paleoContext") && collection.getIsPaleoContextEmbedded()
-        		&& collection.getPaleoContextChildTable().equalsIgnoreCase("collectionobject"))
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        if (fieldName.equals("paleoContext") && discipline.getIsPaleoContextEmbedded()
+        		&& discipline.getPaleoContextChildTable().equalsIgnoreCase("collectionobject"))
         {
-            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             if (discipline != null)
             {
                 DisciplineType dt = DisciplineType.getByName(discipline.getType());

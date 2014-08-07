@@ -53,6 +53,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 @org.hibernate.annotations.Table(appliesTo="discipline", indexes =
     {   @Index (name="DisciplineNameIDX", columnNames={"Name"})
     })
+@SuppressWarnings("serial")
 public class Discipline extends UserGroupScope implements java.io.Serializable, Comparable<Discipline>
 {
     // Fields
@@ -66,6 +67,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
     protected TaxonTreeDef              taxonTreeDef;
     protected LithoStratTreeDef         lithoStratTreeDef;
+    protected String                     paleoContextChildTable;
+    protected Boolean					 isPaleoContextEmbedded;
     //protected Set<Locality>             localities;
     //protected Set<SpAppResourceDir>     spAppResourceDirs;
     //protected Set<UserPermission>       userPermissions;
@@ -123,6 +126,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         geologicTimePeriodTreeDef = null;
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
+        paleoContextChildTable = "CollectingEvent";
+        isPaleoContextEmbedded = false;
         //determinationStatuss  = new HashSet<DeterminationStatus>();
         //localities            = new HashSet<Locality>();
         //spAppResourceDirs     = new HashSet<SpAppResourceDir>();
@@ -303,6 +308,38 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
 
     public void setLithoStratTreeDef(LithoStratTreeDef lithoStratTreeDef) {
         this.lithoStratTreeDef = lithoStratTreeDef;
+    }
+
+    /**
+     * @return the isPaleoContextEmbedded
+     */
+    @Column(name = "IsPaleoContextEmbedded", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsPaleoContextEmbedded()
+    {
+        return isPaleoContextEmbedded;
+    }
+
+    /**
+     * @param isPaleoContextEmbedded the isPaleoContextEmbedded to set
+     */
+    public void setIsPaleoContextEmbedded(Boolean isPaleoContextEmbedded)
+    {
+        this.isPaleoContextEmbedded = isPaleoContextEmbedded;
+    }
+
+    /**
+     * @return
+     */
+    @Column(name = "PaleoContextChildTable", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getPaleoContextChildTable() {
+    	return paleoContextChildTable;
+    }
+    
+    /**
+     * @param paleoContextChildTable
+     */
+    public void setPaleoContextChildTable(String paleoContextChildTable) {
+    	this.paleoContextChildTable = paleoContextChildTable;
     }
 
     /*

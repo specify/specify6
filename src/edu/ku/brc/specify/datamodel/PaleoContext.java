@@ -53,9 +53,9 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 @Table(name="paleocontext")
 @org.hibernate.annotations.Table(appliesTo="paleocontext", indexes =
     {   @Index (name="PaleoCxtNameIDX", columnNames={"PaleoContextName"}),
-		@Index (name="PaleoCxtColMemIDX", columnNames={"CollectionMemberID"})
+		@Index (name="PaleoCxtDisciplineIDX", columnNames={"DisciplineID"})
     })
-public class PaleoContext extends CollectionMember implements Cloneable
+public class PaleoContext extends DisciplineMember implements Cloneable
 {
     protected Integer paleoContextId;
     

@@ -136,8 +136,8 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
             Pair<Component, FormViewObj> paleoContext = formViewObj.getControlWithFormViewObjByName("paleoContext");
             if (paleoContext != null && paleoContextCmp == null && paleoContext.getSecond() == this.formViewObj) {
             	paleoContextCmp = paleoContext.getFirst();
-            	Collection coll = (AppContextMgr.getInstance().getClassObject(Collection.class));
-            	if (!"collectingevent".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
+            	Discipline disc = (AppContextMgr.getInstance().getClassObject(Discipline.class));
+            	if (!"collectingevent".equalsIgnoreCase(disc.getPaleoContextChildTable())) {
             		UIRegistry.showLocalizedMsg("CollectingEventBusRules.PaleoRelationshipDisabled");
             		paleoContextCmp.setEnabled(false);
             	} else {
@@ -158,18 +158,14 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
             return true;
         }
 
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);        
-        if (fieldName.equals("paleoContext") && collection.getIsPaleoContextEmbedded()
-        		&& collection.getPaleoContextChildTable().equalsIgnoreCase("collectingevent"))
+        Discipline disc = AppContextMgr.getInstance().getClassObject(Discipline.class);        
+        if (fieldName.equals("paleoContext") && disc.getIsPaleoContextEmbedded()
+        		&& disc.getPaleoContextChildTable().equalsIgnoreCase("collectingevent"))
         {
-            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            if (discipline != null)
+        	DisciplineType dt = DisciplineType.getByName(disc.getType());
+            if (dt != null && dt.isPaleo())
             {
-                DisciplineType dt = DisciplineType.getByName(discipline.getType());
-                if (dt != null && dt.isPaleo())
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }

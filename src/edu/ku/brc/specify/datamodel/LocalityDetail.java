@@ -71,8 +71,8 @@ public class LocalityDetail extends DataModelObjBase
     protected Byte                  endDepthUnit;
     protected String                endDepthVerbatim;
 
-    protected BigDecimal            paleoLatitude;
-    protected BigDecimal            paleoLongitude;
+    protected String            	paleoLat;
+    protected String            	paleoLng;
 
     // HUC Code for fishes
     protected String                hucCode;
@@ -151,8 +151,8 @@ public class LocalityDetail extends DataModelObjBase
         endDepth           = null;
         endDepthUnit       = null;
         endDepthVerbatim   = null;
-        paleoLatitude      = null;
-        paleoLongitude     = null;
+        paleoLat = null;
+        paleoLng = null;
         
         locality    = null;
         
@@ -638,29 +638,29 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * * paleo latitude
      */
-    @Column(name = "PaleoLatitude", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
-    public BigDecimal getPaleoLatitude()
+    @Column(name = "PaleoLat", unique = false, nullable = true, insertable = true, updatable = true, length=32)
+    public String getPaleoLat()
     {
-        return this.paleoLatitude;
+        return this.paleoLat;
     }
 
-    public void setPaleoLatitude(BigDecimal paleoLatitude)
+    public void setPaleoLat(String paleoLat)
     {
-        this.paleoLatitude = paleoLatitude;
+        this.paleoLat = paleoLat;
     }
 
     /**
      * * Paleo longitude 
      */
-    @Column(name = "PaleoLongitude", unique = false, nullable = true, insertable = true, updatable = true, precision = 13, scale = 10)
-    public BigDecimal getPaleoLongitude()
+    @Column(name = "PaleoLng", unique = false, nullable = true, insertable = true, updatable = true, length=32)
+    public String getPaleoLng()
     {
-        return this.paleoLongitude;
+        return this.paleoLng;
     }
 
-    public void setPaleoLongitude(BigDecimal paleoLongitude)
+    public void setPaleoLng(String paleoLng)
     {
-        this.paleoLongitude = paleoLongitude;
+        this.paleoLng = paleoLng;
     }
 
     /**

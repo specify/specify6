@@ -62,8 +62,6 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected String                     catalogNumFormatName;
     protected String                     code; // Collection Acronym
     protected Boolean                    isEmbeddedCollectingEvent;
-    protected String                     paleoContextChildTable;
-    protected Boolean					 isPaleoContextEmbedded;
     protected String                     regNumber;
     protected String                     description;
     protected String                     remarks;
@@ -126,8 +124,6 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         catalogNumFormatName   = null;
         code                   = null;
         isEmbeddedCollectingEvent = true;
-        paleoContextChildTable = "CollectingEvent";
-        isPaleoContextEmbedded = false;
         regNumber              = null;
         description            = null;
         remarks                = null;
@@ -279,22 +275,6 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.isEmbeddedCollectingEvent = isEmbeddedCollectingEvent;
     }
    
-    /**
-     * @return the isPaleoContextEmbedded
-     */
-    @Column(name = "IsPaleoContextEmbedded", unique = false, nullable = false, insertable = true, updatable = true)
-    public Boolean getIsPaleoContextEmbedded()
-    {
-        return isPaleoContextEmbedded;
-    }
-
-    /**
-     * @param isPaleoContextEmbedded the isPaleoContextEmbedded to set
-     */
-    public void setIsPaleoContextEmbedded(Boolean isPaleoContextEmbedded)
-    {
-        this.isPaleoContextEmbedded = isPaleoContextEmbedded;
-    }
 
     /**
      * @return the isRegistered
@@ -313,20 +293,6 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.regNumber = regNumber;
     }
 
-    /**
-     * @return
-     */
-    @Column(name = "PaleoContextChildTable", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getPaleoContextChildTable() {
-    	return paleoContextChildTable;
-    }
-    
-    /**
-     * @param paleoContextChildTable
-     */
-    public void setPaleoContextChildTable(String paleoContextChildTable) {
-    	this.paleoContextChildTable = paleoContextChildTable;
-    }
     
     /**
      * @param description the description to set

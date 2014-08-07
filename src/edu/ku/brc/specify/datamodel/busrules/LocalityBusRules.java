@@ -118,8 +118,8 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
             Pair<Component, FormViewObj> paleoContext = formViewObj.getControlWithFormViewObjByName("paleoContext");
             if (paleoContext != null && paleoContextCmp == null && paleoContext.getSecond() == this.formViewObj) {
             	paleoContextCmp = paleoContext.getFirst();
-            	Collection coll = (AppContextMgr.getInstance().getClassObject(Collection.class));
-            	if (!"locality".equalsIgnoreCase(coll.getPaleoContextChildTable())) {
+            	Discipline disc = (AppContextMgr.getInstance().getClassObject(Discipline.class));
+            	if (!"locality".equalsIgnoreCase(disc.getPaleoContextChildTable())) {
             		UIRegistry.showLocalizedMsg("LocalityBusRules.PaleoRelationshipDisabled");
             		paleoContextCmp.setEnabled(false);
             	} else {
@@ -206,11 +206,10 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
 	 */
 	@Override
 	public boolean shouldCloneField(String fieldName) {
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);        
-        if (fieldName.equals("paleoContext") && collection.getIsPaleoContextEmbedded()
-        		&& collection.getPaleoContextChildTable().equalsIgnoreCase("locality"))
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        if (fieldName.equals("paleoContext") && discipline.getIsPaleoContextEmbedded()
+        		&& discipline.getPaleoContextChildTable().equalsIgnoreCase("locality"))
         {
-            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             if (discipline != null)
             {
                 DisciplineType dt = DisciplineType.getByName(discipline.getType());
