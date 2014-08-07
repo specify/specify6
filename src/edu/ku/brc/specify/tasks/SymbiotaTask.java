@@ -46,7 +46,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
-import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.SymbiotaPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -69,7 +68,7 @@ public class SymbiotaTask extends BaseTask {
     
     private static final String  SYMBIOTA        = "Symbiota";
     private static final String SELECT_INSTANCE  = "SelectSymbiotaInstance";
-    private static final String  SYMBIOTA_TITLE     = "SYMBIOTA_TITLE";
+    public static final String  SYMBIOTA_TITLE     = "SYMBIOTA_TITLE";
  
     
     public static final String BASE_URL_PREF = "SymbiotaTask.BaseUrlPref";

@@ -48,6 +48,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -62,6 +63,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.SpSymbiotaInstance;
 import edu.ku.brc.specify.plugins.morphbank.DarwinCoreArchive;
+import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.SymbiotaTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.specify.tools.export.ExportPanel;
@@ -763,9 +765,10 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * 
 	 */
 	protected void createIntroPane() {
-		JLabel text = UIHelper.createLabel("<html><p><p><b>Welcome to the Symbiota Task</b><p><p>blah...<p><p>Before you can use this task you need to create a schema mapping and create a new Symbiota connector.<p><p>blah blah blah...</html>");
-		introPane = new JPanel(new BorderLayout());
-		introPane.add(text, BorderLayout.NORTH);
+		//JLabel text = UIHelper.createLabel("<html><p><p><b>Welcome to the Symbiota Task</b><p><p>blah...<p><p>Before you can use this task you need to create a schema mapping and create a new Symbiota connector.<p><p>blah blah blah...</html>");
+		//introPane = new JPanel(new BorderLayout());
+		//introPane.add(text, BorderLayout.NORTH);
+	    introPane = (JPanel)StartUpTask.createFullImageSplashPanel(SymbiotaTask.SYMBIOTA_TITLE, symTask).getUIComponent();
 	}
 	
 	/**
