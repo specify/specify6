@@ -633,18 +633,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     
     /**
      * @param toDrop
+     * @param databaseName
      * @param conn
      * @return
      */
-    private boolean removeField(String toDrop, Connection conn) {
+    private boolean removeField(String toDrop, String databaseName, Connection conn) {
     	//System.out.println("removing " + toDrop);
     	String tbl = toDrop.split("\\.")[0];
     	String fld = toDrop.split("\\.")[1];
     	String sql = "SELECT COUNT(*) FROM " + tbl;
-    	int cnt = BasicSQLUtils.getCountAsInt(sql);
-    	sql = "ALTER TABLE " + tbl + " DROP " + fld;
-    	if (BasicSQLUtils.update(conn, sql) != cnt) {
-    		return false;
+    	if (doesColumnExist(databaseName, tbl, fld)) {
+        	int cnt = BasicSQLUtils.getCountAsInt(sql);
+        	sql = "ALTER TABLE " + databaseName + "." + tbl + " DROP " + fld;
+        	if (BasicSQLUtils.update(conn, sql) != cnt) {
+        		return false;
+        	}
     	}
     	return true;
     }
@@ -674,7 +677,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	}
     	//delete old fields
     	for (int i = 0; i < moves.length; i++) {
-    		if (!removeField(moves[i].split("\\|")[0], itConn)) {
+    		if (!removeField(moves[i].split("\\|")[0], databaseName, itConn)) {
     			return false;
     		}
     	}
@@ -703,8 +706,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     			result = cnt == BasicSQLUtils.update(sql);
     		}
     		if (result) {
-    			//kind of assuming itConn's dbname is the same as databaseName.
-    			result = removeField("paleocontext.CollectionMemberID", itConn);
+    			result = removeField("paleocontext.CollectionMemberID", databaseName, itConn);
     		}
     	}
     	return result;
@@ -719,7 +721,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	if (resources != null && resources.size() > 0) {
     		String pcSearch = "    <typesearch tableid=\"32\"  name=\"PaleoContext\"           searchfield=\"paleoContextName,cs.fullName,ls.fullName\" displaycols=\"paleoContextName,cs.fullName,cse.fullName,ls.fullName\" format=\"%s, %s, %s, %s\"\n"     
     		    	+ "        dataobjformatter=\"PaleoContext\">\n"
-    		    	+ "        SELECT %s1 FROM PaleoContext pc LEFT JOIN pc.chronosStrat cs JOIN cs.definition csd LEFT JOIN pc.chronosStratEnd cse LEFT JOIN cse.definition csed LEFT JOIN pc.lithoStrat ls LEFT JOIN ls.definition lsd WHERE pc.collectionMemberId = COLMEMID AND (pc.chronosStrat IS NULL OR csd.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.chronosStratEnd IS NULL OR csed.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.lithoStrat IS NULL OR lsd.lithoStratTreeDefId=LITHOTREEDEFID) AND %s2 ORDER BY pc.paleoContextName,cs.fullName,cse.fullName,ls.fullName\n"
+    		    	+ "        SELECT %s1 FROM PaleoContext pc LEFT JOIN pc.chronosStrat cs JOIN cs.definition csd LEFT JOIN pc.chronosStratEnd cse LEFT JOIN cse.definition csed LEFT JOIN pc.lithoStrat ls LEFT JOIN ls.definition lsd WHERE pc.discipline.disciplineId = DSPLNID AND (pc.chronosStrat IS NULL OR csd.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.chronosStratEnd IS NULL OR csed.geologicTimePeriodTreeDefId=GTPTREEDEFID) AND (pc.lithoStrat IS NULL OR lsd.lithoStratTreeDefId=LITHOTREEDEFID) AND %s2 ORDER BY pc.paleoContextName,cs.fullName,cse.fullName,ls.fullName\n"
     		    	+ "    </typesearch>\n";
     		for (Object resource : resources) {
     			sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '</typesearches>','" + pcSearch + "</typesearches>') WHERE SpAppResourceID=" + resource;
