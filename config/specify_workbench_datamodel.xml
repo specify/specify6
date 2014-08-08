@@ -244,15 +244,15 @@
     <field column="Number 31 (Col. Obj. Attribute)" name="colObjAttributeNumber31" type="java.lang.Float" length="24"/>
     <field column="Number 32 (Col. Obj. Attribute)" name="colObjAttributeNumber32" type="java.lang.Float" length="24"/>
     <field column="Number 33 (Col. Obj. Attribute)" name="colObjAttributeNumber33" type="java.lang.Float" length="24"/>
-    <field column="Number 34 (Col. Obj. Attribute)" name="colObjAttributeNumber34" type="java.lang.Integer" length="10"/>
-    <field column="Number 35 (Col. Obj. Attribute)" name="colObjAttributeNumber35" type="java.lang.Integer" length="10"/>
-    <field column="Number 36 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 37 (Col. Obj. Attribute)" name="colObjAttributeNumber37" type="java.lang.Integer" length="10"/>
-    <field column="Number 38 (Col. Obj. Attribute)" name="colObjAttributeNumber38" type="java.lang.Integer" length="10"/>
-    <field column="Number 39 (Col. Obj. Attribute)" name="colObjAttributeNumber39" type="java.lang.Integer" length="10"/>
-    <field column="Number 40 (Col. Obj. Attribute)" name="colObjAttributeNumber40" type="java.lang.Integer" length="10"/>
-    <field column="Number 41 (Col. Obj. Attribute)" name="colObjAttributeNumber41" type="java.lang.Integer" length="10"/>
-    <field column="Number 42 (Col. Obj. Attribute)" name="colObjAttributeNumber42" type="java.lang.Integer" length="10"/>
+    <field column="Number 34 (Col. Obj. Attribute)" name="colObjAttributeNumber34" type="java.lang.Float"/>
+    <field column="Number 35 (Col. Obj. Attribute)" name="colObjAttributeNumber35" type="java.lang.Float"/>
+    <field column="Number 36 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Float"/>
+    <field column="Number 37 (Col. Obj. Attribute)" name="colObjAttributeNumber37" type="java.lang.Float"/>
+    <field column="Number 38 (Col. Obj. Attribute)" name="colObjAttributeNumber38" type="java.lang.Float"/>
+    <field column="Number 39 (Col. Obj. Attribute)" name="colObjAttributeNumber39" type="java.lang.Float"/>
+    <field column="Number 40 (Col. Obj. Attribute)" name="colObjAttributeNumber40" type="java.lang.Float"/>
+    <field column="Number 41 (Col. Obj. Attribute)" name="colObjAttributeNumber41" type="java.lang.Float"/>
+    <field column="Number 42 (Col. Obj. Attribute)" name="colObjAttributeNumber42" type="java.lang.Float"/>
     <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 2 (Col. Obj. Attribute)" name="colObjAttributeText2" type="java.lang.String" length="300"/>
     <field column="Text 3 (Col. Obj. Attribute)" name="colObjAttributeText3" type="java.lang.String" length="300"/>
