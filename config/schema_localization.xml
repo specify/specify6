@@ -5598,7 +5598,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="chronosStratEnd" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="chronosStratEnd" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -5653,16 +5653,16 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="text1" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
             <version>1</version>
-            <text>Notas</text>
+            <text>Bio Estrat</text>
           </str>
           <str language="en">
             <version>0</version>
-            <text>Text1</text>
+            <text>Bio Strat</text>
           </str>
         </names>
         <descs/>

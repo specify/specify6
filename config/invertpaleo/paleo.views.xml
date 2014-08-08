@@ -742,14 +742,16 @@
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="chronosStrat" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="chronosStratEnd" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>                    
                 </row>
                 <!--<row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="chronosStratEnd" uitype="querycbx" initialize="name=ChronosStrat;displaydlg=ChronosStratDisplay;searchdlg=ChronosStratSearch" isrequired="false"/>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="bioStrat" uitype="querycbx" initialize="name=BioStrat;displaydlg=BioStratDisplay;searchdlg=BioStratSearch" isrequired="false"/>
                     <cell type="label" labelfor="n1"/>
@@ -764,8 +766,6 @@
                     <cell type="field" id="n5" name="number5" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="t1"/>
-                    <cell type="field" id="t1" name="text1" uitype="text"/>
                     <cell type="label" labelfor="t2"/>
                     <cell type="field" id="t2" name="text2" uitype="text"/>
                     <cell type="label" labelfor="t3"/>
