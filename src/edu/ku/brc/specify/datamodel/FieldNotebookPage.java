@@ -191,7 +191,11 @@ public class FieldNotebookPage extends DisciplineMember implements AttachmentOwn
         return description;
     }
 
-    @OneToMany(mappedBy = "fieldNotebookPage")
+    //Switching to EAGER loading as quick fix for bug #9648. Which I cannot reproduce, no matter how hard I try.
+    //Seems reasonable to assume that there will not be large numbers of attachments 
+    //to individual notebook pages (or field note book pages), and that speed or memory
+    //effects will be minimal.
+    @OneToMany(mappedBy = "fieldNotebookPage", fetch = FetchType.EAGER)
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @OrderBy("ordinal ASC")
     public Set<FieldNotebookPageAttachment> getAttachments()
