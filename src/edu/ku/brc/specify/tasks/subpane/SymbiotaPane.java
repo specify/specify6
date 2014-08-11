@@ -42,14 +42,12 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -82,7 +80,7 @@ import edu.ku.brc.util.Pair;
 @SuppressWarnings("serial")
 public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFace
 {
-    private static final Logger log  = Logger.getLogger(SymbiotaPane.class);
+    //private static final Logger log  = Logger.getLogger(SymbiotaPane.class);
     
     protected static String SymbiotaViewSetName = "SystemSetup";
 	protected static String SymbiotaViewName = "SymbiotaPane";
@@ -680,7 +678,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	    instanceMapping = UIHelper.createLabel("?");
 	    description = UIHelper.createLabel("?");
 	    key = UIHelper.createLabel("?");
-
+	    key.setVisible(!AppContextMgr.isSecurityOn() || symTask.getPermissions().canAdd());
+	    
 		lastSendToSymLbl = UIHelper.createI18NLabel("SymbiotaPane.LastSendDate");
 		lastSendToSym = UIHelper.createLabel("?");
 		lastGetFromSymLbl = UIHelper.createI18NLabel("SymbiotaPane.LastGetDate");
