@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.DroppableNavBox;
@@ -678,6 +680,14 @@ public class SymbiotaTask extends BaseTask {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+	 */
+	@Override
+	public PermissionEditorIFace getPermEditorPanel()
+	{
+		return new BasicPermisionPanel("SymbiotaTask.PermTitle", "SymbiotaTask.PermView", "SymbiotaTask.PermCreate", "SymbiotaTask.PermUpdate", "SymbiotaTask.PermDelete");
+	}
 
 	@Override
 	public List<ToolBarItemDesc> getToolBarItems() {
