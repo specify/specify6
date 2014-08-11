@@ -66,9 +66,9 @@ import edu.ku.brc.ui.dnd.Trash;
 public class SymbiotaTask extends BaseTask {
     //private static final Logger log  = Logger.getLogger(VisualQueryTask.class);
     
-    private static final String  SYMBIOTA        = "Symbiota";
+    public static final String  SYMBIOTA        = "Symbiota";
     private static final String SELECT_INSTANCE  = "SelectSymbiotaInstance";
-    public static final String  SYMBIOTA_TITLE     = "SYMBIOTA_TITLE";
+    public static final String  SYMBIOTA_TITLE     = "SymbiotaTask.SYMBIOTA_TITLE";
  
     
     public static final String BASE_URL_PREF = "SymbiotaTask.BaseUrlPref";
@@ -163,7 +163,7 @@ public class SymbiotaTask extends BaseTask {
 	 * 
 	 */
 	protected void addActions() {
-		actionNavBox.add(NavBox.createBtnWithTT(
+		NavBoxItemIFace nbb = NavBox.createBtnWithTT(
 				UIRegistry.getResourceString("SymbiotaTask.NewInstance"),
 				"Symbiota",
 				UIRegistry.getResourceString("SymbiotaTask.NewInstanceTT"),
@@ -172,7 +172,12 @@ public class SymbiotaTask extends BaseTask {
 					public void actionPerformed(ActionEvent e) {
 						makeNewInstance();
 					}
-				}));
+				});
+		if (AppContextMgr.isSecurityOn() && !getPermissions().canAdd()) {
+			nbb.setEnabled(false);
+			nbb.setToolTip(UIRegistry.getResourceString("SymbiotaPane.NoPermissionForAction"));
+		}
+		actionNavBox.add(nbb);
 
 //		sendToArchiveAction = NavBox.createBtnWithTT(
 //				UIRegistry.getResourceString("SymbiotaTask.SendToArchiveBtn"),
@@ -298,8 +303,9 @@ public class SymbiotaTask extends BaseTask {
 					}
 				});
 	        roc.addDragDataFlavor(new DataFlavorTableExt(getClass(), "Symbiota", SpSymbiotaInstance.getClassTableId()));
-			roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-
+			if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete()) {
+				roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+			}
 			final SymbiotaTask symTask = this;
 	        JPopupMenu popupMenu = new JPopupMenu();
 	        String menuTitle = "SymbiotaTask.EditPropertiesMenu";
@@ -331,6 +337,12 @@ public class SymbiotaTask extends BaseTask {
 	 */
 	protected void editInstanceProps(final NavBoxItemIFace item) {
 		//System.out.println(item.getData());
+		
+		if (AppContextMgr.isSecurityOn() && !getPermissions().canAdd()) {
+			UIRegistry.showLocalizedMsg("SymbiotaPane.NoPermissionForAction");
+			return;
+		}
+		
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try {
         	SpSymbiotaInstance spym = session.get(SpSymbiotaInstance.class, Integer.class.cast(item.getData()));
@@ -678,7 +690,11 @@ public class SymbiotaTask extends BaseTask {
 
         AppPreferences remotePrefs = AppPreferences.getRemote();
         String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-        if (remotePrefs.getBoolean(IS_USING_SYMBIOTA_PREFNAME+"."+ds, false)) {
+        boolean showIt = remotePrefs.getBoolean(IS_USING_SYMBIOTA_PREFNAME+"."+ds, false);
+        if (showIt && AppContextMgr.isSecurityOn()) {
+        	showIt = getPermissions().canView();
+        }
+        if (showIt) {
         	toolbarItems.add(new ToolBarItemDesc(btn));
         }
         return toolbarItems;

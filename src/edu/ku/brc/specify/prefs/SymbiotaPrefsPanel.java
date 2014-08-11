@@ -3,6 +3,8 @@
  */
 package edu.ku.brc.specify.prefs;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -41,6 +43,9 @@ public class SymbiotaPrefsPanel extends GenericPrefsPanel {
         {
         	comp.setText(baseUrl);
         }
+        if (AppContextMgr.isSecurityOn() && !TaskMgr.getTask(SymbiotaTask.SYMBIOTA).getPermissions().canAdd()) {
+        	comp.setViewOnly(true);
+        }
         
 //        Boolean showTask = AppPreferences.getLocalPrefs().getBoolean(SymbiotaTask.SHOW_TASK_PREF, false);
 //        ValCheckBox chk = fvo.getCompById("showtask");
@@ -54,16 +59,18 @@ public class SymbiotaPrefsPanel extends GenericPrefsPanel {
 	 */
 	@Override
 	public void savePrefs() {
-        AppPreferences prefs = AppPreferences.getRemote();
+        if (!AppContextMgr.isSecurityOn() || TaskMgr.getTask(SymbiotaTask.SYMBIOTA).getPermissions().canAdd()) {
+        	AppPreferences prefs = AppPreferences.getRemote();
         
-        FormViewObj fvo = (FormViewObj)form;
+        	FormViewObj fvo = (FormViewObj)form;
         
-        ValTextField comp = fvo.getCompById("1");
-        if (comp != null) {
-            String val = comp.getText();
-            if (val != null) {
-                prefs.put(SymbiotaTask.BASE_URL_PREF, val);
-            }
+        	ValTextField comp = fvo.getCompById("1");
+        	if (comp != null) {
+        		String val = comp.getText();
+        		if (val != null) {
+        			prefs.put(SymbiotaTask.BASE_URL_PREF, val);
+        		}
+        	}
         }
 //        ValCheckBox chk = fvo.getCompById("showtask");
 //        if (chk != null) {

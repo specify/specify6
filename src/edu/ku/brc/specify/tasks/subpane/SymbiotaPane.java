@@ -48,6 +48,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
@@ -738,6 +739,14 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			}
 			
 		});
+		if (!getButtonsPermission()) {
+			pullBtn.setEnabled(false);
+			pushBtn.setEnabled(false);
+			archiveBtn.setEnabled(false);
+			pullBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaPane.NoPermissionForAction"));
+			pushBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaPane.NoPermissionForAction"));
+			archiveBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaPane.NoPermissionForAction"));
+		}
 		//btnPane.add(pullBtn);
 		btnPane.add(pushBtn);
 		btnPane.add(archiveBtn);
@@ -754,13 +763,21 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	}
 	
 	/**
+	 * @return
+	 */
+	protected boolean getButtonsPermission() {
+		return !AppContextMgr.isSecurityOn() || (symTask != null && symTask.getPermissions().canModify());
+	}
+	
+	/**
 	 * 
 	 */
 	public void updateActionEnablement() {
-		pushBtn.setEnabled(symTask.getTheInstance() != null);
-		pullBtn.setEnabled(symTask.getTheInstance() != null);
-		archiveBtn.setEnabled(symTask.getTheInstance() != null);		
+		pushBtn.setEnabled(symTask.getTheInstance() != null && getButtonsPermission());
+		pullBtn.setEnabled(symTask.getTheInstance() != null && getButtonsPermission());
+		archiveBtn.setEnabled(symTask.getTheInstance() != null && getButtonsPermission());		
 	}
+	
 	/**
 	 * 
 	 */
