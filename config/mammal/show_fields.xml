@@ -4,8 +4,6 @@
 		<field name="timestampModified"/>
 	</table>
 	<table name="CollectionObject">
-		<field name="text1"/>
-		<field name="text2"/>
 		<field name="timestampModified"/>
 	</table>
 	<table name="Deaccession">

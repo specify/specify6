@@ -34678,7 +34678,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="number3" isHidden="false" isRequired="false">
+      <desc name="number3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -34733,7 +34733,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="definitionItem" type="ManyToOne" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="definitionItem" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -34831,7 +34831,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text5" isHidden="false" isRequired="false">
+      <desc name="text5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -34858,7 +34858,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text4" isHidden="false" isRequired="false">
+      <desc name="text4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -34996,7 +34996,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="number4" isHidden="false" isRequired="false">
+      <desc name="number4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35382,7 +35382,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo2" isHidden="false" isRequired="false">
+      <desc name="yesNo2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35432,7 +35432,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
           </str>
         </descs>
       </desc>
-      <desc name="yesNo1" isHidden="false" isRequired="false">
+      <desc name="yesNo1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35473,7 +35473,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="number5" isHidden="false" isRequired="false">
+      <desc name="number5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35565,7 +35565,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo3" isHidden="false" isRequired="false">
+      <desc name="yesNo3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35620,7 +35620,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
