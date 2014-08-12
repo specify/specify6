@@ -36,7 +36,7 @@
       <ol>
         <li>Apache Solr and a server must be installed on the computer
           that will be serving data to the internet.</li>
-        <li>Create and Export a Schema Mapping file from within Specify.</li>
+        <li>Create and Export a <a href="#export_schema_map">Schema Mapping</a> file from within Specify.</li>
         <li>Use the Data Exporter, a separate Specify tool, to create
           (build) an index of the data and other configuration files.</li>
         <li>Integrate the exported web portal files with Solr</li>
@@ -63,13 +63,13 @@
         encoded data. See <a href="http://ipt.gbif.org">http://ipt.gbif.org</a>
         for additional information regarding IPT. </p>
       <p> Using the Integrated Publishing Toolkit to display and
-        publish, Specify collection data requires several steps. <br>
+        publish Specify collection data requires several steps. <br>
       </p>
       <ol>
         <li>Install Tomcat on the computer that will be
           serving data to the internet.&nbsp; </li>
         <li>Map Specify data to a schema authority, such as
-          Darwin Core, from inside Specify. </li>
+          Darwin Core, from inside Specify using the <a href="#export_schema_map">Schema Mapping tool</a>. </li>
         <li>Use the Data Exporter, a separate Specify tool, to
           create (build) the data file for IPT. </li>
         <li>Setup IPT to display Specify data. </li>
@@ -89,7 +89,7 @@
     </p>
     <h3> <a name="schema_map" id="schema_map">Schema Mapping Tool </a><br>
     </h3>
-    <p>The Schema Mapper is a powerful tool for organizing data which need to be exported. The schema mapping tool is used to create a query, referred to as a map, for exporting data from Specify to a web publishing platform, i.e. GBIF, or a Specify Web Portal. When publishing to a third party, such as GBIF, the map also creates relationships between the fields in Specify and the predefined field types and column headings in required. </p>
+    <p>The Schema Mapper is a powerful tool for organizing data which need to be exported. The schema mapping tool is used to create a query, referred to as a map, for exporting data from Specify to a web publishing platform, i.e. GBIF, or a Specify Web Portal. When publishing to a third party, such as GBIF, the map also creates relationships between the fields in Specify and the predefined field types and column headings  that are required. </p>
     <p>Open the Schema Mapping Tool by choosing <em>System &gt;
         Schema Mapper</em>.&nbsp; </p>
     <p> Two actions are available in the side bar:</p>
@@ -273,8 +273,7 @@
             button. </li>
         </ol>
       </blockquote>
-      <p>&nbsp; </p>
-      <p> <strong><a name="delete_schema_map"></a>Delete a Mapping</strong>
+<p> <strong><a name="delete_schema_map"></a>Delete a Mapping</strong>
       </p>
   <blockquote>
         <p> Right-click on the side bar (in an empty space) then choose

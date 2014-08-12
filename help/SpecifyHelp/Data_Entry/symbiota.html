@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta content="text/html; charset=windows-1252"
+      http-equiv="Content-Type">
+    <link type="text/css" media="screen" href="../../main.css"
+      rel="stylesheet">
+    <meta name="generator" content="Helen">
+    <title>Symbiota Tool</title>
+    <style type="text/css">
+<!--
+table.box {border-top: 1px solid gray; border-left: 1px solid gray }
+-->
+    </style>
+  </head>
+  <body bgcolor="#ffffff">
+    <table background="../../images/topbar.png" border="0" width="100%">
+      <tbody>
+        <tr>
+          <td>&nbsp; </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2><img src="../../images/data_entry.png" alt=""> 
+  <a name="symbiota_tool"></a>Sharing Data with Symbiota</h2>
+    <p>Symbiota is an open source software project dedicated to providing web tools that allow biologists to curate quality datasets of the world's flora and fauna. </p>
+    <p>New in Specify 6.5.05, data in Specify can be shared with  Symbiota  an automated tool once a the following steps are complete.</p>
+    <ol>
+      <li>Setup Symbiota using Specify Preferences</li>
+      <li>Create a Data Mapping</li>
+      <li>Build the Cache</li>
+      <li>Create a new Symbiota Connector</li>
+    </ol>
+    <h3>1. Setup Symbiota using  Specify Preferences</h3>
+    <blockquote>
+    <p>Open the System Preferences:</p>
+    <ul>
+      <li>For Mac: Choose <em>Specify &gt; Preferences &gt; Symbiota</em> .</li>
+      <li>For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Symbiota</em>.</li>
+    </ul>
+    <p>Type or Copy/Paste the base url for your Symbiota project (this must be provided by Symbiota) into the <em>Base Url</em> text box. </p>
+    <p>Next, add the Symbiota tool to the Task Bar:</p>
+    <ul>
+      <li class="MichaelsChanges">For Mac: Choose<em> Specify &gt;
+        Preferences &gt; Task Bar. </em></li>
+      <li class="MichaelsChanges">For Windows and Linux: Choose <em>Edit
+        
+        
+        
+        &gt; Preferences &gt; Task Bar</em>.</li>
+    </ul>
+    <p>Check the <em>Add Symbiota</em> checkbox. The Symbiota button should now appear on the top of your Specify Task Bar.</p>
+    </blockquote>
+    
+    <h3>2. Create a Data Mapping</h3>
+    <blockquote>
+    <p>Next, define the relationships between the fields in Specify and the predefined fields in Symbiota  by creating what is referred to as a 'map'. This is accomplished using the Schema Mapping tool.    </p>
+    <p>Open the Schema Mapping tool by choosing <em>System &gt;
+    Schema Mapper</em>.&nbsp; </p>
+    <p>Click <em>Create New Mapping</em> located on the sidebar. </p>
+    <p>Schema refers to the many tables and fields that systematize the many dimensions and relationships of the data within biological collections. When preparing data in Specify to be published in Symbiota, it is necessary to use a predefined schema to ensure all necessary data files are included in the data export. Specify ships with a predefined  schema for use when publising data to Symbiota.    </p>
+    <p>In the dialog choose a predefined schema, or click No Schema to create a unique schema. </p>
+    <blockquote>
+    <p><strong><em>Note: </em></strong>Specify ships with a predefined Symbiota schema which includes all the required fields. To use this schema choose <em>SymbiotaDWC(1.0)</em>. </p>
+    </blockquote>
+    <p>If the mapping file includes all the fields you wish to publish to Symbiota, simply click the <em>Save</em> button and give the new mapping a name. Or, if you wish to edit/add fields to the mapping simply follow the steps below. </p>
+    <p align="center"><img alt="schema authority" src="../../images/schema_authority_map.png" /></p>
+    <blockquote>
+      <p><strong>Remap</strong> a term by simply clicking the list box (<img src="../../images/up_down_button.png" alt="" />) and selecting a new schema concept from the list. Only unmapped schema concepts are available from the list. </p>
+      <p><strong>Add</strong> a term by selecting a field from the Specify list and clicking the <img src="../../images/add.png" alt="" /> button. The Schema Concept will be defined as 'Not Mapped'. Choose a schema Concept from the drop down list to map the new field. </p>
+      <blockquote>
+        <p><b><i>Note:</i></b> it is not necessary to include attachment fields in mappings, attachments are automatically included in mapping files.</p>
+      </blockquote>
+      <p><strong>Delete</strong> a term by selecting it from the list and clicking the <img src="../../images/close_hover.png" alt="remove" />&nbsp;<em>(remove field)</em> button.</p>
+      <p><strong>Query Expressions</strong> can be used to narrow the results. These function similarly to the Query Builder. For additional help creating/editing query expressions 
+        please refer to the <a href="Query_Builder.html">Query
+          Builder</a> help page.</p>
+      <h4><strong>Add  Conditions to Eliminate Duplicate Records</strong></h4>
+      <blockquote>
+        <p> IPT and Specify require that all uploaded records be
+          unique.&nbsp; Due to the one-to-many relationships contained
+          in Specify databases it may be necessary to add certain
+          conditional fields to the schema to ensure this e.g. adding
+          the Determination Current field and setting it to <em>Yes</em> will eliminate multiple determinations.&nbsp; One can also
+          select a table to take advantage of the formatted and
+          aggregated value for that table e.g. selecting the
+          Collectors table will add all collectors on a single
+          line.&nbsp; Fields can also be added to eliminate certain
+          records from the resulting index. </p>
+          <blockquote>
+        <p><strong><em>Note:</em></strong> uncheck the <em>Show</em> checkbox to hide the schema concept in the exported data cache.</p>
+        </blockquote>
+      </blockquote>
+        <p><strong>Mapping Checklist</strong></p>
+        <p>Before saving the schema map for Symbiota check the following list against your mapping. If any of the following items are not correct the data upload to Symbiota will fail. </p>
+  
+  <ul>
+      <li>When a new field is added to the mapping and given a unique Schema Concept, rather than chosing the Schema Concept from the drop-down  list, the checkbox for <em>Show</em> MUST be unchecked. </li><br>
+      <li>Fields may only be used once within a single mapping. </li><br>
+      <li>Collections must include a GUID.    </li>
+  </ul>
+    </blockquote>
+    </blockquote>
+<h3>3. Build the Cache</h3>
+<blockquote>
+  <p> The first time the data cache is built for a Symbiota Connector, it must be completed in the Data Exporter, a seperate application that ships with Specify. Subsequent updates to the cache can be built from within the Symbiota tool in Specify. At this time, you will need to close the Specify application.</p>
+  <p>The Data Exporter application is located in the bin directory within the Specify
+      application directory, which stores the executable files for Specify. Double click <em>Exporter</em> (or select it from Start/Program Files/Specify on Windows) to launch the
+  tool. Users are required to login using their Specify Username and Password. </p>
+  <p>The Data Exporter application opens as a three-column table with action buttons. </p>
+  <p align="center"> <img src="../../images/export_tool.png" alt="exporter pane" ></p>
+  <p align="center" class="imgcaption">Data Exporter  </p>
+  <ol>
+    <li>Choose the appropriate Mapping from the list.</li>
+    <li>Click the <em>Build/Update</em> button to build the data cache. </li>
+    <li>Click the <em>Quit</em> button to exit the Data Exporter. </li>
+  </ol>
+</blockquote>
+
+  <h3><a name="symbiota_connector"></a>4. Create a new Symbiota Connector</h3>
+  <blockquote>
+  <ol>
+    <li>Open the Specify application</li>
+    <li>Click the (Symbiota) button on the Task Bar. </li>
+    <li>Click <em>New Connector</em> on the Side Bar. </li>
+  </ol>
+  <blockquote>
+    <p align="center"><img src="../../images/symbiota_choose_schema.png" width="315" height="271" alt="choose schema"></p>
+    <p>Saved mappings that include the required fields for Symbiota will appear in the dialog. Select a Symbiota Schema Mapping from the list and click the <em>OK</em> button.</p>
+    <blockquote>
+      <p><strong><em>Note:</em></strong> Schema Mappings may only be used for one Symbiota Connector. If you require a new Symbiota Connector, you will first need to create a new Schema Mapping. </p>
+    </blockquote>
+    <p><a name="symbiota_connector2"></a>Add information for the Symbiota Connector in the next dialog:</p>
+    <p align="center"><img src="../..//images/symbiota_connector_dialog.png" width="315" height="224" alt="connector"></p>
+    <ol>
+      <li>Type an<strong> Instance Name</strong>(this is a required field). This can be a unique name and does not need to match a project in Symbiota. <br>
+      </li>
+      <li>Type the<strong> Symbiota Key</strong> for the project (this is also a required field). This key is provided to your project by Symbiota. A connector can not be established without this key.<br>
+      </li>
+      <li>Add<strong> Description</strong> and <strong>Remarks</strong> as desired (these are not required fields).</li>
+      <li>Click the <em>Save</em> button.</li>
+    </ol>
+    <p>Once a connector has been created it will appear in the Symbiota Connector section of the side bar. Click on a Connector in the side bar to view information about the Connector including the status of the associated data cache in the Workspace.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+  <h3><a name="connector_info">Updating Symbiota Connectors  
+  </h3>
+  <blockquote>
+  <p>Click on a Connector in the side bar to view information about the connector, including the status of the associated data cache in the Workspace. </p>
+  <p align="center"><img src="../../images/connector_info.png" width="630" height="364" alt="connector info"></p>
+  </blockquote>
+  <ul>
+    <li>Click <em>Send to Symbiota</em> button to send the updated data cache to Symbiota.</li>
+    <li>Click the <em>Save to Archive</em> button to save the updated data cache locally.</li>
+  </ul>
+  </blockquote>

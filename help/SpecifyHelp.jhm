@@ -125,6 +125,7 @@
    <mapID target="PrefsAttachments" url="SpecifyHelp/Prefs/Attachments.html"/>
    <mapID target="PrefsGeolocate" url="SpecifyHelp/Prefs/Geolocate.html"/>
    <mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/> 
+   <mapID target="PrefsSymbiota" url="SpecifyHelp/Prefs/symbiota_pref.html"/>
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
    <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
@@ -141,6 +142,7 @@
    <mapID target="Lifemapper" url="SpecifyHelp/Plugins/lifemapper.html"/>
    <mapID target="ATTACHMENTS" url="SpecifyHelp/Data_Entry/attachments.html"/>
    <mapID target="attach_general" url="SpecifyHelp/Data_Entry/attachments_overview.html"/>
+   <mapID target="Symbiota" url="SpecifyHelp/Data_Entry/symbiota.html"/>
    
       
 
@@ -387,5 +389,9 @@
    <mapID target="store_attach" url="SpecifyHelp/Data_Entry/attachments_overview.html#store_attach"/>
    <mapID target="backup_attach" url="SpecifyHelp/Data_Entry/attachments_overview.html#backup_attach"/>
    <mapID target="web_portal" url="SpecifyHelp/QueryBuilder/third_party.html#web_portal"/>
-   <mapID target="schema_map" url="SpecifyHelp/QueryBuilder/third_party.html#schema_map"/>               
+   <mapID target="schema_map" url="SpecifyHelp/QueryBuilder/third_party.html#schema_map"/>
+   <mapID target="paleo_context" url="SpecifyHelp/Data_Entry/Data_Entry.html#paleo_context"/>
+   <mapID target="new_connector" url="SpecifyHelp/Data_Entry/symbiota.html#symbiota_connector"/>
+   <mapID target="new_connector2" url="SpecifyHelp/Data_Entry/symbiota.html#symbiota_connector2"/>
+   <mapID target="connector_info" url="SpecifyHelp/Data_Entry/symbiota.html#connector_info"/>              
 </map>

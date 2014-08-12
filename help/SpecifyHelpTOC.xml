@@ -64,6 +64,7 @@
 			<tocitem text="Task Bar" target="PrefsMisc" />
 			<tocitem text="Tree" target="PrefsTree" />
 			<tocitem text="System" target="PrefsSystem" />
+			<tocitem text="Symbiota" target="PrefsSymbiota" />
 		</tocitem>
 		<tocitem text="Introduction to Specify" target="Intro">
 			<tocitem text="Components in Specify" target="intro_components" />
@@ -93,6 +94,7 @@
 				<tocitem text="Agent Form" target="Data_Entry_Agent" />
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
+				<tocitem text="Paleo Context" target="paleo_context" />
 				<tocitem text="GUID" target="guid" />
 			</tocitem>
 			<tocitem text="Interactions Forms" target="Interactions">
@@ -190,6 +192,7 @@
 		<tocitem text="Exporting Data" target="export_data">
 		    <tocitem text="Web Portal" target="web_portal" /> 
 			<tocitem text="Web Publishing" target="web_publishing" />
+			<tocitem text="Symbiota" target="Symbiota" />
 			<tocitem text="Schema Mapping" target="schema_map" />
 			<tocitem text="Data Exporter Application" target="schema_tool" />
 		</tocitem>
