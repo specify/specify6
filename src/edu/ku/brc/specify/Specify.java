@@ -2753,7 +2753,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         final String[]  prefNames = {"FixUploaderRecordsets", "FixNullEmbeddedCollectingEvents", "FixedUnMatchedWBSpecifyUserIDs", 
                                      "FixedSpQueryOperators", "FixedUnmappedSchemaConditions", "FixedGTPTreeDefParents",
-                                     "FixNullTreeableFields", "FixNullDatePrecisions", "FixSchemaAfterPaleoModelUpdate",
+                                     "FixNullTreeableFields", "FixNullDatePrecisions", 
                                      "fixSymbiotaExportSchema"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
@@ -2855,13 +2855,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                     inx++;
                     
-                    if (!isFixed[inx]) 
-                    {
-                    	if (FixDBAfterLogin.fixSchemaAfterPaleoModelUpdate()) {
-                    		globalPrefs.putBoolean(prefNames[inx], true);
-                    	}
-                    }
-                    inx++;
+//                    if (!isFixed[inx]) 
+//                    {
+//                    	if (FixDBAfterLogin.fixSchemaAfterPaleoModelUpdate()) {
+//                    		globalPrefs.putBoolean(prefNames[inx], true);
+//                    	}
+//                    }
+//                    inx++;
 
                     if (!isFixed[inx]) 
                     {

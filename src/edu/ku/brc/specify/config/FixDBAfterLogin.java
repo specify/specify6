@@ -988,50 +988,50 @@ public class FixDBAfterLogin
     	return true;
     }
     
-    /**
-     * @return
-     */
-    public static boolean fixSchemaAfterPaleoModelUpdate() {
-    	//remove old fields from schema
-    	String sql = "SELECT COUNT(*) FROM splocaleitemstr WHERE splocalecontaineritemdescid IN(SELECT splocalecontaineritemid FROM splocalecontaineritem WHERE splocalecontainerid IN"
-    			+ "(SELECT splocalecontainerid FROM splocalecontainer WHERE name='paleocontext') AND name IN('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
-    	int cnt = BasicSQLUtils.getCountAsInt(sql);
-    	sql = "DELETE FROM splocaleitemstr WHERE splocalecontaineritemdescid IN(SELECT splocalecontaineritemid FROM splocalecontaineritem WHERE splocalecontainerid IN"
-    			+ "(SELECT splocalecontainerid FROM splocalecontainer WHERE name='paleocontext') AND name IN('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
-    	if (BasicSQLUtils.update(sql) != cnt) {
-    		return false;
-    	}
-    	
-    	sql = "SELECT COUNT(*) from splocaleitemstr where splocalecontaineritemnameid in (select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in"
-    			+ "(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
-    	cnt = BasicSQLUtils.getCountAsInt(sql);
-    	sql = "delete from splocaleitemstr where splocalecontaineritemnameid in (select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in"
-    			+ "(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
-    	if (BasicSQLUtils.update(sql) != cnt) {
-    		return false;
-    	}
-    	
-    	sql = "SELECT COUNT(*) from splocalecontaineritem where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance')";
-    	cnt = BasicSQLUtils.getCountAsInt(sql);
-    	sql = "delete from splocalecontaineritem where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance')";
-    	if (BasicSQLUtils.update(sql) != cnt) {
-    		return false;
-    	}
-
-    	//hide PaleoContext.Collectingevents
-		BasicSQLUtils.update("update splocalecontaineritem set ishidden=true where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name='collectingevents'");
-		
-		//show PaleoContext.CollectionObjects
-		BasicSQLUtils.update("update splocalecontaineritem set ishidden=false where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name='collectionobjects'");	
-
-		//hide collectingevent.PaleoContextID
-		BasicSQLUtils.update("update splocalecontaineritem set ishidden=true where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='collectingevent') and name='paleocontext'");
-
-		//show collectionobject.PaleoContextID ...just in case
-		BasicSQLUtils.update("update splocalecontaineritem set ishidden=false where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='collectionobject') and name='paleocontext'");
-
-		return true;
-    }
+//    /**
+//     * @return
+//     */
+//    public static boolean fixSchemaAfterPaleoModelUpdate() {
+//    	//remove old fields from schema
+//    	String sql = "SELECT COUNT(*) FROM splocaleitemstr WHERE splocalecontaineritemdescid IN(SELECT splocalecontaineritemid FROM splocalecontaineritem WHERE splocalecontainerid IN"
+//    			+ "(SELECT splocalecontainerid FROM splocalecontainer WHERE name='paleocontext') AND name IN('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+//    	int cnt = BasicSQLUtils.getCountAsInt(sql);
+//    	sql = "DELETE FROM splocaleitemstr WHERE splocalecontaineritemdescid IN(SELECT splocalecontaineritemid FROM splocalecontaineritem WHERE splocalecontainerid IN"
+//    			+ "(SELECT splocalecontainerid FROM splocalecontainer WHERE name='paleocontext') AND name IN('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+//    	if (BasicSQLUtils.update(sql) != cnt) {
+//    		return false;
+//    	}
+//    	
+//    	sql = "SELECT COUNT(*) from splocaleitemstr where splocalecontaineritemnameid in (select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in"
+//    			+ "(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+//    	cnt = BasicSQLUtils.getCountAsInt(sql);
+//    	sql = "delete from splocaleitemstr where splocalecontaineritemnameid in (select splocalecontaineritemid from splocalecontaineritem where splocalecontainerid in"
+//    			+ "(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance'))";
+//    	if (BasicSQLUtils.update(sql) != cnt) {
+//    		return false;
+//    	}
+//    	
+//    	sql = "SELECT COUNT(*) from splocalecontaineritem where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance')";
+//    	cnt = BasicSQLUtils.getCountAsInt(sql);
+//    	sql = "delete from splocalecontaineritem where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name in('positionstate', 'direction', 'distanceUnits', 'topdistance', 'bottomdistance')";
+//    	if (BasicSQLUtils.update(sql) != cnt) {
+//    		return false;
+//    	}
+//
+//    	//hide PaleoContext.Collectingevents
+//		BasicSQLUtils.update("update splocalecontaineritem set ishidden=true where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name='collectingevents'");
+//		
+//		//show PaleoContext.CollectionObjects
+//		BasicSQLUtils.update("update splocalecontaineritem set ishidden=false where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='paleocontext') and name='collectionobjects'");	
+//
+//		//hide collectingevent.PaleoContextID
+//		BasicSQLUtils.update("update splocalecontaineritem set ishidden=true where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='collectingevent') and name='paleocontext'");
+//
+//		//show collectionobject.PaleoContextID ...just in case
+//		BasicSQLUtils.update("update splocalecontaineritem set ishidden=false where splocalecontainerid in(select splocalecontainerid from splocalecontainer where name='collectionobject') and name='paleocontext'");
+//
+//		return true;
+//    }
     
     	
     /**
