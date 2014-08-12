@@ -199,10 +199,11 @@
             <text>Col Obj Attribute</text>
           </str>
         </names>
-        <descs/>
+		<descs/>
       </desc>
     </items>
-    </descs>
+	<names/>
+	<descs/>
     <aggregator>CollectionObject</aggregator>
   </container>
 </vector>
