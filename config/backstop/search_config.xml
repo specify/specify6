@@ -1910,7 +1910,7 @@ SELECT cn.ContainerID,
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT PaleoContextID, pc.PaleoContextName, gtps.FullName, ls.FullName FROM paleocontext pc LEFT JOIN geologictimeperiod gtps ON gtps.GeologicTimePeriodID = pc.ChronosStratID 
-LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (CollectionMemberID = COLMEMID) AND (%s)]]>
+LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (pc.DisciplineID = DSPLNID) AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="32" col="PaleoContextID" visible="false"/>
