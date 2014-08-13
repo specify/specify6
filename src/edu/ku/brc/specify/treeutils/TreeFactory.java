@@ -23,7 +23,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -359,12 +361,28 @@ public class TreeFactory
         } else if (clazz.equals(GeologicTimePeriod.class))
         {
             // HQL
-            sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.id = %d");
+        	//counts are for entire discipline, not just the current collection
+        	String pcChild = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+        	if ("collectingevent".equalsIgnoreCase(pcChild)) {
+        		sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.discipline.disciplineId = DSPLNID AND gtp.id = %d");	
+        	} else if ("locality".equalsIgnoreCase(pcChild)) {
+        		sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.locality as l INNER JOIN l.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.discipline.disciplineId = DSPLNID AND gtp.id = %d");	
+        	} else {
+        		sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.discipline.disciplineId = DSPLNID AND gtp.id = %d");
+        	}
             
         } else if (clazz.equals(LithoStrat.class))
         {
             // HQL
-            sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.collectionMemberId = COLMEMID AND ls.id = %d");
+        	//counts are for entire discipline, not just the current collection
+        	String pcChild = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+        	if ("collectingevent".equalsIgnoreCase(pcChild)) {
+                sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.discipline.disciplineId = DSPLNID AND ls.id = %d");
+        	} else if ("locality".equalsIgnoreCase(pcChild)) {
+                sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.locality as l INNER JOIN l.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.discipline.disciplineId = DSPLNID AND ls.id = %d");
+        	} else {
+                sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.discipline.disciplineId = DSPLNID AND ls.id = %d");
+        	}
             
         }
         
@@ -396,7 +414,15 @@ public class TreeFactory
             
         } else if (clazz.equals(GeologicTimePeriod.class))
         {
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.nodeNumber > %d AND gtp.highestChildNodeNumber <= %d");
+        	//counts are for entire discipline, not just the current collection
+        	String pcChild = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+        	if ("collectingevent".equalsIgnoreCase(pcChild)) {
+        		sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.discipline.disciplineId = DSPLNID AND gtp.nodeNumber > %d AND gtp.highestChildNodeNumber <= %d");
+        	} else if ("locality".equalsIgnoreCase(pcChild)) {
+        		sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.locality as l INNER JOIN l.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.discipline.disciplineId = DSPLNID AND gtp.nodeNumber > %d AND gtp.highestChildNodeNumber <= %d");
+        	} else {
+        		sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.discipline.disciplineId = DSPLNID AND gtp.nodeNumber > %d AND gtp.highestChildNodeNumber <= %d");
+        	}
             
         } else if (clazz.equals(Storage.class))
         {
@@ -404,7 +430,15 @@ public class TreeFactory
             
         } else if (clazz.equals(LithoStrat.class))
         {
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.collectionMemberId = COLMEMID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
+        	//counts are for entire discipline, not just the current collection
+        	String pcChild = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+        	if ("collectingevent".equalsIgnoreCase(pcChild)) {
+                sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.discipline.disciplineId = DSPLNID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
+        	} else if ("locality".equalsIgnoreCase(pcChild)) {
+                sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent as ce INNER JOIN ce.locality as l INNER JOIN l.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.discipline.disciplineId = DSPLNID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
+        	} else {
+                sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.discipline.disciplineId = DSPLNID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
+        	}
         }
         
         if (sb.length() > 0)
