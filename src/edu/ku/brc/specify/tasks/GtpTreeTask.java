@@ -150,9 +150,21 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 	 * @return
 	 */
 	int getColObjCount(GeologicTimePeriod gtp) {
-		String sql = "select count(*) from paleocontext pc inner join "
-				+ "collectionobject co on co.PaleoContextID = pc.PaleoContextID "
-				+ "where (pc.ChronosStratID = " + gtp.getId() 
+		String pcChild = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+		String sql = "select count(*) from paleocontext pc inner join ";
+		if ("locality".equalsIgnoreCase(pcChild)) {
+			sql += "locality loc on loc.PaleoContextID = pc.PaleoContextID "
+					+ "inner join collectingevent ce on ce.LocalityID = loc.LocalityID "
+					+ "inner join collectionobject co on co.CollectingEventID = ce.CollectingEventID ";
+		} else if ("collectingevent".equalsIgnoreCase(pcChild)) {
+			sql += "collectingevent ce on ce.PaleoContextID = pc.PaleoContextID "
+					+ "inner join collectionobject co on co.CollectingEventID = ce.CollectingEventID ";
+
+		} else {
+			sql += "collectionobject co on co.PaleoContextID = pc.PaleoContextID ";
+		}
+		sql += "where (pc.ChronosStratID = " + gtp.getId() 
+				+ " or pc.ChronosStratEndID=" + gtp.getId()
 				+ " or pc.BioStratID = " + gtp.getId() + ") and co.CollectionMemberID = "
 				+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
 		return BasicSQLUtils.getCountAsInt(sql);
@@ -181,10 +193,30 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
     {
         // The old way using Hibernate relationships was too slow, 
         // so instead I am using straight SQL it is a lot faster.
-        String sql = "SELECT DISTINCT co.CollectionObjectID FROM paleocontext pc "
-        		+ "INNER JOIN collectionobject co ON co.PaleoContextID = pc.PaleoContextID " 
-                + "WHERE (pc.ChronosStratID = " + gtp.getId()+ " or pc.BioStratID = " + gtp.getId() 
-                +  ") AND co.CollectionMemberID = COLMEMID";
+//        String sql = "SELECT DISTINCT co.CollectionObjectID FROM paleocontext pc "
+//        		+ "INNER JOIN collectionobject co ON co.PaleoContextID = pc.PaleoContextID " 
+//                + "WHERE (pc.ChronosStratID = " + gtp.getId()+ " or pc.BioStratID = " + gtp.getId() 
+//                +  ") AND co.CollectionMemberID = COLMEMID";
+// 
+        
+		String pcChild = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+		String sql = "select DISTINCT co.CollectionObjectID from paleocontext pc inner join ";
+		if ("locality".equalsIgnoreCase(pcChild)) {
+			sql += "locality loc on loc.PaleoContextID = pc.PaleoContextID "
+					+ "inner join collectingevent ce on ce.LocalityID = loc.LocalityID "
+					+ "inner join collectionobject co on co.CollectingEventID = ce.CollectingEventID ";
+		} else if ("collectingevent".equalsIgnoreCase(pcChild)) {
+			sql += "collectingevent ce on ce.PaleoContextID = pc.PaleoContextID "
+					+ "inner join collectionobject co on co.CollectingEventID = ce.CollectingEventID ";
+
+		} else {
+			sql += "collectionobject co on co.PaleoContextID = pc.PaleoContextID ";
+		}
+		sql += "where (pc.ChronosStratID = " + gtp.getId() 
+				+ " or pc.ChronosStratEndID=" + gtp.getId()
+				+ " or pc.BioStratID = " + gtp.getId() + ") and co.CollectionMemberID = "
+				+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+        
         
         Vector<Integer> list = new Vector<Integer>();
         
