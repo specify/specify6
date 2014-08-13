@@ -592,13 +592,13 @@
                     <cell type="separator" label="MORPHBANK_BASE_URL" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="10" name="morphbank.baseurl" cols="100" uitype="text" colspan="4"/>
+                    <cell type="field" id="10" name="morphbank.baseurl" cols="6" uitype="text" colspan="4"/>
                 </row>
                 <row>
                     <cell type="separator" label="MORPHBANK_IMAGEPOST_URL" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="11" name="morphbank.imageposturl" cols="100" uitype="text" colspan="4"/>
+                    <cell type="field" id="11" name="morphbank.imageposturl" cols="60" uitype="text" colspan="4"/>
                 </row>
                 <row>
                     <cell type="separator" label="MORPHBANK_DWC_MAPPING" colspan="4"/>
@@ -639,7 +639,7 @@
                     <cell type="separator" label="SymbiotaBaseURL" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="1" name="symbiota.baseurl" cols="100" uitype="text" colspan="4"/>
+                    <cell type="field" id="1" name="symbiota.baseurl" cols="60" uitype="text" colspan="4"/>
                 </row>
             </rows>
         </viewdef>
