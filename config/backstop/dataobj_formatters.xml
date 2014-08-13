@@ -560,8 +560,11 @@
         <switch single="true">
             <fields>
             	<field>paleoContextName</field>
-                <field sep=", " formatter="GeologicTimePeriod">chronosStrat</field>
-                <field sep=", " formatter="LithoStrat">lithoStrat</field>
+            	<!-- sep is apparently ignored if formatter is set? -->
+                <!--field sep=", " formatter="GeologicTimePeriod">chronosStrat</field>
+                <field sep=", " formatter="LithoStrat">lithoStrat</field-->
+                <field sep=", " >chronosStrat.fullName</field>
+                <field sep=", " >lithoStrat.fullName</field>
             </fields>
         </switch>
     </format>
