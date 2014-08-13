@@ -525,6 +525,7 @@ public class SymbiotaTask extends BaseTask {
         String title = getResourceString("SymbiotaTask.DataEntryFormTitle"); 
         ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, "SpSymbiotaInstance", displayName, title, 
                                                                    closeBtnText, className, idFieldName, isEdit, options);
+        dialog.setHelpContext("new_connector2");
         dialog.setModal(true);
         dialog.setData(spym);
         dialog.preCreateUI();
@@ -599,7 +600,7 @@ public class SymbiotaTask extends BaseTask {
                     getResourceString("SymbiotaTask.PickMappingDlgLbl"), 
                     ChooseFromListDlg.OKCANCELHELP, 
                     maps, 
-                    null);
+                    "new_connector");
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
             if (!dlg.isCancelled())	{

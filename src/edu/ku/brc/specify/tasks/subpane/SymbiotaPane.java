@@ -192,6 +192,19 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
         return tpb.getPanel();
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getHelpTarget()
+	 */
+	@Override
+	public String getHelpTarget() {
+		if (activePane == mainStatsPane) {
+			return "connector_info";
+		} else {
+			return super.getHelpTarget();
+		}
+	}
+
 	protected JPanel buildStatsPanel() {
         PanelBuilder bpb = new PanelBuilder(new FormLayout("f:p:g","p, 3dlu, p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu"));
         CellConstraints cc = new CellConstraints();
