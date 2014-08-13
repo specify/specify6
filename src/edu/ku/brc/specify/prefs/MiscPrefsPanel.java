@@ -113,16 +113,23 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
     /**
      * @param id
      * @param prefName
+     * return true if pref was changed.
      */
-    protected void getCheckbox(final String id, final String prefName)
+    protected boolean getCheckbox(final String id, final String prefName)
     {
         Component comp = form.getCompById(id);
+        boolean result = false;
         if (comp instanceof ValCheckBox)
         {
             String         ds          = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             AppPreferences remotePrefs = AppPreferences.getRemote();
-            remotePrefs.putBoolean(prefName+"."+ds, ((ValCheckBox)comp).isSelected());
+            Boolean v = remotePrefs.getBoolean(prefName+"."+ds, null);
+            if (v == null || !v.equals(((ValCheckBox)comp).isSelected())) {
+            	remotePrefs.putBoolean(prefName+"."+ds, ((ValCheckBox)comp).isSelected());
+            	result = true;
+            }
         } 
+        return result;
     }
     
     /* (non-Javadoc)
@@ -164,16 +171,18 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         if (form.getValidator() == null || form.getValidator().hasChanged())
         {
             super.savePrefs();
-        
-            getCheckbox("1", "Interactions.Using.Interactions");
-            getCheckbox("2", "ExportTask.OnTaskbar");
-            getCheckbox("3", "StartupTask.OnTaskbar");
-            getCheckbox("4", "ImagesTask.OnTaskbar");
-            getCheckbox("5", "CleanupToolsTask.OnTaskbar");
-            getCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME);
-            getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
+            boolean changed = false; 
+            changed |= getCheckbox("1", "Interactions.Using.Interactions");
+            changed |= getCheckbox("2", "ExportTask.OnTaskbar");
+            changed |= getCheckbox("3", "StartupTask.OnTaskbar");
+            changed |= getCheckbox("4", "ImagesTask.OnTaskbar");
+            changed |= getCheckbox("5", "CleanupToolsTask.OnTaskbar");
+            changed |= getCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME);
+            changed |= getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
             
-            UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
+            if (changed) {
+            	UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));
+            }
         }
     }
     
