@@ -1055,8 +1055,21 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                                 JSONObject pObj = (JSONObject)iter.next();
                                                 if (pObj != null)
                                                 {
-                                                    String lat  = (String)pObj.get("lat");
-                                                    String lon  = (String)pObj.get("lon");
+                                                    String lat  = null;//(String)pObj.get("lat");
+                                                    String lon  = null;//(String)pObj.get("lon");
+                                                    String geomwkt = (String)pObj.get("geomwkt");
+                                                    if (geomwkt != null) {
+                                                    	//quel cheapo...
+                                                    	geomwkt = geomwkt.replace("POINT", "");
+                                                    	geomwkt = geomwkt.replace("(", "");
+                                                    	geomwkt = geomwkt.replace(")", "");
+                                                    	geomwkt = geomwkt.trim();
+                                                    	String[] geocs = geomwkt.split(" ");
+                                                    	if (geocs.length == 2) {
+                                                    		lon = geocs[0];
+                                                    		lat = geocs[1];
+                                                    	}
+                                                    }
                                                     //System.out.println(lat+"  "+lon);
                                                     if (lat != null && lon != null)
                                                     {
