@@ -738,6 +738,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			}
 			
 		});
+		archiveBtn.setVisible(false);
+		
 		pullBtn = UIHelper.createButton(UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtn"));
 		pullBtn.setToolTipText(UIRegistry.getResourceString("SymbiotaTask.GetFromSymBtnTT"));
 		pullBtn.addActionListener(new ActionListener() {
