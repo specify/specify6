@@ -2772,11 +2772,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         final ProgressFrame frame = new ProgressFrame(msg);
         if (frame != null)
         {
-            frame.adjustProgressFrame();
-            frame.getCloseBtn().setVisible(false);
-            UIHelper.centerAndShow(frame);
-            frame.toFront();
-            frame.setAlwaysOnTop(true);
+            SwingUtilities.invokeLater(new Runnable() {
+
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				@Override
+				public void run() {
+		            frame.adjustProgressFrame();
+		            frame.getCloseBtn().setVisible(false);
+		            UIHelper.centerAndShow(frame);
+		            frame.toFront();
+		            frame.setAlwaysOnTop(true);
+				}
+            	
+            });
         }
         
         javax.swing.SwingWorker<Boolean, Boolean> worker = new javax.swing.SwingWorker<Boolean, Boolean>()
