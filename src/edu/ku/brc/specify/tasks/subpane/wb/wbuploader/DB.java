@@ -212,14 +212,14 @@ public class DB
                 tblNames.addAll(myStorages.keySet());
             }
             
-            JList mods = new JList(tblNames);
+            JList<String> mods = new JList<String>(tblNames);
             mods.addMouseListener(new MouseListener()
             {
                 public void mouseClicked(MouseEvent me)
                 {
                     if (me.getClickCount() == 2)
                     {
-                        viewBogusTbl(((JList) me.getSource()).getSelectedValue().toString(), !showAllFields);
+                        viewBogusTbl(((JList<?>) me.getSource()).getSelectedValue().toString(), !showAllFields);
                     }
                 }
 
@@ -499,6 +499,7 @@ public class DB
             throw new DuplicateMatchException(matches);
         }
 
+        @SuppressWarnings("serial")
         public class DuplicateMatchException extends Exception
         {
             protected Vector<Integer> matchIds;

@@ -253,6 +253,15 @@
     <field column="Number 40 (Col. Obj. Attribute)" name="colObjAttributeNumber40" type="java.lang.Float"/>
     <field column="Number 41 (Col. Obj. Attribute)" name="colObjAttributeNumber41" type="java.lang.Float"/>
     <field column="Number 42 (Col. Obj. Attribute)" name="colObjAttributeNumber42" type="java.lang.Float"/>
+    <field column="Top Distance" name="topDistance" type="java.lang.Float"/>
+    <field column="Bottom Distance" name="bottomDistance" type="java.lang.Float"/>
+    <field column="Distance Units" name="distanceUnits" type="java.lang.String"/>
+    <field column="Direction" name="direction" type="java.lang.String"/>
+    <field column="Position State" name="positionState" type="java.lang.String"/>
+    <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
+    <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
+    <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
+    <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 2 (Col. Obj. Attribute)" name="colObjAttributeText2" type="java.lang.String" length="300"/>
     <field column="Text 3 (Col. Obj. Attribute)" name="colObjAttributeText3" type="java.lang.String" length="300"/>
@@ -694,6 +703,8 @@
     <field column="Island" name="island" type="java.lang.String" length="64"/>
     <field column="Island Group" name="islandGroup" type="java.lang.String" length="64"/>
    	<field column="National Park Name" name="nationalParkName" type="java.lang.String" length="64"/>
+   	<field column="Paleo Latitude" name="paleoLat" type="java.lang.String"/>
+   	<field column="Paleo Longitude" name="paleoLng" type="java.lang.String"/>
     <field column="Range" name="rangeDesc" type="java.lang.String" length="50"/>
     <field column="Range Direction" name="rangeDirection" type="java.lang.String" length="50"/>
     <field column="Section" name="section" type="java.lang.String" length="50"/>
@@ -741,14 +752,22 @@
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.PaleoContext" table="paleocontext" tableid="32" searchable="true" abbrv="pc">
-      <field column="BottomDistance" name="bottomDistance" type="java.lang.Float" />
-      <field column="Direction" name="direction" type="java.lang.String" length="32"/>
-      <field column="DistanceUnits" name="distanceUnits" type="java.lang.String" length="16" />
-      <field column="PositionState" name="positionState" type="java.lang.String" length="32"/>
-      <field column="Remarks" name="remarks" type="java.lang.String" length="4096" />
-      <field column="Text1" name="text1" type="java.lang.String" length="64" />
-      <field column="Text2" name="text2" type="java.lang.String" length="64" />
-      <field column="TopDistance" name="topDistance" type="java.lang.Float" />
+      <field column="Remarks" name="remarks" type="java.lang.String" />
+      <field column="Text 1" name="text1" type="java.lang.String" />
+      <field column="Text 2" name="text2" type="java.lang.String" />
+      <field column="Text 3" name="text3" type="java.lang.String" />
+      <field column="Text 4" name="text4" type="java.lang.String" />
+      <field column="Text 5" name="text5" type="java.lang.String" />
+      <field column="Number 1" name="number1" type="java.lang.Double" />
+      <field column="Number 2" name="number2" type="java.lang.Double" />
+      <field column="Number 3" name="number3" type="java.lang.Double" />
+      <field column="Number 4" name="number4" type="java.lang.Double" />
+      <field column="Number 5" name="number5" type="java.lang.Double" />
+      <field column="YesNo 1" name="yesNo1" type="boolean"/>
+      <field column="YesNo 2" name="yesNo2" type="boolean"/>
+      <field column="YesNo 3" name="yesNo3" type="boolean"/>
+      <field column="YesNo 4" name="yesNo4" type="boolean"/>
+      <field column="YesNo 5" name="yesNo5" type="boolean"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >

@@ -24,9 +24,11 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.Vertex;
@@ -52,6 +54,10 @@ public class GraphBuilder
      * The DBSchema representing the database being graphed.
      */
     private DBSchema scheme;
+    /**
+     * The table to which paleocontext is connected, from the setting in the current Discipline
+     */
+    private String paleoContextChildTable = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
     /**
      * The graph constructed for the database.
      */
@@ -106,7 +112,8 @@ public class GraphBuilder
                     if (relTblName != null && g.getVertexByLabel(relTblName) != null && includeEdge(tbl.getShortClassName().toLowerCase(), relTblName, rel))
                     {
                         Relationship relationship = getOneToManyRelationship(tbl, rel);
-                        if (relationship != null && !isSystemRelationship(relationship))
+                        if (relationship != null && !isSystemRelationship(relationship) 
+                        		&& isActiveRelationship(relationship))
                         {
                             g.addEdge(relTblName, tbl.getShortClassName().toLowerCase(), relationship);
                         }
@@ -167,6 +174,20 @@ public class GraphBuilder
             ;
     }
 
+    /**
+     * @param r
+     * @return
+     */
+    protected boolean isActiveRelationship(final Relationship r) {
+    	boolean result = true;
+    	Field from = r.getField();
+    	Field to = r.getRelatedField();
+    	if (from.getName().equalsIgnoreCase("paleocontextid") && from.getTable().getName().equalsIgnoreCase("paleocontext")) {
+    		result = paleoContextChildTable.equalsIgnoreCase(to.getTable().getName());
+    	}
+    	return result;
+    }
+    
     /**
      * @param tbl
      * @param rel

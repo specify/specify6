@@ -548,6 +548,8 @@
     <field table="Locality" name="localityYesNo1" actualname="YesNo1" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityYesNo2" actualname="YesNo2" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="nationalParkName" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="paleoLat" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="paleoLng" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="islandGroup" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="island" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="waterBody" actualtable="LocalityDetail" relationshipname="locality"/>
