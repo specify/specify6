@@ -112,7 +112,7 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  * Oct 12, 2011
  *
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","serial"})
 public class LifeMapperPane extends BaseSubPane implements ChangeListener
 {
     protected static final int GLASS_FONT_SIZE = 14;
@@ -847,6 +847,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                     while (iterInner.hasNext())
                                     {
                                         JSONObject pObj = (JSONObject)iterInner.next();
+                                        String binomial   = (String)pObj.get("binomial");
                                         String gnSpName      = (String)pObj.get("name");
                                         String numPoints     = (String)pObj.get("numPoints");
                                         String occurrenceSet = (String)pObj.get("occurrenceSet");
@@ -865,7 +866,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                                     {
                                                         items = new ArrayList<OccurrenceSetIFace>();
                                                     }
-                                                    items.add(new GenusSpeciesDataItem(String.format("%s (%s)", gnSpName, numPoints), occurrenceSet, gnSpName));
+                                                    items.add(new GenusSpeciesDataItem(String.format("%s (%s)", gnSpName, numPoints), occurrenceSet, binomial));
                                                 }
                                             } catch (Exception ex)
                                             {
@@ -927,7 +928,6 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     private void doSearchOccur()
     {
         OccurrenceSetIFace occurSetItem = occurList.get(list.getSelectedIndex());
