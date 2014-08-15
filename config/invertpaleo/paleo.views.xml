@@ -223,7 +223,7 @@
                 </row> 
                 <row>
                     <cell type="label" labelfor="pcsh"/>
-                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext;clonebtn=true" colspan="12"/>
                 </row> 
                 <row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
@@ -482,7 +482,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="pcsh"/>
-                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="10"/>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext;clonebtn=true" colspan="10"/>
                 </row> 
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -550,7 +550,8 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="13" initialize="btn=true;icon=CollectingEventAttachment"/>
                 </row>
                 <row>
-                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
+                    <cell type="label" labelfor="pcsh"/>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext;clonebtn=true" colspan="12"/>
                 </row> 
                 <!--<row>
                  <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
