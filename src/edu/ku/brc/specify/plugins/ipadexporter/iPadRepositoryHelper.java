@@ -385,7 +385,7 @@ public class iPadRepositoryHelper
 
             filePost.setRequestEntity(new MultipartRequestEntity(parts, filePost.getParams()));
             HttpClient client = new HttpClient();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
             int status = client.executeMethod(filePost);
             

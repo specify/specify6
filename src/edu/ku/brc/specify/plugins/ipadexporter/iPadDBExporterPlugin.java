@@ -88,6 +88,7 @@ import edu.ku.brc.specify.tasks.BaseTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
@@ -257,10 +258,24 @@ public class iPadDBExporterPlugin extends BaseTask
         {
             if (cloudInstId == null)
             {
-                Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-                cloudInstId = iPadCloud.getInstId(inst.getGuid());
-                createAccountBtn.setEnabled(cloudInstId == null);
-                loginBtn.setEnabled(cloudInstId != null);
+                try
+                {
+                    Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                    cloudInstId = iPadCloud.getInstId(inst.getGuid());
+                    if (cloudInstId == null)
+                    {
+                        UIRegistry.showError("Unable able to find Cloud Account for GUID: ["+inst.getGuid()+"]");
+                    }
+                    createAccountBtn.setEnabled(cloudInstId == null);
+                    loginBtn.setEnabled(cloudInstId != null);
+                    
+                } catch (Exception ex)
+                {
+                    UIRegistry.showError("Error in iPad Exporter Plugin: "+ex.getMessage());
+                }
+            } else
+            {
+                UIRegistry.showError("Found Cloud Inst id: "+cloudInstId);
             }
         }
     }
@@ -318,7 +333,7 @@ public class iPadDBExporterPlugin extends BaseTask
         final JTextField     userNameTF = createTextField(15);
         final JPasswordField passwordTF = createPasswordField();
         final JLabel         statusLbl  = createLabel(" ");
-        ImageIcon            imgIcon    = new ImageIcon(this.getClass().getResource("SpecifySmalliPad128x128.png"));
+        ImageIcon            imgIcon    = IconManager.getImage("SpecifySmalliPad128x128", IconManager.STD_ICON_SIZE.NonStd);
         JPanel               loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
 
         CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
@@ -484,7 +499,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 setErrorMsg(statusLbl, "Your username or password was not correct.");
             }
             
-            ImageIcon imgIcon    = new ImageIcon(this.getClass().getResource("SpecifySmalliPad128x128.png"));
+            ImageIcon imgIcon    = IconManager.getImage("SpecifySmalliPad128x128", IconManager.STD_ICON_SIZE.NonStd);
             JPanel    loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
             if (!iPadDBExporter.IS_TESTING) // ZZZ
             {
@@ -575,7 +590,7 @@ public class iPadDBExporterPlugin extends BaseTask
         {
             panelTitle     = createI18NLabel("NOT_LOGIN", SwingConstants.CENTER);
             JLabel desc    = createI18NLabel("EXPORTIN_TO_IPAD", SwingConstants.CENTER);
-            JLabel iconLbl = createLabel("  ", new ImageIcon(this.getClass().getResource("export_spmobile.png")));
+            JLabel iconLbl = createLabel("  ", IconManager.getImage("ExportSpMobile", IconManager.STD_ICON_SIZE.NonStd));
             
             desc.setFont(desc.getFont().deriveFont(24.0f));
             

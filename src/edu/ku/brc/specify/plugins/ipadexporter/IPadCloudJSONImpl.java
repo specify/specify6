@@ -430,6 +430,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             System.out.println(String.format("[%s] [%s]", k, valuesMap.get(k)));
         }
         System.out.println("------------------------\n"+writeURLStr);
+        //UIRegistry.showError("Cloud URL: "+writeURLStr); // Visual Debugging
+        
         PostMethod post   = new PostMethod(writeURLStr);
         try
         {
@@ -443,7 +445,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 
             post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
             HttpClient client = new HttpClient();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
 
             int status = client.executeMethod(post);
             

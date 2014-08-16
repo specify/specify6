@@ -301,4 +301,8 @@
     <!-- ViewMorphBankPage -->
     <icon name="MorphBankLogo"		  file="mbLogoHeader.png" sizes="all"/>
     
+    <!-- iPad Exporter -->
+    <icon name="ExportSpMobile" file="export_spmobile.png" sizes="NonStd"/>
+    <icon name="SpecifySmalliPad128x128" file="SpecifySmalliPad128x128.png" sizes="NonStd"/>
+    
 </icons>
