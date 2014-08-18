@@ -10396,7 +10396,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="rangeDirection" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="rangeDirection" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -10410,7 +10410,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="sectionPart" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="sectionPart" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -10775,7 +10775,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="en">
             <version>0</version>
-            <text>Paleo Lat</text>
+            <text>Paleo Latitude</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -10788,7 +10788,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="en">
             <version>0</version>
-            <text>Paleo Lng</text>
+            <text>Paleo Longitude</text>
             <itemName reference="../../.."/>
           </str>
         </names>
