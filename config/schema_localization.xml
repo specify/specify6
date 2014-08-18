@@ -10300,7 +10300,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="number5" isHidden="false" isRequired="false">
+      <desc name="number5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10341,7 +10341,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="number4" isHidden="false" isRequired="false">
+      <desc name="number4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10452,7 +10452,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo3" isHidden="false" isRequired="false">
+      <desc name="yesNo3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10661,7 +10661,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="number3" isHidden="false" isRequired="false">
+      <desc name="number3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10674,7 +10674,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text4" isHidden="false" isRequired="false">
+      <desc name="text4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10687,7 +10687,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo4" isHidden="false" isRequired="false">
+      <desc name="yesNo4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10742,7 +10742,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo5" isHidden="false" isRequired="false">
+      <desc name="yesNo5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10769,7 +10769,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="paleoLat" isHidden="false" isRequired="false">
+      <desc name="paleoLat" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10782,7 +10782,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="paleoLng" isHidden="false" isRequired="false">
+      <desc name="paleoLng" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10837,7 +10837,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text5" isHidden="false" isRequired="false">
+      <desc name="text5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -10850,7 +10850,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>

@@ -100,6 +100,16 @@
             </altviews>
         </view>
         
+        <view name="LocalityDetail"
+            class="edu.ku.brc.specify.datamodel.LocalityDetail"
+            >
+            <desc><![CDATA[LocalityDetail form.]]></desc>
+            <altviews>
+                <altview name="LocalityDetail View" viewdef="LocalityDetail" mode="view"/>
+                <altview name="LocalityDetail Edit" viewdef="LocalityDetail" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
         <view name="PaleoAttributes"
             class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"
             resourcelabels="false">
@@ -223,7 +233,7 @@
                 </row> 
                 <row>
                     <cell type="label" labelfor="pcsh"/>
-                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext;clonebtn=true" colspan="12"/>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="12"/>
                 </row> 
                 <row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
@@ -482,7 +492,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="pcsh"/>
-                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext;clonebtn=true" colspan="10"/>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="10"/>
                 </row> 
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -552,7 +562,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="pcsh"/>
-                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext;clonebtn=true" colspan="12"/>
+                    <cell type="field" uitype="querycbx" id="pcsh" name="paleoContext" initialize="name=PaleoContext" colspan="10"/>
                 </row> 
                 <!--<row>
                  <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
@@ -1151,5 +1161,131 @@
              </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="LocalityDetail"
+            class="edu.ku.brc.specify.datamodel.LocalityDetail"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[LocalityDetail subform for Locality]]></desc>
+            
+            <columnDef>100px,2px,100px,5px,80px,2px,120px,5px,65px,2px,116px,5px,105px,2px,118px,p:g</columnDef>
+            <columnDef os="lnx">113px,2px,125px,5px,90px,2px,125px,5px,89px,2px,115px,5px,120px,2px,115px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,120px,5px,116px,2px,140px,5px,117px,2px,120px,5px,146px,2px,120px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2)</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="section" uitype="text"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="township" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="rangeDesc" uitype="text"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="rangeDirection" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="plat"/>
+                    <cell type="field" id="plat" name="paleoLat" uitype="text"/>
+                    <cell type="label" labelfor="plng"/>
+                    <cell type="field" id="plng" name="paleoLng" uitype="text"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="bm"/>
+                    <cell type="field" id="bm" name="baseMeridian" uitype="text"/>
+                    <cell type="label" labelfor="dra"/>
+                    <cell type="field" id="dra" name="drainage" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ed"/>
+                    <cell type="field" id="ed" name="endDepth" uitype="text"/>
+                    <cell type="label" labelfor="edu"/>
+                    <cell type="field" id="edu" name="endDepthUnit" uitype="text"/>
+                    <cell type="label" labelfor="edv"/>
+                    <cell type="field" id="edv" name="endDepthVerbatim" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="gml"/>
+                    <cell type="field" id="gml" name="gml" uitype="text"/>
+                    <cell type="label" labelfor="huc"/>
+                    <cell type="field" id="huc" name="hucCode" uitype="text"/>
+                    <cell type="label" labelfor="isl"/>
+                    <cell type="field" id="isl" name="island" uitype="text"/>
+                    <cell type="label" labelfor="islg"/>
+                    <cell type="field" id="islg" name="islandGroup" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mz"/>
+                    <cell type="field" id="mz" name="mgrsZone" uitype="text"/>
+                    <cell type="label" labelfor="npn"/>
+                    <cell type="field" id="npn" name="nationalParkName" uitype="text"/>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="n2"/>
+                    <cell type="field" id="n2" name="number2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="sp"/>
+                    <cell type="field" id="sp" name="sectionPart" uitype="text"/>
+                    <cell type="label" labelfor="sd"/>
+                    <cell type="field" id="sd" name="startDepth" uitype="text"/>
+                    <cell type="label" labelfor="sdu"/>
+                    <cell type="field" id="sdu" name="startDepthUnit" uitype="text"/>
+                    <cell type="label" labelfor="sdv"/>
+                    <cell type="field" id="sdv" name="startDepthVerbatim" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="td"/>
+                    <cell type="field" id="td" name="townshipDirection" uitype="text"/>
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ud"/>
+                    <cell type="field" id="ud" name="utmDatum" uitype="text"/>
+                    <cell type="label" labelfor="ue"/>
+                    <cell type="field" id="ue" name="utmEasting" uitype="text"/>
+                    <cell type="label" labelfor="ufe"/>
+                    <cell type="field" id="ufe" name="utmFalseEasting" uitype="text"/>
+                    <cell type="label" labelfor="ufn"/>
+                    <cell type="field" id="ufn" name="utmFalseNorthing" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="un"/>
+                    <cell type="field" id="un" name="utmNorthing" uitype="text"/>
+                    <cell type="label" labelfor="uolat"/>
+                    <cell type="field" id="uolat" name="utmOrigLatitude" uitype="text"/>
+                    <cell type="label" labelfor="uolong"/>
+                    <cell type="field" id="uolong" name="utmOrigLongitude" uitype="text"/>
+                    <cell type="label" labelfor="us"/>
+                    <cell type="field" id="us" name="utmScale" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="uz"/>
+                    <cell type="field" id="uz" name="utmZone" uitype="text"/>
+                    <cell type="label" labelfor="wb"/>
+                    <cell type="field" id="wb" name="waterBody" uitype="text"/>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="20" name="yesNo2" uitype="checkbox" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+       
     </viewdefs>
 </viewset>
