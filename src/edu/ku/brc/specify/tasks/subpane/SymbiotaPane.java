@@ -925,7 +925,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		            					progDlg.setAlwaysOnTop(true);
 		            				}
 		            			}
-		            			if (cancelIt) {
+		            			if (cancelIt && activeWorker.get() != null) {
 		            				activeWorker.get().setIgnoreResult(true);
 		            				activeWorker.get().cancel(true); //true can cause exceptions --- which probably won't percolate up to the UI, and
 		    											//probably won't cause any issues, at least for the statsGetter, updates are another story
