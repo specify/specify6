@@ -517,6 +517,7 @@ public class ExportCmdLine {
 	 */
 	protected boolean setContext() {
         Specify.setUpSystemProperties();
+        System.setProperty(AppContextMgr.factoryName,  "edu.ku.brc.specify.tools.export.SpecifyExpCmdAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         AppPreferences.shutdownRemotePrefs();
         
         AppContextMgr.CONTEXT_STATUS status = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).
