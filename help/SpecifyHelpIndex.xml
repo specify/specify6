@@ -111,6 +111,9 @@
 		<indexitem text="Network" target="PrefsNetwork" mergetype="javax.help.SortMerge" />
 		<indexitem text="System" target="PrefsSystem" mergetype="javax.help.SortMerge" />
 		<indexitem text="Tree" target="PrefsTree" mergetype="javax.help.SortMerge" />
+		<indexitem text="MySQL" target="PrefsMySQL" />
+		<indexitem text="Task Bar" target="PrefsMisc" />
+		<indexitem text="Symbiota" target="PrefsSymbiota" />
 	</indexitem>
 	<indexitem text="Query tool" target="QB" mergetype="javax.help.SortMerge">
 		<indexitem text="Add Fields" target="Q_Fields" mergetype="javax.help.SortMerge" />
@@ -257,5 +260,11 @@
 		<indexitem text="Special Tools" target="WorkbenchSpecialTools" mergetype="javax.help.SortMerge" />
 		<indexitem text="Top 10" target="WorkbenchTop10" mergetype="javax.help.SortMerge" />
 		<indexitem text="Working with Images" target="WorkbenchWorkingWithImages" mergetype="javax.help.SortMerge" />
+	</indexitem>
+	<indexitem text="Paleo Context" target="paleo_context" />
+	<indexitem text="Symbiota" target="Symbiota">
+		<indexitem text="Setup/Preferences" target="PrefsSymbiota" />
+		<indexitem text="Symbiota on Task Bar" target="PrefsMisc" />
+		<indexitem text="New Connector" target="new_connector" />
 	</indexitem>
 </index>

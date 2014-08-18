@@ -61,10 +61,10 @@
 			<tocitem text="GUID" target="PrefsGUID" />
 			<tocitem text="MySQL" target="PrefsMySQL" />
 			<tocitem text="Network" target="PrefsNetwork" />
-			<tocitem text="Task Bar" target="PrefsMisc" />
-			<tocitem text="Tree" target="PrefsTree" />
 			<tocitem text="System" target="PrefsSystem" />
 			<tocitem text="Symbiota" target="PrefsSymbiota" />
+			<tocitem text="Task Bar" target="PrefsMisc" />
+            <tocitem text="Tree" target="PrefsTree" />
 		</tocitem>
 		<tocitem text="Introduction to Specify" target="Intro">
 			<tocitem text="Components in Specify" target="intro_components" />
