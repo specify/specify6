@@ -141,7 +141,9 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
     
     protected String progDlgTitleKey = "SymbiotaPane.SENDING_DLG";
     
-    protected SymWorker<MappingUpdateStatus, Object> statsGetter = null;
+    protected AtomicReference<SymWorker<MappingUpdateStatus, Object>> statsGetter = new AtomicReference<SymWorker<MappingUpdateStatus, Object>>(null);
+    protected AtomicReference<SymWorker<?, Object>> activeWorker = new AtomicReference<SymWorker<?, Object>>(null);
+    
     
 	/**
 	 * @param name
@@ -376,14 +378,15 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 * 
 	 */
 	protected void getStats(final boolean showProgress) {
-		if (statsGetter != null) {
+		if (statsGetter.get() != null) {
 			//System.out.println("cancelling active stats getter");
-			statsGetter.setIgnoreResult(true);
-			statsGetter.cancel(true); //true can cause exceptions --- which probably won't percolate up to the UI, and
+			statsGetter.get().setIgnoreResult(true);
+			statsGetter.get().cancel(true); //true can cause exceptions --- which probably won't percolate up to the UI, and
 										//probably won't cause any issues, at least for the statsGetter, updates are another story
+			statsGetter.set(null);
 		}
 		
-		SymWorker<MappingUpdateStatus, Object> worker = new SymWorker<MappingUpdateStatus, Object>() {
+		SymWorker<MappingUpdateStatus, Object> worker = new SymWorker<MappingUpdateStatus, Object>("getStats") {
 
 			/* (non-Javadoc)
 			 * @see javax.swing.SwingWorker#doInBackground()
@@ -422,7 +425,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				}
 			}			
 		};	
-		statsGetter = worker;
+		statsGetter.set(worker);
 		worker.execute();
 	}
 	
@@ -434,7 +437,15 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		boolean result = true;
 		OverallStatusAlert al = getOverallStatusAlertLevel(getOverallStatus(mapStatus.get(), symTask.getTheInstance()));
 		if (sendAfterArchiveBuild.get() && al.equals(OverallStatusAlert.GREEN)) {
+			boolean onTop = false;
+			if (progDlg.isVisible() && progDlg.isAlwaysOnTop()) {
+				progDlg.setAlwaysOnTop(false);
+				onTop = true;
+			}
 			result = UIRegistry.displayConfirmLocalized("SymbiotaPane.ConfirmSend", "SymbiotaPane.ConfirmSendAllWhenNoneToSend",	 "Yes", "No", JOptionPane.QUESTION_MESSAGE);
+			if (onTop) {
+				progDlg.setAlwaysOnTop(true);
+			}
 		} 
 		return result;
 	}
@@ -631,7 +642,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void updateCache() {
 		setUpProgDlgForUpdate();
-		SymWorker<Boolean, Object> worker = new SymWorker<Boolean, Object>() {
+		SymWorker<Boolean, Object> worker = new SymWorker<Boolean, Object>("updateCache") {
 			
 			/* (non-Javadoc)
 			 * @see javax.swing.SwingWorker#doInBackground()
@@ -657,6 +668,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			@Override
 			protected void doDone() {
 				try {
+					activeWorker.set(null);
 					cacheUpdated(get());
 					symTask.refreshInstance();
 					getStats(false);
@@ -665,6 +677,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			}
 			
 		};	
+		activeWorker.set(worker);
 		worker.execute();
 	}
 
@@ -845,7 +858,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void setUpProgDlgForStatCheck() {
 		//hideProgDlg();
-        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.CheckingStats"));
+        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.CheckingStats"), false);
 	}
 	
 	/**
@@ -853,7 +866,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void setUpProgDlgForUpdate() {
 		//hideProgDlg();
-        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.UpdatingCache"));
+        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.UpdatingCache"), false);
 	}
 	
 	/**
@@ -861,7 +874,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void setUpProgDlgForArchiveBuild() {
 		//hideProgDlg();
-        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.BuildingDwcArchive"));
+        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.BuildingDwcArchive"), true);
 	}
 
 	/**
@@ -869,14 +882,14 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void setUpProgDlgForSend() {
 		//hideProgDlg();
-        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.SENDING_DLG"));
+        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.SENDING_DLG"), true);
 	}
 	
 	/**
 	 * @param title
 	 * @param desc
 	 */
-	protected void showProgDlg(final String title, final String desc) {
+	protected void showProgDlg(final String title, final String desc, final boolean canCancel) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			/* (non-Javadoc)
@@ -885,14 +898,50 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			@Override
 			public void run() {
 				if (progDlg == null) {
-		        	progDlg = new ProgressDialog(title, false, false);
+		        	progDlg = new ProgressDialog(title, false, true);
 		            progDlg.setResizable(false);
-		       } 
+		            progDlg.getCloseBtn().setText(UIRegistry.getResourceString("Cancel"));
+		            progDlg.getCloseBtn().removeActionListener(progDlg.getCloseBtn().getActionListeners()[0]);
+		            progDlg.getCloseBtn().addActionListener(new ActionListener() {
+
+		            	/* (non-Javadoc)
+		            	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		            	 */
+		            	@Override
+		            	public void actionPerformed(ActionEvent e) {
+		            		//System.out.println("NO!");
+		            		if (activeWorker.get() != null) {
+		            			boolean cancelIt = true;
+		            			if (activeWorker.get() != null && activeWorker.get().getTaskName().equals("sendToSym")) {
+		            				//need to warn and get confirmation
+		            				boolean onTop = false;
+		            				if (progDlg.isVisible() && progDlg.isAlwaysOnTop()) {
+		            					progDlg.setAlwaysOnTop(false);
+		            					onTop = true;
+		            				}
+		            				cancelIt = UIRegistry.displayConfirmLocalized("SymbiotaPane.ConfirmPushCancelTitle", 
+		            						"SymbiotaPane.ConfirmPushCancelMsg", "YES", "NO", JOptionPane.WARNING_MESSAGE);
+		            				if (onTop) {
+		            					progDlg.setAlwaysOnTop(true);
+		            				}
+		            			}
+		            			if (cancelIt) {
+		            				activeWorker.get().setIgnoreResult(true);
+		            				activeWorker.get().cancel(true); //true can cause exceptions --- which probably won't percolate up to the UI, and
+		    											//probably won't cause any issues, at least for the statsGetter, updates are another story
+		            				activeWorker.set(null);
+		            				hideProgDlg();
+		            			}
+		    				}
+		    			}
+		            });
+				}
 		       progDlg.setTitle(title);
 		       progDlg.setProcessPercent(false);
 		       progDlg.getProcessProgress().setIndeterminate(true);
 		       progDlg.getProcessProgress().setStringPainted(false);
 		       progDlg.setDesc(desc);
+		       progDlg.getCloseBtn().setEnabled(canCancel);
 		       progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		       
 		       //progDlg.setModal(false);
@@ -980,7 +1029,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		 * @author timo
 		 *
 		 */
-		new SymWorker<Boolean, Object>() {
+		new SymWorker<Boolean, Object>("buildDwcArchive") {
 
 			String outputFileName = getArchiveFileName();
 			
@@ -1069,13 +1118,17 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			 */
 			@Override
 			protected void doDone() {
-				try {
-					saveToFileDone(get(), outputFileName);
-				} catch (Exception ignore) {
+				if (!ignoreResult.get()) {
+					try {
+						activeWorker.set(null);
+						saveToFileDone(get(), outputFileName);
+					} catch (Exception ignore) {
+					}
 				}
 			}
 			
 		};
+		activeWorker.set(worker);
 		worker.execute();
 	}
 	
@@ -1086,7 +1139,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void sendToSym(final String fileName) {
 		setUpProgDlgForSend();
-		SymWorker<Pair<Boolean, String>, Object> worker = new SymWorker<Pair<Boolean, String>, Object>() {
+		SymWorker<Pair<Boolean, String>, Object> worker = new SymWorker<Pair<Boolean, String>, Object>("sendToSym") {
 
 			/* (non-Javadoc)
 			 * @see javax.swing.SwingWorker#doInBackground()
@@ -1108,7 +1161,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 
 					//System.out.println("SKIPPING the POST!!!");
 					int postStatus = /*200*/ httpClient.executeMethod(post);
-					System.out.println("Status from Symbiota Post: " + postStatus);
+					//System.out.println("Status from Symbiota Post: " + postStatus);
 					if (postStatus == 200) {
 						byte[] responseBytes = post.getResponseBody();
 						String response = responseBytes == null ? "" : new String(responseBytes);
@@ -1133,12 +1186,15 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 			 */
 			@Override
 			protected void doDone() {
-				try {
-					sendToSymDone(get());
-				} catch (Exception ignore) {
+				if (!ignoreResult.get()) {
+					try {
+						sendToSymDone(get());
+					} catch (Exception ignore) {
+					}
 				}
 			}
 		};		
+		activeWorker.set(worker);
 		worker.execute();
 	}
 	/**
@@ -1167,6 +1223,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void sendToSymDone(Pair<Boolean, String> result) {
 		hideProgDlg();
+		activeWorker.set(null);
 		if (result.getFirst()) {
 			symTask.updateLastPushForInstance(symTask.getTheInstance());
 			UIRegistry.showLocalizedMsg("SymbiotaPane.SendSuccessDlgTitle", "SymbiotaPane.SendSuccess", result.getSecond());
@@ -1320,7 +1377,17 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 
 	private abstract class SymWorker<T,V> extends javax.swing.SwingWorker<T,V> {
 		protected AtomicBoolean ignoreResult = new AtomicBoolean(false);
+		protected final String taskName;
 		
+		
+		/**
+		 * @param taskName
+		 */
+		public SymWorker(String taskName) {
+			super();
+			this.taskName = taskName;
+		}
+
 		/**
 		 * @return
 		 */
@@ -1333,6 +1400,14 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		 */
 		public void setIgnoreResult(boolean val) {
 			ignoreResult.set(val);
+		}
+
+		
+		/**
+		 * @return the taskName
+		 */
+		public String getTaskName() {
+			return taskName;
 		}
 
 		/* (non-Javadoc)
