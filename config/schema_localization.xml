@@ -5572,7 +5572,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="collectingEvents" isHidden="true" isRequired="false">
+      <desc name="collectingEvents" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
