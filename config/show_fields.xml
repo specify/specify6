@@ -12,10 +12,6 @@
 		<field name="timestampModified"/>
 	</table>
 	
-	<table name="Determination">
-		<field name="yesNo1"/>
-	</table>
-	
 	<table name="Shipment">
 		<field name="numberOfPackages"/>
 	</table>
