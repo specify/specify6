@@ -642,7 +642,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	String tbl = toDrop.split("\\.")[0];
     	String fld = toDrop.split("\\.")[1];
     	String sql = "SELECT COUNT(*) FROM " + tbl;
-    	if (doesColumnExist(databaseName, tbl, fld)) {
+    	if (doesColumnExist(databaseName, tbl, fld, conn)) {
         	int cnt = BasicSQLUtils.getCountAsInt(sql);
         	sql = "ALTER TABLE " + databaseName + "." + tbl + " DROP " + fld;
         	if (BasicSQLUtils.update(conn, sql) != cnt) {
@@ -747,7 +747,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     protected boolean rescopePaleoContext(String databaseName, Connection itConn) {
     	boolean result = true;
-    	if (doesColumnExist(databaseName, "PaleoContext", "CollectionMemberID")) {
+    	if (doesColumnExist(databaseName, "paleocontext", "CollectionMemberID", itConn)) {
     		int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM paleocontext");
     		if (cnt > 0) {
         		String sql = "UPDATE paleocontext pc INNER JOIN collection cn ON cn.CollectionID = pc.CollectionMemberID "
@@ -4610,17 +4610,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return true; // true means it was OK if it wasn't added
     }
     
+    protected boolean doesColumnExist(final String dbName, final String tableName, final String colName) {
+    	return doesColumnExist(dbName, tableName, colName, null);
+    }
     /**
      * @param dbName
      * @param tableName
      * @param colName
      * @return
      */
-    protected boolean doesColumnExist(final String dbName, final String tableName, final String colName)
+    protected boolean doesColumnExist(final String dbName, final String tableName, final String colName, final Connection con)
     {
         String  sql  = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", dbName, tableName, colName);
         //log.debug(sql);
-        return BasicSQLUtils.getCountAsInt(sql) == 1;
+        if (con == null) {
+        	return BasicSQLUtils.getCountAsInt(sql) == 1;
+        } else {
+        	return BasicSQLUtils.getCountAsInt(con, sql) == 1;
+        }
     }
     
     /**
