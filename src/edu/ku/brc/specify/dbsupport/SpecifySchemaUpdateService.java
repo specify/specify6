@@ -752,7 +752,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     		if (cnt > 0) {
         		String sql = "UPDATE paleocontext pc INNER JOIN collection cn ON cn.CollectionID = pc.CollectionMemberID "
         				+ "SET pc.DisciplineID=cn.DisciplineID";
-    			result = cnt == BasicSQLUtils.update(sql);
+    			result = cnt == BasicSQLUtils.update(itConn, sql);
     		}
     		if (result) {
     			result = removeField("paleocontext.CollectionMemberID", databaseName, itConn);
