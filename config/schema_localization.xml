@@ -12708,7 +12708,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="collectingEventAttribute" type="ManyToOne" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="collectingEventAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -28698,7 +28698,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
   <container name="collectingeventattribute" isHidden="false">
     <version>1</version>
     <items>
-      <desc name="text9" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text9" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -28740,7 +28740,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="remarks" isHidden="false" isRequired="false">
+      <desc name="remarks" isHidden="true" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -28810,7 +28810,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -28838,7 +28838,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text3" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -28908,7 +28908,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text6" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -28922,7 +28922,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -29020,7 +29020,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -29034,7 +29034,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -29188,7 +29188,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="collectingEvents" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="collectingEvents" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -29244,7 +29244,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text4" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -29258,7 +29258,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">

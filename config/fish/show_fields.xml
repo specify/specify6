@@ -6,6 +6,9 @@
     <table name="CollectionObject">
         <field name="timestampModified"/>
     </table>
+    <table name="CollectingEvent">
+        <field name="collectingEventAttribute"/>
+    </table>
 	<table name="Deaccession">
 		<field name="timestampModified"/>
 	</table>
