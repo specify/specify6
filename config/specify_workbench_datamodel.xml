@@ -752,6 +752,7 @@
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.PaleoContext" table="paleocontext" tableid="32" searchable="true" abbrv="pc">
+      <field column="Paleo Context Name" name="paleoContextName" type="java.lang.String" />
       <field column="Remarks" name="remarks" type="java.lang.String" />
       <field column="Text 1" name="text1" type="java.lang.String" />
       <field column="Text 2" name="text2" type="java.lang.String" />
