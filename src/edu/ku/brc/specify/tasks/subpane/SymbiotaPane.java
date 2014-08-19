@@ -882,7 +882,14 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 	 */
 	protected void setUpProgDlgForSend() {
 		//hideProgDlg();
-        showProgDlg(getResourceString(progDlgTitleKey), getResourceString("SymbiotaPane.SENDING_DLG"), true);
+		boolean warn = needToSendAllRecs(symTask.getTheInstance(), mapStatus.get())
+				||  mapStatus.get().getTotalRecsChanged() >= 5000
+				|| (getOverallStatusAlertLevel(getOverallStatus(mapStatus.get(), symTask.getTheInstance())).equals(OverallStatusAlert.GREEN)
+						&& getTotalNumberOfRecsInCache(symTask.getTheInstance()) >= 5000);
+		String msgKey = warn 
+				? "SymbiotaPane.PleaseAllowSendActionToComplete"
+				: "SymbiotaPane.SENDING_DLG";
+        showProgDlg(getResourceString(progDlgTitleKey), getResourceString(msgKey), true);
 	}
 	
 	/**
@@ -900,7 +907,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 				if (progDlg == null) {
 		        	progDlg = new ProgressDialog(title, false, true);
 		            progDlg.setResizable(false);
-		            progDlg.getCloseBtn().setText(UIRegistry.getResourceString("Cancel"));
+		            progDlg.getCloseBtn().setText(UIRegistry.getResourceString("CANCEL"));
 		            progDlg.getCloseBtn().removeActionListener(progDlg.getCloseBtn().getActionListeners()[0]);
 		            progDlg.getCloseBtn().addActionListener(new ActionListener() {
 
@@ -942,6 +949,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		       progDlg.getProcessProgress().setStringPainted(false);
 		       progDlg.setDesc(desc);
 		       progDlg.getCloseBtn().setEnabled(canCancel);
+		       progDlg.getCloseBtn().setVisible(canCancel);
 		       progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		       
 		       //progDlg.setModal(false);
@@ -988,6 +996,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		newOrChangedRecsForCurrentUpdate.clear();
 		this.archiveFileName.set(archiveFileName);
 		sendAfterArchiveBuild.set(archiveFileName == null);
+
 		progDlgTitleKey = archiveFileName == null ? "SymbiotaPane.SENDING_DLG" : "SymbiotaPane.ARCHIVING_DLG";
 		getStats(true);
 	}
@@ -1160,7 +1169,7 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 					post.setRequestEntity(entity);
 
 					//System.out.println("SKIPPING the POST!!!");
-					int postStatus = /*200*/ httpClient.executeMethod(post);
+					int postStatus = /*200;*/ httpClient.executeMethod(post);
 					//System.out.println("Status from Symbiota Post: " + postStatus);
 					if (postStatus == 200) {
 						byte[] responseBytes = post.getResponseBody();
