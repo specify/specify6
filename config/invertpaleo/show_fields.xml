@@ -15,8 +15,5 @@
 	<table name="LocalityDetail">
 		<field name="paleoLng"/>
 	</table>
-	<!--  ****The datamodel does not distinguish between determination and determination table.
-	<table name="Determination">
-		<field name="yesNo1"/>
-	</table>-->
+
 </tables>
