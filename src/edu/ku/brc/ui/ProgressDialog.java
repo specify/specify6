@@ -103,7 +103,8 @@ public class ProgressDialog extends JDialog
         
         pack();
         Dimension size = getPreferredSize();
-        setSize(new Dimension(500,size.height+20));
+        int heightNudge = closeBtn != null ? 40 : 20;
+        setSize(new Dimension(500,size.height+heightNudge));
         
         setTitle(title);
         
