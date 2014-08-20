@@ -264,7 +264,7 @@ public class GeographyAssignISOs
     		return false;
     	}
     	
-        final JCheckBox    continentsCBX = createCheckBox("All Continents");
+        final JCheckBox    continentsCBX = createCheckBox("All Continents"); // I18N
         final JCheckBox    countriesCBX  = createCheckBox("All Countries");
         final JCheckBox    stateCBX      = createCheckBox("All States");
         final JCheckBox    countiesCBX   = createCheckBox("All Counties");
@@ -284,7 +284,7 @@ public class GeographyAssignISOs
         Vector<Object[]> rows   = query(sql);
         Object[]         titles = new Object[rows.size()+1];
         int i = 0;
-        titles[i++] = "None";
+        titles[i++] = "None"; // I18N
         countryIds.add(-1);
         for (Object[] r : rows)
         {
@@ -294,8 +294,8 @@ public class GeographyAssignISOs
             titles[i++] = countryStr != null ? (countryStr + " (" + contStr + ")") : countryStr;
         }
         final JComboBox spCountriesCmbx = createComboBox(titles);
-        final JCheckBox spStatesCBX     = createCheckBox("States (Always)");
-        final JCheckBox spCountiesCBX   = createCheckBox("Counties");
+        final JCheckBox spStatesCBX     = createCheckBox("States (Always)"); // I18N
+        final JCheckBox spCountiesCBX   = createCheckBox("Counties");        // I18N
         
         spCountriesCmbx.setSelectedIndex(0);
         
@@ -303,15 +303,15 @@ public class GeographyAssignISOs
         spStatesCBX.setEnabled(false);
         spCountiesCBX.setEnabled(false);
 
-        Object[] comps = new Object[] {"Continents to be processed", continentsCBX, 
-        		                       "Choose the Geographies to be processed", countriesCBX, stateCBX, countiesCBX, 
-                                       "Choose an individual Country", spCountriesCmbx, spStatesCBX, spCountiesCBX};
+        Object[] comps = new Object[] {"Continents to be processed", continentsCBX, // I18N
+        		                       "Choose the Geographies to be processed", countriesCBX, stateCBX, countiesCBX, // I18N
+                                       "Choose an individual Country", spCountriesCmbx, spStatesCBX, spCountiesCBX};// I18N
         String          rowDef = createDuplicateJGoodiesDef("p", "4px", comps.length);
         CellConstraints cc     = new CellConstraints();
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
 
         pb.setDefaultDialogBorder();
-        final CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), "Geographies To Be Processed", true, pb.getPanel()); 
+        final CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), "Geographies To Be Processed", true, pb.getPanel()); // I18N
 
         i = 1;
         for (Object c : comps)
@@ -321,7 +321,7 @@ public class GeographyAssignISOs
                 pb.addSeparator((String)c, cc.xyw(1, i, 3));
             } else if (c instanceof JComboBox)
             {
-                pb.add(createFormLabel("Country"), cc.xy(1, i));
+                pb.add(createFormLabel("Country"), cc.xy(1, i));// I18N
                 pb.add((JComboBox)c, cc.xy(3, i));
             } else
             {
@@ -429,7 +429,7 @@ public class GeographyAssignISOs
             }
         } else
         {
-            showError("Specify cannot prceed the geonames table is missing."); // shouldn't happen
+            showError("Specify cannot proceed the geonames table is missing."); // shouldn't happen
             if (cl != null) cl.stateChanged(new ChangeEvent(GeographyAssignISOs.this));
             return false;
         }
@@ -466,12 +466,12 @@ public class GeographyAssignISOs
             @Override
             protected Boolean doInBackground() throws Exception
             {
-                setProgressDesc("Build Geography Names cross-reference...");
+                setProgressDesc("Build Geography Names cross-reference...");  // I18N
                 stCntXRef = new StateCountryContXRef(readConn);
                 isOK = stCntXRef.build();
                 if (isOK)
                 {
-                    setProgressDesc("Creating searchable index...");
+                    setProgressDesc("Creating searchable index...");  // I18N
                     isOK =  buildLuceneIndex(earthId);
                 }
                 return isOK;
@@ -619,10 +619,10 @@ public class GeographyAssignISOs
                 String countryCode = rs.getString(5);
                 String countryName = rs.getString(2);
                 System.out.println(countryName);
-                if (countryName.equals("Islamic Republic of Afghanistan"))
-                {
-                    System.out.println(countryName);
-                }
+//                if (countryName.equals("Islamic Republic of Afghanistan"))
+//                {
+//                    System.out.println(countryName);
+//                }
                 
                 if (stCntXRef.countryCodeToName(countryCode) == null)
                 {
@@ -638,7 +638,7 @@ public class GeographyAssignISOs
             
             if (!isOK) return false;
             
-            setProgressDesc("Creating States...");
+            setProgressDesc("Creating States...");  // I18N
             
             //////////////////////
             // States
@@ -661,7 +661,7 @@ public class GeographyAssignISOs
             
             if (!isOK) return false;
             
-            setProgressDesc("Creating Counties...");
+            setProgressDesc("Creating Counties...");  // I18N
             
             //////////////////////
             // County

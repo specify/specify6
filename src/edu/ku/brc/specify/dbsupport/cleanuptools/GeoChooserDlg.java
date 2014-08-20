@@ -87,6 +87,7 @@ import edu.ku.brc.util.Triple;
 public class GeoChooserDlg extends CustomDialog
 {
     private static final Logger  log = Logger.getLogger(GeoChooserDlg.class);
+    private static boolean isUpdateNamesChecked = false;
     
     private boolean[] doAllCountries;
     private boolean[] doInvCountry;
@@ -368,21 +369,22 @@ public class GeoChooserDlg extends CustomDialog
                 }
             });
             
-            updateNameCB = createCheckBox("Update Name");
-            mergeCB      = createCheckBox("Merge Geographies");
-            addISOCodeCB = createCheckBox("Add ISO Code");
+            updateNameCB = createCheckBox("Update the Name in the Geography tree.");    // I18N
+            mergeCB      = createCheckBox("Merge all the geographies with the same name.");
+            addISOCodeCB = createCheckBox("Add the ISO Code to the record");
             isoCodeTF    = createTextField(8);
             isoCodeTF.setVisible(rankId < 400);
     
-            updateNameCB.setSelected(true);
+            updateNameCB.setSelected(isUpdateNamesChecked);
             mergeCB.setSelected(true);
             addISOCodeCB.setSelected(true);
             
             updateNameCB.addChangeListener(new ChangeListener()
             {
                 @Override
-                public void stateChanged(ChangeEvent e)
+                public void stateChanged(final ChangeEvent e)
                 {
+                    isUpdateNamesChecked = updateNameCB.isSelected();
                     mergeCB.setEnabled(updateNameCB.isSelected() && rankId == 400);
                     if (!updateNameCB.isSelected())
                     {
@@ -424,11 +426,26 @@ public class GeoChooserDlg extends CustomDialog
                 i++;
             }
             pb.add(pbTop.getPanel(), cc.xy(1, 3));
-            pb.addSeparator("Choose a Standard Geography", cc.xy(1, 5));
+            pb.addSeparator("Possible standard Geography choices", cc.xy(1, 5)); // I18N
             pb.add(sb,               cc.xy(1, 7));
             pb.add(updateNameCB,     cc.xy(1, 9));
             pb.add(mergeCB,          cc.xy(1, 11));
             
+//            JButton showAllISOCodesBtn = new JButton("Show List of ISO Codes");
+//            PanelBuilder pbc  = new PanelBuilder(new FormLayout("p,10px,p,f:p:g,p", "p"));
+//            pbc.add(addISOCodeCB,       cc.xy(1, 1));
+//            pbc.add(isoCodeTF,          cc.xy(3, 1));
+//            pbc.add(showAllISOCodesBtn, cc.xy(5, 1));
+//            showAllISOCodesBtn.addActionListener(new ActionListener()
+//            {
+//                @Override
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    showListOfAllISOCodes();
+//                }
+//            });
+//            showAllISOCodesBtn.setVisible(false); // Temp only
+
             
             PanelBuilder pbc  = new PanelBuilder(new FormLayout("p,10px,p,f:p:g", "p"));
             pbc.add(addISOCodeCB,     cc.xy(1, 1));
@@ -490,6 +507,11 @@ public class GeoChooserDlg extends CustomDialog
         {
             ex.printStackTrace();
         }
+    }
+    
+    private void showListOfAllISOCodes()
+    {
+        
     }
     
     /**

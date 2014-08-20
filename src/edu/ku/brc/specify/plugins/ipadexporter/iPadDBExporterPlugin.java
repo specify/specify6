@@ -273,9 +273,6 @@ public class iPadDBExporterPlugin extends BaseTask
                 {
                     UIRegistry.showError("Error in iPad Exporter Plugin: "+ex.getMessage());
                 }
-            } else
-            {
-                UIRegistry.showError("Found Cloud Inst id: "+cloudInstId);
             }
         }
     }

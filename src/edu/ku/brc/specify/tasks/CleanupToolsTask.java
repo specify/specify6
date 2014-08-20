@@ -53,6 +53,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -68,6 +69,7 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataItem;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyAssignISOs;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyMerging;
+import edu.ku.brc.specify.dbsupport.cleanuptools.ISOCodeListDlg;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityGeoBoundsChecker2;
@@ -80,6 +82,7 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -103,7 +106,7 @@ public class CleanupToolsTask extends BaseTask
     private static final String  AGENT             = Agent.class.getSimpleName();
     private static final String  LOCALITY          = Locality.class.getSimpleName();
     
-
+    private Pair<String, String>       usrPwdPair       = null;
     protected ProgressDialog           prgDlg;
 
     protected Vector<NavBoxIFace>      extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -154,30 +157,42 @@ public class CleanupToolsTask extends BaseTask
                 }
             })); 
             
+//            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_REF"), GEO, getResourceString("CLNUP_GEO_CLEANUP_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    ISOCodeListDlg dlg = new ISOCodeListDlg(null);
+//                    UIHelper.centerAndShow(dlg);
+//                    
+//                }
+//            })); 
+            
+            boolean inclAgents = AppPreferences.getLocalPrefs().getBoolean("AGENTS_CLEANUP", false);
+            if (inclAgents)
+            {
             // 
-            agentNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_AGENT_MERGE_EX"), AGENT, getResourceString("CLNUP_AGENT_MERGE_EX_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doAgentExactMatches();
-                }
-            })); 
+                agentNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_AGENT_MERGE_EX"), AGENT, getResourceString("CLNUP_AGENT_MERGE_EX_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doAgentExactMatches();
+                    }
+                })); 
+                
+                agentNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_AGENT_MERGE_LN"), AGENT, getResourceString("CLNUP_AGENT_MERGE_LN_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doLastNameParsing();
+                    }
+                })); 
+                
+                agentNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_AGENT_MERGE_FZ"), AGENT, getResourceString("CLNUP_AGENT_MERGE_FZ_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doAgentFuzzyMatches();
+                    }
+                })); 
+            }
             
-            agentNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_AGENT_MERGE_LN"), AGENT, getResourceString("CLNUP_AGENT_MERGE_LN_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doLastNameParsing();
-                }
-            })); 
-            
-            agentNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_AGENT_MERGE_FZ"), AGENT, getResourceString("CLNUP_AGENT_MERGE_FZ_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doAgentFuzzyMatches();
-                }
-            })); 
-            
-            boolean inclLocalities = AppPreferences.getLocalPrefs().getBoolean("INCL_LOCALITIES", false);
-            
+            boolean inclLocalities = AppPreferences.getLocalPrefs().getBoolean("LOCALITY_CLEANUP", false);
             if (inclLocalities)
             {
                 localityNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_LOCALITY_MERGE_EX"), LOCALITY, getResourceString("CLNUP_LOCALITY_MERGE_EX_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
@@ -209,8 +224,8 @@ public class CleanupToolsTask extends BaseTask
                 })); 
             }            
             navBoxes.add(geoNavBox);
-            navBoxes.add(agentNavBox);
             
+            if (inclAgents) navBoxes.add(agentNavBox);
             if (inclLocalities) navBoxes.add(localityNavBox);
         }
         isShowDefault = true;
@@ -439,15 +454,21 @@ public class CleanupToolsTask extends BaseTask
      */
     private void doGeographyISOCodes()
     {
-        final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();;
+        if (usrPwdPair == null)
+        {
+            usrPwdPair = DatabaseLoginPanel.getITUsernamePwd();
+        }
+        if (usrPwdPair != null)
+        {
+            final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             final Timestamp  now        = new Timestamp(System .currentTimeMillis());
             final Discipline disp       = AppContextMgr.getInstance().getClassObject(Discipline.class);
             final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
 
-            final ProgressFrame frame   = new ProgressFrame("Building Geography Authority...");
+            final ProgressFrame frame   = new ProgressFrame("Building Geography Authority..."); // I18N
             frame.getCloseBtn().setVisible(false);
             frame.turnOffOverAll();
-            frame.setDesc("Loading Geonames data...");
+            frame.setDesc("Loading Geonames data..."); // I18N
             frame.pack();
             frame.setSize(450, frame.getBounds().height+10);
             UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
@@ -461,7 +482,7 @@ public class CleanupToolsTask extends BaseTask
                 {
                     try
                     {
-                        BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, "root", "root", frame);    
+                        BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, usrPwdPair.first, usrPwdPair.second, frame);    
                         return bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog());
                         
                     } catch (Exception ex)
@@ -503,6 +524,7 @@ public class CleanupToolsTask extends BaseTask
                 }
             };
             worker.execute();
+        }
      }
     
     /**
