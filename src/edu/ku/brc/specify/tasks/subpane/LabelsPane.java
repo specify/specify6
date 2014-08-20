@@ -424,7 +424,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                             for (Object key : params.keySet())
                             {
                                 // System.out.println("key["+key+"] Val["+params.get(key)+"]");
-                                parameters.put(key, params.get(key));
+                            	if (parameters.get(key) == null) {
+                            		parameters.put(key, params.get(key));
+                            	}
                             }
                         }
                         if (recordSet != null)

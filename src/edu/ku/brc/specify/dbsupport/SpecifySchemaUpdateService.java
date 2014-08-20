@@ -600,7 +600,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private boolean moveDataFromHereToHere(String move) {
     	String from = move.split("\\|")[0];
     	String to = move.split("\\|")[1];
-    	System.out.println("moving from " + from + " to " + to);
+    	//System.out.println("moving from " + from + " to " + to);
     	String fromTable = from.split("\\.")[0];
     	String fromField = from.split("\\.")[1];
     	String toTable = to.split("\\.")[0];
