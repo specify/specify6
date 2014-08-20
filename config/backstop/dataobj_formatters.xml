@@ -517,6 +517,9 @@
         <switch single="true">
             <fields>
                 <field>localityName</field>
+                <field sep="; " >geography.fullName</field>
+                <field sep="; ">latitude1</field>
+                <field sep=", ">longitude1</field>
             </fields>
         </switch>
     </format>
