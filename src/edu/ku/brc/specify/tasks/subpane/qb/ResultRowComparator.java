@@ -58,8 +58,13 @@ public class ResultRowComparator implements Comparator<Vector<Object>>
         buildFormatters(colInfo);
     }
 
+    /**
+     * @param colInfo
+     */
     protected void buildFormatters(List<ERTICaptionInfoQB> colInfo) {
-        for (int s = 0; s < sortDef.size(); s++) {
+        //This is necessary to sort (numeric?) catalognumbers correctly. 
+    	//The test for adding the formatter could be made more specific.
+    	for (int s = 0; s < sortDef.size(); s++) {
         	UIFieldFormatterIFace formatter = colInfo == null ? null : colInfo.get(this.sortDef.get(s).getColumn()).getUiFieldFormatter();
         	if (formatter != null && formatter.isInBoundFormatter()) {
         		formatters.add(formatter);
