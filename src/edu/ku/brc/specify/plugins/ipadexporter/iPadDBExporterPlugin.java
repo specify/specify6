@@ -416,10 +416,6 @@ public class iPadDBExporterPlugin extends BaseTask
             Pair<String, String> loginInfo = getExportLoginCreds(userName, wasInError);
             if (loginInfo != null)
             {
-                //if (!iPadCloud.isNetworkError())
-                {
-                    loggedIn(loginInfo);
-                }
                 if (!iPadDBExporter.IS_TESTING) // ZZZ  
                 {
                     userName = loginInfo.first;
