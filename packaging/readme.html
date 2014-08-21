@@ -6,75 +6,60 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.5.04<br>
-08 April 2014<br>
+Specify 6.5.05<br>
+22 August 2014<br>
 Specify Software Project</h3>
 <br>
 <br>
-<h4>List of changes in Specify 6.5.04<br>
+<h4>List of changes in Specify 6.5.05<br>
 </h4>
-<ol><li>Specify requires Java 7 JRE software in order to run.  As of this release the Java JRE is no longer installed within the Specify environment, it must be installed externally at a system level.  In addition Specify deletes the Java JRE which was installed under the Specify program directories.  This and future releases of Specify will not run without a system-level installation of the Java 7 JRE. 2014-04-08 (Bugzilla 9577)</li>
-<li>The Specify EZDB Collection Setup Wizard is now compatible with Windows 8.x. 2014-04-08 (9578)</li>
-<li>Specify WorkBench reports now work for Specify databases created before version 6.1.02.  2014-04-02  (9412)</li>
-<li>Additional string fields have been added to Collecting Event, Locality, GeoCoordDetail, WorkBench for various uses. 2014-04-01 (9513, 9546)</li>
-<li>Additional data fields from the tables: Accession, CollectingEvent, CollectionObject, Determination, GeoCoordDetails, Locality, and Preparation tables have been added to the WorkBench to enable uploading of those data types. 2014-04-01  (9536)</li>
-<li>The order of Taxon Author fields in the WorkBench mapping for multiple determinations no longer causes errors when uploading. 2014-04-01 (9532)</li>
-<li>Removing default privileges for a user type in Security will now remove privileges for users of that type.  2014-04-01  (9497)</li>
-<li>Catalog Numbers with a "-" (hyphen) character can now be used when creating Loans. 2014-04-01 (9540)</li>
-<li>Checking status of mappings when Data Exporter App starts up no longer causes “concurrent modification” or “deleted object would be resaved by cascade rules” errors. 2014-04-01 (9558)</li>
-<li>Added an ID field to "Exchange In" and "Exchange Out" Tables. 2014-04-01 (9552)</li>
-<li>Loan Preparations will automatically be marked as "Resolved" as they are returned. 2014-04-01 (9542)</li>
-<li>Column names will float at the top of the screen of query results so they will not disappear off screen when scrolling through query results. 2014-04-01 (9529)</li>
-<li>The iReport and the Data Exporter applications will no longer mistakenly attempt to update the Specify database schema when run. 2014-03-31 (9547)</li>
-<li>Tree merges are prevented if users are editing Collection Object or Taxon tables. 2014-03-28 (9531)</li>
-<li>If Taxon is added to the Collection Object subform within the main Collecting Event form, the Taxon now display in all of the Collection Object subform records, not just the first. 2014-03-27 (9507)</li>
-<li>Fields in Institution, Discipline, Division, and Collection default forms are no longer truncated and will display fully on Mac and Linux. 2014-03-27 (9510)</li>
-<li>Scroll bars have been removed from the Locality Detail and Geo Coord Detail sub forms on the Locality form. 2014-03-26 (9491)</li>
-<li>Any person agent record with “null” in the title field will no longer be assigned the modest title "mr" when the Specify database schema is updated. 2014-03-25 (9535)</li>
-<li>Size limits on text fields uploaded through the WorkBench have been fixed. 2014-03-20 (9457)</li>
-<li>Adding and deleting Reference Work Authors no longer causes an error. 2014-03-19 (9454)</li>
-<li>Added the text field "Contents" to each of the Loan, Gift, Exchange In, and Exchange Out tables for loans and exchanges which do not itemize, or link to, individual collection objects. 2014-03-19 (9511)</li>
-<li>The Source Geography and Source Taxonomy field lengths in the schema have been increased for wordy descriptions of the provenance and identity of specimens or of "undifferentiated material" in a Loan. 2014-03-19 (9492)</li>
-<li>Added LatLong Accuracy field to the GeoCoord Detail table. 2014-03-19 (9504)</li>
-<li>Integer fields added to Collection Object, Collecting Event, and Preparation tables to accommodate alternate numbers which are not floating point. Imaginary number support forthcoming. 2014-03-19 (9464)</li>
-<li>Added Verbatim Latitude and Verbatim Longitude fields to the Locality table to store one set of original geocoordinate data. 2014-03-19 (9481)</li>
-<li>GUID field is now visible in a Locality query. 2014-03-17 (9524)</li>
-<li>"GUID" as a field caption is now displayed in capital letters. 2014-03-11 (9476)</li>
-<li>Finally removed the default label, gift invoice, and loan invoice, because they were annoying people. 2014-03-17 (9527)</li>
-<li>Removed check for MySQL RELOAD (permissions) privilege for IT user from Specify programs which do not require the RELOAD privilege. 2014-03-13 (9514)</li>
-<li>Members on the Group Agent form are now labeled as "Members" in the Agent table. 2014-03-11 (9485)</li>
-<li>A more visible error message appears when trying to name a query or record set with special characters or a duplicate name. 2014-03-11 (9229)</li>
-<li>Default Tables can now be removed from query side bar list without being moved to More Tables. 2014-03-07 (9479)</li>
-<li>Closed, returned Loans can now be viewed after all items have been returned. 2014-03-05 (9336)</li>
-<li>When trying to query on fields in a Collection Relationship, fields checked in the source collection are no longer already checked in the destination collection. 2014-03-03 (8955)</li>
-<li>"Simultaneous Save by Another User" error will not appear when there is, in fact, not a simultaneous save occurring. 2014-03-03 (9487)</li>
-<li>Added capability to search Catalog Numbers when using catalog Series. 2014-02-28 (9495)</li>
-<li>A command line Data Exporter application has been added to facilitate automatic collection data refresh operations to external databases, like the Specify Web Portal. Documentation to be available on the Specify Project web site. 2014-02-28 (9486)</li>
-<li>Search windows (pop up when clicking on a magnifying glass) now use the 'AND' operator when searching. 2014-02-28 (9508)</li>
-<li>An option has been added to open attachments in an external viewer by right-clicking on an image in the Image Browser window. 2014-02-28 (9493)</li>
-<li>GroupNumber and Author no longer show up in the Query Builder if they aren't visible in the schema. 2014-02-28 (9452)</li>
-<li>When there is no aggregator created in the Schema Configuration to aggregate multiple records and a table is added as an aggregated field in a query, the query results will say in that column that there is no aggregator for that table. If you understand this, you are a power user. 2014-02-28 (9484)</li>
-<li>Can no longer add fields to Schema Mapper twice. 2014-02-28 (9453)</li>
-<li>The WorkbenchRecordSetCleanup Task is no longer in the Tools tab in the Security editor. 2014-02-28 (9500)</li>
-<li>With "Add" permission but not "Modify" permission a user can now add an associated record though a Query Combobox. 2014-02-27 (9499)</li>
-<li>"Georef Det By" field no longer deletes when saving GeoLocate data to an existing locality record. 2014-02-27 (9478)</li>
-<li>ISA # (Institutional Support Agreement Number) field has been added to Collection Table forms. 2014-02-26 (9469)</li>
-<li>A Specify user account can not be created with the Agent record of an existing Specify user. Some things are not shared. 2014-02-14 (9458)</li>
-<li>Members (Agents) of a defined Group can now be searched and discovered using the Query Builder. 2014-02-14 (9466)</li>
-<li>Specify user names and passwords can no longer contain a space character or a comma. 2014-01-02 (9465)</li>
-<li>Added the capability to add file attachments to Storage Table and Storage data forms. 2014-04-02 (9556, 9538)</li>
-<li>Agent fields in ConservEvent are now displayed in queries when un-hidden in the schema. 2014-04-02 (9551)</li>
-<li>Query Results are now left-justified to improve aesthetics of result screens. 2014-04-02 (9519)</li>
-<li>Query result columns are now limited in size so columns may vary in size based on the text within the result but will not exceed 50 characters. 2014-04-02 (9520)</li>
-<li>The Query Results Toolbar now moves dynamically as you scroll around so it will always be in the upper right corner of the results screen. 2014-04-01 (9530)</li>
-<li>General Permissions Tools screen now has scroll bars when the screen is short. 2014-04-02 (9467)</li>
-<li>The "Generate Label" button is no longer cut off on botany forms. 2014-04-02 (9559)</li>
-<li>The tables "Exsiccata" and "Exsiccata Items" are now available in the Query Builder. 2014-04-02 (8873)</li>
-<li>Labels can now be printed using Catalog Number Series.  2014-03-27  (9494)</li>
-<li>Preparations can now be aggregated by Prep Type in reports and labels.  2014-03-31  (9505)</li>
-<li>"Parent of Taxon" field on Taxon form no longer searches using implicit wildcards (stemming) before or after the specified search term.  2014-04-03  (9562)</li>
-<li>The Taxon data field on the Determination form which is in query combo box format can now be edited to add or remove fields to be displayed.  2014-04-03  (9564)</li>
-<li>"Exchange In Number" and "Exchange Out Number" fields have been added to the Exchange data forms.  2014-04-03  (9565)</li>
+<ol>
+<li>Paleo Context table can now be linked to Collection Object, Collecting Event, or Locality.</li>
+<li>Paleo Context can be embedded in Collection Object, Collecting Event, or Locality tables, or treated as a 1-to-many with those tables.</li>
+<li>Export to Symbiota capability added to toolbar, for sending DarwinCore format specimen data to a Symbiota portal.</li>
+<li>The Locality table format now displays Locality Name, Geography Full Name, Latitude 1, and Longitude 1 by default.    2014-08-21  (9699)</li>
+<li>Field Notebook Page is now a button on the Field Notebook Page Set sub-form.   2014-08-20  (9648)</li>
+<li>One can now upload attachments to Collecting Event based on unique values in the Collecting Event GUID field.   2014-08-19  (9656)</li>
+<li>Command Line Data Exporter application no longer fails when security is activated for databases.   2014-08-19  (9613)</li>
+<li>Attachment Tools section of documentation now explains how to export attachments.  2014-08-18  (9627)</li>
+<li>View associated collection objects function now works correctly for Chrono- and Lithostratigraphy Trees.  2014-08-18  (9694)</li>
+<li>Field Notebook Pages is now displayed as a button on default data forms. 2014-08-11  (9648)</li>
+<li>One can now use fields in related tables for query combo box lookups. 2014-08-11  (9657)</li>
+<li>Paleo geocoordinate fields, Paleo Latitude and Paleo Longitude, have been added to Locality Detail table. 2014-08-08  (9664)</li>
+<li>When you upload a synonymized taxon, the WorkBench now uploads it as a synonymized taxon rather than adding it as a new taxon.  2014-08-05  (9620)</li>
+<li>SGR tool added to Task Bar preference page.  2014-08-04  (9676)</li>
+<li>Symbiota tool added to Task Bar preference page.  2014-08-04  (9677)</li>
+<li>Data Exporter can now export Reference Work Type.  2014-08-01  (9593)</li>
+<li>Importing attachments via mapping file now works correctly.  2014-08-01  (9641)</li>
+<li>Data fields of type BigDecimal now validate correctly.  2014-08-01  (9614)</li>
+<li>Fields, Position State, Direction, Distance Units, Top Distance, and Bottom Distance moved from Paleo Context to Collection Object Attribute.   2014-08-01  (9652)</li>
+<li>Added string (Text) fields, float (Number) fields, and logical (Yes/No) fields to Paleo Context. 2014-08-01  (9663)</li>
+<li>Added string (Text) fields to Taxon table.   2014-08-01  (9621)</li>
+<li>Added float (Number) fields and logical (Yes/No) fields to the Taxon table.   2014-08-01  (9599)</li>
+<li>Number of Preparations, Number of Specimens by preparation, and Number Localities Georeferenced have been added to the Statistics Display.  2014-08-01  (9624, 9635)</li>
+<li>Can now add/edit attachments in icon and grid view with manager level user.   2014-08-01  (9607)</li>
+<li>Added string (Text) fields, float (Number) fields, and logical (Yes/No) fields to Locality Detail.  2014-07-30  (9651)</li>
+<li>Storage Attachments are now available in the Query Builder.   2014-07-30  (9645)</li>
+<li>Middle Initial displays by default in the drop-down list of Agent query comboboxes.   2014-07-30  (9650)</li>
+<li>Exchange In table has field “Agent Sent to” instead of “Agent Received by” on form.   2014-07-30  (9586)</li>
+<li>When you clone a Collecting Event, one can auto-generate a new station field number.   2014-07-29  (9619)</li>
+<li>The Catalog and Accession Number formats of a database created through the SpWizard will now be the last one selected, even if a format was created.   2014-07-29  (9603)</li>
+<li>Projects with a lot of associated Collection Objects no longer cause those Collection Object forms to load extremely slowly.   2014-07-29  (9381, 9590)</li>
+<li>Can now set numeric Catalog Number length in the setup Wizard.   2014-07-29  (9605)</li>
+<li>Problem with numeric Catalog Numbers with more than the default 9 digits fixed.  2014-07-29  (9604)</li>
+<li>Columns in WorkBench data sets can now be chosen as repeaters in WorkBench-based reports.   2014-06-19  (9602)</li>
+<li>The button to add search results to existing record set no longer gives “An Issue of Concern” message when clicked.   2014-06-12  (9623)</li>
+<li>The field Chrono Strat End from the Paleo Context table is now available in Query Builder.   2014-06-06  (9608)</li>
+<li>The Borrow Return Materials table is now available in the Query Builder. 2014-06-05  (9606)</li>
+<li>The “In” operator in the Query Builder no longer throws an error when used for fields from Tree tables. 2014-06-05  (9589)</li>
+<li>Quantity Exchanged no longer gets cut off on default Exchange data form. 2014-06-05  (9587)</li>
+<li>When an incorrect user password is entered on the login screen or for master key, Specify no longer closes with no warning. 2014-06-05  (9592)</li>
+<li>Query Builder saves more than 1 moved field.  2014-06-05  (9580)</li>
+<li>Scroll bar no longer jumps when unchecking prompt box in query.   2014-06-05  (8952)</li>
+<li>When saving record sets, if the record set name is too long, the user now gets a message warning them the name is too long and will not be saved.   2014-06-05  (9516)</li>
+<li>Custom parameters in reports now show for record sets.   2014-06-21  (9701)</li>
+<li>Life Mapper now displays points on the map for any selected taxa, including taxa with authority data.   2014-06-18  (9696)</li>
+<li>Sorting on Catalog Number is now done numerically instead of alphabetically on series labels and reports.   2014-06-21  (9700)</li>
 </ol><br>
 <br>
 <br>
