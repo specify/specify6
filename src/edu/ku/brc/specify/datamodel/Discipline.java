@@ -126,7 +126,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         geologicTimePeriodTreeDef = null;
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
-        paleoContextChildTable = "CollectingEvent";
+        paleoContextChildTable = "collectingevent";
         isPaleoContextEmbedded = false;
         //determinationStatuss  = new HashSet<DeterminationStatus>();
         //localities            = new HashSet<Locality>();
