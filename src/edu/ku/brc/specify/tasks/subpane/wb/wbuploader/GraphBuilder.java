@@ -57,7 +57,11 @@ public class GraphBuilder
     /**
      * The table to which paleocontext is connected, from the setting in the current Discipline
      */
-    private String paleoContextChildTable = AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+    
+    private String paleoContextChildTable = 
+    		AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable() == null ?
+    				"collectionobject" : AppContextMgr.getInstance().getClassObject(Discipline.class).getPaleoContextChildTable();
+    
     /**
      * The graph constructed for the database.
      */
