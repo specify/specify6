@@ -13,7 +13,7 @@
         <item title="PREPS">
         	<sql>
         		<tables><id>63</id></tables>
-        		<statement><![CDATA[SELECT count(*) FROM PREPARATION WHERE CollectionMemberID=COLMEMID]]></statement>
+        		<statement><![CDATA[SELECT count(*) FROM preparation WHERE CollectionMemberID=COLMEMID]]></statement>
         	</sql>
         </item>
         <item title="TYP_SPEC">
