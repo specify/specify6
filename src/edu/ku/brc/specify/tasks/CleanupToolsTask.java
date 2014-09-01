@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -75,6 +74,7 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityGeoBoundsChecker2;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.ProgressFrame;
@@ -157,14 +157,14 @@ public class CleanupToolsTask extends BaseTask
                 }
             })); 
             
-//            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_REF"), GEO, getResourceString("CLNUP_GEO_CLEANUP_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-//                public void actionPerformed(ActionEvent e)
-//                {
-//                    ISOCodeListDlg dlg = new ISOCodeListDlg(null);
-//                    UIHelper.centerAndShow(dlg);
-//                    
-//                }
-//            })); 
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_REF"), GEO, getResourceString("CLNUP_GEO_CLEANUP_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ISOCodeListDlg dlg = new ISOCodeListDlg(null,CustomDialog.OK_BTN);
+                    UIHelper.centerAndShow(dlg);
+                    
+                }
+            })); 
             
             boolean inclAgents = AppPreferences.getLocalPrefs().getBoolean("AGENTS_CLEANUP", false);
             if (inclAgents)

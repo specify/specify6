@@ -21,6 +21,7 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleCol;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createFormLabel;
@@ -88,6 +89,8 @@ public class GeoChooserDlg extends CustomDialog
 {
     private static final Logger  log = Logger.getLogger(GeoChooserDlg.class);
     private static boolean isUpdateNamesChecked = false;
+    
+    private static final String kGeoLookUp = "SELECT GeographyCode FROM geography WHERE RankiD = %d AND Name = '%s'";
     
     private boolean[] doAllCountries;
     private boolean[] doInvCountry;
@@ -171,6 +174,36 @@ public class GeoChooserDlg extends CustomDialog
         	setTitle("Choose "+i18NLabels.get(rankInx - 1));
         }
     }
+    
+    /**
+     * @param countryName
+     * @param rankId
+     * @return
+     */
+    private String getCountryISOCode(final String countryName, final int rankId)
+    {
+        String isoCode = stCntXRef.countryNameToCode(countryName);
+        if (isoCode == null)
+        {
+            isoCode = querySingleObj(String.format(kGeoLookUp, rankId, countryName));
+        }
+        return isoCode;
+    }
+
+    /**
+     * @param countryName
+     * @param rankId
+     * @return
+     */
+    private String getStateISOCode(final String stateName, final int rankId)
+    {
+        String isoCode = stCntXRef.stateNameToCode(stateName);
+        if (isoCode == null)
+        {
+            isoCode = querySingleObj(String.format(kGeoLookUp, rankId, stateName));
+        }
+        return isoCode;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
@@ -192,7 +225,11 @@ public class GeoChooserDlg extends CustomDialog
         
         super.createUI();
         
-        boolean isMissingState = rankId == 400 && level == 1;
+        // Geography     Level
+        // Continent       0
+        // Country         1
+        // State           2
+        // County          3
         
         try
         {
@@ -214,23 +251,20 @@ public class GeoChooserDlg extends CustomDialog
                     break;
                     
                 case 300: {
-                    String countryCode = stCntXRef.countryNameToCode(parentNames[0]);
+                    String countryCode = getCountryISOCode(parentNames[1], 200);
                     whereStr = String.format("WHERE fcode = 'ADM1' AND country = '%s'", countryCode);
                     geoName = parentNames[level];
                 } break;
                     
                 case 400: {// County
-                    if (!isMissingState)
+                    String stname    = parentNames[2];
+                    String stateCode =  getStateISOCode(stname, 300);
+                    if (stateCode != null)
                     {
-                        String stname    = parentNames[1];
-                        String stateCode =  stCntXRef.stateNameToCode(stname);
-                        if (stateCode != null)
-                        {
-                            whereStr = String.format("WHERE fcode = 'ADM2' AND admin1 = '%s'", stateCode);
-                        } else
-                        {
-                            System.err.println("Missing state code["+stname+"]");
-                        }
+                        whereStr = String.format("WHERE fcode = 'ADM2' AND admin1 = '%s'", stateCode);
+                    } else
+                    {
+                        System.err.println("Missing state code["+stname+"]");
                     }
                     geoName = parentNames[level];
                 } break;
@@ -247,21 +281,28 @@ public class GeoChooserDlg extends CustomDialog
             	labels.add(i18NLabels.get(0).toString());
             } else
             {
-	            labels.add(i18NLabels.get(1).toString());
+                labels.add(i18NLabels.get(0).toString()); // Continent
+                labels.add(parentNames[0]);
+                
+                labels.add(i18NLabels.get(1).toString()); // Country
+                
 	            switch (rankId)
 	            {
 		            case 200:   // Country
 		                break;
 	                
 	                case 300:   // State 
-	                    labels.add(parentNames[0]);
+	                    labels.add(parentNames[1]); // Country Name
+	                    
 	                    labels.add(i18NLabels.get(2).toString());
 	                    break;
 	                    
 	                case 400: { // County
-	                    labels.add(parentNames[0]);
-	                    labels.add(i18NLabels.get(2).toString());
-	                    labels.add(!isMissingState ? parentNames[1] : "(Missing)");
+	                    labels.add(parentNames[1]); // Country Name
+	                    
+	                    labels.add(i18NLabels.get(2).toString()); // State
+	                    labels.add(parentNames[2]);
+	                    
 	                    labels.add(i18NLabels.get(3).toString());
 	                } break;
 	            }
@@ -400,7 +441,7 @@ public class GeoChooserDlg extends CustomDialog
             if (isStCnty)
             {
                 lookPB    = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-                lookupBtn = createI18NButton("Look Up");
+                lookupBtn = createI18NButton("Look Up"); // I18N
                 lookPB.add(lookupBtn, cc.xy(2,1));
                 final String geoNameFinal = geoName;
                 lookupBtn.addActionListener(new ActionListener()

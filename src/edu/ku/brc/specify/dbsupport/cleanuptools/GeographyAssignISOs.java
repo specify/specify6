@@ -1095,21 +1095,7 @@ public class GeographyAssignISOs
                          final String[]  parentNames,
                          final boolean   isIndvCountry) throws SQLException
     {
-        StringBuilder sb = new StringBuilder();
-        for (int i=0;i<level+1;i++)
-        {
-            String name = i == 0 ? stripExtrasFromName(parentNames[0]) : parentNames[i];
-            if (i > 0) sb.append(" AND ");
-            sb.append(String.format("%s:\"%s\"", keys[i], name));
-        }
-        
-        /*if (rankId == 200 && parentNames[0].length() == 3)
-        {
-            sb.insert(0, '(');
-            sb.append(") OR code3:");
-            sb.append(parentNames[0]);
-        }*/
-        String searchText = sb.toString();
+        String searchText = null;
 
         // Check the database directly
         try
@@ -1124,11 +1110,11 @@ public class GeographyAssignISOs
             } else if (rankId == 200)
             {
                 pStmt = lookupCountryStmt;
-                searchText = parentNames[0];
+                searchText = parentNames[1];
 
             } else if (rankId == 300)
             {
-                lookupCountryStmt.setString(1, parentNames[0]);
+                lookupCountryStmt.setString(1, parentNames[1]);
                 ResultSet rs = lookupCountryStmt.executeQuery();
                 if (rs.next())
                 {
@@ -1138,7 +1124,7 @@ public class GeographyAssignISOs
                 
                 if (StringUtils.isNotEmpty(countryCode))
                 {
-                    searchText = parentNames[1];
+                    searchText = parentNames[2];
                     pStmt = lookupStateStmt;
                     lookupStateStmt.setString(2, countryCode);
                 }
@@ -1171,6 +1157,22 @@ public class GeographyAssignISOs
             // Ok, now check Lucence
             if (geonameId == null)
             {
+                StringBuilder sb = new StringBuilder();
+                for (int i=0;i<level+1;i++)
+                {
+                    String name = i == 0 ? stripExtrasFromName(parentNames[0]) : parentNames[i];
+                    if (i > 0) sb.append(" AND ");
+                    sb.append(String.format("%s:\"%s\"", keys[i], name));
+                }
+                
+                /*if (rankId == 200 && parentNames[0].length() == 3)
+                {
+                    sb.insert(0, '(');
+                    sb.append(") OR code3:");
+                    sb.append(parentNames[0]);
+                }*/
+                searchText = sb.toString();
+                
                 Query  query      = parser.parse(searchText.replace('/', ' '));
                 for (int j=0;j<level;j++) System.out.print("  ");
                 log.debug("Searching for: " + query.toString());
@@ -1499,6 +1501,15 @@ public class GeographyAssignISOs
     {
         mergeToGeoId = null;
         
+        // Convert RankID to level
+        int levelFromRankId = (rankId / 100) - 1;
+        if (levelFromRankId != level)
+        {
+            String msg = String.format("The geography name '%s' appears to have the wrong rank\nYou may want to investigate.", nameStr);
+            showError(msg);
+            return null;
+        }
+        
         GeoChooserDlg dlg = new GeoChooserDlg(nameStr, rankId, level, parentNames, geonameId, 
                                               stCntXRef, countryInfo, doAllCountries, doInvCountry, 
                                               readConn, countryCount, countryTotal);
@@ -1658,49 +1669,52 @@ public class GeographyAssignISOs
                 countryCount++;
             }            
             
-            
-            //-------------------
-            // Do Country
-            //-------------------
-            countryCount = 0;
-            countryTotal = getCountAsInt(readConn, "SELECT COUNT(*) FROM geography WHERE GeographyCode IS NULL AND RankID = 200");
-            sql  = "SELECT GeographyID, Name FROM geography WHERE ";
-            sql += doIndvCountryId != null ? "(GeographyCode IS NULL OR GeographyID = %d)" : "GeographyCode IS NULL";
-            sql += " AND RankID = 200 ORDER BY Name ASC";
-            
-            if (doIndvCountryId != null)
+            if (!doStopProcessing)
             {
-                sql = String.format(sql,  doIndvCountryId);
-            }
-            
-            for (Object[] row : query(readConn, sql))
-            {
-                doSkipCountry = false;
+                //-------------------
+                // Do Country
+                //-------------------
+                countryCount = 0;
+                countryTotal = getCountAsInt(readConn, "SELECT COUNT(*) FROM geography WHERE GeographyCode IS NULL AND RankID = 200");
+                sql  = "SELECT GeographyID, Name FROM geography WHERE ";
+                sql += doIndvCountryId != null ? "(GeographyCode IS NULL OR GeographyID = %d)" : "GeographyCode IS NULL";
+                sql += " AND RankID = 200 ORDER BY Name ASC";
                 
-                for (int i=0;i<parentNames.length;i++) parentNames[i] = null;
-                
-                String countryName = (String)row[1];
-                countryName = countryMappings.get(countryName);
-                if (countryName == null)
+                if (doIndvCountryId != null)
                 {
-                    countryName = (String)row[1];
+                    sql = String.format(sql,  doIndvCountryId);
                 }
                 
-                int     geoId         = (Integer)row[0];
-                boolean isIndvCountry = doIndvCountryId != null && doIndvCountryId == geoId;
-                System.out.println(countryName+"  "+geoId+"   doInvCountry[0]: "+doInvCountry[0]+"  doIndvCountryId: "+doIndvCountryId+"  isIndvCountry: "+isIndvCountry);
-                if (doAllCountries[0] || (doInvCountry[0] && isIndvCountry))
+                for (Object[] row : query(readConn, sql))
                 {
-                    System.out.println(countryName);
-                    parentNames[0] = countryName;
-                    findGeo((Integer)row[0], 0, 200, parentNames, isIndvCountry);
-                    if (doStopProcessing)
+                    doSkipCountry = false;
+                    
+                    for (int i=0;i<parentNames.length;i++) parentNames[i] = null;
+                    
+                    String countryName = (String)row[1];
+                    countryName = countryMappings.get(countryName);
+                    if (countryName == null)
                     {
-                        break;
+                        countryName = (String)row[1];
                     }
+                    
+                    int     geoId         = (Integer)row[0];
+                    boolean isIndvCountry = doIndvCountryId != null && doIndvCountryId == geoId;
+                    System.out.println(countryName+"  "+geoId+"   doInvCountry[0]: "+doInvCountry[0]+"  doIndvCountryId: "+doIndvCountryId+"  isIndvCountry: "+isIndvCountry);
+                    if (doAllCountries[0] || (doInvCountry[0] && isIndvCountry))
+                    {
+                        System.out.println(countryName);
+                        parentNames[0] = countryName;
+                        findGeo((Integer)row[0], 0, 200, parentNames, isIndvCountry);
+                        if (doStopProcessing)
+                        {
+                            break;
+                        }
+                    }
+                    countryCount++;
                 }
-                countryCount++;
             }
+            
             tblWriter.endTable();
             tblWriter.close();
             
