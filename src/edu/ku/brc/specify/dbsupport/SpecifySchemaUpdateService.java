@@ -597,7 +597,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     
     /* paleo model change finalization ... */
     
-    private boolean moveDataFromHereToHere(String move) {
+    private boolean moveDataFromHereToHere(String move, String databaseName, Connection conn) {
     	String from = move.split("\\|")[0];
     	String to = move.split("\\|")[1];
     	//System.out.println("moving from " + from + " to " + to);
@@ -607,25 +607,27 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	String toField = to.split("\\.")[1];
    	    //assuming fromTable is paleoContext
     	//also assuming toTable is collectionObjectAttribute
-    	int recsToMove = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM `" + fromTable + "` WHERE `" + fromField + "` IS NOT NULL");
-    	if (recsToMove > 0) {
-    		String sql = "SELECT count(*) FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
-    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID WHERE pc.`" + fromField + "` IS NOT NULL";
-    		int recsToMoveTo = BasicSQLUtils.getCountAsInt(sql);
-    		if (recsToMoveTo < recsToMove) {
-    			sql = "INSERT INTO collectionobjectattribute(TimestampCreated, TimestampModified, Version, CollectionMemberID,`" + toField + "`) "
-    				+ "SELECT pc.TimestampCreated, pc.TimestampModified, 0, co.CollectionMemberID, co.CollectionObjectID FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID "
-    				+ "WHERE pc.`" + fromField + "` IS NOT NULL AND co.CollectionObjectAttributeID IS NULL";
-    			BasicSQLUtils.update(sql);
-    			sql = "UPDATE collectionobject co INNER JOIN collectionobjectattribute coa ON coa.`" + toField + "`=co.CollectionObjectID SET co.CollectionObjectAttributeID=coa.CollectionObjectAttributeID";
-    			BasicSQLUtils.update(sql);
-    		}
+    	if (doesColumnExist(databaseName, fromTable, fromField, conn)) {
+    		int recsToMove = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM `" + fromTable + "` WHERE `" + fromField + "` IS NOT NULL");
+    		if (recsToMove > 0) {
+    			String sql = "SELECT count(*) FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
+    					+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID WHERE pc.`" + fromField + "` IS NOT NULL";
+    			int recsToMoveTo = BasicSQLUtils.getCountAsInt(sql);
+    			if (recsToMoveTo < recsToMove) {
+    				sql = "INSERT INTO collectionobjectattribute(TimestampCreated, TimestampModified, Version, CollectionMemberID,`" + toField + "`) "
+    						+ "SELECT pc.TimestampCreated, pc.TimestampModified, 0, co.CollectionMemberID, co.CollectionObjectID FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID "
+    						+ "WHERE pc.`" + fromField + "` IS NOT NULL AND co.CollectionObjectAttributeID IS NULL";
+    				BasicSQLUtils.update(sql);
+    				sql = "UPDATE collectionobject co INNER JOIN collectionobjectattribute coa ON coa.`" + toField + "`=co.CollectionObjectID SET co.CollectionObjectAttributeID=coa.CollectionObjectAttributeID";
+    				BasicSQLUtils.update(sql);
+    			}
     	
-    		sql = "UPDATE paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
-    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID SET coa.`" + toField + "`=pc.`" + fromField + "` WHERE pc.`" + fromField + "` IS NOT NULL";
-    		int recsUpdated = BasicSQLUtils.update(sql);
-    		if (recsUpdated != recsToMove) {
-    			return false;
+    			sql = "UPDATE paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
+    					+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID SET coa.`" + toField + "`=pc.`" + fromField + "` WHERE pc.`" + fromField + "` IS NOT NULL";
+    			int recsUpdated = BasicSQLUtils.update(sql);
+    			if (recsUpdated != recsToMove) {
+    				return false;
+    			}
     		}
     	}
     	return true;
@@ -671,7 +673,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     			"paleocontext.direction|collectionobjectattribute.direction"
     	};
     	for (int i = 0; i < moves.length; i++) {
-    		if (!moveDataFromHereToHere(moves[i])) {
+    		if (!moveDataFromHereToHere(moves[i], databaseName, itConn)) {
     			return false;
     		}
     	}
