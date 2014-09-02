@@ -9387,13 +9387,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 try
                 {
-                    String updateStr = "INSERT INTO paleocontext (TimestampCreated, TimestampModified, CollectionMemberID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID) "
+                    String updateStr = "INSERT INTO paleocontext (TimestampCreated, TimestampModified, DisciplineID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID) "
                             + "VALUES ('"
                             + nowStr
                             + "','"
                             + nowStr
                             + "',"
-                            + getCollectionMemberId()
+                            + getDisciplineId()
                             + ", 0, " 
                             + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) 
                             +"," + (newLithoId != null ? newLithoId : "NULL")
