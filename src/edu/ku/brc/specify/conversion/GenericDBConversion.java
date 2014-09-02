@@ -3697,7 +3697,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 strBuf2.setLength(0);
                 strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Type, Name, TimestampCreated, ");
                 strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
-                strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
+                strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId, PaleoContextChildTable, IsPaleoContextEmbedded) VALUES (");
                 strBuf2.append(info.getDisciplineId() + ",");
                 strBuf2.append("'" + dateTimeNow + "',"); // TimestampModified
                 strBuf2.append("'" + disciplineTypeObj.getName() + "',");
@@ -3710,8 +3710,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     
                 strBuf2.append(division.getDivisionId() + ","); // DivisionID
                 strBuf2.append(getCreatorAgentId(null) + "," + getModifiedByAgentIdForAgent(lastEditedBy) + ",0, ");
-                strBuf2.append(curDisciplineID);  // UserGroupScopeId
-                strBuf2.append(")");
+                strBuf2.append(curDisciplineID + ",");  // UserGroupScopeId
+                strBuf2.append("'collectionobject', true)"); //PaleoContextChildTable, IsPaleoContextEmbedded
+                
                 // strBuf2.append("NULL)");// UserPermissionID//User/Security changes
                 log.info(strBuf2.toString());
     
