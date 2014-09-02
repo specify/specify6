@@ -601,6 +601,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	String from = move.split("\\|")[0];
     	String to = move.split("\\|")[1];
     	//System.out.println("moving from " + from + " to " + to);
+    	log.info("moving from " + from + " to " + to);
     	String fromTable = from.split("\\.")[0];
     	String fromField = from.split("\\.")[1];
     	String toTable = to.split("\\.")[0];
@@ -641,13 +642,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     private boolean removeField(String toDrop, String databaseName, Connection conn) {
     	//System.out.println("removing " + toDrop);
+    	log.info("removing " + toDrop);
     	String tbl = toDrop.split("\\.")[0];
     	String fld = toDrop.split("\\.")[1];
-    	String sql = "SELECT COUNT(*) FROM `" + tbl+ "`";
+    	//String sql = "SELECT COUNT(*) FROM `" + tbl+ "`";
     	if (doesColumnExist(databaseName, tbl, fld, conn)) {
-        	int cnt = BasicSQLUtils.getCountAsInt(sql);
-        	sql = "ALTER TABLE `" + databaseName + "`.`" + tbl + "` DROP `" + fld + "`";
-        	if (BasicSQLUtils.update(conn, sql) != cnt) {
+        	//int cnt = BasicSQLUtils.getCountAsInt(sql);
+        	String sql = "ALTER TABLE `" + databaseName + "`.`" + tbl + "` DROP `" + fld + "`";
+        	BasicSQLUtils.update(conn, sql);        		
+        	if (doesColumnExist(databaseName, tbl, fld, conn)) {
         		return false;
         	}
     	}
