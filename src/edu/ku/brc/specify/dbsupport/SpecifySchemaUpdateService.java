@@ -607,22 +607,22 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	String toField = to.split("\\.")[1];
    	    //assuming fromTable is paleoContext
     	//also assuming toTable is collectionObjectAttribute
-    	int recsToMove = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM " + fromTable + " WHERE " + fromField + " IS NOT NULL");
+    	int recsToMove = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM `" + fromTable + "` WHERE `" + fromField + "` IS NOT NULL");
     	if (recsToMove > 0) {
     		String sql = "SELECT count(*) FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
-    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID WHERE pc." + fromField + " IS NOT NULL";
+    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID WHERE pc.`" + fromField + "` IS NOT NULL";
     		int recsToMoveTo = BasicSQLUtils.getCountAsInt(sql);
     		if (recsToMoveTo < recsToMove) {
-    			sql = "INSERT INTO collectionobjectattribute(TimestampCreated, TimestampModified, Version, CollectionMemberID," + toField + ") "
+    			sql = "INSERT INTO collectionobjectattribute(TimestampCreated, TimestampModified, Version, CollectionMemberID,`" + toField + "`) "
     				+ "SELECT pc.TimestampCreated, pc.TimestampModified, 0, co.CollectionMemberID, co.CollectionObjectID FROM paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID "
-    				+ "WHERE pc." + fromField + " IS NOT NULL AND co.CollectionObjectAttributeID IS NULL";
+    				+ "WHERE pc.`" + fromField + "` IS NOT NULL AND co.CollectionObjectAttributeID IS NULL";
     			BasicSQLUtils.update(sql);
-    			sql = "UPDATE collectionobject co INNER JOIN collectionobjectattribute coa ON coa." + toField + "=co.CollectionObjectID SET co.CollectionObjectAttributeID=coa.CollectionObjectAttributeID";
+    			sql = "UPDATE collectionobject co INNER JOIN collectionobjectattribute coa ON coa.`" + toField + "`=co.CollectionObjectID SET co.CollectionObjectAttributeID=coa.CollectionObjectAttributeID";
     			BasicSQLUtils.update(sql);
     		}
     	
     		sql = "UPDATE paleocontext pc INNER JOIN collectionobject co ON co.PaleoContextID=pc.PaleoContextID INNER JOIN collectionobjectattribute coa ON "
-    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID SET coa." + toField + "=pc." + fromField + " WHERE pc." + fromField + " IS NOT NULL";
+    			+ "coa.CollectionObjectAttributeID=co.CollectionObjectAttributeID SET coa.`" + toField + "`=pc.`" + fromField + "` WHERE pc.`" + fromField + "` IS NOT NULL";
     		int recsUpdated = BasicSQLUtils.update(sql);
     		if (recsUpdated != recsToMove) {
     			return false;
