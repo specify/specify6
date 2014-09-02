@@ -641,10 +641,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	//System.out.println("removing " + toDrop);
     	String tbl = toDrop.split("\\.")[0];
     	String fld = toDrop.split("\\.")[1];
-    	String sql = "SELECT COUNT(*) FROM " + tbl;
+    	String sql = "SELECT COUNT(*) FROM `" + tbl+ "`";
     	if (doesColumnExist(databaseName, tbl, fld, conn)) {
         	int cnt = BasicSQLUtils.getCountAsInt(sql);
-        	sql = "ALTER TABLE " + databaseName + "." + tbl + " DROP " + fld;
+        	sql = "ALTER TABLE `" + databaseName + "`.`" + tbl + "` DROP `" + fld + "`";
         	if (BasicSQLUtils.update(conn, sql) != cnt) {
         		return false;
         	}
