@@ -2446,6 +2446,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             deleteAllRecordsFromTable(toTableName, BasicSQLUtils.myDestinationServerType);
 
+            errorsToShow &= ~BasicSQLUtils.SHOW_NAME_MAPPING_ERROR; //assuming that new sp6 fields do not have sp5 equivalents
             setShowErrors(errorsToShow);
             setIdentityInsertONCommandForSQLServer(newDBConn, toTableName, BasicSQLUtils.myDestinationServerType);
             
@@ -8374,6 +8375,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
+        errorsToShow &= ~BasicSQLUtils.SHOW_NAME_MAPPING_ERROR; //Assuming new sp6 fields do not have sp5 equivalent
         setShowErrors(errorsToShow);
         
         TableWriter tblWriter = convLogger.getWriter("Locality.html", "Localities");
@@ -8905,6 +8907,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         int errorsToShow = BasicSQLUtils.SHOW_ALL;
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for DeaccessionPhysicalObjectID
+        errorsToShow &= ~BasicSQLUtils.SHOW_NAME_MAPPING_ERROR; //Assuming any new fields in CollectingEventAttribute do not have Sp5 equivalents.
         setShowErrors(errorsToShow);
         
         // Need to add Fields to ignore!
