@@ -2475,9 +2475,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected String[] getCollectionObjectAttributeToIgnore()
     {
         return new String[] { "BiologicalObjectTypeId", "BiologicalObjectAttributesID", "SexId",
-                "StageId", "Text8", "Number34", "Number35", "Number36", "Text8", "Version",
+                "StageId", "Number34", "Number35", "Number36", "Version",
                 "CreatedByAgentID", "CollectionMemberID", "Text11",
-                "Text12", "Text13", "Text14", "CollectionObjectAttributeID", "RelatedTaxonID"};
+                "Text12", "Text13", "Text14", "CollectionObjectAttributeID",
+                "PositionState", "Direction", "TopDistance", "BottomDistance", "DistanceUnits"};
     }
 
     protected String[] getCollectionObjectAttributeMappings()
