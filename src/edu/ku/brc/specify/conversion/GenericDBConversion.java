@@ -8366,7 +8366,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "LocalityName",
                 "NamedPlace",
                 "RelationToNamedPlace",
-                "SGRStatus"};
+                "SGRStatus",
+                "PaleoContextID",
+                "Text3", "Text4", "Text5", "VerbatimLatitude", "VerbatimLongitude" };
         
         setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
