@@ -539,7 +539,6 @@ public class DeterminationBusRules extends BaseBusRules
      * 
      * Disables/Enables AlternateName field based on whether taxon is non-null/null.
      */
-    @SuppressWarnings("unchecked")
     protected void taxonChanged(final ValComboBoxFromQuery taxonComboBox, final Component altTaxName)
     {
         Object objInForm = formViewObj.getDataObj();
