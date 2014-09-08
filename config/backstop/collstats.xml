@@ -43,14 +43,16 @@
        <stat name="num_litho" desc="Number of Litho Stratigraphy">
           <![CDATA[SELECT count(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID]]>
        </stat>
+       <!-- 
        <stat name="num_lithou" desc="Number of Litho Stratigraphy Used">
           <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM paleocontext p INNER JOIN lithostrat l ON l.LithoStratID = p.LithoStratID WHERE p.CollectionMemberID = 4 AND l.IsAccepted <> 0]]>
-       </stat>
+       </stat>  -->
        <stat name="num_gtp" desc="Number of Chronostratigraphy">
           <![CDATA[SELECT count(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID]]>
        </stat>
+       <!--
        <stat name="num_gtpu" desc="Number of Chronostratigraphy Used">
           <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM paleocontext p INNER JOIN geologictimeperiod g ON g.GeologicTimePeriodID = p.ChronosStratID WHERE p.CollectionMemberID = 4 AND g.IsAccepted <> 0]]>
-       </stat>
+       </stat>  -->
    </stats>
 </statistics>

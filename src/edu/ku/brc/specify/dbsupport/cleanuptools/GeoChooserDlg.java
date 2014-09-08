@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.dbsupport.cleanuptools;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleCol;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
@@ -47,6 +46,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -99,6 +99,7 @@ public class GeoChooserDlg extends CustomDialog
     private int        level;
     private Connection readConn;
     private String[]   parentNames;
+    private int[]      parentRanks;
     private Integer    geonameId;
     private String     nameStr;
     private int        countryCount;
@@ -110,7 +111,7 @@ public class GeoChooserDlg extends CustomDialog
     private Integer          lookupId   = null;
 
     private Vector<Triple<String, Integer, String>> coInfoList;
-    private Vector<Object>   i18NLabels = null;
+    private HashMap<Integer, String> i18NLabelsMap = new HashMap<Integer, String>();
     private JCheckBox        updateNameCB;
     private JCheckBox        mergeCB;
     private JCheckBox        addISOCodeCB;
@@ -142,6 +143,7 @@ public class GeoChooserDlg extends CustomDialog
                          final int        rankId,
                          final int        level,
                          final String[]   parentNames,
+                         final int[]      parentRanks,
                          final Integer    geonameId,
                          final StateCountryContXRef stCntXRef,
                          final Vector<Triple<String, Integer, String>> countryInfo,
@@ -157,6 +159,7 @@ public class GeoChooserDlg extends CustomDialog
         this.rankId       = rankId;
         this.level        = level;
         this.parentNames  = parentNames;
+        this.parentRanks  = parentRanks;
         this.geonameId    = geonameId;
         this.stCntXRef    = stCntXRef;
         this.countryInfo  = countryInfo;
@@ -166,12 +169,16 @@ public class GeoChooserDlg extends CustomDialog
         this.countryCount = countryCount;
         this.countryTotal = countryTotal;
         
-        String sql = "SELECT Name FROM geographytreedefitem WHERE RankID IN (100,200,300,400) AND GeographyTreeDefID = GEOTREEDEFID ORDER BY RankID ASC";
-        i18NLabels = querySingleCol(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
-        int rankInx = rankId / 100;
-        if (rankInx > 0 && rankInx < 4)
+        String sql = "SELECT Name, RankID FROM geographytreedefitem WHERE RankID IN (100,200,300,400) AND GeographyTreeDefID = GEOTREEDEFID ORDER BY RankID ASC";
+        for (Object[] row : query(QueryAdjusterForDomain.getInstance().adjustSQL(sql)))
         {
-        	setTitle("Choose "+i18NLabels.get(rankInx - 1));
+            String  name   = (String)row[0];
+            Integer rankID = (Integer)row[1];
+            i18NLabelsMap.put(rankID, name);
+        }
+        if (i18NLabelsMap.containsKey(rankId))
+        {
+            setTitle("Choose "+i18NLabelsMap.get(rankId)); // I18N
         }
     }
     
@@ -205,6 +212,20 @@ public class GeoChooserDlg extends CustomDialog
         return isoCode;
     }
 
+    private String getParentNameWithRank(final int theRankId)
+    {
+        int i = 0;
+        while (parentRanks[i] > 0)
+        {
+            if (parentRanks[i] == theRankId)
+            {
+                return parentNames[i];
+            }
+            i++;
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
@@ -251,22 +272,29 @@ public class GeoChooserDlg extends CustomDialog
                     break;
                     
                 case 300: {
-                    String countryCode = getCountryISOCode(parentNames[1], 200);
-                    whereStr = String.format("WHERE fcode = 'ADM1' AND country = '%s'", countryCode);
-                    geoName = parentNames[level];
+                    String countryName = getParentNameWithRank(200);
+                    if (countryName != null)
+                    {
+                        String countryCode = getCountryISOCode(countryName, 200);
+                        whereStr = String.format("WHERE fcode = 'ADM1' AND country = '%s'", countryCode);
+                        geoName = parentNames[level];
+                    }
                 } break;
                     
                 case 400: {// County
-                    String stname    = parentNames[2];
-                    String stateCode =  getStateISOCode(stname, 300);
-                    if (stateCode != null)
+                    String stname = getParentNameWithRank(300);
+                    if (stname != null)
                     {
-                        whereStr = String.format("WHERE fcode = 'ADM2' AND admin1 = '%s'", stateCode);
-                    } else
-                    {
-                        System.err.println("Missing state code["+stname+"]");
+                        String stateCode = getStateISOCode(stname, 300);
+                        if (stateCode != null)
+                        {
+                            whereStr = String.format("WHERE fcode = 'ADM2' AND admin1 = '%s'", stateCode.length() == 4 ? stateCode.substring(2) : stateCode);
+                        } else
+                        {
+                            System.err.println("Missing state code["+stname+"]");
+                        }
+                        geoName = parentNames[level];
                     }
-                    geoName = parentNames[level];
                 } break;
             }
             
@@ -276,36 +304,10 @@ public class GeoChooserDlg extends CustomDialog
             char   firstChar = nameStr.charAt(0);
             String twoChars  = nameStr.substring(0, 2);
             
-            if (rankId == 100)
+            int i = 0;
+            while (i < parentNames.length && parentRanks[i] > -1)
             {
-            	labels.add(i18NLabels.get(0).toString());
-            } else
-            {
-                labels.add(i18NLabels.get(0).toString()); // Continent
-                labels.add(parentNames[0]);
-                
-                labels.add(i18NLabels.get(1).toString()); // Country
-                
-	            switch (rankId)
-	            {
-		            case 200:   // Country
-		                break;
-	                
-	                case 300:   // State 
-	                    labels.add(parentNames[1]); // Country Name
-	                    
-	                    labels.add(i18NLabels.get(2).toString());
-	                    break;
-	                    
-	                case 400: { // County
-	                    labels.add(parentNames[1]); // Country Name
-	                    
-	                    labels.add(i18NLabels.get(2).toString()); // State
-	                    labels.add(parentNames[2]);
-	                    
-	                    labels.add(i18NLabels.get(3).toString());
-	                } break;
-	            }
+                labels.add(i18NLabelsMap.get(parentRanks[i++])); 
             }
             
             setCloseOnHelpClk(true);
@@ -313,7 +315,7 @@ public class GeoChooserDlg extends CustomDialog
             int  inx  = -1; // geonameId
             int  inx1 = -1; // first letter
             int  inx2 = -1; // first two letters
-            int  i    = 0;
+            i         = 0;
             
             dlm      = new DefaultListModel();
             mainList = new JList(dlm);
@@ -434,7 +436,7 @@ public class GeoChooserDlg extends CustomDialog
                 }
             });
             
-            labels.add(nameStr);// + "  (Unknown)");
+            //labels.add(nameStr);// + "  (Unknown)");
             
             PanelBuilder lookPB    = null;
             JButton      lookupBtn = null;
@@ -456,15 +458,16 @@ public class GeoChooserDlg extends CustomDialog
             }
             
             JScrollPane  sb     = createScrollPane(mainList, true);
-            PanelBuilder pbTop  = new PanelBuilder(new FormLayout("p,2px,f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", (labels.size() / 2) )));
+            PanelBuilder pbTop  = new PanelBuilder(new FormLayout("p,2px,f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", labels.size() )));
+            int y = 1;
             for (i=0;i<labels.size();i++)
             {
-                JLabel lbl = createLabel(labels.get(i+1));
-                pbTop.add(createFormLabel(labels.get(i)), cc.xy(1, i+1));
-                pbTop.add(lbl,     cc.xy(3, i+1));
+                JLabel lbl = createLabel(parentNames[i]);
+                pbTop.add(createFormLabel(labels.get(i)), cc.xy(1, y));
+                pbTop.add(lbl,     cc.xy(3, y));
                 lbl.setBackground(Color.WHITE);
                 lbl.setOpaque(true);
-                i++;
+                y += 2;
             }
             pb.add(pbTop.getPanel(), cc.xy(1, 3));
             pb.addSeparator("Possible standard Geography choices", cc.xy(1, 5)); // I18N
