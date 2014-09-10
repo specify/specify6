@@ -295,16 +295,18 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
     @Override
     public boolean setStorageLocationIntoAttachment(Attachment attachment, boolean doDisplayErrors)
     {
-        String attName    = attachment.getOrigFilename();
-        int    lastPeriod = attName.lastIndexOf('.');
+        //Possibly for unsaved attachments, origianalFilename could be null? 
+    	//It is happening for KU Herps anyway, so adding check for null origFilename here... 
+    	String origExtension = attachment.getOrigFilename() == null ? "" :
+        	attachment.getOrigFilename().substring(attachment.getOrigFilename().lastIndexOf('.'));
         String suffix     = ".att";
         
-        if (lastPeriod != -1)
+        if (!"".equals(origExtension))
         {
             // Make sure the file extension (if any) remains the same so the host
             // filesystem still sees the files as the proper types.  This is simply
             // to make the files browsable from a system file browser.
-            suffix = ".att" + attName.substring(lastPeriod);
+            suffix = ".att" + origExtension;
         }
         
         String errMsg          = null;
