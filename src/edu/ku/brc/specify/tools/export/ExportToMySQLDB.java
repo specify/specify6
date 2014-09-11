@@ -1044,8 +1044,8 @@ public class ExportToMySQLDB
 			} else
 			{
 				String fldText = "`" + fld.getName() + "`";
-				String dateStr = "concat(year(" + fldText + "), " + "CASE WHEN month(" + fldText + ") = 0 THEN '' ELSE concat('-', month(" + fldText + ")) END, "
-						+ "CASE WHEN day(" + fldText + ") = 0 THEN '' ELSE concat('-', day(" + fldText + ")) END) " + fldText;
+				String dateStr = "concat(year(" + fldText + "), " + "CASE WHEN month(" + fldText + ") = 0 THEN '' ELSE concat('-', lpad(month(" + fldText + "),2,'0')) END, "
+						+ "CASE WHEN day(" + fldText + ") = 0 THEN '' ELSE concat('-', lpad(day(" + fldText + "),2,'0')) END) " + fldText;
 				fldStr += dateStr;
 			}
 		}
