@@ -43,6 +43,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1400,7 +1401,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     Constructor<?> tester;
                     try
                     {
-                        tester = isNumericCatalogNumber() ? Integer.class.getConstructor(String.class)
+                        tester = isNumericCatalogNumber() ? BigInteger.class.getConstructor(String.class)
                         		: fieldQRI.getDataClass().getConstructor(String.class);
                         for (int s = 0; s < criteriaStrs.length; s++)
                         {
