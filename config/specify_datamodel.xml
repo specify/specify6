@@ -2357,7 +2357,8 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false" save="false" likemanytoone="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.OtherIdentifier" table="otheridentifier" tableid="61" searchable="true" abbrv="oi">
-      <field column="CollectionMemberID" name="collectionMemberId" type="java.lang.Integer" indexName="OthIdColMemIDX" updatable="true" required="true" unique="false" indexed="true" partialDate="false"/>
+ 	  <display view="OtherIdentifiers" newobjdlg="OtherIdentifierDisplay"/>      
+ 	  <field column="CollectionMemberID" name="collectionMemberId" type="java.lang.Integer" indexName="OthIdColMemIDX" updatable="true" required="true" unique="false" indexed="true" partialDate="false"/>
       <field column="Identifier" name="identifier" type="java.lang.String" length="64" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="Institution" name="institution" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
