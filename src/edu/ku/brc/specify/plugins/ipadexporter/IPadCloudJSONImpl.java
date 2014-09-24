@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.plugins.ipadexporter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ import org.apache.commons.lang.StringUtils;
 public class IPadCloudJSONImpl implements IPadCloudIFace
 {
     // URLs
-    private String writeURLStr = iPadRepositoryHelper.baseURLStr + "spinsight.php";
+    private String scriptName = "spinsight.php";
     
     private static final String kId          = "id";
     private static final String kIsGlobal    = "isglob";
@@ -415,6 +416,17 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
         }
         return null;
     }
+        
+    private String getWriteURL()
+    {
+        iPadRepositoryHelper export  = new iPadRepositoryHelper();
+        String               baseURL = export.getCloudURL();
+        if (!baseURL.endsWith(File.separator))  
+        {
+            baseURL += File.separator;
+        }
+        return baseURL + scriptName;
+    }
     
     /**
      * @param valuesMap
@@ -422,6 +434,8 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
      */
     private synchronized JSONObject sendPost(final HashMap<String, String> valuesMap)
     {
+        String writeURLStr = getWriteURL();
+
         isNetworkError = false;
         
         System.out.println("\n------------------------ ");

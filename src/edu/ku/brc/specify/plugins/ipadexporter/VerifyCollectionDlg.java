@@ -76,7 +76,7 @@ public class VerifyCollectionDlg extends CustomDialog
 	private JEditorPane                   htmlPane;
 	private VerifyCollectionListener      listener;
 	private SwingWorker<Integer, Integer> worker;
-	private iPadDBExporter                ipadExpoter;
+	private iPadDBExporter                ipadExporter;
 	private File                          cacheDir;
 	private String                        reportPath;
 	private boolean                       isCollectionPaleo;
@@ -93,7 +93,7 @@ public class VerifyCollectionDlg extends CustomDialog
         setAlwaysOnTop(true);
         
         this.listener    = listener;
-        this.ipadExpoter = ipadExpoter;
+        this.ipadExporter = ipadExpoter;
         this.cacheDir    = cacheDir;
         this.reportPath  = this.cacheDir + "/VerifyReport.html"; 
         
@@ -112,7 +112,7 @@ public class VerifyCollectionDlg extends CustomDialog
     @Override
     public void createUI()
     {
-        loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
+        loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         setTitle(getResourceString("VERIFY_TITLE"));
         try
         {
@@ -226,13 +226,12 @@ public class VerifyCollectionDlg extends CustomDialog
     {
         //loadAndPushResourceBundle("stats");
     	
-        boolean hasErrors   = false;
         boolean hasCritical = false;
 
         UIRegistry.setDoShowAllResStrErors(false);
         //logMsg("Verifying the Collection...");
         
-        File tmpFile = ipadExpoter.getResourceFile(VERIFY_XML);
+        File tmpFile = ipadExporter.getConfigFile(VERIFY_XML);
         if (tmpFile != null && tmpFile.exists())
         {
             Statement stmt0  = null;
@@ -273,7 +272,7 @@ public class VerifyCollectionDlg extends CustomDialog
                         
                         if (isPaleo && !isCollectionPaleo) continue;
                         
-                        sql = ipadExpoter.adjustSQL(sql);
+                        sql = ipadExporter.adjustSQL(sql);
                         
                         Object  rv     = BasicSQLUtils.querySingleObj(sql);
                         Integer retVal = cnvToInt(rv);
@@ -328,7 +327,6 @@ public class VerifyCollectionDlg extends CustomDialog
                         	{
                         		warnMsgs.add(fullMsg);
                         	}
-                        	hasErrors = true;
                         	
                         } else if (doDsp)
                         {

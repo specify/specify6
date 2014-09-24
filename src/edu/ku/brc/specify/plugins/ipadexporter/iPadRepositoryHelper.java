@@ -76,9 +76,12 @@ import edu.ku.brc.util.Pair;
 public class iPadRepositoryHelper
 {
     private static MessageDigest sha1       = null;
+    
     //public static final String  baseURLStr = "http://anza.nhm.ku.edu/ipad/";
-    public static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
     //public static final String  baseURLStr = "http://192.168.1.113/ipad/";
+    
+    public  static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
+    private static final String  scriptName = "handler.php";
 
     private boolean                 networkConnError   = false;
     private byte[]                  bytes              = new byte[100*1024];
@@ -87,7 +90,7 @@ public class iPadRepositoryHelper
     
     // URLs
     //private String                  readURLStr  = null;
-    private String                  writeURLStr = baseURLStr + "handler.php";
+    private String                  writeURLStr = baseURLStr + scriptName;
     //private String                  delURLStr   = null;
     
     private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", 
@@ -111,6 +114,7 @@ public class iPadRepositoryHelper
     public iPadRepositoryHelper()
     {
         super();
+        
     }
     
     /**
@@ -353,6 +357,24 @@ public class iPadRepositoryHelper
     {
         return sha1Hash;
     }
+    
+    public String getCloudURL()
+    {
+        Collection     collection   = AppContextMgr.getInstance().getClassObject(Collection.class);
+        String         cloudURLPref = "IPAD_CLOUD_URL_"    + collection.getId();
+        AppPreferences remotePrefs  = AppPreferences.getRemote();
+        return remotePrefs.get(cloudURLPref, baseURLStr);
+    }
+    
+    private String getWriteURL()
+    {
+        String baseURL = getCloudURL();
+        if (!baseURL.endsWith(File.separator))  
+        {
+            baseURL += File.separator;
+        }
+        return baseURL + scriptName;
+    }
 
     /**
      * @param targetFile
@@ -364,7 +386,7 @@ public class iPadRepositoryHelper
                                          final String fileName,
                                          final String dirName)
     {
-        String     targetURL = writeURLStr;
+        String     targetURL = getWriteURL();
         PostMethod filePost  = new PostMethod(targetURL);
 
         try
@@ -389,7 +411,7 @@ public class iPadRepositoryHelper
 
             int status = client.executeMethod(filePost);
             
-            System.out.println(filePost.getResponseBodyAsString());
+            //System.out.println(filePost.getResponseBodyAsString());
 
             if (status == HttpStatus.SC_OK)
             {
@@ -404,7 +426,6 @@ public class iPadRepositoryHelper
         } catch (java.net.UnknownHostException uex)
         {
             networkConnError = true;
-            
             
         } catch (Exception ex)
         {

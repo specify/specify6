@@ -107,7 +107,7 @@ public class ManageDataSetsDlg extends CustomDialog
     @Override
     public void createUI()
     {
-        loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
+        loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         setTitle(getResourceString("MNG_DS"));
         try
         {

@@ -870,7 +870,7 @@ public class BuildFromGeonames
                             String sql      = pre + post;
                             
                             double totalCnt = BasicSQLUtils.getCountAsInt(conn, countStr + post);
-                            doProgress(0, 100, "Updating Water ISO Codes");
+                            doProgress(0, 100, "Initializing...");
                             
                             for (Object[] cols : BasicSQLUtils.query(sql))
                             {
@@ -892,7 +892,7 @@ public class BuildFromGeonames
                             sql  = pre + post;
                             
                             totalCnt = BasicSQLUtils.getCountAsInt(conn, "SELECT COUNT(*) "+post);
-                            doProgress(0, 100, "Updating ISO Codes");
+                            doProgress(0, 100, "Preparing data...");
                             
                             pStmt = conn.prepareStatement("UPDATE geoname SET ISOCode=? WHERE geonameId = ?");
                             stmt  = conn.createStatement();

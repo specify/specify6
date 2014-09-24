@@ -584,16 +584,16 @@ public class GeoCleanupFuzzySearch
             //int cnt = 0;
             for (String altName : altNames)
             {
-                switch (rankId)
-                {
-                    case 200: countryName = altName;
-                    break;
-                    case 300: stateName = altName;
-                    break;
-                    case 400: countyName = altName;
-                    break;
-                }
-                
+//                switch (rankId)
+//                {
+//                    case 200: countryName = altName;
+//                    break;
+//                    case 300: stateName = altName;
+//                    break;
+//                    case 400: countyName = altName;
+//                    break;
+//                }
+//
 //                if (countryName != null && countryName.equalsIgnoreCase("costa rica"))
 //                {
 //                    System.out.println("["+countryName+"]["+stateName+"]["+countyName+"]");
@@ -602,11 +602,11 @@ public class GeoCleanupFuzzySearch
 //                {
 //                    System.out.println("["+countryName+"]["+stateName+"]["+countyName+"]");
 //                }
-                status = addDoc(geonameId, 
-                        fullName.toString(), 
-                        countryName, 
-                        stateName, 
-                        countyName, 
+                status = addDoc(geonameId,
+                        altName + " " + fullName,
+                        countryName,
+                        stateName,
+                        countyName,
                         rankId,
                         isoCode,
                         countryCode,
@@ -942,7 +942,7 @@ public class GeoCleanupFuzzySearch
         dbConn.setUsernamePassword(username, password);
         dbConn.setDriver("com.mysql.jdbc.Driver");
         
-        boolean doBuildIndex = false;
+        boolean doBuildIndex = true;
 
         String indexLocation = "/Users/rods/Downloads/lucene/genames-index";
 
@@ -974,8 +974,8 @@ public class GeoCleanupFuzzySearch
         IndexSearcher searcher = new IndexSearcher(reader);
 
         
-        boolean doFuzzy = true;
-        boolean doTerm = true;
+        boolean doFuzzy = false;
+        boolean doTerm = false;
         boolean doParse = true;
         
         if (doFuzzy)
@@ -1104,32 +1104,37 @@ public class GeoCleanupFuzzySearch
         if (doParse)
         {
             System.out.println("-------------------------- Parsing -----------------------");
-            String[] searchStrs = { 
-                    "+country:Comoro Islands", 
-                    "+country:Solomon",
-                    "+country:bulgaria +state:sofia", 
-                    "+country:\"costa rica\" +state:alajuela",
-                    "+country:\"costa rica\" +state:cartago +name:cartago",
-                    "+country:costa rica +state:cartago", 
-                    "+country:costa rica +state:alajuela",
-                    "+country:costa rica OR +state:alajuela",
-                    "+country:costa rica AND +state:alajuela",
-                    "+country:canada +state:newfoundland", 
-                    "+country:mexico +state:campeche",
-                    "+country:australia +state:\"ashmore and cartier islands\"",
-                    "+country:fiji +state:lau", 
-                    "+country:fiji +state:lomaiviti",
-                    "+country:guam +state:agana", 
-                    "country:united states state:iowa +county:clayton", 
-                    "country:argentina state:buenos aires",
-                    "country:Argentina state:Buenos Aires",
-                    };
-            TopScoreDocCollector collector = TopScoreDocCollector.create(5, true);
+            String[] searchStrs = {
+                    "Comoro Islands",
+                    "Solomon",
+                    "united states iowa",
+                    "germany brandenburg",
+                    "bulgaria sofia",
+                    "costa rica alajuela",
+                    "costa rica cartago",
+                    "costa rica alajuela",
+                    "canada newfoundland",
+                    "mexico campeche",
+                    "australia ashmore and cartier islands",
+                    "fiji lau",
+                    "fiji lomaiviti",
+                    "guam agana",
+                    "germany Lower Saxony",
+                    "germany Saxony",
+                    "germany Sachsen Anhalt",
+                    "germany Sachsen-Anhalt",
+                    "germany Land Sachsen-Anhalt",
+                    "united states iowa,Fayette",
+                    "united states iowa Fayette County",
+                    "Argentina Buenos Aires",
+                    "buenos aires argentina "
+            };
 
             for (String searchText : searchStrs)
             {
                 try
                 {
+                    TopScoreDocCollector collector = TopScoreDocCollector.create(5, true);
                     Query q = new QueryParser(Version.LUCENE_47, "name", analyzer).parse(searchText);
                     searcher.search(q, collector);
                     ScoreDoc[] hits = collector.topDocs().scoreDocs;
@@ -1157,7 +1162,7 @@ public class GeoCleanupFuzzySearch
                     }
                 } catch (Exception e)
                 {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     System.err.println("Error searching  " + searchText + " : " + e.getMessage());
                 }
             }

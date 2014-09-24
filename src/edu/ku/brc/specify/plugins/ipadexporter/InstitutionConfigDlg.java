@@ -97,6 +97,8 @@ import edu.ku.brc.util.AttachmentUtils;
  */
 public class InstitutionConfigDlg extends CustomDialog
 {
+    private final String kCloudURLStr = iPadRepositoryHelper.baseURLStr;
+    
     private IPadCloudIFace cloudHelper;
     
     private Institution inst;
@@ -115,6 +117,10 @@ public class InstitutionConfigDlg extends CustomDialog
     private JTextField    cmTextFld;
     private String        curatorPref;
     private String        colMgrPref;
+    
+    // Cloud URL
+    private JTextField    cloudURLTextFld;
+    private String        cloudURLPref;
 
     // URL Data Members
     protected static final String ATTMGR       = "attmgr";
@@ -153,6 +159,7 @@ public class InstitutionConfigDlg extends CustomDialog
         
         curatorPref     = "IPAD_CURATOR_NAME_" + collection.getId();
         colMgrPref      = "IPAD_COLMGR_NAME_"  + collection.getId();
+        cloudURLPref    = "IPAD_CLOUD_URL_"    + collection.getId();
         
         this.cloudHelper = cloudHelper;
         this.cloudInstId = cloudInstId;
@@ -166,12 +173,12 @@ public class InstitutionConfigDlg extends CustomDialog
     {
         super.createUI();
         
-        loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
+        loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         
         setTitle(getResourceString("IPAD_CONFIG_TITLE"));
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px"));
 
         int y = 1;
         pb.addSeparator(getResourceString("INST_INFO"), cc.xy(1, y)); y+= 2;
@@ -180,7 +187,10 @@ public class InstitutionConfigDlg extends CustomDialog
         pb.addSeparator(getResourceString("CURATOR_NM"), cc.xy(1, y)); y+= 2;
         pb.add(createCuratorPanel(), cc.xy(1, y)); y+= 2;
         
-        pb.addSeparator(getResourceString("IMAGE_SRC_TITLE"), cc.xy(1, y));  y+= 2;
+        pb.addSeparator(getResourceString("CLOUD_URL"), cc.xy(1, y)); y+= 2;
+        pb.add(createCloudURLPanel(), cc.xy(1, y)); y+= 2;
+        
+        pb.addSeparator(getResourceString("IMAGE_SRC_TITLE"), cc.xy(1, y)); y+= 2;
         pb.add(createURLPanel(), cc.xy(1, y)); y+= 2;
         
         pb.addSeparator(getResourceString("PICTURE_TITLE"), cc.xy(1, y));  y+= 2;
@@ -195,6 +205,26 @@ public class InstitutionConfigDlg extends CustomDialog
         contentPanel = pb.getPanel();
         
         mainPanel.add(contentPanel, BorderLayout.CENTER);
+    }
+    
+    /**
+     * @return
+     */
+    private JPanel createCloudURLPanel()
+    {
+       AppPreferences  remotePrefs = AppPreferences.getRemote();
+        
+        String cloudURLStr = remotePrefs.get(cloudURLPref, kCloudURLStr);
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p"));
+        
+        cloudURLTextFld = UIHelper.createTextField(cloudURLStr);
+        
+        pb.add(UIHelper.createI18NFormLabel("CLOUD_URL_TITLE"), cc.xy(1, 1));
+        pb.add(cloudURLTextFld, cc.xy(3, 1));
+        
+        return pb.getPanel();
     }
     
     /**
@@ -319,6 +349,15 @@ public class InstitutionConfigDlg extends CustomDialog
         cmTextFld.addKeyListener(ka);
         return pb.getPanel();
     }
+    
+    /**
+     * Returns the URL of the iPad Cloud Server. 
+     */
+    public String getCloudURL()
+    {
+        AppPreferences  remotePrefs = AppPreferences.getRemote();
+        return remotePrefs.get(cloudURLPref, kCloudURLStr);
+    }
  
     /**
      * @return
@@ -329,8 +368,12 @@ public class InstitutionConfigDlg extends CustomDialog
         String          picturelocation = remotePrefs.get(getRemotePicturePrefName(), "");
         String          curatorName = remotePrefs.get(curatorPref, "");
         String          colMgrName  = remotePrefs.get(colMgrPref, "");
+        String          cloudURLStr = remotePrefs.get(cloudURLPref, kCloudURLStr);
 
-        return cloudInstId != null && StringUtils.isNotEmpty(picturelocation) && StringUtils.isNotEmpty(curatorName) && StringUtils.isNotEmpty(colMgrName);
+        return cloudInstId != null && StringUtils.isNotEmpty(picturelocation) && 
+                                      StringUtils.isNotEmpty(curatorName) && 
+                                      StringUtils.isNotEmpty(colMgrName) && 
+                                      StringUtils.isNotEmpty(cloudURLStr);
     }
     
     /**
@@ -743,6 +786,7 @@ public class InstitutionConfigDlg extends CustomDialog
                 
                 remotePrefs.put(curatorPref, crTextFld.getText());
                 remotePrefs.put(colMgrPref, cmTextFld.getText());
+                remotePrefs.put(cloudURLPref, cloudURLTextFld.getText());
 
                 String fileName = copyInstImage();
                 if (fileName != null)

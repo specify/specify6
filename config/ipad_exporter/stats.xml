@@ -35,15 +35,19 @@
        <stat tbl="100" grp="3" name="num_litho" desc="Litho Stratigraphy">
           <![CDATA[SELECT COUNT(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID]]>
        </stat>
+      <!-- 
        <stat tbl="100" grp="3" name="num_lithou" desc="Litho Stratigraphy Used">
           <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM paleocontext p INNER JOIN lithostrat l ON l.LithoStratID = p.LithoStratID WHERE p.CollectionMemberID = COLMEMID AND l.IsAccepted <> 0]]>
        </stat>
+ -->       
        <stat tbl="46" grp="3" name="num_gtp" desc="Chronosstratigraphy">
           <![CDATA[SELECT COUNT(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID]]>
        </stat>
+       <!-- 
        <stat tbl="46" grp="3" name="num_gtpu" desc="Chronosstratigraphy Used">
           <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM paleocontext p INNER JOIN geologictimeperiod g ON g.GeologicTimePeriodID = p.ChronosStratID WHERE p.CollectionMemberID = COLMEMID AND g.IsAccepted <> 0]]>
        </stat>
+        -->
        <stat tbl="23" grp="4" name="Collection" desc="Collection">
            <![CDATA[SELECT CollectionName FROM collection WHERE CollectionID = COLMEMID]]>
         </stat>
@@ -60,7 +64,10 @@
            <![CDATA[SELECT Type FROM discipline WHERE DisciplineID = DSPLNID]]>
         </stat>
        <stat tbl="23" grp="5" name="CountsByYear" desc="Specimens Collected By Year">
-           <![CDATA[SELECT SUM(CNT), YR FROM (SELECT IF (co.CountAmt IS NULL, 1, co.CountAmt) AS CNT, YEAR(ce.StartDate) AS YR FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID WHERE ce.StartDate IS NOT NULL AND YEAR(ce.StartDate) <= YEAR(CURDATE()) ) T1 GROUP BY YR]]>
+           <![CDATA[SELECT SUM(CNT), YR FROM (SELECT IF (co.CountAmt IS NULL, 1, co.CountAmt) AS CNT, YEAR(ce.StartDate) AS YR FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID WHERE co.CollectionMemberID = COLMEMID AND ce.StartDate IS NOT NULL AND YEAR(ce.StartDate) <= YEAR(CURDATE()) ) T1 GROUP BY YR]]>
+       </stat>
+       <stat tbl="23" grp="15" name="CountsByYear" desc="Digitization Growth By Year">
+           <![CDATA[SELECT SUM(CNT), YR FROM (SELECT IF (co.CountAmt IS NULL, 1, co.CountAmt) AS CNT, YEAR(co.CatalogedDate) AS YR FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID WHERE co.CollectionMemberID = 4 AND ce.StartDate IS NOT NULL AND YEAR(ce.StartDate) <= YEAR(CURDATE()) ) T1 GROUP BY YR]]>
        </stat>
         <stat tbl="9" grp="" name="" desc="TYP_SPEC">
               <![CDATA[SELECT COUNT(DeterminationID) FROM determination WHERE CollectionMemberID = COLMEMID AND TypeStatusName is not null]]>

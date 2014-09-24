@@ -460,8 +460,7 @@ public class CleanupToolsTask extends BaseTask
         }
         if (usrPwdPair != null)
         {
-            final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            final Timestamp  now        = new Timestamp(System .currentTimeMillis());
+            final Timestamp  now        = new Timestamp(System.currentTimeMillis());
             final Discipline disp       = AppContextMgr.getInstance().getClassObject(Discipline.class);
             final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
 
@@ -473,7 +472,12 @@ public class CleanupToolsTask extends BaseTask
             frame.setSize(450, frame.getBounds().height+10);
             UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
             
+            final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             final Discipline discipline = session.get(Discipline.class, disp.getId());
+            if (session != null) 
+            {
+                session.close();
+            }
             
             final SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
             {
@@ -504,15 +508,7 @@ public class CleanupToolsTask extends BaseTask
                             frame.setVisible(false);
                             
                             GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent, frame);
-                            geoAssignISOCodes.buildAsync(earthId, new ChangeListener()
-                            {
-                                @Override
-                                public void stateChanged(ChangeEvent e)
-                                {
-                                    if (session != null) session.close();
-                                    
-                                }
-                            });
+                            geoAssignISOCodes.buildAsync(earthId);
                         } else
                         {
                             UIRegistry.showError("There was an error loading the Geography reference file.");

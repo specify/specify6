@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -138,11 +137,6 @@ public class iPadDBExporter implements VerifyCollectionListener
     private iPadRepositoryHelper                     helper             = new iPadRepositoryHelper();
     private String                                   dbName;
     private HashMap<String, Integer>                 idMapper           = new HashMap<String, Integer>();
-//    private HashMap<Integer, Pair<Integer, Integer>> taxMapper          = new HashMap<Integer, Pair<Integer, Integer>>();
-//    private HashMap<Pair<Integer, Integer>, Integer> revMapper          = new HashMap<Pair<Integer, Integer>, Integer>();
-//    private int[]                                    array              = null;
-//    private int                                      largestVal         = 0;
-//    private Vector<Pair<Integer, Integer>>           familyIdList       = null;
 
 
     private ProgressDialog                           progressDelegate;
@@ -244,33 +238,9 @@ public class iPadDBExporter implements VerifyCollectionListener
         return worker;
     }
     
-    /**
-     * @param fileName
-     * @return
-     * @throws IOException
-     */
-    protected File getResourceFile(final String fileName)
+    protected File getConfigFile(final String fileName)
     {
-        File outFile = null;
-        try
-        {
-            byte[]      bytes = new byte[1024];
-            InputStream is    = this.getClass().getResourceAsStream(fileName);
-            
-            outFile = File.createTempFile("sp-", "tmp");
-            FileOutputStream oFile   = new FileOutputStream(outFile);
-            while (is.available() > 0)
-            {
-                int len = is.read(bytes);
-                oFile.write(bytes, 0, len);
-            }
-            oFile.close();
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
-        return outFile;
+        return XMLHelper.getConfigDir("ipad_exporter" + File.separator + fileName);
     }
     
     /**
@@ -281,7 +251,7 @@ public class iPadDBExporter implements VerifyCollectionListener
     @SuppressWarnings("unchecked")
     protected boolean createDBTables(final Connection conn, final String fileName) throws Exception
     {
-        File outFile = getResourceFile(fileName);
+        File outFile = getConfigFile(fileName);
         if (outFile != null && outFile.exists())
         {
             StringBuilder sb      = new StringBuilder();
@@ -357,14 +327,18 @@ public class iPadDBExporter implements VerifyCollectionListener
      * @param collectionId
      * @param disciplineId
      * @param divisionId
+     * @param taxTreeDefId
+     * @param geoTreeDefId
+     * @param lithoTreeDefId
+     * @param gtpTreeDefId
      */
     public void createMappings(final int collectionId, 
-                                final int disciplineId, 
-                                final int divisionId, 
-                                final int taxTreeDefId, 
-                                final int geoTreeDefId,
-                                final int lithoTreeDefId,
-                                final int gtpTreeDefId)
+                               final int disciplineId, 
+                               final int divisionId, 
+                               final int taxTreeDefId, 
+                               final int geoTreeDefId,
+                               final int lithoTreeDefId,
+                               final int gtpTreeDefId)
     {
         String[] names = {"COLMEMID", "DSPLNID", "DIVID", "TAXTREEDEFID", "GEOTREEDEFID", "LITHOTREEDEFID", "GTPTREEDEFID"};
         int[]    ids   = {collectionId, disciplineId, divisionId, taxTreeDefId, geoTreeDefId, lithoTreeDefId, gtpTreeDefId};
@@ -396,13 +370,12 @@ public class iPadDBExporter implements VerifyCollectionListener
      */
     private boolean createStatsTable() throws Exception
     {
-        //loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
         loadAndPushResourceBundle("stats");
 
         UIRegistry.setDoShowAllResStrErors(false);
-        logMsg("Creating Stats...");
+        logMsg("Creating Stats..."); // I18N
         
-        File tmpFile = getResourceFile(STATS_XML);
+        File tmpFile = getConfigFile(STATS_XML);
         if (tmpFile != null && tmpFile.exists())
         {
             dbS3Conn.setAutoCommit(false);
@@ -893,526 +866,7 @@ public class iPadDBExporter implements VerifyCollectionListener
 
         System.out.println(taxonToPIDMapper.size()+"  PIDS: "+parentSet.size());
     }
-    
-//    private void doBuildTaxonMappingsOld2() throws SQLException
-//    {
-//        int cnt = 0;
-//        
-//        worker.firePropertyChange(MSG, "", "Build Taxon Mapping");
-//        
-//        String sql = "SELECT DISTINCT RNK FROM (SELECT t.RankID RNK, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) CNT FROM taxon t " +
-//                     "INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
-//                     "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
-//                     "WHERE d.IsCurrent = true) T1 WHERE CNT > 0 AND RNK > 139 AND RNK < 200 ORDER BY RNK DESC";
-//        System.out.println(sql);
-//        
-//        Vector<Integer> ranks = queryForInts(sql); 
-//        
-//        Statement stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//        stmt.setFetchSize(Integer.MIN_VALUE);
-//        cnt = 0;
-//        
-//        ArrayList<String>  preList  = new ArrayList<String>();
-//        ArrayList<String>  postList = new ArrayList<String>();
-//        
-//        ArrayList<ArrayList<Integer>> rankList = new ArrayList<ArrayList<Integer>>();
-//        
-//        int inx  = ranks.size();
-//        int tCnt = 1;
-//        for (int t=0;t<ranks.size();t++)
-//        {
-//            StringBuilder sb = new StringBuilder(" FROM taxon t1");
-//            if (inx > 1)
-//            {
-//                preList.add(String.format("SELECT t%d.TaxonID AS TID, t%d.RankId, t1.TaxonID, t1.RankID ", inx, inx));
-//                
-//                for (int i=2;i<=inx;i++)
-//                {
-//                    sb.append(String.format(" INNER JOIN taxon t%d ON t%d.ParentID = t%d.TaxonID", i, i-1, i));
-//                }
-//                
-//                ArrayList<Integer> rList = new ArrayList<Integer>();
-//                for (int k=0;k<tCnt;k++)
-//                {
-//                    rList.add(ranks.get(k));
-//                }
-//                rankList.add(rList);
-//            } else
-//            {
-//                preList.add("SELECT t1.ParentID, t1.RankId, t1.TaxonID");
-//                ArrayList<Integer> rList = new ArrayList<Integer>();
-//                rList.add(ranks.get(tCnt-2));
-//                rList.add(ranks.get(tCnt-1));
-//                rankList.add(rList);
-//            }
-//            sb.append(" WHERE t1.RankID = %d AND t1.TaxonTreeDefID = TAXTREEDEFID");
-//            postList.add(sb.toString());
-//            inx--;
-//            tCnt++;
-//        }
-//        for (String s : preList)
-//        {
-//            System.out.println(s);
-//        }
-//        for (String s : postList)
-//        {
-//            System.out.println(s);
-//        }
-//        for (ArrayList<Integer> a : rankList)
-//        {
-//            System.out.println(a);
-//        }
-//        System.out.println();
-////        String[] prefixes = { 
-////                "SELECT g4.GeographyID AS GID, g4.RankId, g1.GeographyID, g1.RankID ",
-////                "SELECT g3.GeographyID AS GID, g3.RankId, g1.GeographyID, g1.RankID ",
-////                "SELECT g2.GeographyID AS GID, g2.RankId, g1.GeographyID, g1.RankID ",
-////                "SELECT g1.ParentID, g1.RankId, g1.GeographyID ",
-////                };
-////        
-////        String[] sqls = { 
-////                "FROM geography g1 " +
-////                "INNER JOIN geography g2 ON g1.ParentID = g2.GeographyID " +
-////                "INNER JOIN geography g3 ON g2.ParentID = g3.GeographyID " +
-////                "INNER JOIN geography g4 ON g3.ParentID = g4.GeographyID " +
-////                "WHERE g1.RankID = %d AND g1.GeographyTreeDefID = GEOTREEDEFID",
-////                
-////                "FROM geography g1 " +
-////                "INNER JOIN geography g2 ON g1.ParentID = g2.GeographyID " +
-////                "INNER JOIN geography g3 ON g2.ParentID = g3.GeographyID " +
-////                "WHERE g1.RankID = %d AND g1.GeographyTreeDefID = GEOTREEDEFID",
-////                
-////                "FROM geography g1 " +
-////                "INNER JOIN geography g2 ON g1.ParentID = g2.GeographyID " +
-////                "WHERE g1.RankID = %d AND g1.GeographyTreeDefID = GEOTREEDEFID",
-////                
-////                "FROM geography g1 " +
-////                "WHERE g1.RankID = %d AND g1.GeographyTreeDefID = GEOTREEDEFID",
-////                };
-////        
-////        Integer[][] ranks = {
-////                {400},
-////                {400, 300},
-////                {400, 300, 200},
-////                {200, 100},
-////        };
-////        geoToGeoContinentMapper.setShowLogErrors(true);
-////        geoToGeoCountryMapper.setShowLogErrors(true);
-//
-//        for (int i=0;i<preList.size();i++)
-//        {
-//            ArrayList<Integer> ranksArray = rankList.get(i);
-//            for (Integer rnk : ranksArray)
-//            {
-//                String postSQL = String.format(postList.get(i), rnk);
-//                sql = adjustSQL("SELECT COUNT(*) " + postSQL);
-//                int totCnt = getCountAsInt(dbConn, sql);
-//                if (totCnt < 1)
-//                {
-//                    continue;
-//                }
-//                System.out.println(totCnt+"  "+rnk+"\n"+sql);
-//                
-//                if (progressDelegate != null)
-//                {
-//                    progressDelegate.setProcess(0, totCnt);
-//                    progressDelegate.setProcess(0);
-//                }
-//                int inc = Math.max(totCnt / 20, 1);
-//                
-//                String sqlStr = adjustSQL(preList.get(i) + postSQL);
-//                System.out.println(sqlStr);
-//                ResultSet rs = stmt.executeQuery(sqlStr); // Get the GeoID and LocID
-//                while (rs.next())
-//                {
-//                    int geoId   = rs.getInt(1);
-//                    int rankLvl = rs.getInt(2);
-//                    int fromId  = rs.getInt(3);
-//                    
-//                    
-////                    if (rankLvl == 100)
-////                    {
-////                        geoToGeoContinentMapper.put(fromId, geoId);
-////                        
-////                    } else if (rankLvl == 200)
-////                    {
-////                        geoToGeoCountryMapper.put(fromId, geoId);
-////                    }
-//                    
-//                    cnt++;
-//                    if (cnt % inc == 0) 
-//                    {
-//                        worker.firePropertyChange(PROGRESS, 0, cnt);
-//                        //log.debug("LocID -> GeoID: "+cnt+ " -> "+getCountAsInt("SELECT COUNT(*) FROM geoloc"));
-//                    }
-//                }
-//                rs.close();
-//                worker.firePropertyChange(PROGRESS, 0, totCnt);
-//            }
-//        }
-//    }
-//
-//    
-//    private void doBuildTaxon() throws SQLException
-//    {
-//        /*
-//        
-//        SELECT COUNT(*) FROM (SELECT DISTINCT d.TaxonID FROM collectionobject co 
-//        INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID 
-//        INNER JOIN determination d ON t.TaxonID = d.TaxonID) T1 
-//        
-//        SELECT t.TaxonID, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID WHERE d.IsCurrent = true GROUP BY t.TaxonID 
-//        
-//        SELECT DISTINCT RNK FROM (SELECT t.RankID RNK, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) CNT FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID WHERE d.IsCurrent = true GROUP BY t.TaxonID) T1 WHERE CNT > 0 AND RNK > 139 ORDER BY RNK DESC; 
-//        */
-//        //doBuildColObjToGeoMapping();
-//        
-//        doBuildGeographyContCountry();
-//        
-//        int     cnt = 0;
-//        String  sql;
-//        Integer count = null;
-//
-//        // Get Specimen Counts for Geography
-//        worker.firePropertyChange(MSG, "", "Getting Geography Counts...");
-//        HashMap<Integer, Integer> numObjsHash = new HashMap<Integer, Integer>();
-//        sql = adjustSQL("SELECT t.TaxonID, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) FROM taxon t INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
-//                "INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
-//                "WHERE d.IsCurrent = true GROUP BY t.TaxonID ");
-//        log.debug(sql);
-//        
-//        for (Object[] row : query(sql))
-//        {
-//            count = getCount(row[1]);
-//            numObjsHash.put((Integer)row[0], count);
-//        }
-//
-//        // Get All Unsed Geo items
-//        worker.firePropertyChange(MSG, "", "Building Geography...");
-//        
-//        String prefix  = "SELECT g.GeographyID, FullName, GeographyCode, RankID, ParentID, HighestChildNodeNumber, NodeNumber ";
-//        String postfix = adjustSQL("FROM geography g " +
-//                "LEFT JOIN locality l ON g.GeographyID = l.GeographyID " +
-//                "LEFT JOIN collectingevent ce ON l.LocalityID = ce.LocalityID " +
-//                "LEFT JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID " +
-//                "WHERE g.GeographyTreeDefID = GEOTREEDEFID AND co.CollectionObjectID IS NOT NULL");
-//        
-//        sql = "SELECT COUNT(*) " + postfix;
-//        log.debug(sql);
-//        
-//        int totCnt = getCountAsInt(dbConn, sql);
-//        if (progressDelegate != null)
-//        {
-//            progressDelegate.setProcess(0, totCnt);
-//        }
-//        sql = prefix + postfix + " GROUP BY g.GeographyID ORDER BY FullName";
-//        log.debug(sql);
-//        
-//        tblWriter.log("Geography Issues");
-//        tblWriter.startTable();
-//        tblWriter.logHdr("Full Name", "Rank Id", "Issue");
-//       
-//        dbS3Conn.setAutoCommit(false);
-//        PreparedStatement s3Stmt = null;
-//        Statement         stmt   = null;
-//        try
-//        {
-//            stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//            stmt.setFetchSize(Integer.MIN_VALUE);
-//    
-//            dbS3Conn.setAutoCommit(false);
-//            int transCnt = 0;
-//            
-//            Double lat = null;
-//            Double lon = null;
-//            //if ()
-//            
-//            cnt = 0;
-//            String upSQL = "INSERT INTO geo (_id, FullName, ISOCode, RankID, ParentID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum, ContinentId, CountryId, Latitude, Longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-//            s3Stmt = dbS3Conn.prepareStatement(upSQL);
-//            ResultSet rs = stmt.executeQuery(adjustSQL(sql));
-//            while (rs.next())
-//            {
-//                transCnt++;
-//    
-//                Integer id = rs.getInt(1);
-//                s3Stmt.setInt(1,    id);
-//                s3Stmt.setString(2, rs.getString(2)); // FullName
-//                s3Stmt.setString(3, rs.getString(3)); // GeoCode / ISOCode
-//                s3Stmt.setInt(4,    rs.getInt(4));    // RankID
-//                s3Stmt.setInt(5,    rs.getInt(5));    // ParentID
-//                
-//                int highestNodeNum = rs.getInt(6);    
-//                int nodeNumber     = rs.getInt(7);
-//                
-//                s3Stmt.setInt(6,    0);          // Total Number of Specimens below
-//                
-//                Integer numObjs = numObjsHash.get(id);
-//                if (numObjs == null) numObjs = 0;
-//                s3Stmt.setInt(7,    numObjs);          // Number of Specimens this Geo has
-//                
-//                s3Stmt.setInt(8,    highestNodeNum);
-//                s3Stmt.setInt(9,    nodeNumber);
-//                
-//                Integer continentId  = geoToGeoContinentMapper.get(id); // Get GeoID for the Continent that the Locality belongs to.
-//                Integer countryId    = geoToGeoCountryMapper.get(id);   // Get GeoID for the Country that the Locality belongs to.
-//
-//                if (continentId != null)
-//                {
-//                    s3Stmt.setInt(10, continentId);        // GeoID (continentId)
-//                } else
-//                {
-//                    s3Stmt.setObject(10, null);
-//                    tblWriter.logWithSpaces(rs.getString(2), ((Integer)rs.getInt(4)).toString(), "Missing Continent");
-//                }
-//                
-//                if (countryId != null)
-//                {
-//                    s3Stmt.setInt(11, countryId);        // GeoID (CountryID)
-//                } else
-//                {
-//                    s3Stmt.setObject(11, null);
-//                    tblWriter.logWithSpaces(rs.getString(2), ((Integer)rs.getInt(4)).toString(), "Missing Country");
-//                }
-//                
-//                if (s3Stmt.executeUpdate() != 1)
-//                {
-//                    System.out.println("Error updating geo: "+id);
-//                }
-//                cnt++;
-//                if (cnt % 1000 == 0) 
-//                {
-//                    worker.firePropertyChange(PROGRESS, 0, cnt);
-//                    log.debug("Geography: "+cnt);
-//                }
-//            }
-//            try
-//            {
-//                if (transCnt > 0) dbS3Conn.commit();
-//            } catch (Exception ex2) { ex2.printStackTrace();}
-//    
-//            rs.close();
-//        } catch (Exception e) 
-//        {
-//            try
-//            {
-//                dbS3Conn.rollback();
-//            } catch (Exception ex2) {}
-//            e.printStackTrace();
-//            
-//        } finally
-//        {
-//            if (stmt != null) stmt.close();
-//            if (s3Stmt != null) s3Stmt.close();
-//            try
-//            {
-//                dbS3Conn.setAutoCommit(true);
-//            } catch (Exception ex2) { ex2.printStackTrace();}
-//        }
-//        
-//        tblWriter.endTable();
-//        
-//        worker.firePropertyChange(MSG, "", "Updating Total Geography Counts...");
-//        
-//        treeCnt = 0;
-//
-//        sql = adjustSQL("SELECT GeographyID FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND RankID = 0");
-//        int rootId = getCountAsInt(dbConn, sql);
-//        
-//        sql = adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID");
-//        treeTotal = getCountAsInt(dbConn, sql);
-//        treePercent = treeTotal / 20;
-//        if (progressDelegate != null) 
-//        {
-//            progressDelegate.setProcessPercent(true);
-//            progressDelegate.setProcess(0, 100);
-//        }
-//
-//        dbS3Conn.setAutoCommit(false);
-//        PreparedStatement pStmt = null;
-//        try
-//        {
-//            String upStr = "UPDATE geo SET TotalCOCnt=? WHERE _id=?";
-//            pStmt = dbS3Conn.prepareStatement(upStr);
-//            fillTotalCountForTree("Geo", pStmt);
-//            pStmt.close();
-//            
-//        } catch (Exception e) 
-//        {
-//            try
-//            {
-//                dbS3Conn.rollback();
-//            } catch (Exception ex2) {}
-//            e.printStackTrace();
-//            
-//        } finally
-//        {
-//            if (pStmt != null) pStmt.close();
-//            try
-//            {
-//                dbS3Conn.setAutoCommit(true);
-//            } catch (Exception ex2) { ex2.printStackTrace();}
-//        }
-//        
-//        if (progressDelegate != null) progressDelegate.setProcessPercent(false);
-//    }
-//
-//    /**
-//     * @throws SQLException
-//     */
-//    private void doBuildTaxonOrig() throws SQLException
-//    {
-//        int    cnt;
-//        String postfix;
-//        int    totCnt;
-//        
-//        worker.firePropertyChange(MSG, "", "Updating Total Taxonomy Counts...");
-//         
-//        dbS3Conn.setAutoCommit(false);
-//        PreparedStatement s3Stmt = null;
-//        Statement         stmt   = null;
-//        try
-//        {
-//            worker.firePropertyChange(MSG, "", "Building Taxonomy...");
-//            
-//            cnt = 0;
-//            
-//            stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//            stmt.setFetchSize(Integer.MIN_VALUE);
-//            
-//            s3Stmt = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, TotalCOCnt, HighNodeNum, NodeNum) VALUES (?,?,?,?,?,?,?,?)");
-//            
-//            String prefix = "SELECT TaxonID, FullName, RankID, ParentID, HighestChildNodeNumber, NodeNumber ";
-//            for (int i=0;i<2;i++)
-//            {
-//                postfix = String.format("FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND %s AND HighestChildNodeNumber IS NOT NULL AND NodeNumber IS NOT NULL ORDER BY FullName", i == 0 ? "RankID = 140" : "RankID > 140");
-//                
-//                totCnt = getCountAsInt("SELECT COUNT(*) " + adjustSQL(postfix));
-//                if (progressDelegate != null)
-//                {
-//                    progressDelegate.setProcess(0, totCnt);
-//                }
-//                
-//                String sql = prefix + postfix;
-//                
-//                System.out.println(sql);
-//                
-//                if (i == 1)
-//                {
-//                    familyIdList = new Vector<Pair<Integer, Integer>>(taxMapper.values());
-//                    Collections.sort(familyIdList, new Comparator<Pair<Integer, Integer>>()
-//                            {
-//                        @Override
-//                        public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2)
-//                        {
-//                            return o1.first.compareTo(o2.first);
-//                        } 
-//                    });
-//                    
-//                    array = new int[taxMapper.size()];
-//                    int inx = 0;
-//                    for (Pair<Integer, Integer> p : familyIdList)
-//                    {
-//                        array[inx] = p.first;
-//                        largestVal = p.second;
-//                        //System.out.println(String.format("array => %d -> %d %d", inx, p.first, p.second));
-//                        inx++;
-//                    }
-//                }
-//                
-//                dbS3Conn.setAutoCommit(false);
-//                int transCnt = 0;
-//                
-//                ResultSet rs = stmt.executeQuery(adjustSQL(sql));
-//                while (rs.next())
-//                {
-//                    transCnt++;
-//    
-//                    Integer id = rs.getInt(1);
-//                    
-//                    s3Stmt.setInt(1,    id); // TaxonID
-//                    s3Stmt.setString(2, rs.getString(2));
-//                    s3Stmt.setInt(3,    rs.getInt(3));
-//                    s3Stmt.setInt(4,    rs.getInt(4));
-//                    
-//                    int highestNodeNum = rs.getInt(5);
-//                    int nodeNumber     = rs.getInt(6);
-//                    
-//                    Integer familyId = null;
-//                    
-//                    if (i == 0) // zero mean processing Families
-//                    {
-//                        Pair<Integer, Integer> p = new Pair<Integer, Integer>(nodeNumber, highestNodeNum);
-//                        taxMapper.put(id, p);
-//                        revMapper.put(p, id);
-//                        s3Stmt.setObject(5, null);
-//                        
-//                    } else
-//                    {
-//                        if (id <= largestVal)
-//                        {
-//                            int inx = Arrays.binarySearch(array, nodeNumber);
-//                            if (inx < 0)
-//                            {
-//                                inx = Math.abs(inx) - 2;
-//                            }
-//                            if (inx > -1)
-//                            {
-//                                Pair<Integer, Integer> p = familyIdList.get(inx);
-//                                familyId = revMapper.get(p);
-//                            }
-//                            //System.out.println(familyId + " => " + id);
-//                        }
-//                        if (familyId != null)
-//                        {
-//                            s3Stmt.setInt(5, familyId);
-//                        } else
-//                        {
-//                            s3Stmt.setObject(5, null);
-//                        }
-//                    }
-//                    
-//                    s3Stmt.setInt(6, 0);
-//                    
-//                    s3Stmt.setInt(7, highestNodeNum);
-//                    s3Stmt.setInt(8, nodeNumber);
-//                    
-//                    if (s3Stmt.executeUpdate() != 1)
-//                    {
-//                        System.out.println("Error updating taxon: "+id);
-//                    }
-//                    cnt++;
-//                    if (cnt % 1000 == 0) 
-//                    {
-//                        worker.firePropertyChange(PROGRESS, 0, cnt);
-//                        //log.debug("Taxon: "+cnt);
-//                    }
-//                }
-//                rs.close();
-//                try
-//                {
-//                    if (transCnt > 0) dbS3Conn.commit();
-//                } catch (Exception ex2) { ex2.printStackTrace();}
-//            }
-//        } catch (Exception e) 
-//        {
-//            try
-//            {
-//                dbS3Conn.rollback();
-//            } catch (Exception ex2) {}
-//            e.printStackTrace();
-//            
-//        } finally
-//        {
-//            if (stmt != null) stmt.close();
-//            if (s3Stmt != null) s3Stmt.close();
-//            try
-//            {
-//                dbS3Conn.setAutoCommit(true);
-//            } catch (Exception ex2) { ex2.printStackTrace();}
-//        }
-//    }
-    
+   
     /**
      * @throws SQLException
      */
@@ -2124,10 +1578,10 @@ public class iPadDBExporter implements VerifyCollectionListener
         
         String prefix  = "SELECT g.GeographyID, FullName, GeographyCode, RankID, ParentID, HighestChildNodeNumber, NodeNumber ";
         String postfix = adjustSQL("FROM geography g " +
-                "LEFT JOIN locality l ON g.GeographyID = l.GeographyID " +
-                "LEFT JOIN collectingevent ce ON l.LocalityID = ce.LocalityID " +
-                "LEFT JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID " +
-                "WHERE co.CollectionID = COLMEMID AND co.CollectionObjectID IS NOT NULL");
+                                   "LEFT JOIN locality l ON g.GeographyID = l.GeographyID " +
+                                   "LEFT JOIN collectingevent ce ON l.LocalityID = ce.LocalityID " +
+                                   "LEFT JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID " +
+                                   "WHERE co.CollectionID = COLMEMID AND co.CollectionObjectID IS NOT NULL");
         
         sql = "SELECT COUNT(*) " + postfix;
         log.debug(sql);
@@ -4092,7 +3546,7 @@ public class iPadDBExporter implements VerifyCollectionListener
      */
     protected void showDownloadCode()
     {
-        loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
+        loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         Collection col = AppContextMgr.getInstance().getClassObject(Collection.class);
         UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SUCCESS_UPL_TITLE", "SUCCESS_UPL", col.getCollectionName());
         popResourceBundle();
@@ -4339,7 +3793,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         fileNamesForExport.clear();
         fileNamesForExport.add(new ChartFileInfo(dbName, "The Data", ""));
 
-        loadAndPushResourceBundle(iPadDBExporterPlugin.RES_NAME);
+        loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         
         Institution inst  = AppContextMgr.getInstance().getClassObject(Institution.class);
         Collection  col   = AppContextMgr.getInstance().getClassObject(Collection.class);
@@ -4665,6 +4119,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         worker.execute();
     }
     
+    @SuppressWarnings("unused")
     private void doFinalCleanupOfTaxon()
     {
         Statement stmt = null;

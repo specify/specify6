@@ -106,8 +106,7 @@ public class iPadDBExporterPlugin extends BaseTask
 {
     //private static final Logger log = Logger.getLogger(iPadDBExporterPlugin.class);
         
-    protected static final String RES_NAME       = "edu/ku/brc/specify/plugins/ipadexporter/res";
-    protected static final String CHART_RES_NAME = "edu/ku/brc/specify/plugins/ipadexporter/chart";
+    protected static final String RESOURCE_NAME = "ipad_exporter";
     
     // Static Data Members
     private static final String ON_TASKBAR = "iPadDBExporttask.OnTaskbar";
@@ -175,7 +174,7 @@ public class iPadDBExporterPlugin extends BaseTask
 
             actionNavBox = new NavBox(getResourceString("Actions"));
             
-            loadAndPushResourceBundle(RES_NAME);
+            loadAndPushResourceBundle(RESOURCE_NAME);
             
             createAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("CREATE_ACCT"),     "image", null, null);
             loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     "image", null, null);
@@ -242,7 +241,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    checkInstitutionInfo();
+                    checkInstitutionInfo(true);
                 }
             });
             exportBtn.setEnabled(false);
@@ -360,7 +359,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 createAccountBtn.setEnabled(false);
                 loginBtn.setEnabled(true);
                 
-                checkInstitutionInfo();
+                checkInstitutionInfo(false);
 
             } else
             {
@@ -372,12 +371,12 @@ public class iPadDBExporterPlugin extends BaseTask
     /**
      * @return
      */
-    private boolean checkInstitutionInfo()
+    private boolean checkInstitutionInfo(final boolean forceDisplay)
     {
         if (!iPadDBExporter.IS_TESTING) // ZZZ       
         {
             InstitutionConfigDlg dlg = new InstitutionConfigDlg(iPadCloud, cloudInstId);
-            //if (!dlg.isInstOK())
+            if (forceDisplay || !dlg.isInstOK())
             {
                 dlg.createUI();
                 dlg.pack();
@@ -480,7 +479,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private Pair<String, String> getExportLoginCreds(final String userName, final boolean wasInError)
     {
-        loadAndPushResourceBundle(RES_NAME);
+        loadAndPushResourceBundle(RESOURCE_NAME);
         try
         {
             final JTextField     userNameTF = createTextField(15);
@@ -576,7 +575,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     public SubPaneIFace getExportPanel()
     {
-        loadAndPushResourceBundle(RES_NAME);
+        loadAndPushResourceBundle(RESOURCE_NAME);
         
         panelTitle = null;
         if (panelTitle == null)
@@ -605,7 +604,10 @@ public class iPadDBExporterPlugin extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent arg0)
                 {
-                    processDB();
+                    if (checkInstitutionInfo(false))
+                    {
+                        processDB();
+                    }
                 }
             });
         }
@@ -663,7 +665,7 @@ public class iPadDBExporterPlugin extends BaseTask
         
         if (permissions == null || permissions.canView())
         {
-            loadAndPushResourceBundle(RES_NAME);
+            loadAndPushResourceBundle(RESOURCE_NAME);
             String    menuTitle = "iPadDBExporterPlugin.PLUGIN_MENU"; //$NON-NLS-1$
             String    mneu      = "t";//"iPadDBExporterPlugin.PLUGIN_MNEU"; //$NON-NLS-1$
             String    desc      = menuTitle;//"iPadDBExporterPlugin.PLUGIN_DESC"; //$NON-NLS-1$
@@ -703,7 +705,7 @@ public class iPadDBExporterPlugin extends BaseTask
     {
         try
         {
-            loadAndPushResourceBundle(RES_NAME);
+            loadAndPushResourceBundle(RESOURCE_NAME);
             
             int totalColObjRecords = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject");
             if (totalColObjRecords > maxRequiredRecs-1)
