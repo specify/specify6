@@ -185,10 +185,10 @@ public class BuildFromGeonames
             stmt = readConn.createStatement();
             
             Integer count = BasicSQLUtils.getCount(readConn, CNT_SQL);
-            doProgress(0, count, "Creating Geography...");
+            doProgress(0, count, "Initializing Reference Geography...");
             
             Hashtable<String, String> continentCodeFromName = new Hashtable<String, String>();
-            ResultSet rs = stmt.executeQuery("SELECT code, name from continentCodes");
+            ResultSet rs = stmt.executeQuery("SELECT code, name from continentcodes");
             while (rs.next())
             {
                 continentNameFromCode.put(rs.getString(1), rs.getString(2));
@@ -208,14 +208,14 @@ public class BuildFromGeonames
                 log.debug("Deleted "+delCnt+" geography records.");
             }*/
             
-            doProgress("Creating Continents..."); // I18N
+            doProgress("Initializing Reference Continents..."); // I18N
             
             int cnt = 0;
             
             //////////////////////
             // Continent
             //////////////////////
-            String sqlStr = "SELECT continentCodes.name, geoname.latitude, geoname.longitude, continentCodes.code FROM geoname Inner Join continentCodes ON geoname.name = continentCodes.name";
+            String sqlStr = "SELECT continentcodes.name, geoname.latitude, geoname.longitude, continentcodes.code FROM geoname Inner Join continentcodes ON geoname.name = continentcodes.name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -249,7 +249,7 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            doProgress("Creating Countries...");
+            doProgress("Initializing Reference Countries...");
             
             // First map all Countries to Continents
             rs = stmt.executeQuery("SELECT name, iso_alpha2 AS CountryCode, continent FROM countryinfo ORDER BY continent, iso_alpha2");
@@ -305,7 +305,7 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            doProgress("Creating States...");
+            doProgress("Initializing Reference States...");
             
             //////////////////////
             // States
@@ -382,7 +382,7 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            doProgress("Creating Counties...");
+            doProgress("Initializing Reference Counties...");
             
             //////////////////////
             // County
@@ -686,14 +686,14 @@ public class BuildFromGeonames
         {
             Long lastModLong = getLastGeonamesBuiltTime();
             long prefMilli   = lastModLong != null ? lastModLong : 0;
-            isDatesMatch = file.lastModified() == prefMilli;
+            isDatesMatch     = file.lastModified() == prefMilli;
             
         } else
         {
             return false;
         }
         
-        DBMSUserMgr  dbMgr = null;
+        DBMSUserMgr  dbMgr         = null;
         boolean shouldLoadGeoNames = true;
         try
         {
@@ -772,7 +772,7 @@ public class BuildFromGeonames
             boolean      status     = bsf.doRestoreBulkDataInBackground(dbName, null, file.getAbsolutePath(), null, null, null, true, false);
             if (status)
             {
-            	//File createFile = bsf.getUnzippedFileByName("continentCodes.txt");
+            	//File createFile = bsf.getUnzippedFileByName("continentcodes.txt");
             	buildISOCodes();
             }
             
@@ -838,7 +838,7 @@ public class BuildFromGeonames
                         
                         if (isFieldOK)
                         {
-                        	Vector<Object[]> rowData = BasicSQLUtils.query("SELECT code, name, geonameId FROM continentCodes");
+                        	Vector<Object[]> rowData = BasicSQLUtils.query("SELECT code, name, geonameId FROM continentcodes");
                         	// Do Continents and Oceans
                             for (Object[] cols : rowData)
                             {

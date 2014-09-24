@@ -201,6 +201,32 @@ public class GeoCleanupFuzzySearch
     {
         return searcher;
     }
+    
+    public boolean shouldIndex()
+    {
+        AppPreferences localPrefs            = AppPreferences.getLocalPrefs();
+        boolean        needsIndexing         = false;
+        Long           lastGeoNamesBuildTime = BuildFromGeonames.getLastGeonamesBuiltTime();
+        Long           lastIndexBuild        = localPrefs != null ? localPrefs.getLong(GEONAMES_INDEX_DATE_PREF, null) : null;
+        if (lastIndexBuild == null || lastGeoNamesBuildTime == null || !lastIndexBuild.equals(lastGeoNamesBuildTime))
+        {
+            if (initLuceneforReading())
+            {
+                if (getReader() != null)
+                {
+                    Integer numDocs = localPrefs != null ? localPrefs.getInt(GEONAMES_INDEX_NUMDOCS, null) : null;
+                    if (numDocs != null)
+                    {
+                        System.out.println(String.format("%d %d", getReader().numDocs(), numDocs));
+                        needsIndexing = getReader().numDocs() != numDocs;
+                    }
+                }
+                doneSearching();
+            }
+        }
+
+        return needsIndexing;
+    }
 
     /**
      * Close the index.
@@ -266,10 +292,10 @@ public class GeoCleanupFuzzySearch
             //////////////////////
             cnt    = 0;
             String cntSQL = "SELECT COUNT(*) ";
-            int    totCnt = getCountAsInt(cntSQL + "FROM continentCodes");
+            int    totCnt = getCountAsInt(cntSQL + "FROM continentcodes");
             if (frame != null) frame.setProcess(0, totCnt);
             
-            String sqlStr = "SELECT geonameId, name, code from continentCodes";
+            String sqlStr = "SELECT geonameId, name, code from continentcodes";
             ResultSet rs = stmt.executeQuery(sqlStr);
             while (rs.next() && isOK)
             {
@@ -796,8 +822,7 @@ public class GeoCleanupFuzzySearch
         };
         worker.execute();
     }
-    
-    
+       
     /**
      * 
      */
