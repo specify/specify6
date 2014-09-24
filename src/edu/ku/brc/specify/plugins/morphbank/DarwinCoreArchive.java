@@ -458,10 +458,14 @@ public class DarwinCoreArchive
 		}
 		if (val.indexOf(encloser) >= 0)
 		{
-			val = val.replace(encloser, escaper + encloser);
-		}
+			if ("\"".equals(encloser)) {
+				val = val.replace(encloser, encloser + encloser);
+			} else {
+				val = val.replace(encloser, escaper + encloser);
+			}
+		} 
 		
-		boolean enclose = val.indexOf(eoFld) >= 0;
+		boolean enclose = val.indexOf(eoFld) >= 0 || val.indexOf("\n") >= 0 || val.indexOf("\r") >= 0;
 		if (enclose) line += encloser;
 		line += val;
 		if (enclose) line += encloser;
