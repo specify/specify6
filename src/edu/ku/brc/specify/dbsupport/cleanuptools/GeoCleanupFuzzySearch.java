@@ -91,7 +91,7 @@ public class GeoCleanupFuzzySearch
 {
     private static final Logger  log = Logger.getLogger(GeoCleanupFuzzySearch.class);
     
-    private static boolean isDoingTesting = true;
+    private static boolean isDoingTesting = false;
     
     public  final static String        GEONAMES_INDEX_DATE_PREF     = "GEONAMES_INDEX_DATE_PREF";
     public  final static String        GEONAMES_INDEX_NUMDOCS       = "GEONAMES_INDEX_NUMDOCS";
@@ -172,7 +172,7 @@ public class GeoCleanupFuzzySearch
             FILE_INDEX_DIR = new File("/Users/rods/Downloads/lucene/genames-index"); // Debug Only
         } else
         {
-            String dirPath = getAppDataDir() + File.separator + "genames-index";
+            String dirPath = getAppDataDir() + File.separator + "geonames-index";
             FILE_INDEX_DIR = new File(dirPath);
         }
      }    
@@ -205,7 +205,7 @@ public class GeoCleanupFuzzySearch
     public boolean shouldIndex()
     {
         AppPreferences localPrefs            = AppPreferences.getLocalPrefs();
-        boolean        needsIndexing         = false;
+        boolean        needsIndexing         = true;
         Long           lastGeoNamesBuildTime = BuildFromGeonames.getLastGeonamesBuiltTime();
         Long           lastIndexBuild        = localPrefs != null ? localPrefs.getLong(GEONAMES_INDEX_DATE_PREF, null) : null;
         if (lastIndexBuild == null || lastGeoNamesBuildTime == null || !lastIndexBuild.equals(lastGeoNamesBuildTime))
