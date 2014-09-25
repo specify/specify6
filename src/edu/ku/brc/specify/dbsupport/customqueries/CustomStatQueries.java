@@ -242,6 +242,7 @@ public class CustomStatQueries implements CustomQueryIFace
         Criteria criteria = session.createCriteria(Loan.class);
         criteria.add(Restrictions.isNotNull("currentDueDate"));
         criteria.add(Restrictions.lt("currentDueDate", today));
+        criteria.add(Restrictions.or(Restrictions.isNull("isClosed"), Restrictions.eq("isClosed", false)));
         
         Criteria dsp = criteria.createCriteria("discipline");
         dsp.add(Restrictions.eq("disciplineId", AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId()));
