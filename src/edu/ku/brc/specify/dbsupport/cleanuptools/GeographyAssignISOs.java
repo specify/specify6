@@ -61,28 +61,27 @@ import javax.swing.event.ChangeListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.util.Version;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
@@ -561,52 +560,59 @@ public class GeographyAssignISOs
             if (i > 0) sb.append(' ');
             sb.append(parentNames[i]);
         }
-        Query query = new FuzzyQuery(new Term("name", sb.toString()));
+        log.debug("["+sb.toString()+"]");        //Query query = new FuzzyQuery(new Term("name", sb.toString()));
 
         Integer  geonameId = null;
         String   isoCode   = null;
         Document doc       = null;
-        HashSet<Integer>     usedIds     = new HashSet<Integer>();
-        TopScoreDocCollector collector   = TopScoreDocCollector.create(10, true);
-        luceneSearch.getSearcher().search(query, collector);
+        HashSet<Integer>     usedIds   = new HashSet<Integer>();
+        TopScoreDocCollector collector = TopScoreDocCollector.create(10, true);
+        try
+        {
+            Query q = new QueryParser(Version.LUCENE_47, "name", GeoCleanupFuzzySearch.getAnalyzer()).parse(sb.toString());
+            luceneSearch.getSearcher().search(q, collector);
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
         ScoreDoc[] hits = collector.topDocs().scoreDocs;
         for (int i=0;i<hits.length;++i) 
         {
-            if (i == 0)
-            {
-                int docId     = hits[0].doc;
-                doc           = luceneSearch.getSearcher().doc(docId);
-                int docRankId = Integer.parseInt(doc.get("rankid"));
-                if (rankId == docRankId)
-                {
-                    int geoId = Integer.parseInt(doc.get("geonmid"));
-                    if (!usedIds.contains(geoId))
-                    {
-                        usedIds.add(geoId);                    
-                        isoCode   = doc.get("code");
-                    
-                        if (geonameId == null)
-                        {
-                            geonameId = geoId;
-                        }
-                        
-                        sb = new StringBuilder();
-                        String[] names = {doc.get("country"), doc.get("state"), doc.get("county")};
-                        for (String nm : names)
-                        {
-                            if (nm != null)
-                            {
-                                if (sb.length() > 0) sb.append(", ");
-                                sb.append(nm);
-                            }
-                        }
-                        luceneResults.add(new GeoSearchResultsItem(sb.toString(), geonameId, isoCodeStr));
-                    }
-                }
-            }
             int docId     = hits[i].doc;
             doc           = luceneSearch.getSearcher().doc(docId);
-            System.out.println("Fuzzy: "+i+"  "+hits[i].score+"  "+doc.get("name"));
+            System.out.println("Fuzzy: "+i+"  "+hits[i].score+"  ["+doc.get("name")+"]["+doc.get("country")+" "+doc.get("state")+" "+doc.get("county")+"] "+doc.get("rankid")+" "+doc.get("geonmid"));
+            int docRankId = Integer.parseInt(doc.get("rankid"));
+            if (rankId == docRankId)
+            {
+                int geoId = Integer.parseInt(doc.get("geonmid"));
+                if (!usedIds.contains(geoId))
+                {
+                    usedIds.add(geoId);
+                    
+                    sb = new StringBuilder();
+                    String[] names = {doc.get("country"), doc.get("state"), doc.get("county")};
+                    for (String nm : names)
+                    {
+                        if (nm != null)
+                        {
+                            if (sb.length() > 0) sb.append(", ");
+                            sb.append(nm);
+                        }
+                    }
+                    String fullName = sb.toString();
+                    isoCode   = doc.get("code");
+                
+                    if (geonameId == null)
+                    {
+                        geonameId = geoId;
+                    }
+                    luceneResults.add(new GeoSearchResultsItem(fullName, geonameId, isoCodeStr));
+                }
+            }
+//            int docId     = hits[i].doc;
+//            doc           = luceneSearch.getSearcher().doc(docId);
+//            System.out.println("Fuzzy: "+i+"  "+hits[i].score+"  "+doc.get("name"));
         }
         
         if (rankId == 400 && !doInvCountry[2])
@@ -853,11 +859,7 @@ public class GeographyAssignISOs
                 boolean foundMatch = searchGeonameForMatch(level, rankId, parentNames, parentRanks, parentISOCodes);
                 if (!foundMatch)
                 {
-                    foundMatch = searchLuceneWithTerms(level, rankId, parentNames, parentRanks, parentISOCodes);
-                    if (!foundMatch)
-                    {
-                        foundMatch = searchLuceneWithFuzzy(level, rankId, parentNames, parentRanks, parentISOCodes);
-                    }          
+                    foundMatch = searchLuceneWithFuzzy(level, rankId, parentNames, parentRanks, parentISOCodes);
     
                     Integer geonameId = chooseGeo(geoId, parentNames[level], level, rankId, parentNames, parentRanks, foundGeonameId);
                     

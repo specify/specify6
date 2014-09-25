@@ -150,12 +150,12 @@ public class CleanupToolsTask extends BaseTask
                 }
             })); 
             
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_MERGE"), GEO, getResourceString("CLNUP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doGeographyMerge();
-                }
-            })); 
+//            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_MERGE"), GEO, getResourceString("CLNUP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    doGeographyMerge();
+//                }
+//            })); 
             
             geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_REF"), GEO, getResourceString("CLNUP_GEO_CLEANUP_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)

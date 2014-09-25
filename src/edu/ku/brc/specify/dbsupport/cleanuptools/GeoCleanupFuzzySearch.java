@@ -169,7 +169,7 @@ public class GeoCleanupFuzzySearch
         // ZZZ For Release
         if (isDoingTesting)
         {
-            FILE_INDEX_DIR = new File("/Users/rods/Downloads/lucene/genames-index"); // Debug Only
+            FILE_INDEX_DIR = new File("/Users/rods/Downloads/lucene/geonames-index"); // Debug Only
         } else
         {
             String dirPath = getAppDataDir() + File.separator + "geonames-index";
@@ -177,6 +177,13 @@ public class GeoCleanupFuzzySearch
         }
      }    
 
+    /**
+     * @return the analyzer
+     */
+    public static StandardAnalyzer getAnalyzer()
+    {
+        return analyzer;
+    }
 
     /**
      * @return the parser
@@ -208,21 +215,21 @@ public class GeoCleanupFuzzySearch
         boolean        needsIndexing         = true;
         Long           lastGeoNamesBuildTime = BuildFromGeonames.getLastGeonamesBuiltTime();
         Long           lastIndexBuild        = localPrefs != null ? localPrefs.getLong(GEONAMES_INDEX_DATE_PREF, null) : null;
-        if (lastIndexBuild == null || lastGeoNamesBuildTime == null || !lastIndexBuild.equals(lastGeoNamesBuildTime))
+        if (!initLuceneforReading() || lastIndexBuild == null || lastGeoNamesBuildTime == null || !lastIndexBuild.equals(lastGeoNamesBuildTime))
         {
-            if (initLuceneforReading())
+            if (getReader() != null)
             {
-                if (getReader() != null)
+                Integer numDocs = localPrefs != null ? localPrefs.getInt(GEONAMES_INDEX_NUMDOCS, null) : null;
+                if (numDocs != null)
                 {
-                    Integer numDocs = localPrefs != null ? localPrefs.getInt(GEONAMES_INDEX_NUMDOCS, null) : null;
-                    if (numDocs != null)
-                    {
-                        System.out.println(String.format("%d %d", getReader().numDocs(), numDocs));
-                        needsIndexing = getReader().numDocs() != numDocs;
-                    }
+                    System.out.println(String.format("%d %d", getReader().numDocs(), numDocs));
+                    needsIndexing = getReader().numDocs() != numDocs;
                 }
-                doneSearching();
             }
+            doneSearching();
+        } else
+        {
+            needsIndexing = false;
         }
 
         return needsIndexing;
@@ -831,8 +838,7 @@ public class GeoCleanupFuzzySearch
         try
         {
             analyzer.close();
-            //searcher.close();
-            reader.close();
+            if (reader != null) reader.close();
             
             analyzer = null;
             searcher = null;
@@ -967,9 +973,10 @@ public class GeoCleanupFuzzySearch
         dbConn.setUsernamePassword(username, password);
         dbConn.setDriver("com.mysql.jdbc.Driver");
         
-        boolean doBuildIndex = true;
+        boolean doBuildIndex = false;
 
-        String indexLocation = "/Users/rods/Downloads/lucene/genames-index";
+        //String indexLocation = "/Users/rods/Downloads/lucene/geonames-index";
+        String indexLocation = "/Users/rods/Documents/Specify/geonames-index";
 
         GeoCleanupFuzzySearch indexer = null;
         try
@@ -1131,28 +1138,29 @@ public class GeoCleanupFuzzySearch
             System.out.println("-------------------------- Parsing -----------------------");
             String[] searchStrs = {
                     "Comoro Islands",
-                    "Solomon",
-                    "united states iowa",
-                    "germany brandenburg",
-                    "bulgaria sofia",
-                    "costa rica alajuela",
-                    "costa rica cartago",
-                    "costa rica alajuela",
-                    "canada newfoundland",
-                    "mexico campeche",
-                    "australia ashmore and cartier islands",
-                    "fiji lau",
-                    "fiji lomaiviti",
-                    "guam agana",
-                    "germany Lower Saxony",
-                    "germany Saxony",
-                    "germany Sachsen Anhalt",
-                    "germany Sachsen-Anhalt",
-                    "germany Land Sachsen-Anhalt",
-                    "united states iowa,Fayette",
-                    "united states iowa Fayette County",
-                    "Argentina Buenos Aires",
-                    "buenos aires argentina "
+                    "Bahamas Elbow Bank",
+//                    "Solomon",
+//                    "united states iowa",
+//                    "germany brandenburg",
+//                    "bulgaria sofia",
+//                    "costa rica alajuela",
+//                    "costa rica cartago",
+//                    "costa rica alajuela",
+//                    "canada newfoundland",
+//                    "mexico campeche",
+//                    "australia ashmore and cartier islands",
+//                    "fiji lau",
+//                    "fiji lomaiviti",
+//                    "guam agana",
+//                    "germany Lower Saxony",
+//                    "germany Saxony",
+//                    "germany Sachsen Anhalt",
+//                    "germany Sachsen-Anhalt",
+//                    "germany Land Sachsen-Anhalt",
+//                    "united states iowa,Fayette",
+//                    "united states iowa Fayette County",
+//                    "Argentina Buenos Aires",
+//                    "buenos aires argentina "
             };
 
             for (String searchText : searchStrs)
