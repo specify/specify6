@@ -25,9 +25,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -129,7 +131,8 @@ public class SpecialMsgNotifier
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        
+        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
+
         PostMethod postMethod = new PostMethod(url);
         
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
@@ -153,7 +156,7 @@ public class SpecialMsgNotifier
             paramArray[i] = postParams.get(i);
         }
 
-        postMethod.setRequestBody(paramArray);
+         postMethod.setRequestBody(paramArray);
         
         // connect to the server
         try
