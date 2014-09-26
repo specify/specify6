@@ -25,11 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
