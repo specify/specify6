@@ -427,6 +427,7 @@ public class iPadDBExporterPlugin extends BaseTask
         {
             setUIEnabled(false);
             panelTitle.setText("");
+            isLoggedIn = false;
         }
     }
     
