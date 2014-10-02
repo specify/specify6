@@ -134,6 +134,7 @@ public class iPadDBExporterPlugin extends BaseTask
     
     // Login Info
     private Integer                 cloudInstId = null;
+    private boolean                 isLoggedIn  = false;
 
     /**
      * Constructor.
@@ -142,7 +143,6 @@ public class iPadDBExporterPlugin extends BaseTask
     {
         super(DBEXPORTER, getResourceString("iPadDBExporter"));
         
-        //iPadCloudDBHelper = new IPadCloudDBImpl();
         iPadCloud = new IPadCloudJSONImpl();
         
         CommandDispatcher.register(DBEXPORTER, this);
@@ -178,7 +178,6 @@ public class iPadDBExporterPlugin extends BaseTask
             
             createAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("CREATE_ACCT"),     "image", null, null);
             loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     "image", null, null);
-            //manageDataSetsBtn = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("MGR_DS"),    "image", null, null);
             iPadInfoSetupBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("IPAD_SETUP"), "image", null, null);
             removeAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_ACCT"),  "image", null, null);
             logoutBtn         = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGOUT"),    "image", null, null);
@@ -187,15 +186,6 @@ public class iPadDBExporterPlugin extends BaseTask
             setUIEnabled(false);
             loginBtn.setEnabled(false);
             popResourceBundle();
-
-//            manageDataSetsBtn.addActionListener(new ActionListener()
-//            {
-//                @Override
-//                public void actionPerformed(ActionEvent e)
-//                {
-//                    manageDataSets();
-//                }
-//            });
             
             createAccountBtn.addActionListener(new ActionListener()
             {
@@ -229,11 +219,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (iPadCloud.logout())
-                    {
-                        setUIEnabled(false);
-                        panelTitle.setText("");
-                    }
+                    logout();
                 }
             });
             iPadInfoSetupBtn.addActionListener(new ActionListener()
@@ -284,8 +270,6 @@ public class iPadDBExporterPlugin extends BaseTask
         createAccountBtn.setEnabled(!enabled);
         removeAccountBtn.setEnabled(enabled);
         
-        //manageDataSetsBtn.setEnabled(enabled);
-        
         iPadInfoSetupBtn.setEnabled(enabled);
         loginBtn.setEnabled(!enabled);
         logoutBtn.setEnabled(enabled);
@@ -301,8 +285,6 @@ public class iPadDBExporterPlugin extends BaseTask
     @SuppressWarnings("unused")
     private void manageDataSets()
     {
-        //((IPadCloudDBHelper)iPadCloudDBHelper).createTestData();
-        
         ManageDataSetsDlg mdsDlg = new ManageDataSetsDlg(iPadCloud);
         centerAndShow(mdsDlg);
     }
@@ -419,6 +401,7 @@ public class iPadDBExporterPlugin extends BaseTask
                     {
                         remotePrefs.put(prefName, loginInfo.first);
                         loggedIn(loginInfo);
+                        isLoggedIn = true;
                         break;
                     } else
                     {
@@ -432,6 +415,18 @@ public class iPadDBExporterPlugin extends BaseTask
             {
                 break;
             }
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void logout()
+    {
+        if (isLoggedIn && iPadCloud.logout())
+        {
+            setUIEnabled(false);
+            panelTitle.setText("");
         }
     }
     
@@ -575,11 +570,10 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     public SubPaneIFace getExportPanel()
     {
-        loadAndPushResourceBundle(RESOURCE_NAME);
-        
-        panelTitle = null;
         if (panelTitle == null)
         {
+            loadAndPushResourceBundle(RESOURCE_NAME);
+            
             panelTitle     = createI18NLabel("NOT_LOGIN", SwingConstants.CENTER);
             JLabel desc    = createI18NLabel("EXPORTIN_TO_IPAD", SwingConstants.CENTER);
             JLabel iconLbl = createLabel("  ", IconManager.getImage("ExportSpMobile", IconManager.STD_ICON_SIZE.NonStd));
@@ -610,8 +604,8 @@ public class iPadDBExporterPlugin extends BaseTask
                     }
                 }
             });
+            popResourceBundle();
         }
-        popResourceBundle();
         return starterPane;
     }
     
@@ -833,6 +827,13 @@ public class iPadDBExporterPlugin extends BaseTask
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
         {
             prefsChanged(cmdAction);
-        } 
+            
+        }  else if (cmdAction.isType("App") && cmdAction.isAction("AppRestart"))
+        {
+            if (isLoggedIn && iPadCloud != null)
+            {
+                logout();
+            }
+        }
     }
 }

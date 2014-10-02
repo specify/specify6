@@ -19,9 +19,17 @@
 */
 package edu.ku.brc.dbsupport;
 
+import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.List;
 import java.util.Vector;
+
+import org.apache.commons.io.FileUtils;
+
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -106,6 +114,41 @@ public abstract class SchemaUpdateService
      * @return a string with the version number for the database schema
      */
     public abstract String getDBSchemaVersionFromXML();
+    
+    /**
+     * @param conn
+     * @param fileName
+     * @return
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public static boolean createDBTablesFromSQLFile(final Connection conn, final String fileName) throws Exception
+    {
+        File outFile = XMLHelper.getConfigDir(fileName);
+        if (outFile != null && outFile.exists())
+        {
+            StringBuilder sb      = new StringBuilder();
+            Statement     stmt    = conn.createStatement();
+            List<?>       list    = FileUtils.readLines(outFile);
+            
+            for (String line : (List<String>)list)
+            {
+                String tLine = line.trim();
+                sb.append(tLine);
+                
+                if (tLine.endsWith(";"))
+                {
+                    System.out.println(sb.toString());
+                    stmt.executeUpdate(sb.toString());
+                    sb.setLength(0);
+                }
+            }
+            stmt.close();
+            return true;
+        }
+        return false;
+    }
+    
     
     /**
      * Returns the instance of the AppContextMgr.

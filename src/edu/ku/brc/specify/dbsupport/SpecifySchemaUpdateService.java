@@ -45,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +70,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.GenericGUIDGeneratorFactory;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -182,7 +184,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 52; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 54; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -597,7 +599,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     
     /* paleo model change finalization ... */
     
-    private boolean moveDataFromHereToHere(String move, String databaseName, Connection conn) {
+    private boolean moveDataFromHereToHere(final String move, final String databaseName, final Connection conn) 
+    {
     	String from = move.split("\\|")[0];
     	String to = move.split("\\|")[1];
     	//System.out.println("moving from " + from + " to " + to);
@@ -2222,6 +2225,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.incOverall(); 
+                    
+                    //-------------------------------------------------------------------
+                    // Create tables need for Geography Cleanup tool
+                    // geonames tables
+                    //-------------------------------------------------------------------
+                    addGeoCleanupTables();
+                    frame.incOverall();
+                    
+                    //-------------------------------------------------------------------
+                    //-- Create tables needed for iPad Export
+                    //-------------------------------------------------------------------
+                    addIPadExporterTables(conn);
                     frame.incOverall(); 
                     
                     //-------------------------------------------------------------------
@@ -5078,4 +5094,53 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 		return true;
     }
 
+    //-----------------------------------------------------------------------------------------------
+    //-- Methods for adding the new tables that are needed for the SpecifyInsight iPad app
+    //-- And for Geography Cleanup tools
+    //-----------------------------------------------------------------------------------------------
+    private Discipline getCurrentDiscipline()
+    {
+        Discipline               disp       = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
+        Discipline               discipline = session.get(Discipline.class, disp.getId());
+        if (session != null) 
+        {
+            session.close();
+        }
+        return discipline;
+    }
+    
+    private boolean addGeoCleanupTables()
+    {
+        try
+        {
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            BuildFromGeonames bldGeoNames = new BuildFromGeonames(null, now, null, 
+                                                                  itUserNamePassword.first, itUserNamePassword.second, frame);    
+            boolean isOK =  bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog());
+            if (!isOK)
+            {
+                //return SchemaUpdateService.createDBTablesFromSQLFile(conn, "create_geonames_tables.sql");
+            }
+            
+        } catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    private boolean addIPadExporterTables(final Connection conn)
+    {
+        try
+        {
+            return SchemaUpdateService.createDBTablesFromSQLFile(conn, "build_ipad_xreftables.sql");
+        } catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

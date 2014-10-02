@@ -59,8 +59,8 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdHashMapper;
@@ -95,9 +95,7 @@ public class iPadDBExporter implements VerifyCollectionListener
     private static final boolean doAll                = true;
     private static final boolean doRebuildDB          = false;
     
-    //private static final String  BLD_SPTBL_FILE  = "build_sptables.sql";
     private static final String  BLD_ISITE_FILE  = "build_isite.sql";
-    private static final String  BLD_XREF_FILE   = "build_xreftables.sql";
     private static final String  STATS_XML       = "stats.xml";
     private static final String  CAT_FILE        = "catalog.xml";
     private static final String  ZIP_FILE        = "isite.zip";
@@ -110,19 +108,17 @@ public class iPadDBExporter implements VerifyCollectionListener
     private static final String  COLOBJAGENTNAME  = "ios_colobjagents";
     private static final String  COLOBJCNTNAME    = "ios_colobjcnts";
     private static final String  TAXONTBLNAME     = "ios_taxon_pid";
-//    private static final String  COLOBJGEONAME    = "ios_colobjgeo";
 
     // Paleo
-//    private static final String  COLOBJLITHONAME  = "ios_colobjlitho";
-//    private static final String  COLOBJBIONAME    = "ios_colobjbio";
-//    private static final String  COLOBJCHRONNAME  = "ios_colobjchron";
+    private static final String  COLOBJLITHONAME  = "ios_colobjlitho";
+    private static final String  COLOBJBIONAME    = "ios_colobjbio";
+    private static final String  COLOBJCHRONNAME  = "ios_colobjchron";
 
     
     // Database Members
-    private DBConnection                             dbRootConn        = null;
     private Connection                               dbConn            = null;
+    private Connection                               dbUpdateConn      = null;
     private Connection                               dbS3Conn          = null;
-    private Pair<String, String>                     itUsrPwd          = null;
     private String                                   imageURL          = null;
     private boolean                                  isUsingDirectURL  = false;
     
@@ -141,7 +137,6 @@ public class iPadDBExporter implements VerifyCollectionListener
 
     private ProgressDialog                           progressDelegate;
     private HashMap<Integer, Integer>                locNumObjsHash     = new HashMap<Integer, Integer>();
-    //private HashMap<Integer, Integer>                geoNumObjsHash     = new HashMap<Integer, Integer>();
     private HashMap<Integer, Integer>                geoStateMapper     = new HashMap<Integer, Integer>();
     
     private SwingWorker<Integer, Integer>            worker;
@@ -152,18 +147,17 @@ public class iPadDBExporter implements VerifyCollectionListener
     private IdMapperIFace                            geoToGeoCountryMapper   = null;
     private IdMapperIFace                            taxonToPIDMapper        = null;
     
-    private IdMapperIFace                            colObjToAgent      = null;
-    private IdMapperIFace                            colObjToCnt        = null;
-//    private IdMapperIFace                            colObjToGeo        = null;
-//    
-//    private IdMapperIFace                            colObjToLitho      = null;
-//    private IdMapperIFace                            colObjToBio        = null;
-//    private IdMapperIFace                            colObjToChron      = null;
+    private IdMapperIFace                            colObjToAgent           = null;
+    private IdMapperIFace                            colObjToCnt             = null;
     
-    private boolean                                  doZipFile          = true; 
-    private boolean                                  doUpload           = true; 
-    private ArrayList<ChartFileInfo>                 fileNamesForExport = new ArrayList<ChartFileInfo>();
-    private String                                   institutionImageName  = null;
+    private IdMapperIFace                            colObjToLitho           = null;
+    private IdMapperIFace                            colObjToBio             = null;
+    private IdMapperIFace                            colObjToChron           = null;
+    
+    private boolean                                  doZipFile               = true; 
+    private boolean                                  doUpload                = true; 
+    private ArrayList<ChartFileInfo>                 fileNamesForExport      = new ArrayList<ChartFileInfo>();
+    private String                                   institutionImageName    = null;
     
     private int continentIdCnt = 0;
     private int countryIdCnt   = 0;
@@ -243,53 +237,38 @@ public class iPadDBExporter implements VerifyCollectionListener
         return XMLHelper.getConfigDir("ipad_exporter" + File.separator + fileName);
     }
     
-    /**
-     * @param conn
-     * @param fileName
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    protected boolean createDBTables(final Connection conn, final String fileName) throws Exception
-    {
-        File outFile = getConfigFile(fileName);
-        if (outFile != null && outFile.exists())
-        {
-            StringBuilder sb      = new StringBuilder();
-            Statement     stmt    = conn.createStatement();
-            List<?>       list    = FileUtils.readLines(outFile);
-            
-            for (String line : (List<String>)list)
-            {
-                String tLine = line.trim();
-                
-                /*if (StringUtils.contains(tLine, PRIMARYKEY))
-                {
-                    tLine = StringUtils.remove(tLine, PRIMARYKEY);
-                    
-                } else if (tLine.startsWith(CONSTRAINT))
-                {
-                    //System.out.println(sb.toString());
-                    if (sb.charAt(sb.length()-1) == ',')
-                    {
-                        sb.setLength(sb.length()-1); // chomp ','
-                    }
-                    continue;
-                }*/
-                
-                sb.append(tLine);
-                
-                if (tLine.endsWith(";"))
-                {
-                    System.out.println(sb.toString());
-                    stmt.executeUpdate(sb.toString());
-                    sb.setLength(0);
-                }
-            }
-            stmt.close();
-            return true;
-        }
-        return false;
-    }
+//    /**
+//     * @param conn
+//     * @param fileName
+//     * @throws Exception
+//     */
+//    @SuppressWarnings("unchecked")
+//    protected boolean createDBTables(final Connection conn, final String fileName) throws Exception
+//    {
+//        File outFile = getConfigFile(fileName);
+//        if (outFile != null && outFile.exists())
+//        {
+//            StringBuilder sb      = new StringBuilder();
+//            Statement     stmt    = conn.createStatement();
+//            List<?>       list    = FileUtils.readLines(outFile);
+//            
+//            for (String line : (List<String>)list)
+//            {
+//                String tLine = line.trim();
+//                sb.append(tLine);
+//                
+//                if (tLine.endsWith(";"))
+//                {
+//                    System.out.println(sb.toString());
+//                    stmt.executeUpdate(sb.toString());
+//                    sb.setLength(0);
+//                }
+//            }
+//            stmt.close();
+//            return true;
+//        }
+//        return false;
+//    }
     
     /**
      * @param msg
@@ -557,7 +536,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         String sql = "SELECT DISTINCT RNK FROM (SELECT t.RankID RNK, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) CNT FROM taxon t " +
                      "INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
                      "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
-                     "WHERE d.IsCurrent = true GROUP BY t.RankID) T1 WHERE CNT > 0 AND RNK > 139 ORDER BY RNK DESC";
+                     "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = true GROUP BY t.RankID) T1 WHERE CNT > 0 AND RNK > 139 ORDER BY RNK DESC";
         System.out.println(sql);
         
         Vector<Integer> ranks = queryForInts(sql); 
@@ -566,7 +545,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         String post = adjustSQL(" FROM (SELECT t.TaxonID TID, IF (co.CountAmt IS NULL, 1, co.CountAmt) CNT, t.ParentID PID FROM taxon t  " +
                                 "INNER JOIN determination d ON t.TaxonID = d.TaxonID  " +
                                 "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
-                                "WHERE IsCurrent = true AND t.RankID = %d AND TaxonTreeDefID = TAXTREEDEFID GROUP BY t.TaxonID) T1 WHERE CNT > 0");
+                                "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = true AND t.RankID = %d AND TaxonTreeDefID = TAXTREEDEFID GROUP BY t.TaxonID) T1 WHERE CNT > 0");
         
         Statement stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         stmt.setFetchSize(Integer.MIN_VALUE);
@@ -1090,23 +1069,17 @@ public class iPadDBExporter implements VerifyCollectionListener
         int totCnt = getCountAsInt(dbConn, sql);
         if (progressDelegate != null) progressDelegate.setProcess(0, 100);
                 
-//        dbConn = DBConnection.getInstance() != null ? DBConnection.getInstance().getConnection() : null;
-//        setDBConnection(dbConn);
-//
-//        IdHashMapper.setEnableDelete(true);
-//        IdMapperMgr.getInstance().setDBs(dbRootConn.getConnection(), dbRootConn.getConnection());
-//        
-//        colObjToLitho = IdMapperMgr.getInstance().addHashMapper(COLOBJLITHONAME, null, true);
-//        colObjToLitho.reset();
-//
-//        colObjToBio = IdMapperMgr.getInstance().addHashMapper(COLOBJBIONAME, null, true);
-//        colObjToBio.reset();
-//       
-//        colObjToChron = IdMapperMgr.getInstance().addHashMapper(COLOBJCHRONNAME, null, true);
-//        colObjToChron.reset();
-//        
-//        IdHashMapper.setEnableDelete(false);
-//        IdMapperMgr.getInstance().setDBs(dbConn, dbConn);
+        colObjToLitho = IdMapperMgr.getInstance().addHashMapper(COLOBJLITHONAME, null, true);
+        colObjToLitho.reset();
+
+        colObjToBio = IdMapperMgr.getInstance().addHashMapper(COLOBJBIONAME, null, true);
+        colObjToBio.reset();
+       
+        colObjToChron = IdMapperMgr.getInstance().addHashMapper(COLOBJCHRONNAME, null, true);
+        colObjToChron.reset();
+        
+        IdHashMapper.setEnableDelete(false);
+        IdMapperMgr.getInstance().setDBs(dbConn, dbConn);
         
         dbS3Conn.setAutoCommit(false);
 
@@ -2346,7 +2319,11 @@ public class iPadDBExporter implements VerifyCollectionListener
             ResultSet rs = stmt.executeQuery(adjustSQL(sql));
             while (rs.next())
             {
-                //int id = rs.getInt(1);
+                int id = rs.getInt(1);
+                if (id == 30512)
+                {
+                    System.out.println("");
+                }
                 //if (!keepers.contains(id)) continue;
                 
                 transCnt++;
@@ -3831,39 +3808,16 @@ public class iPadDBExporter implements VerifyCollectionListener
             fileNamesForExport.add(new ChartFileInfo(institutionImageName, "Institution Picture", "en"));
         }
         
-        // XXX Testing for testing
-        //imageURL = "http://anza.nhm.ku.edu/getfileref.php?type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>&scale=<scale>";
-        //imageURL = "http://specify6-prod.nhm.ku.edu/getfileref.php?type=<type>&filename=<fname>&coll=<coll>&disp=<disp>&div=<div>&inst=<inst>&scale=<scale>";
+        dbUpdateConn = DBConnection.getInstance().createConnection();
         
-//        if (StringUtils.isEmpty(imageURL))
-//        {
-//            // Ask for image URL
-//        }
-        
-        DBConnection dbc = DBConnection.getInstance();
-        if (itUsrPwd == null)
+        File sqliteFile = new File(cacheDir + File.separator + dbName);
+        if (sqliteFile.exists())
         {
-            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "LOGIN", "LOGIN_REQ");
-            itUsrPwd = DatabaseLoginPanel.getITUsernamePwd();
-            if (itUsrPwd == null)
-            {
-                popResourceBundle();
-                return false;
-            }
+            sqliteFile.delete();
         }
-        
-        dbRootConn = new DBConnection(itUsrPwd.first, itUsrPwd.second, dbc.getConnectionStr(), dbc.getDriver(), dbc.getDialect(), dbc.getDatabaseName());
-        if (dbRootConn != null)
-        {
-            Class.forName("org.sqlite.JDBC");
-            dbS3Conn = DriverManager.getConnection("jdbc:sqlite:" + cacheDir + File.separator + dbName);
-        } else
-        {
-            itUsrPwd = null;
-            popResourceBundle();
-            return false;
-        }
-        
+        Class.forName("org.sqlite.JDBC");
+        dbS3Conn = DriverManager.getConnection("jdbc:sqlite:" + cacheDir + File.separator + dbName);
+               
         iPadRepositoryHelper h = new iPadRepositoryHelper();
         auxInfoMap = h.getAuxilaryInfo(institutionImageName);
         if (auxInfoMap == null)
@@ -3931,8 +3885,8 @@ public class iPadDBExporter implements VerifyCollectionListener
                     dbConn = DBConnection.getInstance() != null ? DBConnection.getInstance().getConnection() : null;
                     setDBConnection(dbConn);
 
-                    IdHashMapper.setEnableDelete(true);
-                    IdMapperMgr.getInstance().setDBs(dbRootConn.getConnection(), dbRootConn.getConnection());
+                    IdHashMapper.setEnableRemoveRecords(true);
+                    IdMapperMgr.getInstance().setDBs(dbUpdateConn, dbUpdateConn);
                     
                     locToGeoContinentMapper = IdMapperMgr.getInstance().addHashMapper(GEOLOCCNTTBLNAME, null, true);
                     locToGeoContinentMapper.reset();
@@ -3958,12 +3912,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     
                     if (doAll || doRebuildDB)
                     {
-                        if (!createDBTables(dbS3Conn, BLD_ISITE_FILE))
-                        {
-                            isInError = true;
-                            return null;
-                        }
-                        if (!createDBTables(dbRootConn.getConnection(), BLD_XREF_FILE))
+                        if (!SchemaUpdateService.createDBTablesFromSQLFile(dbS3Conn, "ipad_exporter" + File.separator + BLD_ISITE_FILE))
                         {
                             isInError = true;
                             return null;
@@ -4175,10 +4124,10 @@ public class iPadDBExporter implements VerifyCollectionListener
     {
         if (helper.isNetworkConnError())
         {
-            UIRegistry.showError("There was a problem connecting to the internet.\nThis is required to create the SpecifyInsight data store.");
+            UIRegistry.showError("There was a problem connecting to the internet.\nThis is required to create the SpecifyInsight data store."); // I18N
         } else
         {
-            UIRegistry.showError("There was an unrecoverable error while creating the iPad data store.");
+            UIRegistry.showError("There was an unrecoverable error while creating the iPad data store."); // I18N
         }
     }
 
@@ -4255,11 +4204,6 @@ public class iPadDBExporter implements VerifyCollectionListener
      */
     public void shutdown()
     {
-        if (dbRootConn != null)
-        {
-            dbRootConn.close();
-        }
-        
         if (progressDelegate != null)
         {
             progressDelegate.setVisible(false);
@@ -4271,6 +4215,11 @@ public class iPadDBExporter implements VerifyCollectionListener
         
         try
         {
+            if (dbUpdateConn != null)
+            {
+                dbUpdateConn.close();
+            }
+            
             AppContextMgr ac = AppContextMgr.getInstance();
             if (ac == null)
             {

@@ -35,8 +35,6 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,7 +50,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -61,11 +58,11 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataItem;
+import edu.ku.brc.specify.dbsupport.cleanuptools.CountryClearProcesser;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyAssignISOs;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyMerging;
 import edu.ku.brc.specify.dbsupport.cleanuptools.ISOCodeListDlg;
@@ -82,7 +79,6 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -106,7 +102,6 @@ public class CleanupToolsTask extends BaseTask
     private static final String  AGENT             = Agent.class.getSimpleName();
     private static final String  LOCALITY          = Locality.class.getSimpleName();
     
-    private Pair<String, String>       usrPwdPair       = null;
     protected ProgressDialog           prgDlg;
 
     protected Vector<NavBoxIFace>      extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -143,21 +138,28 @@ public class CleanupToolsTask extends BaseTask
             
             extendedNavBoxes.clear();
             
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_TOOLS"), GEO, getResourceString("CLNUP_GEO_CLEANUP_TOOLS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_TOOLS"), GEO, getResourceString("CLNUP_GEO_TOOLS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     doGeographyISOCodes();
                 }
             })); 
             
-//            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_MERGE"), GEO, getResourceString("CLNUP_GEO_CLEANUP_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-//                public void actionPerformed(ActionEvent e)
-//                {
-//                    doGeographyMerge();
-//                }
-//            })); 
-            
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEANUP_REF"), GEO, getResourceString("CLNUP_GEO_CLEANUP_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+          geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEAR_ISOS"), GEO, getResourceString("CLNUP_GEO_CLEAR_ISOS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+              public void actionPerformed(ActionEvent e)
+              {
+                  doClearISOs();
+              }
+          })); 
+      
+//          geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_MERGE"), GEO, getResourceString("CLNUP_GEO_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+//          public void actionPerformed(ActionEvent e)
+//          {
+//              doGeographyMerge();
+//          }
+//      })); 
+      
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_REF"), GEO, getResourceString("CLNUP_GEO_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     ISOCodeListDlg dlg = new ISOCodeListDlg(null,CustomDialog.OK_BTN);
@@ -434,6 +436,27 @@ public class CleanupToolsTask extends BaseTask
         });
         worker.execute();
     }
+    
+    /**
+     * @param discipline
+     * @return
+     */
+    private int getEarthRecordId(final Discipline discipline)
+    {
+        return BasicSQLUtils.getCountAsInt("SELECT GeographyID FROM geography WHERE RankID = 0 AND GeographyTreeDefID = "+discipline.getGeographyTreeDef().getId());
+    }
+    
+    private Discipline getCurrentDiscipline()
+    {
+        Discipline               disp       = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
+        Discipline               discipline = session.get(Discipline.class, disp.getId());
+        if (session != null) 
+        {
+            session.close();
+        }
+        return discipline;
+    }
 
     /**
      * 
@@ -452,75 +475,40 @@ public class CleanupToolsTask extends BaseTask
     /**
      * 
      */
+    private void doClearISOs()
+    {
+        final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
+        final Discipline discipline = getCurrentDiscipline();
+
+        CountryClearProcesser clearCountries = new CountryClearProcesser(discipline.getGeographyTreeDef(), agent);
+        clearCountries.start();
+    }
+    
+    /**
+     * 
+     */
     private void doGeographyISOCodes()
     {
-        if (usrPwdPair == null)
-        {
-            usrPwdPair = DatabaseLoginPanel.getITUsernamePwd();
-        }
-        if (usrPwdPair != null)
-        {
-            final Timestamp  now        = new Timestamp(System.currentTimeMillis());
-            final Discipline disp       = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
 
-            final ProgressFrame frame   = new ProgressFrame("Building Geography Authority..."); // I18N
-            frame.getCloseBtn().setVisible(false);
-            frame.turnOffOverAll();
-            frame.setDesc("Loading Geonames data..."); // I18N
-            frame.pack();
-            frame.setSize(450, frame.getBounds().height+10);
-            UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
-            
-            final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            final Discipline discipline = session.get(Discipline.class, disp.getId());
-            if (session != null) 
-            {
-                session.close();
-            }
-            
-            final SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
-            {
-                @Override
-                protected Boolean doInBackground() throws Exception
-                {
-                    try
-                    {
-                        BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, usrPwdPair.first, usrPwdPair.second, frame);    
-                        return bldGeoNames.loadGeoNamesDB(DBConnection.getInstance().getConnection().getCatalog());
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    return false;
-                }
+        final Timestamp  now        = new Timestamp(System.currentTimeMillis());
+        final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
+        final Discipline discipline = getCurrentDiscipline();
 
-                @Override
-                protected void done()
-                {
-                    try
-                    {
-                        if (this.get()) // done synchronously
-                        {
-                            int earthId = BasicSQLUtils.getCountAsInt("SELECT GeographyID FROM geography WHERE RankID = 0 AND GeographyTreeDefID = "+discipline.getGeographyTreeDef().getId());
-                            
-                            frame.setVisible(false);
-                            
-                            GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent, frame);
-                            geoAssignISOCodes.buildAsync(earthId);
-                        } else
-                        {
-                            UIRegistry.showError("There was an error loading the Geography reference file.");
-                        }
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            };
-            worker.execute();
-        }
+        final ProgressFrame frame   = new ProgressFrame("Building Geography Authority..."); // I18N
+        frame.getCloseBtn().setVisible(false);
+        frame.turnOffOverAll();
+        frame.setDesc("Loading Geonames data..."); // I18N
+        frame.pack();
+        frame.setSize(450, frame.getBounds().height+10);
+        UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
+        
+        int earthId =  getEarthRecordId(discipline);
+        
+        frame.setVisible(false);
+        
+        GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent, frame);
+        geoAssignISOCodes.buildAsync(earthId);
+
      }
     
     /**

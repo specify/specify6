@@ -121,7 +121,7 @@ public class BuildFromGeonames
                     "CreatedByAgentID, CentroidLat, CentroidLon, Abbrev, " +
                     "TimestampCreated, TimestampModified, Version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     }
-    
+
     /**
      * Builds the root Geography record (node).
      * @param session the current session
@@ -759,6 +759,7 @@ public class BuildFromGeonames
             if (dbMgr != null) dbMgr.close();
         }
         
+        shouldLoadGeoNames = true;
         if (shouldLoadGeoNames)
         {
             BackupServiceFactory bsf = BackupServiceFactory.getInstance();

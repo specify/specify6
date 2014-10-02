@@ -45,8 +45,9 @@ public class IdHashMapper implements IdMapperIFace
 {
     protected static final Logger log = Logger.getLogger(IdHashMapper.class);
     
-    protected static TableWriter tblWriter = null;
-    protected static boolean     enableDelete  = true;
+    protected static TableWriter tblWriter           = null;
+    protected static boolean     enableDelete        = false;
+    protected static boolean     enableRemoveRecords = true;
 
 
     protected String            sql           = null;
@@ -172,12 +173,19 @@ public class IdHashMapper implements IdMapperIFace
     }
 
     /**
+     * @param enableRemove the enableRemove to set
+     */
+    public static void setEnableRemoveRecords(final boolean enableRemoveRecords)
+    {
+        IdHashMapper.enableRemoveRecords = enableRemoveRecords;
+    }
+
+    /**
      * Initializes the Hash Database Table.
      */
     protected void init(final boolean checkOldDB)
     {
         oldConn = IdMapperMgr.getInstance().getOldConnection();
-        //newConn = IdMapperMgr.getInstance().getNewConnection();
         
         int numRecs      = checkOldDB ? BasicSQLUtils.getNumRecords(oldConn, tableName) : 0;
         int mappingCount = oldConn != null ? getMapCount(mapTableName) : 0;
@@ -187,6 +195,13 @@ public class IdHashMapper implements IdMapperIFace
         
         try
         {
+            if (enableRemoveRecords)
+            {
+                wasEmpty = true;
+                String sql = String.format("DELETE FROM %s", mapTableName);
+                BasicSQLUtils.update(oldConn, sql);
+                return;
+            }
 
             if ((doDelete || mappingCount == 0) && enableDelete)
             {
