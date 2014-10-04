@@ -28,7 +28,6 @@ import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
 
@@ -145,7 +144,7 @@ public class CleanupToolsTask extends BaseTask
                 }
             })); 
             
-          geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEAR_ISOS"), GEO, getResourceString("CLNUP_GEO_CLEAR_ISOS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEAR_ISOS"), GEO, getResourceString("CLNUP_GEO_CLEAR_ISOS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
               public void actionPerformed(ActionEvent e)
               {
                   doClearISOs();
@@ -324,6 +323,7 @@ public class CleanupToolsTask extends BaseTask
         if (matchCnt > 0)
         {
             //String msg = UIRegistry.getLocalizedMessage("CLNUP_HAS_EXACT_AG_MATCHES", matchCnt);
+            // I18N
             String msg = String.format("There were %d exact matches.\nIt is recommended to resolve these first before merging using 'fuzzy matches'.\n\nDo you wish to continue with 'fuzzy matches' ?", matchCnt);
             rv = UIRegistry.askYesNoLocalized("Continue", "Close", msg, "CLNUP_HAS_EXACT_AG_MATCHES_TITLE");
         }
@@ -489,8 +489,6 @@ public class CleanupToolsTask extends BaseTask
      */
     private void doGeographyISOCodes()
     {
-
-        final Timestamp  now        = new Timestamp(System.currentTimeMillis());
         final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
         final Discipline discipline = getCurrentDiscipline();
 
@@ -514,12 +512,13 @@ public class CleanupToolsTask extends BaseTask
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private void doGeographyMerge()
     {
         GeographyMerging geoMerging = new GeographyMerging();
         if (!geoMerging.start())
         {
-            UIRegistry.showLocalizedMsg("There were no 'exact matches' for geography.");
+            UIRegistry.showLocalizedMsg("There were no 'exact matches' for geography."); // I18N
         }
     }
     

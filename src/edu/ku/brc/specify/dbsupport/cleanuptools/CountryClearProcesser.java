@@ -25,7 +25,6 @@ import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createFormLabel;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
-import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
@@ -184,10 +183,11 @@ public class CountryClearProcesser
     
     private void clearISOCodes()
     {
+        @SuppressWarnings("unused")
         int total = 0;
         if (countriesCBX.isSelected())
         {
-            String updateSQL = adjustSQL("UPDATE geography SET GeographyCode=NULL WHERE GeographyTreeDefID = GEOTREEDEFID");
+            String updateSQL = adjustSQL("UPDATE geography SET GeographyCode=NULL WHERE GeographyTreeDefID = GEOTREEDEFID AND RankID > 100");
             total = BasicSQLUtils.update(updateSQL);
         } else
         {
@@ -198,7 +198,7 @@ public class CountryClearProcesser
             total = BasicSQLUtils.update(updateSQL);
         }
         
-        UIRegistry.displayInfoMsgDlg(getFormattedResStr("CLNUP_GEO_CLEAR_RESULTS", total));
+        UIRegistry.displayInfoMsgDlg(getResourceString("CLNUP_GEO_CLEAR_RESULTS"));
     }
 
 }

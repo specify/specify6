@@ -3747,7 +3747,7 @@ return doLogin(null, null, engageUPPrefs, usrPwdProvider, doAutoClose,
     public static JButton createHelpIconButton(final String helpContext)
     {
         JButton helpBtn;
-        if (UIHelper.isMacOS())
+        if (isMacOS())
         {
             helpBtn = new JButton("");
             helpBtn.putClientProperty( "JButton.buttonType", "help" );

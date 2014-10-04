@@ -3804,8 +3804,11 @@ public class iPadDBExporter implements VerifyCollectionListener
         if (StringUtils.isNotEmpty(institutionImageName))
         {
             File   srcPicFile  = new File(UIRegistry.getAppDataDir() + File.separator + institutionImageName);
-            FileUtils.copyFileToDirectory(srcPicFile, cacheDir);
-            fileNamesForExport.add(new ChartFileInfo(institutionImageName, "Institution Picture", "en"));
+            if (srcPicFile.exists())
+            {
+                FileUtils.copyFileToDirectory(srcPicFile, cacheDir);
+                fileNamesForExport.add(new ChartFileInfo(institutionImageName, "Institution Picture", "en"));
+            }
         }
         
         dbUpdateConn = DBConnection.getInstance().createConnection();

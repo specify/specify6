@@ -33,6 +33,7 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -46,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -61,6 +61,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -124,7 +125,6 @@ public class GeoChooserDlg extends CustomDialog
     private boolean          noMatchesFound;
     
     private int              selectedIndex;
-    private List<GeoSearchResultsItem> luceneResults = null;
 
 
     /**
@@ -192,14 +192,28 @@ public class GeoChooserDlg extends CustomDialog
     protected JPanel buildButtonBar()
     {
         helpBtn.setText("Quit"); // I18N
-        applyBtn.setText("Skip To Next Country");
         cancelBtn.setText("Skip");
         okBtn.setText("Save and Next");
+
+        if (applyBtn != null)
+        {
+            applyBtn.setText("Skip To Next Country");
+        }
+        
+        boolean isContinent = this.rankId == 100;
+        if (isContinent)
+        {
+            whichBtns = OKCANCELHELP;
+        }
         
         CellConstraints cc  = new CellConstraints();
 
-        PanelBuilder pbLast = new PanelBuilder(new FormLayout("f:p:g,p,8px,p,8px,p,8px" + (whichBtns == OKCANCELAPPLYHELP ? ",p,8px" : ""), "p"));
-        int inx = 2;
+        PanelBuilder pbLast = new PanelBuilder(new FormLayout("4px,p,8px,f:p:g,p,8px,p,8px,p,4px" + (whichBtns == OKCANCELAPPLYHELP ? ",p,8px" : ""), "p"));
+        
+        JButton theRealHelpBtn = UIHelper.createHelpIconButton("GeoCleanUpISOChooser");
+        pbLast.add(theRealHelpBtn, cc.xy(2, 1));
+        
+        int inx = 5;
         pbLast.add(helpBtn,   cc.xy(inx, 1)); inx += 2;
         if (whichBtns == OKCANCELAPPLYHELP)
         {
@@ -299,11 +313,26 @@ public class GeoChooserDlg extends CustomDialog
         boolean doStatesOrCounties = doAllCountries[1] || doAllCountries[2] || doInvCountry[1] || doInvCountry[2];
         this.whichBtns = doStatesOrCounties ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP;
         
-        boolean isStCnty = rankId > 200;//== 300 || rankId == 400; 
-        //isStCnty = true;
+        boolean isStCnty = rankId > 200; 
+        
+        dlm      = new DefaultListModel<String>();
+        mainList = new JList<String>(dlm);
+        JScrollPane sb = createScrollPane(mainList, true);
+        
+        String listDim;
+        if (UIHelper.isWindows())
+        {
+            listDim = "250px";
+            Dimension sz = new Dimension(250, 250);
+            mainList.setPreferredSize(sz);
+            sb.setPreferredSize(sz);
+        } else
+        {
+            listDim = "f:p:g";
+        }
         
         CellConstraints cc  = new CellConstraints();
-        PanelBuilder    pb  = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,12px,p,2px,f:p:g,8px,p,4px,p,10px,p"+ (isStCnty ? ",8px,p" : "")));
+        PanelBuilder    pb  = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,12px,p,2px," + listDim + ",8px,p,4px,p,10px,p"+ (isStCnty ? ",8px,p" : "")));
 
         this.contentPanel = pb.getPanel();
         
@@ -311,9 +340,6 @@ public class GeoChooserDlg extends CustomDialog
         
         try
         {
-            dlm      = new DefaultListModel<String>();
-            mainList = new JList<String>(dlm);
-
             String geoName;
             if (coInfoList != null && coInfoList.size() > 0)
             {
@@ -397,7 +423,6 @@ public class GeoChooserDlg extends CustomDialog
                 labels.add(i18NLabelsMap.get(parentRanks[i++])); 
             }
 
-            JScrollPane  sb     = createScrollPane(mainList, true);
             PanelBuilder pbTop  = new PanelBuilder(new FormLayout("p,2px,f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", labels.size())));
             int y = 1;
             for (i=0;i<labels.size();i++)
@@ -409,6 +434,7 @@ public class GeoChooserDlg extends CustomDialog
                 lbl.setOpaque(true);
                 y += 2;
             }
+            
             pb.add(pbTop.getPanel(), cc.xy(1, 3));
             pb.addSeparator("Possible standard Geography choices", cc.xy(1, 5)); // I18N
             pb.add(sb,               cc.xy(1, 7));
@@ -458,6 +484,12 @@ public class GeoChooserDlg extends CustomDialog
         {
             ex.printStackTrace();
         }
+        
+        if (UIHelper.isWindows())
+        {
+            setResizable(false);
+        }
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Must be called at the end 'createUI'
     }
     
     /**

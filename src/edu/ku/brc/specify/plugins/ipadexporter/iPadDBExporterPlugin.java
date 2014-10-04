@@ -571,7 +571,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     public SubPaneIFace getExportPanel()
     {
-        if (panelTitle == null)
+        if (panelTitle == null || starterPane == null)
         {
             loadAndPushResourceBundle(RESOURCE_NAME);
             

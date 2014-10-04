@@ -198,8 +198,11 @@ public class IdHashMapper implements IdMapperIFace
             if (enableRemoveRecords)
             {
                 wasEmpty = true;
-                String sql = String.format("DELETE FROM %s", mapTableName);
-                BasicSQLUtils.update(oldConn, sql);
+                try
+                {
+                    String sql = String.format("DELETE FROM %s", mapTableName);
+                    BasicSQLUtils.update(oldConn, sql);
+                } catch (Exception ex ) {}
                 return;
             }
 
