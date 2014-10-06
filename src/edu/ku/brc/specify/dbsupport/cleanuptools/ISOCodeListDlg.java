@@ -65,9 +65,9 @@ public class ISOCodeListDlg extends CustomDialog
 {
     protected enum GeoRankType {eContinent, eCountry, eState, eCounty}
 
+    private final String         blankValue = "        ";
     private Vector<ISOItem>      isoList;
     private JTable               table;
-    private ISOTableModel        model;
     
     protected ArrayList<JLabel>  labels   = new ArrayList<JLabel>();
     protected ArrayList<JLabel>  codes    = new ArrayList<JLabel>();
@@ -124,7 +124,7 @@ public class ISOCodeListDlg extends CustomDialog
             }
         });
         
-        JLabel hdrTitle1 = createI18NLabel("Geography", JLabel.CENTER);
+        JLabel hdrTitle1 = createI18NLabel("Geography", JLabel.CENTER); // I18N
         JLabel hdrTitle2 = createI18NLabel("ISO Code", JLabel.CENTER);
         Font font = hdrTitle1.getFont().deriveFont(Font.BOLD);
         hdrTitle1.setFont(font);
@@ -137,14 +137,14 @@ public class ISOCodeListDlg extends CustomDialog
         int index = 3;
         for (int i=0;i<3;i++)
         {
-            JLabel lbl = new JLabel();
+            JLabel lbl = new JLabel(blankValue);
             labels.add(lbl);
             
-            JLabel cdLbl = new JLabel();
+            JLabel cdLbl = new JLabel(blankValue);
             codes.add(cdLbl);
             cdLbl.setHorizontalAlignment(SwingConstants.CENTER);
             
-            JButton btn = new JButton("^");
+            JButton btn = new JButton("Clear");
             backBtns.add(btn);
             btn.addActionListener(al);
             pbc.add(lbl,   cc.xy(1, index));
@@ -159,7 +159,7 @@ public class ISOCodeListDlg extends CustomDialog
             index += 2;
         }
 
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,f:p:g,4px,p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,p,2px,f:p:g,4px,p"));
         
         isoList = new Vector<ISOItem>();
         //model   = new ISOTableModel();
@@ -177,7 +177,7 @@ public class ISOCodeListDlg extends CustomDialog
 
         int y = 1;
         pb.add(pb2.getPanel(), cc.xy(1,1)); y += 2;
-        //pb.add(new JLabel("ISO Codes"), cc.xy(1,y)); y += 2;   // I18N
+        pb.add(new JLabel("Click on an item in the list:"), cc.xy(1,y)); y += 2;   // I18N
         pb.add(createScrollPane(table), cc.xy(1,y)); y += 2;
 
         pb.setDefaultDialogBorder();
@@ -250,8 +250,8 @@ public class ISOCodeListDlg extends CustomDialog
         int index = backBtns.indexOf(btn);
         for (int i=backBtns.size()-1;i >= index;i--)
         {
-            labels.get(i).setText("");
-            codes.get(i).setText("");
+            labels.get(i).setText(blankValue);
+            codes.get(i).setText(blankValue);
             backBtns.get(i).setEnabled(false);
         }
         
@@ -296,7 +296,7 @@ public class ISOCodeListDlg extends CustomDialog
         }
         //model.fireTableDataChanged();
         //model.fireTableStructureChanged();
-       table.setModel(model = new ISOTableModel());
+       table.setModel(new ISOTableModel());
     }
     
     /**
@@ -319,7 +319,7 @@ public class ISOCodeListDlg extends CustomDialog
         }
         codes.get(0).setText(item.code);
         backBtns.get(0).setEnabled(true);
-        String sql = String.format("select name,iso_alpha2 from countryinfo WHERE continent = '%s' ORDER BY name;", item.code);
+        String sql = String.format("SELECT name,iso_alpha2 from countryinfo WHERE continent = '%s' ORDER BY name;", item.code);
         isoList.clear();
         System.out.println(sql);
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
@@ -328,7 +328,7 @@ public class ISOCodeListDlg extends CustomDialog
             isoList.add(new ISOItem(row[0].toString(), row[1].toString()));
         }
         currentLevel = GeoRankType.eCountry;
-        table.setModel(model = new ISOTableModel());
+        table.setModel(new ISOTableModel());
     }
     
     /**

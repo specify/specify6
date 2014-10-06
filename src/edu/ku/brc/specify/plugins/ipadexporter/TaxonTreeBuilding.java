@@ -32,6 +32,7 @@ import java.util.Vector;
 import javax.swing.SwingWorker;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.IdMapperIFace;
 import edu.ku.brc.ui.ProgressDialog;
 
 public class TaxonTreeBuilding
@@ -46,18 +47,21 @@ public class TaxonTreeBuilding
     
     private int            totalRecords;
     private int            minRank = 139;
+    private IdMapperIFace  colObjToCnt;
     
     private Vector<Integer> ranks;
     
     public TaxonTreeBuilding(final iPadDBExporter ipadExporter, 
-                        final Connection dbS3Conn, 
-                        final Connection conn)
+                             final Connection dbS3Conn, 
+                             final Connection conn,
+                             final IdMapperIFace colObjToCnt)
     {
         this.dbS3Conn         = dbS3Conn;
         this.conn             = conn;
         this.ipadExporter     = ipadExporter;
         this.progressDelegate = ipadExporter.getProgressDelegate();
         this.worker           = ipadExporter.getWorker();
+        this.colObjToCnt      = colObjToCnt;
     }
     
     public void process()
@@ -181,13 +185,20 @@ public class TaxonTreeBuilding
         
         PreparedStatement s3Stmt = null;        
         Statement         stmt   = null;
+        PreparedStatement pStmtLK = null;
+        
         int transCnt = 0;
         int cnt      = 0;
         try
         {   
             dbS3Conn.setAutoCommit(false);
-            s3Stmt = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, TotalCOCnt, HighNodeNum, NodeNum) VALUES (?,?,?,?,?,?,?,?)");        
+            s3Stmt = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum) VALUES (?,?,?,?,?,?,?,?,?)");        
             stmt   = conn.createStatement();
+            String selSQL = "SELECT co.CollectionObjectID, t.NodeNumber FROM taxon t " +
+                            "INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
+                            "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
+                            "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = TRUE AND NodeNumber >= ? AND NodeNumber <= ?";
+            pStmtLK  = conn.prepareStatement(ipadExporter.adjustSQL(selSQL));
             
             for (Integer rankId : ranks)
             {
@@ -201,16 +212,33 @@ public class TaxonTreeBuilding
                         int highNodeNum = rs.getInt(5);
                         int nodeNum     = rs.getInt(6);
                         
-                        Integer coTotal = null;
-                        if (rankId == 140)
+                        Integer coTotal = null; // Total count of this level and all below
+                        Integer coCount = null; // Count of current level
+                        
+                        if (rankId == 140 && familySet.contains(id))
                         {
-                            if (familySet.contains(id))
+                            int totCnt = 0;
+                            pStmtLK.setInt(1, nodeNum);
+                            pStmtLK.setInt(2, highNodeNum);
+                            
+                            ResultSet rsLK = pStmtLK.executeQuery();
+                            while (rsLK.next())
                             {
-                                sql = String.format("SELECT SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) CNT FROM taxon t " +
-                                                    "INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
-                                                    "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
-                                                    "WHERE d.IsCurrent = TRUE AND NodeNumber > %d AND HighestChildNodeNumber <= %d", nodeNum, highNodeNum);//(Integer)row[0], (Integer)row[1]);
-                                coTotal = BasicSQLUtils.getCount(sql);
+                                Integer coCnt = colObjToCnt.get(rsLK.getInt(1));
+                                if (coCnt != null)
+                                {
+                                    totCnt += coCnt;
+                                    int nn = rsLK.getInt(2);
+                                    if (nn == nodeNum)
+                                    {
+                                        coCount = coCnt;
+                                    }
+                                }
+                                
+                            }
+                            if (totCnt > 0)
+                            {
+                                coTotal = totCnt;
                             }
                         }
                         //System.out.println(rankId+" "+id);
@@ -219,10 +247,11 @@ public class TaxonTreeBuilding
                         s3Stmt.setInt(3,    rs.getInt(3));
                         s3Stmt.setInt(4,    rs.getInt(4));
                         s3Stmt.setObject(5, null);
-                        s3Stmt.setInt(6,    coTotal != null ? coTotal : 1);
+                        s3Stmt.setInt(6,    coTotal != null ? coTotal : 0);
+                        s3Stmt.setInt(6,    coCount != null ? coCount : 0);
                         
-                        s3Stmt.setInt(7, highNodeNum);
-                        s3Stmt.setInt(8, nodeNum);
+                        s3Stmt.setInt(8, highNodeNum);
+                        s3Stmt.setInt(9, nodeNum);
                         
                         if (s3Stmt.executeUpdate() != 1)
                         {
@@ -238,6 +267,7 @@ public class TaxonTreeBuilding
                     rs.close();
                 }
             }
+            s3Stmt.close();
             
             // Update FamilyID in all Taxon Records
             //String            sql    = "SELECT HighestChildNodeNumber, NodeNumber FROM taxon WHERE TaxonID = ?";
@@ -272,6 +302,8 @@ public class TaxonTreeBuilding
                     }
                 }
             }
+            pStmt.close();
+            s3Stmt.close();
             
             try
             {
@@ -287,6 +319,7 @@ public class TaxonTreeBuilding
             {
                 if (stmt != null) stmt.close();
                 if (s3Stmt != null) s3Stmt.close();
+                if (pStmtLK != null) pStmtLK.close();
                 dbS3Conn.setAutoCommit(true);
             } catch (Exception ex2) { ex2.printStackTrace();}
 

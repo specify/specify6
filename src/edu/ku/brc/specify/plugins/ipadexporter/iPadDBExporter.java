@@ -2181,7 +2181,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         colObjToCnt = IdMapperMgr.getInstance().addHashMapper(COLOBJCNTNAME, null, false);
         colObjToCnt.reset();
 
-        sql = "SELECT co.CollectionObjectID, co.CountAmt, COUNT(IF (p.CountAmt IS NULL, 0, p.CountAmt)) " +
+        sql = "SELECT co.CollectionObjectID, co.CountAmt, SUM(IF (p.CountAmt IS NULL, 0, p.CountAmt)) " +
               "FROM collectionobject co LEFT JOIN preparation p ON co.CollectionObjectID = p.CollectionObjectID " +
               "WHERE co.CollectionID = COLMEMID GROUP BY co.CollectionObjectID";
         Statement stmt2 = dbConn.createStatement();
@@ -2207,8 +2207,6 @@ public class iPadDBExporter implements VerifyCollectionListener
      */
     private void doBuildColObjs() throws SQLException
     {
-        doBuildColObjCounts();
-        
         int cnt = 0;
         String sql;
         
@@ -2320,7 +2318,7 @@ public class iPadDBExporter implements VerifyCollectionListener
             while (rs.next())
             {
                 int id = rs.getInt(1);
-                if (id == 30512)
+                if (id == 29208)
                 {
                     System.out.println("");
                 }
@@ -3936,12 +3934,17 @@ public class iPadDBExporter implements VerifyCollectionListener
                         }
                         progressDelegate.incOverall();
                     }
+                    
+                    if (doAll || doBldColObjs)
+                    {
+                        doBuildColObjCounts();
+                    }
             
                     if (doAll || doTaxon)
                     {
                         //checkAndFixTaxon();
                         //doBuildTaxonMappings();
-                        TaxonTreeBuilding treeBuilding = new TaxonTreeBuilding(iPadDBExporter.this, dbS3Conn, dbConn);
+                        TaxonTreeBuilding treeBuilding = new TaxonTreeBuilding(iPadDBExporter.this, dbS3Conn, dbConn, colObjToCnt);
                         treeBuilding.process();
                         progressDelegate.incOverall();
                     }
@@ -3949,7 +3952,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     if (doAll || doGeography)
                     {
                         //doBuildGeography();
-                        TreeBuilder treeBuilder = new TreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn);
+                        TreeBuilder treeBuilder = new TreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn, colObjToCnt);
                         treeBuilder.process();
                         progressDelegate.incOverall();
                     }

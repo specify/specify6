@@ -33,6 +33,7 @@ import java.util.Vector;
 import javax.swing.SwingWorker;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.IdMapperIFace;
 import edu.ku.brc.ui.ProgressDialog;
 
 public class TreeBuilder
@@ -46,19 +47,28 @@ public class TreeBuilder
     private HashMap<Integer, HashSet<Integer>> rankSets = new HashMap<Integer, HashSet<Integer>>();
     
     private int            totalRecords;
-    private int            minRank = 139;
+    //private int            minRank = 139;
+    private IdMapperIFace  colObjToCnt;
     
     private Vector<Integer> ranks;
     
+    /**
+     * @param ipadExporter
+     * @param dbS3Conn
+     * @param conn
+     * @param colObjToCnt
+     */
     public TreeBuilder(final iPadDBExporter ipadExporter, 
                        final Connection dbS3Conn, 
-                       final Connection conn)
+                       final Connection conn,
+                       final IdMapperIFace colObjToCnt)
     {
         this.dbS3Conn         = dbS3Conn;
         this.conn             = conn;
         this.ipadExporter     = ipadExporter;
         this.progressDelegate = ipadExporter.getProgressDelegate();
         this.worker           = ipadExporter.getWorker();
+        this.colObjToCnt      = colObjToCnt;
     }
     
     public void process()
@@ -119,6 +129,9 @@ public class TreeBuilder
          }
     }
 
+    /**
+     * 
+     */
     private void collectParentIds()
     {
         String sql = "SELECT g1.ParentID, g2.RankID FROM geography g1 INNER JOIN geography g2 ON g1.ParentID = g2.GeographyID WHERE g1.GeographyID=?";
@@ -179,10 +192,12 @@ public class TreeBuilder
         
         HashSet<Integer> continentSet = rankSets.get(100);
         HashSet<Integer> countrySet   = rankSets.get(200);
-        HashSet<Integer> stateSet     = rankSets.get(300);
+        //HashSet<Integer> stateSet     = rankSets.get(300);
         
-        PreparedStatement s3Stmt = null;        
-        Statement         stmt   = null;
+        PreparedStatement s3Stmt  = null;        
+        Statement         stmt    = null;
+        PreparedStatement pStmtLK = null;
+        
         int transCnt = 0;
         int cnt      = 0;
         try
@@ -191,6 +206,12 @@ public class TreeBuilder
             String upSQL = "INSERT INTO geo (_id, FullName, ISOCode, RankID, ParentID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum, ContinentId, CountryId, Latitude, Longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
             s3Stmt = dbS3Conn.prepareStatement(upSQL);        
             stmt   = conn.createStatement();
+            String selSQL = "SELECT co.CollectionObjectID, g.NodeNumber FROM collectionobject co " +
+                            "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
+                            "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
+                            "INNER JOIN geography g ON l.GeographyID = g.GeographyID " +
+                            "WHERE co.CollectionID = COLMEMID AND NodeNumber >= ? AND NodeNumber <= ?";
+            pStmtLK  = conn.prepareStatement(ipadExporter.adjustSQL(selSQL));
             
             for (Integer rankId : ranks)
             {
@@ -204,20 +225,36 @@ public class TreeBuilder
                         int highNodeNum = rs.getInt(6);
                         int nodeNum     = rs.getInt(7);
                         
-                        Integer coTotal = null;
+                        Integer coTotal = null; // Total count of this level and all below
+                        Integer coCount = null; // Count of current level
+                        
                         if (rankId >= 100 && rankId <= 300)
                         {
                             HashSet<Integer> tempSet = rankSets.get(rankId);
                             if (tempSet.contains(id))
                             {
-                                sql = String.format("SELECT SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) CNT FROM collectionobject co " +
-                                                    "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
-                                                    "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
-                                                    "INNER JOIN geography g ON l.GeographyID = g.GeographyID " +
-                                                    "WHERE co.CollectionID = COLMEMID AND NodeNumber > %d AND HighestChildNodeNumber <= %d", nodeNum, highNodeNum);
-                                //System.out.println(sql);
-                                coTotal = BasicSQLUtils.getCount(ipadExporter.adjustSQL(sql));
-                                //System.out.println(String.format("%s: %s Total: %d", (rankId == 100 ? "Cont" : "Country"), rs.getString(2), coTotal));
+                                int totCnt = 0;
+                                pStmtLK.setInt(1, nodeNum);
+                                pStmtLK.setInt(2, highNodeNum);
+                                
+                                ResultSet rsLK = pStmtLK.executeQuery();
+                                while (rsLK.next())
+                                {
+                                    Integer coCnt = colObjToCnt.get(rsLK.getInt(1));
+                                    if (coCnt != null)
+                                    {
+                                        totCnt += coCnt;
+                                        //System.out.println(String.format("%d == %d", rsLK.getInt(2), nodeNum));
+                                        if (rsLK.getInt(2) == nodeNum)
+                                        {
+                                            coCount = coCnt;
+                                        }
+                                    }
+                                }
+                                if (totCnt > 0)
+                                {
+                                    coTotal = totCnt;
+                                }
                             }
                         }
                         //System.out.println(rankId+" "+id);
@@ -227,8 +264,8 @@ public class TreeBuilder
                         s3Stmt.setInt(4,    rs.getInt(4));
                         s3Stmt.setInt(5,    rs.getInt(5));
                         
-                        s3Stmt.setInt(6,    coTotal != null ? coTotal : 0);
-                        s3Stmt.setObject(7, null);
+                        s3Stmt.setInt(6,    coTotal != null ? coTotal : 0); // Count of all levels
+                        s3Stmt.setObject(7, coCount != null ? coCount : 0); // Count of just this level (sometimes it is zero)
 
                         s3Stmt.setInt(8, highNodeNum);
                         s3Stmt.setInt(9, nodeNum);
@@ -265,7 +302,7 @@ public class TreeBuilder
             for (HashSet<Integer> tempSet : setsArray)
             {
                 String sql = String.format("UPDATE geo SET %s=? WHERE NodeNum > ? AND HighNodeNum <= ?", colName[i]);
-                s3Stmt = dbS3Conn.prepareStatement(sql);
+                PreparedStatement s3Stmt2 = dbS3Conn.prepareStatement(sql);
                 for (Integer id : tempSet)
                 {
                     Object[] row = queryForRow(dbS3Conn, "SELECT _id, FullName FROM geo where _id = "+id);
@@ -281,10 +318,10 @@ public class TreeBuilder
                     ResultSet rs = pStmt.executeQuery();
                     if (rs.next())
                     {
-                        s3Stmt.setInt(1, id);
-                        s3Stmt.setInt(2, rs.getInt(1));
-                        s3Stmt.setInt(3, rs.getInt(2));
-                        if (s3Stmt.executeUpdate() == 0)
+                        s3Stmt2.setInt(1, id);
+                        s3Stmt2.setInt(2, rs.getInt(1));
+                        s3Stmt2.setInt(3, rs.getInt(2));
+                        if (s3Stmt2.executeUpdate() == 0)
                         {
                             System.out.println(String.format("SELECT _id, RankID,ParentID FROM geo WHERE NodeNum > %d AND HighNodeNum <= %d", rs.getInt(1), rs.getInt(2)));
                             System.out.println(String.format("Error updating geography: %d (%d, %d)", id, rs.getInt(1), rs.getInt(2)));
@@ -294,8 +331,10 @@ public class TreeBuilder
                         }
                     }
                 }
+                s3Stmt2.close();
                 i++;
             }
+            pStmt.close();
             
             try
             {
@@ -310,7 +349,8 @@ public class TreeBuilder
             try
             {
                 if (stmt != null) stmt.close();
-                if (s3Stmt != null) s3Stmt.close();
+                if (pStmtLK != null) pStmtLK.close();
+                
                 dbS3Conn.setAutoCommit(true);
             } catch (Exception ex2) { ex2.printStackTrace();}
 
