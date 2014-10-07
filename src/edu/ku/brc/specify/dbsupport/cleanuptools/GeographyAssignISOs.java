@@ -32,6 +32,9 @@ import static edu.ku.brc.ui.UIHelper.createFormLabel;
 import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.showError;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.remove;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -59,7 +62,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import static org.apache.commons.lang.StringUtils.*;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -68,7 +70,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.util.Version;
-import org.apache.poi.hssf.record.formula.functions.Isnontext;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -82,6 +83,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 
@@ -108,7 +110,7 @@ public class GeographyAssignISOs
 
     //private GeographyTreeDef           geoDef;
     private Agent                      createdByAgent;
-    //private ProgressFrame              frame;
+    private ProgressFrame              frame;
     
     private Connection                 readConn = null;
     private Connection                 updateConn;
@@ -179,23 +181,20 @@ public class GeographyAssignISOs
      * @param createdByAgent
      * @param itUsername
      * @param itPassword
-     * @param frame
      */
     public GeographyAssignISOs(final GeographyTreeDef   geoDef, 
-                               final Agent              createdByAgent,
-                               final ProgressFrame      frame)
+                               final Agent              createdByAgent)
     {
         super();
         //this.geoDef            = geoDef;
         this.createdByAgent    = createdByAgent;
-        //this.frame             = frame;
         
         for (int i=0;i<keys.length;i++)
         {
             rankToNameMap.put(keys[i], values[i]);
         }
 
-        luceneSearch = new GeoCleanupFuzzySearch(geoDef, frame);
+        luceneSearch = new GeoCleanupFuzzySearch(geoDef);
     }
     
     /**
@@ -440,12 +439,21 @@ public class GeographyAssignISOs
         
         if (shouldIndex)
         {
-            luceneSearch.startIndexingProcessAsync(earthId, new ChangeListener()
+            frame = new ProgressFrame("Building Geography Authority..."); // I18N
+            frame.getCloseBtn().setVisible(false);
+            frame.turnOffOverAll();
+            frame.setDesc("Loading Geonames data..."); // I18N
+            frame.pack();
+            frame.setSize(450, frame.getBounds().height+10);
+            UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
+
+            luceneSearch.startIndexingProcessAsync(earthId, frame, new ChangeListener()
             {
                 @Override
                 public void stateChanged(ChangeEvent e)
                 {
-                    
+                    frame.setVisible(false);
+                    frame = null;
                     if (((Boolean)e.getSource()))
                     {
                         GeographyAssignISOs.this.startTraversal();

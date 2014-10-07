@@ -122,8 +122,7 @@ public class GeoCleanupFuzzySearch
      * @param geoDef
      * @param frame
      */
-    public GeoCleanupFuzzySearch(final GeographyTreeDef geoDef, 
-                                 final ProgressFrame    frame)
+    public GeoCleanupFuzzySearch(final GeographyTreeDef geoDef)
     {
         super();
         
@@ -164,7 +163,6 @@ public class GeoCleanupFuzzySearch
         }
 
         this.geoDef = geoDef;
-        this.frame = frame;
         
         // ZZZ For Release
         if (isDoingTesting)
@@ -222,7 +220,7 @@ public class GeoCleanupFuzzySearch
                 Integer numDocs = localPrefs != null ? localPrefs.getInt(GEONAMES_INDEX_NUMDOCS, null) : null;
                 if (numDocs != null)
                 {
-                    System.out.println(String.format("%d %d", getReader().numDocs(), numDocs));
+                    //System.out.println(String.format("%d %d", getReader().numDocs(), numDocs));
                     needsIndexing = getReader().numDocs() != numDocs;
                 }
             }
@@ -698,7 +696,8 @@ public class GeoCleanupFuzzySearch
                            final String isoCode3) // Countries Only
     {
         Document doc = new Document();
-        doc.add(new TextField("name", stripExtrasFromName(fullName), Store.YES));
+        String strippedName = stripExtrasFromName(fullName);
+        doc.add(new TextField("name", strippedName, Store.YES));
 //        if (rankId == 200)
 //        {
 //            countryInfo.add(new Triple<String, Integer, String>(countryName, geonmId, countryCode));
@@ -779,8 +778,10 @@ public class GeoCleanupFuzzySearch
     * @param earthId
     * @return true if ok
     */
-   private boolean startIndexingProcessSync(final int earthId)
+   private boolean startIndexingProcessSync(final int earthId, final ProgressFrame frame)
    {
+       this.frame = frame;
+       
         setProgressDesc("Build Geography Names cross-reference..."); // I18N
         stCntXRef = new StateCountryContXRef(readConn);
         boolean isOK = stCntXRef.build();
@@ -796,8 +797,10 @@ public class GeoCleanupFuzzySearch
      * @param earthId
      * @param cl
      */
-    public void startIndexingProcessAsync(final int earthId, final ChangeListener cl)
+    public void startIndexingProcessAsync(final int earthId, final ProgressFrame frame, final ChangeListener cl)
     {
+        this.frame = frame;
+        
         centerAndShow(frame);
         
         SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
@@ -820,8 +823,6 @@ public class GeoCleanupFuzzySearch
             protected void done()
             {
                 super.done();
-                
-                frame.setVisible(false);
                 
                 // NOTE: need to check here that everything built OK
                 cl.stateChanged(new ChangeEvent((Boolean)isOK));
@@ -981,10 +982,10 @@ public class GeoCleanupFuzzySearch
         GeoCleanupFuzzySearch indexer = null;
         try
         {
-            indexer = new GeoCleanupFuzzySearch(null, null);
+            indexer = new GeoCleanupFuzzySearch(null);
             if (doBuildIndex)
             {
-                indexer.startIndexingProcessSync(1);
+                indexer.startIndexingProcessSync(1, null);
             }
 
         } catch (Exception ex)

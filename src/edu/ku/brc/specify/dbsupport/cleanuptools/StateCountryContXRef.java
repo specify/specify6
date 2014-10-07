@@ -81,7 +81,7 @@ public class StateCountryContXRef
             rs.close();
             
             // Countries
-            String sql = "SELECT gn.geonameId, ci.name, ci.iso_alpha2, continent FROM countryinfo ci INNER JOIN geoname gn ON ci.iso_alpha2 = gn.country WHERE gn.fcode = 'PCLI' ORDER BY ci.name";
+            String sql = "SELECT gn.geonameId, ci.name, ci.iso_alpha2, continent FROM countryinfo ci INNER JOIN geoname gn ON ci.iso_alpha2 = gn.country WHERE gn.fcode LIKE 'PCL%' ORDER BY ci.name";
             rs = stmt.executeQuery(sql);
             while (rs.next())
             {

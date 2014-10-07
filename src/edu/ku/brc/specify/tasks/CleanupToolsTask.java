@@ -73,7 +73,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressDialog;
-import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -492,19 +491,8 @@ public class CleanupToolsTask extends BaseTask
         final Agent      agent      = AppContextMgr.getInstance().getClassObject(Agent.class);
         final Discipline discipline = getCurrentDiscipline();
 
-        final ProgressFrame frame   = new ProgressFrame("Building Geography Authority..."); // I18N
-        frame.getCloseBtn().setVisible(false);
-        frame.turnOffOverAll();
-        frame.setDesc("Loading Geonames data..."); // I18N
-        frame.pack();
-        frame.setSize(450, frame.getBounds().height+10);
-        UIHelper.centerAndShow(frame, 450, frame.getBounds().height+10);
-        
         int earthId =  getEarthRecordId(discipline);
-        
-        frame.setVisible(false);
-        
-        GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent, frame);
+        GeographyAssignISOs geoAssignISOCodes = new GeographyAssignISOs(discipline.getGeographyTreeDef(), agent);
         geoAssignISOCodes.buildAsync(earthId);
 
      }
