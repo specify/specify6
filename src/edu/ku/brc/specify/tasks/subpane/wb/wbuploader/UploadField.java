@@ -398,9 +398,9 @@ public class UploadField
         
         if (field != null && field.getFieldInfo() != null)
         {
-            return field.getFieldInfo().isRequired() || 
+            return field.getFieldInfo().isRequired() 
             	//force CollectionObject.CatalogNumber to be required
-            	(field.getFieldInfo().getTableInfo().getTableId() == 1 && field.getFieldInfo().getName().equalsIgnoreCase("catalogNumber"))
+            	//|| (field.getFieldInfo().getTableInfo().getTableId() == 1 && field.getFieldInfo().getName().equalsIgnoreCase("catalogNumber"))
             	//ditto for locality.LocalityName. Its field info no longer says it's required, but hibernate/mysql still requires it.
             	|| (field.getFieldInfo().getTableInfo().getTableId() == Locality.getClassTableId() && field.getFieldInfo().getName().equalsIgnoreCase("localityname"));
         }
