@@ -59,7 +59,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.*;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -68,6 +68,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.util.Version;
+import org.apache.poi.hssf.record.formula.functions.Isnontext;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -596,17 +597,30 @@ public class GeographyAssignISOs
                 {
                     usedIds.add(geoId);
                     
-                    sb = new StringBuilder();
-                    String[] names = {doc.get("country"), doc.get("state"), doc.get("county")};
-                    for (String nm : names)
+                    String fullName;
+                    
+                    String country = doc.get("country");
+                    String state   = doc.get("state");
+                    String county  = doc.get("county");
+                    
+                    if (isNotEmpty(country) || isNotEmpty(country) || isNotEmpty(country))
                     {
-                        if (nm != null)
+                        sb = new StringBuilder();
+                        String[] names = {country, state, county};
+                        for (String nm : names)
                         {
-                            if (sb.length() > 0) sb.append(", ");
-                            sb.append(nm);
+                            if (nm != null)
+                            {
+                                if (sb.length() > 0) sb.append(", ");
+                                sb.append(nm);
+                            }
                         }
+                        fullName = sb.toString();
+                    } else
+                    {
+                        fullName = doc.get("name");
                     }
-                    String fullName = sb.toString();
+                    
                     isoCodeStr = doc.get("code");
                 
                     if (geonameId == null)
@@ -628,7 +642,7 @@ public class GeographyAssignISOs
         
         foundGeonameId = geonameId;
         isoCodeStr     = isoCode;
-        return StringUtils.isNotEmpty(isoCodeStr);
+        return isNotEmpty(isoCodeStr);
     }
                                           
     /**
@@ -676,7 +690,7 @@ public class GeographyAssignISOs
                 rs.close();
             }
             
-            if (StringUtils.isNotEmpty(isoCode))
+            if (isNotEmpty(isoCode))
             {
                 searchText = getParentNameWithRank(300, parentNames, parentRanks);
                 pStmt = lookupStateStmt;
@@ -781,7 +795,7 @@ public class GeographyAssignISOs
 //                searchText = query.toString();
 //            }
 //            
-//            if (StringUtils.isNotEmpty(searchText))
+//            if (isNotEmpty(searchText))
 //            {
 //                //for (int j=0;j<level;j++) System.out.print("  ");
 //                log.debug("Searching for: " + query.toString());
@@ -855,7 +869,7 @@ public class GeographyAssignISOs
         String nbsp       = "&nbsp;";
 
         // Check the database directly
-        if (StringUtils.isEmpty(geoISOCode))
+        if (isEmpty(geoISOCode))
         {
             try
             {
@@ -887,7 +901,7 @@ public class GeographyAssignISOs
                     } else
                     {
                     	boolean didUpdate = false;
-                    	if (StringUtils.isNotEmpty(this.isoCodeStr))
+                    	if (isNotEmpty(this.isoCodeStr))
                     	{
                     		String ic = BasicSQLUtils.querySingleObj("SELECT GeographyCode FROM geography WHERE GeographyID  = "+geoId);
                     		if (ic == null || !ic.equals(this.isoCodeStr))
@@ -967,22 +981,22 @@ public class GeographyAssignISOs
                                     final PreparedStatement pStmt) throws SQLException
     {
         String countryName = getParentNameWithRank(200, parentNames, parentRanks);
-        if (StringUtils.isNotEmpty(countryName))
+        if (isNotEmpty(countryName))
         {
             String countryCode = querySingleObj(String.format("SELECT iso_alpha2 FROM countryinfo WHERE LOWER(name) = '%s'", countryName.toLowerCase()));
-            if (StringUtils.isNotEmpty(countryCode))
+            if (isNotEmpty(countryCode))
             {
                 String stateName = getParentNameWithRank(300, parentNames, parentRanks);
-                if (StringUtils.isNotEmpty(stateName))
+                if (isNotEmpty(stateName))
                 {
                     String stateCode = querySingleObj(String.format("SELECT ISOCode FROM geoname WHERE LOWER(country) = '%s' AND LOWER(asciiname) = '%s'", countryCode.toLowerCase(), stateName.toLowerCase()));
-                    if (StringUtils.isNotEmpty(stateCode))
+                    if (isNotEmpty(stateCode))
                     {
                         if (stateCode.length() == 4)
                         {
                             stateCode = stateCode.substring(2);
                         }
-                        if (StringUtils.isNotEmpty(countyName))
+                        if (isNotEmpty(countyName))
                         {
                             String lwrCounty = countyName.toLowerCase();
                             pStmt.setString(2, lwrCounty.contains("county") ? lwrCounty : (lwrCounty + " county"));
@@ -1045,9 +1059,9 @@ public class GeographyAssignISOs
         Object[] row       = queryForRow(sql);
         if (row != null || countryCode != null)
         {
-        	boolean           isAlt   = (row == null && StringUtils.isNotEmpty(countryCode));
+        	boolean           isAlt   = (row == null && isNotEmpty(countryCode));
             String            name    = isAlt ? parentNames[0] : (String)row[0];
-            String            isoCode = isAlt ? countryCode : (StringUtils.isNotEmpty(isoCodeStr) ? isoCodeStr : (String)row[1]);
+            String            isoCode = isAlt ? countryCode : (isNotEmpty(isoCodeStr) ? isoCodeStr : (String)row[1]);
             PreparedStatement pStmt   = null;
             try
             {
@@ -1232,7 +1246,7 @@ public class GeographyAssignISOs
                     {
                         try
                         {
-                            String cName = StringUtils.remove(selectedCounty, " County");
+                            String cName = remove(selectedCounty, " County");
                             PreparedStatement pStmt = updateConn.prepareStatement("SELECT GeographyID FROM geography WHERE RankID = 400 AND GeographyID <> ? AND ParentID = ? AND (LOWER(Name) = ? OR LOWER(Name) = ?");
                             pStmt.setInt(1,    geoId);
                             pStmt.setInt(2,    geoParentId);
