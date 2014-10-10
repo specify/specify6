@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.dbsupport;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.queryForInts;
@@ -184,7 +185,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 54; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 55; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2256,7 +2257,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     frame.incOverall();
-
+                    
+                    //------------------------------------------------------------
+                    // Matching CollectionMemberIDs between preparation and collectionobject
+                    // --bug #9760
+                    fixPreparationCollectionMemberID();
+                    frame.incOverall();
+                    
+                    
                     //-------------------------------------------------------------------
                     // Ordinal in AttachmentObject tables made non-nullable
                     //-- bug #9423. 
@@ -2347,6 +2355,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
+    /**
+     * Matches preparations' CollectionMemberIDs with their collectionobjects' CollectionMemberIDs.  
+     */
+    public void fixPreparationCollectionMemberID() {
+    	try {
+    		int cnt = getCountAsInt("SELECT COUNT(PreparationID) FROM preparation p INNER JOIN collectionobject co "
+    			+ " ON co.CollectionObjectID = p.CollectionObjectID WHERE co.CollectionMemberID != p.CollectionMemberID");
+    		if (cnt > 0) {
+    			String sql = "UPDATE preparation p INNER JOIN collectionobject co "
+        			+ " ON co.CollectionObjectID = p.CollectionObjectID SET p.CollectionMemberID=co.CollectionMemberID"
+    				+ " WHERE co.CollectionMemberID != p.CollectionMemberID";
+    			BasicSQLUtils.update(sql);
+    		}
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage());
+    	}
+    }
+
     /**
      * @param conn
      */
