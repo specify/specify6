@@ -331,8 +331,12 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     /**
     *
     */
-   @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
-   @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   //@ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+   //@org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.LOCK })
+
    @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
    public PaleoContext getPaleoContext()
    {
@@ -736,6 +740,20 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         collectingEventAttachments.size();
         if (loadCOs) {
         	collectionObjects.size();
+        }
+        collectors.size();
+        collectingEventAttrs.size();
+    }
+
+    public void fullForceLoad()
+    {
+        if (collectingEventAttribute != null)
+        {
+            collectingEventAttribute.getId();
+        }
+        collectingEventAttachments.size();
+        for (CollectionObject co : collectionObjects) {
+        	co.forceLoad();
         }
         collectors.size();
         collectingEventAttrs.size();

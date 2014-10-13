@@ -35,6 +35,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -459,7 +461,11 @@ public class PaleoContext extends DisciplineMember implements Cloneable
 	/**
      *
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    //@OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    
+    @OneToMany(mappedBy = "paleoContext")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+
     public Set<CollectionObject> getCollectionObjects() 
     {
         return this.collectionObjects;
@@ -468,7 +474,9 @@ public class PaleoContext extends DisciplineMember implements Cloneable
     /**
      * @return
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    //@OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    @OneToMany(mappedBy = "paleoContext")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<CollectingEvent> getCollectingEvents() 
     {
         return this.collectingEvents;
@@ -477,7 +485,9 @@ public class PaleoContext extends DisciplineMember implements Cloneable
     /**
      * @return
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    //@OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    @OneToMany(mappedBy = "paleoContext")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Locality> getLocalities() 
     {
         return this.localities;

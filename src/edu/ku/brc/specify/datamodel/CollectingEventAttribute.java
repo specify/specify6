@@ -703,7 +703,19 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         return getClassTableId();
     }
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+	 */
+	@Override
+	public void forceLoad() {
+		super.forceLoad();
+		for (CollectingEvent ce : collectingEvents) {
+			ce.fullForceLoad();
+		}
+	}
+
+	/**
      * @param o
      * @return true if 'non-system' fields all match.
      * 

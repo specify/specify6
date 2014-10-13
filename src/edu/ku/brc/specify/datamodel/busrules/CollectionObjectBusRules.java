@@ -84,6 +84,7 @@ import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Project;
@@ -130,6 +131,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
     
     private CollectingEvent  cachedColEve     = null;
+    private PaleoContext     cachedPalCon     = null;
     private JButton          generateLabelBtn = null;
     private JCheckBox        generateLabelChk = null;
     private Component	     paleoContextCmp  = null;
@@ -310,7 +312,22 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 colObj.addReference(ce, "collectingEvent");
             }
         }
-        
+ 
+//        Boolean    doCreatePC = AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded();
+//        //CollectionObject colObj = (CollectionObject)newDataObj;
+//        if (doCreatePC)
+//        {
+//            // Carry Forward may have already added 
+//            // some values so we need to check to make sure
+//            // before adding new ones automatically.
+//            if (colObj.getPaleoContext() == null)
+//            {
+//                PaleoContext pc = new PaleoContext();
+//                pc.initialize();
+//                colObj.addReference(pc, "paleoContext");
+//            }
+//        }
+
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs != null)
         {
@@ -611,7 +628,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
-            cachedColEve = colObj.getCollectingEvent();
+            cachedColEve = colObj != null ? colObj.getCollectingEvent() : null;
             if (colObj != null && cachedColEve != null)
             {
                 colObj.setCollectingEvent(null);
@@ -627,6 +644,26 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
             }
         }
+        
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded())
+        {
+            cachedPalCon = colObj != null ? colObj.getPaleoContext() : null;
+            if (colObj != null && cachedPalCon != null)
+            {
+                colObj.setPaleoContext(null);
+                try
+                {
+                    cachedPalCon.getCollectionObjects().clear();
+                } catch (org.hibernate.LazyInitializationException ex)
+                {
+                    //ex.printStackTrace();
+                } catch (Exception ex)
+                {
+                    //ex.printStackTrace();
+                }
+            }
+        }
+
     }
     
     /**
@@ -694,7 +731,41 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 log.error("The CE "+cachedColEve+" was null or the CO "+colObj+" was null");
             }     
         }
-        
+  
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded())
+        {
+            if (cachedPalCon != null)
+            {
+                try
+                {
+                    if (cachedPalCon != null && cachedPalCon.getId() != null)
+                    {
+                    	cachedPalCon = session.merge(cachedPalCon);
+                    } else
+                    {
+                        session.save(cachedPalCon);
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
+                }
+            }
+            
+            // Hook back up
+            if (cachedPalCon != null && colObj != null)
+            {
+                colObj.setPaleoContext(cachedPalCon);
+                cachedPalCon.getCollectionObjects().add(colObj);
+                cachedPalCon = null;
+            } else
+            {
+                log.error("The PC "+cachedPalCon+" was null or the CO "+colObj+" was null");
+            }     
+        }
+
     }
     
     /* (non-Javadoc)
@@ -728,7 +799,28 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     }
                 }
             }
-            
+
+            Discipline       discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            if (discipline != null && discipline.getIsPaleoContextEmbedded())
+            {
+                PaleoContext pc = colObj.getPaleoContext();
+                if (pc != null)
+                {
+                    try
+                    {
+                        session.delete(pc);
+                        return true;
+                        
+                    } catch (Exception ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
+                        ex.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+
             
             if (colObj.getContainerOwner() != null)
             {

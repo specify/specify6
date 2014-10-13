@@ -34,9 +34,9 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -51,6 +51,7 @@ import edu.ku.brc.util.Pair;
 public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements ListSelectionListener
 {
    private Component	     paleoContextCmp  = null;
+   private PaleoContext     cachedPalCon     = null;
    protected ValComboBoxFromQuery geographyCBX = null;
     /**
      * 
@@ -222,6 +223,105 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
         return false;
 	}
     
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public void beforeMerge(Object dataObj, DataProviderSessionIFace session) {
+		super.beforeMerge(dataObj, session);
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded())
+        {
+            Locality lObj = Locality.class.cast(dataObj);
+        	cachedPalCon = lObj != null ? lObj.getPaleoContext() : null;
+            if (lObj != null && cachedPalCon != null)
+            {
+                lObj.setPaleoContext(null);
+                try
+                {
+                    cachedPalCon.getLocalities().clear();
+                } catch (org.hibernate.LazyInitializationException ex)
+                {
+                    //ex.printStackTrace();
+                } catch (Exception ex)
+                {
+                    //ex.printStackTrace();
+                }
+            }
+        }
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public void beforeSave(Object dataObj, DataProviderSessionIFace session) {
+		super.beforeSave(dataObj, session);
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded())
+        {
+            if (cachedPalCon != null)
+            {
+                try
+                {
+                    if (cachedPalCon != null && cachedPalCon.getId() != null)
+                    {
+                    	cachedPalCon = session.merge(cachedPalCon);
+                    } else
+                    {
+                        session.save(cachedPalCon);
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalityBusRules.class, ex);
+                }
+            }
+            
+            // Hook back up
+            Locality lObj = Locality.class.cast(dataObj);
+            if (cachedPalCon != null && lObj != null)
+            {
+                lObj.setPaleoContext(cachedPalCon);
+                cachedPalCon.getLocalities().add(lObj);
+                cachedPalCon = null;
+            } else
+            {
+                log.error("The PC "+cachedPalCon+" was null or the Locality "+lObj+" was null");
+            }     
+        }
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public boolean beforeDeleteCommit(Object dataObj,
+			DataProviderSessionIFace session) throws Exception {
+		boolean result = false;
+		if (super.beforeDeleteCommit(dataObj, session)) {
+			if (dataObj != null) {
+				Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+				if (discipline != null && discipline.getIsPaleoContextEmbedded()) {
+					Locality lObj = Locality.class.cast(dataObj);
+					PaleoContext pc = lObj.getPaleoContext();
+					if (pc != null) {
+						try {
+							session.delete(pc);
+							result = true;
+						} catch (Exception ex) {
+							edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalityBusRules.class, ex);
+							ex.printStackTrace();
+							result = false;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
     
 //    /* (non-Javadoc)
 //     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
