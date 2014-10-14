@@ -56,8 +56,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -124,6 +126,7 @@ public class GeographyAssignISOs
     private int                        totalUpdated;
     private int                        totalMerged;
     private int                        processedCount;
+    private boolean                    blockStatsUpdates = false;
     
     //-------------------------------------------------
     // UI
@@ -142,6 +145,10 @@ public class GeographyAssignISOs
     private JRadioButton               allCountriesRB;
     private JRadioButton               singleCountryRB;
     private ButtonGroup                btnGroup;
+    
+    private JLabel                     countriesTotalLabel;
+    private JLabel                     statesTotalLabel;
+    
     
     private TableWriter                tblWriter        = null;
     private boolean                    doStopProcessing = false;
@@ -331,7 +338,7 @@ public class GeographyAssignISOs
         spStatesCBX.setEnabled(false);
         spCountiesCBX.setEnabled(false);
 
-        String          rowDef = createDuplicateJGoodiesDef("p", "4px", 7);
+        String          rowDef = createDuplicateJGoodiesDef("p", "4px", 8);
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("16px,f:p:g", rowDef));
         
         pb.addSeparator("Continents to be processed", cc.xyw(1, 1, 2));
@@ -343,6 +350,8 @@ public class GeographyAssignISOs
         
         pb.add(singleCountryRB, cc.xyw(1, 11, 2));
         pb.add(pb2.getPanel(),  cc.xyw(2, 13, 1));
+        
+        pb.add(createGeoStatsPanel(), cc.xyw(1, 15, 2));
         
         pb.setDefaultDialogBorder();
         final CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), "ISO Code Processing", 
@@ -359,7 +368,7 @@ public class GeographyAssignISOs
             }
         };
         allCountriesRB.addChangeListener(rbChangeListener);
-        singleCountryRB.addChangeListener(rbChangeListener);
+        singleCountryRB.addChangeListener(null);
         
         countriesCBX.addActionListener(new ActionListener()
         {
@@ -374,6 +383,7 @@ public class GeographyAssignISOs
                     stateCBX.setSelected(false);
                     countiesCBX.setSelected(false);
                 }
+                calcGeoStats();
                 dlg.getOkBtn().setEnabled(isSel || spCountriesCmbx.getSelectedIndex() > 0);
             }
         });
@@ -388,6 +398,7 @@ public class GeographyAssignISOs
                 {
                     countiesCBX.setSelected(false);
                 }
+                calcGeoStats();
             }
         });
         
@@ -405,6 +416,7 @@ public class GeographyAssignISOs
                     spStatesCBX.setSelected(false);
                     spCountiesCBX.setSelected(false);
                 }
+                calcGeoStats();
                 dlg.getOkBtn().setEnabled(isSel || countriesCBX.isSelected());
 
             }
@@ -416,6 +428,7 @@ public class GeographyAssignISOs
             public void actionPerformed(ActionEvent arg0)
             {
                 spCountiesCBX.setEnabled(stateCBX.isSelected());
+                calcGeoStats();
             }
         });
         
@@ -476,6 +489,97 @@ public class GeographyAssignISOs
         
         return true;
     }
+    
+    private JPanel createGeoStatsPanel()
+    {
+        CellConstraints cc  = new CellConstraints();
+
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,", "p,8px,p,4px,p"));
+        countriesTotalLabel = UIHelper.createLabel("");
+        statesTotalLabel  = UIHelper.createLabel("");
+        
+        pb.addSeparator("Unassigned Geography Counts", cc.xyw(1,1,4)); // I18N
+        pb.add(createFormLabel("Countries"), cc.xy(1, 3));
+        pb.add(createFormLabel("States"),    cc.xy(1, 5));
+        pb.add(countriesTotalLabel, cc.xy(3, 3));
+        pb.add(statesTotalLabel,    cc.xy(3, 5));
+        return pb.getPanel();
+    }
+    
+    private void calcGeoStats()
+    {
+        synchronized (this)
+        {
+            if (blockStatsUpdates) return;
+            
+            if (allCountriesRB.isSelected())
+            {
+                if (!countriesCBX.isSelected())
+                {
+                    countriesTotalLabel.setText("");
+                    statesTotalLabel.setText("");
+                    return;
+                }
+                if (!stateCBX.isSelected())
+                {
+                    statesTotalLabel.setText("");
+                }
+            } else {
+                if (spCountriesCmbx.getSelectedIndex() < 1)
+                {
+                    countriesTotalLabel.setText("");
+                    statesTotalLabel.setText("");
+                    return;
+                }
+                if (!spStatesCBX.isSelected())
+                {
+                    statesTotalLabel.setText("");
+                }
+            }
+            
+            SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
+            {
+                Integer totalCountries = null;
+                Integer totalStates    = null;
+                
+                @Override
+                protected Object doInBackground() throws Exception
+                {
+                    boolean isAll  = allCountriesRB.isSelected();
+                    int     selInx = spCountriesCmbx.getSelectedIndex();
+                    
+                    String base = "SELECT COUNT(*) FROM geography WHERE GeographyCode IS NULL";
+                    
+                    totalCountries = (!isAll && selInx < 1) ? null : getCountAsInt(base + " AND RankID = 200" + (isAll ? "" : " AND GeographyID = "+countryIds.get(selInx)));
+                   
+                    if ((isAll && stateCBX.isSelected()) || (!isAll && spStatesCBX.isSelected()))
+                    {
+                        String sql = base + " AND RankID = 300";
+                        if (!isAll)
+                        {
+                            sql += " AND ParentID = " + countryIds.get(selInx);
+                        }
+                        totalStates = getCountAsInt(sql);
+                    }
+                    return null;
+                }
+    
+                @Override
+                protected void done()
+                {
+                    if (totalCountries != null)
+                    {
+                        countriesTotalLabel.setText(totalCountries.toString());
+                    }
+                    if (totalStates != null)
+                    {
+                        statesTotalLabel.setText(totalStates.toString());
+                    }
+                }
+            };
+            worker.execute();
+        }
+    }
 
     
     /**
@@ -492,6 +596,8 @@ public class GeographyAssignISOs
      */
     private void radioSelected(final CustomDialog dlg)
     {
+        blockStatsUpdates = true;
+        
         boolean isAllCountries = this.allCountriesRB.isSelected();
        
         countriesCBX.setEnabled(isAllCountries);
@@ -514,7 +620,9 @@ public class GeographyAssignISOs
         {
             dlg.getOkBtn().setEnabled(false);
         }
-
+        
+        blockStatsUpdates = false;
+        calcGeoStats();
     }
     
     
