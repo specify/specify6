@@ -114,7 +114,7 @@ public class iPadDBExporter implements VerifyCollectionListener
     private static final String  COLOBJBIONAME    = "ios_colobjbio";
     private static final String  COLOBJCHRONNAME  = "ios_colobjchron";
 
-    
+    private String                                   kErroOnUploadMsg  = "";
     // Database Members
     private Connection                               dbConn            = null;
     private Connection                               dbUpdateConn      = null;
@@ -1874,9 +1874,11 @@ public class iPadDBExporter implements VerifyCollectionListener
             Integer continentId  = locToGeoContinentMapper.get(locId); // Get GeoID for the Continent that the Locality belongs to.
             Integer countryId    = locToGeoCountryMapper.get(locId); // Get GeoID for the Country that the Locality belongs to.
             Integer coltrId      = colObjToAgent.get(id);
-            Integer taxaId       = rs.getInt(9);
             Integer cntAmt       = colObjToCnt.get(id);
-            
+
+            Integer taxaId       = rs.getInt(9);
+            if (rs.wasNull()) taxaId = null;
+
             if (continentId == null)
             {
                 continentIdCnt++;
@@ -2317,11 +2319,11 @@ public class iPadDBExporter implements VerifyCollectionListener
             ResultSet rs = stmt.executeQuery(adjustSQL(sql));
             while (rs.next())
             {
-                int id = rs.getInt(1);
-                if (id == 29208)
-                {
-                    System.out.println("");
-                }
+//                int id = rs.getInt(1);
+//                if (id == 24074)
+//                {
+//                    System.out.println("");
+//                }
                 //if (!keepers.contains(id)) continue;
                 
                 transCnt++;
@@ -3440,10 +3442,10 @@ public class iPadDBExporter implements VerifyCollectionListener
             progressDelegate.setDesc("Uploading data...");
             if (!IS_TESTING)
             {
-                if (!uploadFiles())
-                {
-                    isInError = true;
-                }
+//                if (!uploadFiles())
+//                {
+//                    isInError = true;
+//                }
             }
             
             SwingUtilities.invokeLater(new Runnable()
@@ -3628,8 +3630,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     if (!helper.sendFile(fileToExport, fileInfo.getFileName(), tmp.getName()))
                     {
                         log.error("Unable upload  ["+fileToExport.getAbsolutePath()+"]");
-                        String msg = "ERROR_ON_UPLOAD";
-                        tryAgain = JOptionPane.OK_OPTION == UIRegistry.askYesNoLocalized("YES", "CANCEL", msg, "UPLOAD_ERROR");
+                        tryAgain = JOptionPane.OK_OPTION == UIRegistry.askYesNoLocalized("YES", "CANCEL", kErroOnUploadMsg, "UPLOAD_ERROR");
                         if (!tryAgain)
                         {
                             stopTrying = true;
@@ -3770,6 +3771,8 @@ public class iPadDBExporter implements VerifyCollectionListener
 
         loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         
+        kErroOnUploadMsg = getResourceString("ERROR_ON_UPLOAD");
+        
         Institution inst  = AppContextMgr.getInstance().getClassObject(Institution.class);
         Collection  col   = AppContextMgr.getInstance().getClassObject(Collection.class);
         String      colNm = col.getCollectionName();
@@ -3830,7 +3833,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         checkAndFixTaxon();
 
         verifyDlg = new VerifyCollectionDlg(this, cacheDir, this);
-        UIHelper.centerAndShow(verifyDlg, 650, 600);
+        UIHelper.centerAndShow(verifyDlg, 800, 650);
         
         return true;
     }
@@ -4205,8 +4208,8 @@ public class iPadDBExporter implements VerifyCollectionListener
         return null;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#shutdown()
+    /**
+     * 
      */
     public void shutdown()
     {
@@ -4217,22 +4220,31 @@ public class iPadDBExporter implements VerifyCollectionListener
             progressDelegate = null;
         }
         
-        tblWriter.close();
+        if (tblWriter != null)
+        {
+            tblWriter.close();
+            tblWriter = null;
+        }
         
         try
         {
             if (dbUpdateConn != null)
             {
                 dbUpdateConn.close();
+                dbUpdateConn = null;
             }
             
             AppContextMgr ac = AppContextMgr.getInstance();
-            if (ac == null)
+            if (ac == null && dbConn != null)
             {
                 dbConn.close();
+                dbConn = null;
             }
-            dbS3Conn.close();
-            
+            if (dbS3Conn != null)
+            {
+                dbS3Conn.close();
+                dbS3Conn = null;
+            }
         } catch (SQLException e)
         {
             e.printStackTrace();

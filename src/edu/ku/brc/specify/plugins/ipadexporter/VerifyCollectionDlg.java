@@ -40,6 +40,7 @@ import java.util.List;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -122,14 +123,14 @@ public class VerifyCollectionDlg extends CustomDialog
             htmlPane.setEditable(false);
             
             CellConstraints cc = new CellConstraints();
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:500px:g", "f:500px:g"));
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:700px:g", "f:500px:g"));
             contentPanel       = pb.getPanel();
 
             pb.add(scrollPane, cc.xy(1, 1));
             pb.setDefaultDialogBorder();
             
             setOkLabel("Continue");
-            setCancelLabel("Back");
+            setCancelLabel("Close");
             setHelpLabel("To Browser");
             
             worker = new SwingWorker<Integer, Integer>()
@@ -159,9 +160,10 @@ public class VerifyCollectionDlg extends CustomDialog
             popResourceBundle();
         }
         
-        setSize(650,600);
-        setBounds(0, 0, 650, 600);
+        setSize(800, 650);
+        setBounds(0, 0, 650, 650);
         super.createUI();
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Must be called at the end 'createUI'
     }
     
     private Integer cnvToInt(final Object rv)
@@ -202,10 +204,10 @@ public class VerifyCollectionDlg extends CustomDialog
     		String htmlTitle;
     		if (isHTML3)
     		{
-    			htmlTitle = String.format("<BR><b><font color='%s'>%s</font></b><br><font color='white'><OL>", color, title);
+    			htmlTitle = String.format("<BR><b><font color='%s'>%s</font></b><br><font color='black'><UL>", color, title);
     		} else
     		{
-    			htmlTitle = String.format("<h2 style='color:%s'>%s</h2>", color, title);
+    			htmlTitle = String.format("<h2 style='color:%s'>%s</h2><UL>", color, title);
     		}
 	    	sb.append(htmlTitle);
 	    	for (String s : items)
@@ -214,7 +216,7 @@ public class VerifyCollectionDlg extends CustomDialog
 	    		//sb.append(String.format("<LI%s>%s</LI>", (isHTML3 ? "" : clsStr), s));
 	    		sb.append(String.format("<LI>%s</LI>", s));
 	    	}
-	    	sb.append("</OL>");
+	    	sb.append("</UL>");
     	}
     	if (isHTML3) sb.append("</font>");
     }
@@ -244,8 +246,11 @@ public class VerifyCollectionDlg extends CustomDialog
                 	ArrayList<String> warnMsgs     = new ArrayList<String>(); 
                 	ArrayList<String> criticalMsgs = new ArrayList<String>(); 
                 	int issueCnt = 0;
-                	StringBuilder sb = new StringBuilder("<htmL><head></head><body bgcolor='black'><font face='verdana'>");
-                	htmlPane.setText(sb.toString()+"<BR><BR><font color='white'>Processing...</body></body></html>");
+                	
+                	String mainFont = "<font face='verdana' color='black'>";
+                	String headHTML = "<htmL><head></head><body bgcolor='white'>" + mainFont;
+                	//StringBuilder sb = new StringBuilder(headHTML);
+                	//htmlPane.setText(sb.toString()+"<BR><BR>Processing...</font></body></html>");
                 	
                     List<?> items = root.selectNodes("eval"); //$NON-NLS-1$
         
@@ -338,6 +343,7 @@ public class VerifyCollectionDlg extends CustomDialog
                     }
                     stmt0.close();
                     
+                    StringBuilder sb = new StringBuilder(headHTML);
                     if (issueCnt == 0)
                     {
                     	sb.append("<BR><BR>There were no issues to report.");
@@ -347,11 +353,11 @@ public class VerifyCollectionDlg extends CustomDialog
                     	listMsgs(sb, "Warnings", warnMsgs, "yellow", null, true);
                     	listMsgs(sb, "Critical Errors - Cannot proceed.", criticalMsgs, "red", null, true);
                     }
-                    sb.append("<BR>Verification Complete.<BR><BR></font></body></html>");
+                    sb.append(mainFont + "<BR>Verification Complete.<BR><BR></font></body></html>");
                     
                     htmlPane.setText(sb.toString());
                     
-                    // for external report
+                    // For external report
                     sb = new StringBuilder("<htmL><head><title>Collection Verification</title></head><body>");
                 	listMsgs(sb, "Passed", okMsgs, "green", "ok", false);
                 	listMsgs(sb, "Warnings", warnMsgs, "yellow", "wn", false);
@@ -425,8 +431,5 @@ public class VerifyCollectionDlg extends CustomDialog
             e.printStackTrace();
             
         } 
-
     }
-    
-    
-}
+ }

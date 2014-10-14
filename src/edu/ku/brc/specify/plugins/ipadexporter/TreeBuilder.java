@@ -73,7 +73,6 @@ public class TreeBuilder
     
     public void process()
     {
-        System.out.println("  ");
         getRanks();
         buildRankSets();
         collectParentIds();
@@ -217,7 +216,7 @@ public class TreeBuilder
             {
                 for (Integer recId : rankSets.get(rankId))
                 {
-                    String sql = String.format("SELECT GeographyID, FullName, GeographyCode, RankID, ParentID, HighestChildNodeNumber, NodeNumber FROM geography WHERE GeographyID = %d", recId);
+                    String sql = String.format("SELECT GeographyID, Name, GeographyCode, RankID, ParentID, HighestChildNodeNumber, NodeNumber FROM geography WHERE GeographyID = %d", recId);
                     ResultSet rs = stmt.executeQuery(sql); // Get the GeoID and LocID
                     if (rs.next())
                     {
@@ -264,8 +263,8 @@ public class TreeBuilder
                         s3Stmt.setInt(4,    rs.getInt(4));
                         s3Stmt.setInt(5,    rs.getInt(5));
                         
-                        s3Stmt.setInt(6,    coTotal != null ? coTotal : 0); // Count of all levels
-                        s3Stmt.setObject(7, coCount != null ? coCount : 0); // Count of just this level (sometimes it is zero)
+                        s3Stmt.setInt(6, coTotal != null ? coTotal : 0); // Count of all levels
+                        s3Stmt.setInt(7, coCount != null ? coCount : 0); // Count of just this level (sometimes it is zero)
 
                         s3Stmt.setInt(8, highNodeNum);
                         s3Stmt.setInt(9, nodeNum);
@@ -305,7 +304,7 @@ public class TreeBuilder
                 PreparedStatement s3Stmt2 = dbS3Conn.prepareStatement(sql);
                 for (Integer id : tempSet)
                 {
-                    Object[] row = queryForRow(dbS3Conn, "SELECT _id, FullName FROM geo where _id = "+id);
+                    Object[] row = queryForRow(dbS3Conn, "SELECT _id, Name FROM geo where _id = "+id);
                     if (row != null)
                     {
                         System.out.println(row[0]+"  "+row[1]);

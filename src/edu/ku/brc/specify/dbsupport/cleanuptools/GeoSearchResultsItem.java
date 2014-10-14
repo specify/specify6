@@ -30,18 +30,48 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 public class GeoSearchResultsItem
 {
     public String  name;
-    public Integer recId;
+    public Integer geonameId;
     public String  isoCode;
+    
+    // These are for capturing Rank Errors
+    public int currentRankId;  // Bad RankId
+    public int goodRankId;     // Should be RankId
+    
+
+    public GeoSearchResultsItem(final String name)
+    {
+        this(name, null, null);
+    }
+
+    public GeoSearchResultsItem(final String name, final int currentRankId, final int goodRankId)
+    {
+        this(name, null, null);
+        
+        this.currentRankId = currentRankId;
+        this.goodRankId    = goodRankId;
+    }
+
     /**
      * @param name
      * @param recId
      * @param isoCode
      */
-    public GeoSearchResultsItem(String name, Integer recId, String isoCode)
+    public GeoSearchResultsItem(final String name, final Integer geonameId, final String isoCode)
     {
         super();
-        this.name = name;
-        this.recId = recId;
-        this.isoCode = isoCode;
+        this.name          = name;
+        this.geonameId     = geonameId;
+        this.isoCode       = isoCode;
+        
+        this.currentRankId = 0;
+        this.goodRankId    = 0;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return name;
     }
 }

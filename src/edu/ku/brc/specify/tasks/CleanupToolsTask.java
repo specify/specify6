@@ -156,15 +156,6 @@ public class CleanupToolsTask extends BaseTask
 //              doGeographyMerge();
 //          }
 //      })); 
-      
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_REF"), GEO, getResourceString("CLNUP_GEO_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    ISOCodeListDlg dlg = new ISOCodeListDlg(null,CustomDialog.OK_BTN);
-                    UIHelper.centerAndShow(dlg);
-                    
-                }
-            })); 
             
             boolean inclAgents = AppPreferences.getLocalPrefs().getBoolean("AGENTS_CLEANUP", false);
             if (inclAgents)

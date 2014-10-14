@@ -145,6 +145,7 @@
    <mapID target="Symbiota" url="SpecifyHelp/Data_Entry/symbiota.html"/>
    <mapID target="GeoCleanUpISOChooser" url="SpecifyHelp/Cleanup/iso_assignments.html"/>
    <mapID target="GeoCleanUpLevelChooser" url="SpecifyHelp/Cleanup/ios_choose_levels.html"/>
+   <mapID target="GeoCleanUpFindISOCode" url="SpecifyHelp/Cleanup/ios_find_isocode.html"/>
 
 
 <!-- Index Bookmarks -->

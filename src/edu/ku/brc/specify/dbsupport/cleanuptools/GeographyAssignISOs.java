@@ -123,6 +123,7 @@ public class GeographyAssignISOs
     private int                        geographyTotal;
     private int                        totalUpdated;
     private int                        totalMerged;
+    private int                        processedCount;
     
     //-------------------------------------------------
     // UI
@@ -142,10 +143,9 @@ public class GeographyAssignISOs
     private JRadioButton               singleCountryRB;
     private ButtonGroup                btnGroup;
     
-    private TableWriter  tblWriter        = null;
-    private boolean      doStopProcessing = false;
-    private boolean      doSkipCountry    = false;
-    //private boolean      areNodesChanged  = false;
+    private TableWriter                tblWriter        = null;
+    private boolean                    doStopProcessing = false;
+    private boolean                    doSkipCountry    = false;
     
     private StateCountryContXRef stCntXRef;
     
@@ -160,18 +160,21 @@ public class GeographyAssignISOs
     private boolean doUpdateName = false;
     private boolean doMerge      = false;
     private boolean doAddISOCode = true;
-    private String  isoCodeStr   = "";
+    //private String  isoCodeStr   = "";
     private Integer mergeToGeoId = null;
+    
+    private GeoSearchResultsItem selectedSearchItem = null;
     
     private boolean[] doAllCountries;
     private boolean[] doInvCountry;
     private Integer   doIndvCountryId = null;
     
-    private Vector<Integer> countryIds = new Vector<Integer>();
-    private Vector<GeoSearchResultsItem> countryInfo = new Vector<GeoSearchResultsItem>();
+    private Vector<Integer>              countryIds    = new Vector<Integer>();
+    private Vector<GeoSearchResultsItem> countryInfo   = new Vector<GeoSearchResultsItem>();
     private Vector<GeoSearchResultsItem> luceneResults = new Vector<GeoSearchResultsItem>();
+    private Vector<GeoSearchResultsItem> badRankIDs    = new Vector<GeoSearchResultsItem>();
     
-    private Integer foundGeonameId = null;
+    //private Integer foundGeonameId = null;
 
     
     /**
@@ -311,7 +314,7 @@ public class GeographyAssignISOs
         }
         
         
-        PanelBuilder    pb2 = new PanelBuilder(new FormLayout("8px,p,2px,f:p:g", "p,4px,p,4px,p,8px"));
+        PanelBuilder    pb2 = new PanelBuilder(new FormLayout("8px,p,2px,f:p:g", "p,4px,p,8px"));
         spCountriesLbl  = createFormLabel("Country");          // I18N
         spCountriesCmbx = createComboBox(titles);
         spStatesCBX     = createCheckBox("States (Required)"); // I18N
@@ -320,7 +323,7 @@ public class GeographyAssignISOs
         pb2.add(spCountriesLbl, cc.xy(2, 1));
         pb2.add(spCountriesCmbx, cc.xy(4, 1));
         pb2.add(spStatesCBX,     cc.xyw(1, 3, 4));
-        pb2.add(spCountiesCBX,   cc.xyw(1, 5, 4));
+        //pb2.add(spCountiesCBX,   cc.xyw(1, 5, 4));
         
         spCountriesCmbx.setSelectedIndex(0);
         
@@ -344,7 +347,7 @@ public class GeographyAssignISOs
         pb.setDefaultDialogBorder();
         final CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), "ISO Code Processing", 
                                                   true, CustomDialog.OKCANCELHELP, pb.getPanel()); // I18N
-       dlg.setHelpContext("GeoCleanUpLevelChooser");
+        dlg.setHelpContext("GeoCleanUpLevelChooser");
        
         // Setup actions
         ChangeListener rbChangeListener = new ChangeListener()
@@ -568,6 +571,8 @@ public class GeographyAssignISOs
                                           final int[]     parentRanks,
                                           final String[]  parentISOCodes) throws IOException
     {
+        luceneResults.removeAllElements();
+        
         StringBuilder sb = new StringBuilder();
         for (int i=0;i<level+1;i++)
         {
@@ -576,7 +581,6 @@ public class GeographyAssignISOs
         }
         log.debug("["+sb.toString()+"]");        //Query query = new FuzzyQuery(new Term("name", sb.toString()));
 
-        Integer  geonameId = null;
         String   isoCode   = null;
         Document doc       = null;
         HashSet<Integer>     usedIds   = new HashSet<Integer>();
@@ -629,13 +633,8 @@ public class GeographyAssignISOs
                         fullName = doc.get("name");
                     }
                     
-                    isoCodeStr = doc.get("code");
-                
-                    if (geonameId == null)
-                    {
-                        geonameId = geoId;
-                    }
-                    luceneResults.add(new GeoSearchResultsItem(fullName, geonameId, isoCodeStr));
+                    isoCode = doc.get("code");
+                    luceneResults.add(new GeoSearchResultsItem(fullName, geoId, isoCode));
                 }
             }
 //            int docId     = hits[i].doc;
@@ -648,9 +647,12 @@ public class GeographyAssignISOs
             return false;
         }
         
-        foundGeonameId = geonameId;
-        isoCodeStr     = isoCode;
-        return isNotEmpty(isoCodeStr);
+        boolean hasItems = luceneResults.size() > 0;
+        if (hasItems)
+        {
+            selectedSearchItem = luceneResults.get(0);
+        }
+        return hasItems;
     }
                                           
     /**
@@ -679,7 +681,7 @@ public class GeographyAssignISOs
 
         } else if (rankId == 200)
         {
-            pStmt = lookupCountryStmt;
+            pStmt      = lookupCountryStmt;
             searchText = getParentNameWithRank(200, parentNames, parentRanks);
 
         } else if (rankId == 300)
@@ -701,7 +703,7 @@ public class GeographyAssignISOs
             if (isNotEmpty(isoCode))
             {
                 searchText = getParentNameWithRank(300, parentNames, parentRanks);
-                pStmt = lookupStateStmt;
+                pStmt      = lookupStateStmt;
                 lookupStateStmt.setString(2, isoCode);
             }
         } else if (rankId == 400)
@@ -736,125 +738,15 @@ public class GeographyAssignISOs
             }
             rs.close();
         }
-        foundGeonameId = geonameId;
-        isoCodeStr      = isoCode;
-        return geonameId != null;
+
+        boolean found = geonameId != null;
+        if (found)
+        {
+            selectedSearchItem = new GeoSearchResultsItem(searchText, geonameId, isoCode);
+        }
+        return found;
     }
     
-    /**
-     * @param level
-     * @param rankId
-     * @param parentNames
-     * @param parentRanks
-     * @param parentISOCodes
-     * @return
-     */
-//    private boolean searchLuceneWithTerms(final int       level,
-//                                          final int       rankId,
-//                                          final String[]  parentNames,
-//                                          final int[]     parentRanks,
-//                                          final String[]  parentISOCodes) throws Exception
-//    {
-//        String  searchText = null;
-//        String  isoCode    = null;
-//        Integer geonameId  = null;
-//        
-//        
-//        // Ok, now check Lucence
-//        if (geonameId == null)
-//        {
-//            Query  query;
-//            boolean oldWay = false;
-//            if (oldWay)
-//            {
-//                StringBuilder sb = new StringBuilder();
-//                for (int i=0;i<level+1;i++)
-//                {
-//                    String name = i == 0 ? GeoCleanupFuzzySearch.stripExtrasFromName(parentNames[0]) : parentNames[i];
-//                    if (name != null && parentRanks[i] > 100)
-//                    {
-//                        String keyStr = rankToNameMap.get(parentRanks[i]);
-//                        if (keyStr != null)
-//                        {
-//                            if (sb.length() > 0) sb.append(" AND ");
-//                            sb.append(String.format("%s:\"%s\"", keyStr, name));
-//                        }
-//                    }
-//                }
-//                searchText = sb.toString();
-//                query      = luceneSearch.getParser().parse(searchText.replace('/', ' '));
-//            } else
-//            {
-//                BooleanQuery boolQuery = new BooleanQuery();
-//                for (int i=0;i<level+1;i++)
-//                {
-//                    String name = i == 0 ? GeoCleanupFuzzySearch.stripExtrasFromName(parentNames[0]) : parentNames[i];
-//                    if (name != null && parentRanks[i] > 100)
-//                    {
-//                        String keyStr = rankToNameMap.get(parentRanks[i]);
-//                        if (keyStr != null)
-//                        {
-//                            TermQuery t1 = new TermQuery(new Term(keyStr, name));
-//                            boolQuery.add(t1, parentRanks[i] == 400 ? Occur.MUST : Occur.SHOULD);
-//                        }
-//                    }
-//                }
-//                query = boolQuery;
-//                searchText = query.toString();
-//            }
-//            
-//            if (isNotEmpty(searchText))
-//            {
-//                //for (int j=0;j<level;j++) System.out.print("  ");
-//                log.debug("Searching for: " + query.toString());
-//        
-//                HashSet<Integer>     usedIds     = new HashSet<Integer>();
-//                Document             doc         = null;
-//                int                  hitsPerPage = 500;
-//                TopScoreDocCollector collector   = TopScoreDocCollector.create(hitsPerPage, true);
-//                luceneSearch.getSearcher().search(query, collector);
-//                ScoreDoc[] hits = collector.topDocs().scoreDocs;
-//                for (int i=0;i<hits.length;++i) 
-//                {
-//                    int docId     = hits[i].doc;
-//                    doc           = luceneSearch.getSearcher().doc(docId);
-//                    int docRankId = Integer.parseInt(doc.get("rankid"));
-//                    
-//                    System.out.println(String.format("%s -> rank: %d = %d", doc.get("name"), rankId, docRankId));
-//                    if (rankId == docRankId)
-//                    {
-//                        int geoId = Integer.parseInt(doc.get("geonmid"));
-//                        if (!usedIds.contains(geoId))
-//                        {
-//                            usedIds.add(geoId);
-//                            isoCode   = doc.get("code");
-//                            
-//                            if (geonameId == null)
-//                            {
-//                                geonameId = geoId;
-//                            }
-//    
-//                            StringBuilder sb = new StringBuilder();
-//                            String[] names = {doc.get("country"), doc.get("state"), doc.get("county")};
-//                            for (String nm : names)
-//                            {
-//                                if (nm != null)
-//                                {
-//                                    if (sb.length() > 0) sb.append(", ");
-//                                    sb.append(nm);
-//                                }
-//                            }
-//                            luceneResults.add(new GeoSearchResultsItem(sb.toString(), geonameId, isoCode));
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        foundGeonameId = geonameId;
-//        isoCodeStr      = isoCode;
-//        return geonameId != null;
-//    }
-
     /**
      * @param geoId
      * @param level
@@ -874,23 +766,23 @@ public class GeographyAssignISOs
                          final String[]  parentISOCodes,
                          final boolean   isIndvCountry) throws SQLException
     {
-        String nbsp       = "&nbsp;";
+        String nbsp = "&nbsp;";
+        
+        processedCount++;
 
         // Check the database directly
         if (isEmpty(geoISOCode))
         {
             try
             {
-                foundGeonameId = null;
                 luceneResults.removeAllElements();
                 
-                boolean foundMatch = searchGeonameForMatch(level, rankId, parentNames, parentRanks, parentISOCodes);
-                System.out.println(parentNames+"  foundMatch: "+foundMatch);
+                boolean foundMatch = searchGeonameForMatch(level, rankId, parentNames, parentRanks, parentISOCodes); // will set selectedSearchItem
                 if (!foundMatch)
                 {
-                    foundMatch = searchLuceneWithFuzzy(level, rankId, parentNames, parentRanks, parentISOCodes);
+                    foundMatch = searchLuceneWithFuzzy(level, rankId, parentNames, parentRanks, parentISOCodes); // will set selectedSearchItem
     
-                    Integer geonameId = chooseGeo(geoId, parentNames[level], level, rankId, parentNames, parentRanks, foundGeonameId);
+                    chooseGeo(geoId, parentNames[level], level, rankId, parentNames, parentRanks);
                     
                     if (doStopProcessing || (doSkipCountry && rankId > 199))
                     {
@@ -902,40 +794,16 @@ public class GeographyAssignISOs
                         return;
                     }
         
-                    if (geonameId != null)
+                    if (selectedSearchItem != null)
                     {
-                        parentISOCodes[level] = isoCodeStr;
-                        updateGeography(geoId, geonameId, parentNames, isoCodeStr);
-                    } else
-                    {
-                    	boolean didUpdate = false;
-                    	if (isNotEmpty(this.isoCodeStr))
-                    	{
-                    		String ic = BasicSQLUtils.querySingleObj("SELECT GeographyCode FROM geography WHERE GeographyID  = "+geoId);
-                    		if (ic == null || !ic.equals(this.isoCodeStr))
-                    		{
-                    			String updateStr = String.format("UPDATE geography SET GeographyCode='%s' WHERE GeographyID = %d", this.isoCodeStr, geoId);
-                    			BasicSQLUtils.update(updateStr);
-                    			didUpdate = true;
-                    		}
-                    	}
-        
-                    	if (!didUpdate)
-                    	{
-                            String oldName = querySingleObj(GEONAME_SQL + geoId);
-                            tblWriter.log(parentNames[0], 
-                                          parentNames[1] != null ? parentNames[1] : nbsp, 
-                                          parentNames[2] != null ? parentNames[2] : nbsp, 
-                                          oldName, nbsp, nbsp, "Skipped");
-                            //System.out.println(String.format("No Match [%s]", parentNames[level]));
-                            return;
-                    	}
+                        parentISOCodes[level] = selectedSearchItem.isoCode;
+                        updateGeography(geoId, selectedSearchItem.geonameId, selectedSearchItem.name, selectedSearchItem.isoCode, parentNames);
                     }
                 } else
                 {
-                    System.out.println(String.format("Matched [%s] [%s]", parentNames[level], isoCodeStr));
-                    parentISOCodes[level] = isoCodeStr;
-                    updateGeography(geoId, foundGeonameId, parentNames, isoCodeStr);
+                    parentISOCodes[level] = selectedSearchItem.isoCode;
+                    updateGeography(geoId, selectedSearchItem.geonameId, selectedSearchItem.name, selectedSearchItem.isoCode, parentNames);
+                    
                 }
                
             } catch (Exception ex)
@@ -1020,56 +888,26 @@ public class GeographyAssignISOs
     }
     
     /**
-     * Get full ISO code from Lucene Index.
-     * @param geonameId
-     * @return string with full geo ISO
-     */
-    /*private String getISOCode(final int geonameId)
-    {
-        try
-        {
-            String               geonameIdStr = Integer.toString(geonameId);
-            Query                query        = parser.parse("geonmid:"+geonameIdStr);
-            int                  hitsPerPage  = 500;
-            TopScoreDocCollector collector    = TopScoreDocCollector.create(hitsPerPage, true);
-            
-            searcher.search(query, collector);
-            for (ScoreDoc scoreDoc : collector.topDocs().scoreDocs) 
-            {
-                int      docId = scoreDoc.doc;
-                Document doc   = searcher.doc(docId);
-                if (geonameIdStr.equals(doc.get("geonmid")))
-                {
-                    return doc.get("code");
-                }
-            }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return null;
-    }*/
-    
-    /**
      * @param geoId
      * @param geonameId
      * @param rankId
      */
     private void updateGeography(final int      geoId, 
                                  final int      geonameId,
-                                 final String[] parentNames,
-                                 final String   countryCode)
+                                 final String   newGeoName,
+                                 final String   newISOCode,
+                                 final String[] parentNames)
     {
         boolean autoCommit = true;
         
         String   oldName   = querySingleObj(GEONAME_SQL + geoId);
         String   sql       = "SELECT asciiname, ISOCode FROM geoname WHERE geonameId = " + geonameId;
         Object[] row       = queryForRow(sql);
-        if (row != null || countryCode != null)
+        if (row != null || newISOCode != null)
         {
-        	boolean           isAlt   = (row == null && isNotEmpty(countryCode));
-            String            name    = isAlt ? parentNames[0] : (String)row[0];
-            String            isoCode = isAlt ? countryCode : (isNotEmpty(isoCodeStr) ? isoCodeStr : (String)row[1]);
+            String name    = this.doUpdateName ? newGeoName : (String)row[0];
+            String isoCode = this.doAddISOCode && isNotEmpty(newISOCode) ? newISOCode : (String)row[1];
+            
             PreparedStatement pStmt   = null;
             try
             {
@@ -1077,21 +915,21 @@ public class GeographyAssignISOs
                 String pre  = "UPDATE geography SET ";
                 String post = ", ModifiedByAgentID=?, TimestampModified=? WHERE GeographyID=?";
                 int inx     = 2; 
-                if (doUpdateName && doAddISOCode)
+                if (this.doUpdateName && this.doAddISOCode)
                 {
-                    pStmt = updateConn.prepareStatement(pre+"LOWER(Name)=?, GeographyCode=?"+post);
-                    pStmt.setString(1, name.toLowerCase());
+                    pStmt = updateConn.prepareStatement(pre+"Name=?, GeographyCode=?"+post);
+                    pStmt.setString(1, name);
                     pStmt.setString(2, isoCode);
                     inx = 3;
                     
-                } else if (doUpdateName)
+                } else if (this.doUpdateName)
                 {
-                    pStmt = updateConn.prepareStatement(pre+"LOWER(Name)=?"+post);
+                    pStmt = updateConn.prepareStatement(pre+"Name=? "+post);
                     pStmt.setString(1, name.toLowerCase());
                     
-                } else if (doAddISOCode)
+                } else if (this.doAddISOCode)
                 {
-                    pStmt = updateConn.prepareStatement(pre+"GeographyCode=?"+post);
+                    pStmt = updateConn.prepareStatement(pre+"GeographyCode=? "+post);
                     pStmt.setString(1, isoCode);
                 }
                 
@@ -1167,10 +1005,10 @@ public class GeographyAssignISOs
             {
                 // These need to be reset here, 
                 // because this method is called sometimes automatically 
-                doUpdateName = false;
-                doMerge      = false;
-                doAddISOCode = true;
-                isoCodeStr   = null;
+                doUpdateName       = false;
+                doMerge            = false;
+                doAddISOCode       = true;
+                selectedSearchItem = null;
                 
                 try
                 {
@@ -1196,29 +1034,27 @@ public class GeographyAssignISOs
      * @throws SQLException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Integer chooseGeo(final int       geoId,
-                              final String    nameStr,
-                              final int       level,
-                              final int       rankId,
-                              final String[]  parentNames,
-                              final int[]     parentRanks,
-                              final Integer   geonameId) throws SQLException
+    private void chooseGeo(final int       geoId,
+                           final String    nameStr,
+                           final int       level,
+                           final int       rankId,   // the RankID it is currently working on
+                           final String[]  parentNames,
+                           final int[]     parentRanks) throws SQLException
     {
         // Convert RankID to level
-//        if (rankId > 200)
-//        {
-//            int levelFromRankId = (rankId / 100) - 1;
-//            if (levelFromRankId != level)
-//            {
-//                String msg = String.format("The geography name '%s' appears to have the wrong rank\nYou may want to investigate.\nCurrent Rank is %d processed Rank is %d", nameStr, rankId, level * 100);
-//                showError(msg);
-//                return null;
-//            }
-//        }
+        if (rankId > 200)
+        {
+            int levelFromRankId = (rankId / 100) - 2;
+            if (levelFromRankId != level)
+            {
+                badRankIDs.add(new GeoSearchResultsItem(nameStr, rankId, level * 100));
+            }
+        }
         
+        Integer geonameId = selectedSearchItem != null ? selectedSearchItem.geonameId : null;
         GeoChooserDlg dlg = new GeoChooserDlg(nameStr, rankId, level, parentNames, parentRanks, geonameId, 
                                               stCntXRef, countryInfo, doAllCountries, doInvCountry, 
-                                              readConn, geographyTotal);
+                                              readConn, processedCount, geographyTotal);
         if (luceneResults.size() > 0)
         {
             dlg.setCoInfoList(luceneResults); // this will force the dialog to use the results from Lucene
@@ -1234,19 +1070,25 @@ public class GeographyAssignISOs
         centerAndShow(dlg);
         
         //dlg.dispose();
-        this.isoCodeStr   = null;
-        this.doAddISOCode = false;
+        this.doAddISOCode       = false;
+        this.selectedSearchItem = null;
 
         if (dlg.getBtnPressed() != QUIT_BTN) 
         {
             if (dlg.getBtnPressed() == SAVE_BTN)
             {
-                doUpdateName = dlg.getUpdateNameCB().isSelected();
-                doMerge      = dlg.getMergeCB() != null ? dlg.getMergeCB().isSelected() : false;
-                doAddISOCode = dlg.getAddISOCodeCB().isSelected();
-                isoCodeStr   = dlg.getSelectedISOValue();
+                doUpdateName       = dlg.getUpdateNameCB().isSelected();
+                doMerge            = dlg.getMergeCB() != null ? dlg.getMergeCB().isSelected() : false;
+                doAddISOCode       = dlg.getAddISOCodeCB().isSelected();
+                selectedSearchItem = dlg.getSelectedGeoSearchItem();
+                
+                String textISOCode = dlg.getISOCodeFromTextField();
+                if (textISOCode != null && !textISOCode.equals(selectedSearchItem.isoCode))
+                {
+                    selectedSearchItem.isoCode = textISOCode;
+                }
 
-                String selectedCounty = dlg.getSelectedListValue();
+                String selectedGeoName = selectedSearchItem.name;
                 if (doMerge && rankId == 400)
                 {
                     int geoParentId = getCountAsInt(readConn, "SELECT ParentID FROM geography WHERE GeographyID = "+ geoId);
@@ -1254,12 +1096,12 @@ public class GeographyAssignISOs
                     {
                         try
                         {
-                            String cName = remove(selectedCounty, " County");
+                            String cName = remove(selectedGeoName, " County");
                             PreparedStatement pStmt = updateConn.prepareStatement("SELECT GeographyID FROM geography WHERE RankID = 400 AND GeographyID <> ? AND ParentID = ? AND (LOWER(Name) = ? OR LOWER(Name) = ?");
                             pStmt.setInt(1,    geoId);
                             pStmt.setInt(2,    geoParentId);
                             pStmt.setString(3, cName.toLowerCase());
-                            pStmt.setString(4, selectedCounty.toLowerCase());
+                            pStmt.setString(4, selectedGeoName.toLowerCase());
                             ResultSet rs = pStmt.executeQuery();
                             
                             if (rs.first())
@@ -1268,24 +1110,20 @@ public class GeographyAssignISOs
                             }
                             rs.close();
                             pStmt.close();
+                            
                         } catch (SQLException ex)
                         {
                             ex.printStackTrace();
                         }
                     }
                 }
-                parentNames[level] = selectedCounty;
+                parentNames[level] = selectedGeoName;
                 parentRanks[level] = rankId;
-                Integer idFromList = dlg.getSelectedId();
-                Integer lookupId   = dlg.getLookupId();
                 
-                if (idFromList == null)
-                {
-                    return lookupId;
-                }
-                return idFromList;
-                
-            } else if (dlg.getBtnPressed() == NXTC_BTN)
+                return;
+            } 
+            
+            if (dlg.getBtnPressed() == NXTC_BTN)
             {
                 doSkipCountry = true;
             }
@@ -1293,7 +1131,6 @@ public class GeographyAssignISOs
         {
             doStopProcessing = true;
         }
-        return null;
     }
                               
     /**
@@ -1301,7 +1138,7 @@ public class GeographyAssignISOs
      */
     private void startTraversal()
     {
-        UIRegistry.writeSimpleGlassPaneMsg("Processing geography...", 24);
+        UIRegistry.writeSimpleGlassPaneMsg("Processing geography...", 24); // I18N
 
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -1352,6 +1189,7 @@ public class GeographyAssignISOs
             
             totalUpdated = 0;
             totalMerged  = 0;
+            processedCount = 0;
             
             //-------------------
             // Do Continent
@@ -1442,6 +1280,22 @@ public class GeographyAssignISOs
             }
             
             tblWriter.endTable();
+            
+            if (badRankIDs.size() > 0)
+            {
+                tblWriter.println("<BR><BR><h2>Geography Records with incorrect RankIDs</h2>");
+                tblWriter.startTable();
+                tblWriter.logHdr("Geography Name", "Incorrect Rank", "Correct Rank");
+                for (GeoSearchResultsItem item : badRankIDs)
+                {
+                    String goodLevel = rankToNameMap.get(item.goodRankId);
+                    String badLevel  = rankToNameMap.get(item.currentRankId);
+                    tblWriter.log(item.name, 
+                                  goodLevel != null ? goodLevel : Integer.toString(item.goodRankId), 
+                                  badLevel != null ? badLevel : Integer.toString(item.currentRankId));
+                }
+                tblWriter.endTable();
+            }
             tblWriter.close();
             
             if (tblWriter.hasLines())

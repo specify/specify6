@@ -232,6 +232,8 @@ public class iPadDBExporterPlugin extends BaseTask
             });
             exportBtn.setEnabled(false);
         }
+        
+        //exportBtn.setEnabled(true); // YYY
     }
     
     /* (non-Javadoc)
@@ -314,6 +316,7 @@ public class iPadDBExporterPlugin extends BaseTask
         ImageIcon            imgIcon    = IconManager.getImage("SpecifySmalliPad128x128", IconManager.STD_ICON_SIZE.NonStd);
         JPanel               loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
 
+        loadAndPushResourceBundle(RESOURCE_NAME);
         CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
                 getResourceString("LOGIN_INFO"), true, CustomDialog.OKCANCEL, loginPanel)
         {
@@ -324,12 +327,17 @@ public class iPadDBExporterPlugin extends BaseTask
                 if (!iPadCloud.isUserNameOK(uName))
                 {
                     setErrorMsg(statusLbl, getFormattedResStr("USRNM_IS_TAKEN", uName));
+                } else
+                {
+                    super.okButtonPressed();
                 }
+                           
+                
             }
         };
         dlg.setOkLabel(getResourceString("NEW_USER"));
-        
         centerAndShow(dlg);
+        popResourceBundle();        
         
         if (!dlg.isCancelled())
         {
@@ -599,7 +607,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent arg0)
                 {
-                    if (checkInstitutionInfo(false))
+                    if (checkInstitutionInfo(false)) // YYY
                     {
                         processDB();
                     }
@@ -835,6 +843,12 @@ public class iPadDBExporterPlugin extends BaseTask
             {
                 logout();
             }
+            if (iPadDBExporter != null)
+            {
+                iPadDBExporter.shutdown();
+                iPadDBExporter = null;
+            }
+            //cloudInstId    = null;
         }
     }
 }

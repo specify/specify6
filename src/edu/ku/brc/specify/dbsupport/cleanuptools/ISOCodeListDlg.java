@@ -52,6 +52,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -63,32 +64,29 @@ import edu.ku.brc.ui.CustomDialog;
  */
 public class ISOCodeListDlg extends CustomDialog
 {
-    protected enum GeoRankType {eContinent, eCountry, eState, eCounty}
+    protected enum GeoRankType {eEarth, eContinent, eCountry, eState, eCounty}
 
+    private final boolean        isIncludingCounties = false;
     private final String         blankValue = "        ";
-    private Vector<ISOItem>      isoList;
+    private Vector<GeoSearchResultsItem>      isoList;
     private JTable               table;
     
-    protected ArrayList<JLabel>  labels   = new ArrayList<JLabel>();
-    protected ArrayList<JLabel>  codes    = new ArrayList<JLabel>();
-    protected ArrayList<JButton> backBtns = new ArrayList<JButton>();
+    private ArrayList<JLabel>    labels       = new ArrayList<JLabel>();
+    private ArrayList<JLabel>    codes        = new ArrayList<JLabel>();
     
-    //protected HashMap<GeoRankType, ISOItem> levelMap = new HashMap<GeoRankType, ISOItem>();
+    private JButton              backBtn;
+    private JButton              nextBtn;
     
-    protected GeoRankType currentLevel    = GeoRankType.eContinent;
-    protected JButton     selectRowBtn;
+    private GeoRankType          currentLevel;
     
     /**
      * @param dialog
-     * @param title
-     * @param isModal
      * @param whichBtns
-     * @param contentPanel
      * @throws HeadlessException
      */
     public ISOCodeListDlg(final Dialog dialog, final int whichBtns) throws HeadlessException
     {
-        super(dialog, "ISO Codes", true, whichBtns, null); // I18N
+        super(dialog, "ISO Codes", true, OKCANCELHELP, null); // I18N
     }
     
     /* (non-Javadoc)
@@ -97,10 +95,10 @@ public class ISOCodeListDlg extends CustomDialog
     @Override
     public void createUI()
     {
-        if (CustomDialog.OK_BTN == this.whichBtns)
-        {
-            setCancelLabel(getResourceString("CLOSE"));            
-        }
+        setHelpContext("GeoCleanUpFindISOCode");
+        setCancelLabel(getResourceString("CLOSE"));            
+        setOkLabel(getResourceString("CLNUP_GEO_CHOOSE_ISO")); 
+        
         super.createUI();
         
         CellConstraints cc = new CellConstraints();
@@ -110,19 +108,31 @@ public class ISOCodeListDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                clearLevels((JButton)e.getSource());
+                clearLevels();
             }
         };
-        
-        selectRowBtn = new JButton("Select");
-        selectRowBtn.addActionListener(new ActionListener() 
+        backBtn = UIHelper.createI18NButton("Back");
+        backBtn.addActionListener(al);
+        backBtn.setEnabled(false);
+
+        al = new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                tableRowChoosen();
+              int selectedIndex = table.getSelectedRow();
+              if (selectedIndex > -1)
+              {
+                  currentLevel = GeoRankType.values()[currentLevel.ordinal() + 1];
+                  
+                  GeoSearchResultsItem item = isoList.get(selectedIndex);
+                  fillTableFromItem(item);
+              }
             }
-        });
+        };
+        nextBtn = UIHelper.createI18NButton("Next");
+        nextBtn.addActionListener(al);
+        nextBtn.setEnabled(false);
         
         JLabel hdrTitle1 = createI18NLabel("Geography", JLabel.CENTER); // I18N
         JLabel hdrTitle2 = createI18NLabel("ISO Code", JLabel.CENTER);
@@ -131,11 +141,13 @@ public class ISOCodeListDlg extends CustomDialog
         hdrTitle2.setFont(font);
         
         PanelBuilder pbc = new PanelBuilder(new FormLayout("f:p:g,12px,p,12px,p", "p,4px,p,4px,p,4px,p,4px,p"));
-        pbc.add(hdrTitle1,   cc.xy(1, 1));
+        pbc.add(hdrTitle1, cc.xy(1, 1));
         pbc.add(hdrTitle2, cc.xy(3, 1));
-        //pbc.add(" ",   cc.xy(5, 1));
-        int index = 3;
-        for (int i=0;i<3;i++)
+        
+        int numRows = isIncludingCounties ? 3 : 2;
+        int index   = 3;
+        
+        for (int i=0;i<numRows;i++)
         {
             JLabel lbl = new JLabel(blankValue);
             labels.add(lbl);
@@ -144,25 +156,23 @@ public class ISOCodeListDlg extends CustomDialog
             codes.add(cdLbl);
             cdLbl.setHorizontalAlignment(SwingConstants.CENTER);
             
-            JButton btn = new JButton("Clear");
-            backBtns.add(btn);
-            btn.addActionListener(al);
             pbc.add(lbl,   cc.xy(1, index));
             pbc.add(cdLbl, cc.xy(3, index));
-            pbc.add(btn,   cc.xy(5, index));
             
             lbl.setBackground(new Color(250, 250, 250));
             cdLbl.setBackground(lbl.getBackground());
             lbl.setOpaque(true);
             cdLbl.setOpaque(true);
-            btn.setEnabled(false);
             index += 2;
         }
-
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,p,2px,f:p:g,4px,p"));
         
-        isoList = new Vector<ISOItem>();
-        //model   = new ISOTableModel();
+        PanelBuilder pbck = new PanelBuilder(new FormLayout("p", "f:p:g,p,10px,p,f:p:g"));
+        pbck.add(backBtn,   cc.xy(1, 2));
+        pbck.add(nextBtn,   cc.xy(1, 4));
+
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,4px,p", "p,8px,p,2px,f:p:g,4px,p"));
+        
+        isoList = new Vector<GeoSearchResultsItem>();
         table   = new JTable();
         makeTableHeadersCentered(table, false);
         
@@ -172,13 +182,13 @@ public class ISOCodeListDlg extends CustomDialog
 
         PanelBuilder pb2 = new PanelBuilder(new FormLayout("c:p:g", "p"));
         pb2.add(pbc.getPanel(), cc.xy(1,1));
-        //pb2.getPanel().setBackground(Color.BLUE);
-        //pb2.setOpaque(true);
 
         int y = 1;
         pb.add(pb2.getPanel(), cc.xy(1,1)); y += 2;
         pb.add(new JLabel("Click on an item in the list:"), cc.xy(1,y)); y += 2;   // I18N
         pb.add(createScrollPane(table), cc.xy(1,y)); y += 2;
+        
+        pb.add(pbck.getPanel(), cc.rchw(1, 3, 7, 1));
 
         pb.setDefaultDialogBorder();
         contentPanel = pb.getPanel();
@@ -203,21 +213,34 @@ public class ISOCodeListDlg extends CustomDialog
                 
                 if (e.getClickCount() == 2)
                 {
-                    tableRowChoosen();
+                    getOkBtn().doClick();
                 }
             }
         });
         
-        fillContinent();
+        currentLevel = GeoRankType.eEarth;
+        fillTableFromItem(null); // eEarth doesn't need an item
     }
-    
+
+    /**
+     * @return the geonameId
+     */
+    public GeoSearchResultsItem getSelectedItem()
+    {
+        return table.getSelectedRow() > -1 ? isoList.get(table.getSelectedRow()) : null;
+    }
+
     /**
      *
      */
-    private void fillTable(final ISOItem item)
+    private void fillTableFromItem(final GeoSearchResultsItem item)
     {
         switch (currentLevel)
         {
+            case eEarth:
+                fillContinent();
+                break;
+                
             case eContinent:
                 fillContriesWithContinent(item);
                 break;
@@ -227,7 +250,13 @@ public class ISOCodeListDlg extends CustomDialog
                 break;
                 
             case eState:
-                fillCountiesWithState(item);
+                if (isIncludingCounties)
+                {
+                    fillCountiesWithState(item);
+                }
+                break;
+                
+            case eCounty:
                 break;
         }
     }
@@ -237,43 +266,25 @@ public class ISOCodeListDlg extends CustomDialog
      */
     private void tableRowChoosen()
     {
-        int selectedIndex = table.getSelectedRow();
-        if (selectedIndex > -1)
-        {
-            ISOItem item = isoList.get(selectedIndex);
-            fillTable(item);
-        }
+        nextBtn.setEnabled(table.getSelectedRow() > -1 && currentLevel.ordinal() < GeoRankType.eCountry.ordinal());
     }
     
-    private void clearLevels(final JButton btn)
+    private void clearLevels()
     {
-        int index = backBtns.indexOf(btn);
-        for (int i=backBtns.size()-1;i >= index;i--)
+        currentLevel = GeoRankType.values()[currentLevel.ordinal() - 1];
+        
+        int    index   = currentLevel.ordinal();
+        String newCode = currentLevel == GeoRankType.eEarth ? null : codes.get(index-1).getText();
+        
+        for (int i=labels.size()-1;i >= index;i--)
         {
             labels.get(i).setText(blankValue);
             codes.get(i).setText(blankValue);
-            backBtns.get(i).setEnabled(false);
         }
         
-        switch (index)
-        {
-            case 0:
-                fillContinent();
-                return;
-                
-            case 1:
-                currentLevel = GeoRankType.eContinent;
-                break;
-
-            case 2:
-                currentLevel = GeoRankType.eCountry;
-                break;
-
-            case 3:
-                currentLevel = GeoRankType.eState;
-                break;
-        }
-        fillTable(new ISOItem(null, codes.get(index-1).getText()));
+        fillTableFromItem(new GeoSearchResultsItem(null, null, newCode));
+        
+        backBtn.setEnabled(index > 0);
     }
     
     /**
@@ -282,21 +293,19 @@ public class ISOCodeListDlg extends CustomDialog
     private void fillTable(final String whereStr, final int codeLen)
     {
         String extra = codeLen > -1 ? String.format("AND LENGTH(ISOCode) = %d", codeLen) : "";
-        String sql   = String.format("SELECT DISTINCT asciiname, ISOCode FROM geoname WHERE %s %s ORDER BY asciiname", whereStr, extra);
+        String sql   = String.format("SELECT DISTINCT asciiname, ISOCode,geonameId FROM geoname WHERE %s %s ORDER BY asciiname", whereStr, extra);
         isoList.clear();
-        System.out.println(sql);
+        //System.out.println(sql);
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         for (Object[] row : rows)
         {
             String cont = row[0].toString();
             if (!cont.endsWith("Ocean") || (!cont.startsWith("North") && !cont.startsWith("South")))
             {
-                isoList.add(new ISOItem(row[0].toString(), row[1].toString()));
+                isoList.add(new GeoSearchResultsItem(row[0].toString(), (Integer)row[2], row[1].toString()));
             }
         }
-        //model.fireTableDataChanged();
-        //model.fireTableStructureChanged();
-       table.setModel(new ISOTableModel());
+        table.setModel(new ISOTableModel());
     }
     
     /**
@@ -304,81 +313,62 @@ public class ISOCodeListDlg extends CustomDialog
      */
     private void fillContinent()
     {
-        currentLevel = GeoRankType.eContinent;
         fillTable("fcode = 'CONT' OR fcode = 'OCN'", 2);
     }
+
     
     /**
-     *
+     * @param item
      */
-    private void fillContriesWithContinent(final ISOItem item)
+    private void fillContriesWithContinent(final GeoSearchResultsItem item)
     {
-        if (item.title != null) 
+        if (item.name != null) 
         {
-            labels.get(0).setText(item.title);
+            labels.get(0).setText(item.name);
         }
-        codes.get(0).setText(item.code);
-        backBtns.get(0).setEnabled(true);
-        String sql = String.format("SELECT name,iso_alpha2 from countryinfo WHERE continent = '%s' ORDER BY name;", item.code);
+        codes.get(0).setText(item.isoCode);
+        backBtn.setEnabled(true);
+        String sql = String.format("SELECT name,iso_alpha2,geonameId from countryinfo WHERE continent = '%s' ORDER BY name;", item.isoCode);
         isoList.clear();
-        System.out.println(sql);
+        //System.out.println(sql);
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         for (Object[] row : rows)
         {
-            isoList.add(new ISOItem(row[0].toString(), row[1].toString()));
+            isoList.add(new GeoSearchResultsItem(row[0].toString(), (Integer)row[2], row[1].toString()));
         }
-        currentLevel = GeoRankType.eCountry;
         table.setModel(new ISOTableModel());
     }
     
     /**
      *
      */
-    private void fillStatesWithCountry(final ISOItem item)
+    private void fillStatesWithCountry(final GeoSearchResultsItem item)
     {
         // SELECT asciiname, latitude, longitude, country, admin1 as StateCode FROM geoname WHERE fcode = 'ADM1' AND country = 'US' ORDER BY name
-        if (item.title != null) 
+        if (item.name != null) 
         {
-            labels.get(1).setText(item.title);
+            labels.get(1).setText(item.name);
         }
-        codes.get(1).setText(item.code);
-        backBtns.get(1).setEnabled(true);
-        String sql = String.format("fcode = 'ADM1' AND country = '%s'", item.code);
-        currentLevel = GeoRankType.eState;
+        codes.get(1).setText(item.isoCode);
+        backBtn.setEnabled(true);
+        String sql = String.format("fcode = 'ADM1' AND country = '%s'", item.isoCode);
         fillTable(sql, 4);
     }
     
     /**
      *
      */
-    private void fillCountiesWithState(final ISOItem item)
+    private void fillCountiesWithState(final GeoSearchResultsItem item)
     {
         //SELECT asciiname AS CountyName, latitude, longitude, country, admin1 as StateCode FROM geoname WHERE admin1 = 'IA' AND fcode = 'ADM2' ORDER BY name
-        if (item.title != null) 
+        if (item.name != null) 
         {
-            labels.get(2).setText(item.title);
+            labels.get(2).setText(item.name);
         }
-        codes.get(2).setText(item.code);
-        backBtns.get(2).setEnabled(true);
-        String sql = String.format("fcode = 'ADM2' AND admin1 = '%s' AND country = '%s'", item.code.substring(2), codes.get(1).getText());
-        currentLevel = GeoRankType.eCounty;
+        codes.get(2).setText(item.isoCode);
+        backBtn.setEnabled(true);
+        String sql = String.format("fcode = 'ADM2' AND admin1 = '%s' AND country = '%s'", item.isoCode.substring(2), codes.get(1).getText());
         fillTable(sql, -1);
-    }
-    
-    
-    //-----------------------------------------------------------
-    //--
-    //-----------------------------------------------------------
-    private class ISOItem
-    {
-        public String title;
-        public String code;
-        
-        public ISOItem(final String title, final String code)
-        {
-            this.title = title;
-            this.code = code;
-        }
     }
     
     //-----------------------------------------------------------
@@ -404,7 +394,7 @@ public class ISOCodeListDlg extends CustomDialog
                         return "States";
                         
                     case eCounty:
-                        return "Couties";
+                        return "Counties";
                 }
             }
             return "ISO Code"; // I18N
@@ -430,8 +420,8 @@ public class ISOCodeListDlg extends CustomDialog
         @Override
         public Object getValueAt(int row, int column)
         {
-            ISOItem item = isoList.get(row);
-            return column == 0 ? item.title : item.code;
+            GeoSearchResultsItem item = isoList.get(row);
+            return column == 0 ? item.name : item.isoCode;
         }
 
         @Override

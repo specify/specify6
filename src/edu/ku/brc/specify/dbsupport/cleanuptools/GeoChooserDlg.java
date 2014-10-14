@@ -21,19 +21,16 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
-import static edu.ku.brc.ui.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createFormLabel;
 import static edu.ku.brc.ui.UIHelper.createI18NButton;
-import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
-import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIHelper.createTextField;
-import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -52,15 +49,12 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -75,7 +69,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -106,12 +99,11 @@ public class GeoChooserDlg extends CustomDialog
     private Integer    geonameId;
     private String     nameStr;
     private int        geoTotal;
+    private int        processedCount;
     
     private StateCountryContXRef stCntXRef;
     private Vector<GeoSearchResultsItem> countryInfo = new Vector<GeoSearchResultsItem>();
     
-    private Integer          lookupId   = null;
-
     private Vector<GeoSearchResultsItem> coInfoList = null;
     private HashMap<Integer, String> i18NLabelsMap = new HashMap<Integer, String>();
     private JCheckBox        updateNameCB;
@@ -120,12 +112,11 @@ public class GeoChooserDlg extends CustomDialog
     private JTextField       isoCodeTF;
     private JProgressBar     progressBar = new JProgressBar();
     
-    private JList<String>    mainList;
-    private DefaultListModel<String> dlm;
+    private JList<GeoSearchResultsItem>            mainList;
+    private DefaultListModel<GeoSearchResultsItem> dataListModel;
     private boolean          noMatchesFound;
     
     private int              selectedIndex;
-
 
     /**
      * @param nameStr
@@ -139,6 +130,7 @@ public class GeoChooserDlg extends CustomDialog
      * @param doAllCountries
      * @param doInvCountry
      * @param readConn
+     * @param processedCount
      * @param geoTotal
      * @throws HeadlessException
      */
@@ -153,22 +145,24 @@ public class GeoChooserDlg extends CustomDialog
                          boolean[]        doAllCountries,
                          boolean[]        doInvCountry,
                          final Connection readConn,
+                         final int        processedCount,
                          final int        geoTotal) throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), "Choose", true, OKCANCELAPPLYHELP, null); // I18N
         
-        this.nameStr      = nameStr;
-        this.rankId       = rankId;
-        this.level        = level;
-        this.parentNames  = parentNames;
-        this.parentRanks  = parentRanks;
-        this.geonameId    = geonameId;
-        this.stCntXRef    = stCntXRef;
-        this.countryInfo  = countryInfo;
+        this.nameStr        = nameStr;
+        this.rankId         = rankId;
+        this.level          = level;
+        this.parentNames    = parentNames;
+        this.parentRanks    = parentRanks;
+        this.geonameId      = geonameId;
+        this.stCntXRef      = stCntXRef;
+        this.countryInfo    = countryInfo;
         this.doAllCountries = doAllCountries;
-        this.doInvCountry = doInvCountry;
-        this.readConn     = readConn;
-        this.geoTotal     = geoTotal;
+        this.doInvCountry   = doInvCountry;
+        this.readConn       = readConn;
+        this.geoTotal       = geoTotal;
+        this.processedCount = processedCount;
         
         String sql = "SELECT Name, RankID FROM geographytreedefitem WHERE RankID IN (100,200,300,400) AND GeographyTreeDefID = GEOTREEDEFID ORDER BY RankID ASC";
         for (Object[] row : query(QueryAdjusterForDomain.getInstance().adjustSQL(sql)))
@@ -181,8 +175,6 @@ public class GeoChooserDlg extends CustomDialog
         {
             setTitle("Choose "+i18NLabelsMap.get(rankId)); // I18N
         }
-        
-        calcProgress();
     }
     
     /* (non-Javadoc)
@@ -235,23 +227,14 @@ public class GeoChooserDlg extends CustomDialog
     {
         if (progressBar != null)
         {
-            SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
-            {
+            EventQueue.invokeLater(new Runnable() {
                 @Override
-                protected Boolean doInBackground() throws Exception
-                {
-                    int geoCount = BasicSQLUtils.getCount(QueryAdjusterForDomain.getInstance().adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL"));
-                    progressBar.setValue(geoTotal == 0 ? 0 : (geoCount*100) / geoTotal);
-                    return true;
+                public void run() {
+                    int percent = geoTotal == 0 ? 0 : (int)(((double)processedCount*100.0) / (double)geoTotal);
+                    progressBar.setValue(percent);
+                    progressBar.repaint();
                 }
-                @Override
-                protected void done()
-                {
-                    super.done();
-                    
-                }
-            };
-            worker.execute();
+            });
         }
     }
     
@@ -313,10 +296,10 @@ public class GeoChooserDlg extends CustomDialog
         boolean doStatesOrCounties = doAllCountries[1] || doAllCountries[2] || doInvCountry[1] || doInvCountry[2];
         this.whichBtns = doStatesOrCounties && !doInvCountry[1] && rankId > 200 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP;
         
-        boolean isStCnty = rankId > 200; 
+        boolean isStCnty = true;//rankId > 200; 
         
-        dlm      = new DefaultListModel<String>();
-        mainList = new JList<String>(dlm);
+        dataListModel      = new DefaultListModel<GeoSearchResultsItem>();
+        mainList = new JList<GeoSearchResultsItem>(dataListModel);
         JScrollPane sb = createScrollPane(mainList, true);
         
         String listDim;
@@ -338,15 +321,16 @@ public class GeoChooserDlg extends CustomDialog
         
         super.createUI();
         
+        calcProgress();
+        
         try
         {
-            String geoName;
             if (coInfoList != null && coInfoList.size() > 0)
             {
-                geoName = fillFromLuceneResults();
+                fillFromLuceneResults();
             } else
             {
-                geoName = fillFromQuery();
+                fillFromQuery();
             }
             
             mainList.addMouseListener(new MouseAdapter()
@@ -402,16 +386,14 @@ public class GeoChooserDlg extends CustomDialog
             if (isStCnty)
             {
                 lookPB    = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-                lookupBtn = createI18NButton("Look Up"); // I18N
+                lookupBtn = createI18NButton("CLNUP_GEO_LOOK_UP_ISO");
                 lookPB.add(lookupBtn, cc.xy(2,1));
-                final String geoNameFinal = geoName;
                 lookupBtn.addActionListener(new ActionListener()
                 {
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        int index = (rankId / 100) - 2;
-                        lookupId = globalRankSearch(parentNames[index], geoNameFinal);
+                        globalRankSearch();
                     }
                 });
             }
@@ -453,7 +435,7 @@ public class GeoChooserDlg extends CustomDialog
                 i += 2;
             }
             
-            if (doAllCountries[0])
+            //if (doAllCountries[0])
             {
                 progressBar = new JProgressBar(0, 100);
                 progressBar.setStringPainted(true);
@@ -467,14 +449,14 @@ public class GeoChooserDlg extends CustomDialog
             mainList.setSelectedIndex(selectedIndex);
             mainList.ensureIndexIsVisible(selectedIndex);
             
-            noMatchesFound = dlm.size() == 0;
+            noMatchesFound = dataListModel.size() == 0;
             
             // Optional Depending on States / Countries
             if (doStatesOrCounties)
             {
-                if (dlm.getSize() == 0)
+                if (dataListModel.getSize() == 0)
                 {
-                    dlm.addElement("No matches found.");// I18N
+                    dataListModel.addElement(new GeoSearchResultsItem("No matches found."));// I18N
                 }
             }
 
@@ -519,8 +501,8 @@ public class GeoChooserDlg extends CustomDialog
         int i = 0;
         for (GeoSearchResultsItem item : coInfoList)
         {
-             dlm.addElement(item.name);
-             if (geonameId != null && geonameId.equals(item.recId))
+             dataListModel.addElement(item);
+             if (geonameId != null && geonameId.equals(item.geonameId))
              {
                  inx = i; 
              }
@@ -649,14 +631,14 @@ public class GeoChooserDlg extends CustomDialog
             String name = p.name;
             char   fc   = name.charAt(0);
             String cmp  = name.length() > 1 ? name.substring(0, 2) : null;
-            dlm.addElement(name);
+            dataListModel.addElement(p);
             
             if (inx == -1)
             {
                 if (name.equals(geoName))
                 {
                     inx = i;
-                } else if (geonameId != null && p.recId == geonameId)
+                } else if (geonameId != null && p.geonameId == geonameId)
                 {
                     inx = i;
                 }
@@ -691,39 +673,8 @@ public class GeoChooserDlg extends CustomDialog
         int inx = mainList.getSelectedIndex();
         if (inx > -1)
         {
-            GeoSearchResultsItem item = coInfoList.get(inx);
+            GeoSearchResultsItem item = mainList.getSelectedValue();
             isoCodeTF.setText(item.isoCode);
-        }
-    }
-
-    /**
-     * @param selIndex
-     * @param model
-     * @param ids
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void fillGeoList(final int selIndex, 
-                             final String parentName,
-                             final DefaultListModel model, 
-                             final ArrayList<Integer> ids)
-    {
-        ids.clear();
-        model.removeAllElements();
-        
-        StringBuilder sb = new StringBuilder("");
-        if (selIndex == 0)
-        {
-            sb.append("SELECT geonameId, name FROM countryinfo ORDER BY name");
-        } else
-        {
-            String countryCode = stCntXRef.countryNameToCode(parentName);
-            sb.append(String.format("SELECT geonameId, asciiname FROM geoname WHERE fcode = 'ADM1' AND country = '%s' ORDER BY asciiname", countryCode));
-        }
-        System.err.println(sb.toString());
-        for (Object[] row : query(sb.toString()))
-        {
-            ids.add((Integer)row[0]);
-            model.addElement(row[1]);
         }
     }
     
@@ -732,64 +683,21 @@ public class GeoChooserDlg extends CustomDialog
      * @param geoName
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Integer globalRankSearch(final String parentName, final String geoName)
+    private void globalRankSearch()
     {
-        final DefaultListModel   model    = new DefaultListModel();
-        final JComboBox          typeCBX  = UIHelper.createComboBox(new Object[] {"Country", "State"});
-        final JList              list     = new JList(model);
-        final ArrayList<Integer> ids      = new ArrayList<Integer>();
-        
-        CellConstraints cc  = new CellConstraints();
-        PanelBuilder    pb  = new PanelBuilder(new FormLayout("p,2px,f:p:g","p,8px,p,2px,p"));
-        JScrollPane     sb  = createScrollPane(list, true);
-
-        pb.add(createI18NFormLabel("Choose a Cataegory"), cc.xy(1, 1));
-        pb.add(typeCBX, cc.xy(3, 1));
-        
-        pb.add(createI18NLabel("Choose a Geography"), cc.xyw(1, 3, 3));
-        pb.add(sb, cc.xyw(1, 5, 3));
-              
-                
-        pb.setDefaultDialogBorder();
-        
-        typeCBX.addActionListener(new ActionListener()
+        ISOCodeListDlg dlg = new ISOCodeListDlg(null,CustomDialog.OK_BTN);
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            GeoSearchResultsItem selectedItem = dlg.getSelectedItem();
+            if (selectedItem != null)
             {
-                fillGeoList(typeCBX.getSelectedIndex(), parentName, model, ids);
+                dataListModel.insertElementAt(selectedItem, 0);
+                mainList.setSelectedIndex(0);
             }
-        });
-        
-        if (lookupId != null)
-        {
-            dlm.removeElementAt(0); 
         }
-        lookupId = null;
-        CustomDialog dlg = new CustomDialog((Frame)getTopWindow(), "Choose", true, CustomDialog.OKCANCEL, pb.getPanel());
-        
-        typeCBX.setSelectedIndex(0);
-
-        centerAndShow(dlg);
-        
-        int selInx = list.getSelectedIndex();
-        if (selInx > -1)
-        {
-            Object selObj = model.get(selectedIndex);
-            dlm.insertElementAt((String)selObj, 0);
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    mainList.setSelectedIndex(0);
-                }
-            });
-            return ids.get(selInx);
-        }
-        return null;
     }
-
+    
     /**
      * @return the updateNameCB
      */
@@ -817,39 +725,30 @@ public class GeoChooserDlg extends CustomDialog
     /**
      * @return
      */
-    public String getSelectedListValue()
+    public GeoSearchResultsItem getSelectedGeoSearchItem()
     {
-        return (String)mainList.getSelectedValue();
+        return mainList.getSelectedValue();
     }
     
     /**
      * @return
      */
-    public String getSelectedISOValue()
+    public String getISOCodeFromTextField()
     {
         return isoCodeTF.getText();
-    }
-    
-    /**
-     * @return the lookupId
-     */
-    public Integer getLookupId()
-    {
-        return lookupId;
     }
 
     /**
      * @return
      */
-    public Integer getSelectedId()
+    public Integer getSelectedGeonameId()
     {
-        Integer id     = null;
-        int     selInx = mainList.getSelectedIndex();
+        int     selInx    = mainList.getSelectedIndex();
         if (selInx > -1 && coInfoList.size() > 0)
         {
-            id = coInfoList.get(mainList.getSelectedIndex()).recId;
+            return coInfoList.get(mainList.getSelectedIndex()).geonameId;
         }
-        return lookupId != null ? null : id;
+        return null;
     }
 
     /* (non-Javadoc)
