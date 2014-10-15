@@ -1008,7 +1008,7 @@ public class StratToGTP
                 if (isPaleo)
                 {
                     String stratTblName = "stratigraphy" + (useStrat2 ? "2" : "");
-                    conversion.convertLithoStrat(lithoStratTreeDef, earthNode, stratTblWriter, stratTblName, false);
+                    conversion.convertLithoStratCustom(lithoStratTreeDef, earthNode, stratTblWriter, stratTblName, false);
                 }
             }
             
@@ -1084,7 +1084,7 @@ public class StratToGTP
                 
                 if (isPaleo)
                 {
-                    conversion.convertLithoStrat(lithoStratTreeDef, earthNode, stratTblWriter, "stratigraphy2", false);
+                    conversion.convertLithoStratCustom(lithoStratTreeDef, earthNode, stratTblWriter, "stratigraphy2", false);
                 }
             }
             
