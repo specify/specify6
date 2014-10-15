@@ -1011,9 +1011,15 @@ public class GeographyAssignISOs
         String   oldName   = querySingleObj(GEONAME_SQL + geoId);
         String   sql       = "SELECT asciiname, ISOCode FROM geoname WHERE geonameId = " + geonameId;
         Object[] row       = queryForRow(sql);
+        
+        if (row == null && !this.doAddISOCode)
+        {
+            return;
+        }
+        
         if (row != null || newISOCode != null)
         {
-            String name    = this.doUpdateName ? newGeoName : (String)row[0];
+            String name    = this.doUpdateName || row == null ? newGeoName : (String)row[0];
             String isoCode = this.doAddISOCode && isNotEmpty(newISOCode) ? newISOCode : (String)row[1];
             
             PreparedStatement pStmt   = null;
