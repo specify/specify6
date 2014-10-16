@@ -29,6 +29,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -48,6 +49,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     protected int        mode;  
     protected Dimension  prefSize;
     protected Dimension  contractedSize;
+
+    final public static String wbAutoFillPrefName = "WB.AutoFillPref";
 
     public static final int EXPANDED = 1;
     public static final int CONTRACTED = -1;
@@ -230,12 +233,16 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     			configuredFields.add(catno);
     			autoAssignCatNumLbl.setText(String.format(UIRegistry.getResourceString("WB_UPLOAD_AutoAssCatChk"), 
     					catno.getField().getFieldInfo().getTitle()));
+    	        boolean doAutoFill = AppPreferences.getLocalPrefs().getBoolean(wbAutoFillPrefName + "." + wbSS.getWorkbench().getId(), catno.isAutoAssignForUpload());
+    	        catno.setAutoAssignForUpload(doAutoFill);
     			autoAssignCatNumChk.setSelected(catno.isAutoAssignForUpload());
     			final UploadField catno_uf = catno;
     			autoAssignCatNumChk.addActionListener(new ActionListener() {
     				@Override
     				public void actionPerformed(ActionEvent e) {
     					catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
+    					AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "." 
+    							+ wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());
     					if (wbSS.isDoIncrementalValidation()) {
     						wbSS.validateAll(null);
     					}
