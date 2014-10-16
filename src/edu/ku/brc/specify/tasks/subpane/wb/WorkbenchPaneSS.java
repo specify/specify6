@@ -185,6 +185,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UniquenessChecker;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
@@ -789,7 +790,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 geoRefToolBtn.setEnabled(true);
             }
         }
-        
+                
         if (isReadOnly)
         {
             convertGeoRefFormatBtn = null;
@@ -1149,7 +1150,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         //compareSchemas();
-        if (getIncremental())
+        if (getIncremental() && workbenchValidator == null)
         {
         	buildValidator();
         }
@@ -1195,6 +1196,20 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         ((WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class)).opening(this);
         ((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
+    }
+    
+    /**
+     * @return
+     */
+    public List<UploadField> getConfigables() {
+    	List <UploadField> result = null;
+    	if (workbenchValidator == null) {
+    		buildValidator(true);
+    	}
+    	if (workbenchValidator != null) {	
+    		result = workbenchValidator.getUploader().getAutoAssignableFields();
+    	}
+    	return result;
     }
     
     /**
@@ -3179,6 +3194,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         return reqdFields;
     }
     
+    
     /**
      * @return
      */
@@ -4285,6 +4301,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             	uploadDone();
             	return;
             }
+            
+            UploadField[] configs = uploadToolPanel.getConfiguredFields();
+            datasetUploader.copyFldConfigs(configs);
+            
             uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheet
 					.getScrollPane(), datasetUploader.getMainPanel());
 			mainPanel.remove(spreadSheet.getScrollPane());

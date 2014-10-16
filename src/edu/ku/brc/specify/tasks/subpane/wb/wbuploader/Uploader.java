@@ -35,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -5297,6 +5298,17 @@ public class Uploader implements ActionListener, KeyListener
             goToLastInvalidCell();
     }
 
+    /**
+     * @param fldConfigs
+     */
+    public void copyFldConfigs(UploadField[] fldConfigs) {
+    	if (fldConfigs != null) {
+    		for (UploadTable ut : uploadTables) {
+    			ut.copyFldConfigs(fldConfigs);
+    		}
+    	}
+    }
+    
     
  /*
   * Stuff to handling with preventing logins and disabling tasks during uploads.
@@ -5671,6 +5683,17 @@ public class Uploader implements ActionListener, KeyListener
 	public String getCurrentOp() 
 	{
 		return currentOp;
+	}
+	
+	/**
+	 * @return
+	 */
+	public List<UploadField> getAutoAssignableFields() {
+		List<UploadField> result = new ArrayList<UploadField>();
+		for (UploadTable ut : uploadTables) {
+			result.addAll(ut.getAutoAssignableFields());
+		}
+		return result;
 	}
 	
      /* @param structureErrors

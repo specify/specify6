@@ -1794,6 +1794,70 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     	
     }
+    
+    /**
+     * @param fldConfigs
+     */
+    public void copyFldConfigs(UploadField[] fldConfigs) {
+    	if (fldConfigs != null) {
+    		for (UploadField uf : fldConfigs) {
+    			copyFldConfig(uf);
+    		}
+    	}
+    }
+    
+    /**
+     * @param fld
+     * @return
+     */
+    private boolean isFieldFromMyTable(UploadField fld) {
+    	return fld.getField().getFieldInfo() != null
+    		&& fld.getField().getFieldInfo().getTableInfo().getTableId() ==
+				table.getTableInfo().getTableId();
+    }
+    
+    /**
+     * @param fld1
+     * @param fld2
+     * 
+     * Assumes fld2 has DBFieldInfo
+     * 
+     * @return
+     */
+    private boolean isFieldNameMatch(UploadField fld1, UploadField fld2) {
+    	return fld1.getField().getFieldInfo() != null
+				&& fld1.getField().getFieldInfo().getName().equals(fld2.getField().getFieldInfo().getName());
+    }
+    
+    /**
+     * @param fldConfig
+     */
+    public void copyFldConfig(UploadField fldConfig) {
+    	if (isFieldFromMyTable(fldConfig)) {
+    		for (List<UploadField> ufs : uploadFields) {
+    			for (UploadField uf : ufs) {
+    				if (isFieldNameMatch(uf, fldConfig)) {
+    					uf.copyConfig(fldConfig);
+    					break;
+    				}
+    			}
+    		}
+    	}
+    }
+    
+    public List<UploadField> getAutoAssignableFields() {
+    	List<UploadField> result = new ArrayList<UploadField>();
+    	for (List<UploadField> ufs : uploadFields) {
+    		for (UploadField uf : ufs) {
+    	    	UIFieldFormatterIFace formatter = uf.getField().getFieldInfo().getFormatter();
+    			if (formatter != null && formatter.isIncrementer()) {
+    				result.add(uf);
+    			}
+    		}
+    	}
+    	return result;
+    }
+    
     /**
      * @param fld
      * @return values of the correct class for fld's setter.
@@ -1984,7 +2048,8 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         if (formatter != null)
                         {
-                            if (isUploadRoot && StringUtils.isBlank(fldStr) && formatter.isIncrementer())
+                            if (isUploadRoot && StringUtils.isBlank(fldStr) && formatter.isIncrementer() 
+                            		&& ufld.isAutoAssignForUpload())
                             {
                                 if (!this.validatingValues || autoAssignedVal == null)
                                 {
@@ -2015,7 +2080,7 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 if (StringUtils.isBlank(fldStr))
                                 {
-                                	val = fldStr;
+                                	val = null;
                                 }
                                 else
                                 {
@@ -4042,9 +4107,10 @@ public class UploadTable implements Comparable<UploadTable>
         	}
         	blankButRequired = geoDataPresent;
         }
-        boolean isAutoAssignable = fld.getField().getFieldInfo() != null && fld.getField().getFieldInfo().getFormatter() != null
-            && fld.getField().getFieldInfo().getFormatter().isIncrementer(); 
-            //&& fld.getField().getFieldInfo().getFormatter().isNumeric();
+//        boolean isAutoAssignable = fld.getField().getFieldInfo() != null && fld.getField().getFieldInfo().getFormatter() != null
+//            && fld.getField().getFieldInfo().getFormatter().isIncrementer(); 
+//            //&& fld.getField().getFieldInfo().getFormatter().isNumeric();
+        boolean isAutoAssignable = fld.isAutoAssignForUpload();
         return blankButRequired && !isAutoAssignable;
     }
 
@@ -4520,6 +4586,9 @@ public class UploadTable implements Comparable<UploadTable>
 									continue;
 								}
 							}
+							if (fld.getValue() != null && !"".equals(fld.getValue()) && fld.isAutoAssignForUpload()) {
+								throw new Exception(UIRegistry.getResourceString("WB_UPLOAD_AutoAssMustBeBlankErrMsg"));
+							}
 							if (!pickListCheck(fld))
 							{
 								if (!fld.isReadOnlyValidValues())
@@ -4727,8 +4796,7 @@ public class UploadTable implements Comparable<UploadTable>
 										String.format(getResourceString("UploadTable.AttachmentPresentButNoData"), getTable().getTableInfo().getTitle()))));
 					}
 					
-				}
-				isBlank = isBlankSequence(isBlank, uploadData, row, seq, null);
+				} 				isBlank = isBlankSequence(isBlank, uploadData, row, seq, null);
 				if (isBlank)
 				/*
 				 * Disallow situations where 1-many lists have 'holes' - eg.

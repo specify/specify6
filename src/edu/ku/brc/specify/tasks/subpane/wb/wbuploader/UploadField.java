@@ -87,6 +87,8 @@ public class UploadField
      * True if the field must contain data
      */
     protected Boolean                    required = null;
+    
+    protected boolean 					 autoAssignForUpload = false; 
     /**
      * The methods used to set and get the field's contents in the java object representing the field's
      * Table.
@@ -238,15 +240,48 @@ public class UploadField
     	return getter;
     }
     
+    /**
+     * @param field
+     * @param index
+     * @param wbFldName
+     * @param relationship
+     */
     public UploadField(Field field, int index, String wbFldName, Relationship relationship)
     {
         this.field = field;
         this.index = index;
         this.wbFldName = wbFldName;
         this.relationship = relationship;
+        if (field != null && field.getFieldInfo() != null) {
+        	if (field.getFieldInfo().getFormatter() != null) {
+        		this.autoAssignForUpload = field.getFieldInfo().isRequired()
+        				&& field.getFieldInfo().getFormatter().isIncrementer();
+        	}
+        }
     }
 
-    @Override
+    /**
+     * @param configFld
+     */
+    public void copyConfig(UploadField configFld) {
+    	setAutoAssignForUpload(configFld.isAutoAssignForUpload());
+    }
+    
+    /**
+	 * @return the autoAssignForUpload
+	 */
+	public boolean isAutoAssignForUpload() {
+		return autoAssignForUpload;
+	}
+
+	/**
+	 * @param autoAssignForUpload the autoAssignForUpload to set
+	 */
+	public void setAutoAssignForUpload(boolean autoAssignForUpload) {
+		this.autoAssignForUpload = autoAssignForUpload;
+	}
+
+	@Override
     public String toString()
     {
         return wbFldName + ", " + String.valueOf(index) + ", " + field.getName();

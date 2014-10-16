@@ -3,14 +3,14 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -28,6 +28,7 @@ import org.jdesktop.animation.timing.TimingTarget;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -59,9 +60,12 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     protected JButton			    prevUnmatchedCellBtn   = null;
     protected JButton				nextUnmatchedCellBtn   = null;
     protected JLabel				unmatchedCellCountLbl  = null;
+    protected JCheckBox             autoAssignCatNumChk    = null;
+    protected JLabel                autoAssignCatNumLbl    = null;
     protected JButton				helpBtn                = null;
 
     protected final WorkbenchPaneSS	wbSS;
+    protected List<UploadField> configuredFields           = null;    
     
     public UploadToolPanel(final WorkbenchPaneSS wbSS, int startingMode)
     {
@@ -104,7 +108,6 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     	autoValidateLbl.setOpaque(true);
     	autoValidatePanel.add(autoValidateLbl, BorderLayout.CENTER);
 
-        
         Action prevErrAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F5, "PrevErr", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -197,9 +200,56 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
 
+        JPanel autoAssignCatNumPanel = new JPanel(new BorderLayout());
+        autoAssignCatNumChk = UIHelper.createI18NCheckBox("");
+        autoAssignCatNumLbl = UIHelper.createLabel("");
+        //autoAssignCatNumLbl.setBorder(new BorderUIResource.LineBorderUIResource(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBorder));
+        //autoAssignCatNumLbl.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
+        //autoAssignCatNumLbl.setOpaque(true);
+        autoAssignCatNumPanel.add(autoAssignCatNumChk, BorderLayout.WEST);
+        autoAssignCatNumPanel.add(autoAssignCatNumLbl, BorderLayout.CENTER);
+        autoAssignCatNumPanel.setVisible(false);
+        
+    	final List<UploadField> configables = wbSS.getConfigables();
+    	
+    	if (configables != null && configables.size() > 0) {
+    		UploadField catno = null;
+    		for (UploadField uf : configables) {
+    			if (uf.getField().getFieldInfo() != null) {
+    				DBFieldInfo ufi = uf.getField().getFieldInfo();
+    				if (ufi.getName().equalsIgnoreCase("catalognumber") &&
+    						ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject") &&
+    						ufi.getFormatter() != null && ufi.getFormatter().isIncrementer()) {
+    					catno = uf;
+    					break;
+    				}
+    			}
+    		}
+    		if (catno != null) {
+    			autoAssignCatNumPanel.setVisible(true);
+    			configuredFields = new ArrayList<UploadField>();
+    			configuredFields.add(catno);
+    			autoAssignCatNumLbl.setText(String.format(UIRegistry.getResourceString("WB_UPLOAD_AutoAssCatChk"), 
+    					catno.getField().getFieldInfo().getTitle()));
+    			autoAssignCatNumChk.setSelected(catno.isAutoAssignForUpload());
+    			final UploadField catno_uf = catno;
+    			autoAssignCatNumChk.addActionListener(new ActionListener() {
+    				@Override
+    				public void actionPerformed(ActionEvent e) {
+    					catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
+    					if (wbSS.isDoIncrementalValidation()) {
+    						wbSS.validateAll(null);
+    					}
+    				}    	        	
+    	        });
+    		}
+    	}
+        
+        JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
+        sep2.setVisible(autoAssignCatNumPanel.isVisible());
         JComponent[] compsArray = {/*autoValidateChk*/autoValidatePanel, invalidCellCountLbl,
                                    prevInvalidCellBtn,  nextInvalidCellBtn, sep1, /*autoMatchChk*/autoMatchPanel,
-                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn, helpBtn};
+                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn, sep2, autoAssignCatNumPanel, helpBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length);
         for (JComponent c : compsArray)
         {
@@ -209,7 +259,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
             }
         }
         
-        setLayout(new FormLayout(createDuplicateJGoodiesDef("p", "4px", availableComps.size())+",4px,", "2dlu,c:p:g,2dlu"));
+        setLayout(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "4px", availableComps.size())+",4px,", "2dlu,c:p:g,2dlu"));
         int x = 1;
         for (JComponent c : availableComps)
         {
@@ -228,6 +278,22 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         contractedSize = new Dimension(prefSize.width,0);
         
     }
+    
+    /**
+     * @return
+     */
+    public UploadField[] getConfiguredFields() {
+    	UploadField[] result = null;
+    	if (configuredFields != null) {
+    		result = new UploadField[configuredFields.size()];
+    		int i = 0;
+    		for (UploadField f : configuredFields) {
+    			result[i++] = f;
+    		}
+    	}
+    	return result;
+    }
+    
 	/* (non-Javadoc)
 	 * @see org.jdesktop.animation.timing.TimingTarget#begin()
 	 */
