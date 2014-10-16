@@ -304,7 +304,7 @@ public class TreeBuilder
                 PreparedStatement s3Stmt2 = dbS3Conn.prepareStatement(sql);
                 for (Integer id : tempSet)
                 {
-                    Object[] row = queryForRow(dbS3Conn, "SELECT _id, Name FROM geo where _id = "+id);
+                    Object[] row = queryForRow(dbS3Conn, "SELECT _id, FullName FROM geo where _id = "+id);
                     if (row != null)
                     {
                         System.out.println(row[0]+"  "+row[1]);

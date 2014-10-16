@@ -223,10 +223,10 @@ public class TaxonTreeBuilding
                 progressDelegate.setProcessPercent(true);
             }
             
-            familySQL = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t WHERE t.TaxonID = 369"; // Chiasmodontidae
+            //familySQL = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t WHERE t.TaxonID = 369"; // Chiasmodontidae
 
             
-            long startTime = System.currentTimeMillis();
+            //long startTime = System.currentTimeMillis();
             int prevPercent = 0;
             //-----------------------
             // Loop thru Families
