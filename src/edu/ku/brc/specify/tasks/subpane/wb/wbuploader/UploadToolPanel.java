@@ -218,8 +218,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     			if (uf.getField().getFieldInfo() != null) {
     				DBFieldInfo ufi = uf.getField().getFieldInfo();
     				if (ufi.getName().equalsIgnoreCase("catalognumber") &&
-    						ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject") &&
-    						ufi.getFormatter() != null && ufi.getFormatter().isIncrementer()) {
+    						ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
     					catno = uf;
     					break;
     				}

@@ -1845,12 +1845,15 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     }
     
+    /**
+     * @return
+     */
     public List<UploadField> getAutoAssignableFields() {
     	List<UploadField> result = new ArrayList<UploadField>();
     	for (List<UploadField> ufs : uploadFields) {
     		for (UploadField uf : ufs) {
     	    	UIFieldFormatterIFace formatter = uf.getField().getFieldInfo().getFormatter();
-    			if (formatter != null && formatter.isIncrementer()) {
+    			if (formatter != null && formatter.isNumeric() && formatter.isIncrementer()) {
     				result.add(uf);
     			}
     		}
