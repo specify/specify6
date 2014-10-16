@@ -1620,6 +1620,16 @@ public class Uploader implements ActionListener, KeyListener
     }
     	
     /**
+     * @param fld
+     * @return msg describing current cell contents length and max length for the mapped fld
+     */
+    protected String getInvalidLengthErrMsg(String value, int maxlen) {
+    	return String.format(UIRegistry.getResourceString("UploadTable.FieldHasTooManyChars"), 
+    			value.length(),
+    			maxlen);
+    }
+
+    /**
      * @param uploadTable
      * @param rowToValidate
      * @param colToValidate
@@ -1641,11 +1651,16 @@ public class Uploader implements ActionListener, KeyListener
                     {
                         String value = wbSS.getSpreadSheet().getValueAt(r, uf.getIndex())
                                 .toString();
-                        if (value.length() > wbSS.getColumnMaxWidth(uf.getIndex()))
+                        int maxlen = wbSS.getColumnMaxWidth(uf.getIndex());
+                        if (uf.getField().getFieldInfo() != null) {
+                        	maxlen = uf.getField().getFieldInfo().getLength();
+                        }
+                        if (maxlen != -1 && value.length() > maxlen)
                         {
                             result.add(new UploadTableInvalidValue(null, uploadTable, uf, r,
                                     new UploaderException(
-                                            getResourceString(WB_CELL_LENGTH_EXCEPTION),
+                                            getInvalidLengthErrMsg(value, maxlen),
+                                            //getResourceString(WB_CELL_LENGTH_EXCEPTION),
                                             UploaderException.INVALID_DATA)));
                         }
                     }
@@ -3694,29 +3709,27 @@ public class Uploader implements ActionListener, KeyListener
                             // invalid cell after ENTER/TAB/UP/DOWN
                             Component editor = wbSS.getSpreadSheet().getEditorComponent();
                             boolean addListener = true;
-                            KeyListener[] listeners = editor.getKeyListeners();
-                            for (int k = 0; k < listeners.length; k++)
-                            {
-                                if (listeners[k] instanceof Uploader)
-                                {
-                                    if (listeners[k] == this)
-                                    {
-                                        logDebug("already listening to spreadsheet editor");
-                                        addListener = false;
-                                        break;
-                                    }
-                                    // should never get here, but just in case:
-                                    logDebug("removing previous listener");
-                                    editor.removeKeyListener(listeners[k]);
-                                }
+                            if (editor != null) {
+                            	KeyListener[] listeners = editor.getKeyListeners();
+                            	for (int k = 0; k < listeners.length; k++) {
+                            		if (listeners[k] instanceof Uploader) {
+                            			if (listeners[k] == this) {
+                            				logDebug("already listening to spreadsheet editor");
+                            				addListener = false;
+                            				break;
+                            			}
+                            			// should never get here, but just in case:
+                            			logDebug("removing previous listener");
+                            			editor.removeKeyListener(listeners[k]);
+                            		}
+                            	}
+                            	if (addListener) {
+                            		logDebug("adding this as listener to spreadsheet editor");
+                            		editor.addKeyListener(this);
+                            		this.keyListeningTo.add(editor);
+                            	}
+                            	editor.requestFocusInWindow();
                             }
-                            if (addListener)
-                            {
-                                logDebug("adding this as listener to spreadsheet editor");
-                                editor.addKeyListener(this);
-                                this.keyListeningTo.add(editor);
-                            }
-                            editor.requestFocusInWindow();
                         }
                         else
                         {

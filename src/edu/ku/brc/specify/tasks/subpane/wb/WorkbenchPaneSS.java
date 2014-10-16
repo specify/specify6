@@ -5344,8 +5344,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             this.ceSaveBtn = saveBtn;
      
             
-            verifier = new LengthInputVerifier(caption, length);
-            uiComponent.setInputVerifier(verifier);
+            //verifier = new LengthInputVerifier(caption, length);
+            //uiComponent.setInputVerifier(verifier);
 
             uiComponent.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 //            docListener = new DocumentListener() {
@@ -5402,7 +5402,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         	if (result)
             {
-            	if (!verifier.verify(uiComponent))
+            	if (verifier != null && !verifier.verify(uiComponent))
             	{
             		ceSaveBtn.setEnabled(false);
                 	editRow = -1;
@@ -6088,7 +6088,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				{
 					if (condition == status)
 					{
-						System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
+						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
 						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
 						return true;
 					} 				

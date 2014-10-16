@@ -2126,7 +2126,7 @@ public class TemplateEditor extends CustomDialog
                 item.setSrcTableId(fieldInfo.getTableinfo().getTableId());
                 item.setTableName(fieldInfo.getTableinfo().getName());
                 short len = (short)fieldInfo.getFieldInfo().getLength();
-                item.setDataFieldLength(len == -1 ? 15 : len);
+                item.setDataFieldLength(len == -1 ? 32767 : len);
                 
                 item.setViewOrder(fmp.getViewOrder());
                 item.setOrigImportColumnIndex(origColNum.shortValue());
