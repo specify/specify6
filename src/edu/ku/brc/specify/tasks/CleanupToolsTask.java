@@ -64,13 +64,11 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataI
 import edu.ku.brc.specify.dbsupport.cleanuptools.CountryClearProcesser;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyAssignISOs;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyMerging;
-import edu.ku.brc.specify.dbsupport.cleanuptools.ISOCodeListDlg;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityGeoBoundsChecker2;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -90,10 +88,9 @@ public class CleanupToolsTask extends BaseTask
 {
     private static final Logger  log = Logger.getLogger(CleanupToolsTask.class);
     
-    private static final String  CLEANUP           = "CLEANUP";
-    private static final String  CLEANUP_TITLE     = "CLEANUP";
-    //private static final String  CLEANUP_SECURITY  = "CLEANUPEDIT";
-    private static final String  CLEANUP_ICON      = "CleanUp";
+    private static final String  ISOASSIGN         = "ISOASSIGN";
+    private static final String  ISOASSIGN_TITLE   = "ISOASSIGN_TITLE";
+    private static final String  ISOASSIGN_ICON    = "ISOIcon";
     private static final String  ON_TASKBAR        = "CleanupToolsTask.OnTaskbar";
     
     private static final String  GEO               = Geography.class.getSimpleName();
@@ -118,8 +115,8 @@ public class CleanupToolsTask extends BaseTask
      */
     public CleanupToolsTask()
     {
-        super(CLEANUP, getResourceString(CLEANUP_TITLE));
-        this.iconName = CLEANUP_ICON;
+        super(ISOASSIGN, getResourceString(ISOASSIGN_TITLE));
+        this.iconName = ISOASSIGN_ICON;
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
 
@@ -228,7 +225,7 @@ public class CleanupToolsTask extends BaseTask
     @Override
     public void preInitialize()
     {
-        CommandDispatcher.register(CLEANUP, this);
+        CommandDispatcher.register(ISOASSIGN, this);
 
         // Create and add the Actions NavBox first so it is at the top at the top
         geoNavBox      = new NavBox(DBTableIdMgr.getInstance().getTitleForId(Geography.getClassTableId()));
@@ -525,8 +522,8 @@ public class CleanupToolsTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        String label    = getResourceString(CLEANUP);
-        String hint     = getResourceString(CLEANUP);
+        String label    = getResourceString(ISOASSIGN);
+        String hint     = getResourceString(ISOASSIGN);
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
@@ -582,9 +579,9 @@ public class CleanupToolsTask extends BaseTask
         
         if (permissions == null || permissions.canModify())
         {
-            String    menuTitle = "CLNUP.CLEANUP_MENU"; //$NON-NLS-1$
-            String    mneu      = "CLNUP.CLEANUP_MNEU"; //$NON-NLS-1$
-            String    desc      = "CLNUP.CLEANUP_DESC"; //$NON-NLS-1$
+            String    menuTitle = "CLNUP.ISOASSIGN_MENU"; //$NON-NLS-1$
+            String    mneu      = "CLNUP.ISOASSIGN_MNEU"; //$NON-NLS-1$
+            String    desc      = "CLNUP.ISOASSIGN_DESC"; //$NON-NLS-1$
             JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
             mi.addActionListener(new ActionListener()
             {
@@ -623,7 +620,7 @@ public class CleanupToolsTask extends BaseTask
     @Override
     public PermissionEditorIFace getPermEditorPanel()
     {
-        return new BasicPermisionPanel(CLEANUP, "ENABLE", null, null, null);
+        return new BasicPermisionPanel(ISOASSIGN, "ENABLE", null, null, null);
     }
 
     /*

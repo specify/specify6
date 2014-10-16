@@ -34,6 +34,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -266,6 +269,16 @@ public class ISOCodeListDlg extends CustomDialog
      */
     private void tableRowChoosen()
     {
+        if (currentLevel == GeoRankType.eEarth && table.getSelectedRow() > -1)
+        {
+            Set<String> conts = new HashSet<String>(Arrays.asList(new String[] { "OO", "XO", "XQ", "ZH", "ZN", "OC", "AN" }));
+            String isoCode = isoList.get(table.getSelectedRow()).isoCode;
+            if (conts.contains(isoCode))
+            {
+                nextBtn.setEnabled(false);
+                return;
+            }
+        }
         nextBtn.setEnabled(table.getSelectedRow() > -1 && currentLevel.ordinal() < GeoRankType.eCountry.ordinal());
     }
     
