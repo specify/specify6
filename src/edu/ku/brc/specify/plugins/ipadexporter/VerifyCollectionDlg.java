@@ -248,7 +248,7 @@ public class VerifyCollectionDlg extends CustomDialog
                 	int issueCnt = 0;
                 	
                 	String mainFont = "<font face='verdana' color='black'>";
-                	String headHTML = "<htmL><head></head><body bgcolor='white'>" + mainFont;
+                	String headHTML = "<htmL><head></head><body bgcolor='#EEEEEE'>" + mainFont;
                 	//StringBuilder sb = new StringBuilder(headHTML);
                 	//htmlPane.setText(sb.toString()+"<BR><BR>Processing...</font></body></html>");
                 	
