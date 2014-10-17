@@ -3193,10 +3193,10 @@ public class iPadDBExporter implements VerifyCollectionListener
             progressDelegate.setDesc("Uploading data...");
             if (!IS_TESTING)
             {
-//                if (!uploadFiles())
-//                {
-//                    isInError = true;
-//                }
+                if (!uploadFiles())
+                {
+                    isInError = true;
+                }
             }
             
             SwingUtilities.invokeLater(new Runnable()

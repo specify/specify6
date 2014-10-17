@@ -220,13 +220,13 @@ public class TaxonTreeBuilding
             {
                 progressDelegate.setDesc("Calculating Taxonomic Counts...");
                 progressDelegate.setProcess(0, 100);
+                progressDelegate.setProcess(0);
                 progressDelegate.setProcessPercent(true);
             }
             
             //familySQL = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t WHERE t.TaxonID = 369"; // Chiasmodontidae
 
             
-            //long startTime = System.currentTimeMillis();
             int prevPercent = 0;
             //-----------------------
             // Loop thru Families
@@ -326,10 +326,9 @@ public class TaxonTreeBuilding
                 cnt++;
                 if (cnt % percentInx == 0) 
                 {
-                    int percent = Math.max((int)(((float)cnt / (float)totalRecords) * 100.0f), 100);
+                    int percent = Math.min((int)(((float)cnt / (float)totalRecords) * 100.0f), 100);
                     if (percent != prevPercent)
                     {
-                        //System.out.println(String.format("Elapsed: %5.2f - %d", ((float)(System.currentTimeMillis() - startTime) / 1000.0f), percent));
                         worker.firePropertyChange(iPadDBExporter.PROGRESS, 0, percent);
                         prevPercent = percent;
                     }

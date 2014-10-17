@@ -178,7 +178,7 @@ public class ProgressDialog extends JDialog
         
         if (isProcessPercent)
         {
-            int percent = (int)(((double)value) / ((double)origMax) * 100.0);
+            int percent = Math.min((int)(((double)value) / ((double)origMax) * 100.0), 100);
             processProgress.setValue(percent);
             processProgress.setString(value > 0 ? Integer.toString(percent) + "%" : "");
             
