@@ -60,10 +60,13 @@ public class DataImport
                                          final WorkbenchTemplateMappingItem wbtmi)
     {
         int maxLen = WorkbenchDataItem.getMaxWBCellLength();
-        if (/*wbtmi.getFieldInfo().getLength()*/wbtmi.getDataFieldLength() != null && wbtmi.getDataFieldLength() != -1 && /*wbtmi.getFieldInfo().getLength()*/ wbtmi.getDataFieldLength() < maxLen)
-        {
-            maxLen = wbtmi.getDataFieldLength()/*wbtmi.getFieldInfo().getLength()*/;
-        }
+       
+        //Don't chop off data here, give users opportunity to fix it themselves, or re-map the field
+//        if (/*wbtmi.getFieldInfo().getLength()*/wbtmi.getDataFieldLength() != null && wbtmi.getDataFieldLength() != -1 && /*wbtmi.getFieldInfo().getLength()*/ wbtmi.getDataFieldLength() < maxLen)
+//        {
+//            maxLen = wbtmi.getDataFieldLength()/*wbtmi.getFieldInfo().getLength()*/;
+//        }
+        
         if (value == null || value.length() <= maxLen ) 
         { 
         	return value; 
