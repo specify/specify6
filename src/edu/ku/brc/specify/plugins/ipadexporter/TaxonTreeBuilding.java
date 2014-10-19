@@ -24,8 +24,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -42,13 +47,21 @@ import edu.ku.brc.util.Pair;
  */
 public class TaxonTreeBuilding
 {
+    final int secsInHours = 3600;
+    final int secInMin    = 60;
+
     private ProgressDialog progressDelegate;
     private SwingWorker<Integer, Integer> worker;
     
     private Connection     dbS3Conn;
     private Connection     conn;
     private iPadDBExporter ipadExporter;
+    
     private int            totalRecords;
+    private int            processedCount;
+    
+    private AtomicInteger  timeRemaining;
+    private Timer          countDownTimer;
     
     /**
      * @param ipadExporter
@@ -177,9 +190,36 @@ public class TaxonTreeBuilding
         PreparedStatement coCountLookUpStmt = null;
         
         int transCnt = 0;
-        int cnt      = 0;
         try
-        {   
+        {
+            timeRemaining  = new AtomicInteger(0);
+            processedCount = 0;
+            
+            countDownTimer = new Timer(true); // Daemon Thread
+            countDownTimer.schedule(new TimerTask() {
+                @Override
+                public void run() 
+                {
+                    if (timeRemaining.get() > 0 && processedCount > 0)
+                    {
+                        int secondsRemaining = timeRemaining.get() - 1;
+                        timeRemaining.set(secondsRemaining);
+                        
+                        int  hours           = secondsRemaining / secsInHours;
+                        secondsRemaining    -= hours * secsInHours;
+                        int minutes          = secondsRemaining / secInMin;
+                        secondsRemaining    -= minutes * secInMin;
+                        
+                        final String timeStr = String.format("time remaining: %02d:%02d:%02d", hours, minutes, secondsRemaining);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                progressDelegate.setDesc("Calculating Taxonomic Counts, " + timeStr);
+                            }
+                        });
+                    }
+                }
+            }, 1000, 1000);
+            
             dbS3Conn.setAutoCommit(false);
             s3Stmt = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, TotalCOCnt, NumObjs, NodeNum, HighNodeNum) VALUES (?,?,?,?,?,?,?,?,?)");        
             stmt   = conn.createStatement();
@@ -218,14 +258,21 @@ public class TaxonTreeBuilding
             int percentInx = (int)Math.round((float)totalRecords *0.01f);
             if (progressDelegate != null)
             {
-                progressDelegate.setDesc("Calculating Taxonomic Counts...");
-                progressDelegate.setProcess(0, 100);
-                progressDelegate.setProcess(0);
-                progressDelegate.setProcessPercent(true);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        progressDelegate.setDesc("Calculating taxonomic counts...");
+                        progressDelegate.setProcess(0, 100);
+                        progressDelegate.setProcess(0);
+                        progressDelegate.setProcessPercent(true);
+                    }
+                });
             }
             
             //familySQL = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t WHERE t.TaxonID = 369"; // Chiasmodontidae
 
+            Calendar calendar = Calendar.getInstance();
+            
+            long    startTime       = calendar.getTimeInMillis();
             
             int prevPercent = 0;
             //-----------------------
@@ -323,10 +370,16 @@ public class TaxonTreeBuilding
                     }
                     rs.close();
                 }
-                cnt++;
-                if (cnt % percentInx == 0) 
+                processedCount++;
+                if (processedCount % percentInx == 0) 
                 {
-                    int percent = Math.min((int)(((float)cnt / (float)totalRecords) * 100.0f), 100);
+                    float percentFloat     = (float)processedCount / (float)totalRecords;
+                    float elapsedMilliSecs = (Calendar.getInstance()).getTimeInMillis() - startTime;
+                    float elapsedSecs      = elapsedMilliSecs / 1000.0f;
+                    int   secondsRemaining = (int)(elapsedSecs / percentFloat);
+                    timeRemaining.set(secondsRemaining);
+                    
+                    int percent = Math.min((int)(percentFloat * 100.0f), 100);
                     if (percent != prevPercent)
                     {
                         worker.firePropertyChange(iPadDBExporter.PROGRESS, 0, percent);
@@ -334,6 +387,14 @@ public class TaxonTreeBuilding
                     }
                 }
             }
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    progressDelegate.setDesc("Done calculating taxonomic counts.");
+                }
+            });
+            countDownTimer.cancel();
+            countDownTimer = null;
+            
             stmtGenera.close();
             rsFamily.close();
             

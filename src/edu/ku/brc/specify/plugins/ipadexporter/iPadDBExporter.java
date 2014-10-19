@@ -3193,10 +3193,10 @@ public class iPadDBExporter implements VerifyCollectionListener
             progressDelegate.setDesc("Uploading data...");
             if (!IS_TESTING)
             {
-                if (!uploadFiles())
-                {
-                    isInError = true;
-                }
+//                if (!uploadFiles())
+//                {
+//                    isInError = true;
+//                }
             }
             
             SwingUtilities.invokeLater(new Runnable()
@@ -3706,7 +3706,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     if (doAll || doGeography)
                     {
                         //doBuildGeography();
-                        TreeBuilder treeBuilder = new TreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn, colObjToCnt);
+                        GeoTreeBuilder treeBuilder = new GeoTreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn, colObjToCnt);
                         treeBuilder.process();
                         progressDelegate.incOverall();
                     }

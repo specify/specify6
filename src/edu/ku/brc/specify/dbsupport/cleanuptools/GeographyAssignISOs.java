@@ -51,6 +51,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -109,6 +110,9 @@ public class GeographyAssignISOs
     private final static String        GEONAME_LOOKUP_COUNTY_SQL    = "SELECT geonameid, ISOCode FROM geoname WHERE fcode = 'ADM2' AND (LOWER(asciiname) = ? OR LOWER(asciiname) = ?) AND country = ? AND admin1 = ?";  
     public  final static String        GEONAMES_INDEX_DATE_PREF     = "GEONAMES_INDEX_DATE_PREF";
     public  final static String        GEONAMES_INDEX_NUMDOCS       = "GEONAMES_INDEX_NUMDOCS";
+    
+    private final static Pattern       kSpecialCharsPattern = Pattern.compile("[,.;!?(){}\\[\\]<>%\\-+*&$@\\=\\/]"); //store it somewhere so 
+
 
     //private GeographyTreeDef           geoDef;
     private Agent                      createdByAgent;
@@ -239,32 +243,6 @@ public class GeographyAssignISOs
             ex.printStackTrace();
         }
     }
-    
-//    private boolean checkUniqueness(final int rankId)
-//    {
-//        String sql = adjustSQL(String.format("SELECT CNT, NM FROM (SELECT COUNT(Name) CNT, Name NM FROM geography WHERE RankID = %d AND GeographyTreeDefID = GEOTREEDEFID GROUP BY Name) T1 WHERE CNT > 1 ORDER BY NM ASC", rankId));
-//    	Vector<Object[]> items = BasicSQLUtils.query(sql);
-//    	if (items != null && items.size() > 0)
-//    	{
-//        	sql = adjustSQL(String.format("SELECT Name FROM geographytreedefitem WHERE RankID = %d AND GeographyTreeDefID = GEOTREEDEFID", rankId));
-//        	String rankName = BasicSQLUtils.querySingleObj(sql);
-//    		UIRegistry.displayInfoMsgDlg("There are " + rankName);
-//    		//return false;
-//    	}
-//    	return true;
-//    }
-    
-//    private boolean isUniquenessOK()
-//    {
-//    	if (checkUniqueness(100))
-//    	{
-//    		if (checkUniqueness(200))
-//    		{
-//    			return true;
-//    		}
-//    	}
-//    	return false;
-//    }
 
     /**
      * @return
@@ -687,7 +665,7 @@ public class GeographyAssignISOs
             if (i > 0) sb.append(' ');
             sb.append(parentNames[i]);
         }
-        log.debug("["+sb.toString()+"]");        //Query query = new FuzzyQuery(new Term("name", sb.toString()));
+        //log.debug("["+sb.toString()+"]");        //Query query = new FuzzyQuery(new Term("name", sb.toString()));
 
         String   isoCode   = null;
         Document doc       = null;
@@ -695,7 +673,8 @@ public class GeographyAssignISOs
         TopScoreDocCollector collector = TopScoreDocCollector.create(10, true);
         try
         {
-            Query q = new QueryParser(Version.LUCENE_47, "name", GeoCleanupFuzzySearch.getAnalyzer()).parse(sb.toString());
+            String searchStr = kSpecialCharsPattern.matcher(sb.toString()).replaceAll(" ").trim();
+            Query q = new QueryParser(Version.LUCENE_47, "name", GeoCleanupFuzzySearch.getAnalyzer()).parse(searchStr);
             luceneSearch.getSearcher().search(q, collector);
         } catch (ParseException e)
         {
@@ -897,7 +876,7 @@ public class GeographyAssignISOs
                         String oldName = querySingleObj(GEONAME_SQL + geoId);
                         tblWriter.log(parentNames[0], 
                                       parentNames[1] != null ? parentNames[1] : nbsp, 
-                                      parentNames[2] != null ? parentNames[2] : nbsp, 
+                                      //parentNames[2] != null ? parentNames[2] : nbsp, // Counties 
                                       oldName, nbsp, nbsp, "Skipped");
                         return;
                     }
@@ -948,7 +927,9 @@ public class GeographyAssignISOs
                 if (doStopProcessing)
                 {
                     return;
-                } else if (doSkipCountry)
+                }
+                
+                if (doSkipCountry)
                 {
                     doSkipCountry = rankId > 199;
                     if (doSkipCountry) return;
@@ -1093,7 +1074,7 @@ public class GeographyAssignISOs
                     String nbsp = "&nbsp;";
                     tblWriter.log(parentNames[0], 
                                   parentNames[1] != null ? parentNames[1] : nbsp, 
-                                  parentNames[2] != null ? parentNames[2] : nbsp, 
+                                  //parentNames[2] != null ? parentNames[2] : nbsp, // Counties 
                                   doUpdateName ? oldName : nbsp, 
                                   doUpdateName ? name : nbsp,
                                   doAddISOCode ? isoCode : nbsp, 
@@ -1295,7 +1276,8 @@ public class GeographyAssignISOs
             tblWriter       = new TableWriter(fullPath, "Geography ISO Code Report");
             tblWriter.startTable();
             String firstCol = continentsCBX.isSelected() ? "Continent / " : "";
-            tblWriter.logHdr(firstCol+"Country", "State", "County", "Old Name", "New Name", "ISO Code", "Action");
+            //tblWriter.logHdr(firstCol+"Country", "State", "County", "Old Name", "New Name", "ISO Code", "Action"); // for when we do counties
+            tblWriter.logHdr(firstCol+"Country", "State", "Old Name", "New Name", "ISO Code", "Action");
 
             // KUFish - United States
             // Herps - United State 853, USA 1065
@@ -1443,7 +1425,7 @@ public class GeographyAssignISOs
             {
                 msg += String.format("\nGeography records merged: %d", totalMerged);
             }
-            UIRegistry.showLocalizedMsg("INFORMATION", msg);
+           UIRegistry.writeTimedSimpleGlassPaneMsg(msg, 4000, true);
         }
     }
 }

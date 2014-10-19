@@ -761,11 +761,23 @@ public class GeoChooserDlg extends CustomDialog
         btnPressed  = HELP_BTN;
         setVisible(false);
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
      */
     @Override
-    protected void cancelButtonPressed() // Acts like the Skip Button
+    protected void cancelButtonPressed() // Acts like the Skip Button or Skip Country Button
+    {
+        isCancelled = false;
+        btnPressed  = whichBtns == OKCANCELAPPLYHELP ? APPLY_BTN : CANCEL_BTN;
+        setVisible(false);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
+     */
+    @Override
+    protected void applyButtonPressed() // Acts like the normal Skip Button when there
     {
         isCancelled = false;
         btnPressed  = CANCEL_BTN;

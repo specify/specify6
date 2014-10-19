@@ -1930,8 +1930,22 @@ public class UIRegistry
      * Fades screen and writes message to screen
      * @param localizedMsg the already localized message
      * @param milliseconds the number of milliseconds to pause showing the message
+     * @param doHideOnClick true to hide message on user click
+     */
+    public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
+                                                    final Integer milliseconds,
+                                                    final boolean doHideOnClick)
+    {
+        writeTimedSimpleGlassPaneMsg(localizedMsg, milliseconds, null, null, doHideOnClick);
+    }
+    
+    /**
+     * Fades screen and writes message to screen
+     * @param localizedMsg the already localized message
+     * @param milliseconds the number of milliseconds to pause showing the message
      * @param textColor the color of the text
      * @param pointSize the point size to draw the text
+     * @param doHideOnClick true to hide message on user click
      */
     public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
                                                     final Integer milliseconds, 

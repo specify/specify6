@@ -36,7 +36,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperIFace;
 import edu.ku.brc.ui.ProgressDialog;
 
-public class TreeBuilder
+public class GeoTreeBuilder
 {
     private ProgressDialog progressDelegate;
     private SwingWorker<Integer, Integer> worker;
@@ -58,7 +58,7 @@ public class TreeBuilder
      * @param conn
      * @param colObjToCnt
      */
-    public TreeBuilder(final iPadDBExporter ipadExporter, 
+    public GeoTreeBuilder(final iPadDBExporter ipadExporter, 
                        final Connection dbS3Conn, 
                        final Connection conn,
                        final IdMapperIFace colObjToCnt)

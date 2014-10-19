@@ -197,8 +197,6 @@ public class CountryClearProcesser
             String   updateSQL = adjustSQL(String.format("UPDATE geography SET GeographyCode=NULL WHERE NodeNumber >= %d AND NodeNumber <= %d", (Integer)row[1],(Integer)row[0]));
             total = BasicSQLUtils.update(updateSQL);
         }
-        
-        UIRegistry.displayInfoMsgDlg(getResourceString("CLNUP_GEO_CLEAR_RESULTS"));
+        UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString("CLNUP_GEO_CLEAR_RESULTS"), 4000, true);
     }
-
 }
