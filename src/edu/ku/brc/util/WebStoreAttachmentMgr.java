@@ -927,11 +927,6 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         values[1] = disp.getName();
         values[2] = div.getName();
         values[3] = inst.getName();
-        
-        for (int i=0;i<values.length;i++)
-        {
-            values[i] = StringUtils.replace(values[i], " ", "%20");
-        }
     }
     
     /**
