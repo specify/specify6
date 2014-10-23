@@ -311,7 +311,7 @@ public class QueryTask extends BaseTask
     	List<String> result = new ArrayList<String>();
     	for (String q  : list) {
             DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(q);
-    		if ((!doVisibility || !tbl.isHidden()) && (!doSecurity || tbl.getPermissions().canView())) {
+    		if (tbl != null && (!doVisibility || !tbl.isHidden()) && (!doSecurity || tbl.getPermissions().canView())) {
     			result.add(q);
     		}
     	}
@@ -1840,9 +1840,18 @@ public class QueryTask extends BaseTask
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
                                                 .getRankId(), "name", treeDef));
                                 if (defItem instanceof TaxonTreeDefItem) {
-                                	newTreeNode.getTableQRI().addField(
-                                        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                .getRankId(), "author", treeDef));
+                                	DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getFieldByName("author");
+                                	if (fi != null && !fi.isHidden()) {
+                                		newTreeNode.getTableQRI().addField(
+                                				new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                						.getRankId(), "author", treeDef));
+                                	}
+                                	fi = DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()).getFieldByName("groupNumber");
+                                	if (fi != null && !fi.isHidden()) {
+                                		newTreeNode.getTableQRI().addField(
+                                				new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                						.getRankId(), "groupNumber", treeDef));
+                                	}
                                 }
                             }
                             catch (Exception ex) {
