@@ -1420,11 +1420,12 @@ public class GeographyAssignISOs
             }
             
             UIRegistry.clearSimpleGlassPaneMsg();
-            String msg = String.format("Geography records updated: %d", totalUpdated);
-            if (doMerge)
-            {
-                msg += String.format("\nGeography records merged: %d", totalMerged);
-            }
+            String msg = totalUpdated == 0 ? "The selected geography records are up to date." : 
+                                             String.format("Geography records updated: %d", totalUpdated);
+//            if (doMerge)
+//            {
+//                msg += String.format("\nGeography records merged: %d", totalMerged);
+//            }
            UIRegistry.writeTimedSimpleGlassPaneMsg(msg, 4000, true);
         }
     }
