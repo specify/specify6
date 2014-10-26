@@ -166,10 +166,11 @@ public class iPadDBExporter implements VerifyCollectionListener
     private int coltrIdCnt     = 0;
     private int cntAmtCnt      = 0;
 
-    private IPadCloudIFace ipadCloud;
-    private Map<String, String>                      auxInfoMap  = null;
+    private IPadCloudIFace     ipadCloud;
+    private Map<String, String> auxInfoMap  = null;
     
     /**
+     * @param ipadCloud
      * @param dbName
      * @param width
      * @param height
@@ -192,7 +193,6 @@ public class iPadDBExporter implements VerifyCollectionListener
      */
     private void createProgressUI()
     {
-        
         progressDelegate = new ProgressDialog("", true, false);//UIRegistry.getGlassPane() == null);
         progressDelegate.setOverall(0, numSteps);
         
@@ -3195,35 +3195,12 @@ public class iPadDBExporter implements VerifyCollectionListener
             progressDelegate.setDesc("Uploading data...");
             if (!IS_TESTING)
             {
-//                if (!uploadFiles())
-//                {
-//                    isInError = true;
-//                }
+                if (!uploadFiles())
+                {
+                    isInError = true;
+                }
             }
             
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    shutdown();
-                    if (!isInError)
-                    {
-                        if (doZipFile)
-                        {
-                            showDownloadCode();
-                        }
-                    } else
-                    {
-                        showFinalErrorDlg();
-                    }
-                    
-                    if (changeListener != null)
-                    {
-                        changeListener.stateChanged(new ChangeEvent("done"));
-                    }
-                }
-            });
         }
     }
     
@@ -3795,25 +3772,8 @@ public class iPadDBExporter implements VerifyCollectionListener
                     if (doAll || doZipFile)
                     {
                         progressDelegate.incOverall();
-                        
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                //progressDelegate.setDesc("Exporting Charts...");
-                                iPadDBExporter.this.buildZipFile();
-                            }
-                        });
+                        buildZipFile();
                     }
-
-            
-                    /*if (doAll || doCollectors)
-                    {
-                        worker.firePropertyChange(MSG, "", "Updating Collectors...");
-                        doBuildCollectors();
-                        progressDelegate.incOverall();
-                    }*/
                     
                 } catch (Exception ex)
                 {
@@ -3834,10 +3794,14 @@ public class iPadDBExporter implements VerifyCollectionListener
                 if (isInError)
                 {
                     showFinalErrorDlg();
-                    if (changeListener != null)
-                    {
-                        changeListener.stateChanged(new ChangeEvent("done"));
-                    }
+                } else if (doZipFile)
+                {
+                    showDownloadCode();
+                }
+                
+                if (changeListener != null)
+                {
+                    changeListener.stateChanged(new ChangeEvent("done"));
                 }
             }
         };
@@ -4006,7 +3970,7 @@ public class iPadDBExporter implements VerifyCollectionListener
             AppContextMgr ac = AppContextMgr.getInstance();
             if (ac == null && dbConn != null)
             {
-                dbConn.close();
+                //dbConn.close();
                 dbConn = null;
             }
             if (dbS3Conn != null)

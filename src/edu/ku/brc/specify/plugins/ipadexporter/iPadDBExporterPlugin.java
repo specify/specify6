@@ -188,6 +188,7 @@ public class iPadDBExporterPlugin extends BaseTask
             logoutBtn         = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGOUT"),    "image", null, null);
             exportBtn         = createI18NButton("EXPORT_TO_IPAD");
 
+            createAccountBtn.setEnabled(false);
             setUIEnabled(false);
             loginBtn.setEnabled(false);
             popResourceBundle();
@@ -235,7 +236,20 @@ public class iPadDBExporterPlugin extends BaseTask
                     checkInstitutionInfo(true);
                 }
             });
+            
             exportBtn.setEnabled(false);
+            exportBtn.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent ae)
+                {
+                    if (checkInstitutionInfo(false))
+                    {
+                        processDB();
+                    }
+                }
+            });
+
         }
         
         //exportBtn.setEnabled(true); // YYY
@@ -274,7 +288,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void setUIEnabled(final boolean enabled)
     {
-        createAccountBtn.setEnabled(!enabled);
+        //createAccountBtn.setEnabled(!enabled);
         removeAccountBtn.setEnabled(enabled);
         
         iPadInfoSetupBtn.setEnabled(enabled);
@@ -414,16 +428,19 @@ public class iPadDBExporterPlugin extends BaseTask
             {
                 if (!iPadDBExporter.IS_TESTING) // ZZZ  
                 {
+                    writeSimpleGlassPaneMsg("Logging in...", 24);
                     userName = loginInfo.first;
                     if (iPadCloud.login(loginInfo.first, loginInfo.second))
                     {
                         remotePrefs.put(prefName, loginInfo.first);
                         loggedIn(loginInfo);
                         isLoggedIn = true;
+                        clearSimpleGlassPaneMsg();
                         break;
                     } else
                     {
                         wasInError = true;
+                        clearSimpleGlassPaneMsg();
                     }
                 } else
                 {
@@ -493,6 +510,8 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private Pair<String, String> getExportLoginCreds(final String userName, final boolean wasInError)
     {
+        loginBtn.setEnabled(false);
+        
         loadAndPushResourceBundle(RESOURCE_NAME);
         try
         {
@@ -567,6 +586,7 @@ public class iPadDBExporterPlugin extends BaseTask
         {
             popResourceBundle();
         }
+        loginBtn.setEnabled(true);
         return null;
     }
 
@@ -611,17 +631,6 @@ public class iPadDBExporterPlugin extends BaseTask
             
             starterPane = new SimpleDescPane(title, this, pb.getPanel());
             
-            exportBtn.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent arg0)
-                {
-                    if (checkInstitutionInfo(false)) // YYY
-                    {
-                        processDB();
-                    }
-                }
-            });
             popResourceBundle();
         }
         return starterPane;

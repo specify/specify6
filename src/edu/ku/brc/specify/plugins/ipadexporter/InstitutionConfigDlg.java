@@ -365,12 +365,12 @@ public class InstitutionConfigDlg extends CustomDialog
     public boolean isInstOK()
     {
         AppPreferences  remotePrefs = AppPreferences.getRemote();
-        String          picturelocation = remotePrefs.get(getRemotePicturePrefName(), "");
+        //String          picturelocation = remotePrefs.get(getRemotePicturePrefName(), "");
         String          curatorName = remotePrefs.get(curatorPref, "");
         String          colMgrName  = remotePrefs.get(colMgrPref, "");
         String          cloudURLStr = remotePrefs.get(cloudURLPref, kCloudURLStr);
 
-        return cloudInstId != null && StringUtils.isNotEmpty(picturelocation) && 
+        return cloudInstId != null && //StringUtils.isNotEmpty(picturelocation) && 
                                       StringUtils.isNotEmpty(curatorName) && 
                                       StringUtils.isNotEmpty(colMgrName) && 
                                       StringUtils.isNotEmpty(cloudURLStr);

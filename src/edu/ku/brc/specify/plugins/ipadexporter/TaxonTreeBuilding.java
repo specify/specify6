@@ -371,7 +371,7 @@ public class TaxonTreeBuilding
                     rs.close();
                 }
                 processedCount++;
-                if (processedCount % percentInx == 0) 
+                if (percentInx > 0 && processedCount % percentInx == 0) 
                 {
                     float percentFloat     = (float)processedCount / (float)totalRecords;
                     float elapsedMilliSecs = (Calendar.getInstance()).getTimeInMillis() - startTime;
@@ -389,6 +389,7 @@ public class TaxonTreeBuilding
             }
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
+                    worker.firePropertyChange(iPadDBExporter.PROGRESS, 0, 100);
                     progressDelegate.setDesc("Done calculating taxonomic counts.");
                 }
             });
