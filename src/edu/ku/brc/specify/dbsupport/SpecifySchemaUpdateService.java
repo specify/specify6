@@ -5105,6 +5105,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         worker.execute();
     }
     
+    /**
+     * @param conn
+     * @param databaseName
+     * @return
+     */
     private boolean fixSpQuerySQLLength(Connection conn, String databaseName)
     {
 		BasicSQLUtils.setSkipTrackExceptions(false);
@@ -5136,6 +5141,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return discipline;
     }
     
+    /**
+     * @return
+     */
     private boolean addGeoCleanupTables()
     {
         try
@@ -5151,13 +5159,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
         } catch (Exception e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;
     }
     
-    private boolean addIPadExporterTables(final Connection conn)
+    /**
+     * @param conn
+     * @return
+     */
+    public static boolean addIPadExporterTables(final Connection conn)
     {
         try
         {

@@ -78,6 +78,7 @@ import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
@@ -1015,6 +1016,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         
                         if (isOK)
                         {
+                            SpecifySchemaUpdateService.addIPadExporterTables(DBConnection.getInstance().getConnection());
                             FixDBAfterLogin.fixUserPermissions(true);
                             saveFormatters();
                         }

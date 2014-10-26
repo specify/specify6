@@ -1137,14 +1137,14 @@ public class GeographyAssignISOs
                            final int[]     parentRanks) throws SQLException
     {
         // Convert RankID to level
-        if (rankId > 200)
-        {
-            int levelFromRankId = (rankId / 100) - 2;
-            if (levelFromRankId != level)
-            {
-                badRankIDs.add(new GeoSearchResultsItem(nameStr, rankId, level * 100));
-            }
-        }
+//        if (rankId > 100)
+//        {
+//            int levelFromRankId = (rankId / 100) - 2;
+//            if (levelFromRankId != level)
+//            {
+//                badRankIDs.add(new GeoSearchResultsItem(nameStr, rankId, level * 100));
+//            }
+//        }
         
         Integer geonameId = selectedSearchItem != null ? selectedSearchItem.geonameId : null;
         GeoChooserDlg dlg = new GeoChooserDlg(nameStr, rankId, level, parentNames, parentRanks, geonameId, 

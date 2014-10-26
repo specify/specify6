@@ -55,6 +55,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -116,7 +118,8 @@ public class iPadDBExporterPlugin extends BaseTask
     public static final String EXPORT_DB  = "ExportRecordSet";
 
     // Data Members
-    private iPadDBExporter          iPadDBExporter   = null;
+    private String                  kErrorCreatingAcctMsg  = "";
+    private iPadDBExporter          iPadDBExporter    = null;
     private JButton                 exportBtn;
     private JLabel                  panelTitle;
     
@@ -175,6 +178,8 @@ public class iPadDBExporterPlugin extends BaseTask
             actionNavBox = new NavBox(getResourceString("Actions"));
             
             loadAndPushResourceBundle(RESOURCE_NAME);
+            
+            kErrorCreatingAcctMsg = getResourceString("ERROR_CREAT_ACCOUNT");
             
             createAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("CREATE_ACCT"),     "image", null, null);
             loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     "image", null, null);
@@ -247,7 +252,7 @@ public class iPadDBExporterPlugin extends BaseTask
             {
                 try
                 {
-                    Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                    Institution inst = iPadDBExporter.getCurrentInstitution();
                     cloudInstId = iPadCloud.getInstId(inst.getGuid());
                     if (cloudInstId == null)
                     {
@@ -296,7 +301,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void removeAccount()
     {
-        Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+        Institution inst = iPadDBExporter.getCurrentInstitution();
         if (iPadCloud.removeAccount(cloudInstId, inst.getGuid()))
         {
             // dialog account removed
@@ -310,6 +315,13 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void createAccount()
     {
+        Institution inst = iPadDBExporter.getCurrentInstitution();
+        if (StringUtils.isEmpty(inst.getUri()))
+        {
+            UIRegistry.showError("Institution must have an URL value.");
+            return;
+        }
+        
         final JTextField     userNameTF = createTextField(15);
         final JPasswordField passwordTF = createPasswordField();
         final JLabel         statusLbl  = createLabel(" ");
@@ -323,16 +335,16 @@ public class iPadDBExporterPlugin extends BaseTask
             @Override
             protected void okButtonPressed()
             {
+                // NOTE: THis call should fail indicating is is not being used
+                // so it if is OK then it is an error
                 String uName = userNameTF.getText();                
-                if (!iPadCloud.isUserNameOK(uName))
+                if (iPadCloud.isUserNameOK(uName))
                 {
                     setErrorMsg(statusLbl, getFormattedResStr("USRNM_IS_TAKEN", uName));
                 } else
                 {
                     super.okButtonPressed();
                 }
-                           
-                
             }
         };
         dlg.setOkLabel(getResourceString("NEW_USER"));
@@ -341,8 +353,6 @@ public class iPadDBExporterPlugin extends BaseTask
         
         if (!dlg.isCancelled())
         {
-            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-    
             cloudInstId = iPadCloud.createInstitution(inst.getName(), inst.getUri(), inst.getCode(), inst.getGuid());
             if (cloudInstId != null)
             {
@@ -353,7 +363,7 @@ public class iPadDBExporterPlugin extends BaseTask
 
             } else
             {
-                UIRegistry.showLocalizedError("ERROR_CREAT_ACCOUNT");
+                UIRegistry.showError(kErrorCreatingAcctMsg);
             }
         }
     }
@@ -509,13 +519,12 @@ public class iPadDBExporterPlugin extends BaseTask
                         protected void applyButtonPressed()
                         {
                             String uName = userNameTF.getText();
-                            
-                            if (!iPadCloud.isUserNameOK(uName))
-                            {
-                                super.applyButtonPressed();
-                            } else
+                            if (iPadCloud.isUserNameOK(uName))
                             {
                                 setErrorMsg(statusLbl, getFormattedResStr("USRNM_IS_TAKEN", uName));
+                            } else
+                            {
+                                super.applyButtonPressed();
                             }
                         }
                     };
@@ -532,10 +541,10 @@ public class iPadDBExporterPlugin extends BaseTask
                         String pwd   = new String(passwordTF.getPassword());
                         if (dlg.getBtnPressed() == CustomDialog.APPLY_BTN)
                         {
-                            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-                            if (!iPadCloud.addNewUser(uName, pwd, inst.getUri()))
+                            Institution inst = iPadDBExporter.getCurrentInstitution();
+                            if (!iPadCloud.addNewUser(uName, pwd, inst.getGuid()))
                             {
-                                setErrorMsg(statusLbl, getResourceString("ERROR_CREAT_ACCOUNT"));
+                                setErrorMsg(statusLbl, kErrorCreatingAcctMsg);
                                 isOK = false;
                             }
                         }
@@ -845,6 +854,7 @@ public class iPadDBExporterPlugin extends BaseTask
             }
             if (iPadDBExporter != null)
             {
+                iPadCloud.logout();
                 iPadDBExporter.shutdown();
                 iPadDBExporter = null;
             }

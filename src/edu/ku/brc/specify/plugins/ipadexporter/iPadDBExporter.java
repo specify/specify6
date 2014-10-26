@@ -60,6 +60,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -3270,6 +3272,22 @@ public class iPadDBExporter implements VerifyCollectionListener
     }
     
     /**
+     * @return institution read from database
+     */
+    public static Institution getCurrentInstitution()
+    {
+        Institution inst= AppContextMgr.getInstance().getClassObject(Institution.class);
+        try
+        {
+        DataProviderSessionIFace session     = DataProviderFactory.getInstance().createSession();
+            inst = session.get(Institution.class, inst.getId());
+            session.close();
+            
+        } catch (Exception ex) {}
+        return inst;
+    }
+    
+    /**
      * 
      */
     protected void showDownloadCode()
@@ -3390,7 +3408,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     {
                         tryAgain = false;
                         String dirName = helper.getSha1Hash();
-                        Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                        Institution inst = getCurrentInstitution();
                         Division    div  = AppContextMgr.getInstance().getClassObject(Division.class);
                         Discipline  dsp  = AppContextMgr.getInstance().getClassObject(Discipline.class);
                         Collection  col  = AppContextMgr.getInstance().getClassObject(Collection.class);
@@ -3524,7 +3542,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         
         kErroOnUploadMsg = getResourceString("ERROR_ON_UPLOAD");
         
-        Institution inst  = AppContextMgr.getInstance().getClassObject(Institution.class);
+        Institution inst  = getCurrentInstitution();
         Collection  col   = AppContextMgr.getInstance().getClassObject(Collection.class);
         String      colNm = col.getCollectionName();
         
