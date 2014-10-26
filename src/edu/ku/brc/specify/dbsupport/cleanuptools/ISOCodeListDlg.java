@@ -216,7 +216,7 @@ public class ISOCodeListDlg extends CustomDialog
                 
                 if (e.getClickCount() == 2)
                 {
-                    getOkBtn().doClick();
+                    nextBtn.doClick();
                 }
             }
         });
@@ -407,7 +407,8 @@ public class ISOCodeListDlg extends CustomDialog
         {
             if (column == 0)
             {
-                switch (currentLevel)
+                GeoRankType type = GeoRankType.values()[currentLevel.ordinal()+1];
+                switch (type)
                 {
                     case eContinent:
                         return "Continents";
@@ -421,6 +422,7 @@ public class ISOCodeListDlg extends CustomDialog
                     case eCounty:
                         return "Counties";
                 }
+                return "Geography";
             }
             return "ISO Code"; // I18N
         }
