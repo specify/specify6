@@ -305,10 +305,10 @@ public class ISOCodeListDlg extends CustomDialog
      */
     private void fillTable(final String whereStr, final int codeLen)
     {
-        String extra = codeLen > -1 ? String.format("AND LENGTH(ISOCode) = %d", codeLen) : "";
+        String extra = codeLen > -1 ? String.format("AND LENGTH(ISOCode) >= %d", codeLen) : "";
         String sql   = String.format("SELECT DISTINCT asciiname, ISOCode,geonameId FROM geoname WHERE %s %s ORDER BY asciiname", whereStr, extra);
         isoList.clear();
-        //System.out.println(sql);
+        System.out.println(sql);
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         for (Object[] row : rows)
         {
