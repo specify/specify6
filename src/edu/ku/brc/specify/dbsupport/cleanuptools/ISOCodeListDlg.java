@@ -271,7 +271,7 @@ public class ISOCodeListDlg extends CustomDialog
     {
         if (currentLevel == GeoRankType.eEarth && table.getSelectedRow() > -1)
         {
-            Set<String> conts = new HashSet<String>(Arrays.asList(new String[] { "OO", "XO", "XQ", "ZH", "ZN", "OC", "AN" }));
+            Set<String> conts = new HashSet<String>(Arrays.asList(new String[] { "OO", "XO", "XQ", "ZH", "ZN", "AN" }));
             String isoCode = isoList.get(table.getSelectedRow()).isoCode;
             if (conts.contains(isoCode))
             {
@@ -309,13 +309,19 @@ public class ISOCodeListDlg extends CustomDialog
         String sql   = String.format("SELECT DISTINCT asciiname, ISOCode,geonameId FROM geoname WHERE %s %s ORDER BY asciiname", whereStr, extra);
         isoList.clear();
         System.out.println(sql);
+        HashSet<String> nmSet = new HashSet<String>();
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         for (Object[] row : rows)
         {
             String cont = row[0].toString();
-            if (!cont.endsWith("Ocean") || (!cont.startsWith("North") && !cont.startsWith("South")))
+            if (!nmSet.contains(cont))
             {
-                isoList.add(new GeoSearchResultsItem(row[0].toString(), (Integer)row[2], row[1].toString()));
+                if (!cont.contains("Ocean") || 
+                        (!cont.startsWith("North") && !cont.startsWith("South") && !cont.startsWith("Western") && !cont.startsWith("Oceano")))
+                {
+                    isoList.add(new GeoSearchResultsItem(row[0].toString(), (Integer)row[2], row[1].toString()));
+                }
+                nmSet.add(cont);
             }
         }
         table.setModel(new ISOTableModel());
@@ -344,10 +350,16 @@ public class ISOCodeListDlg extends CustomDialog
         String sql = String.format("SELECT name,iso_alpha2,geonameId from countryinfo WHERE continent = '%s' ORDER BY name;", item.isoCode);
         isoList.clear();
         //System.out.println(sql);
+        HashSet<String> nmSet = new HashSet<String>();
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         for (Object[] row : rows)
         {
-            isoList.add(new GeoSearchResultsItem(row[0].toString(), (Integer)row[2], row[1].toString()));
+            String name = row[0].toString();
+            if (!nmSet.contains(name))
+            {
+                isoList.add(new GeoSearchResultsItem(name, (Integer)row[2], row[1].toString()));
+                nmSet.add(name);
+            }
         }
         table.setModel(new ISOTableModel());
     }
