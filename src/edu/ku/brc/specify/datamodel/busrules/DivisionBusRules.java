@@ -307,6 +307,11 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
             {
                 dlg.setTitle(title);
             }
+            @Override
+            public void helpContextChanged(String helpTarget)
+            {
+            	
+            }
         });
         UIHelper.centerAndShow(dlg);
         

@@ -44,28 +44,15 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.MacOSAppHandler;
-import edu.ku.brc.af.core.RecordSetFactory;
-import edu.ku.brc.af.core.SchemaI18NService;
-import edu.ku.brc.af.core.db.BackupServiceFactory;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.af.ui.ProcessListUtil.PROC_STATUS;
 import edu.ku.brc.af.ui.ProcessListUtil.ProcessListener;
-import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.af.ui.weblink.WebLinkMgr;
-import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -93,6 +80,8 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
     private String               appVersion          = "6.0"; //$NON-NLS-1$
     private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
  
+    private JMenu helpMenu;
+    
     /**
      * @throws HeadlessException
      */
@@ -161,6 +150,13 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                     {
                        setTitle(getAppTitle(title));
                     }
+                    @Override 
+                    public void helpContextChanged(String helpTarget) {
+                    	if (getHelpMenuItem() != null) {
+                    		HelpMgr.registerComponent(getHelpMenuItem(), helpTarget);
+                    	}
+                    }
+                    
         });
         
         setTitle(getAppTitle(getResourceString("MAIN_TITLE")));
@@ -232,6 +228,13 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         
     }
     
+    public JMenuItem getHelpMenuItem() {
+    	JMenuItem result = null;
+    	if (helpMenu != null && helpMenu.getItemCount() > 0) { 
+    		result = helpMenu.getItem(0);
+    	}
+    	return result;
+    }
     /**
      * @return
      */
@@ -261,7 +264,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                     });
         }
         
-        JMenu helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
         helpMenu.addSeparator();
         

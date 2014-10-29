@@ -228,6 +228,11 @@ public class CollectionBusRules extends BaseBusRules
             {
                 dlg.setTitle(title);
             }
+            @Override
+            public void helpContextChanged(String helpTarget)
+            {
+                
+            }
         });
         dlg.createUI();
         dlg.pack();

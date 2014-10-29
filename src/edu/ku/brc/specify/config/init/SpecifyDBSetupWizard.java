@@ -239,7 +239,9 @@ public class SpecifyDBSetupWizard extends JPanel
             dbPanel = new DatabasePanel(nextBtn, backBtn, getHelpCntxt("wizard_mysql_username"), true);
             panels.add(dbPanel);
             HelpMgr.registerComponent(helpBtn, dbPanel.getHelpContext());
-            
+            if (listener != null) {
+            	listener.helpContextChanged(dbPanel.getHelpContext());
+            }
             panels.add(new MasterUserPanel("SA",
                     "ENTER_SA_INFO", 
                     getHelpCntxt("wizard_master_username"),
@@ -487,6 +489,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     if (listener != null)
                     {
                         listener.panelChanged(getResourceString(panels.get(step).getPanelName()+".TITLE"));
+                        listener.helpContextChanged(panels.get(step).getHelpContext());
                     }
                 }
             });
@@ -703,6 +706,7 @@ public class SpecifyDBSetupWizard extends JPanel
         if (listener != null)
         {
             listener.panelChanged(getResourceString(panels.get(step).getPanelName()+".TITLE"));
+            listener.helpContextChanged(panels.get(step).getHelpContext());
         }
 
     }
@@ -1082,6 +1086,8 @@ public class SpecifyDBSetupWizard extends JPanel
         public abstract void hide();
         
         public abstract void finished();
+        
+        public abstract void helpContextChanged(String helpTarget);
 
     }
     

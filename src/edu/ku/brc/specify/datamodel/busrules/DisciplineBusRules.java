@@ -261,6 +261,11 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             {
                 dlg.setTitle(title);
             }
+            @Override
+            public void helpContextChanged(String helpTarget)
+            {
+                
+            }
         });
         UIHelper.centerAndShow(dlg);
         
@@ -760,6 +765,11 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             public void panelChanged(String title)
             {
                 dlg.setTitle(title);
+            }
+            @Override
+            public void helpContextChanged(String helpTarget)
+            {
+                
             }
         });
         UIHelper.centerAndShow(dlg);
