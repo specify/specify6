@@ -2003,7 +2003,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public void doAbout()
     {
         AppContextMgr acm        = AppContextMgr.getInstance();
-        boolean       hasContext = acm.hasContext();
+        boolean       showDetailedAbout = acm.hasContext() && acm.getClassObject(Division.class) != null && 
+        		acm.getClassObject(Discipline.class) != null && acm.getClassObject(Collection.class) != null;
         
         int baseNumRows = 14;
         String serverName = AppPreferences.getLocalPrefs().get("login.servers_selected", null);
@@ -2019,7 +2020,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         PanelBuilder iconPB    = new PanelBuilder(new FormLayout("p", "20px,t:p,f:p:g"));
         iconPB.add(iconLabel, cc.xy(1, 2));
         
-        if (hasContext)
+        if (showDetailedAbout)
         {
             final ArrayList<String> values = new ArrayList<String>();
             
@@ -2066,27 +2067,25 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
             addLabel(values, infoPB, lbl = UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
             lbl.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e)
-                {
-                    if (e.getClickCount() == 2)
-                    {
-                        openGlobalPrefs();
-                    }
-                }
+            	@Override
+            	public void mouseClicked(MouseEvent e)
+            	{
+            		if (e.getClickCount() == 2)
+            		{
+            			openGlobalPrefs();
+            		}
+            	}
             });
-
+            
             addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
             addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
             
             addLabel(values, infoPB, UIHelper.createFormLabel(tableMgr.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
             addLabel(values, infoPB, UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
-            
             addLabel(values, infoPB, UIHelper.createFormLabel(getGUIDTitle(Collection.getClassTableId())),  cc.xy(1, y));
             
             guidStr = acm.getClassObject(Collection.class).getGuid();
             addLabel(values, infoPB, UIHelper.createLabel(guidStr != null ? guidStr : noGUID),cc.xy(3, y)); y += 2;
-            
            //addLabel(values, infoPB, UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
            //addLabel(values, infoPB, UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
             
@@ -2165,7 +2164,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         pb.add(txtPane,           cc.xy(3, 1));
         Color bg = getBackground();
         
-        if (hasContext)
+        if (showDetailedAbout)
         {
             pb.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(5, 1));
             pb.add(infoPB.getPanel(), cc.xy(7, 1));
