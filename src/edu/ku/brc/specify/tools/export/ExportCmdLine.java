@@ -38,6 +38,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
@@ -577,6 +578,7 @@ public class ExportCmdLine {
         {
              zipFile += ".zip";
         }
+        StartUpTask.configureAttachmentManager();
         final BuildSearchIndex2 bsi = new BuildSearchIndex2(
                 getTheMapping(),
                 zipFile,
