@@ -135,7 +135,7 @@ public class ImportFileSplitter extends CustomDialog
 		
 		pb.add(UIHelper.createLabel(UIRegistry.getResourceString("ImportFileSplitter.FileSize")), cc.xy(2, 6)); 
 		//fileSize = UIHelper.createTextField(5);
-		fileSize = new PosIntTextField(10000);
+		fileSize = new PosIntTextField(25000);
 		fileSize.setText(String.valueOf(defaultChunkSize));
 		pb.add(fileSize, cc.xy(4, 6));
 		
