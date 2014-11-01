@@ -624,7 +624,7 @@ public class GeoChooserDlg extends CustomDialog
         }
         
         char   firstChar = nameStr.charAt(0);
-        String twoChars  = nameStr.substring(0, 2);
+        String twoChars  = nameStr.length() > 1 ? nameStr.substring(0, 2) : nameStr;
                 
         for (GeoSearchResultsItem p : coInfoList)
         {
