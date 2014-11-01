@@ -29,6 +29,9 @@ import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createFormLabel;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
+import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import static edu.ku.brc.ui.UIRegistry.showError;
@@ -48,6 +51,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
@@ -57,8 +61,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
@@ -243,6 +249,22 @@ public class GeographyAssignISOs
             ex.printStackTrace();
         }
     }
+    
+    private int getUnitedStatesIndex(final Object[] titles)
+    {
+        Vector<Object> list = new Vector<Object>();
+        Collections.addAll(list, titles);
+        String[] names = {"United States", "USA", "U.S.A.", "United States of America"};
+        for (String nm : names)
+        {
+            int index = list.indexOf(nm);
+            if (index > -1)
+            {
+                return index;
+            }
+        }
+        return -1;
+    }
 
     /**
      * @return
@@ -416,7 +438,9 @@ public class GeographyAssignISOs
         dlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Must be called after 'createUI'
         dlg.getOkBtn().setEnabled(false);
         
+        // AUTO Don't show Dialog because it is automatically setting what to do 
         centerAndShow(dlg);
+        
         if (dlg.isCancelled())
         {
             return false;
@@ -424,10 +448,41 @@ public class GeographyAssignISOs
         
         connectToDB();
         
-        doAllCountries  = new boolean[] {countriesCBX.isSelected(), stateCBX.isSelected(), countiesCBX.isSelected(), false};
-        doInvCountry    = new boolean[] {spCountriesCmbx.getSelectedIndex() > 0, spStatesCBX.isSelected(), spCountiesCBX.isSelected(), false};
-        doIndvCountryId = doInvCountry[0] ? countryIds.get(spCountriesCmbx.getSelectedIndex()) : null;
-               
+        if (true) // AUTO 
+        {
+            doAllCountries  = new boolean[] {countriesCBX.isSelected(), stateCBX.isSelected(), countiesCBX.isSelected(), false};
+            doInvCountry    = new boolean[] {spCountriesCmbx.getSelectedIndex() > 0, spStatesCBX.isSelected(), spCountiesCBX.isSelected(), false};
+            doIndvCountryId = doInvCountry[0] ? countryIds.get(spCountriesCmbx.getSelectedIndex()) : null;
+        } else
+        {
+            int indexOfUSA = getUnitedStatesIndex(titles);
+            if (indexOfUSA == -1)
+            {
+                Vector<Object> nameList = new Vector<Object>();
+                Collections.addAll(nameList, titles);
+                JList list = createList(nameList);
+                
+                JScrollPane sp = createScrollPane(list);
+                pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,f:p:g"));
+                pb.add(createLabel("Select the United States"), cc.xy(1, 1));
+                pb.add(sp, cc.xy(1, 3));
+                pb.setDefaultDialogBorder();
+                final CustomDialog askDlg = new CustomDialog((Frame)getTopWindow(), "Choose", 
+                                                          true, CustomDialog.OKCANCELHELP, pb.getPanel()); // I18N
+                dlg.setHelpContext("GeoCleanUpLevelChooser");
+                centerAndShow(askDlg);
+                if (!askDlg.isCancelled())
+                {
+                    indexOfUSA = list.getSelectedIndex();
+                }
+            }
+            
+            doAllCountries  = new boolean[] {true, false, false, false};
+            doInvCountry    = new boolean[] {indexOfUSA > -1, true, false, false};
+            doIndvCountryId = doInvCountry[0] ? countryIds.get(indexOfUSA) : null;
+        }
+        
+        
         // Check to see if it needs indexing.
         boolean shouldIndex = luceneSearch.shouldIndex();
         
@@ -1275,16 +1330,16 @@ public class GeographyAssignISOs
             String fullPath = getAppDataDir() + File.separator + "geo_report.html";
             tblWriter       = new TableWriter(fullPath, "Geography ISO Code Report");
             tblWriter.startTable();
-            String firstCol = continentsCBX.isSelected() ? "Continent / " : "";
+            //String firstCol = continentsCBX.isSelected() ? "Continent / " : "";
             //tblWriter.logHdr(firstCol+"Country", "State", "County", "Old Name", "New Name", "ISO Code", "Action"); // for when we do counties
-            tblWriter.logHdr(firstCol+"Country", "State", "Old Name", "New Name", "ISO Code", "Action");
+            tblWriter.logHdr("Continent / Country", "State", "Old Name", "New Name", "ISO Code", "Action");
 
             // KUFish - United States
             // Herps - United State 853, USA 1065
             // KUPlants 205
             
-            totalUpdated = 0;
-            totalMerged  = 0;
+            totalUpdated   = 0;
+            totalMerged    = 0;
             processedCount = 0;
             
             //-------------------
@@ -1326,7 +1381,10 @@ public class GeographyAssignISOs
                 //-------------------
                 // Do Country
                 //-------------------
-                geographyTotal = getCountAsInt(readConn, "SELECT COUNT(*) FROM geography WHERE GeographyCode IS NULL AND RankID = 200");
+                int countryCount = getCountAsInt(readConn, "SELECT COUNT(*) FROM geography WHERE GeographyCode IS NULL AND RankID = 200");
+                int statesCount  = getCountAsInt(readConn, "SELECT COUNT(*) FROM geography g1 INNER JOIN geography g2 ON g1.GeographyID = g2.ParentID WHERE g1.RankID = 200 AND g2.GeographyCode IS NULL");
+                geographyTotal   = countryCount + statesCount;
+                
                 sql  = "SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE ";
                 sql += doIndvCountryId != null ? "(GeographyCode IS NULL OR GeographyID = %d) AND" : "";
                 sql += " RankID = 200 ORDER BY Name ASC";
