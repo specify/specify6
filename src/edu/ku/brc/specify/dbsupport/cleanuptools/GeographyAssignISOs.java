@@ -933,7 +933,11 @@ public class GeographyAssignISOs
                                       parentNames[1] != null ? parentNames[1] : nbsp, 
                                       //parentNames[2] != null ? parentNames[2] : nbsp, // Counties 
                                       oldName, nbsp, nbsp, "Skipped");
-                        return;
+                        if (rankId > 200)
+                        {
+                            doSkipCountry = false;
+                            return;
+                        }
                     }
         
                     if (selectedSearchItem != null)
@@ -1349,7 +1353,7 @@ public class GeographyAssignISOs
             int[]    parentRanks    = new int[3];
             String[] parentISOCodes = new String[3];
             geographyTotal = getCountAsInt(readConn, adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL"));
-            String sql   = adjustSQL("SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL AND RankID = 100 ORDER BY Name ASC");
+            String sql     = adjustSQL("SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL AND RankID = 100 ORDER BY Name ASC");
             
             for (Object[] row : query(readConn, sql))
             {
