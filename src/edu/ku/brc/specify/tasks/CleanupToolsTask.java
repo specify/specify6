@@ -62,13 +62,16 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.AgentCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg;
 import edu.ku.brc.specify.dbsupport.cleanuptools.AgentNameCleanupParserDlg.DataItem;
 import edu.ku.brc.specify.dbsupport.cleanuptools.CountryClearProcesser;
+import edu.ku.brc.specify.dbsupport.cleanuptools.GeoSearchResultsItem;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyAssignISOs;
 import edu.ku.brc.specify.dbsupport.cleanuptools.GeographyMerging;
+import edu.ku.brc.specify.dbsupport.cleanuptools.ISOCodeListDlg;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupIndexer;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityCleanupProcessor;
 import edu.ku.brc.specify.dbsupport.cleanuptools.LocalityGeoBoundsChecker2;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -141,12 +144,20 @@ public class CleanupToolsTask extends BaseTask
             })); 
             
             geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEAR_ISOS"), GEO, getResourceString("CLNUP_GEO_CLEAR_ISOS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
-              public void actionPerformed(ActionEvent e)
-              {
-                  doClearISOs();
-              }
-          })); 
-      
+                public void actionPerformed(ActionEvent e)
+                {
+                    doClearISOs();
+                }
+            })); 
+        
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_ISO_REF"), GEO, getResourceString("CLNUP_GEO_ISO_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ISOCodeListDlg dlg = new ISOCodeListDlg(null, CustomDialog.OK_BTN);
+                    UIHelper.centerAndShow(dlg);
+                }
+            })); 
+        
 //          geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_MERGE"), GEO, getResourceString("CLNUP_GEO_MERGE_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
 //          public void actionPerformed(ActionEvent e)
 //          {

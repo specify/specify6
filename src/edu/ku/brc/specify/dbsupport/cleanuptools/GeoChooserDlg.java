@@ -686,7 +686,7 @@ public class GeoChooserDlg extends CustomDialog
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void globalRankSearch()
     {
-        ISOCodeListDlg dlg = new ISOCodeListDlg(null, CustomDialog.OK_BTN);
+        ISOCodeListDlg dlg = new ISOCodeListDlg(null, OKCANCELHELP);
         dlg.setAlwaysOnTop(true);
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())

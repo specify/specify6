@@ -89,7 +89,7 @@ public class ISOCodeListDlg extends CustomDialog
      */
     public ISOCodeListDlg(final Dialog dialog, final int whichBtns) throws HeadlessException
     {
-        super(dialog, "ISO Codes", true, OKCANCELHELP, null); // I18N
+        super(dialog, "ISO Codes", true, whichBtns, null); // I18N
     }
     
     /* (non-Javadoc)
@@ -100,7 +100,9 @@ public class ISOCodeListDlg extends CustomDialog
     {
         setHelpContext("GeoCleanUpFindISOCode");
         setCancelLabel(getResourceString("CLOSE"));            
-        setOkLabel(getResourceString("CLNUP_GEO_CHOOSE_ISO")); 
+        setOkLabel(this.whichBtns == CustomDialog.OK_BTN ? 
+                getResourceString("CLOSE") : 
+                getResourceString("CLNUP_GEO_CHOOSE_ISO")); 
         
         super.createUI();
         

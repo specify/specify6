@@ -29,6 +29,8 @@ import java.net.URL;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +96,8 @@ public class iPadRepositoryHelper
     //private String                  delURLStr   = null;
     
     private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", 
-                                               "colmgr", "icon", "curator", "disptype", "instguid", "collguid", "instimg"};
+                                               "colmgr", "icon", "curator", "disptype", "instguid", 
+                                               "collguid", "instimg", "created"};
     private String[]                values  = new String[symbols.length];
     
     static
@@ -254,7 +257,9 @@ public class iPadRepositoryHelper
      */
     public Map<String, String> getAuxilaryInfo(final String instImageName)
     {
-        AppContextMgr appMgr = AppContextMgr.getInstance();
+        AppContextMgr    appMgr        = AppContextMgr.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String           nowStr        = dateFormatter.format(new Timestamp(System.currentTimeMillis()));
         
         TreeMap<String, String> auxInfoMap = new TreeMap<String, String>();
         if (appMgr != null)
@@ -289,19 +294,20 @@ public class iPadRepositoryHelper
             Pair<String, String> names = getCuratorName(coll);
             if (names == null) return null;
             
-            values[0] = coll.getCollectionName();
-            values[1] = disp.getName();
-            values[2] = div.getName();
-            values[3] = inst.getName();
-            values[4] = spUser.getName();
-            values[5] = agent.toString();
-            values[6] = StringUtils.isEmpty(names.second) ? agent.toString() : names.second;//colMgr != null ? colMgr.toString() : values[5];
-            values[7] = iconName;
-            values[8] = StringUtils.isEmpty(names.first) ? agent.toString() : names.first;
-            values[9] = disp.getType();
+            values[0]  = coll.getCollectionName();
+            values[1]  = disp.getName();
+            values[2]  = div.getName();
+            values[3]  = inst.getName();
+            values[4]  = spUser.getName();
+            values[5]  = agent.toString();
+            values[6]  = StringUtils.isEmpty(names.second) ? agent.toString() : names.second;//colMgr != null ? colMgr.toString() : values[5];
+            values[7]  = iconName;
+            values[8]  = StringUtils.isEmpty(names.first) ? agent.toString() : names.first;
+            values[9]  = disp.getType();
             values[10] = inst.getGuid();
             values[11] = coll.getGuid();
             values[12] = instImageName;
+            values[13] = nowStr;
             
             for (int i=0;i<values.length;i++)
             {

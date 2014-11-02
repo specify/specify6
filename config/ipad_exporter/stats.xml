@@ -23,13 +23,13 @@
        <stat tbl="2" grp="3" name="num_loc" desc="Localities">
           <![CDATA[SELECT COUNT(*) FROM locality WHERE DisciplineID = DSPLNID]]>
        </stat>
-       <stat tbl="2" grp="3" name="num_locgr" desc="Georef'ed Localities">
+       <stat tbl="2" grp="3" name="num_locgr" desc="Georeferenced Localities">
           <![CDATA[SELECT COUNT(*) FROM locality WHERE DisciplineID = DSPLNID AND Latitude1 is not NULL AND Longitude1 is not NULL]]>
        </stat>
        <stat tbl="63" grp="3" name="num_preps" desc="Preparations">
           <![CDATA[SELECT COUNT(*) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
        </stat>
-       <stat tbl="63" grp="3" name="num_prpcnt" desc="Total Prep Counts">
+       <stat tbl="63" grp="3" name="num_prpcnt" desc="Total Preparations">
           <![CDATA[SELECT SUM(IF (CountAmt IS NULL, 1, CountAmt)) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
        </stat>
        <stat tbl="100" grp="3" name="num_litho" desc="Litho Stratigraphy">
