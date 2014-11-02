@@ -436,6 +436,7 @@ public class GeoChooserDlg extends CustomDialog
             }
             
             //if (doAllCountries[0])
+            if (false) // hidding it for now
             {
                 progressBar = new JProgressBar(0, 100);
                 progressBar.setStringPainted(true);
@@ -685,7 +686,8 @@ public class GeoChooserDlg extends CustomDialog
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void globalRankSearch()
     {
-        ISOCodeListDlg dlg = new ISOCodeListDlg(null,CustomDialog.OK_BTN);
+        ISOCodeListDlg dlg = new ISOCodeListDlg(null, CustomDialog.OK_BTN);
+        dlg.setAlwaysOnTop(true);
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {

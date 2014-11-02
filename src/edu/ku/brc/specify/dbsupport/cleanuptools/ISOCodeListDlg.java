@@ -169,11 +169,10 @@ public class ISOCodeListDlg extends CustomDialog
             index += 2;
         }
         
-        PanelBuilder pbck = new PanelBuilder(new FormLayout("p", "f:p:g,p,10px,p,f:p:g"));
-        pbck.add(backBtn,   cc.xy(1, 2));
-        pbck.add(nextBtn,   cc.xy(1, 4));
+        PanelBuilder pbck = new PanelBuilder(new FormLayout("p", "f:p:g, p,4px,p"));
+        pbck.add(backBtn, cc.xy(1, 2));
+        pbck.add(nextBtn, cc.xy(1, 4));
 
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,4px,p", "p,8px,p,2px,f:p:g,4px,p"));
         
         isoList = new Vector<GeoSearchResultsItem>();
         table   = new JTable();
@@ -183,15 +182,15 @@ public class ISOCodeListDlg extends CustomDialog
         DefaultTableCellRenderer dtcr = (DefaultTableCellRenderer) tcr;
         dtcr.setHorizontalAlignment(SwingConstants.CENTER);
 
-        PanelBuilder pb2 = new PanelBuilder(new FormLayout("c:p:g", "p"));
-        pb2.add(pbc.getPanel(), cc.xy(1,1));
+        PanelBuilder pb2 = new PanelBuilder(new FormLayout("f:p:g,8px,p,", "p"));
+        pb2.add(pbc.getPanel(),  cc.xy(1, 1));
+        pb2.add(pbck.getPanel(), cc.xy(3, 1));
 
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,p,2px,f:p:g,4px,p"));
         int y = 1;
         pb.add(pb2.getPanel(), cc.xy(1,1)); y += 2;
         pb.add(new JLabel("Click on an item in the list:"), cc.xy(1,y)); y += 2;   // I18N
         pb.add(createScrollPane(table), cc.xy(1,y)); y += 2;
-        
-        pb.add(pbck.getPanel(), cc.rchw(1, 3, 7, 1));
 
         pb.setDefaultDialogBorder();
         contentPanel = pb.getPanel();
@@ -223,6 +222,8 @@ public class ISOCodeListDlg extends CustomDialog
         
         currentLevel = GeoRankType.eEarth;
         fillTableFromItem(null); // eEarth doesn't need an item
+        
+        table.getColumnModel().getColumn(0).setPreferredWidth(260);
     }
 
     /**
