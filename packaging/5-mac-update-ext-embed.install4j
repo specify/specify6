@@ -475,22 +475,16 @@
                             <string>String version = System.getProperty("os.version");
 int count = 0;
 int i = 0;
-
 while(version.indexOf('.') != -1) {
     i = version.indexOf('.');
     version = version.substring(0,i)+version.substring(i+1);
     count++;
 }
-
-if(count == 2 && Integer.parseInt(version) &lt; 1073) {
+if(count == 2 &amp;&amp; Integer.parseInt(version) &lt; 1073) {
     return false;
-}
-else if(count == 1 && Integer.parseInt(version) &lt; 108)
-{
+} else if(count == 1 &amp;&amp; Integer.parseInt(version) &lt; 108) {
     return false;
-}
-else
-{
+} else {
     return true;
 }</string>
                           </void>
