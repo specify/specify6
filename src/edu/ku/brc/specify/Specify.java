@@ -285,7 +285,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private boolean              isWorkbenchOnly     = false;
     
     private String               appName             = "Specify"; //$NON-NLS-1$
-    private String               appVersion          = "6.0"; //$NON-NLS-1$
+    private String               appVersion          = "6"; //$NON-NLS-1$
     private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
@@ -2222,7 +2222,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Award DBI-0960913 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6.0 Copyright \u00A9 2013 University of Kansas Center for Research. " + 
+        "Specify 6 Copyright \u00A9 2014 University of Kansas Center for Research. " + 
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
