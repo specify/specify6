@@ -155,6 +155,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -8871,18 +8872,22 @@ public class BuildSampleDatabase
                                 if (StringUtils.isNotEmpty(fName))
                                 {
                                     DBFieldInfo fld = tbl.getFieldByName(fName);
-                                    if (fld != null)
+                                    DBRelationshipInfo rel = null;
+                                    if (fld == null) {
+                                    	rel  = tbl.getRelationshipByName(fName);
+                                    }
+                                    if (fld != null || rel != null)
                                     {
-                                        setFieldVisible(tbl.getName(), fld.getName(), discipline);
+                                        setFieldVisible(tbl.getName(), fld != null ? fld.getName() : rel.getName(), discipline);
                                     } else
                                     {
-                                        showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                        showError(showFieldsFileName + " in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
                                     }
                                 }
                             }
                         } else
                         {
-                            showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
+                            showError(showFieldsFileName + " in ["+disciplineDirName+"] has bad table name ["+tName+"]");
                         }
                     }
                 }   
