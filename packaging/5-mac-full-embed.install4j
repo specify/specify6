@@ -635,24 +635,26 @@
                       <void property="script">
                         <object class="com.install4j.api.beans.ScriptProperty">
                           <void property="value">
-                            <string>if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) &gt;= 1073)
-{
-    return true;
+                            <string>String version = System.getProperty("os.version");
+int count = 0;
+int i = 0;
+
+while(version.indexOf('.') != -1) {
+    i = version.indexOf('.');
+    version = version.substring(0,i)+version.substring(i+1);
+    count++;
 }
-else if(System.getProperty("os.version").replace(".", "").length() == 3)
+
+if(count == 2 && Integer.parseInt(version) &lt; 1073) {
+    return false;
+}
+else if(count == 1 && Integer.parseInt(version) &lt; 108)
 {
-    if(Integer.parseInt(System.getProperty("os.version").replace(".", "")) &gt;= 108)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 else
 {
-    return false;
+    return true;
 }</string>
                           </void>
                         </object>
