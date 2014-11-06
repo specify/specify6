@@ -3200,14 +3200,13 @@ public class iPadDBExporter implements VerifyCollectionListener
             doBuildZipFile(ZIP_FILE, fileNamesForExport);
             
             progressDelegate.setDesc("Uploading data...");
-//            if (!IS_TESTING)
-//            {
-//                if (!uploadFiles())
-//                {
-//                    isInError = true;
-//                }
-//            }
-            
+            if (!IS_TESTING)
+            {
+                if (!uploadFiles())
+                {
+                    isInError = true;
+                }
+            }
         }
     }
     
