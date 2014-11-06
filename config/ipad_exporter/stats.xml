@@ -3,24 +3,24 @@
           <![CDATA[SELECT * FROM (SELECT tn, COUNT(tx) AS namecnt, tx FROM (SELECT dt.TaxonId, taxon.TaxonID AS tx, taxon.FullName AS tn FROM taxon,determination AS dt WHERE dt.TaxonId = taxon.TaxonID AND dt.CollectionMemberID = COLMEMID) AS newTable GROUP BY tx ORDER BY namecnt DESC) T4 WHERE namecnt > 10]]>
        </stat>
        <stat tbl="3" grp="2" name="top_countries" desc="By Countries">
-          <![CDATA[SELECT g.Name AS Country, (select COUNT(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber AND co.CollectionMemberID = COLMEMID AND ce.StartDate IS NOT NULL AND YEAR(ce.StartDate) <= YEAR(CURDATE()) ) AS SpecimenCount, g.GeographyID AS ID FROM geography g where g.rankid = 200 ORDER BY SpecimenCount DESC]]>
+          <![CDATA[SELECT * FROM (SELECT Country, SUM(SpecimenCount) CNTSUM FROM (SELECT g.Name AS Country, g.GeographyCode AS ISO, (select COUNT(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber AND co.CollectionMemberID = COLMEMID AND ce.StartDate IS NOT NULL AND YEAR(ce.StartDate) <= YEAR(CURDATE()) ) AS SpecimenCount, g.GeographyID AS ID FROM geography g where g.rankid = 200) AS T1 GROUP BY ISO) T2 ORDER BY CNTSUM DESC]]>
        </stat>
        <stat tbl="1" grp="3" name="num_co" desc="Collection Objects">
           <![CDATA[SELECT COUNT(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID]]>
        </stat>
-       <stat tbl="4" grp="3" name="num_txu" desc="Taxa Used in Determinations">
+       <stat tbl="4" grp="3" name="num_txu" desc="Species in Collection">
           <![CDATA[SELECT COUNT(DISTINCT d.TaxonID) FROM determination d INNER JOIN taxon t ON t.TaxonID = d.TaxonID WHERE d.CollectionMemberID = COLMEMID AND d.IsCurrent <> 0 AND t.IsAccepted <> 0]]>
        </stat>
-       <stat tbl="4" grp="3" name="num_tx" desc="Taxa in Database">
+       <stat tbl="4" grp="3" name="num_tx" desc="Scientific Names in Database">
           <![CDATA[SELECT COUNT(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID]]>
        </stat>
-       <stat tbl="3" grp="3" name="num_geou" desc="Geography Used">
+       <stat tbl="3" grp="3" name="num_geou" desc="Geographical Entities Used">
           <![CDATA[SELECT COUNT(DISTINCT g.GeographyID) FROM locality l INNER JOIN geography g ON g.GeographyID = l.GeographyID WHERE l.DisciplineID = DSPLNID AND g.IsAccepted <> 0]]>
        </stat>
-       <stat tbl="3" grp="3" name="num_geo" desc="Geography">
+       <stat tbl="3" grp="3" name="num_geo" desc="Geographical Entities">
           <![CDATA[SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]>
        </stat>
-       <stat tbl="2" grp="3" name="num_loc" desc="Localities">
+       <stat tbl="2" grp="3" name="num_loc" desc="Collecting Localities">
           <![CDATA[SELECT COUNT(*) FROM locality WHERE DisciplineID = DSPLNID]]>
        </stat>
        <stat tbl="2" grp="3" name="num_locgr" desc="Georeferenced Localities">

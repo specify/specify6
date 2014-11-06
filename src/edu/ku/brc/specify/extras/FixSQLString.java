@@ -218,7 +218,7 @@ public class FixSQLString extends CustomDialog
             {
                 dstTA.requestFocus();
                 dstTA.selectAll();
-                //UIHelper.setTextToClipboard(dstTA.getText());
+                UIHelper.setTextToClipboard(dstTA.getText());
             }
         });
         

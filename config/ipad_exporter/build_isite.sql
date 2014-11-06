@@ -17,6 +17,7 @@ CREATE TABLE `taxon` (
 `RankID` INTEGER,
 `ParentID` INTEGER,
 `FamilyID` INTEGER,
+`GenusID` INTEGER,
 `TotalCOCnt` INTEGER,
 `NumObjs` INTEGER,
 `NodeNum` INTEGER,
@@ -26,6 +27,7 @@ CREATE TABLE `taxon` (
 CREATE TABLE `geo` (
 `_id` INTEGER PRIMARY KEY, 
 `FullName` TEXT,
+`Name` TEXT,
 `ISOCode` TEXT,
 `RankID` INTEGER,
 `ParentID` INTEGER,
@@ -108,6 +110,7 @@ CREATE TABLE `colobj` (
 `CountryID` INTEGER,
 `ContinentID` INTEGER,
 `FamilyID` INTEGER,
+`GenusID` INTEGER,
 `GeoID` INTEGER,
 `StateID` INTEGER
 );

@@ -202,7 +202,7 @@ public class GeoTreeBuilder
         try
         {   
             dbS3Conn.setAutoCommit(false);
-            String upSQL = "INSERT INTO geo (_id, FullName, ISOCode, RankID, ParentID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum, ContinentId, CountryId, Latitude, Longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String upSQL = "INSERT INTO geo (_id, FullName, Name, ISOCode, RankID, ParentID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum, ContinentId, CountryId, Latitude, Longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             s3Stmt = dbS3Conn.prepareStatement(upSQL);        
             stmt   = conn.createStatement();
             String selSQL = "SELECT co.CollectionObjectID, g.NodeNumber FROM collectionobject co " +
@@ -216,13 +216,13 @@ public class GeoTreeBuilder
             {
                 for (Integer recId : rankSets.get(rankId))
                 {
-                    String sql = String.format("SELECT GeographyID, Name, GeographyCode, RankID, ParentID, HighestChildNodeNumber, NodeNumber FROM geography WHERE GeographyID = %d", recId);
+                    String sql = String.format("SELECT GeographyID, FullName, Name, GeographyCode, RankID, ParentID, HighestChildNodeNumber, NodeNumber FROM geography WHERE GeographyID = %d", recId);
                     ResultSet rs = stmt.executeQuery(sql); // Get the GeoID and LocID
                     if (rs.next())
                     {
                         int id          = rs.getInt(1);
-                        int highNodeNum = rs.getInt(6);
-                        int nodeNum     = rs.getInt(7);
+                        int highNodeNum = rs.getInt(7);
+                        int nodeNum     = rs.getInt(8);
                         
                         Integer coTotal = null; // Total count of this level and all below
                         Integer coCount = null; // Count of current level
@@ -260,19 +260,20 @@ public class GeoTreeBuilder
                         s3Stmt.setInt(1,    id); // GeographyID
                         s3Stmt.setString(2, rs.getString(2));
                         s3Stmt.setString(3, rs.getString(3));
-                        s3Stmt.setInt(4,    rs.getInt(4));
+                        s3Stmt.setString(4, rs.getString(4));
                         s3Stmt.setInt(5,    rs.getInt(5));
+                        s3Stmt.setInt(6,    rs.getInt(6));
                         
-                        s3Stmt.setInt(6, coTotal != null ? coTotal : 0); // Count of all levels
-                        s3Stmt.setInt(7, coCount != null ? coCount : 0); // Count of just this level (sometimes it is zero)
+                        s3Stmt.setInt(7, coTotal != null ? coTotal : 0); // Count of all levels
+                        s3Stmt.setInt(8, coCount != null ? coCount : 0); // Count of just this level (sometimes it is zero)
 
-                        s3Stmt.setInt(8, highNodeNum);
-                        s3Stmt.setInt(9, nodeNum);
+                        s3Stmt.setInt(9, highNodeNum);
+                        s3Stmt.setInt(10, nodeNum);
                         
-                        s3Stmt.setObject(10, null); // ContinentID
-                        s3Stmt.setObject(11, null); // CountryId
-                        s3Stmt.setObject(12, null); // Lat
-                        s3Stmt.setObject(13, null); // Lon
+                        s3Stmt.setObject(11, null); // ContinentID
+                        s3Stmt.setObject(12, null); // CountryId
+                        s3Stmt.setObject(13, null); // Lat
+                        s3Stmt.setObject(14, null); // Lon
                         
                         if (s3Stmt.executeUpdate() != 1)
                         {

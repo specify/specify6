@@ -1848,6 +1848,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                             final int prevId,
                             final HashMap<String, Integer> typeStatusHash,
                             final HashMap<Integer, Integer> taxaToFamily,
+                            final HashMap<Integer, Integer> taxaToGenus,
                             final PreparedStatement s3Stmt2) throws SQLException
     {
         int id = rs.getInt(1);
@@ -1950,31 +1951,38 @@ public class iPadDBExporter implements VerifyCollectionListener
             setInt(s3StmtPrep, coltrId, 13);// CollectorID
             
             Integer familyId = null;
+            Integer genusId  = null;
             if (taxaId != null)
             {
                 if (taxaToFamily != null)
                 {
                     familyId = taxaToFamily.get(taxaId);
-                } else
+                    genusId  = taxaToGenus.get(taxaId);
+                }
+                
+                if ((rankId != null && rankId > 180) && (familyId == null || familyId == 0 || genusId == null || genusId == 0))
                 {
                     s3Stmt2.setInt(1, taxaId);
                     ResultSet rs2 = s3Stmt2.executeQuery();
                     if (rs2 != null && rs2.next())
                     {
                         familyId = rs2.getInt(1);
+                        genusId  = rs2.getInt(2);
                     }
+                    rs2.close();
                 }
             }
             
             setInt(s3StmtPrep, familyId, 14); // FamilyID
-            setInt(s3StmtPrep, geoId, 15);    // GeographyID
+            setInt(s3StmtPrep, genusId,  15); // GenusID
+            setInt(s3StmtPrep, geoId,    16); // GeographyID
             
             if (geoId != null && rankId != null && rankId == 300)
             {
-                s3StmtPrep.setInt(16, geoId);
+                s3StmtPrep.setInt(17, geoId);
             } else
             {
-                setInt(s3StmtPrep, geoId != null ? geoStateMapper.get(geoId) : null, 16);    // StateID
+                setInt(s3StmtPrep, geoId != null ? geoStateMapper.get(geoId) : null, 17);    // StateID
             }
             
             try
@@ -2268,17 +2276,20 @@ public class iPadDBExporter implements VerifyCollectionListener
         
         cnt = 0;
         int fivePercent = Math.max(totCnt / 20, 1);
-        boolean isSmallCollection = totCnt < 100000;
+        boolean isSmallCollection = totCnt < 50000;
         HashMap<Integer, Integer> taxaToFamily = null;
+        HashMap<Integer, Integer> taxaToGenus  = null;
         if (isSmallCollection)
         {
             taxaToFamily   = new HashMap<Integer, Integer>();
+            taxaToGenus    = new HashMap<Integer, Integer>();
             Statement stmt = dbS3Conn.createStatement();
 
-            ResultSet rs   = stmt.executeQuery("SELECT _id, FamilyID FROM taxon WHERE FamilyID IS NOT NULL ORDER BY _id");
+            ResultSet rs   = stmt.executeQuery("SELECT _id, FamilyID, GenusID FROM taxon WHERE FamilyID IS NOT NULL AND GenusID IS NOT NULL ORDER BY _id");
             while (rs.next())
             {
                 taxaToFamily.put(rs.getInt(1), rs.getInt(2));
+                taxaToGenus.put(rs.getInt(1),  rs.getInt(3));
                 cnt++;
                 if (cnt % fivePercent == 0) 
                 {
@@ -2307,10 +2318,13 @@ public class iPadDBExporter implements VerifyCollectionListener
         PreparedStatement s3StmtPrep = null;
         try
         {
-            s3Stmt     = dbS3Conn.prepareStatement("SELECT FamilyID FROM taxon WHERE _id = ?");
-            //                                                           1           2         3            4                5            6          7          8          9      10      11           12         13            14      15      16
-            s3StmtPrep = dbS3Conn.prepareStatement("INSERT INTO colobj (_id, CatalogNumber, CountAmt, CollectorNumber, CollectedDate, IsMappable, HasImage, TypeStatus, TaxonID, LocID, CountryID, ContinentID, CollectorID, FamilyID, GeoID, StateID) " +
-                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            s3Stmt = dbS3Conn.prepareStatement("SELECT FamilyID, GenusID FROM taxon WHERE _id = ?");
+            //                                  1           2         3            4                5            6          7          8          
+            String sqlp = "INSERT INTO colobj (_id, CatalogNumber, CountAmt, CollectorNumber, CollectedDate, IsMappable, HasImage, TypeStatus, " +
+                          //   9      10      11           12         13            14      15      16      17
+            		      "TaxonID, LocID, CountryID, ContinentID, CollectorID, FamilyID, GenusID, GeoID, StateID) " +
+                          "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            s3StmtPrep = dbS3Conn.prepareStatement(sqlp);
         
             stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
@@ -2321,16 +2335,9 @@ public class iPadDBExporter implements VerifyCollectionListener
             ResultSet rs = stmt.executeQuery(adjustSQL(sql));
             while (rs.next())
             {
-//                int id = rs.getInt(1);
-//                if (id == 24074)
-//                {
-//                    System.out.println("");
-//                }
-                //if (!keepers.contains(id)) continue;
-                
                 transCnt++;
    
-                prevId = writeColObj(rs, s3StmtPrep, prevId, typeStatusHash, taxaToFamily, s3Stmt);
+                prevId = writeColObj(rs, s3StmtPrep, prevId, typeStatusHash, taxaToFamily, taxaToGenus, s3Stmt);
                 cnt++;
                 if (cnt % fivePercent == 0) 
                 {
@@ -2419,7 +2426,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                 if (rs2.next())
                 {
                     transCnt++;
-                    prevId = writeColObj(rs2, s3StmtPrep, prevId, typeStatusHash, taxaToFamily, s3Stmt);
+                    prevId = writeColObj(rs2, s3StmtPrep, prevId, typeStatusHash, taxaToFamily, taxaToGenus, s3Stmt);
                     cnt++;
                     if (cnt % 1000 == 0)
                     {
@@ -3193,13 +3200,13 @@ public class iPadDBExporter implements VerifyCollectionListener
             doBuildZipFile(ZIP_FILE, fileNamesForExport);
             
             progressDelegate.setDesc("Uploading data...");
-            if (!IS_TESTING)
-            {
-                if (!uploadFiles())
-                {
-                    isInError = true;
-                }
-            }
+//            if (!IS_TESTING)
+//            {
+//                if (!uploadFiles())
+//                {
+//                    isInError = true;
+//                }
+//            }
             
         }
     }

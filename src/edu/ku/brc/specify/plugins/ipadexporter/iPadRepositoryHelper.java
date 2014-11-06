@@ -92,7 +92,7 @@ public class iPadRepositoryHelper
     
     // URLs
     //private String                  readURLStr  = null;
-    private String                  writeURLStr = baseURLStr + scriptName;
+    //private String                  writeURLStr = baseURLStr + scriptName;
     //private String                  delURLStr   = null;
     
     private String[]                symbols = {"coll", "disp", "div", "inst", "spuser", "agent", 
@@ -200,6 +200,7 @@ public class iPadRepositoryHelper
      * @param collectionArg
      * @return
      */
+    @SuppressWarnings("unused")
     private Agent getContentManager(final Collection collectionArg)
     {
         Set<Agent>               contentMgrs = null;
