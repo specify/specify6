@@ -3199,9 +3199,16 @@ public class iPadDBExporter implements VerifyCollectionListener
             progressDelegate.setDesc("Compressing data...");
             doBuildZipFile(ZIP_FILE, fileNamesForExport);
             
-            progressDelegate.setDesc("Uploading data...");
-            if (!IS_TESTING)
+            boolean doUpload = true;
+            if (System.getProperty("user.name").equals("rods"))
             {
+                progressDelegate.setVisible(false);
+                doUpload = UIRegistry.displayConfirm("Upload", "Do you wish to upload the dataset?", "Upload", "Cancel", JOptionPane.QUESTION_MESSAGE);
+            }
+            
+            if (doUpload)
+            {
+                progressDelegate.setDesc("Uploading data...");
                 if (!uploadFiles())
                 {
                     isInError = true;
@@ -3707,7 +3714,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     if (doAll || doGeography)
                     {
                         //doBuildGeography();
-                        GeoTreeBuilder treeBuilder = new GeoTreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn, colObjToCnt);
+                        GeographyTreeBuilder treeBuilder = new GeographyTreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn);
                         treeBuilder.process();
                         progressDelegate.incOverall();
                     }

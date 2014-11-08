@@ -633,7 +633,7 @@ public class InstitutionConfigDlg extends CustomDialog
         {
             Pattern patt = Pattern.compile(pattern);
             Matcher matcher = patt.matcher(uriStr);
-            System.out.println("URL: "+ matcher.matches()+"  "+uriStr);
+            //System.out.println("URL: "+ matcher.matches()+"  "+uriStr);
             return matcher.matches();
         } catch (RuntimeException e)
         {

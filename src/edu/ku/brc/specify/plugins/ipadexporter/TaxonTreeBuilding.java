@@ -25,18 +25,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.util.Pair;
@@ -55,17 +46,10 @@ public class TaxonTreeBuilding
     final int secInMin    = 60;
 
     private ProgressDialog progressDelegate;
-    private SwingWorker<Integer, Integer> worker;
     
     private Connection     dbS3Conn;
     private Connection     conn;
     private iPadDBExporter ipadExporter;
-    
-    private int            totalRecords;
-    private int            processedCount;
-    
-    private AtomicInteger  timeRemaining;
-    private Timer          countDownTimer;
     
     private HashMap<Integer, HashMap<Integer, TreeNode>> taxonHash = new HashMap<Integer, HashMap<Integer, TreeNode>>();
     private ArrayList<TreeNode> nodeList = new ArrayList<TreeNode>();
@@ -87,7 +71,6 @@ public class TaxonTreeBuilding
         this.conn             = conn;
         this.ipadExporter     = ipadExporter;
         this.progressDelegate = ipadExporter.getProgressDelegate();
-        this.worker           = ipadExporter.getWorker();
     }
     
     /**
@@ -96,45 +79,6 @@ public class TaxonTreeBuilding
     public void process()
     {
         exportTreeData();
-    }
-    
-    /**
-     * @param pStmt
-     * @param nodenum
-     * @param highNodeNum
-     * @return
-     * @throws SQLException
-     */
-    private Pair<Integer, Integer> calcTotalForTreeSpan(final PreparedStatement pStmt, 
-                                                        final int nodeNum, 
-                                                        final int highNodeNum) throws SQLException
-    {
-        pStmt.setInt(1, nodeNum);
-        pStmt.setInt(2, highNodeNum);
-        
-        int countBelow = 0;
-        int countAt    = 0;
-        ResultSet rs   = pStmt.executeQuery(); // Get the GeoID and LocID
-        while (rs.next())
-        {
-            int     nn   = rs.getInt(2);
-            Integer cnt  = rs.getInt(3);
-            if (rs.wasNull()) cnt = null;
-            
-            if (cnt != null)
-            {
-                if (nn == nodeNum)
-                {
-                    countAt += cnt;
-                } else
-                {
-                    countBelow += cnt;
-                }
-            }
-        }
-        rs.close();
-        
-        return new Pair<Integer, Integer>(countBelow, countAt);
     }
     
     /**
@@ -189,23 +133,14 @@ public class TaxonTreeBuilding
         }
         return status;
     }
-
-    /**
-     * 
-     */
-    private void exportTreeData()
-    {
-        boolean doNew = true;
-        if (doNew)
-        {
-            exportTreeDataNew();
-        } else
-        {
-            exportTreeDataOld();
-        }
-    }
-    
      
+    /**
+     * @param taxonId
+     * @param rankId
+     * @param parentId
+     * @param parentRankId
+     * @return
+     */
     private TreeNode getNode(final int taxonId,
                              final int rankId,
                              final Integer parentId,
@@ -273,8 +208,6 @@ public class TaxonTreeBuilding
 
             } else
             {
-                //famGen.first = node.familyId;
-                //famGen.second = node.genusId;
                 return;
             }
             rs.close();
@@ -308,13 +241,17 @@ public class TaxonTreeBuilding
     /**
      * 
      */
-    private void exportTreeDataNew()
+    private void exportTreeData()
     {
         PreparedStatement s3Stmt       = null;        
         PreparedStatement s3Stmt2      = null; 
         PreparedStatement txLookUpStmt = null;
         Statement         stmt         = null;
         
+        progressDelegate.setProcessPercent(true);
+        progressDelegate.setProcess(0, 100);
+        progressDelegate.setDesc("Exporting Taxonomic Information");
+
         int transCnt = 0;
         try
         {
@@ -398,6 +335,8 @@ public class TaxonTreeBuilding
             TreeNode ppNode = getNode(prevTaxonID, rankId, parentId, taxonParentRankID);  // Parent
             ppNode.nodeCount += countAmtTotal;
             ppNode.written = true;
+            
+            progressDelegate.setProcess(20);
 
             rs.close();
             try
@@ -428,21 +367,16 @@ public class TaxonTreeBuilding
             
             skipNodeList = true;
             
-            int cnt = 0;
             for (TreeNode node: nodeList)
             {
                 Pair<Integer, Integer> famGen = new Pair<Integer, Integer>(0, 0);
                 buildTree(node, famGen);
                 node.familyId = famGen.first;
                 node.genusId  = famGen.second;
-                
-                cnt++;
-                if (cnt % 100 == 0)
-                {
-                    System.out.println(String.format("%d / %d", cnt, nodeList.size()));
-                }
             }
-            
+
+            progressDelegate.setProcess(40);
+
             //dumpTree();
             //System.out.println();
             
@@ -472,6 +406,8 @@ public class TaxonTreeBuilding
                 if (transCnt > 0) dbS3Conn.commit();
             } catch (Exception ex2) { ex2.printStackTrace();}
             
+            progressDelegate.setProcess(60);
+            
 /*
  * 
 `_id` INTEGER PRIMARY KEY, 
@@ -499,7 +435,9 @@ public class TaxonTreeBuilding
                 }
             }
             
-            cnt = 0;
+            progressDelegate.setProcess(80);
+
+            int cnt = 0;
             for (Integer rankID : treeRanks)
             {
                 HashMap<Integer, TreeNode> pNodeHash = taxonHash.get(rankID);
@@ -544,6 +482,8 @@ public class TaxonTreeBuilding
                 }
             }
             
+            progressDelegate.setProcess(100);
+            
             try
             {
                 if (transCnt > 0) dbS3Conn.commit();
@@ -567,265 +507,6 @@ public class TaxonTreeBuilding
         }
     }
     
-    /**
-     * 
-     */
-    @SuppressWarnings("unused")
-    private void exportTreeDataOld()
-    {
-        Connection        conn1       = null;
-        Connection        conn2       = null;
-        Connection        conn3       = null;
-        Connection        conn4       = null;
-        
-        PreparedStatement s3Stmt      = null;        
-        Statement         stmt        = null;
-        Statement         stmtGenera  = null;
-        PreparedStatement pStmtKids   = null;
-        PreparedStatement coCountLookUpStmt = null;
-        
-        int transCnt = 0;
-        try
-        {
-            conn1 = DBConnection.getInstance().createConnection();
-            conn2 = DBConnection.getInstance().createConnection();
-            conn3 = DBConnection.getInstance().createConnection();
-            conn4 = DBConnection.getInstance().createConnection();
-            
-            timeRemaining  = new AtomicInteger(0);
-            processedCount = 0;
-            
-            countDownTimer = new Timer(true); // Daemon Thread
-            countDownTimer.schedule(new TimerTask() {
-                @Override
-                public void run() 
-                {
-                    if (timeRemaining.get() > 0 && processedCount > 0)
-                    {
-                        int secondsRemaining = timeRemaining.get() - 1;
-                        timeRemaining.set(secondsRemaining);
-                        
-                        int  hours           = secondsRemaining / secsInHours;
-                        secondsRemaining    -= hours * secsInHours;
-                        int minutes          = secondsRemaining / secInMin;
-                        secondsRemaining    -= minutes * secInMin;
-                        
-                        final String timeStr = String.format("time remaining: %02d:%02d:%02d", hours, minutes, secondsRemaining);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                progressDelegate.setDesc("Calculating Taxonomic Counts, " + timeStr);
-                            }
-                        });
-                    }
-                }
-            }, 1000, 1000);
-            
-            dbS3Conn.setAutoCommit(false);
-            s3Stmt     = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, TotalCOCnt, NumObjs, NodeNum, HighNodeNum) VALUES (?,?,?,?,?,?,?,?,?)");        
-            stmt       = conn1.createStatement();
-            stmtGenera = conn2.createStatement();
-            
-            String coLookUp = ipadExporter.adjustSQL("SELECT co.CollectionObjectID, t.NodeNumber, i.NewID FROM taxon t " +
-                                                     "INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
-                                                     "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
-                                                     "INNER JOIN ios_colobjcnts i ON co.CollectionObjectID = i.OldID " +
-                                                     "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = TRUE AND t.NodeNumber >= ? AND t.NodeNumber <= ?");
-            System.out.println(coLookUp);
-            coCountLookUpStmt = conn3.prepareStatement(coLookUp);
-            
-            String kidsSQL   = "SELECT co.CollectionObjectID, t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t " +
-                               "INNER JOIN determination d ON t.TaxonID = d.TaxonID " +
-                               "INNER JOIN collectionobject co ON co.CollectionObjectID = d.CollectionObjectID " +
-                               "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = TRUE AND NodeNumber >= ? AND NodeNumber <= ? ORDER BY t.TaxonID";
-            
-            String preSQL    = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t ";
-            
-            String familySQL = preSQL + ipadExporter.adjustSQL("WHERE t.TaxonTreeDefID = TAXTREEDEFID AND RankID = 140");
-            
-            String extraJoins = "LEFT OUTER JOIN taxon p1 ON t.ParentID = p1.TaxonID " +
-                                "LEFT OUTER JOIN taxon p2 ON p1.ParentID = p2.TaxonID " +
-                                "LEFT OUTER JOIN taxon p3 ON p2.ParentID = p3.TaxonID " +
-                                "LEFT JOIN taxon p4 ON p3.ParentID = p4.TaxonID ";
-            
-            //String generaSQL = preSQL + extraJoins + ipadExporter.adjustSQL(" WHERE t.TaxonTreeDefID = TAXTREEDEFID AND t.RankID = 180 AND (t.ParentID = %d OR p1.ParentID = %d OR p2.ParentID = %d OR p3.ParentID = %d OR p4.ParentID = %d)");
-            String generaSQL = preSQL + extraJoins + ipadExporter.adjustSQL(" WHERE t.TaxonTreeDefID = TAXTREEDEFID AND t.RankID = 180 AND t.ParentID = %d");
-            
-            
-            pStmtKids = conn4.prepareStatement(ipadExporter.adjustSQL(kidsSQL));
-            
-            String cntSQL = ipadExporter.adjustSQL("SELECT COUNT(*) FROM taxon t WHERE t.TaxonTreeDefID = TAXTREEDEFID AND t.RankID = 140");
-            totalRecords  = BasicSQLUtils.getCountAsInt(cntSQL);
-            int percentInx = (int)Math.round((float)totalRecords *0.01f);
-            if (progressDelegate != null)
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        progressDelegate.setDesc("Calculating taxonomic counts...");
-                        progressDelegate.setProcess(0, 100);
-                        progressDelegate.setProcess(0);
-                        progressDelegate.setProcessPercent(true);
-                    }
-                });
-            }
-            
-            //familySQL = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t WHERE t.TaxonID = 369"; // Chiasmodontidae
-
-            Calendar calendar = Calendar.getInstance();
-            
-            long    startTime       = calendar.getTimeInMillis();
-            
-            int prevPercent = 0;
-            //-----------------------
-            // Loop thru Families
-            //-----------------------
-            ResultSet rsFamily = stmt.executeQuery(familySQL); // Get the GeoID and LocID
-            while (rsFamily.next())
-            {
-                System.out.println("Family TaxonID: "+rsFamily.getInt(1));
-                
-                int taxonIdFamily     = rsFamily.getInt(1); 
-                String fullNameFamily = rsFamily.getString(2);
-                int rankIdFamily      = rsFamily.getInt(3);
-                int parentIdFamily    = rsFamily.getInt(4);
-                int nodeNumFamily     = rsFamily.getInt(5);
-                int highNodeNumFamily = rsFamily.getInt(6);
-                
-                Pair<Integer, Integer> counts = calcTotalForTreeSpan(coCountLookUpStmt, nodeNumFamily, highNodeNumFamily);
-                if (counts.first == 0 && counts.second == 0)
-                {
-                    continue;
-                }
-                writeTaxon(s3Stmt, taxonIdFamily, fullNameFamily, rankIdFamily, parentIdFamily, null, null, counts.first, counts.second, nodeNumFamily, highNodeNumFamily);
-                
-                HashSet<Integer> usedRankSet = new HashSet<Integer>();
-                //-----------------------
-                // Loop thru Genera 
-                //-----------------------
-                //for (Integer traversalRankId : ranks)
-                {
-                    //System.out.println("Genera Rank: "+traversalRankId);
-                    
-                    String gSQL = String.format(generaSQL, taxonIdFamily);//, taxonIdFamily, taxonIdFamily, taxonIdFamily, taxonIdFamily);
-                    //System.out.println(gSQL);
-                    //gSQL = "SELECT t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber FROM taxon t WHERE t.TaxonID = 4918"; // Kali
-
-                    ResultSet rs = stmtGenera.executeQuery(gSQL);
-                    while (rs.next())
-                    {
-                        int taxonIdGenera = rs.getInt(1); // Genera TaxonID
-                        if (usedRankSet.contains(taxonIdGenera))
-                        {
-                            continue;
-                        }
-                        //System.out.println("Genera TaxonID: "+taxonIdGenera);
-                        
-                        usedRankSet.add(taxonIdGenera);
-                        
-                        String fullNameGenera = rs.getString(2);
-                        int rankIdGenera      = rs.getInt(3);
-                        int parentIdGenera    = rs.getInt(4);
-                        int nodeNumGenera     = rs.getInt(5);
-                        int highNodeNumGenera = rs.getInt(6);
-    
-                        counts = calcTotalForTreeSpan(coCountLookUpStmt, nodeNumGenera, highNodeNumGenera);
-                        if (counts.first == 0 && counts.second == 0)
-                        {
-                            continue;
-                        }
-                        writeTaxon(s3Stmt, taxonIdGenera, fullNameGenera, rankIdGenera, parentIdGenera, taxonIdFamily, null, counts.first, counts.second, nodeNumGenera, highNodeNumGenera);
-    
-                        pStmtKids.setInt(1, nodeNumGenera);
-                        pStmtKids.setInt(2, highNodeNumGenera);
-                        
-                        //---------------------------------
-                        // Loop thru all children of Genera
-                        //---------------------------------
-                        int prevTx = -1;
-                        int txId   = -1;
-                        ResultSet rsLK = pStmtKids.executeQuery();
-                        while (rsLK.next())
-                        {
-                            txId = rsLK.getInt(2);
-                            
-                            // Write Children of Genera
-                            if (txId != prevTx)
-                            {
-                                String fullName = rsLK.getString(3);
-                                int rankId      = rsLK.getInt(4);
-                                int parentId    = rsLK.getInt(5);
-                                int nodeNN      = rsLK.getInt(6);
-                                int highNN      = rsLK.getInt(7);
-                                
-//                                counts = calcTotalForTreeSpan(coCountLookUpStmt, nodeNN, highNN);
-//                                if (counts.first == 0 && counts.second == 0)
-//                                {
-//                                    continue;
-//                                }
-//                                System.out.println("Taxon: "+txId+" CO: "+rsLK.getInt(1));
-                                writeTaxon(s3Stmt, txId, fullName, rankId, parentId, taxonIdFamily, null, 1, 1, nodeNN, highNN);
-                                prevTx = txId;
-                            }
-                        }
-                        rsLK.close();
-                    }
-                    rs.close();
-                }
-                processedCount++;
-                if (percentInx > 0 && processedCount % percentInx == 0) 
-                {
-                    float percentFloat     = (float)processedCount / (float)totalRecords;
-                    float elapsedMilliSecs = (Calendar.getInstance()).getTimeInMillis() - startTime;
-                    float elapsedSecs      = elapsedMilliSecs / 1000.0f;
-                    int   secondsRemaining = (int)(elapsedSecs / percentFloat);
-                    timeRemaining.set(secondsRemaining);
-                    
-                    int percent = Math.min((int)(percentFloat * 100.0f), 100);
-                    if (percent != prevPercent)
-                    {
-                        worker.firePropertyChange(iPadDBExporter.PROGRESS, 0, percent);
-                        prevPercent = percent;
-                    }
-                }
-            }
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    worker.firePropertyChange(iPadDBExporter.PROGRESS, 0, 100);
-                    progressDelegate.setDesc("Done calculating taxonomic counts.");
-                }
-            });
-            countDownTimer.cancel();
-            countDownTimer = null;
-            
-            stmtGenera.close();
-            rsFamily.close();
-            
-            try
-            {
-                if (transCnt > 0) dbS3Conn.commit();
-            } catch (Exception ex2) { ex2.printStackTrace();}
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        } finally
-        {
-            try
-            {
-                if (stmt != null) stmt.close();
-                if (s3Stmt != null) s3Stmt.close();
-                if (pStmtKids != null) pStmtKids.close();
-                if (coCountLookUpStmt != null) coCountLookUpStmt.close();
-
-                if (conn1 != null) conn1.close();
-                if (conn2 != null) conn2.close();
-                if (conn3 != null) conn3.close();
-                if (conn4 != null) conn4.close();
-                
-                dbS3Conn.setAutoCommit(true);
-            } catch (Exception ex2) { ex2.printStackTrace();}
-
-        }
-    }
     
     class TreeNode
     {
