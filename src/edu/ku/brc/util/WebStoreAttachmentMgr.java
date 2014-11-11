@@ -199,9 +199,11 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
         boolean result = false;
         if (StringUtils.isNotEmpty(urlStr))
         {
+            final int timeoutMilliseconds = 5000;
             GetMethod method = new GetMethod(urlStr);
             HttpClient client = new HttpClient();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMilliseconds);
+            client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMilliseconds);
         
             try
             {

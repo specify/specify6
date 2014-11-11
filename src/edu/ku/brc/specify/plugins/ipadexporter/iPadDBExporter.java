@@ -64,6 +64,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdHashMapper;
 import edu.ku.brc.specify.conversion.IdMapperIFace;
@@ -73,6 +74,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.plugins.ipadexporter.ExportPaleo.RelationshipType;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -92,7 +94,7 @@ public class iPadDBExporter implements VerifyCollectionListener
     private static final Logger  log                  = Logger.getLogger(iPadDBExporter.class);
     
     protected static final String PROGRESS            = "progress";
-    private static final String   MSG                 = "msg";
+    protected static final String MSG                 = "msg";
 
     private static final boolean doAll                = true;
     private static final boolean doRebuildDB          = false;
@@ -110,11 +112,6 @@ public class iPadDBExporter implements VerifyCollectionListener
     private static final String  COLOBJAGENTNAME  = "ios_colobjagents";
     private static final String  COLOBJCNTNAME    = "ios_colobjcnts";
     private static final String  TAXONTBLNAME     = "ios_taxon_pid";
-
-    // Paleo
-    private static final String  COLOBJLITHONAME  = "ios_colobjlitho";
-    private static final String  COLOBJBIONAME    = "ios_colobjbio";
-    private static final String  COLOBJCHRONNAME  = "ios_colobjchron";
 
     private String                                   kErroOnUploadMsg  = "";
     // Database Members
@@ -135,7 +132,11 @@ public class iPadDBExporter implements VerifyCollectionListener
     private iPadRepositoryHelper                     helper             = new iPadRepositoryHelper();
     private String                                   dbName;
     private HashMap<String, Integer>                 idMapper           = new HashMap<String, Integer>();
+    private boolean                                  isCollectionPaleo;
 
+    private int                                      treePercent        = 1;
+    private int                                      treeCnt            = 0;
+    private int                                      treeTotal          = 0;
 
     private ProgressDialog                           progressDelegate;
     private HashMap<Integer, Integer>                locNumObjsHash     = new HashMap<Integer, Integer>();
@@ -151,10 +152,6 @@ public class iPadDBExporter implements VerifyCollectionListener
     
     private IdMapperIFace                            colObjToAgent           = null;
     private IdMapperIFace                            colObjToCnt             = null;
-    
-    private IdMapperIFace                            colObjToLitho           = null;
-    private IdMapperIFace                            colObjToBio             = null;
-    private IdMapperIFace                            colObjToChron           = null;
     
     private boolean                                  doZipFile               = true; 
     private boolean                                  doUpload                = true; 
@@ -186,6 +183,10 @@ public class iPadDBExporter implements VerifyCollectionListener
         }
         
         this.dbName = dbName;
+        
+        Discipline     discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        DisciplineType dispType   = DisciplineType.getByName(discipline.getType());
+        this.isCollectionPaleo = dispType != null && dispType.isPaleo();
     }
     
     /**
@@ -239,39 +240,6 @@ public class iPadDBExporter implements VerifyCollectionListener
         return XMLHelper.getConfigDir("ipad_exporter" + File.separator + fileName);
     }
     
-//    /**
-//     * @param conn
-//     * @param fileName
-//     * @throws Exception
-//     */
-//    @SuppressWarnings("unchecked")
-//    protected boolean createDBTables(final Connection conn, final String fileName) throws Exception
-//    {
-//        File outFile = getConfigFile(fileName);
-//        if (outFile != null && outFile.exists())
-//        {
-//            StringBuilder sb      = new StringBuilder();
-//            Statement     stmt    = conn.createStatement();
-//            List<?>       list    = FileUtils.readLines(outFile);
-//            
-//            for (String line : (List<String>)list)
-//            {
-//                String tLine = line.trim();
-//                sb.append(tLine);
-//                
-//                if (tLine.endsWith(";"))
-//                {
-//                    System.out.println(sb.toString());
-//                    stmt.executeUpdate(sb.toString());
-//                    sb.setLength(0);
-//                }
-//            }
-//            stmt.close();
-//            return true;
-//        }
-//        return false;
-//    }
-    
     /**
      * @param msg
      */
@@ -285,7 +253,7 @@ public class iPadDBExporter implements VerifyCollectionListener
      * @param cntObj
      * @return
      */
-    private Integer getCount(final Object cntObj)
+    protected static Integer getCount(final Object cntObj)
     {
         if (cntObj instanceof BigDecimal)
         {
@@ -378,6 +346,7 @@ public class iPadDBExporter implements VerifyCollectionListener
                     stmt0.setFetchSize(Integer.MIN_VALUE);
                     s3Stmt = dbS3Conn.prepareStatement("INSERT INTO stats (_id, Tbl, Grp, Name, Descr, NumObjs, RecID) VALUES (?,?,?,?,?,?,?)");
                     
+                    // For Debugging
 //                    for (Iterator<?> capIter = items.iterator(); capIter.hasNext(); )
 //                    {
 //                        Element fieldNode = (Element)capIter.next();
@@ -393,6 +362,9 @@ public class iPadDBExporter implements VerifyCollectionListener
 //                        System.out.println(String.format("\n/* From Stats */", desc));
 //                        System.out.println(String.format("\"%s\" = \"%s\";", desc, desc));
 //                    }
+                    
+                    RelationshipType paleoRelType = isCollectionPaleo ? ExportPaleo.discoverPaleRelationshipType() : RelationshipType.eTypeError; 
+                    Map<String, RelationshipType> paleoLookupHash = VerifyCollectionDlg.getPaleoLookupHash();
                         
                     int recId    = 0;
                     int cnt      = 0;
@@ -405,6 +377,15 @@ public class iPadDBExporter implements VerifyCollectionListener
                         String  desc = fieldNode.attributeValue("desc"); //$NON-NLS-1$
                         String  sql  = fieldNode.getTextTrim();
                         
+                        String  paleoTypeStr = fieldNode.attributeValue("paleotype"); //$NON-NLS-1$
+                        if (isCollectionPaleo && StringUtils.isNotEmpty(paleoTypeStr))
+                        {
+                            if (paleoRelType !=  paleoLookupHash.get(paleoTypeStr))
+                            {
+                                continue;
+                            }
+                        }
+
                         int table = Integer.parseInt(tbl);
                         int group = StringUtils.isNotEmpty(grp) ? Integer.parseInt(grp) : 0;
                         
@@ -1055,471 +1036,6 @@ public class iPadDBExporter implements VerifyCollectionListener
     }
     
     /**
-     * Count number of Specimens for each Collection Object.
-     * @throws SQLException
-     */
-    private void doBuildPaleo() throws SQLException
-    {
-        worker.firePropertyChange(MSG, "", "Locating Specimen Paleo data...");
-        
-        String postSQL = " FROM collectionobject co LEFT JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID " +
-                         "LEFT JOIN lithostrat l ON p.LithoStratID = l.LithoStratID " +
-                         "LEFT JOIN lithostrat bl ON p.BioStratID = bl.LithoStratID " +
-                         "LEFT JOIN geologictimeperiod g ON p.ChronosStratID = g.GeologicTimePeriodID WHERE CollectionID = COLMEMID";
-        String sql = adjustSQL("SELECT COUNT(*)" + postSQL);
-        
-        int totCnt = getCountAsInt(dbConn, sql);
-        if (progressDelegate != null) progressDelegate.setProcess(0, 100);
-                
-        colObjToLitho = IdMapperMgr.getInstance().addHashMapper(COLOBJLITHONAME, null, true);
-        colObjToLitho.reset();
-
-        colObjToBio = IdMapperMgr.getInstance().addHashMapper(COLOBJBIONAME, null, true);
-        colObjToBio.reset();
-       
-        colObjToChron = IdMapperMgr.getInstance().addHashMapper(COLOBJCHRONNAME, null, true);
-        colObjToChron.reset();
-        
-        IdHashMapper.setEnableDelete(false);
-        IdMapperMgr.getInstance().setDBs(dbConn, dbConn);
-        
-        dbS3Conn.setAutoCommit(false);
-
-        //----------------------------------------------------------
-        // Creating Mapping from ColObj top Geo
-        //----------------------------------------------------------
-        int fivePercent = Math.max(totCnt / 20, 1);
-        
-        int cnt = 0; 
-        
-        PreparedStatement s3Stmt = null;
-        Statement         stmt   = null;
-        try
-        {
-            String upSQL = "INSERT INTO paleo (_id, LithoID, ChronosID, BioStratID) VALUES (?,?,?,?)";
-            s3Stmt = dbS3Conn.prepareStatement(upSQL);
-    
-            sql  = adjustSQL("SELECT co.CollectionObjectID, l.LithoStratID, p.ChronosStratID, bl.LithoStratID " + postSQL);
-            stmt = dbConn.createStatement();
-            ResultSet rs    = stmt.executeQuery(adjustSQL(sql));
-            while (rs.next())
-            {
-                int coId       = rs.getInt(1);
-                s3Stmt.setInt(1, coId);
-                
-                Integer lithId = rs.getInt(2);
-                if (rs.wasNull())
-                {
-                    lithId = null;
-                    s3Stmt.setObject(2, null);
-                } else
-                {
-                    s3Stmt.setInt(2, lithId);
-                }
-                
-                Integer chronosId = rs.getInt(3);
-                if (rs.wasNull())
-                {
-                    chronosId = null;
-                    s3Stmt.setObject(3, null);
-                } else
-                {
-                    s3Stmt.setInt(3, chronosId);
-                }
-                
-                Integer bioId = rs.getInt(4);
-                if (rs.wasNull())
-                {
-                    bioId = null;
-                    s3Stmt.setObject(4, null);
-                } else
-                {
-                    s3Stmt.setInt(4, bioId);    
-                }
-
-                if (s3Stmt.executeUpdate() != 1)
-                {
-                    System.out.println("Error updating litho: "+coId);
-                }                
-                cnt++;
-                if (cnt % fivePercent == 0) 
-                {
-                    worker.firePropertyChange(PROGRESS, 0, Math.max((100 * cnt) / totCnt, 1));
-                }
-            }
-            rs.close();
-        } catch (Exception e) 
-        {
-            try
-            {
-                dbS3Conn.rollback();
-            } catch (Exception ex2) {}
-            e.printStackTrace();
-            
-        } finally
-        {
-            if (stmt != null) stmt.close();
-            if (s3Stmt != null) s3Stmt.close();
-            try
-            {
-                dbS3Conn.setAutoCommit(true);
-            } catch (Exception ex2) { ex2.printStackTrace();}
-        }
-    }
-        
-    /**
-     * @throws SQLException
-     */
-    private void doBuildLitho() throws SQLException
-    {
-        int     cnt = 0;
-        String  sql;
-        Integer count = null;
-
-        // Get Specimen Counts for Litho
-        worker.firePropertyChange(MSG, "", "Getting Lithostratigraphy Counts...");
-        HashMap<Integer, Integer> numObjsHash = new HashMap<Integer, Integer>();
-        sql = adjustSQL("SELECT l.LithoStratID, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) FROM collectionobject co " +
-                        "INNER JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID " +
-                        "INNER JOIN lithostrat l ON p.LithoStratID = l.LithoStratID " +
-                        "WHERE l.LithoStratTreeDefID = LITHOTREEDEFID GROUP BY l.LithoStratID");
-        
-        log.debug(sql);
-        
-        for (Object[] row : query(sql))
-        {
-            count = getCount(row[1]);
-            numObjsHash.put((Integer)row[0], count);
-        }
-        
-        // Get All Unsed Litho items
-        worker.firePropertyChange(MSG, "", "Building Lithostrat...");
-        
-        String prefix  = "SELECT l.LithostratID, FullName, RankID, ParentID, HighestChildNodeNumber, NodeNumber ";
-        String fullPostFix = adjustSQL(" FROM lithostrat l " +
-                                        "LEFT JOIN paleocontext p ON p.LithoStratID = l.LithoStratID " +
-                                        "LEFT JOIN collectionobject co ON co.PaleoContextID = p.PaleoContextID " +
-                                        "WHERE l.LithoStratTreeDefID = LITHOTREEDEFID AND co.CollectionObjectID IS NOT NULL ");
-
-        
-        sql = "SELECT COUNT(*) " + fullPostFix;
-        log.debug(sql);
-        int totCnt = getCountAsInt(dbConn, sql);
-        if (progressDelegate != null)
-        {
-            progressDelegate.setProcess(0, totCnt);
-        }
-        sql = prefix + fullPostFix + " GROUP BY l.LithostratID";
-        log.debug(sql);
-        
-        tblWriter.log("Lithostrat Issues");
-        tblWriter.startTable();
-        tblWriter.logHdr("Full Name", "Rank Id", "Issue");
-
-        
-        //boolean isSingleCollection = getCountAsInt(dbConn, "SELECT COUNT(*) FROM collection") == 1;
-
-        dbS3Conn.setAutoCommit(false);
-        PreparedStatement s3Stmt = null;
-        Statement         stmt   = null;
-        try
-        {
-            stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            stmt.setFetchSize(Integer.MIN_VALUE);
-    
-            dbS3Conn.setAutoCommit(false);
-            int transCnt = 0;
-            
-            cnt = 0;
-            String upSQL = "INSERT INTO litho (_id, FullName, RankID, ParentID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum) VALUES (?,?,?,?,?,?,?,?)";
-            s3Stmt = dbS3Conn.prepareStatement(upSQL);
-            ResultSet rs = stmt.executeQuery(adjustSQL(sql));
-            while (rs.next())
-            {
-                transCnt++;
-    
-                Integer id = rs.getInt(1);
-                
-                s3Stmt.setInt(1,    id);
-                s3Stmt.setString(2, rs.getString(2)); // FullName
-                s3Stmt.setInt(3,    rs.getInt(3));    // RankID
-                s3Stmt.setInt(4,    rs.getInt(4));    // ParentID
-                
-                int highestNodeNum = rs.getInt(5);    
-                int nodeNumber     = rs.getInt(6);
-                
-                s3Stmt.setInt(5,    0);          // Total Number of Specimens below
-                
-                Integer numObjs = numObjsHash.get(id);
-                if (numObjs == null) numObjs = 0;
-                s3Stmt.setInt(6,    numObjs);          // Number of Specimens this Lithostrat has
-                
-                s3Stmt.setInt(7,    highestNodeNum);
-                s3Stmt.setInt(8,    nodeNumber);
-                
-                if (s3Stmt.executeUpdate() != 1)
-                {
-                    System.out.println("Error updating litho: "+id);
-                }
-                cnt++;
-                if (cnt % 1000 == 0) 
-                {
-                    worker.firePropertyChange(PROGRESS, 0, cnt);
-                    log.debug("Lithostrat: "+cnt);
-                }
-            }
-            try
-            {
-                if (transCnt > 0) dbS3Conn.commit();
-            } catch (Exception ex2) { ex2.printStackTrace();}
-    
-            rs.close();
-        } catch (Exception e) 
-        {
-            try
-            {
-                dbS3Conn.rollback();
-            } catch (Exception ex2) {}
-            e.printStackTrace();
-            
-        } finally
-        {
-            if (stmt != null) stmt.close();
-            if (s3Stmt != null) s3Stmt.close();
-            try
-            {
-                dbS3Conn.setAutoCommit(true);
-            } catch (Exception ex2) { ex2.printStackTrace();}
-        }
-        
-        tblWriter.endTable();
-        
-        worker.firePropertyChange(MSG, "", "Updating Total Lithostrategraphy Counts...");
-        
-        treeCnt = 0;
-
-        //sql = adjustSQL("SELECT LithoStratID FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID AND RankID = 0");
-        //int rootId = getCountAsInt(dbConn, sql);
-        
-        sql = adjustSQL("SELECT COUNT(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID");
-        treeTotal = getCountAsInt(dbConn, sql);
-        if (treeTotal == 0)
-        {
-            return;
-        }
-        treePercent = treeTotal / 20;
-        if (progressDelegate != null) 
-        {
-            progressDelegate.setProcessPercent(true);
-            progressDelegate.setProcess(0, 100);
-        }
-
-        dbS3Conn.setAutoCommit(false);
-        PreparedStatement pStmt = null;
-        try
-        {
-            String upStr = "UPDATE litho SET TotalCOCnt=? WHERE _id=?";
-            pStmt = dbS3Conn.prepareStatement(upStr);
-            fillTotalCountForTree("Litho", pStmt);
-            pStmt.close();
-            
-        } catch (Exception e) 
-        {
-            try
-            {
-                dbS3Conn.rollback();
-            } catch (Exception ex2) {}
-            e.printStackTrace();
-            
-        } finally
-        {
-            if (pStmt != null) pStmt.close();
-            try
-            {
-                dbS3Conn.setAutoCommit(true);
-            } catch (Exception ex2) { ex2.printStackTrace();}
-        }
-        
-        if (progressDelegate != null) progressDelegate.setProcessPercent(false);
-
-    }
-
-    
-    /**
-     * @throws SQLException
-     */
-    private void doBuildChronostrat() throws SQLException
-    {
-        int     cnt = 0;
-        String  sql;
-        Integer count = null;
-        
-        // GeologicTimePeriodID geologictimeperiod
-
-        // Get Specimen Counts for ChronosStrat
-        worker.firePropertyChange(MSG, "", "Getting ChronosStrat Counts...");
-        HashMap<Integer, Integer> numObjsHash = new HashMap<Integer, Integer>();
-        sql = adjustSQL("SELECT g.GeologicTimePeriodID, SUM(IF (co.CountAmt IS NULL, 1, co.CountAmt)) FROM collectionobject co " +
-                        "INNER JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID " +
-                        "INNER JOIN geologictimeperiod g ON p.ChronosStratID = g.GeologicTimePeriodID " +
-                        "WHERE g.GeologicTimePeriodTreeDefID = GTPTREEDEFID GROUP BY g.GeologicTimePeriodID");
-        
-        log.debug(sql);
-        
-        for (Object[] row : query(sql))
-        {
-            count = getCount(row[1]);
-            numObjsHash.put((Integer)row[0], count);
-        }
-        
-        // Get All Unsed Litho items
-        worker.firePropertyChange(MSG, "", "Pruning ChronosStrat Tree...");
-         worker.firePropertyChange(MSG, "", "Building ChronosStrat...");
-        
-        String prefix  = "SELECT g.GeologicTimePeriodID, FullName, RankID, ParentID, HighestChildNodeNumber, NodeNumber ";
-        String fullPostfix = adjustSQL(" FROM geologictimeperiod g LEFT JOIN paleocontext p ON p.ChronosStratID = g.GeologicTimePeriodID " +
-                                       "LEFT JOIN collectionobject co ON co.PaleoContextID = p.PaleoContextID " +
-                                       "WHERE g.GeologicTimePeriodTreeDefID = GTPTREEDEFID AND co.CollectionObjectID IS NOT NULL");
-        
-        sql = "SELECT COUNT(*) " + fullPostfix;
-        log.debug(sql);
-        int totCnt = getCountAsInt(dbConn, sql);
-        if (progressDelegate != null)
-        {
-            progressDelegate.setProcess(0, totCnt);
-        }
-        sql = prefix + fullPostfix + " GROUP BY g.GeologicTimePeriodID";
-        log.debug(sql);
-        
-        tblWriter.log("ChronosStrat Issues");
-        tblWriter.startTable();
-        tblWriter.logHdr("Full Name", "Rank Id", "Issue");
-        
-        dbS3Conn.setAutoCommit(false);
-        PreparedStatement s3Stmt = null;
-        Statement         stmt   = null;
-        try
-        {
-            stmt  = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            stmt.setFetchSize(Integer.MIN_VALUE);
-    
-            dbS3Conn.setAutoCommit(false);
-            int transCnt = 0;
-            
-            cnt = 0;
-            String upSQL = "INSERT INTO gtp (_id, FullName, RankID, ParentID, TotalCOCnt, NumObjs, HighNodeNum, NodeNum) VALUES (?,?,?,?,?,?,?,?)";
-            s3Stmt = dbS3Conn.prepareStatement(upSQL);
-            ResultSet rs = stmt.executeQuery(adjustSQL(sql));
-            while (rs.next())
-            {
-                transCnt++;
-    
-                Integer id = rs.getInt(1);
-                s3Stmt.setInt(1,    id);
-                s3Stmt.setString(2, rs.getString(2)); // FullName
-                s3Stmt.setInt(3,    rs.getInt(3));    // RankID
-                s3Stmt.setInt(4,    rs.getInt(4));    // ParentID
-                
-                int highestNodeNum = rs.getInt(5);    
-                int nodeNumber     = rs.getInt(6);
-                
-                s3Stmt.setInt(5,    0);          // Total Number of Specimens below
-                
-                Integer numObjs = numObjsHash.get(id);
-                if (numObjs == null) numObjs = 0;
-                s3Stmt.setInt(6,    numObjs);          // Number of Specimens this Chronos has
-                
-                s3Stmt.setInt(7,    highestNodeNum);
-                s3Stmt.setInt(8,    nodeNumber);
-                
-                if (s3Stmt.executeUpdate() != 1)
-                {
-                    System.out.println("Error updating litho: "+id);
-                }
-                cnt++;
-                if (cnt % 1000 == 0) 
-                {
-                    worker.firePropertyChange(PROGRESS, 0, cnt);
-                    log.debug("Chronos: "+cnt);
-                }
-            }
-            try
-            {
-                if (transCnt > 0) dbS3Conn.commit();
-            } catch (Exception ex2) { ex2.printStackTrace();}
-    
-            rs.close();
-        } catch (Exception e) 
-        {
-            try
-            {
-                dbS3Conn.rollback();
-            } catch (Exception ex2) {}
-            e.printStackTrace();
-            
-        } finally
-        {
-            if (stmt != null) stmt.close();
-            if (s3Stmt != null) s3Stmt.close();
-            try
-            {
-                dbS3Conn.setAutoCommit(true);
-            } catch (Exception ex2) { ex2.printStackTrace();}
-        }
-        
-        tblWriter.endTable();
-        
-        worker.firePropertyChange(MSG, "", "Updating Total Chronostratigraphy Counts...");
-        
-        treeCnt = 0;
-
-        //sql = adjustSQL("SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID AND RankID = 0");
-        //int rootId = getCountAsInt(dbConn, sql);
-        
-        sql = adjustSQL("SELECT COUNT(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID");
-        treeTotal = getCountAsInt(dbConn, sql);
-        if (treeTotal == 0)
-        {
-            return;
-        }
-        treePercent = treeTotal / 20;
-        if (progressDelegate != null) 
-        {
-            progressDelegate.setProcessPercent(true);
-            progressDelegate.setProcess(0, 100);
-        }
-
-        dbS3Conn.setAutoCommit(false);
-        PreparedStatement pStmt = null;
-        try
-        {
-            String upStr = "UPDATE gtp SET TotalCOCnt=? WHERE _id=?";
-            pStmt = dbS3Conn.prepareStatement(upStr);
-            fillTotalCountForTree("GTP", pStmt);
-            pStmt.close();
-            
-        } catch (Exception e) 
-        {
-            try
-            {
-                dbS3Conn.rollback();
-            } catch (Exception ex2) {}
-            e.printStackTrace();
-            
-        } finally
-        {
-            if (pStmt != null) pStmt.close();
-            try
-            {
-                dbS3Conn.setAutoCommit(true);
-            } catch (Exception ex2) { ex2.printStackTrace();}
-        }
-        
-        if (progressDelegate != null) progressDelegate.setProcessPercent(false);
-
-    }
-        
-    /**
      * @throws SQLException
      */
     @SuppressWarnings("unused")
@@ -1676,7 +1192,7 @@ public class iPadDBExporter implements VerifyCollectionListener
 //        sql = adjustSQL("SELECT GeographyID FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND RankID = 0");
 //        int rootId = getCountAsInt(dbConn, sql);
         
-        sql = adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID");
+        sql       = adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID");
         treeTotal = getCountAsInt(dbConn, sql);
         treePercent = treeTotal / 20;
         if (progressDelegate != null) 
@@ -1691,7 +1207,7 @@ public class iPadDBExporter implements VerifyCollectionListener
         {
             String upStr = "UPDATE geo SET TotalCOCnt=? WHERE _id=?";
             pStmt = dbS3Conn.prepareStatement(upStr);
-            fillTotalCountForTree("Geo", pStmt);
+            fillTotalCountForTree(dbS3Conn, worker, "Geo", pStmt);
             pStmt.close();
             
         } catch (Exception e) 
@@ -1714,18 +1230,16 @@ public class iPadDBExporter implements VerifyCollectionListener
         if (progressDelegate != null) progressDelegate.setProcessPercent(false);
     }
     
-    int treePercent = 1;
-    int treeCnt     = 0;
-    int treeTotal   = 0;
-    
-    /**
+     /**
      * @param parentId
      * @param pStmt
      * @return
      * @throws SQLException
      */
-    private void fillTotalCountForTree(final String tableClassName, 
-                                       final PreparedStatement pStmt) throws SQLException
+    protected static  void fillTotalCountForTree(final Connection dbS3Conn,
+                                                 final SwingWorker<Integer, Integer> worker,
+                                                 final String tableClassName, 
+                                                 final PreparedStatement pStmt) throws SQLException
     {
         HashMap<Integer, Integer> idToTotal = new HashMap<Integer, Integer>();
         String tableName = tableClassName.toLowerCase();
@@ -1778,45 +1292,6 @@ public class iPadDBExporter implements VerifyCollectionListener
             }
         }
     }
-//    private int fillTotalCountForTree(final String tablePrefix, 
-//                                     final int parentId, 
-//                                     final int nodeNum,
-//                                     final int highNodeNum,
-//                                     final PreparedStatement pStmt) throws SQLException
-//    {
-//        // select SUM(NumObjs) FROM taxon WHERE NodeNum > 3266 AND HighNodeNum <= 3270;
-//        if (treeCnt % treePercent == 0)
-//        {
-//            worker.firePropertyChange(PROGRESS, 0, (int)((double)treeCnt * 100.0 /  (double)treeTotal));
-//        }
-//        treeCnt++;
-//        
-//        String  sql   = String.format("SELECT SUM(NumObjs) FROM %s WHERE NodeNum > %d AND HighNodeNum <= %d", tablePrefix.toLowerCase(), nodeNum, highNodeNum);
-//        Integer total = getCount(dbS3Conn, sql);
-//        if (total == null) total = 0;
-//        
-//        int kidTotal = 0;
-//        sql = String.format("SELECT _id,NodeNum,HighNodeNum FROM %s WHERE ParentID = %d", tablePrefix.toLowerCase(), parentId);
-//        for (Object[] values : query(dbS3Conn, sql))
-//        {
-//            int id  = (Integer)values[0];
-//            int nn  = (Integer)values[1];
-//            int hnn = (Integer)values[2];            
-//            kidTotal += fillTotalCountForTree(tablePrefix, id, nn, hnn, pStmt);
-//        }
-//        
-//        //if (kidTotal > 0) System.out.println(String.format("%d -> %d", parentId, kidTotal));
-//        if (kidTotal > 0)
-//        {
-//            pStmt.setInt(1, kidTotal);
-//            pStmt.setInt(2, parentId);
-//            if (pStmt.executeUpdate() != 1)
-//            {
-//                log.error(String.format("Error updating ParentID %d KidCnt: %d  Tbl: %s", parentId, kidTotal, tablePrefix));
-//            }
-//        }
-//        return total + kidTotal;
-//    }
     
     /**
      * @param pStmt
@@ -3004,12 +2479,6 @@ public class iPadDBExporter implements VerifyCollectionListener
         stmt.setFetchSize(Integer.MIN_VALUE);
         cnt = 0;
         
-        //String sql = adjustSQL("SELECT COUNT(*) FROM locality WHERE GeographyID IS NULL AND DisciplineID = DSPLNID");
-        //int totLocs = Math.max(getCountAsInt(sql), 0);
-        //String sql = adjustSQL("SELECT COUNT(*) FROM locality l INNER JOIN geography g ON l.GeographyID = g.GeographyID WHERE g.RankID < 200 AND l.DisciplineID = DSPLNID");
-        //totLocs += Math.max(getCountAsInt(sql), 0);
-        //System.out.println("totLocs: "+totLocs);
-        
         String[] prefixes = { 
                 "SELECT geo4.GeographyID AS GID4, geo4.RankID AS RID4, LID, RID, geo4.ParentID AS PID4 ",
                 "SELECT geo3.GeographyID, geo3.RankID, LID, RID ",
@@ -3733,21 +3202,23 @@ public class iPadDBExporter implements VerifyCollectionListener
                         progressDelegate.incOverall();
                     }
                     
+                    ExportPaleo paleoExporter = new ExportPaleo(iPadDBExporter.this, dbS3Conn, dbConn, tblWriter, worker);
+                    if (paleoExporter.initialize())
                     if (doAll || doBuildPaleo)
                     {
-                        doBuildPaleo();
+                        paleoExporter.doBuildPaleo();
                         progressDelegate.incOverall();
                     }
                     
                     if (doAll || doLithostrat)
                     {
-                        doBuildLitho();
+                        paleoExporter.doBuildLitho();
                         progressDelegate.incOverall();
                     }
                     
                     if (doAll || doChronostrat)
                     {
-                        doBuildChronostrat();
+                        paleoExporter.doBuildChronostrat();
                         progressDelegate.incOverall();
                     }
                     

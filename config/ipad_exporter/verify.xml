@@ -31,6 +31,9 @@
        <eval name="SpeciesParentedWrong" desc="%d - Species not parented to a Genus" fmt="true" cond=">" val="0">
           <![CDATA[SELECT COUNT(*) FROM taxon t1 INNER JOIN taxon t2 ON t1.ParentID = t2.TaxonID WHERE t1.RankID = 220 AND t2.RankID < 180 AND t1.TaxonTreeDefID = TAXTREEDEFID]]>
        </eval>
+       <eval name="NoParent" desc="%d - Taxon record is missing a parent." fmt="true" cond=">" val="0" stop="true">
+          <![CDATA[SELECT COUNT(*) FROM taxon WHERE RankID > 0 AND ParentID IS NULL AND TaxonTreeDefID = TAXTREEDEFID]]>
+       </eval>
        <eval name="GeneraParentedWrong" desc="%d - Genera not parented to a Family" fmt="true" cond=">" val="0">
           <![CDATA[SELECT COUNT(*) FROM taxon t1 INNER JOIN taxon t2 ON t1.ParentID = t2.TaxonID WHERE t1.RankID = 180 AND t2.RankID < 140 AND t1.TaxonTreeDefID = TAXTREEDEFID]]>
        </eval>
@@ -52,8 +55,14 @@
        <eval name="LocalityMissingLatLon" desc="%d - Percent of Locality records that are missing a Geography." fmt="true" cond=">" val="5">
           <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(*) CN FROM locality WHERE GeographyID IS NULL AND DisciplineID = DSPLNID) T1, (SELECT COUNT(*) SM FROM locality WHERE DisciplineID = DSPLNID) T2]]>
        </eval> 
-       <eval name="Paleo" desc="%d - Percentage Collection Objects with no Paleo Context Information." fmt="true" cond=">" val="0" isPaleo="true">
+       <eval name="PaleoCO" desc="%d - Percentage Collection Objects with no Paleo Context Information." fmt="true" cond=">" val="0" paleotype="co">
           <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(*) CN FROM collectionobject co LEFT JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID WHERE p.LithoStratID IS NULL AND p.ChronosStratID IS NULL AND p.BioStratID IS NULL AND co.CollectionID = COLMEMID) T1, (SELECT COUNT(*) SM FROM collectionobject co LEFT JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID WHERE co.CollectionID = COLMEMID) T2]]>
+       </eval>
+       <eval name="PaleoCE" desc="%d - Percentage Collection Objects with no Paleo Context Information." fmt="true" cond=">" val="0"  paleotype="ce">
+          <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(*) CN FROM paleocontext pc INNER JOIN collectingevent ce ON pc.PaleoContextID = ce.PaleoContextID INNER JOIN geologictimeperiod g ON pc.LithoStratID = g.GeologicTimePeriodID INNER JOIN collectionobject co ON pc.PaleoContextID = co.PaleoContextID WHERE pc.LithoStratID IS NULL AND pc.ChronosStratID IS NULL AND pc.BioStratID IS NULL AND co.CollectionID = COLMEMID) T1, (SELECT COUNT(*) SM FROM collectionobject co LEFT JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID WHERE co.CollectionID = COLMEMID) T2]]>
+       </eval>
+       <eval name="PaleoLoc" desc="%d - Percentage Collection Objects with no Paleo Context Information." fmt="true" cond=">" val="0"  paleotype="loc">
+          <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(*) CN FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID INNER JOIN locality lc ON ce.LocalityID = lc.LocalityID INNER JOIN paleocontext pc ON lc.PaleoContextID = pc.PaleoContextID INNER JOIN geologictimeperiod g ON pc.LithoStratID = g.GeologicTimePeriodID WHERE pc.LithoStratID IS NULL AND pc.ChronosStratID IS NULL AND pc.BioStratID IS NULL AND co.CollectionID = COLMEMID) T1, (SELECT COUNT(*) SM FROM collectionobject co LEFT JOIN paleocontext p ON co.PaleoContextID = p.PaleoContextID WHERE co.CollectionID = COLMEMID) T2]]>
        </eval>
        <eval name="Missing PaleoInformation" desc="%d - Percentage of Paleo Context records that have no information." fmt="true" cond=">" val="0" isPaleo="true">
           <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(PaleoContextID) CN FROM paleocontext WHERE ChronosStratID IS NULL AND LithoStratID IS NULL AND BioStratID IS NULL) T1, (SELECT COUNT(*) SM FROM paleocontext) T2]]>

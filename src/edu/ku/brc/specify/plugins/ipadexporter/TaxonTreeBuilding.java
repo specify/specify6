@@ -390,10 +390,13 @@ public class TaxonTreeBuilding
                     {
                         if (pNode.rankId < 180) pNode.genusId = 0;
                         
-                        TreeNode parent = getNode(pNode.parentId, pNode.parentRankId, 0, 0);
-                        //System.out.println(String.format("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", pNode.taxonId, pNode.rankId, pNode.totalCount, pNode.nodeCount,  pNode.parentId, pNode.parentRankId,
-                        //                                                                   parent.taxonId, parent.rankId,  parent.totalCount, (parent.totalCount + pNode.nodeCount + pNode.totalCount)));
-                        parent.totalCount += pNode.nodeCount + pNode.totalCount;
+                        if (pNode.parentId != null)
+                        {
+                            TreeNode parent = getNode(pNode.parentId, pNode.parentRankId, 0, 0);
+                            //System.out.println(String.format("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", pNode.taxonId, pNode.rankId, pNode.totalCount, pNode.nodeCount,  pNode.parentId, pNode.parentRankId,
+                            //                                                                   parent.taxonId, parent.rankId,  parent.totalCount, (parent.totalCount + pNode.nodeCount + pNode.totalCount)));
+                            parent.totalCount += pNode.nodeCount + pNode.totalCount;
+                        }
                     }
                 }
             }
@@ -466,7 +469,10 @@ public class TaxonTreeBuilding
                                 fullName          = rs.getString(1);
                                 nodeNum           = rs.getInt(2);
                                 highNodeNum       = rs.getInt(3);
-                                writeTaxon(s3Stmt, pNode.taxonId, fullName, pNode.rankId, pNode.parentId, pNode.familyId, pNode.genusId, pNode.totalCount, pNode.nodeCount, nodeNum, highNodeNum);
+                                if (pNode.parentId != null)
+                                {
+                                    writeTaxon(s3Stmt, pNode.taxonId, fullName, pNode.rankId, pNode.parentId, pNode.familyId, pNode.genusId, pNode.totalCount, pNode.nodeCount, nodeNum, highNodeNum);
+                                }
                             } else
                             {
                                 System.err.println("Error looking up taxon: "+pNode.taxonId);

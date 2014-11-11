@@ -34,8 +34,11 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
@@ -56,6 +59,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.plugins.ipadexporter.ExportPaleo.RelationshipType;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -81,6 +85,13 @@ public class VerifyCollectionDlg extends CustomDialog
 	private File                          cacheDir;
 	private String                        reportPath;
 	private boolean                       isCollectionPaleo;
+	
+	private static final Map<String, RelationshipType> paleoLookupHash = 
+	        Collections.unmodifiableMap(new HashMap<String, RelationshipType>() {{ 
+                put("ce", RelationshipType.eColCE);
+                put("co", RelationshipType.eColObj);
+                put("loc", RelationshipType.eLocality);
+	        }});
 	
     /**
      * @param cloudHelper
@@ -166,6 +177,14 @@ public class VerifyCollectionDlg extends CustomDialog
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Must be called at the end 'createUI'
     }
     
+    /**
+     * @return
+     */
+    public static Map<String, RelationshipType> getPaleoLookupHash()
+    {
+        return paleoLookupHash;
+    }
+    
     private Integer cnvToInt(final Object rv)
     {
         if (rv instanceof String)
@@ -196,7 +215,6 @@ public class VerifyCollectionDlg extends CustomDialog
     		              final String title, 
     		              final ArrayList<String> items, 
     		              final String color,
-    		              final String cls,
     		              final boolean isHTML3)
     {
     	if (items.size() > 0)
@@ -227,6 +245,8 @@ public class VerifyCollectionDlg extends CustomDialog
     private void processResults()
     {
         //loadAndPushResourceBundle("stats");
+        
+        RelationshipType paleoRelType = isCollectionPaleo ? ExportPaleo.discoverPaleRelationshipType() : RelationshipType.eTypeError; 
     	
         boolean hasCritical = false;
 
@@ -249,8 +269,8 @@ public class VerifyCollectionDlg extends CustomDialog
                 	
                 	String mainFont = "<font face='verdana' color='black'>";
                 	String headHTML = "<htmL><head></head><body bgcolor='#EEEEEE'>" + mainFont;
-                	//StringBuilder sb = new StringBuilder(headHTML);
-                	//htmlPane.setText(sb.toString()+"<BR><BR>Processing...</font></body></html>");
+                	StringBuilder sb = new StringBuilder(headHTML);
+                	htmlPane.setText(sb.toString()+"<BR><BR>Verifying collection...</font></body></html>");
                 	
                     List<?> items = root.selectNodes("eval"); //$NON-NLS-1$
         
@@ -260,7 +280,7 @@ public class VerifyCollectionDlg extends CustomDialog
                     for (Iterator<?> capIter = items.iterator(); capIter.hasNext(); )
                     {
                         Element fieldNode = (Element)capIter.next();
-                        String  name      = fieldNode.attributeValue("name"); //$NON-NLS-1$
+                        //String  name      = fieldNode.attributeValue("name"); //$NON-NLS-1$
                         String  desc      = fieldNode.attributeValue("desc"); //$NON-NLS-1$
                         String  sql       = fieldNode.getTextTrim();
                         String  cond      = fieldNode.attributeValue("cond");
@@ -270,12 +290,20 @@ public class VerifyCollectionDlg extends CustomDialog
                         boolean doStop    = stop != null && stop.equals("true");
                         
                         String  display   = fieldNode.attributeValue("display");
-                        boolean doDsp    = display == null || display.equals("true");
+                        boolean doDsp     = display == null || display.equals("true");
                         
                         String  paleo     = fieldNode.attributeValue("isPaleo");
                         boolean isPaleo   = paleo != null && paleo.equals("true");
-                        
                         if (isPaleo && !isCollectionPaleo) continue;
+                        
+                        String  paleoTypeStr = fieldNode.attributeValue("paleotype"); //$NON-NLS-1$
+                        if (isCollectionPaleo && StringUtils.isNotEmpty(paleoTypeStr))
+                        {
+                            if (paleoRelType !=  paleoLookupHash.get(paleoTypeStr))
+                            {
+                                continue;
+                            }
+                        }
                         
                         sql = ipadExporter.adjustSQL(sql);
                         
@@ -343,15 +371,15 @@ public class VerifyCollectionDlg extends CustomDialog
                     }
                     stmt0.close();
                     
-                    StringBuilder sb = new StringBuilder(headHTML);
+                    sb = new StringBuilder(headHTML);
                     if (issueCnt == 0)
                     {
                     	sb.append("<BR><BR>There were no issues to report.");
                     } else
                     {
-                    	listMsgs(sb, "Passed", okMsgs, "green", null, true);
-                    	listMsgs(sb, "Warnings", warnMsgs, "yellow", null, true);
-                    	listMsgs(sb, "Critical Errors - Cannot proceed.", criticalMsgs, "red", null, true);
+                    	listMsgs(sb, "Passed", okMsgs, "green", true);
+                    	listMsgs(sb, "Warnings", warnMsgs, "yellow", true);
+                    	listMsgs(sb, "Critical Errors - Cannot proceed.", criticalMsgs, "red", true);
                     }
                     sb.append(mainFont + "<BR>Verification Complete.<BR><BR></font></body></html>");
                     
@@ -359,9 +387,9 @@ public class VerifyCollectionDlg extends CustomDialog
                     
                     // For external report
                     sb = new StringBuilder("<htmL><head><title>Collection Verification</title></head><body>");
-                	listMsgs(sb, "Passed", okMsgs, "green", "ok", false);
-                	listMsgs(sb, "Warnings", warnMsgs, "yellow", "wn", false);
-                	listMsgs(sb, "Critical Errors - Cannot proceed.", criticalMsgs, "red", "cr", false);
+                	listMsgs(sb, "Passed", okMsgs, "green", false);
+                	listMsgs(sb, "Warnings", warnMsgs, "yellow", false);
+                	listMsgs(sb, "Critical Errors - Cannot proceed.", criticalMsgs, "red", false);
                 	sb.append("</body></html>");
                 	try
                     {

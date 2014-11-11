@@ -32,22 +32,30 @@
        <stat tbl="63" grp="3" name="num_prpcnt" desc="Total Preparations">
           <![CDATA[SELECT SUM(IF (CountAmt IS NULL, 1, CountAmt)) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
        </stat>
-       <stat tbl="100" grp="3" name="num_litho" desc="Litho Stratigraphy">
+       <stat tbl="100" grp="3" name="num_litho" desc="Litho Stratigraphy" paleotype="ce">
           <![CDATA[SELECT COUNT(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID]]>
        </stat>
-      <!-- 
-       <stat tbl="100" grp="3" name="num_lithou" desc="Litho Stratigraphy Used">
-          <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM paleocontext p INNER JOIN lithostrat l ON l.LithoStratID = p.LithoStratID WHERE p.CollectionMemberID = COLMEMID AND l.IsAccepted <> 0]]>
+       <stat tbl="100" grp="3" name="num_lithou" desc="Litho Stratigraphy Used" paleotype="co">
+          <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM paleocontext pc INNER JOIN collectionobject co ON pc.PaleoContextID = co.PaleoContextID INNER JOIN lithostrat l ON pc.LithoStratID = l.LithoStratID WHERE co.CollectionMemberID = COLMEMID AND l.IsAccepted <> 0]]>
        </stat>
- -->       
-       <stat tbl="46" grp="3" name="num_gtp" desc="Chronosstratigraphy">
+       <stat tbl="100" grp="3" name="num_lithou" desc="Litho Stratigraphy Used" paleotype="ce">
+          <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM paleocontext pc INNER JOIN collectingevent ce ON pc.PaleoContextID = ce.PaleoContextID INNER JOIN lithostrat l ON pc.LithoStratID = l.LithoStratID INNER JOIN collectionobject co ON pc.PaleoContextID = co.PaleoContextID WHERE co.CollectionMemberID = COLMEMID AND l.IsAccepted <> 0]]>
+       </stat>
+       <stat tbl="100" grp="3" name="num_lithou" desc="Litho Stratigraphy Used" paleotype="loc">
+          <![CDATA[SELECT COUNT(DISTINCT l.LithoStratID) FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID INNER JOIN locality lc ON ce.LocalityID = lc.LocalityID INNER JOIN paleocontext pc ON lc.PaleoContextID = pc.PaleoContextID INNER JOIN lithostrat l ON pc.LithoStratID = l.LithoStratID WHERE co.CollectionMemberID = COLMEMID AND l.IsAccepted <> 0]]>
+       </stat>
+       <stat tbl="46" grp="3" name="num_gtp" desc="Chronosstratigraphy" paleotype="ce">
           <![CDATA[SELECT COUNT(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID]]>
        </stat>
-       <!-- 
-       <stat tbl="46" grp="3" name="num_gtpu" desc="Chronosstratigraphy Used">
-          <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM paleocontext p INNER JOIN geologictimeperiod g ON g.GeologicTimePeriodID = p.ChronosStratID WHERE p.CollectionMemberID = COLMEMID AND g.IsAccepted <> 0]]>
+       <stat tbl="46" grp="3" name="num_gtpu" desc="Chronosstratigraphy Used" paleotype="co">
+          <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM paleocontext pc INNER JOIN collectionobject co ON pc.PaleoContextID = co.PaleoContextID INNER JOIN geologictimeperiod g ON pc.LithoStratID = g.GeologicTimePeriodID WHERE co.CollectionMemberID = COLMEMID]]>
        </stat>
-        -->
+       <stat tbl="46" grp="3" name="num_gtpu" desc="Chronosstratigraphy Used" paleotype="ce">
+          <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM paleocontext pc INNER JOIN collectingevent ce ON pc.PaleoContextID = ce.PaleoContextID INNER JOIN geologictimeperiod g ON pc.LithoStratID = g.GeologicTimePeriodID INNER JOIN collectionobject co ON pc.PaleoContextID = co.PaleoContextID WHERE co.CollectionMemberID = COLMEMID]]>
+       </stat>
+       <stat tbl="46" grp="3" name="num_gtpu" desc="Chronosstratigraphy Used" paleotype="loc">
+          <![CDATA[SELECT COUNT(DISTINCT g.GeologicTimePeriodID) FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID INNER JOIN locality lc ON ce.LocalityID = lc.LocalityID INNER JOIN paleocontext pc ON lc.PaleoContextID = pc.PaleoContextID INNER JOIN geologictimeperiod g ON pc.LithoStratID = g.GeologicTimePeriodID WHERE co.CollectionMemberID = COLMEMID]]>
+       </stat>
        <stat tbl="23" grp="4" name="Collection" desc="Collection">
            <![CDATA[SELECT CollectionName FROM collection WHERE CollectionID = COLMEMID]]>
         </stat>
