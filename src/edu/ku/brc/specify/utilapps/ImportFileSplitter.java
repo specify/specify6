@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.AttributeSet;
@@ -63,9 +64,9 @@ import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * 
@@ -84,6 +85,8 @@ public class ImportFileSplitter extends CustomDialog
 {
 	private static final Logger log = Logger.getLogger(ImportFileSplitter.class);
 
+	private static final int maxChunkSize = 25000;
+	
 	protected final int defaultChunkSize = edu.ku.brc.specify.tasks.WorkbenchTask.MAX_ROWS;
 	protected JTextField fileName;
 	protected JCheckBox headerChk;
@@ -111,7 +114,7 @@ public class ImportFileSplitter extends CustomDialog
 		
 		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p, 1dlu, f:max(150dlu;p):g, 1dlu, f:p, 5dlu", "8dlu, p, 2dlu, p, 2dlu, p, 9dlu"));
 		CellConstraints cc = new CellConstraints();
-		pb.add(UIHelper.createLabel(UIRegistry.getResourceString("ImportFileSplitter.FileToSplit")), cc.xy(2, 2)); 
+		pb.add(UIHelper.createLabel(UIRegistry.getResourceString("ImportFileSplitter.FileToSplit"), SwingConstants.RIGHT), cc.xy(2, 2)); 
 		fileName = UIHelper.createTextField();
 		pb.add(fileName, cc.xy(4, 2));
 		JButton chooseBtn = UIHelper.createButton(UIRegistry.getResourceString("ImportFileSplitter.ChooseFile")); 
@@ -133,9 +136,10 @@ public class ImportFileSplitter extends CustomDialog
 		headerChk.setSelected(true);
 		pb.add(headerChk, cc.xy(4, 4));
 		
-		pb.add(UIHelper.createLabel(UIRegistry.getResourceString("ImportFileSplitter.FileSize")), cc.xy(2, 6)); 
+		pb.add(UIHelper.createLabel(UIRegistry.getResourceString("ImportFileSplitter.FileSize") 
+				+ " (<= " + maxChunkSize + ")", SwingConstants.RIGHT), cc.xy(2, 6)); 
 		//fileSize = UIHelper.createTextField(5);
-		fileSize = new PosIntTextField(25000);
+		fileSize = new PosIntTextField(maxChunkSize);
 		fileSize.setText(String.valueOf(defaultChunkSize));
 		pb.add(fileSize, cc.xy(4, 6));
 		
@@ -1084,8 +1088,15 @@ public class ImportFileSplitter extends CustomDialog
 		 * @author Tadmin
 		 *
 		 */
+		/**
+		 * @author timo
+		 *
+		 */
 		class IntTextDocument extends PlainDocument
 		{
+			/* (non-Javadoc)
+			 * @see javax.swing.text.PlainDocument#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
+			 */
 			public void insertString(int offs, String str, AttributeSet a)
 					throws BadLocationException
 			{
