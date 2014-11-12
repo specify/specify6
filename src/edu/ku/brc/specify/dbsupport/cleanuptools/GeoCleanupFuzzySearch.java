@@ -23,7 +23,6 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
 import static edu.ku.brc.ui.UIRegistry.showError;
-import static org.apache.commons.lang.StringUtils.replace;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,6 +90,22 @@ public class GeoCleanupFuzzySearch
 {
     private static final Logger  log = Logger.getLogger(GeoCleanupFuzzySearch.class);
     
+    private static String[] replaceNames = new String[] {"Republic of Korea", "South Korea", 
+                                                         "Russian", "Russia", 
+                                                         "United States of America", "United States",
+                                                         "Portuguese", "Portugal",
+                                                         };
+    
+    private static String[] removeStrs = new String[] {
+        "Islamic Republic", "Republics", "Republic", "Islamic", "Independent",
+        "Federal", "Democratic", "Federation", "Commonwealth", 
+        "Principality", "Federative", "Plurinational", "Socialist", "Arab", 
+        "Co-operative", "Sultanate", "People's", "Territory", "Hashemite", "Country",
+    };
+
+    private static String[] replaceStrs = new String[] {"State of ", "Union of ", "Kingdom of ", 
+                                                        " of ", "of ", " the ", "the ", "-" , ",", "?" };
+
     private static boolean isDoingTesting = false;
     
     public  final static String        GEONAMES_INDEX_DATE_PREF     = "GEONAMES_INDEX_DATE_PREF";
@@ -116,7 +131,6 @@ public class GeoCleanupFuzzySearch
     
     private ArrayList<Object>          rowData = new ArrayList<Object>();
     private StateCountryContXRef       stCntXRef;
-
     
     /**
      * @param geoDef
@@ -149,6 +163,29 @@ public class GeoCleanupFuzzySearch
 //            e.printStackTrace();
 //        }
 //        //dbConn.close();
+        
+        //
+        if (false) // debug
+        {
+            HashSet<String> namesSet = new HashSet<String>();
+            Vector<Object> nmRows = BasicSQLUtils.querySingleCol("select asciiname from geoname where fcode LIKE '%PCL%' ORDER BY asciiname");
+            for (Object nm : nmRows)
+            {
+                String newName = stripExtrasFromName((String)nm);
+                System.out.println("["+newName+"]\t\t["+nm+"]");
+                namesSet.add(newName);
+            }
+    
+            nmRows = BasicSQLUtils.querySingleCol("SELECT Name FROM geography WHERE RankID = 200 ORDER BY Name");
+            for (Object nm : nmRows)
+            {
+                String newName = stripExtrasFromName((String)nm);
+                if (!namesSet.contains(newName))
+                {
+                    System.out.println("Not Found: ["+newName+"]\t\t["+nm+"]");
+                }
+            }
+        }
         
         Vector<Object[]> rows = BasicSQLUtils.query("SELECT iso_alpha2, name FROM countryinfo");
         for (Object[] row : rows)
@@ -248,22 +285,24 @@ public class GeoCleanupFuzzySearch
      */
     protected static String stripExtrasFromName(final String name)
     {
-        
-        String[] extras = new String[] {"Islamic Republic ", "Republic ", "Islamic ", "Independent ",
-                                       "Federal ", "Democratic ", "Federation ", "Commonwealth ", 
-                                       "Principality ", "Federative", "Plurinational ", "Socialist ", };
-        
-        String sName = StringUtils.replace(name, "State of ", " ");
-        sName = StringUtils.replace(sName, "Union of ", " ");
-        sName = StringUtils.replace(sName, "Kingdom of ", " ");
-        sName = StringUtils.replace(sName, " of ", " ");
-        sName = StringUtils.replace(sName, " the ", " ");
-        
-        for (String extra : extras)
+        String sName = name;
+        for (int i=0;i<replaceNames.length;i+=2)
         {
-            sName = StringUtils.remove(sName, extra);
+            sName = StringUtils.replace(sName.trim(), replaceNames[i], replaceNames[i+1]);
         }
-        return replace(sName, "-", " ");
+        for (String extraStr : removeStrs)
+        {
+            sName = StringUtils.remove(sName.trim(), extraStr);
+        }
+        for (String replStr : replaceStrs)
+        {
+            sName = StringUtils.replace(sName.trim(), replStr, " ");
+        }
+        while (sName.contains("  "))
+        {
+            sName = StringUtils.replace(sName.trim(), "  ", " ");
+        }
+        return sName;
     }
     
 //    private String lookupStateName(final String countryISOCode, final String stateISOCode)
@@ -353,13 +392,6 @@ public class GeoCleanupFuzzySearch
             while (rs.next() && isOK)
             {
                 String countryCode = rs.getString(5);
-//                String countryName = rs.getString(2);
-//                System.out.println(countryName);
-//                if (countryName.equals("Islamic Republic of Afghanistan"))
-//                {
-//                    System.out.println(countryName);
-//                }
-                
                 if (stCntXRef.countryCodeToName(countryCode) == null)
                 {
                     log.error("Error - Unknown country code["+countryCode+"]");
@@ -838,7 +870,7 @@ public class GeoCleanupFuzzySearch
     {
         try
         {
-            analyzer.close();
+            if (analyzer != null) analyzer.close();
             if (reader != null) reader.close();
             
             analyzer = null;
