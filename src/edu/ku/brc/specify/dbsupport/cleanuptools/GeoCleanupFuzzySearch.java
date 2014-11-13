@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -90,6 +91,9 @@ public class GeoCleanupFuzzySearch
 {
     private static final Logger  log = Logger.getLogger(GeoCleanupFuzzySearch.class);
     
+    public final static Pattern kSpecialCharsPattern = Pattern.compile("[,.;!?(){}\\[\\]<>%\\-+*&$@\\=\\/]"); //store it somewhere so 
+
+    
     private static String[] replaceNames = new String[] {"Republic of Korea", "South Korea", 
                                                          "Russian", "Russia", 
                                                          "United States of America", "United States",
@@ -99,12 +103,12 @@ public class GeoCleanupFuzzySearch
     private static String[] removeStrs = new String[] {
         "Islamic Republic", "Republics", "Republic", "Islamic", "Independent",
         "Federal", "Democratic", "Federation", "Commonwealth", 
-        "Principality", "Federative", "Plurinational", "Socialist", "Arab", 
-        "Co-operative", "Sultanate", "People's", "Territory", "Hashemite", "Country",
+        "Principality", "Federative", "Plurinational", "Socialist",  
+        "Co operative", "Sultanate", "People's", "Territory", "Hashemite", "Country",
     };
 
-    private static String[] replaceStrs = new String[] {"State of ", "Union of ", "Kingdom of ", 
-                                                        " of ", "of ", " the ", "the ", "-" , ",", "?" };
+    private static String[] replaceStrs = new String[] {"State of ", "Union of ", "Kingdom of ", "Arab ", 
+                                                        " of ", "of ", " the ", "the ", " The ", "The ", };
 
     private static boolean isDoingTesting = false;
     
@@ -298,6 +302,8 @@ public class GeoCleanupFuzzySearch
         {
             sName = StringUtils.replace(sName.trim(), replStr, " ");
         }
+        sName = kSpecialCharsPattern.matcher(sName).replaceAll(" ").trim();
+
         while (sName.contains("  "))
         {
             sName = StringUtils.replace(sName.trim(), "  ", " ");
@@ -387,7 +393,7 @@ public class GeoCleanupFuzzySearch
 
 
             sqlStr = "SELECT c.geonameId, c.Name, Latitude, Longitude, iso_alpha2, iso_alpha3, alternatenames " + post;
-            System.out.println(sqlStr);
+            //System.out.println(sqlStr);
             rs = stmt.executeQuery(sqlStr);
             while (rs.next() && isOK)
             {
@@ -456,10 +462,6 @@ public class GeoCleanupFuzzySearch
                 rowData.add(rs.getString(7));       // CountyCode  (6)
                 rowData.add(rs.getString(8));       // ISOCode     (7)
                 
-                if (rs.getString(2).equals("Fayette County") && rs.getString(6).equals("IA"))
-                {
-                    System.out.println("");
-                }
                 isOK = buildDocInsert(rowData, 400, earthId);
                 
                 cnt++;
@@ -631,9 +633,12 @@ public class GeoCleanupFuzzySearch
             fullName.append(countryName);
         }
         
+        String fullNameString = fullName.toString().trim();
+
+        
         // Lucene Index
         status = addDoc(geonameId, 
-                        fullName.toString(), 
+                        fullNameString, 
                         countryName, 
                         stateName, 
                         countyName, 
@@ -665,8 +670,9 @@ public class GeoCleanupFuzzySearch
 //                {
 //                    System.out.println("["+countryName+"]["+stateName+"]["+countyName+"]");
 //                }
+                String docName = altName.contains(fullNameString) ? altName : (altName + " " + fullNameString);
                 status = addDoc(geonameId,
-                        altName + " " + fullName,
+                        docName,
                         countryName,
                         stateName,
                         countyName,
@@ -685,7 +691,7 @@ public class GeoCleanupFuzzySearch
             if (lwCty.startsWith("saint ") && lwCty.length() > 7)
             {
                 addDoc(geonameId, 
-                        fullName.toString(), 
+                        fullNameString, 
                         countryName, 
                         stateName, 
                         "St. " + countyName.substring(6), 
@@ -695,7 +701,7 @@ public class GeoCleanupFuzzySearch
                         null);
                 
                 addDoc(geonameId, 
-                        fullName.toString(), 
+                        fullNameString, 
                         countryName, 
                         stateName, 
                         "St " + countyName.substring(6), 
@@ -994,7 +1000,7 @@ public class GeoCleanupFuzzySearch
     {
         
         //For Debug
-        String       connectStr = "jdbc:mysql://localhost/kufish";
+        String       connectStr = "jdbc:mysql://localhost/testfish";
         String       username   = "root";
         String       password   = "root";
         DBConnection dbConn;

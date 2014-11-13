@@ -56,7 +56,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -118,11 +117,7 @@ public class GeographyAssignISOs
     public  final static String        GEONAMES_INDEX_DATE_PREF     = "GEONAMES_INDEX_DATE_PREF";
     public  final static String        GEONAMES_INDEX_NUMDOCS       = "GEONAMES_INDEX_NUMDOCS";
     
-    private final static Pattern       kSpecialCharsPattern = Pattern.compile("[,.;!?(){}\\[\\]<>%\\-+*&$@\\=\\/]"); //store it somewhere so 
-    
     protected enum LuceneSearchResultsType {eNotFound, eFound, eMatch}
-
-
 
     //private GeographyTreeDef           geoDef;
     private Agent                      createdByAgent;
@@ -847,8 +842,8 @@ public class GeographyAssignISOs
         String searchStr = "";
         try
         {
-            searchStr = kSpecialCharsPattern.matcher(sb.toString()).replaceAll(" ").trim();
-            searchStr = GeoCleanupFuzzySearch.stripExtrasFromName(searchStr);
+            searchStr = GeoCleanupFuzzySearch.stripExtrasFromName(sb.toString());
+            //System.out.println("searchStr["+searchStr+"]");
             Query q = new QueryParser(Version.LUCENE_47, "name", GeoCleanupFuzzySearch.getAnalyzer()).parse(searchStr);
             luceneSearch.getSearcher().search(q, collector);
         } catch (ParseException e)
@@ -862,8 +857,8 @@ public class GeographyAssignISOs
         {
             int docId     = hits[i].doc;
             doc           = luceneSearch.getSearcher().doc(docId);
-            System.out.println("Fuzzy: "+i+"  "+hits[i].score+"  ["+doc.get("name")+"][cntry: "+doc.get("country")+" st:"+doc.get("state")+" co:"+
-                                doc.get("county")+"] rnk:"+doc.get("rankid")+" gnId: "+doc.get("geonmid"));
+            //System.out.println("Fuzzy: "+i+"  "+hits[i].score+"  ["+doc.get("name")+"][cntry: "+doc.get("country")+" st:"+doc.get("state")+" co:"+
+            //                    doc.get("county")+"] rnk:"+doc.get("rankid")+" gnId: "+doc.get("geonmid"));
             int docRankId = Integer.parseInt(doc.get("rankid"));
             if (rankId == docRankId)
             {
@@ -871,7 +866,10 @@ public class GeographyAssignISOs
                 String fullName = doc.get("name");
                 isoCode         = doc.get("code");
                 
-                if (i == 0 && isNotEmpty(fullName) && fullName.equals(searchStr))
+                String country = doc.get("country");
+                if (i == 0 && 
+                    ((isNotEmpty(fullName) && fullName.equals(searchStr)) || 
+                    ( rankId == 200 && isNotEmpty(country) && country.equals(searchStr))))
                 {
                     selectedSearchItem = new GeoSearchResultsItem(fullName, geoId, isoCode);
                     return LuceneSearchResultsType.eMatch;
@@ -881,7 +879,6 @@ public class GeographyAssignISOs
                 {
                     usedIds.add(geoId);
                     
-                    String country = doc.get("country");
                     String state   = doc.get("state");
                     String county  = doc.get("county");
                     
@@ -1069,14 +1066,15 @@ public class GeographyAssignISOs
         
                     if (selectedSearchItem != null)
                     {
+                        this.doAddISOCode     = true;
                         parentISOCodes[level] = selectedSearchItem.isoCode;
                         updateGeography(geoId, selectedSearchItem.geonameId, selectedSearchItem.name, selectedSearchItem.isoCode, parentNames);
                     }
                 } else
                 {
+                    this.doAddISOCode     = true;
                     parentISOCodes[level] = selectedSearchItem.isoCode;
                     updateGeography(geoId, selectedSearchItem.geonameId, selectedSearchItem.name, selectedSearchItem.isoCode, parentNames);
-                    
                 }
                
             } catch (Exception ex)
@@ -1555,7 +1553,7 @@ public class GeographyAssignISOs
                     //System.out.println(countryName+"  "+geoId+"   doInvCountry[0]: "+doInvCountry[0]+"  doIndvCountryId: "+doIndvCountryId+"  isIndvCountry: "+isIndvCountry);
                     if (doAllCountries[0] || (doInvCountry[0] && isIndvCountry))
                     {
-                        System.out.println(countryName);
+                        //System.out.println(countryName);
                         parentNames[0] = countryName;
                         parentRanks[0] = 200;
                         parentISOCodes[0] = isoCode;
