@@ -101,7 +101,8 @@ public class ExportPaleo
      */
     public boolean initialize()
     {
-        if (discoverPaleRelationshipType() != RelationshipType.eTypeError)
+        this.paleRelType = discoverPaleRelationshipType();
+        if (this.paleRelType != RelationshipType.eTypeError)
         {
             dbConn = DBConnection.getInstance().getConnection();
             return true;
@@ -607,8 +608,9 @@ public class ExportPaleo
      */
     public static RelationshipType discoverPaleRelationshipType()
     {
-        String[] values = {"collectionobject", "collectingevent", "locality"};
+        String[] values = {"error", "collectionobject", "collectingevent", "locality"};
         Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        System.out.println(disp.getPaleoContextChildTable());
         for (int i=0;i<values.length;i++)
         {
             if (values[i].equals(disp.getPaleoContextChildTable()))
