@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.util.Pair;
@@ -42,6 +44,8 @@ import edu.ku.brc.util.Pair;
  */
 public class TaxonTreeBuilding
 {
+    private static final Logger  log = Logger.getLogger(TaxonTreeBuilding.class);
+    
     final int secsInHours = 3600;
     final int secInMin    = 60;
 
@@ -125,11 +129,11 @@ public class TaxonTreeBuilding
             status = rv == 1;
             if (!status)
             {
-                System.out.println("Error updating taxon: "+taxonId);
+                log.error("Error updating taxon: "+taxonId);
             }
         } catch (SQLException ex)
         {
-            System.err.println("For ID: "+taxonId+" - "+ex.getMessage());
+            log.error("For ID: "+taxonId+" - "+ex.getMessage());
         }
         return status;
     }
@@ -219,6 +223,9 @@ public class TaxonTreeBuilding
         node.genusId  = famGen.second;
     }
     
+    /**
+     * 
+     */
     private void dumpTree()
     {
         System.out.println("TaxonID\tName\tTotal\tCount\tRankID\tFamily\tGenus\tVisited");
@@ -243,8 +250,9 @@ public class TaxonTreeBuilding
      */
     private void exportTreeData()
     {
-        PreparedStatement s3Stmt       = null;        
-        PreparedStatement s3Stmt2      = null; 
+        PreparedStatement s3Update     = null;        
+        PreparedStatement s3Update2    = null; 
+        PreparedStatement s3Update3    = null; 
         PreparedStatement txLookUpStmt = null;
         Statement         stmt         = null;
         
@@ -260,8 +268,9 @@ public class TaxonTreeBuilding
 
             // SQLite
             dbS3Conn.setAutoCommit(false);
-            s3Stmt  = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, GenusID, TotalCOCnt, NumObjs, NodeNum, HighNodeNum) VALUES (?,?,?,?,?,?,?,?,?,?)");        
-            s3Stmt2 = dbS3Conn.prepareStatement("UPDATE taxon SET FamilyID=?, GenusID=?, TotalCOCnt=?, NumObjs=? WHERE _id = ?");  
+            s3Update  = dbS3Conn.prepareStatement("INSERT INTO taxon (_id, FullName, RankID, ParentID, FamilyID, GenusID, TotalCOCnt, NumObjs, NodeNum, HighNodeNum) VALUES (?,?,?,?,?,?,?,?,?,?)");        
+            s3Update2 = dbS3Conn.prepareStatement("UPDATE taxon SET FamilyID=?, GenusID=?, TotalCOCnt=?, NumObjs=? WHERE _id = ?");  
+            s3Update3 = dbS3Conn.prepareStatement("UPDATE taxon SET ParentID=? WHERE _id = ?");  
             
             // MySQL
             stmt    = conn.createStatement();
@@ -269,12 +278,12 @@ public class TaxonTreeBuilding
             
             String coLookUp = ipadExporter.adjustSQL("SELECT co.CollectionObjectID, t.TaxonID, t.FullName, t.RankID, t.ParentID, t.NodeNumber, t.HighestChildNodeNumber, ios_colobjcnts.NewID, tp.RankID " +
             		                                 "FROM collectionobject co " +
-                                                    "INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
-                                                    "INNER JOIN taxon t ON d.TaxonID = t.TaxonID " +
-                                                    "INNER JOIN taxon tp ON t.ParentID = tp.TaxonID " +
-                                                    "INNER JOIN ios_colobjcnts ON co.CollectionObjectID = ios_colobjcnts.OldID " +
-                                                    "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = TRUE ORDER BY t.RankID DESC, t.TaxonID ASC");
-            //System.out.println(coLookUp);
+                                                     "INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
+                                                     "INNER JOIN taxon t ON d.TaxonID = t.TaxonID " +
+                                                     "INNER JOIN taxon tp ON t.ParentID = tp.TaxonID " +
+                                                     "INNER JOIN ios_colobjcnts ON co.CollectionObjectID = ios_colobjcnts.OldID " +
+                                                     "WHERE co.CollectionID = COLMEMID AND d.IsCurrent = TRUE ORDER BY t.RankID DESC, t.TaxonID ASC");
+            //log.error(coLookUp);
             
             
             //---------------------------------------
@@ -306,7 +315,7 @@ public class TaxonTreeBuilding
                      firstTime = false;
                 } else if (taxonID != prevTaxonID)
                 {
-                    writeTaxon(s3Stmt, prevTaxonID, fullName, rankId, parentId, familyId, null, 0, countAmtTotal, nodeNum, highNodeNum);
+                    writeTaxon(s3Update, prevTaxonID, fullName, rankId, parentId, familyId, null, 0, countAmtTotal, nodeNum, highNodeNum);
                     TreeNode pNode = getNode(prevTaxonID, rankId, parentId, taxonParentRankID); 
                     pNode.written = true;
                     pNode.nodeCount += countAmtTotal;
@@ -331,7 +340,7 @@ public class TaxonTreeBuilding
                 countAmtTotal += colObjCntAmt;
             }
             
-            writeTaxon(s3Stmt, prevTaxonID, fullName, rankId, parentId, familyId, null, 0, colObjCntAmt, nodeNum, highNodeNum);
+            writeTaxon(s3Update, prevTaxonID, fullName, rankId, parentId, familyId, null, 0, colObjCntAmt, nodeNum, highNodeNum);
             TreeNode ppNode = getNode(prevTaxonID, rankId, parentId, taxonParentRankID);  // Parent
             ppNode.nodeCount += countAmtTotal;
             ppNode.written = true;
@@ -438,6 +447,43 @@ public class TaxonTreeBuilding
                 }
             }
             
+            ////////////////////////////////
+            // Remove extra Levels
+            ////////////////////////////////
+            
+            for (Integer rankID : treeRanks)
+            {
+                HashMap<Integer, TreeNode> pNodeHash = taxonHash.get(rankID);
+                if (pNodeHash != null)
+                {
+                    for (TreeNode pNode : pNodeHash.values())
+                    {
+                        if (pNode.parentRankId > 140 && pNode.parentRankId < 180)
+                        {
+                            TreeNode familyNode = getFamilyNode(pNode);
+                            if (familyNode != null)
+                            {
+                                pNode.parentId     = familyNode.taxonId;
+                                pNode.parentRankId = familyNode.rankId;
+                                if (pNode.written)
+                                {
+                                    s3Update3.setInt(1, familyNode.taxonId);
+                                    s3Update3.setInt(2, pNode.taxonId);
+                                    int rv = s3Update3.executeUpdate();
+                                    if (rv != 1)
+                                    {
+                                        log.error("Error updating taxon parentID  TaxonID: "+pNode.taxonId);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            
+            
+            // Write the rest of the taxon nodes
             progressDelegate.setProcess(80);
 
             int cnt = 0;
@@ -448,17 +494,33 @@ public class TaxonTreeBuilding
                 {
                     for (TreeNode pNode : pNodeHash.values())
                     {
+                        if (pNode.rankId > 140 && pNode.rankId < 180)
+                        {
+                            if (pNode.nodeCount == 0)
+                            {
+                                if (pNode.written)
+                                {
+                                    int rv = BasicSQLUtils.update("DELETE FROM taxon WHERE _id = " + pNode.taxonId);
+                                    if (rv != 1)
+                                    {
+                                        log.error("Error removing unneed parent -  TaxonID: "+pNode.taxonId);
+                                    }
+                                }
+                                continue;
+                            }
+                        }
+                        
                         if (pNode.written)
                         {
-                            s3Stmt2.setInt(1, pNode.familyId);
-                            s3Stmt2.setInt(2, pNode.genusId);
-                            s3Stmt2.setInt(3, pNode.totalCount);
-                            s3Stmt2.setInt(4, pNode.nodeCount);
-                            s3Stmt2.setInt(5, pNode.taxonId);
-                            int rv = s3Stmt2.executeUpdate();
+                            s3Update2.setInt(1, pNode.familyId);
+                            s3Update2.setInt(2, pNode.genusId);
+                            s3Update2.setInt(3, pNode.totalCount);
+                            s3Update2.setInt(4, pNode.nodeCount);
+                            s3Update2.setInt(5, pNode.taxonId);
+                            int rv = s3Update2.executeUpdate();
                             if (rv != 1)
                             {
-                                System.err.println("Error updating taxon: "+pNode.taxonId);
+                                log.error("Error updating taxon: "+pNode.taxonId);
                             }
                         } else
                         {
@@ -471,11 +533,11 @@ public class TaxonTreeBuilding
                                 highNodeNum       = rs.getInt(3);
                                 if (pNode.parentId != null)
                                 {
-                                    writeTaxon(s3Stmt, pNode.taxonId, fullName, pNode.rankId, pNode.parentId, pNode.familyId, pNode.genusId, pNode.totalCount, pNode.nodeCount, nodeNum, highNodeNum);
+                                    writeTaxon(s3Update, pNode.taxonId, fullName, pNode.rankId, pNode.parentId, pNode.familyId, pNode.genusId, pNode.totalCount, pNode.nodeCount, nodeNum, highNodeNum);
                                 }
                             } else
                             {
-                                System.err.println("Error looking up taxon: "+pNode.taxonId);
+                                log.error("Error looking up taxon: "+pNode.taxonId);
                             }
                             rs.close();
                         }
@@ -503,14 +565,34 @@ public class TaxonTreeBuilding
             try
             {
                 if (stmt != null) stmt.close();
-                if (s3Stmt != null) s3Stmt.close();
-                if (s3Stmt2 != null) s3Stmt2.close();
+                if (s3Update != null) s3Update.close();
+                if (s3Update2 != null) s3Update2.close();
+                if (s3Update3 != null) s3Update3.close();
                 if (txLookUpStmt != null) txLookUpStmt.close();
                 
                 dbS3Conn.setAutoCommit(true);
             } catch (Exception ex2) { ex2.printStackTrace();}
 
         }
+    }
+    
+    private TreeNode getFamilyNode(final TreeNode node)
+    {
+        HashMap<Integer, TreeNode> treeLevel = taxonHash.get(node.parentRankId);
+        if (treeLevel != null)
+        {
+            TreeNode parentNode = treeLevel.get(node.parentId);
+            if (parentNode != null)
+            {
+                if (parentNode.rankId == 140)
+                {
+                    return parentNode;
+                }
+                return getFamilyNode(parentNode);
+            }
+        }
+        log.debug("Error searching for Family Node - Can't find parent for node Id: " + node.taxonId);
+        return null;
     }
     
     

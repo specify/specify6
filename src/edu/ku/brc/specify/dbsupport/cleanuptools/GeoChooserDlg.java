@@ -148,7 +148,7 @@ public class GeoChooserDlg extends CustomDialog
                          final int        processedCount,
                          final int        geoTotal) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), "Choose", true, OKCANCELAPPLYHELP, null); // I18N
+        super((Frame)UIRegistry.getTopWindow(), "Choose", true, OKCANCELHELP, null); // I18N
         
         this.nameStr        = nameStr;
         this.rankId         = rankId;
@@ -294,9 +294,9 @@ public class GeoChooserDlg extends CustomDialog
     public void createUI()
     {
         boolean doStatesOrCounties = doAllCountries[1] || doAllCountries[2] || doInvCountry[1] || doInvCountry[2];
-        this.whichBtns = doStatesOrCounties && !doInvCountry[1] && rankId > 200 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP;
+        //this.whichBtns = doStatesOrCounties && !doInvCountry[1] && rankId > 200 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP;
         
-        boolean isStCnty = true;//rankId > 200; 
+        boolean isStCnty = rankId > 200; 
         
         dataListModel      = new DefaultListModel<GeoSearchResultsItem>();
         mainList = new JList<GeoSearchResultsItem>(dataListModel);
