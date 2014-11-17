@@ -56,9 +56,10 @@ public interface FileNameParserIFace
 	
 	/**
 	 * @param fileName
+	 * @param getBaseName
 	 * @return
 	 */
-	public abstract boolean isNameValid(String fileName);
+	public abstract boolean isNameValid(String fileName, boolean getBaseName);
 	
 	/**
 	 * @param fileName

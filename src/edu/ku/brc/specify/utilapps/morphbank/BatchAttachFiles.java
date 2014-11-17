@@ -527,7 +527,7 @@ public class BatchAttachFiles
 
                         for (String fieldValue : fieldValueList)
                         {
-                            if (fnParser.isNameValid(fieldValue))
+                            if (fnParser.isNameValid(fieldValue, false))
                             {
                                 Integer id = fnParser.getRecordId(fieldValue);
                                 if (id != null)

@@ -100,7 +100,7 @@ public class BarCodeFileNameParser implements FileNameParserIFace
      * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#isNameValid(java.lang.String)
      */
     @Override
-    public boolean isNameValid(String fileName)
+    public boolean isNameValid(String fileName, boolean getBaseName)
     {
         return false;
     }

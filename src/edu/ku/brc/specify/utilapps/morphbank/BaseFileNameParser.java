@@ -198,14 +198,14 @@ public class BaseFileNameParser implements FileNameParserIFace
      * @see edu.ku.brc.specify.utilapps.morphbank.FileNameParserIFace#isNameValid(java.lang.String)
      */
     @Override
-    public boolean isNameValid(final String fileName)
+    public boolean isNameValid(final String fileName, boolean getBaseName)
     {
         UIFieldFormatterIFace fmtr = fldInfo.getFormatter();
         
         String fieldNameValue = fileName;
         if (fmtr != null)
         {
-            fieldNameValue = getTrimmedFileName(FilenameUtils.getBaseName(fileName));
+            fieldNameValue = getTrimmedFileName(getBaseName ? FilenameUtils.getBaseName(fileName) : fileName);
             if (!fmtr.isValid(fieldNameValue))
             {
                 fieldNameValue = null;
