@@ -46,6 +46,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -131,6 +132,7 @@ public class iPadDBExporterPlugin extends BaseTask
     //private RolloverCommand         manageDataSetsBtn;
     private RolloverCommand         iPadInfoSetupBtn;
     private RolloverCommand         removeAccountBtn;
+    private RolloverCommand         removeDatasetBtn;
     private RolloverCommand         loginBtn;
     private RolloverCommand         logoutBtn;
     private RolloverCommand         createAccountBtn;
@@ -185,6 +187,7 @@ public class iPadDBExporterPlugin extends BaseTask
             loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     "image", null, null);
             iPadInfoSetupBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("IPAD_SETUP"), "image", null, null);
             removeAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_ACCT"),  "image", null, null);
+            removeDatasetBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_DATASET"),  "image", null, null);
             logoutBtn         = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGOUT"),    "image", null, null);
             exportBtn         = createI18NButton("EXPORT_TO_IPAD");
 
@@ -192,6 +195,8 @@ public class iPadDBExporterPlugin extends BaseTask
             setUIEnabled(false);
             loginBtn.setEnabled(false);
             popResourceBundle();
+            
+            removeDatasetBtn.setVisible(false);
             
             createAccountBtn.addActionListener(new ActionListener()
             {
@@ -208,6 +213,15 @@ public class iPadDBExporterPlugin extends BaseTask
                 public void actionPerformed(ActionEvent e)
                 {
                     removeAccount();
+                }
+            });
+
+            removeDatasetBtn.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    removeDataset();
                 }
             });
 
@@ -290,6 +304,7 @@ public class iPadDBExporterPlugin extends BaseTask
     {
         //createAccountBtn.setEnabled(!enabled);
         removeAccountBtn.setEnabled(enabled);
+        removeDatasetBtn.setEnabled(enabled);
         
         iPadInfoSetupBtn.setEnabled(enabled);
         loginBtn.setEnabled(!enabled);
@@ -321,6 +336,21 @@ public class iPadDBExporterPlugin extends BaseTask
             // dialog account removed
             // return;
         }
+        // dialog account removal failed.
+    }
+    
+    /**
+     * 
+     */
+    private void removeDataset()
+    {
+//        JList<String>
+//        Institution inst = iPadDBExporter.getCurrentInstitution();
+//        if (iPadCloud.removeAccount(cloudInstId, inst.getGuid()))
+//        {
+//            // dialog account removed
+//            // return;
+//        }
         // dialog account removal failed.
     }
     

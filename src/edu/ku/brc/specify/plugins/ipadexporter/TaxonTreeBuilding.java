@@ -65,7 +65,6 @@ public class TaxonTreeBuilding
      * @param ipadExporter
      * @param dbS3Conn
      * @param conn
-     * @param colObjToCnt
      */
     public TaxonTreeBuilding(final iPadDBExporter ipadExporter, 
                              final Connection dbS3Conn, 
