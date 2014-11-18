@@ -3,19 +3,6 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="bottomDistance" isHidden="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Bottom Distance</text>
-            <itemName reference="../../.."/>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="positionState" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -29,31 +16,47 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="topDistance" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
-        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Top Distance</text>
-            <itemName reference="../../.."/>
+            <text>Text3</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto3</text>
           </str>
         </names>
         <descs/>
-        <spExportSchemaItems/>
       </desc>
-      <desc name="distanceUnits" isHidden="false" isRequired="false">
+      <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
-        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Distance Units</text>
-            <itemName reference="../../.."/>
+            <text>Text8</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto8</text>
           </str>
         </names>
         <descs/>
-        <spExportSchemaItems/>
+      </desc>
+      <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto7</text>
+          </str>
+          <str language="en">
+            <version>0</version>
+            <text>Text7</text>
+          </str>
+        </names>
+        <descs/>
       </desc>
       <desc name="direction" isHidden="false" isRequired="false">
         <version>0</version>
@@ -62,6 +65,47 @@
           <str language="en">
             <version>0</version>
             <text>Direction</text>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text4" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Text4</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto4</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto2</text>
+          </str>
+          <str language="en">
+            <version>0</version>
+            <text>Text2</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="topDistance" isHidden="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Top Distance</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -85,69 +129,13 @@
       <desc name="text1" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto1</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Text1</text>
           </str>
-        </names>
-        <descs/>
-      </desc>
-      <desc name="text7" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
           <str language="pt">
             <version>1</version>
-            <text>Texto7</text>
-          </str>
-          <str language="en">
-            <version>0</version>
-            <text>Text7</text>
-          </str>
-        </names>
-        <descs/>
-      </desc>
-      <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text8</text>
-          </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto8</text>
-          </str>
-        </names>
-        <descs/>
-      </desc>
-      <desc name="text3" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text3</text>
-          </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto3</text>
-          </str>
-        </names>
-        <descs/>
-      </desc>
-      <desc name="text2" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text2</text>
-          </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto2</text>
+            <text>Texto1</text>
           </str>
         </names>
         <descs/>
@@ -166,26 +154,39 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text4" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="bottomDistance" isHidden="false" isRequired="false">
         <version>0</version>
+        <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Text4</text>
-          </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto4</text>
+            <text>Bottom Distance</text>
+            <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="distanceUnits" isHidden="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Distance Units</text>
+            <itemName reference="../../.."/>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
       </desc>
     </items>
     <names/>
     <descs/>
   </container>
-  <container name="collectionobject" isHidden="false" format="CollectionObject">
-    <version>2</version>
+  <container name="collectionobject" isHidden="false">
+    <version>0</version>
+    <isSystem>false</isSystem>
     <items>
       <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -199,11 +200,10 @@
             <text>Col Obj Attribute</text>
           </str>
         </names>
-		<descs/>
+        <descs/>
       </desc>
     </items>
-	<names/>
-	<descs/>
-    <aggregator>CollectionObject</aggregator>
+    <names/>
+    <descs/>
   </container>
 </vector>

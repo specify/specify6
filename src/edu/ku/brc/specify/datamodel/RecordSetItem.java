@@ -47,6 +47,7 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     protected Integer   recordSetItemId;
     protected RecordSet recordSet;
     protected Integer   recordId;
+    protected Integer   orderNumber;
 
 
     // Constructors
@@ -59,12 +60,21 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
      
      public RecordSetItem(final Integer recordId) 
      {
-         this.recordId = recordId;
+         this(recordId, null);
      }
      
      public RecordSetItem(final String recordId) 
      {
-         this.recordId = Integer.parseInt(recordId);
+         this(recordId, null);
+     }
+
+     public RecordSetItem(final Integer recordId, final Integer orderNumber) {
+    	 this.recordId = recordId;
+    	 this.orderNumber = orderNumber;
+     }
+
+     public RecordSetItem(final String recordId, final Integer orderNumber) {
+    	 this(Integer.parseInt(recordId), orderNumber);
      }
 
     // Initializer
@@ -73,6 +83,7 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
         recordSetItemId = null;
         recordId = null;
         recordSet = null;
+        orderNumber = null;
     }
     // End Initializer
 
@@ -107,7 +118,19 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     {
         this.recordId = recordId;
     }
+
     
+    @Column(name = "OrderNumber", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getOrder() 
+    {
+        return this.orderNumber;
+    }
+
+    public void setOrder(final Integer orderNumber) 
+    {
+        this.orderNumber = orderNumber;
+    }
+
     public int compareTo(RecordSetItemIFace obj)
     {
         return recordId != null && obj != null && obj.getRecordId() != null ? recordId.compareTo(obj.getRecordId()) : 0;

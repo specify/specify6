@@ -40,6 +40,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+
 /**
  * 
  * 
@@ -65,6 +67,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     
     // Step #1
     protected Calendar                   examDate;
+    protected Byte                       examDatePrecision;
     protected String                     conditionReport;
     protected String                     advTestingExam;
     protected String                     advTestingExamResults;
@@ -79,10 +82,12 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     // Step #3
     protected String                     treatmentReport;
     protected Calendar                   treatmentCompDate;
+    protected Byte                       treatmentCompDatePrecision;
     protected Agent                      treatedByAgent;
     
     // Step #4 
     protected Calendar                   completedDate;
+    protected Byte						 completedDatePrecision;
     protected String                     completedComments; 
     
     // Additional Information
@@ -367,8 +372,54 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     public void setCompletedDate(Calendar completedDate) {
         this.completedDate = completedDate;
     }
+
     
     /**
+	 * @return the examDatePrecision
+	 */
+    @Column(name = "ExamDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getExamDatePrecision() {
+        return examDatePrecision != null ? this.examDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+	}
+
+	/**
+	 * @param examDatePrecision the examDatePrecision to set
+	 */
+	public void setExamDatePrecision(Byte examDatePrecision) {
+		this.examDatePrecision = examDatePrecision;
+	}
+
+	/**
+	 * @return the treatmentCompDatePrecision
+	 */
+    @Column(name = "TreatmentCompDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getTreatmentCompDatePrecision() {
+        return treatmentCompDatePrecision != null ? this.treatmentCompDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+	}
+
+	/**
+	 * @param treatmentCompDatePrecision the treatmentCompDatePrecision to set
+	 */
+	public void setTreatmentCompDatePrecision(Byte treatmentCompDatePrecision) {
+		this.treatmentCompDatePrecision = treatmentCompDatePrecision;
+	}
+
+	/**
+	 * @return the completedDatePrecision
+	 */
+    @Column(name = "CompletedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getCompletedDatePrecision() {
+        return completedDatePrecision != null ? this.completedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+	}
+
+	/**
+	 * @param completedDatePrecision the completedDatePrecision to set
+	 */
+	public void setCompletedDatePrecision(Byte completedDatePrecision) {
+		this.completedDatePrecision = completedDatePrecision;
+	}
+
+	/**
      *
      */
     @Lob

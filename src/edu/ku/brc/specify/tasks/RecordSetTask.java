@@ -904,9 +904,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                             {
                                 connection.setAutoCommit(false);
                                 stmt = connection.createStatement();
-                                for (Integer id : newIdsList)
+                                for (int i=0; i < newIdsList.size(); i++)
                                 {
-                                    stmt.executeUpdate("INSERT INTO recordsetitem (RecordSetID, RecordID) VALUES ("+dstRecordSet.getRecordSetId()+","+id+")");
+                                    stmt.executeUpdate("INSERT INTO recordsetitem (RecordSetID, RecordID, OrderNumber) VALUES ("
+                                    		+dstRecordSet.getRecordSetId()+","+newIdsList.get(i)+","+i+")");
                                 }
                                 connection.commit();
                                 success = true;

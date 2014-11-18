@@ -2199,6 +2199,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     		{"referencework", "Text1,Text2"},
                     		{"shipment", "Text1,Text2"},
                     		{"taxoncitation", "Text1,Text2"},
+                    		{"workbenchdataitem", "CellData"}
                     };
                     
                     for (String[] fldToFix : toFix) {
@@ -2227,6 +2228,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         }
                     }
                     frame.incOverall(); 
+                    
+                    //------------------------------------------------------------------
+                    // Stretch ReferenceWork.Title and ReferenceWork.Publisher. #9718
+                    alterFieldLength(conn, databaseName, "referencework", "Title", 255, 500);
+                    alterFieldLength(conn, databaseName, "referencework", "Publisher", 50, 250);
                     
                     //-------------------------------------------------------------------
                     // Create tables need for Geography Cleanup tool

@@ -25,6 +25,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -159,7 +160,8 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @Column(name = "CellData", length=512)
+    @Lob
+    @Column(name = "CellData")
     public String getCellData()
     {
         return this.cellData;

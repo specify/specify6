@@ -26,10 +26,11 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -87,8 +88,8 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
      protected InfoRequest             infoRequest;
      
      // Transient
-     protected Vector<RecordSetItemIFace> items = null;
-
+     protected ArrayList<RecordSetItemIFace> items = null;
+     protected boolean areItemsInOrder             = false;
 
      // Non-Database Members
      protected ImageIcon dataSpecificIcon = null;
@@ -383,7 +384,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     { 
         if (this.items == null)
         {
-            this.items = new Vector<RecordSetItemIFace>();
+            this.items = new ArrayList<RecordSetItemIFace>();
             this.items.addAll(this.recordSetItems);
             
         } else if (doClear)
@@ -427,7 +428,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     {
         if (items == null)
         {
-            items = new Vector<RecordSetItemIFace>();
+            items = new ArrayList<RecordSetItemIFace>();
             for (RecordSetItem rsi : recordSetItems)
             {
                 this.items.add(rsi);
@@ -442,16 +443,38 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     @Transient
     public List<RecordSetItemIFace> getOrderedItems() 
     {
-        if (items == null)
+        if (items == null || !areItemsInOrder)
         {
-            items = new Vector<RecordSetItemIFace>();
+        	ArrayList<RecordSetItem> oItems = new ArrayList<RecordSetItem>();
             
             for (RecordSetItem rsi : recordSetItems)
             {
-                this.items.add(rsi);
+            	oItems.add(rsi);
             }
+            Collections.sort(oItems, new Comparator<RecordSetItem>() {
+
+    			/* (non-Javadoc)
+    			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+    			 */
+    			@Override
+    			public int compare(RecordSetItem o1, RecordSetItem o2) {
+    				Integer id1 = o1.getOrder();
+    				Integer id2 = o2.getOrder();
+    				if (id1 == null && id2 == null) {
+    					return o1.compareTo(o2); //use record ids.
+    				}
+    				if (id1 != null) {
+    					return id1.compareTo(id2);
+    				}
+    				return -1;
+    			}
+            	
+            });
+            items = new ArrayList<RecordSetItemIFace>();
+            items.addAll(oItems);
+            areItemsInOrder = true;
         }
-        return this.items;
+        return items;
     }
     
     /* (non-Javadoc)
@@ -489,7 +512,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     {
         ensureItemsList(false);
 
-        RecordSetItem rsi = new RecordSetItem(recordId);
+        RecordSetItem rsi = new RecordSetItem(recordId, this.items.size());
         this.items.add(rsi);
         this.recordSetItems.add(rsi);
         rsi.setRecordSet(this);
@@ -503,7 +526,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     {
         ensureItemsList(false);
 
-        RecordSetItem rsi = new RecordSetItem(recordId);
+        RecordSetItem rsi = new RecordSetItem(recordId, this.items.size());
         this.items.add(rsi);
         this.recordSetItems.add(rsi);
         rsi.setRecordSet(this);
@@ -517,6 +540,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     {
         ensureItemsList(false);
 
+        ((RecordSetItem)item).setOrder(this.items.size());
         this.items.add(item);
         this.recordSetItems.add((RecordSetItem)item);
         ((RecordSetItem)item).setRecordSet(this);

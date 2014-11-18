@@ -302,9 +302,9 @@
         <table name="edu.ku.brc.specify.datamodel.MorphBankView" abbrev="mbvw" id="138" searchable="true">
             <display view="MorphBankView" searchdlg="MorphBankViewSearch" newobjdlg="MorphBankViewDisplay"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" abbrev="oi" id="61" searchable="true"
+        <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" abbrev="oi" id="61" searchable="true">
             <display view="OtherIdentifiers" newobjdlg="OtherIdentifierDisplay"/>
-        />
+        </table>
         <table name="edu.ku.brc.specify.datamodel.PaleoContext" abbrev="pc" id="32" searchable="true">
             <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg="PaleoContextDisplay"/>            
         </table>

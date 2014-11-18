@@ -54,6 +54,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
         @Index (name="COLTRPNameIDX", columnNames={"CollectingTripName"}),
         @Index (name="COLTRPStartDateIDX", columnNames={"StartDate"})
     })
+@SuppressWarnings("serial")
 public class CollectingTrip extends DisciplineMember implements java.io.Serializable
 {
      // Fields    
@@ -67,9 +68,11 @@ public class CollectingTrip extends DisciplineMember implements java.io.Serializ
     protected String                endDateVerbatim;
     protected Short                 startTime;          // Minutes in 24 hours
     protected Short                 endTime;            // Minutes in 24 hours
-    protected String                verbatimLocality;
     protected String                collectingTripName;
     protected String                sponsor;
+    protected String                vessel;
+    protected String                cruise;
+    protected String                expedition;
     
     protected String                text1;
     protected String                text2;
@@ -114,6 +117,9 @@ public class CollectingTrip extends DisciplineMember implements java.io.Serializ
         endTime            = null;
         collectingTripName = null;
         sponsor            = null;
+        vessel             = null;
+        cruise             = null;
+        expedition         = null;
         
         text1   = null;
         text2   = null;
@@ -308,7 +314,53 @@ public class CollectingTrip extends DisciplineMember implements java.io.Serializ
         this.sponsor = sponsor;
     }
 
+    
     /**
+	 * @return the vessel
+	 */
+    @Column(name = "Vessel", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
+	public String getVessel() {
+		return vessel;
+	}
+
+	/**
+	 * @param vessel the vessel to set
+	 */
+	public void setVessel(String vessel) {
+		this.vessel = vessel;
+	}
+
+	/**
+	 * @return the cruise
+	 */
+    @Column(name = "Cruise", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
+	public String getCruise() {
+		return cruise;
+	}
+
+	/**
+	 * @param cruise the cruise to set
+	 */
+	public void setCruise(String cruise) {
+		this.cruise = cruise;
+	}
+
+	/**
+	 * @return the expedition
+	 */
+    @Column(name = "Expedition", unique = false, nullable = true, insertable = true, updatable = true, length = 250)
+	public String getExpedition() {
+		return expedition;
+	}
+
+	/**
+	 * @param expedition the expedition to set
+	 */
+	public void setExpedition(String expedition) {
+		this.expedition = expedition;
+	}
+
+	/**
      * @return the text1
      */
     @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 255)

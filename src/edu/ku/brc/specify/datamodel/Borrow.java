@@ -42,6 +42,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+
 /**
 
  */
@@ -62,6 +64,8 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
 
     protected Integer             borrowId;
     protected String              invoiceNumber;
+    protected Calendar            borrowDate;
+    protected Byte                borrowDatePrecision;
     protected Calendar            receivedDate;
     protected Calendar            originalDueDate;
     protected Calendar            dateClosed;
@@ -75,6 +79,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
     protected Boolean             yesNo2;
     protected Calendar            currentDueDate;
     protected Boolean             isFinancialResponsibility;
+    protected Integer             numberOfItemsBorrowed;
     
     protected AddressOfRecord     addressOfRecord;
     protected Set<Shipment>       shipments;
@@ -117,6 +122,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
         yesNo2 = null;
         currentDueDate = null;
         addressOfRecord = null;
+        numberOfItemsBorrowed = null;
         shipments = new HashSet<Shipment>();
         borrowAgents = new HashSet<BorrowAgent>();
         borrowAttachments = new HashSet<BorrowAttachment>();
@@ -177,7 +183,23 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
         this.borrowId = borrowId;
     }
 
+    
     /**
+	 * @return the numberOfItems
+	 */
+    @Column(name = "NumberOfItemsBorrowed", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+	public Integer getNumberOfItemsBorrowed() {
+		return numberOfItemsBorrowed;
+	}
+
+	/**
+	 * @param numberOfItems the numberOfItems to set
+	 */
+	public void setNumberOfItemsBorrowed(Integer numberOfItemsBorrowed) {
+		this.numberOfItemsBorrowed = numberOfItemsBorrowed;
+	}
+
+	/**
      * * Lender's loan number
      */
     @Column(name = "InvoiceNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
@@ -236,7 +258,39 @@ public class Borrow extends CollectionMember implements java.io.Serializable,
         this.dateClosed = dateClosed;
     }
 
+    
     /**
+	 * @return the borrowDate
+	 */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "BorrowDate", unique = false, nullable = true, insertable = true, updatable = true)
+	public Calendar getBorrowDate() {
+		return borrowDate;
+	}
+
+	/**
+	 * @param borrowDate the borrowDate to set
+	 */
+	public void setBorrowDate(Calendar borrowDate) {
+		this.borrowDate = borrowDate;
+	}
+
+	/**
+	 * @return the borrowDatePrecision
+	 */
+    @Column(name = "BorrowDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+	public Byte getBorrowDatePrecision() {
+        return borrowDatePrecision != null ? this.borrowDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+	}
+
+	/**
+	 * @param borrowDatePrecision the borrowDatePrecision to set
+	 */
+	public void setBorrowDatePrecision(Byte borrowDatePrecision) {
+		this.borrowDatePrecision = borrowDatePrecision;
+	}
+
+	/**
      * @return the isFinancialResponsibility
      */
     @Column(name = "IsFinancialResponsibility", unique = false, nullable = true, insertable = true, updatable = true)
