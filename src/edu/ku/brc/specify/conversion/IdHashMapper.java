@@ -195,14 +195,15 @@ public class IdHashMapper implements IdMapperIFace
         
         try
         {
-            if (enableRemoveRecords && BasicSQLUtils.doesTableExist(oldConn, mapTableName) )
+            if (enableRemoveRecords && doDelete)
             {
                 wasEmpty = true;
-                try
-                {
-                    String sql = String.format("DELETE FROM %s", mapTableName);
-                    BasicSQLUtils.update(oldConn, sql);
-                 } catch (Exception ex ) {}
+                if (BasicSQLUtils.doesTableExist(oldConn, mapTableName)) {
+                	try {
+                		String sql = String.format("DELETE FROM %s", mapTableName);
+                		BasicSQLUtils.update(oldConn, sql);
+                	} catch (Exception ex ) {}
+                }
                 return;
             }
 
