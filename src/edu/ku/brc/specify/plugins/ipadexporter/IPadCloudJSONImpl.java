@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.plugins.ipadexporter;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -77,7 +80,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     
 
     /**
-     * 
+     *  
      */
     public IPadCloudJSONImpl()
     {
@@ -279,6 +282,54 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 
         return data != null && isStatusOK(data);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#getDatasetList(java.lang.String)
+     */
+    public List<Pair<Integer, String>> getDatasetList(final String instGuid)
+    {
+        HashMap<String, String> map = createHashMap(
+                kGUID,     instGuid, 
+                kAction,   "listdatasets");
+        JSONObject data = sendPost(map);
+        
+        if (data != null && isStatusOK(data))
+        {
+            JSONArray datasets = data.getJSONArray("datasets");
+            ArrayList<Pair<Integer, String>> dsList = new ArrayList<Pair<Integer, String>>();
+            for (Object obj : datasets)
+            {
+                JSONObject datasetFields = (JSONObject)obj;
+                String  title = ((JSONObject)datasetFields).getString("dsname");
+                Integer dsId  = ((JSONObject) datasetFields).getInt("id");
+                if (dsId == null) continue;
+               
+                Pair<Integer, String> p = new Pair<Integer, String>(dsId, title);
+                dsList.add(p);
+            }
+            return dsList;
+        }
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#getNumberOfDatasets(java.lang.String)
+     */
+    public int getNumberOfDatasets(final String instGuid)
+    {
+        HashMap<String, String> map = createHashMap(
+                kGUID,     instGuid, 
+                kAction,   "numdatasets");
+        JSONObject data = sendPost(map);
+        
+        if (data != null && isStatusOK(data))
+        {
+            Integer numObj = ((JSONObject) data).getInt("number");
+            return numObj != null ? numObj : 0;
+        }
+        return 0;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#addNewUser(java.lang.String, java.lang.String, java.lang.String)
@@ -562,7 +613,11 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     @Override
     public Integer createInstitution(final String title, final String webSite, final String code, final String guid)
     {
-        HashMap<String, String> map = createHashMap(kTitle, title, kWebSite, webSite, kCode, code, kGUID, guid, kAction, "createinst");
+        HashMap<String, String> map = createHashMap(kTitle, title, 
+                                                    kWebSite, isEmpty(webSite) ? "" : webSite, 
+                                                    kCode, code, 
+                                                    kGUID, guid, 
+                                                    kAction, "createinst");
         JSONObject data = sendPost(map);
         
         if (data != null && isStatusOK(data))
@@ -582,8 +637,10 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     @Override
     public boolean updateInstitution(final Integer instId, final String title, final String webSite)
     {
-        String ws = StringUtils.isNotEmpty(webSite) ? webSite : "";
-        HashMap<String, String> map = createHashMap(kId, instId.toString(), kTitle, title, kWebSite, ws, kAction, "updateinst");
+        HashMap<String, String> map = createHashMap(kId, instId.toString(), 
+                                                    kTitle, title, 
+                                                    kWebSite, isEmpty(webSite) ? "" : webSite, 
+                                                    kAction, "updateinst");
         JSONObject data = sendPost(map);
         
         return data != null && isStatusOK(data);

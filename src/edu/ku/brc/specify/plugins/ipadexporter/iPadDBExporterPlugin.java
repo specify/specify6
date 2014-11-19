@@ -120,7 +120,7 @@ public class iPadDBExporterPlugin extends BaseTask
 
     // Data Members
     private String                  kErrorCreatingAcctMsg  = "";
-    private iPadDBExporter          iPadDBExporter    = null;
+    private iPadDBExporter          iPadDBExporterObj      = null;
     private JButton                 exportBtn;
     private JLabel                  panelTitle;
     
@@ -142,7 +142,7 @@ public class iPadDBExporterPlugin extends BaseTask
     private boolean                 isLoggedIn  = false;
 
     /**
-     * Constructor.
+     * Constructor. 
      */
     public iPadDBExporterPlugin()
     {
@@ -195,8 +195,6 @@ public class iPadDBExporterPlugin extends BaseTask
             setUIEnabled(false);
             loginBtn.setEnabled(false);
             popResourceBundle();
-            
-            removeDatasetBtn.setVisible(false);
             
             createAccountBtn.addActionListener(new ActionListener()
             {
@@ -284,7 +282,9 @@ public class iPadDBExporterPlugin extends BaseTask
                     cloudInstId = iPadCloud.getInstId(inst.getGuid());
                     if (cloudInstId == null)
                     {
-                        UIRegistry.showError("Unable able to find Cloud Account for GUID: ["+inst.getGuid()+"]");
+                        loadAndPushResourceBundle(RESOURCE_NAME);
+                        UIRegistry.showLocalizedMsg("NO_IPAD_INST_ACCOUNT");
+                        popResourceBundle(); 
                     }
                     createAccountBtn.setEnabled(cloudInstId == null);
                     loginBtn.setEnabled(cloudInstId != null);
@@ -306,7 +306,6 @@ public class iPadDBExporterPlugin extends BaseTask
         removeAccountBtn.setEnabled(enabled);
         removeDatasetBtn.setEnabled(enabled);
         
-        iPadInfoSetupBtn.setEnabled(enabled);
         loginBtn.setEnabled(!enabled);
         logoutBtn.setEnabled(enabled);
         if (exportBtn != null) 
@@ -344,13 +343,14 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void removeDataset()
     {
-//        JList<String>
-//        Institution inst = iPadDBExporter.getCurrentInstitution();
-//        if (iPadCloud.removeAccount(cloudInstId, inst.getGuid()))
-//        {
-//            // dialog account removed
-//            // return;
-//        }
+        List<Pair<Integer, String>> list = null;
+        Institution inst = iPadDBExporter.getCurrentInstitution();
+        list = iPadCloud.getDatasetList(inst.getGuid());
+        if (list != null && list.size() > 0)
+        {
+            // dialog account removed
+            // return;
+        }
         // dialog account removal failed.
     }
     
@@ -360,9 +360,9 @@ public class iPadDBExporterPlugin extends BaseTask
     private void createAccount()
     {
         Institution inst = iPadDBExporter.getCurrentInstitution();
-        if (StringUtils.isEmpty(inst.getUri()))
+        if (StringUtils.isEmpty(inst.getGuid()))
         {
-            UIRegistry.showError("Institution must have an URL value.");
+            UIRegistry.showError("Institution must have a GUID value.");
             return;
         }
         
@@ -374,7 +374,7 @@ public class iPadDBExporterPlugin extends BaseTask
 
         loadAndPushResourceBundle(RESOURCE_NAME);
         CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
-                getResourceString("LOGIN_INFO"), true, CustomDialog.OKCANCEL, loginPanel)
+                getResourceString("CREATE_INST_IN_CLOUD"), true, CustomDialog.OKCANCEL, loginPanel)
         {
             @Override
             protected void okButtonPressed()
@@ -403,7 +403,17 @@ public class iPadDBExporterPlugin extends BaseTask
                 createAccountBtn.setEnabled(false);
                 loginBtn.setEnabled(true);
                 
+                int dsCount = iPadCloud.getNumberOfDatasets(inst.getGuid());
+                removeDatasetBtn.setEnabled(dsCount > 0);
+                
                 checkInstitutionInfo(false);
+                
+                String uName = userNameTF.getText();
+                String pwd   = new String(passwordTF.getPassword());
+                if (!iPadCloud.addNewUser(uName, pwd, inst.getGuid()))
+                {
+                    setErrorMsg(statusLbl, kErrorCreatingAcctMsg);
+                }
 
             } else
             {
@@ -445,6 +455,7 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void login()
     {
+        Institution     inst        = AppContextMgr.getInstance().getClassObject(Institution.class);
         Division        div         = AppContextMgr.getInstance().getClassObject(Division.class);
         SpecifyUser     spUser      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         AppPreferences  remotePrefs = AppPreferences.getRemote();
@@ -466,6 +477,10 @@ public class iPadDBExporterPlugin extends BaseTask
                         loggedIn(loginInfo);
                         isLoggedIn = true;
                         clearSimpleGlassPaneMsg();
+                        
+                        int dsCount = iPadCloud.getNumberOfDatasets(inst.getGuid());
+                        removeDatasetBtn.setEnabled(dsCount > 0);
+
                         break;
                     } else
                     {
@@ -764,9 +779,9 @@ public class iPadDBExporterPlugin extends BaseTask
                 double ratio = 510.0 / 720.0;
                 int    width = 1024;
                 int    height = (int)((width * ratio) + 0.5); 
-                if (iPadDBExporter == null)
+                if (iPadDBExporterObj == null)
                 {
-                    iPadDBExporter = new iPadDBExporter(iPadCloud, "isite.db", width, height);
+                    iPadDBExporterObj = new iPadDBExporter(iPadCloud, "isite.db", width, height);
                 }
                 
                 writeSimpleGlassPaneMsg(getResourceString("EXPORTING"), 24);
@@ -782,9 +797,9 @@ public class iPadDBExporterPlugin extends BaseTask
                     LithoStratTreeDef lithoDef = disp.getLithoStratTreeDef();
                     GeologicTimePeriodTreeDef gtpDef = disp.getGeologicTimePeriodTreeDef();
     
-                    iPadDBExporter.initialize();
+                    iPadDBExporterObj.initialize();
                     
-                    iPadDBExporter.createMappings(coll.getId(), 
+                    iPadDBExporterObj.createMappings(coll.getId(), 
                                                   disp.getId(), 
                                                   div.getId(), 
                                                   taxDef.getId(), 
@@ -806,7 +821,7 @@ public class iPadDBExporterPlugin extends BaseTask
                         }
                     };
                     
-                    if (!iPadDBExporter.createSQLiteDatabase(null, cl))
+                    if (!iPadDBExporterObj.createSQLiteDatabase(null, cl))
                     {
                         cl.stateChanged(new ChangeEvent(this));
                     }
@@ -891,11 +906,11 @@ public class iPadDBExporterPlugin extends BaseTask
             {
                 logout();
             }
-            if (iPadDBExporter != null)
+            if (iPadDBExporterObj != null)
             {
                 iPadCloud.logout();
-                iPadDBExporter.shutdown();
-                iPadDBExporter = null;
+                iPadDBExporterObj.shutdown();
+                iPadDBExporterObj = null;
             }
             //cloudInstId    = null;
         }

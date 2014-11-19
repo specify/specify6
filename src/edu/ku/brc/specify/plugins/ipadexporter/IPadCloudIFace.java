@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.util.Pair;
+
 public interface IPadCloudIFace
 {
     public enum LoginStatus {eLoggedIn, eError, eCancelled}
@@ -129,6 +131,18 @@ public interface IPadCloudIFace
      * @return
      */
     public abstract List<String> getAccessList(String collGuid);
+    
+    /**
+     * @param instGuid
+     * @return
+     */
+    public abstract List<Pair<Integer, String>> getDatasetList(String instGuid);
+    
+    /**
+     * @param instGuid
+     * @return
+     */
+    public abstract int getNumberOfDatasets(String instGuid);
     
     /**
      * @param collGuid
