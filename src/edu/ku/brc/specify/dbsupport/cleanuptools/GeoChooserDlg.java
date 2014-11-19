@@ -296,7 +296,7 @@ public class GeoChooserDlg extends CustomDialog
         boolean doStatesOrCounties = doAllCountries[1] || doAllCountries[2] || doInvCountry[1] || doInvCountry[2];
         //this.whichBtns = doStatesOrCounties && !doInvCountry[1] && rankId > 200 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP;
         
-        boolean isStCnty = rankId > 200; 
+        boolean isStCnty = true;//rankId > 200; 
         
         dataListModel      = new DefaultListModel<GeoSearchResultsItem>();
         mainList = new JList<GeoSearchResultsItem>(dataListModel);
