@@ -195,7 +195,7 @@ public class IdHashMapper implements IdMapperIFace
         
         try
         {
-            if (enableRemoveRecords && doDelete)
+            if (enableRemoveRecords)
             {
                 wasEmpty = true;
                 if (BasicSQLUtils.doesTableExist(oldConn, mapTableName)) {

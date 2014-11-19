@@ -7252,9 +7252,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             return true;
         }
         
-        IdTableMapper loanPrepsMapper = IdMapperMgr.getInstance().addTableMapper("loanphysicalobject", "LoanPhysicalObjectID", false);
-        
         TableWriter tblWriter = convLogger.getWriter("convertLoanPreparations.html", "Loan Preparations");
+        
+        IdTableMapper loanPrepsMapper = (IdTableMapper)IdMapperMgr.getInstance().get("loanphysicalobject", "LoanPhysicalObjectID");
+        if (loanPrepsMapper == null) {
+            String msg = "LoanPrepsMapper not found. (This was a fatal error).";
+            tblWriter.logError(msg);
+            log.error(msg);
+            return false;
+        }
         
         TimeLogger timeLogger = new TimeLogger();
 
