@@ -358,7 +358,6 @@ public class GeographyAssignISOs
         
         try
         {
-            if (readConn != null) readConn.close();
             if (updateConn != DBConnection.getInstance()) updateConn.close();
             if (lookupCountryStmt != null) lookupCountryStmt.close();
             if (lookupStateStmt != null) lookupStateStmt.close();
@@ -1434,6 +1433,8 @@ public class GeographyAssignISOs
      */
     private void startTraversalInternal()
     {
+        String fullPath = getAppDataDir() + File.separator + "geo_report.html";
+
         log.debug("Phase: "+processingPhase+" Id:"+doIndvCountryId);
         connectToDB();
 
@@ -1457,7 +1458,6 @@ public class GeographyAssignISOs
         HashMap<String, String> countryMappings = new HashMap<String, String>();
         try
         {
-            String fullPath = getAppDataDir() + File.separator + "geo_report.html";
             if (processingPhase == 1)
             {
                 tblWriter       = new TableWriter(fullPath, "Geography ISO Code Report");
@@ -1572,6 +1572,13 @@ public class GeographyAssignISOs
                 }
             }
             
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
             tblWriter.endTable();
             
             if (badRankIDs.size() > 0)
@@ -1593,16 +1600,16 @@ public class GeographyAssignISOs
             
             if (tblWriter.hasLines())
             {
-                AttachmentUtils.openFile(new File(fullPath));
+                try
+                {
+                    AttachmentUtils.openFile(new File(fullPath));
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
+            
             doIndvCountryId = null;
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
             if (processingPhase != 1 && doIndvCountryId == null && usaIds.size() == 0)
             {
                 shutdown();
