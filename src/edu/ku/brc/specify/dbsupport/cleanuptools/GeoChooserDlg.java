@@ -630,7 +630,7 @@ public class GeoChooserDlg extends CustomDialog
         for (GeoSearchResultsItem p : coInfoList)
         {
             String name = p.name;
-            char   fc   = name.charAt(0);
+            char   fc   = StringUtils.isNotEmpty(name) ? name.charAt(0) : ' ';
             String cmp  = name.length() > 1 ? name.substring(0, 2) : null;
             dataListModel.addElement(p);
             

@@ -55,6 +55,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -167,6 +168,7 @@ public class GeographyAssignISOs
     private TableWriter                tblWriter        = null;
     private boolean                    doStopProcessing = false;
     private boolean                    doSkipCountry    = false;
+    private TreeSet<String>            blankGeoNameParents = new TreeSet<String>();
     
     private StateCountryContXRef stCntXRef;
     
@@ -841,8 +843,15 @@ public class GeographyAssignISOs
         String searchStr = "";
         try
         {
+            System.out.println("searchStr["+searchStr+"]");
             searchStr = GeoCleanupFuzzySearch.stripExtrasFromName(sb.toString());
-            //System.out.println("searchStr["+searchStr+"]");
+            if (isEmpty(searchStr)) 
+            {
+                String parentName = level == 0 ? "Earth" : parentNames[level];
+                blankGeoNameParents.add(parentName);
+                return LuceneSearchResultsType.eNotFound;
+            }
+            System.out.println("searchStr["+searchStr+"]");
             Query q = new QueryParser(Version.LUCENE_47, "name", GeoCleanupFuzzySearch.getAnalyzer()).parse(searchStr);
             luceneSearch.getSearcher().search(q, collector);
         } catch (ParseException e)
@@ -977,16 +986,24 @@ public class GeographyAssignISOs
             }
         }
         
-        if (pStmt != null && searchText != null)
+        if (isNotEmpty(searchText))
         {
-            pStmt.setString(1, searchText.toLowerCase());
-            ResultSet rs = pStmt.executeQuery();
-            if (rs.next())
+            if (pStmt != null)
             {
-                geonameId = rs.getInt(1);
-                isoCode   = rs.getString(2);
+                pStmt.setString(1, searchText.toLowerCase());
+                ResultSet rs = pStmt.executeQuery();
+                if (rs.next())
+                {
+                    geonameId = rs.getInt(1);
+                    isoCode   = rs.getString(2);
+                }
+                rs.close();
             }
-            rs.close();
+        } else
+        {
+            String parentName = level == 0 ? "Earth" : parentNames[level];
+            blankGeoNameParents.add(parentName);
+            return false;
         }
         
         if (geonameId == null && rankId == 300)
@@ -1087,35 +1104,41 @@ public class GeographyAssignISOs
         if (doDrillDown) // don't go down further than County level
         {
             //String    sql  = "SELECT GeographyID, Name, RankID FROM geography WHERE GeographyCode IS NULL AND ParentID = " + geoId + " ORDER BY RankID, Name";
-            String     wStr = rankId == 400 ? "GeographyCode IS NULL" : ""; 
+            String    wStr  = rankId == 400 ? "GeographyCode IS NULL" : ""; 
             String    sql   = String.format("SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE %s ParentID = %d ORDER BY RankID, Name", wStr, geoId);
             Statement stmt  = readConn.createStatement();
             ResultSet rs    = stmt.executeQuery(sql);
             while (rs.next())
             {
-                int    childGeoId  = rs.getInt(1);    // Get Child's Id
-                String name        = rs.getString(2); // Get Child's Name
-                int    childRankId = rs.getInt(3);    // Get Child's RankID
-                String isoCode     = rs.getString(4); // Get Child's ISO Code
-                
-                for (int ii=level+1;ii<parentNames.length;ii++)
+                String name = rs.getString(2); // Get Child's Name
+                if (isNotEmpty(name))
                 {
-                    parentNames[ii] = null;
-                    parentRanks[ii] = -1;
-                }
-                
-                parentNames[level+1] = name;
-                parentRanks[level+1] = childRankId;
-                findGeo(childGeoId, isoCode, level+1, childRankId, parentNames, parentRanks, parentISOCodes, isIndvCountry);
-                if (doStopProcessing)
+                    int    childGeoId  = rs.getInt(1);    // Get Child's Id
+                    int    childRankId = rs.getInt(3);    // Get Child's RankID
+                    String isoCode     = rs.getString(4); // Get Child's ISO Code
+                    
+                    for (int ii=level+1;ii<parentNames.length;ii++)
+                    {
+                        parentNames[ii] = null;
+                        parentRanks[ii] = -1;
+                    }
+                    
+                    parentNames[level+1] = name;
+                    parentRanks[level+1] = childRankId;
+                    findGeo(childGeoId, isoCode, level+1, childRankId, parentNames, parentRanks, parentISOCodes, isIndvCountry);
+                    if (doStopProcessing)
+                    {
+                        return;
+                    }
+                    
+                    if (doSkipCountry)
+                    {
+                        doSkipCountry = rankId > 199;
+                        if (doSkipCountry) return;
+                    }
+                } else
                 {
-                    return;
-                }
-                
-                if (doSkipCountry)
-                {
-                    doSkipCountry = rankId > 199;
-                    if (doSkipCountry) return;
+                    blankGeoNameParents.add(parentNames[level]);
                 }
             }
             rs.close();
@@ -1361,13 +1384,13 @@ public class GeographyAssignISOs
                 selectedSearchItem = dlg.getSelectedGeoSearchItem();
                 
                 String textISOCode = dlg.getISOCodeFromTextField();
-                if (textISOCode != null && !textISOCode.equals(selectedSearchItem.isoCode))
+                if (textISOCode != null && selectedSearchItem != null && !textISOCode.equals(selectedSearchItem.isoCode))
                 {
                     selectedSearchItem.isoCode = textISOCode;
                 }
 
-                String selectedGeoName = selectedSearchItem.name;
-                if (doMerge && rankId == 400)
+                String selectedGeoName = selectedSearchItem != null ? selectedSearchItem.name : null;
+                if (doMerge && rankId == 400 && selectedGeoName != null)
                 {
                     int geoParentId = getCountAsInt(readConn, "SELECT ParentID FROM geography WHERE GeographyID = "+ geoId);
                     if (geoParentId != -1)
@@ -1493,19 +1516,25 @@ public class GeographyAssignISOs
                     parentISOCodes[i] = null;
                 }
                 
-                int    geoId         = (Integer)row[0];
                 String continentName = (String)row[1];
-                int    rankId        = (Integer)row[2];                
-                String isoCode       = (String)row[3];                
-
-                parentNames[0]    = continentName;
-                parentRanks[0]    = rankId;
-                parentISOCodes[0] = isoCode;
-                
-                findGeo(geoId, isoCode, 0, 100, parentNames, parentRanks, parentISOCodes, false);
-                if (doStopProcessing)
+                if (isNotEmpty(continentName))
                 {
-                    break;
+                    int    geoId         = (Integer)row[0];
+                    int    rankId        = (Integer)row[2];                
+                    String isoCode       = (String)row[3];                
+    
+                    parentNames[0]    = continentName;
+                    parentRanks[0]    = rankId;
+                    parentISOCodes[0] = isoCode;
+                    
+                    findGeo(geoId, isoCode, 0, 100, parentNames, parentRanks, parentISOCodes, false);
+                    if (doStopProcessing)
+                    {
+                        break;
+                    }
+                } else
+                {
+                    blankGeoNameParents.add("Earth");
                 }
             }            
             
@@ -1554,13 +1583,16 @@ public class GeographyAssignISOs
                     if (doAllCountries[0] || (doInvCountry[0] && isIndvCountry))
                     {
                         //System.out.println(countryName);
-                        parentNames[0] = countryName;
-                        parentRanks[0] = 200;
-                        parentISOCodes[0] = isoCode;
-                        findGeo(geoId, isoCode, 0, 200, parentNames, parentRanks, parentISOCodes, isIndvCountry);
-                        if (doStopProcessing)
+                        if (isNotEmpty(countryName))
                         {
-                            break;
+                            parentNames[0]    = countryName;
+                            parentRanks[0]    = 200;
+                            parentISOCodes[0] = isoCode;
+                            findGeo(geoId, isoCode, 0, 200, parentNames, parentRanks, parentISOCodes, isIndvCountry);
+                            if (doStopProcessing)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -1593,6 +1625,18 @@ public class GeographyAssignISOs
                     tblWriter.log(item.name, 
                                   goodLevel != null ? goodLevel : Integer.toString(item.goodRankId), 
                                   badLevel != null ? badLevel : Integer.toString(item.currentRankId));
+                }
+                tblWriter.endTable();
+            }
+            if (blankGeoNameParents.size() > 0)
+            {
+                tblWriter.println("<BR><BR><h2>Geography Records that have children with a blank names.</h2>");
+                tblWriter.println("<p>The name may not be blank in the database but once all the special characters are removed it may become blank. For example, if the name had just a question mark.</p>");
+                tblWriter.startTable();
+                tblWriter.logHdr("Geography Parent Name");
+                for (String parentName : blankGeoNameParents)
+                {
+                    tblWriter.logTDCls("", parentName);
                 }
                 tblWriter.endTable();
             }
