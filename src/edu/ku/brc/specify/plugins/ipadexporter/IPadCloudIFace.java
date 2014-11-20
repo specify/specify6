@@ -112,11 +112,10 @@ public interface IPadCloudIFace
     public abstract boolean doesDataSetExist(String dsName, String guid);
     
     /**
-     * @param guid
-     * @param guid
+     * @param dsGUID the dataset's GUID
      * @return
      */
-    public abstract boolean removeDataSet(String dsName, String guid);
+    public abstract boolean removeDataSet(String dsGUID);
     
     /**
      * @param usrName
@@ -136,7 +135,7 @@ public interface IPadCloudIFace
      * @param instGuid
      * @return
      */
-    public abstract List<Pair<Integer, String>> getDatasetList(String instGuid);
+    public abstract List<Pair<String, String>> getDatasetList(String instGuid);
     
     /**
      * @param instGuid

@@ -37,12 +37,14 @@ import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 import static edu.ku.brc.ui.UIRegistry.writeSimpleGlassPaneMsg;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -55,6 +57,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -94,6 +98,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -332,10 +337,17 @@ public class iPadDBExporterPlugin extends BaseTask
         Institution inst = iPadDBExporter.getCurrentInstitution();
         if (iPadCloud.removeAccount(cloudInstId, inst.getGuid()))
         {
-            // dialog account removed
-            // return;
+            createAccountBtn.setEnabled(true);
+            removeAccountBtn.setEnabled(false);
+            removeDatasetBtn.setEnabled(false);
+            loginBtn.setEnabled(false);
+            logoutBtn.setEnabled(false);
+            
+            UIRegistry.writeTimedSimpleGlassPaneMsg("The account was removed.");
+        } else
+        {
+            UIRegistry.writeTimedSimpleGlassPaneMsg("There was a problem removing the account.");
         }
-        // dialog account removal failed.
     }
     
     /**
@@ -343,15 +355,51 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     private void removeDataset()
     {
-        List<Pair<Integer, String>> list = null;
-        Institution inst = iPadDBExporter.getCurrentInstitution();
-        list = iPadCloud.getDatasetList(inst.getGuid());
+        Institution                 inst = iPadDBExporter.getCurrentInstitution();
+        List<Pair<String, String>> list = iPadCloud.getDatasetList(inst.getGuid());
         if (list != null && list.size() > 0)
         {
-            // dialog account removed
-            // return;
+            CellConstraints cc = new CellConstraints();
+            
+            final JList<String> dsList = new JList<String>(new DSListModel(list));
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,f:p:g"));
+            pb.add(UIHelper.createI18NLabel("Choose a Dataset to remove"), cc.xy(1, 1));
+            pb.add(dsList, cc.xy(1, 3));
+            pb.setDefaultDialogBorder();
+            final CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), "Remove Collection", true, pb.getPanel());
+            dsList.addListSelectionListener(new ListSelectionListener()
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        dlg.getOkBtn().setEnabled(!dsList.isSelectionEmpty());
+                    }
+                }
+            });
+            dlg.setPreferredSize(new Dimension(300, 400));
+            dlg.createUI();
+            dlg.getOkBtn().setEnabled(false);
+            centerAndShow(dlg, 300, 400);
+            if (!dlg.isCancelled())
+            {
+                String collectionGUID = list.get(dsList.getSelectedIndex()).first;
+                if (StringUtils.isNotEmpty(collectionGUID))
+                {
+                    if (iPadCloud.removeDataSet(collectionGUID))
+                    {
+                        enableRemoveDatasetBtn();
+                        UIRegistry.writeTimedSimpleGlassPaneMsg("The dataset was removed.");   
+                    } else
+                    {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg("The dataset was not removed.");
+                    }
+                }
+            }
+            return;
         }
-        // dialog account removal failed.
+        UIRegistry.showError("You do not have Datasets to remove."); // should not get here
     }
     
     /**
@@ -403,8 +451,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 createAccountBtn.setEnabled(false);
                 loginBtn.setEnabled(true);
                 
-                int dsCount = iPadCloud.getNumberOfDatasets(inst.getGuid());
-                removeDatasetBtn.setEnabled(dsCount > 0);
+                enableRemoveDatasetBtn();
                 
                 checkInstitutionInfo(false);
                 
@@ -478,9 +525,7 @@ public class iPadDBExporterPlugin extends BaseTask
                         isLoggedIn = true;
                         clearSimpleGlassPaneMsg();
                         
-                        int dsCount = iPadCloud.getNumberOfDatasets(inst.getGuid());
-                        removeDatasetBtn.setEnabled(dsCount > 0);
-
+                        enableRemoveDatasetBtn();
                         break;
                     } else
                     {
@@ -630,8 +675,8 @@ public class iPadDBExporterPlugin extends BaseTask
         } finally
         {
             popResourceBundle();
+            loginBtn.setEnabled(true);
         }
-        loginBtn.setEnabled(true);
         return null;
     }
 
@@ -818,6 +863,7 @@ public class iPadDBExporterPlugin extends BaseTask
 
                             clearSimpleGlassPaneMsg();
                             exportBtn.setEnabled(true);
+                            enableRemoveDatasetBtn();
                         }
                     };
                     
@@ -836,6 +882,13 @@ public class iPadDBExporterPlugin extends BaseTask
         {
             ex.printStackTrace();
         }
+    }
+    
+    private void enableRemoveDatasetBtn()
+    {
+        Institution inst = iPadDBExporter.getCurrentInstitution();
+        int dsCount = iPadCloud.getNumberOfDatasets(inst.getGuid());
+        removeDatasetBtn.setEnabled(dsCount > 0);
     }
 
     //-------------------------------------------------------
@@ -914,5 +967,38 @@ public class iPadDBExporterPlugin extends BaseTask
             }
             //cloudInstId    = null;
         }
+    }
+    
+    class DSListModel extends AbstractListModel<String> 
+    {
+        protected List<Pair<String, String>> list;
+        
+        /**
+         * @param list
+         */
+        public DSListModel(List<Pair<String, String>> list)
+        {
+            super();
+            this.list = list;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.ListModel#getSize()
+         */
+        @Override
+        public int getSize()
+        {
+            return list != null ? list.size() : 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.ListModel#getElementAt(int)
+         */
+        @Override
+        public String getElementAt(int index)
+        {
+            return list != null ? list.get(index).second : "";
+        }
+        
     }
 }

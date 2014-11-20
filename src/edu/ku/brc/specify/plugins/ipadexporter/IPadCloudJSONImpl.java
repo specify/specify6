@@ -269,13 +269,12 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeDataSet(java.lang.String, java.lang.String)
+     * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#removeDataSet(java.lang.String)
      */
     @Override
-    public boolean removeDataSet(final String collGuid, final String guid)
+    public boolean removeDataSet(final String collGuid)
     {
         HashMap<String, String> map = createHashMap(
-                kGUID,     guid, 
                 kCollGUID,  collGuid, 
                 kAction,      "deldataset");
         JSONObject data = sendPost(map);
@@ -286,7 +285,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.ipadexporter.IPadCloudIFace#getDatasetList(java.lang.String)
      */
-    public List<Pair<Integer, String>> getDatasetList(final String instGuid)
+    public List<Pair<String, String>> getDatasetList(final String instGuid)
     {
         HashMap<String, String> map = createHashMap(
                 kGUID,     instGuid, 
@@ -296,15 +295,15 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
         if (data != null && isStatusOK(data))
         {
             JSONArray datasets = data.getJSONArray("datasets");
-            ArrayList<Pair<Integer, String>> dsList = new ArrayList<Pair<Integer, String>>();
+            ArrayList<Pair<String, String>> dsList = new ArrayList<Pair<String, String>>();
             for (Object obj : datasets)
             {
                 JSONObject datasetFields = (JSONObject)obj;
-                String  title = ((JSONObject)datasetFields).getString("dsname");
-                Integer dsId  = ((JSONObject) datasetFields).getInt("id");
-                if (dsId == null) continue;
+                String  title  = ((JSONObject)datasetFields).getString("dsname");
+                String  dsGUID = ((JSONObject)datasetFields).getString("collguid");
+                if (dsGUID == null) continue;
                
-                Pair<Integer, String> p = new Pair<Integer, String>(dsId, title);
+                Pair<String, String> p = new Pair<String, String>(dsGUID, title);
                 dsList.add(p);
             }
             return dsList;
@@ -489,6 +488,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 
         isNetworkError = false;
         
+        System.out.println(writeURLStr);
         System.out.println("\n------------------------ ");
         for (String k : valuesMap.keySet())
         {
