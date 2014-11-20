@@ -1235,7 +1235,8 @@ public class SymbiotaPane extends BaseSubPane implements QBDataSourceListenerIFa
 		activeWorker.set(null);
 		if (result.getFirst()) {
 			symTask.updateLastPushForInstance(symTask.getTheInstance());
-			UIRegistry.showLocalizedMsg("SymbiotaPane.SendSuccessDlgTitle", "SymbiotaPane.SendSuccess", result.getSecond());
+			UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SymbiotaPane.SendSuccessDlgTitle", 
+					"SymbiotaPane.SendSuccess", result.getSecond());
 		} else {
 			UIRegistry.showLocalizedError("SymbiotaPane.PushToSymFailed", result.getSecond());
 		}
