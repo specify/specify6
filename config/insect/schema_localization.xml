@@ -6,16 +6,40 @@
       <desc name="text8" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Texto8</text>
-          </str>
           <str language="en">
             <version>0</version>
             <text>Text8</text>
           </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Texto8</text>
+          </str>
         </names>
         <descs/>
+      </desc>
+      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Length</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stage</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
       </desc>
       <desc name="text5" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
@@ -31,13 +55,25 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text4" isHidden="false" isUIFormatter="false" pickListName="Stage" isRequired="false">
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Stage</text>
+            <text>Sex</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
           </str>
         </names>
         <descs/>
@@ -57,55 +93,19 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text2" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Weight</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="text6" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
-          <str language="en">
-            <version>0</version>
-            <text>Text6</text>
-          </str>
           <str language="pt">
             <version>1</version>
             <text>Texto6</text>
           </str>
-        </names>
-        <descs/>
-      </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Sex" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
           <str language="en">
             <version>0</version>
-            <text>Sex</text>
+            <text>Text6</text>
           </str>
         </names>
         <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Length</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
       </desc>
     </items>
     <names/>

@@ -102,6 +102,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     protected String                        interests;
     protected String                        abbreviation;
     protected String                        initials;
+    protected String                        suffix;
     protected String                        remarks;
     
     protected String                        guid; 
@@ -228,6 +229,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         interests                 = null;
         abbreviation              = null;
         initials                  = null;
+        suffix                    = null;
         remarks                   = null;
         guid                      = null;
         orgMembers                = new HashSet<Agent>();
@@ -540,7 +542,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         return initials;
     }
 
+    
     /**
+	 * @return the suffix
+	 */
+    @Column(name = "Suffix", length = 50)
+	public String getSuffix() {
+		return suffix;
+	}
+
+	/**
+	 * @param suffix the suffix to set
+	 */
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
+	/**
      * @param initials the initials to set
      */
     public void setInitials(String initials)
