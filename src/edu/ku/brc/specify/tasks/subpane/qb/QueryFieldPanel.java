@@ -652,7 +652,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     
     protected String getDefaultExportedFieldName()
     {
-    	return queryField.getColumnAlias();
+    	if (queryField != null) {
+    		return queryField.getColumnAlias();
+    	} else {
+    		return fieldQRI.getTitle();
+    	}
     }
     
     /**

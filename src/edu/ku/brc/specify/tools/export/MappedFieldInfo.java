@@ -25,6 +25,7 @@ public class MappedFieldInfo
 	protected final String tableIds; //list of tableids in the path from root to the field
 	protected final boolean isRel; //basically equivalent to is aggregated
 	protected final boolean isActive; //should the mapping be automatically applied
+	protected final Byte operator;   //default operator for the query field ui for automappings. Specifically for the Iscurrent un-mapped auto mapping. 
 	
 	/**
 	 * @param stringId
@@ -33,7 +34,7 @@ public class MappedFieldInfo
 	 * @param isRel
 	 * @param isActive
 	 */
-	public MappedFieldInfo(String stringId, String fieldName, String term, String tableIds, boolean isRel, boolean isActive) 
+	public MappedFieldInfo(String stringId, String fieldName, String term, String tableIds, boolean isRel, boolean isActive, Byte operator) 
 	{
 		super();
 		this.stringId = stringId;
@@ -42,6 +43,7 @@ public class MappedFieldInfo
 		this.tableIds = tableIds;
 		this.isRel = isRel;
 		this.isActive = isActive;
+		this.operator = operator;
 	}
 
 	/**
@@ -52,7 +54,7 @@ public class MappedFieldInfo
 	 */
 	public MappedFieldInfo(String stringId, String fieldName, String term, String tableIds, boolean isRel) 
 	{
-		this(stringId, fieldName, term, tableIds, isRel, true);
+		this(stringId, fieldName, term, tableIds, isRel, true, null);
 	}
 
 	/**
@@ -65,7 +67,10 @@ public class MappedFieldInfo
 				XMLHelper.getAttr(def, "term", null),
 				XMLHelper.getAttr(def, "table_path", null),
 				XMLHelper.getAttr(def, "is_relationship", false),
-				XMLHelper.getAttr(def, "active", true));
+				XMLHelper.getAttr(def, "active", true),
+				XMLHelper.getAttr(def, "operator", null) == null 
+						? null 
+						: Byte.valueOf(XMLHelper.getAttr(def, "operator", null)));
 	}
 	
 	/**
@@ -109,13 +114,24 @@ public class MappedFieldInfo
 	}
 
 	/**
+	 * @return operator
+	 */
+	public Byte getOperator() {
+		return operator;
+	}
+	
+	/**
 	 * @return xml def (partial)
 	 */
 	public String toXML()
 	{
-		return "specify_field=\"" + stringId + "\" fieldname=\"" + fieldName + "\" table_path=\""
+		String result = "specify_field=\"" + stringId + "\" fieldname=\"" + fieldName + "\" table_path=\""
 			+ tableIds + "\" is_relationship=\"" + (isRel ? "true" : "false") + "\" active=\""
-			+ (isActive ? "true" : "false") + "\""; 
+			+ (isActive ? "true" : "false") + "\"";
+		if (operator != null) {
+			result += " operator=\"" + operator + "\"";
+		}
+		return result;
 	}
 
 	/**
@@ -139,7 +155,7 @@ public class MappedFieldInfo
 	 */
 	public int getContextTableId()
 	{
-		return Integer.parseInt(tableIds.substring(tableIds.indexOf(",")));
+		return Integer.parseInt(tableIds.substring(0, tableIds.indexOf(",")));
 	}
 	
 	/* (non-Javadoc)

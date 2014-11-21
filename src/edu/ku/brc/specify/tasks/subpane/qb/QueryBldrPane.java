@@ -4762,9 +4762,42 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	}
         }
-        
-        //now add un-mapped fields
+
         List<SpQueryField> toRemove = new ArrayList<SpQueryField>(); 
+
+        //add 'auto-mapped' fields not mapped to a concept
+    	if (autoMaps != null && fields.size() == 0 /* a new mapping */) {
+    		int cnt = 0;
+			for (Map.Entry<String, Vector<MappedFieldInfo>> me : autoMaps.entrySet()) {
+				if (me.getKey().startsWith("Unmapped:")) {
+					System.out.println(me.getKey());
+					MappedFieldInfo fi = me.getValue().get(0);
+					SpQueryField fld = new SpQueryField();
+					fld.initialize();
+					
+					fld.setIsNot(false);
+					fld.setAlwaysFilter(false);
+					fld.setIsPrompt(true);
+					fld.setIsRelFld(false);
+					fld.setSortType(Byte.valueOf("0"));
+					fld.setPosition(Short.valueOf(String.valueOf(result.size()-1 + cnt++)));
+					
+					fld.setSpQueryFieldId(-1);
+					fld.setIsDisplay(false);
+					fld.setOperStart(fi.getOperator());
+					fld.setFieldName(fi.getFieldName());
+					fld.setStringId(fi.getStringId());
+					fld.setTableList(fi.getTableIds());
+					fld.setContextTableIdent(fi.getContextTableId());
+					
+					fields.add(fld);
+					toRemove.add(fld);
+				}
+			}
+    		
+    	}
+    	
+        //now add un-mapped fields
         for (SpQueryField fld : fields)
         {
         	//int insertAt = 0;
@@ -4776,9 +4809,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		{
 //        			result.insertElementAt(new QueryFieldPanel(container, fieldQRI, 
 //            				container.getColumnDefStr(), saveBtn, fld, null, true), insertAt++);
-        			result.add(new QueryFieldPanel(container, fieldQRI, 
-            				container.getColumnDefStr(), saveBtn, fld, schemaMapping, null));
+        			QueryFieldPanel newQfp = new QueryFieldPanel(container, fieldQRI, 
+            				container.getColumnDefStr(), saveBtn, fld, schemaMapping, null); 
+        			result.add(newQfp);
         			fieldQRI.setIsInUse(true);
+        			if (fld.getSpQueryFieldId() == -1) {
+        				newQfp.setAutoMapped(true);
+        				newQfp.setQueryFieldForAutomapping(null);
+        			}
         			if (fieldQRI.isFieldHidden() && !container.isPromptMode() && !container.isForSchemaExport())
         			{
         				UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
