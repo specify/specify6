@@ -4770,7 +4770,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		int cnt = 0;
 			for (Map.Entry<String, Vector<MappedFieldInfo>> me : autoMaps.entrySet()) {
 				if (me.getKey().startsWith("Unmapped:")) {
-					System.out.println(me.getKey());
 					MappedFieldInfo fi = me.getValue().get(0);
 					SpQueryField fld = new SpQueryField();
 					fld.initialize();
