@@ -473,7 +473,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
         String               baseURL = export.getCloudURL();
         if (!baseURL.endsWith(File.separator))  
         {
-            baseURL += File.separator;
+            baseURL += "/";
         }
         return baseURL + scriptName;
     }
