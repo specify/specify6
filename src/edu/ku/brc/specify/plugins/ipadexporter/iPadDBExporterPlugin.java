@@ -41,6 +41,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
 
@@ -615,14 +617,15 @@ public class iPadDBExporterPlugin extends BaseTask
             }
             
             ImageIcon imgIcon    = IconManager.getImage("SpecifySmalliPad128x128", IconManager.STD_ICON_SIZE.NonStd);
-            JPanel    loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
+            JPanel    loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "USRNM_EMAIL_HINT", "Password", passwordTF, statusLbl, imgIcon);
             if (!iPadDBExporter.IS_TESTING) // ZZZ
             {
                 while (true)
                 {
                     userNameTF.setText(userName);
-                    CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
-                            getResourceString("iPad Cloud Login"), true, CustomDialog.OKCANCELAPPLY, loginPanel)
+                    final CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
+                                                     getResourceString("iPad Cloud Login"), true, 
+                                                     CustomDialog.OKCANCELAPPLY, loginPanel)
                     {
                         @Override
                         protected void applyButtonPressed()
@@ -637,6 +640,16 @@ public class iPadDBExporterPlugin extends BaseTask
                             }
                         }
                     };
+                    userNameTF.addKeyListener(new KeyAdapter()
+                    {
+                        @Override
+                        public void keyTyped(KeyEvent e)
+                        {
+                            boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText());
+                            dlg.getOkBtn().setEnabled(isOK);
+                        }
+                    });
+                    
                     dlg.setCloseOnApplyClk(true);
                     dlg.setApplyLabel(getResourceString("NEW_USER"));
                     dlg.setOkLabel(getResourceString("LOGIN"));

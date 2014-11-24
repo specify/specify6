@@ -1456,7 +1456,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      * @param pwdLblKey
      * @param passwordTF
      * @param statusLbl
-     * @param iconName
+     * @param imgIcon
      * @return
      */
     public static JPanel createLoginPanel(final String usrLblKey,
@@ -1466,15 +1466,40 @@ public class DatabaseLoginPanel extends JTiledPanel
                                           final JLabel statusLbl,
                                           final ImageIcon imgIcon)
     {
+        return createLoginPanel(usrLblKey, userNameTF, null, pwdLblKey, passwordTF, statusLbl, imgIcon);
+    }
+    
+    /**
+     * @param usrLblKey
+     * @param userNameTF
+     * @param pwdLblKey
+     * @param passwordTF
+     * @param statusLbl
+     * @param imgIcon
+     * @return
+     */
+    public static JPanel createLoginPanel(final String usrLblKey,
+                                          final JTextField userNameTF,
+                                          final String usernameHintKey,
+                                          final String pwdLblKey,
+                                          final JPasswordField passwordTF,
+                                          final JLabel statusLbl,
+                                          final ImageIcon imgIcon)
+    {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,10px,p,8px"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g,2px,p", "p,4px,p,10px,p,8px"));
         
+        boolean hasUsrNmHint = StringUtils.isNotEmpty(usernameHintKey);
         pb.add(UIHelper.createI18NFormLabel(usrLblKey), cc.xy(1, 1));
-        pb.add(userNameTF, cc.xy(3, 1));
+        pb.add(userNameTF, cc.xyw(3, 1, hasUsrNmHint ? 1 : 3));
+        if (hasUsrNmHint)
+        {
+            pb.add(UIHelper.createI18NLabel(usernameHintKey), cc.xy(5, 1));
+        }
         
         pb.add(UIHelper.createI18NFormLabel(pwdLblKey), cc.xy(1, 3));
-        pb.add(passwordTF, cc.xy(3, 3));
-        pb.add(statusLbl, cc.xyw(1, 5, 3));
+        pb.add(passwordTF, cc.xyw(3, 3, 1));
+        pb.add(statusLbl, cc.xyw(1, 5, 5));
         
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
         JLabel       icon       = new JLabel(imgIcon); 
