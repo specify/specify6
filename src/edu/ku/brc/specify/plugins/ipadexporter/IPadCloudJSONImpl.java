@@ -471,7 +471,7 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
     {
         iPadRepositoryHelper export  = new iPadRepositoryHelper();
         String               baseURL = export.getCloudURL();
-        if (!baseURL.endsWith(File.separator))  
+        if (!baseURL.endsWith("/"))  
         {
             baseURL += "/";
         }
