@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.plugins.ipadexporter;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -225,9 +227,11 @@ public class TaxonTreeBuilding
     /**
      * 
      */
+    static int fileCnt = 0;
     private void dumpTree()
     {
-        System.out.println("TaxonID\tName\tTotal\tCount\tRankID\tFamily\tGenus\tVisited");
+        StringBuilder sb = new StringBuilder();
+        sb.append("TaxonID\tName\tTotal\tCount\tRankID\tFamily\tGenus\tVisited\n");
         for (Integer rankID : treeRanks)
         {
             HashMap<Integer, TreeNode> pNodeHash = taxonHash.get(rankID);
@@ -236,12 +240,24 @@ public class TaxonTreeBuilding
                 for (TreeNode pNode : pNodeHash.values())
                 {
                     String name = BasicSQLUtils.querySingleObj("SELECT FullName from taxon WHERE TaxonID = "+pNode.taxonId);
-                    System.out.println(String.format("%d\t%s\t%d\t%d\t%d\t%d\t%d\t%s",  
+                    sb.append(String.format("%d\t%s\t%d\t%d\t%d\t%d\t%d\t%s\n",  
                             pNode.taxonId, name, pNode.totalCount, pNode.nodeCount, pNode.rankId, pNode.familyId, pNode.genusId, pNode.visited?"Y":"N"));
                 }
             }
         }
-        System.out.println("----------------------------------------------");
+        System.out.println(sb.toString()+"----------------------------------------------");
+        
+        try
+        {
+            String fileName = String.format("/Users/rods/dumps/dump_%d.tab", fileCnt++);
+            PrintWriter pw = new PrintWriter(fileName);
+            pw.println(sb.toString());
+            pw.flush();
+            pw.close();
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -367,10 +383,8 @@ public class TaxonTreeBuilding
                 }
                 rs1.close();
                 stmt1.close();
-                System.out.println();
             
                 dumpTree();
-                System.out.println();
             }
             
             skipNodeList = true;
@@ -386,7 +400,6 @@ public class TaxonTreeBuilding
             progressDelegate.setProcess(40);
 
             //dumpTree();
-            //System.out.println();
             
             //System.out.println("ID\tRK\tTC\tNC\tPID\tPRK\tPTID\tPTRNK\tTC\tTC2");
             for (Integer rankID : treeRanks)
@@ -410,7 +423,6 @@ public class TaxonTreeBuilding
             }
             
             //dumpTree();
-            //System.out.println();
               
             try
             {

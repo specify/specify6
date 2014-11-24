@@ -235,7 +235,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    login();
+                    login(null);
                 }
             });
 
@@ -415,16 +415,17 @@ public class iPadDBExporterPlugin extends BaseTask
             UIRegistry.showError("Institution must have a GUID value.");
             return;
         }
+        loadAndPushResourceBundle(RESOURCE_NAME);
         
         final JTextField     userNameTF = createTextField(15);
         final JPasswordField passwordTF = createPasswordField();
         final JLabel         statusLbl  = createLabel(" ");
         ImageIcon            imgIcon    = IconManager.getImage("SpecifySmalliPad128x128", IconManager.STD_ICON_SIZE.NonStd);
-        JPanel               loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "Password", passwordTF, statusLbl, imgIcon);
+        JPanel               loginPanel = DatabaseLoginPanel.createLoginPanel("Username", userNameTF, "USRNM_EMAIL_HINT", "Password", passwordTF, statusLbl, imgIcon);
 
-        loadAndPushResourceBundle(RESOURCE_NAME);
-        CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
-                getResourceString("CREATE_INST_IN_CLOUD"), true, CustomDialog.OKCANCEL, loginPanel)
+        final CustomDialog dlg = new CustomDialog((Frame)getMostRecentWindow(), 
+                                         getResourceString("CREATE_INST_IN_CLOUD"), true, 
+                                         CustomDialog.OKCANCEL, loginPanel)
         {
             @Override
             protected void okButtonPressed()
@@ -441,7 +442,18 @@ public class iPadDBExporterPlugin extends BaseTask
                 }
             }
         };
+        userNameTF.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyTyped(KeyEvent e)
+            {
+                boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText());
+                dlg.getOkBtn().setEnabled(isOK);
+            }
+        });
         dlg.setOkLabel(getResourceString("NEW_USER"));
+        dlg.createUI();
+        dlg.getOkBtn().setEnabled(false);
         centerAndShow(dlg);
         popResourceBundle();        
         
@@ -459,7 +471,13 @@ public class iPadDBExporterPlugin extends BaseTask
                 
                 String uName = userNameTF.getText();
                 String pwd   = new String(passwordTF.getPassword());
-                if (!iPadCloud.addNewUser(uName, pwd, inst.getGuid()))
+                if (iPadCloud.addNewUser(uName, pwd, inst.getGuid()))
+                {
+                    if (iPadCloud.login(uName, pwd))
+                    {
+                        login(new Pair<String, String>(uName, pwd));
+                    }
+                } else
                 {
                     setErrorMsg(statusLbl, kErrorCreatingAcctMsg);
                 }
@@ -500,20 +518,28 @@ public class iPadDBExporterPlugin extends BaseTask
     }
     
     /**
-     * 
+     * @return
      */
-    private void login()
+    private String getUserNamePrefName()
     {
-        Institution     inst        = AppContextMgr.getInstance().getClassObject(Institution.class);
         Division        div         = AppContextMgr.getInstance().getClassObject(Division.class);
         SpecifyUser     spUser      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        AppPreferences  remotePrefs = AppPreferences.getRemote();
         String          prefName    = String.format("IPAD_USERNAME_%d_%d", div.getId(), spUser.getId());
+        return prefName;
+    }
+    
+    /**
+     * 
+     */
+    private void login(final Pair<String, String> loginUPInfo)
+    {
+        String          prefName    = getUserNamePrefName(); 
+        AppPreferences  remotePrefs = AppPreferences.getRemote();
         String          userName    = remotePrefs.get(prefName, "");
         boolean         wasInError  = false;
         while (true)
         {
-            Pair<String, String> loginInfo = getExportLoginCreds(userName, wasInError);
+            Pair<String, String> loginInfo = loginUPInfo != null ? loginUPInfo : getExportLoginCreds(userName, wasInError);
             if (loginInfo != null)
             {
                 if (!iPadDBExporter.IS_TESTING) // ZZZ  

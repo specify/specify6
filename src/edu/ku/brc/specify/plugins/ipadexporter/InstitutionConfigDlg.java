@@ -769,7 +769,13 @@ public class InstitutionConfigDlg extends CustomDialog
             boolean isOK           = false;
             if (!iPadDBExporter.IS_TESTING) // ZZZ  
             {            
-                isOK = cloudHelper.updateInstitution(cloudInstId, nmStr, inst.getUri());
+                if (cloudInstId != null)
+                {   
+                    isOK = cloudHelper.updateInstitution(cloudInstId, nmStr, inst.getUri());
+                } else
+                {
+                    isOK = true;
+                }
             } else 
             {
                 isOK = true;
