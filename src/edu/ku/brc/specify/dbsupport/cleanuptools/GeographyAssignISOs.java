@@ -110,15 +110,18 @@ import edu.ku.brc.util.AttachmentUtils;
 public class GeographyAssignISOs
 {
     private static final Logger  log = Logger.getLogger(GeographyAssignISOs.class);
-    private final static String        GEONAME_SQL                  = "SELECT Name FROM geography WHERE GeographyID = ";  
-    private final static String        GEONAME_LOOKUP_CONTINENT_SQL = "SELECT geonameid, ISOCode FROM geoname WHERE LOWER(asciiname) = ?";  
-    private final static String        GEONAME_LOOKUP_COUNTRY_SQL   = "SELECT geonameid, iso_alpha2 FROM countryinfo WHERE LOWER(name) = ?";  
-    private final static String        GEONAME_LOOKUP_STATE_SQL     = "SELECT geonameid, ISOCode FROM geoname WHERE fcode = 'ADM1' AND LOWER(asciiname) = ? AND country = ?";  
-    private final static String        GEONAME_LOOKUP_COUNTY_SQL    = "SELECT geonameid, ISOCode FROM geoname WHERE fcode = 'ADM2' AND (LOWER(asciiname) = ? OR LOWER(asciiname) = ?) AND country = ? AND admin1 = ?";  
-    public  final static String        GEONAMES_INDEX_DATE_PREF     = "GEONAMES_INDEX_DATE_PREF";
-    public  final static String        GEONAMES_INDEX_NUMDOCS       = "GEONAMES_INDEX_NUMDOCS";
+    private final static String GEONAME_SQL                  = "SELECT Name FROM geography WHERE GeographyID = ";  
+    private final static String GEONAME_LOOKUP_CONTINENT_SQL = "SELECT geonameid, ISOCode FROM geoname WHERE LOWER(asciiname) = ?";  
+    private final static String GEONAME_LOOKUP_COUNTRY_SQL   = "SELECT geonameid, iso_alpha2 FROM countryinfo WHERE LOWER(name) = ?";  
+    private final static String GEONAME_LOOKUP_STATE_SQL     = "SELECT geonameid, ISOCode FROM geoname WHERE fcode = 'ADM1' AND LOWER(asciiname) = ? AND country = ?";  
+    private final static String GEONAME_LOOKUP_COUNTY_SQL    = "SELECT geonameid, ISOCode FROM geoname WHERE fcode = 'ADM2' AND (LOWER(asciiname) = ? OR LOWER(asciiname) = ?) AND country = ? AND admin1 = ?";  
+    public  final static String GEONAMES_INDEX_DATE_PREF     = "GEONAMES_INDEX_DATE_PREF";
+    public  final static String GEONAMES_INDEX_NUMDOCS       = "GEONAMES_INDEX_NUMDOCS";
     
     protected enum LuceneSearchResultsType {eNotFound, eFound, eMatch}
+    
+    protected enum ProcessingState {eInitialPass, eAllCountriesPass, eStartIndvCountryPass, eIndvCountryPass, eProcessingDone}
+
 
     //private GeographyTreeDef           geoDef;
     private Agent                      createdByAgent;
@@ -139,7 +142,7 @@ public class GeographyAssignISOs
     private boolean                    blockStatsUpdates = false;
     
     // Auto processing of ISOCodes
-    private int                        processingPhase = 0;
+    private ProcessingState            processingPhase = ProcessingState.eInitialPass;
     private Vector<Integer>            usaIds          = new Vector<Integer>();
     private int                        earthId         = 0;
     
@@ -197,6 +200,8 @@ public class GeographyAssignISOs
     private Vector<GeoSearchResultsItem> luceneResults = new Vector<GeoSearchResultsItem>();
     private Vector<GeoSearchResultsItem> badRankIDs    = new Vector<GeoSearchResultsItem>();
     
+    private String    fullWriterPath;
+    
     //private Integer foundGeonameId = null;
 
     
@@ -220,7 +225,8 @@ public class GeographyAssignISOs
             rankToNameMap.put(keys[i], values[i]);
         }
 
-        luceneSearch = new GeoCleanupFuzzySearch(geoDef);
+        luceneSearch   = new GeoCleanupFuzzySearch(geoDef);
+        fullWriterPath = getAppDataDir() + File.separator + "geo_report.html";
     }
     
     /**
@@ -280,10 +286,9 @@ public class GeographyAssignISOs
     {
         this.earthId = earthID;
         
-        processingPhase++;
-        
-        if (processingPhase == 1)
+        if (processingPhase == ProcessingState.eInitialPass)
         {
+            processingPhase = ProcessingState.eAllCountriesPass;
             doAllCountries  = new boolean[] {true, false, false, false};
             doInvCountry    = new boolean[] {false, false, false, false};
             doIndvCountryId = null;
@@ -326,13 +331,14 @@ public class GeographyAssignISOs
             }
         } else
         {
-            if (processingPhase == 2)
+            if (processingPhase == ProcessingState.eStartIndvCountryPass)
             {
                 String sql = "SELECT GeographyID FROM geography WHERE GeographyCode = 'US'";
                 for (Integer recId : queryForInts(sql))
                 {
                     usaIds.add(recId);
                 }
+                processingPhase = ProcessingState.eIndvCountryPass;
             }
             
             if (usaIds.size() > 0)
@@ -344,6 +350,7 @@ public class GeographyAssignISOs
                 startTraversal();
             } else
             {
+                processingPhase = ProcessingState.eProcessingDone;
                 shutdown();
             }
         }
@@ -357,6 +364,19 @@ public class GeographyAssignISOs
     private void shutdown()
     {
         luceneSearch.doneSearching();
+        
+        tblWriter.close();
+        
+        if (tblWriter.hasLines())
+        {
+            try
+            {
+                AttachmentUtils.openFile(new File(fullWriterPath));
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
         
         try
         {
@@ -1456,8 +1476,6 @@ public class GeographyAssignISOs
      */
     private void startTraversalInternal()
     {
-        String fullPath = getAppDataDir() + File.separator + "geo_report.html";
-
         log.debug("Phase: "+processingPhase+" Id:"+doIndvCountryId);
         connectToDB();
 
@@ -1481,9 +1499,15 @@ public class GeographyAssignISOs
         HashMap<String, String> countryMappings = new HashMap<String, String>();
         try
         {
-            if (processingPhase == 1)
+            processedCount = 0;
+            String[] parentNames    = new String[3];
+            int[]    parentRanks    = new int[3];
+            String[] parentISOCodes = new String[3];
+
+            // Keep code here in case we switch back to using the dialog
+            if (processingPhase == ProcessingState.eAllCountriesPass) // represents first time through
             {
-                tblWriter       = new TableWriter(fullPath, "Geography ISO Code Report");
+                tblWriter       = new TableWriter(fullWriterPath, "Geography ISO Code Report");
                 tblWriter.startTable();
                 //String firstCol = continentsCBX.isSelected() ? "Continent / " : "";
                 //tblWriter.logHdr(firstCol+"Country", "State", "County", "Old Name", "New Name", "ISO Code", "Action"); // for when we do counties
@@ -1495,49 +1519,48 @@ public class GeographyAssignISOs
                 
                 totalUpdated   = 0;
                 totalMerged    = 0;
-            }
-            processedCount = 0;
-            
-            //-------------------
-            // Do Continent
-            //-------------------
-            String[] parentNames    = new String[3];
-            int[]    parentRanks    = new int[3];
-            String[] parentISOCodes = new String[3];
-            geographyTotal = getCountAsInt(readConn, adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL"));
-            String sql     = adjustSQL("SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL AND RankID = 100 ORDER BY Name ASC");
-            
-            for (Object[] row : query(readConn, sql))
-            {
-                for (int i=0;i<parentNames.length;i++)
-                {
-                    parentNames[i] = null;
-                    parentRanks[i] = -1;
-                    parentISOCodes[i] = null;
-                }
                 
-                String continentName = (String)row[1];
-                if (isNotEmpty(continentName))
+                //------------------------------------------------------
+                // Do Continents
+                // Only do Continents on the first time through
+                //------------------------------------------------------
+                geographyTotal = getCountAsInt(readConn, adjustSQL("SELECT COUNT(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL"));
+                String sql     = adjustSQL("SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyCode IS NULL AND RankID = 100 ORDER BY Name ASC");
+                
+                for (Object[] row : query(readConn, sql))
                 {
-                    int    geoId         = (Integer)row[0];
-                    int    rankId        = (Integer)row[2];                
-                    String isoCode       = (String)row[3];                
-    
-                    parentNames[0]    = continentName;
-                    parentRanks[0]    = rankId;
-                    parentISOCodes[0] = isoCode;
-                    
-                    findGeo(geoId, isoCode, 0, 100, parentNames, parentRanks, parentISOCodes, false);
-                    if (doStopProcessing)
+                    for (int i=0;i<parentNames.length;i++)
                     {
-                        break;
+                        parentNames[i] = null;
+                        parentRanks[i] = -1;
+                        parentISOCodes[i] = null;
                     }
-                } else
-                {
-                    blankGeoNameParents.add("Earth");
+                    
+                    String continentName = (String)row[1];
+                    if (isNotEmpty(continentName))
+                    {
+                        int    geoId         = (Integer)row[0];
+                        int    rankId        = (Integer)row[2];                
+                        String isoCode       = (String)row[3];                
+        
+                        parentNames[0]    = continentName;
+                        parentRanks[0]    = rankId;
+                        parentISOCodes[0] = isoCode;
+                        
+                        findGeo(geoId, isoCode, 0, 100, parentNames, parentRanks, parentISOCodes, false);
+                        if (doStopProcessing)
+                        {
+                            break;
+                        }
+                    } else
+                    {
+                        blankGeoNameParents.add("Earth");
+                    }
                 }
-            }            
+            }
             
+            // Check to see this the user decided to quit
+            // This code works for both all Counreies and an individual country
             if (!doStopProcessing)
             {
                 //-------------------
@@ -1547,6 +1570,7 @@ public class GeographyAssignISOs
                 int statesCount  = getCountAsInt(readConn, "SELECT COUNT(*) FROM geography g1 INNER JOIN geography g2 ON g1.GeographyID = g2.ParentID WHERE g1.RankID = 200 AND g2.GeographyCode IS NULL");
                 geographyTotal   = countryCount + statesCount;
                 
+                String sql;
                 sql  = "SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE ";
                 sql += doIndvCountryId != null ? "(GeographyCode IS NULL OR GeographyID = %d) AND" : "";
                 sql += " RankID = 200 ORDER BY Name ASC";
@@ -1596,14 +1620,31 @@ public class GeographyAssignISOs
                         }
                     }
                 }
+            }
+            
+            doIndvCountryId = null;
+
+            if (doStopProcessing)
+            {
+                processingPhase = ProcessingState.eProcessingDone;
                 
-                if (processingPhase == 1 || usaIds.size() > 0)
+            } else if (processingPhase == ProcessingState.eAllCountriesPass)
+            {
+                processingPhase = ProcessingState.eStartIndvCountryPass;
+                
+            } else if (processingPhase == ProcessingState.eIndvCountryPass)
+            {
+                if (usaIds.size() == 0)
                 {
-                    buildAsync(this.earthId);
-                    return;
+                    processingPhase = ProcessingState.eProcessingDone;
                 }
             }
             
+            if (processingPhase != ProcessingState.eProcessingDone)
+            {
+                buildAsync(this.earthId);
+                return;
+            }
             
         } catch (Exception ex)
         {
@@ -1611,51 +1652,38 @@ public class GeographyAssignISOs
             
         } finally
         {
-            tblWriter.endTable();
-            
-            if (badRankIDs.size() > 0)
+            if (processingPhase == ProcessingState.eProcessingDone)
             {
-                tblWriter.println("<BR><BR><h2>Geography Records with incorrect RankIDs</h2>");
-                tblWriter.startTable();
-                tblWriter.logHdr("Geography Name", "Incorrect Rank", "Correct Rank");
-                for (GeoSearchResultsItem item : badRankIDs)
+                tblWriter.endTable(); // end the current HTML table
+
+                if (badRankIDs.size() > 0)
                 {
-                    String goodLevel = rankToNameMap.get(item.goodRankId);
-                    String badLevel  = rankToNameMap.get(item.currentRankId);
-                    tblWriter.log(item.name, 
-                                  goodLevel != null ? goodLevel : Integer.toString(item.goodRankId), 
-                                  badLevel != null ? badLevel : Integer.toString(item.currentRankId));
+                    tblWriter.println("<BR><BR><h2>Geography Records with incorrect RankIDs</h2>");
+                    tblWriter.startTable();
+                    tblWriter.logHdr("Geography Name", "Incorrect Rank", "Correct Rank");
+                    for (GeoSearchResultsItem item : badRankIDs)
+                    {
+                        String goodLevel = rankToNameMap.get(item.goodRankId);
+                        String badLevel  = rankToNameMap.get(item.currentRankId);
+                        tblWriter.log(item.name, 
+                                      goodLevel != null ? goodLevel : Integer.toString(item.goodRankId), 
+                                      badLevel != null ? badLevel : Integer.toString(item.currentRankId));
+                    }
+                    tblWriter.endTable();
                 }
-                tblWriter.endTable();
-            }
-            if (blankGeoNameParents.size() > 0)
-            {
-                tblWriter.println("<BR><BR><h2>Geography Records that have children with a blank names.</h2>");
-                tblWriter.println("<p>The name may not be blank in the database but once all the special characters are removed it may become blank. For example, if the name had just a question mark.</p>");
-                tblWriter.startTable();
-                tblWriter.logHdr("Geography Parent Name");
-                for (String parentName : blankGeoNameParents)
+                if (blankGeoNameParents.size() > 0)
                 {
-                    tblWriter.logTDCls("", parentName);
+                    tblWriter.println("<BR><BR><h2>Geography Records that have children with a blank names.</h2>");
+                    tblWriter.println("<p>The name may not be blank in the database but once all the special characters are removed it may become blank. For example, if the name had just a question mark.</p>");
+                    tblWriter.startTable();
+                    tblWriter.logHdr("Geography Parent Name");
+                    for (String parentName : blankGeoNameParents)
+                    {
+                        tblWriter.logTDCls("", parentName);
+                    }
+                    tblWriter.endTable();
                 }
-                tblWriter.endTable();
-            }
-            tblWriter.close();
-            
-            if (tblWriter.hasLines())
-            {
-                try
-                {
-                    AttachmentUtils.openFile(new File(fullPath));
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            
-            doIndvCountryId = null;
-            if (processingPhase != 1 && doIndvCountryId == null && usaIds.size() == 0)
-            {
+                
                 shutdown();
             }
         }
