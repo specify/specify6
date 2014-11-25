@@ -58,6 +58,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -70,6 +72,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -379,6 +382,15 @@ public class GeoChooserDlg extends CustomDialog
                 }
             });
             
+            DocumentListener dl = new DocumentAdaptor()
+            {
+                @Override
+                protected void changed(DocumentEvent e)
+                {
+                    okBtn.setEnabled(!isoCodeTF.getText().isEmpty());
+                }
+            };
+            isoCodeTF.getDocument().addDocumentListener(dl);
             //labels.add(nameStr);// + "  (Unknown)");
             
             PanelBuilder lookPB    = null;
