@@ -378,7 +378,7 @@ public class iPadRepositoryHelper
         String baseURL = getCloudURL();
         if (!baseURL.endsWith(File.separator))  
         {
-            baseURL += File.separator;
+            baseURL += "/";
         }
         return baseURL + scriptName;
     }
