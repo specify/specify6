@@ -81,6 +81,7 @@ public class ISOCodeListDlg extends CustomDialog
     private JButton              nextBtn;
     
     private GeoRankType          currentLevel;
+    private boolean              inSelectionMode;
     
     /**
      * @param dialog
@@ -98,13 +99,21 @@ public class ISOCodeListDlg extends CustomDialog
     @Override
     public void createUI()
     {
+        inSelectionMode = this.whichBtns != CustomDialog.OK_BTN;
+        
         setHelpContext("GeoCleanUpFindISOCode");
         setCancelLabel(getResourceString("CLOSE"));            
-        setOkLabel(this.whichBtns == CustomDialog.OK_BTN ? 
-                getResourceString("CLOSE") : 
-                getResourceString("CLNUP_GEO_CHOOSE_ISO")); 
+        setOkLabel(inSelectionMode? 
+                   getResourceString("CLNUP_GEO_CHOOSE_ISO") :
+                   getResourceString("CLOSE")
+                ); 
         
         super.createUI();
+        
+        if (inSelectionMode)
+        {
+            getOkBtn().setEnabled(false);
+        }
         
         CellConstraints cc = new CellConstraints();
 
@@ -272,7 +281,8 @@ public class ISOCodeListDlg extends CustomDialog
      */
     private void tableRowChoosen()
     {
-        if (currentLevel == GeoRankType.eEarth && table.getSelectedRow() > -1)
+        boolean isRowSelected = table.getSelectedRow() > -1;
+        if (currentLevel == GeoRankType.eEarth && isRowSelected)
         {
             Set<String> conts = new HashSet<String>(Arrays.asList(new String[] { "OO", "XO", "XQ", "ZH", "ZN", "AN" }));
             String isoCode = isoList.get(table.getSelectedRow()).isoCode;
@@ -282,7 +292,11 @@ public class ISOCodeListDlg extends CustomDialog
                 return;
             }
         }
-        nextBtn.setEnabled(table.getSelectedRow() > -1 && currentLevel.ordinal() < GeoRankType.eCountry.ordinal());
+        nextBtn.setEnabled(isRowSelected && currentLevel.ordinal() < GeoRankType.eCountry.ordinal());
+        if (inSelectionMode)
+        {
+            okBtn.setEnabled(isRowSelected);
+        }
     }
     
     private void clearLevels()
@@ -311,7 +325,7 @@ public class ISOCodeListDlg extends CustomDialog
         String extra = codeLen > -1 ? String.format("AND LENGTH(ISOCode) >= %d", codeLen) : "";
         String sql   = String.format("SELECT DISTINCT asciiname, ISOCode,geonameId FROM geoname WHERE %s %s ORDER BY asciiname", whereStr, extra);
         isoList.clear();
-        System.out.println(sql);
+        //System.out.println(sql);
         HashSet<String> nmSet = new HashSet<String>();
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         for (Object[] row : rows)
@@ -328,6 +342,10 @@ public class ISOCodeListDlg extends CustomDialog
             }
         }
         table.setModel(new ISOTableModel());
+        if (inSelectionMode)
+        {
+            getOkBtn().setEnabled(false);
+        }
     }
     
     /**

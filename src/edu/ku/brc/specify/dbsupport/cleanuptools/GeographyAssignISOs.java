@@ -1572,7 +1572,7 @@ public class GeographyAssignISOs
                 
                 String sql;
                 sql  = "SELECT GeographyID, Name, RankID, GeographyCode FROM geography WHERE ";
-                sql += doIndvCountryId != null ? "(GeographyCode IS NULL OR GeographyID = %d) AND" : "";
+                sql += doIndvCountryId != null ? "GeographyID = %d AND" : "";
                 sql += " RankID = 200 ORDER BY Name ASC";
                 
                 if (doIndvCountryId != null)
