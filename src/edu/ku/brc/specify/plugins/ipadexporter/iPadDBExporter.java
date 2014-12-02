@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -2696,7 +2697,10 @@ public class iPadDBExporter implements VerifyCollectionListener
         try
         {
             int cnt = 0;
-            PrintWriter pw = new PrintWriter(new File(cacheDir + File.separator + CAT_FILE));
+            File               outFile    = new File(cacheDir + File.separator + CAT_FILE);
+            FileOutputStream   fileStream = new FileOutputStream(outFile);
+            OutputStreamWriter writer     = new OutputStreamWriter(fileStream, "UTF-8");
+            PrintWriter        pw         = new PrintWriter(writer);
             pw.println("<catalog>");
             for (ChartFileInfo fileInfo : fileNamesForExport)
             {
@@ -3173,8 +3177,6 @@ public class iPadDBExporter implements VerifyCollectionListener
             
                     if (doAll || doTaxon)
                     {
-                        //checkAndFixTaxon();
-                        //doBuildTaxonMappings();
                         TaxonTreeBuilding treeBuilding = new TaxonTreeBuilding(iPadDBExporter.this, dbS3Conn, dbConn);
                         treeBuilding.process();
                         progressDelegate.incOverall();
@@ -3182,7 +3184,6 @@ public class iPadDBExporter implements VerifyCollectionListener
                     
                     if (doAll || doGeography)
                     {
-                        //doBuildGeography();
                         GeographyTreeBuilder treeBuilder = new GeographyTreeBuilder(iPadDBExporter.this, dbS3Conn, dbConn);
                         treeBuilder.process();
                         progressDelegate.incOverall();

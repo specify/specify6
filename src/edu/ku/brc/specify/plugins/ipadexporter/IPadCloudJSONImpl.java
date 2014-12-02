@@ -20,7 +20,7 @@
 package edu.ku.brc.specify.plugins.ipadexporter;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +32,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.StringUtils;
@@ -505,12 +504,16 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             for (String key : valuesMap.keySet())
             {
                 System.out.println("key["+key+"] val["+valuesMap.get(key)+"]");
-                parts[i++] = new StringPart(key, valuesMap.get(key));
+                parts[i++] = new StringPart(key, valuesMap.get(key), "UTF-8");
             }
 
-            post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
+            client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+            
+            //System.out.println("CharSet: "+client.getParams().getHttpElementCharset());
+            client.getParams().setHttpElementCharset("UTF-8");
+            //System.out.println("CharSet: "+client.getParams().getHttpElementCharset());
 
             int status = client.executeMethod(post);
             
