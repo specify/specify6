@@ -335,7 +335,11 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             }
         } else
         {
-            log.error("Number of ResourceData objects: "+spAppResource.getSpAppResourceDatas().size());
+        	if (spAppResource != null && spAppResource.getSpAppResourceDatas() != null) {
+        		log.error("Number of ResourceData objects: "+spAppResource.getSpAppResourceDatas().size());
+        	} else {
+        		log.error("Resource data was null");
+        	}
         }
     }
 }
