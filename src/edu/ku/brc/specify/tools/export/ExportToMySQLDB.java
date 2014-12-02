@@ -13,12 +13,15 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -49,6 +52,7 @@ import edu.ku.brc.util.Pair;
  */
 public class ExportToMySQLDB
 {
+    protected static final Logger  log = Logger.getLogger(ExportToMySQLDB.class);
 	
 	private final static int bulkBlockSize = 1000;
 	private final static int bulkQueueSize = 8000;
@@ -97,6 +101,7 @@ public class ExportToMySQLDB
 	 */
 	protected static String getFieldTypeDef(ERTICaptionInfo column)
 	{
+		boolean isLatLng = isLatLngCol(column);
 		DBFieldInfo fld = column.getFieldInfo();
 		Class<?> dataType = column.getColClass() != null ? column.getColClass() : (fld != null ? fld.getDataClass() : null);
 		if (column instanceof ERTICaptionInfoRel)
@@ -136,12 +141,15 @@ public class ExportToMySQLDB
 		{
 			return "date";
 		}
+		if (isLatLng) {
+			return "varchar(20)";
+		}
 		if (dataType.equals(BigDecimal.class))
 		{
-			//XXX too much for everything but longitude, but is it really a problem?
 			String decSpec = getBigDecimalSpec(fld);
 			if (decSpec.equals("")) 
 			{
+				//XXX large enough for any "CURRENT" big decimal field in specify
 				return "decimal(13,10)";
 			} else
 			{
@@ -321,7 +329,7 @@ public class ExportToMySQLDB
 	public static long exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass,
-			String bulkFilePath) throws Exception
+			String bulkFilePath, Integer theMappingId) throws Exception
 	{
 	    
 		try 
@@ -368,18 +376,22 @@ public class ExportToMySQLDB
 					listener.filling();
 				}
 			
+				processedKeys.clear();
 				rowNum = deletedRows + processRows(listeners, rows, rowNum, update, newTable, firstPass, stmt, tblName, bulkFilePath);
 				if (deletedRows != 0)
 				{
 					deletedRows = 0;
 				}
 				//System.out.println("returning " + rowNum + ". Time elapsed: " + (System.nanoTime() - startTime)/1000000000L + " seconds.");
+				
+				adjustLatLngAccuracy(tblName, processedKeys, getLatLngFldNames(toConnection, tblName, theMappingId, false));
 				return rowNum;
 			}
 			finally
 			{
 				stmt.close();
 			}
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;
@@ -404,9 +416,9 @@ public class ExportToMySQLDB
 	 */
 	public static long exportToTable(List<ERTICaptionInfoQB> columns, QBDataSource rows, 
 			String tblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass, String bulkFilePath) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId, boolean firstPass, String bulkFilePath, Integer mappingId) throws Exception
 	{
-		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId, firstPass, bulkFilePath);
+		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId, firstPass, bulkFilePath, mappingId);
 	}
 	
 	/**
@@ -567,8 +579,7 @@ public class ExportToMySQLDB
 	{
 		//Thread.sleep(500); //to wait for formatters to see if get() is waiting...
 		StringBuilder result = new StringBuilder();
-		for (int r=0; r < row.size(); r++)
-		{
+		for (int r=0; r < row.size(); r++) {
 			//System.out.println("geting insert value for: " + row.getFieldValue(r));
 			if (r > 0)
 			{
@@ -580,17 +591,9 @@ public class ExportToMySQLDB
 			{
 				val = "NULL";
 			}
-			else 
-			{
-//Not necessary to trim lengths unless sql_mode has been customized...
-//				if (fldVal instanceof String)
-//				{
-//					String fldStr = (String )fldVal;
-//					fldVal = fldStr.substring(0, Math.min(fldStr.length(), 256));
-//				}
+			else {
 				val = BasicSQLUtils.getStrValue(fldVal);
-				if (StringUtils.isBlank(val))
-				{
+				if (StringUtils.isBlank(val)) {
 					val = "NULL";
 				}
 			}
@@ -602,6 +605,38 @@ public class ExportToMySQLDB
 		
 	}
 	
+	/**
+	 * @param col
+	 * @return true if col represents latitude1, longitude1, latitude2, or longitude2
+	 */
+	protected static boolean isLatLngCol(ERTICaptionInfo col) {
+		boolean result = false;
+		DBFieldInfo fld = col.getFieldInfo();
+		if (fld != null) {
+			String fldName = fld.getName();
+			if (fldName.equalsIgnoreCase("Latitude1") || fldName.equalsIgnoreCase("Latitude2")
+					|| fldName.equalsIgnoreCase("Longitude1") || fldName.equalsIgnoreCase("Longitude2")) {
+				result = true;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @param q
+	 * @return column indexes of latitude1, longitude1, latitude2, longitude2 fields in q
+	 */
+	protected static List<Integer> getLatLngIdxs(QBDataSource q) {
+		List<Integer> result = new ArrayList<Integer>();
+		for (int c=0; c < q.getFieldCount(); c++) {
+			if (isLatLngCol(q.getColumnInfo(c))) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
+	
+	protected static List<Integer> processedKeys = new ArrayList<Integer>();
 	
 	/**
 	 * @param listeners
@@ -663,16 +698,17 @@ public class ExportToMySQLDB
 				{
 					stmt.execute(getInsertSql(row, tblName));
 				}
+				Integer key = Integer.class.cast(row.get(0).get());
 				for (QBDataSourceListenerIFace listener : listeners) {
 					if (listener.doTellAll()) {
 						if (isAdd) {
-							listener.addedRec(Integer.class.cast(row.get(0).get()));
+							listener.addedRec(key);
 						} else {
-							listener.updatedRec(Integer.class.cast(row.get(0).get()));
+							listener.updatedRec(key);
 						}
 					}
 				}
-				
+				processedKeys.add(key);
 				
 			}
 			//System.out.println("returning " + currentRow);
@@ -893,21 +929,21 @@ public class ExportToMySQLDB
 		return result;
 	}
 	
-	protected static String formatLatLng(String fldName, BigDecimal latLng, Integer rowId, List<String> srcInfo) throws SQLException
+	protected static String formatLatLng(String fldName, BigDecimal latLng, Integer originalLatLngUnit,
+			String srcTxt) throws SQLException
 	{
 		String result = null;
-		if (srcInfo != null)
+		if (originalLatLngUnit != null && latLng != null)
 		{
-			LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.values()[Integer.valueOf(srcInfo.get(0))];
-			String txt = srcInfo.get(getLatLonSrcTextIdx(fldName));
+			LatLonConverter.FORMAT fmt = LatLonConverter.FORMAT.values()[originalLatLngUnit];
 			LatLonConverter.LATLON llType = getLatLngType(fldName);
-			if (LatLonConverter.FORMAT.DDDDDD.equals(fmt) && StringUtils.isNotBlank(txt))
+			if (LatLonConverter.FORMAT.DDDDDD.equals(fmt) && StringUtils.isNotBlank(srcTxt))
 			{
-				result = txt;
+				result = srcTxt;
 			} 
-			else if (StringUtils.isNotBlank(txt))
+			else if (StringUtils.isNotBlank(srcTxt))
 			{
-				result =  LatLonConverter.convert(txt, fmt, LatLonConverter.FORMAT.DDDDDD, llType);				
+				result =  LatLonConverter.convert(srcTxt, fmt, LatLonConverter.FORMAT.DDDDDD, llType);				
 			} else
 			{
 				result =  LatLonConverter.convertToSignedDDDDDD(latLng, 7, LatLonConverter.DEGREES_FORMAT.None);
@@ -915,7 +951,7 @@ public class ExportToMySQLDB
 		}
 		return convertToSignedNumberFormat(result);
 	}
-	
+
 	protected static LatLonConverter.LATLON getLatLngType(String fldName) throws SQLException
 	{
 		if (fldName.toLowerCase().contains("latitude"))
@@ -955,7 +991,7 @@ public class ExportToMySQLDB
 		Statement stmt = conn.createStatement();
 		try
 		{
-			ResultSet rs = stmt.executeQuery("select SrcLatLongUnit, Lat1Text, Long1Text, Long1Text, Long2Text from "
+			ResultSet rs = stmt.executeQuery("select OriginalLatLongUnit, Lat1Text, Long1Text from "
 					+ "collectionobject co inner join collectingevent ce on ce.collectingeventid = co.collectingeventid "
 					+ "inner join locality l on l.localityid = ce.localityid where co.CollectionObjectID = " + rowId);
 			if (rs.next())
@@ -964,8 +1000,8 @@ public class ExportToMySQLDB
 				vals.add(rs.getString(1));
 				vals.add(rs.getString(2)); 
 				vals.add(rs.getString(3)); 
-				vals.add(rs.getString(4)); 
-				vals.add(rs.getString(5)); 
+				//vals.add(rs.getString(4)); 
+				//vals.add(rs.getString(5)); 
 				return new Pair<Integer, List<String>>(rowId, vals);
 			}
 		} finally
@@ -983,7 +1019,6 @@ public class ExportToMySQLDB
 	protected static String getTabDelimLine(ResultSet rows, Connection conn) throws SQLException
 	{
 		StringBuilder result = new StringBuilder();
-		Pair<Integer, List<String>> latLngInfo = null;
 		for (int c = 1; c <= rows.getMetaData().getColumnCount(); c++)
 		{
 			if (c > 1)
@@ -993,18 +1028,6 @@ public class ExportToMySQLDB
 			String val = rows.getString(c);
 			if (val != null)
 			{
-				String fldName = rows.getMetaData().getColumnName(c);
-				if ("latitude1".equalsIgnoreCase(fldName) || "latitude2".equalsIgnoreCase(fldName)  ||
-						"longitude1".equalsIgnoreCase(fldName) || "longitude2".equalsIgnoreCase(fldName) ||
-						"decimallatitude".equalsIgnoreCase(fldName) || "decimallongitude".equalsIgnoreCase(fldName))
-				{
-					Integer id = rows.getInt(1);
-					if (latLngInfo == null || !latLngInfo.getFirst().equals(id)) 
-					{
-						latLngInfo = getSrcInfo(id, conn);
-					}
-					val = formatLatLng(fldName, rows.getBigDecimal(c), id, latLngInfo.getSecond());
-				}
 				int type = rows.getMetaData().getColumnType(c);
 				// remove tabs and line returns
 				// If link to original specify db model field was available
@@ -1051,6 +1074,253 @@ public class ExportToMySQLDB
 		}
 		return "select " + fldStr + " from `" + tbl + "`";
 	}
+	
+	/**
+	 * @param tableName
+	 * @param keys
+	 * @param latLngFldNames
+	 * 
+	 * Update values for cache table named tableName for rows identified by keys. 
+	 */
+	protected static void adjustLatLngAccuracy(String tableName, List<Integer> keys, List<String> latLngFldNames) {
+		adjustLatLngAccuracy(null, tableName, keys, latLngFldNames);
+	}
+	
+	/**
+	 * @param connection
+	 * @param tableName
+	 * @param keys
+	 * @param latLngFldNames
+	 * 
+	 * Update values for cache table named tableName for rows identified by keys.
+	 */
+	protected static void adjustLatLngAccuracy(Connection connection, String tableName, List<Integer> keys, List<String> latLngFldNames) {
+		String keyQL = "";
+		if (keys != null && keys.size() > 0) {
+			Collections.sort(keys);
+			// compress keys
+			List<Pair<Integer, Integer>> grps = new ArrayList<Pair<Integer, Integer>>();
+			Integer startGrp = -1;
+			Integer endGrp = -1;
+			for (int k = 0; k < keys.size(); k++) {
+				Integer key = keys.get(k);
+				if (endGrp + 1 == key) {
+					endGrp = key;
+				} else {
+					if (endGrp != -1) {
+						grps.add(new Pair<Integer, Integer>(startGrp, endGrp));
+					}
+					startGrp = key;
+					endGrp = key;
+				}
+			}
+			grps.add(new Pair<Integer, Integer>(startGrp, endGrp));
+			String inStr = "";
+			String btwStr = "";
+			int inLen = 0;
+			for (int g = 0; g < grps.size(); g++) {
+				Integer gStart = grps.get(g).getFirst();
+				Integer gEnd = grps.get(g).getSecond();
+				if (gStart == gEnd) {
+					if (inLen > 1000) {
+						inLen = 0;
+						inStr += ") OR ";
+					}
+					if (inLen == 0) {
+						inStr += tableName + "ID IN(";
+					} else {
+						inStr += ",";
+					}
+					inStr += gStart;
+					inLen++;
+				} else {
+					if (!"".equals(btwStr)) {
+						btwStr += " OR ";
+					}
+					btwStr += tableName + "ID BETWEEN " + gStart + " AND "
+							+ gEnd;
+				}
+			}
+			if (!"".equals(inStr)) {
+				inStr += ")";
+			}
+			keyQL = btwStr;
+			if (!"".equals(inStr) && !"".equals(keyQL)) {
+				keyQL += " OR ";
+			}
+			keyQL += inStr;
+			if (!"".equals(keyQL)) {
+				keyQL = " AND (" + keyQL + ")";
+			}
+		}
+		Connection conn = connection != null ? connection : DBConnection.getInstance().createConnection();
+		String sql = "SELECT DISTINCT l.LocalityID, OriginalLatLongUnit, Latitude1, Longitude1, Latitude2, Longitude2, "
+				+ "Lat1Text, Long1Text, Lat2Text, Long2Text FROM " + tableName + " t" 
+				+ " INNER JOIN collectionobject co ON co.CollectionObjectID=t."
+				+ tableName + "ID INNER JOIN collectingevent ce ON ce.CollectingEventID="
+				+ "co.CollectingEventID INNER JOIN locality l ON l.LocalityID = ce.LocalityID "
+				+ "WHERE Latitude1 IS NOT NULL AND Longitude1 IS NOT NULL" + keyQL;
+		List<Object[]> locs = BasicSQLUtils.query(conn, sql);
+		for (Object[] loc : locs) {
+			try {
+				adjustLatLngAccuracy(tableName, conn, loc, latLngFldNames);
+			} catch (SQLException sqlex) {
+				Log.error(sqlex.getMessage());
+			}
+		}
+		if (connection == null) {
+			try {
+				conn.close();
+			} catch (SQLException ex) {
+				log.error(ex);
+			}
+		}
+	}
+	
+	/**
+	 * @param conn
+	 * @param tblName
+	 * @param mappingID
+	 * @return list of length 4 containing names of fields mapped to latitude1, longitude1, latitude2, longitude2
+	 * respectively. For fields that aren't mapped, name will be null
+	 */
+	protected static List<String> getLatLngFldNames(Connection conn, String tblName, Integer mappingID, boolean onlyIfNumericType) {
+		String sql = "select qf.ContextTableIdent, FieldName,  StringId, Position from spexportschemaitemmapping im "
+				+ "inner join spqueryfield qf on qf.spqueryfieldid = im.spqueryfieldid where "
+				+ "im.spexportschemamappingid="
+				+ mappingID
+				+ " and qf.IsDisplay and qf.ContextTableIdent=2 and "
+				+ "(qf.StringId like '%longitude_'  or qf.StringId like '%latitude_')";
+		List<Object[]> latLngRows = BasicSQLUtils.query(conn, sql);
+		Object[] lat1 = null;
+		Object[] lng1 = null;
+		Object[] lat2 = null;
+		Object[] lng2 = null;
+		for (Object[] ll : latLngRows) {
+			String fldId = ll[2].toString();
+			if (fldId.endsWith("latitude1")) {
+				lat1 = ll;
+			} else if (fldId.endsWith("latitude2")) {
+				lat2 = ll;
+			} else if (fldId.endsWith("longitude1")) {
+				lng1 = ll;
+			} else if (fldId.endsWith("longitude2")) {
+				lng2 = ll;
+			}
+		}
+		List<Object[]> latLngFlds = new ArrayList<Object[]>(4);
+		latLngFlds.add(lat1);
+		latLngFlds.add(lng1);
+		latLngFlds.add(lat2);
+		latLngFlds.add(lng2);
+		List<Object[]> cacheFlds = BasicSQLUtils.query(conn, "describe "
+				+ tblName);
+		List<String> latLngFldNames = new ArrayList<String>(latLngFlds.size());
+		for (Object[] latLngFld : latLngFlds) {
+			if (latLngFld != null) {
+				Integer pos = Integer.class.cast(latLngFld[3]);
+				if (pos != null && pos < cacheFlds.size()) {
+					if (!onlyIfNumericType || !cacheFlds.get(pos)[1].toString().startsWith("varchar")) {
+						latLngFldNames.add(cacheFlds.get(pos)[0].toString());
+					}
+				} else {
+					break;
+				}
+			} else if (!onlyIfNumericType) {
+				latLngFldNames.add(null);
+			}
+		}
+		return latLngFldNames;
+	}
+	/**
+	 * @param mappingID
+	 * 
+	 * If cache table for mapping exists, change field types and re-assign values for lat/lng columns.
+	 */
+	public static boolean updateLatLngInCache(Connection conn, Integer mappingID) {
+		boolean result = false;
+		Object[] mapping = BasicSQLUtils.queryForRow(conn, "select MappingName, TimestampExported from spexportschemamapping" +
+				" where SpExportSchemaMappingID=" + mappingID);
+		if (mapping == null || mapping[1] == null) {
+			result = true;
+		} else {
+			String tblName = fixTblNameForMySQL(mapping[0].toString());
+			if (!BasicSQLUtils.doesTableExist(conn, tblName)) {
+				result = true;
+			} else {
+				List<String> latLngFldNames = getLatLngFldNames(conn, tblName, mappingID, true);
+				if (latLngFldNames != null) {
+					if (latLngFldNames.size() == 0) {
+						result = true;
+					} else {
+						boolean typesChanged = true;
+						for (String latLngFldName : latLngFldNames) {
+							if (latLngFldName != null) {
+								if (0 == BasicSQLUtils.update(conn, "ALTER TABLE " + tblName + " MODIFY " + latLngFldName + " VARCHAR(20)")) {
+									typesChanged = false;
+								}
+							}
+						}
+						if (typesChanged) {
+							adjustLatLngAccuracy(conn, tblName, null, latLngFldNames);
+							result = true;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @param tableName
+	 * @param conn
+	 * @param loc
+	 * @throws SQLException
+	 */
+	protected static void adjustLatLngAccuracy(String tableName, Connection conn, Object[] loc, List<String> fldNames) throws SQLException {
+		List<String> geocoords = getAdjustedLatLngAccuracy(loc);
+		String setter = "";
+		for (int i=0; i < fldNames.size(); i++) {
+			String fldName = fldNames.get(i);
+			if (fldName != null) {
+				if (!"".equals(setter)) {
+					setter += ", ";
+				}
+				setter += "t." + fldName + "='" + geocoords.get(i) + "'";
+			}
+		}
+		if (!"".equals(setter)) {
+			String sql = "UPDATE collectingevent ce "
+				+ "INNER JOIN collectionobject co ON co.CollectingEventID = ce.CollectingEventID "
+				+ "INNER JOIN " + tableName + " t ON t." + tableName + "ID=co.CollectionObjectID "
+				+ "SET " + setter
+				+ " WHERE ce.LocalityID=" + loc[0];
+			BasicSQLUtils.update(conn, sql);
+		}
+	}
+	
+	/**
+	 * @param loc
+	 * @return
+	 * @throws SQLException
+	 */
+	protected static List<String> getAdjustedLatLngAccuracy(Object[] loc) throws SQLException {
+		List<String> result = new ArrayList<String>(4);
+		if (loc.length == 6) {
+			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), Integer.class.cast(loc[1]), String.class.cast(loc[4])));
+			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), Integer.class.cast(loc[1]), String.class.cast(loc[5])));
+			result.add(null);
+			result.add(null);
+		} else {
+			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), Integer.class.cast(loc[1]), String.class.cast(loc[6])));
+			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), Integer.class.cast(loc[1]), String.class.cast(loc[7])));
+			result.add(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), Integer.class.cast(loc[1]), String.class.cast(loc[8])));
+			result.add(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), Integer.class.cast(loc[1]), String.class.cast(loc[9])));
+		}
+		return result;
+	}
+	
 	/**
 	 * @param file
 	 * @param headers
@@ -1082,7 +1352,7 @@ public class ExportToMySQLDB
 							listener.loading();
 						}
 						stmt = conn.createStatement();
-						List<FieldMetaData> flds = BasicSQLUtils.getFieldMetaDataFromSchema(conn, tableName);
+						//List<FieldMetaData> flds = BasicSQLUtils.getFieldMetaDataFromSchema(conn, tableName);
 						String sql = getSQLForTabDelimExport(conn, tableName);
 						ResultSet rows = stmt.executeQuery(sql);
 						//no simple way to get record count from ResultSet??

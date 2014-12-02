@@ -185,7 +185,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 55; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 56; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2329,6 +2329,31 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     			errMsgList.add("update error: " + q);
                     			return false;
                     		}
+                    	}
+                    }
+                    frame.incOverall();
+                    
+                    //-----------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.1
+                    //
+                    //--------------------------------------------------------------------------
+                    
+                    //change geocoord field types and values in export cache tables
+                    sql = "select SpExportSchemaMappingID, MappingName from spexportschemamapping";
+                    List<Object[]> mappings = BasicSQLUtils.query(conn, sql);
+                    for (Object[] mapping : mappings) {
+                    	frame.setDesc("Fixing geocoordinate precision for '" + mapping[1] + "' mapping...");
+                    	boolean updateOK = false;
+                    	try {
+                    		updateOK = ExportToMySQLDB.updateLatLngInCache(conn, (Integer)mapping[0]);
+                    	} catch (Exception ex) {
+                    		log.error(ex);
+                    	}
+                    	if (!updateOK) {
+                    		log.error("Unable to fix geocoords for " + mapping[1]+ ". Setting LastExportTime to null to force cache rebuild.");
+                    		BasicSQLUtils.update(conn, "update spexportschemamapping set TimestampExported=null where spexportschemamappingid="
+                    				+ mapping[0]);
                     	}
                     }
                     

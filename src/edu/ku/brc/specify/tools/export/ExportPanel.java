@@ -1164,7 +1164,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			// XXX Assuming specimen-based export - 1 for baseTableId.
 			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src,
 					exportQuery.getName(), dataSrcListeners, includeRecordIds,
-					false, true, 1, firstPass, bulkFilePath);
+					false, true, 1, firstPass, bulkFilePath, theMapping.getSpExportSchemaMappingId());
 
 			firstPass = false;
 		}
@@ -1324,7 +1324,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			
             			//XXX Assuming specimen-based export - 1 for baseTableId.
             			rowsExported += ExportToMySQLDB.exportToTable(loopConn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuild, 
-            					!rebuildExistingTbl, 1, firstPass, bulkFilePath);
+            					!rebuildExistingTbl, 1, firstPass, bulkFilePath, theMapping.getSpExportSchemaMappingId());
             			
             			rebuild = false;
             			firstPass = false;
