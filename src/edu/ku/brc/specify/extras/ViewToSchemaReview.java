@@ -501,7 +501,7 @@ public class ViewToSchemaReview
         };
         dlg.setApplyLabel("Fix All");*/
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", true, CustomDialog.OKCANCEL, pb.getPanel());
         
         //... end removing fix all button
         
