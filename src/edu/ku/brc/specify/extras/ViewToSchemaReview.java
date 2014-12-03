@@ -488,8 +488,10 @@ public class ViewToSchemaReview
 
         //UIHelper.makeTableHeadersCentered(table, false);
         UIHelper.calcColumnWidths(table, null);
-        
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", true, CustomDialog.OKCANCELAPPLY, pb.getPanel()) 
+
+        //Removing fix all button because fix() method is broken (bug #8087)...
+
+        /*CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", true, CustomDialog.OKCANCELAPPLY, pb.getPanel()) 
         {
             @Override
             protected void applyButtonPressed()
@@ -497,7 +499,13 @@ public class ViewToSchemaReview
                 fix(this);
             }
         };
-        dlg.setApplyLabel("Fix All");
+        dlg.setApplyLabel("Fix All");*/
+        
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
+        
+        //... end removing fix all button
+        
+        
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())
