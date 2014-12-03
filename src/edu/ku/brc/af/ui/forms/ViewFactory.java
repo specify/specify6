@@ -62,6 +62,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1635,6 +1636,15 @@ public class ViewFactory
                         ValBrowseBtnPanel bbp = new ValBrowseBtnPanel((ValTextField)textField, 
                                                                       cellField.getPropertyAsBoolean("dirsonly", false), 
                                                                       cellField.getPropertyAsBoolean("forinput", true));
+                        String fileFilter = cellField.getProperty("filefilter");
+                        String fileFilterDesc = cellField.getProperty("filefilterdesc");
+                        String defaultExtension = cellField.getProperty("defaultExtension");
+                        if (fileFilter != null && fileFilterDesc != null) {
+                        	bbp.setUseNativeFileDlg(false);
+                        	bbp.setFileFilter(new FileNameExtensionFilter(fileFilterDesc, fileFilter));
+                        	bbp.setDefaultExtension(defaultExtension);
+                        	//bbp.setNativeDlgFilter(new FileNameExtensionFilter(fileFilterDesc, fileFilter));
+                        }
                         bi.compToAdd = bbp;
                         
                     } else

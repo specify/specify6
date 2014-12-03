@@ -580,7 +580,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Filename"/>
-                    <cell type="field" id="2" name="FilePath" uitype="browse" isrequired="true" cols="30" initialize="forinput=false"/>
+                    <cell type="field" id="2" name="FilePath" uitype="browse" isrequired="true" cols="30" initialize="forinput=false;filefilterdesc=.xls files;filefilter=.xls;defaultExtension=xls"/>
                 </row>
             </rows>
         </viewdef>

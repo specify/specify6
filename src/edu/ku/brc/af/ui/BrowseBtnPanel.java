@@ -74,6 +74,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
     protected FilenameFilter nativeDlgFilter = null;
     protected FileFilter     fileFilter      = null;
     protected String		 currentDir		 = null;
+    protected String         defaultExtension = null;
 
     /**
      * Constructor.
@@ -217,6 +218,19 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         this.fileFilter = fileFilter;
     }
 
+    /**
+     * @param defaultExtension
+     */
+    public void setDefaultExtension(String defaultExtension) {
+    	this.defaultExtension = defaultExtension;
+    }
+    
+    /**
+     * @return
+     */
+    public String getDefaultExtension() {
+    	return defaultExtension;
+    }
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
@@ -425,10 +439,18 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                     currentDir = chooser.getCurrentDirectory().getPath();
                     if (textField instanceof ValTextField)
                     {
-                        ((ValTextField)txtField).setValueWithNotification(chooser.getSelectedFile().getAbsolutePath(), "", true);
+                        String fileText = chooser.getSelectedFile().getAbsolutePath();
+                        if (defaultExtension != null && !fileText.endsWith(defaultExtension)) {
+                        	fileText += "." + defaultExtension;
+                        }
+                        ((ValTextField)txtField).setValueWithNotification(fileText, "", true);
                     } else
                     {
-                        txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                        String fileText = chooser.getSelectedFile().getAbsolutePath();
+                        if (defaultExtension != null && !fileText.endsWith(defaultExtension)) {
+                        	fileText += File.separator + defaultExtension;
+                        }
+                    	txtField.setText(fileText);
                     }
                     txtField.repaint();
                 }
