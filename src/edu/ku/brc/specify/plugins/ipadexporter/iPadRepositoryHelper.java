@@ -82,7 +82,7 @@ public class iPadRepositoryHelper
     //public static final String  baseURLStr = "http://anza.nhm.ku.edu/ipad/";
     //public static final String  baseURLStr = "http://192.168.1.113/ipad/";
     
-    public  static final String  baseURLStr = "http://specify6-prod.nhm.ku.edu/ipad/";
+    public  static final String  baseURLStr = "http://insightspecify.res.ku.edu/ipad/";
     private static final String  scriptName = "handler.php";
 
     private boolean                 networkConnError   = false;
