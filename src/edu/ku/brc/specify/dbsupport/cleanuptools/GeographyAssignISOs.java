@@ -1091,7 +1091,7 @@ public class GeographyAssignISOs
                             tblWriter.log(parentNames[0], 
                                           parentNames[1] != null ? parentNames[1] : nbsp, 
                                           //parentNames[2] != null ? parentNames[2] : nbsp, // Counties 
-                                          oldName, nbsp, nbsp, "Skipped");
+                                          doStopProcessing || doSkipCountry ? nbsp : oldName, nbsp, nbsp, "Skipped");
                             if (rankId > 200)
                             {
                                 doSkipCountry = false;
