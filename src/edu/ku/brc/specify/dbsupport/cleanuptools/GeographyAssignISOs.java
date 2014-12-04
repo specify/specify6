@@ -186,7 +186,7 @@ public class GeographyAssignISOs
     private boolean doUpdateName = false;
     private boolean doMerge      = false;
     private boolean doAddISOCode = true;
-    //private String  isoCodeStr   = "";
+    private String  isoCodeStr   = "";
     private Integer mergeToGeoId = null;
     
     private GeoSearchResultsItem selectedSearchItem = null;
@@ -1105,6 +1105,10 @@ public class GeographyAssignISOs
                         this.doAddISOCode     = true;
                         parentISOCodes[level] = selectedSearchItem.isoCode;
                         updateGeography(geoId, selectedSearchItem.geonameId, selectedSearchItem.name, selectedSearchItem.isoCode, parentNames);
+                    } else if (this.doAddISOCode)
+                    {
+                        parentISOCodes[level] = this.isoCodeStr;
+                        updateGeography(geoId, -1, null, this.isoCodeStr, parentNames);
                     }
                 } else
                 {
@@ -1217,7 +1221,7 @@ public class GeographyAssignISOs
         
         String   oldName   = querySingleObj(GEONAME_SQL + geoId);
         String   sql       = "SELECT asciiname, ISOCode FROM geoname WHERE geonameId = " + geonameId;
-        Object[] row       = queryForRow(sql);
+        Object[] row       = geonameId != -1 ? queryForRow(sql) : null;
         
         if (row == null && !this.doAddISOCode)
         {
@@ -1403,10 +1407,10 @@ public class GeographyAssignISOs
                 doAddISOCode       = dlg.getAddISOCodeCB().isSelected();
                 selectedSearchItem = dlg.getSelectedGeoSearchItem();
                 
-                String textISOCode = dlg.getISOCodeFromTextField();
-                if (textISOCode != null && selectedSearchItem != null && !textISOCode.equals(selectedSearchItem.isoCode))
+                this.isoCodeStr = dlg.getISOCodeFromTextField();
+                if (this.isoCodeStr != null && selectedSearchItem != null && !this.isoCodeStr.equals(selectedSearchItem.isoCode))
                 {
-                    selectedSearchItem.isoCode = textISOCode;
+                    selectedSearchItem.isoCode = this.isoCodeStr;
                 }
 
                 String selectedGeoName = selectedSearchItem != null ? selectedSearchItem.name : null;

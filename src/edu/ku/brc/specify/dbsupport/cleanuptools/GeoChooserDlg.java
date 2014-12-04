@@ -688,6 +688,10 @@ public class GeoChooserDlg extends CustomDialog
         {
             GeoSearchResultsItem item = mainList.getSelectedValue();
             isoCodeTF.setText(item.isoCode);
+            okBtn.setEnabled(StringUtils.isNotEmpty(item.isoCode));
+        } else
+        {
+            okBtn.setEnabled(false);
         }
     }
     

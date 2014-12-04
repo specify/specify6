@@ -174,6 +174,7 @@ public class VerifyCollectionDlg extends CustomDialog
         setSize(800, 650);
         setBounds(0, 0, 650, 650);
         super.createUI();
+        okBtn.setEnabled(false);
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Must be called at the end 'createUI'
     }
     
