@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.StringUtils;
@@ -487,13 +488,13 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
 
         isNetworkError = false;
         
-        System.out.println(writeURLStr);
-        System.out.println("\n------------------------ ");
-        for (String k : valuesMap.keySet())
-        {
-            System.out.println(String.format("[%s] [%s]", k, valuesMap.get(k)));
-        }
-        System.out.println("------------------------\n"+writeURLStr);
+//        System.out.println(writeURLStr);
+//        System.out.println("\n------------------------ ");
+//        for (String k : valuesMap.keySet())
+//        {
+//            System.out.println(String.format("[%s] [%s]", k, valuesMap.get(k)));
+//        }
+//        System.out.println("------------------------\n"+writeURLStr);
         //UIRegistry.showError("Cloud URL: "+writeURLStr); // Visual Debugging
         
         PostMethod post   = new PostMethod(writeURLStr);
@@ -503,10 +504,13 @@ public class IPadCloudJSONImpl implements IPadCloudIFace
             int i = 0;
             for (String key : valuesMap.keySet())
             {
-                System.out.println("key["+key+"] val["+valuesMap.get(key)+"]");
-                parts[i++] = new StringPart(key, valuesMap.get(key), "UTF-8");
+                //System.out.println("key["+key+"] val["+valuesMap.get(key)+"]");
+                String val = valuesMap.get(key);
+                parts[i++] = new StringPart(key, val == null ? "" : val, "UTF-8");
             }
 
+            post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
+            
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
             client.getParams().setParameter("http.protocol.content-charset", "UTF-8");

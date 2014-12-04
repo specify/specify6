@@ -25,7 +25,7 @@
        <!-- <eval name="CountryParentedWrong" desc="%d - Number Counties not parented to a State" fmt="true" cond=">" val="0">
           <![CDATA[SELECT COUNT(*) FROM geography g1 INNER JOIN geography g2 ON g1.ParentID = g2.GeographyID WHERE g1.RankID = 400 AND g2.RankID <> 300 AND g1.GeographyTreeDefID = GEOTREEDEFID]]>
        </eval>  -->
-       <eval name="GeographyISO" desc="%d - Percentage of Continent and Country records missing ISO Codes"  fmt="true" cond=">" val="10">
+       <eval name="GeographyISO" desc="%d - Percentage of Continent and Country records missing ISO Codes"  fmt="true" cond=">" val="98" stop="true">
           <![CDATA[SELECT (CN / SM * 100.0) FROM (SELECT COUNT(*) SM FROM geography WHERE RankID > 0 AND RankID < 300 AND GeographyTreeDefID = GEOTREEDEFID) T1, (SELECT COUNT(*) CN FROM geography WHERE RankID > 0 AND RankID < 300 AND GeographyCode IS NULL AND GeographyTreeDefID = GEOTREEDEFID) T2]]>
        </eval>
        <eval name="SpeciesParentedWrong" desc="%d - Species not parented to a Genus" fmt="true" cond=">" val="0">
