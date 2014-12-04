@@ -55,7 +55,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
     protected ValCheckBox  doUncertCBX;
     protected ValCheckBox  doPolyCBX;
     protected ValCheckBox  displacePolyCBX;
-    protected ValCheckBox  geoLocMapServerCBX;
+    //protected ValCheckBox  geoLocMapServerCBX;
     protected ValComboBox  languageKeyCoBX;
 
     /**
@@ -100,7 +100,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         doPolyCBX          = form.getCompById(GL_DOPOLY);
         displacePolyCBX    = form.getCompById(GL_DISPLACEPOLY);
         languageKeyCoBX    = form.getCompById(GL_LANGKEY);
-        geoLocMapServerCBX = form.getCompById(GL_USEGL_MAPS);
+        //geoLocMapServerCBX = form.getCompById(GL_USEGL_MAPS);
         boolean isFish = Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish);
         
         AppPreferences locPrefs = AppPreferences.getLocalPrefs();
@@ -110,7 +110,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         doUncertCBX.setValue(locPrefs.getBoolean(GL_DOUNCERT, isFish), null);
         doPolyCBX.setValue(locPrefs.getBoolean(GL_DOPOLY, isFish), null);
         displacePolyCBX.setValue(locPrefs.getBoolean(GL_DISPLACEPOLY, isFish), null);
-        geoLocMapServerCBX.setValue(locPrefs.getBoolean(GL_USEGL_MAPS, true), null);
+        //geoLocMapServerCBX.setValue(locPrefs.getBoolean(GL_USEGL_MAPS, true), null);
         //languageKeyCoBX.setValue(locPrefs.get(GL_LANGKEY, null), null);
     }
     
@@ -207,7 +207,7 @@ public class GEOLocatePrefsPanel extends GenericPrefsPanel
         saveCBX(doUncertCBX, GL_DOUNCERT);
         saveCBX(doPolyCBX, GL_DOPOLY);
         saveCBX(displacePolyCBX, GL_DISPLACEPOLY);
-        saveCBX(geoLocMapServerCBX, GL_USEGL_MAPS);
+        //saveCBX(geoLocMapServerCBX, GL_USEGL_MAPS);
         saveCoBX(languageKeyCoBX, GL_LANGKEY);
     }
 }
