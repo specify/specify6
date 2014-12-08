@@ -10,7 +10,6 @@
 		<field name="text4" />
 		<field name="text5" />
 		<field name="text6" />
-		<field name="text14" />
 	</table>
 	<table name="CollectionObject">
 		<field name="timestampModified" />
