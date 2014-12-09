@@ -3,11 +3,9 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PaleoContext;
 
 /**
