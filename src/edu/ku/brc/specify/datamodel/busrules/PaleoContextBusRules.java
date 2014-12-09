@@ -38,9 +38,7 @@ public class PaleoContextBusRules extends BaseBusRules {
                 
             } else
             {
-                Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                int        count      = discipline.getIsPaleoContextEmbedded() ? 1 : 0;
-                isOK = okToDelete(count, new String[] {"collectionobject", "PaleoContextID", "collectingevent", "PaleoContextID",
+                isOK = okToDelete(0, new String[] {"collectionobject", "PaleoContextID", "collectingevent", "PaleoContextID",
                 		"locality", "PaleoContextID"}, id);
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
