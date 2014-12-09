@@ -950,7 +950,20 @@ public class ValComboBox extends JPanel implements UIValidatable,
         {
             if (adapter != null)
             {
-                return selectedObj instanceof PickListItemIFace ? ((PickListItem)selectedObj).getValueObject() : selectedObj;
+            	if (adapter instanceof PickListDBAdapterIFace) {
+                	//
+            		if (!adapter.isReadOnly() && !(selectedObj instanceof PickListItemIFace)) {
+                		adapter.setAutoSaveOnAdd(true);
+                		PickListItemIFace newItem = adapter.addItem(selectedObj.toString(), selectedObj.toString());
+                		adapter.setAutoSaveOnAdd(false);
+                		comboBox.setSelectedItem(newItem);
+                		if (textEditor != null) {
+                			textEditor.setText(selectedObj.toString());
+                		}
+                		return newItem;
+                	}
+                }
+            	return selectedObj instanceof PickListItemIFace ? ((PickListItem)selectedObj).getValueObject() : selectedObj;
             } 
             
             if (selectedObj instanceof TitleValueIFace)
@@ -961,11 +974,12 @@ public class ValComboBox extends JPanel implements UIValidatable,
         return selectedObj;
     }
 
+    
     //-------------------------------------------------
     // AppPrefsChangeListener
     //-------------------------------------------------
 
-    @Override
+	@Override
     public void preferenceChange(final AppPrefsChangeEvent evt)
     {
         if (evt.getKey().equals("ui.formatting.requiredfieldcolor"))

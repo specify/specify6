@@ -2896,6 +2896,11 @@ public class TableViewObj implements Viewable,
                             return item.getTitle();
                         }
                     }
+                    if (!adapter.isReadOnly()) {
+                    	//If a new value has been added in the data form
+                    	//the tableview's adapter probably won't yet contain it.
+                    	return value.toString();
+                    }
                 }
             }
             return "";
