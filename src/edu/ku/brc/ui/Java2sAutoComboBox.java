@@ -258,14 +258,18 @@ public class Java2sAutoComboBox extends JComboBox
                     final int cbxIndex = index;
                     if (shouldSetComboboxIndex(this, cbxIndex))
                     {
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                Java2sAutoComboBox.this.setSelectedIndex(cbxIndex);
-                            }
-                        });
+                        if (SwingUtilities.isEventDispatchThread()) {
+                        	Java2sAutoComboBox.this.setSelectedIndex(cbxIndex);	
+                        } else {
+                        	SwingUtilities.invokeLater(new Runnable()
+                        	{
+                        		@Override
+                        		public void run()
+                        		{
+                        			Java2sAutoComboBox.this.setSelectedIndex(cbxIndex);
+                        		}
+                        	});
+                        }
                     }
                     break;
                 }
