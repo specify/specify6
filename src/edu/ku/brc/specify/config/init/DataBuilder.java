@@ -3324,7 +3324,7 @@ public class DataBuilder
 //            localSession.flush();
             
             //ExportMappingTask imports don't update the schemaLocale tables
-            ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("tdwg_dwcterms.xsd")), "DarwinCoreTDWG", "1.4");
+            ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("tdwg_dwcterms.xsd")), "DarwinCoreTDWG", "2014-11-08");
             
         } catch (Exception ex)
         {
