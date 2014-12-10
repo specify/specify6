@@ -4,7 +4,12 @@
 repeat will be tried -->
 <default_mapping name="modified" specify_field="1.collectionobject.TimestampModified" fieldname="TimestampModified" table_path="1" is_relationship="false" active="true"/>
 <default_mapping name="institutioncode" specify_field="1,23,26,96,94.institution.code" fieldname="code" table_path="1,23,26,96,94" is_relationship="false" active="true"/>
+<default_mapping name="institutionid" specify_field="1,23,26,96,94.institution.altname" fieldname="altname" table_path="1,23,26,96,94" is_relationship="false" active="true"/>
+<default_mapping name="license" specify_field="1,23,26,96,94.institution.copyright" fieldname="copyright" table_path="1,23,26,96,94" is_relationship="false" active="true"/>
+<default_mapping name="accessrights" specify_field="1,23,26,96,94.institution.termsofuse" fieldname="termsofuse" table_path="1,23,26,96,94" is_relationship="false" active="true"/>
 <default_mapping name="collectioncode" specify_field="1,23.collection.code" fieldname="code" table_path="1,23" is_relationship="false" active="true"/>
+<default_mapping name="datasetname" specify_field="1,23.collection.description" fieldname="description" table_path="1,23" is_relationship="false" active="true"/>
+<default_mapping name="basisofrecord" specify_field="1,23.collection.collectiontype" fieldname="collectiontype" table_path="1,23" is_relationship="false" active="true"/>
 <default_mapping name="globaluniqueidentifier" specify_field="1.collectionobject.guid" fieldname="guid" table_path="1" is_relationship="false" active="true"/>
 <default_mapping name="catalognumber" specify_field="1.collectionobject.catalogNumber" fieldname="catalogNumber" table_path="1" is_relationship="false" active="true"/>
 <default_mapping name="occurrenceremarks" specify_field="1.collectionobject.remarks" fieldname="remarks" table_path="1" is_relationship="false" active="true"/>
@@ -80,5 +85,4 @@ repeat will be tried -->
 <default_mapping name="vernacularname" specify_field="1,9-determinations,4.taxon.commonName" fieldname="commonName" table_path="1,9-determinations,4" is_relationship="false" active="false"/>
 <default_mapping name="taxonremarks" specify_field="1,9-determinations,4-preferredTaxon.taxon.remarks" fieldname="remarks" table_path="1,9-determinations,4-preferredTaxon" is_relationship="false" active="false"/>
 <default_mapping name="taxonremarks" specify_field="1,9-determinations,4.taxon.remarks" fieldname="remarks" table_path="1,9-determinations,4" is_relationship="false" active="false"/>
-<default_mapping name="Unmapped:isCurrent" operator="13" specify_field="1,9-determinations.determination.isCurrent" fieldname="isCurrent" table_path="1,9-determinations" is_relationship="false" active="true"/>
 </default_mappings>
