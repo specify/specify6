@@ -1460,9 +1460,8 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="invoiceNumber" uitype="text"/>
-                    <cell type="label" labelfor="21"/>
-                    <cell type="field" id="21" name="originalDueDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="label" labelfor="bd"/>
+                    <cell type="field" id="bd" uitype="plugin" name="this" initialize="name=PartialDateUI;df=borrowDate;tp=borrowDatePrecision" uifieldformatter="Date" colspan="3"/>
                     <cell type="field" id="7" name="isFinancialResponsibility" uitype="checkbox" initialize="editable=true" colspan="3"/>
                 </row>
                 <row>
@@ -1496,6 +1495,11 @@
                 	<cell type="label" labelfor="30"/>
                 	<cell type="field" id="30" name="number2" uitype="text"/>
                 </row> 
+                <row>
+                    <cell type="label" labelfor="21"/>
+                    <cell type="field" id="21" name="originalDueDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                </row>
                 <row>
                 	<cell type="field" id="34" uitype="checkbox" name="yesNo1" label="yesNo1"/>                	
                 	<cell type="field" id="35" uitype="checkbox" name="yesNo2" label="yesNo2"/>
