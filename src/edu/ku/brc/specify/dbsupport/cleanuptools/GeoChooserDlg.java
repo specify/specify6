@@ -108,12 +108,12 @@ public class GeoChooserDlg extends CustomDialog
     private Vector<GeoSearchResultsItem> countryInfo = new Vector<GeoSearchResultsItem>();
     
     private Vector<GeoSearchResultsItem> coInfoList = null;
-    private HashMap<Integer, String> i18NLabelsMap = new HashMap<Integer, String>();
-    private JCheckBox        updateNameCB;
-    private JCheckBox        mergeCB;
-    private JCheckBox        addISOCodeCB;
-    private JTextField       isoCodeTF;
-    private JProgressBar     progressBar = new JProgressBar();
+    private HashMap<Integer, String>     i18NLabelsMap = new HashMap<Integer, String>();
+    private JCheckBox                    updateNameCB;
+    private JCheckBox                    mergeCB;
+    private JCheckBox                    addISOCodeCB;
+    private JTextField                   isoCodeTF;
+    private JProgressBar                 progressBar = new JProgressBar();
     
     private JList<GeoSearchResultsItem>            mainList;
     private DefaultListModel<GeoSearchResultsItem> dataListModel;
@@ -323,6 +323,8 @@ public class GeoChooserDlg extends CustomDialog
         this.contentPanel = pb.getPanel();
         
         super.createUI();
+        
+        okBtn.setEnabled(false);
         
         calcProgress();
         
