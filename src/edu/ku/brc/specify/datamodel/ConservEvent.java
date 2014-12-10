@@ -78,6 +78,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     protected String                     recommendedComments;
     protected Agent                      curator;
     protected Calendar                   curatorApprovalDate;
+    protected Byte						 curatorApprovalDatePrecision;
     
     // Step #3
     protected String                     treatmentReport;
@@ -329,7 +330,24 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
         this.curatorApprovalDate = curatorApprovalDate;
     }
 
+	/**
+	 * @return the completedDatePrecision
+	 */
+    //XXX mysql-specific columnDefinition attribute
+    @Column(name = "CuratorApprovalDatePrecision", unique = false, nullable = true, insertable = true, updatable = true, columnDefinition="tinyint(4) DEFAULT 1")
+	public Byte getCuratorApprovalDatePrecision() {
+        return completedDatePrecision != null ? this.completedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+	}
+
+    
     /**
+	 * @param curatorApprovalDatePrecision the curatorApprovalDatePrecision to set
+	 */
+	public void setCuratorApprovalDatePrecision(Byte curatorApprovalDatePrecision) {
+		this.curatorApprovalDatePrecision = curatorApprovalDatePrecision;
+	}
+
+	/**
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -377,7 +395,8 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     /**
 	 * @return the examDatePrecision
 	 */
-    @Column(name = "ExamDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    //XXX mysql-specific columnDefinition attribute
+    @Column(name = "ExamDatePrecision", unique = false, nullable = true, insertable = true, updatable = true, columnDefinition="tinyint(4) DEFAULT 1")
 	public Byte getExamDatePrecision() {
         return examDatePrecision != null ? this.examDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
 	}
@@ -392,7 +411,8 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
 	/**
 	 * @return the treatmentCompDatePrecision
 	 */
-    @Column(name = "TreatmentCompDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    //XXX mysql-specific columnDefinition attribute
+    @Column(name = "TreatmentCompDatePrecision", unique = false, nullable = true, insertable = true, updatable = true, columnDefinition="tinyint(4) DEFAULT 1")
 	public Byte getTreatmentCompDatePrecision() {
         return treatmentCompDatePrecision != null ? this.treatmentCompDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
 	}
@@ -407,7 +427,8 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
 	/**
 	 * @return the completedDatePrecision
 	 */
-    @Column(name = "CompletedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    //XXX mysql-specific columnDefinition attribute
+    @Column(name = "CompletedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true, columnDefinition="tinyint(4) DEFAULT 1")
 	public Byte getCompletedDatePrecision() {
         return completedDatePrecision != null ? this.completedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
 	}
