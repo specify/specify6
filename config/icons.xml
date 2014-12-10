@@ -223,7 +223,7 @@
     <icon name="Attach16"         file="attachicon16.png" sizes="16"/>
     <icon name="RedDot6x6"        file="reddot.gif" sizes="NonStd"/>
     
-    <icon name="ISOIcon"          file="iso" sizes="all"/>
+    <icon name="ISOIcon"          file="iso.png" sizes="all"/>
     
     <!-- Preferences -->
     <icon name="Preferences"      file="preferences.png"    sizes="all"/>
