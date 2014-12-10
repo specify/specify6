@@ -25048,7 +25048,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="suffix" isHidden="false" isRequired="false">
+      <desc name="suffix" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30843,7 +30843,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="shortDesc" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="shortDesc" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
