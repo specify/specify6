@@ -151,7 +151,9 @@ public class InstitutionConfigDlg extends CustomDialog
      */
     public InstitutionConfigDlg(final IPadCloudIFace cloudHelper, final Integer cloudInstId) throws HeadlessException
     {
-        super((Frame)getTopWindow(), "", true, OKCANCEL, null);
+        super((Frame)getTopWindow(), "", true, OKCANCELHELP, null);
+        
+        setHelpContext("iPadConfig");
         
         collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         inst       = AppContextMgr.getInstance().getClassObject(Institution.class);
