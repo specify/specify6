@@ -672,7 +672,13 @@ public class BuildFromGeonames
      */
     public static Long getLastGeonamesBuiltTime()
     {
-        AppPreferences appPrefs = getGlobalPrefs();
+    	AppPreferences appPrefs = null;
+    	try {
+        	appPrefs = getGlobalPrefs();
+        } catch(Exception ex) {
+        	//in case of errors due to pending schema updates bug #9977
+        	log.error(ex.getMessage());
+        }
         return appPrefs != null ? appPrefs.getLong(GEONAMES_DATE_PREF, null) : null;
     }
     
