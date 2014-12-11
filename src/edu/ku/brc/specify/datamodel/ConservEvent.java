@@ -336,7 +336,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     //XXX mysql-specific columnDefinition attribute
     @Column(name = "CuratorApprovalDatePrecision", unique = false, nullable = true, insertable = true, updatable = true, columnDefinition="tinyint(4) DEFAULT 1")
 	public Byte getCuratorApprovalDatePrecision() {
-        return completedDatePrecision != null ? this.completedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+        return curatorApprovalDatePrecision != null ? this.curatorApprovalDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
 	}
 
     
