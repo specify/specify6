@@ -27,7 +27,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
  */
 public class CollectingEventAttributeBusRules extends BaseBusRules {
 
-	CollectingEventAttribute cea = null;
+	//CollectingEventAttribute cea = null;
 	
     protected KeyListener    nameChangeKL          = null;
 	
@@ -37,7 +37,7 @@ public class CollectingEventAttributeBusRules extends BaseBusRules {
 	 */
 	@Override
 	public void beforeFormFill() {
-		cea = null;
+		//cea = null;
 	}
 
 
@@ -47,22 +47,24 @@ public class CollectingEventAttributeBusRules extends BaseBusRules {
 	 */
 	@Override
 	public void afterFillForm(Object dataObj) {
-		Component activeTax = formViewObj.getControlByName("preferredHostTaxon");
-	    if (activeTax != null)
-	    {
-	        JTextField activeTaxTF = (JTextField)activeTax;
-	        activeTaxTF.setFocusable(false);
-	        if (cea != null && cea.getHostTaxon() != null) {
-	        	Taxon hostAccepted = cea.getHostTaxon().getAcceptedTaxon();
-	        	if (hostAccepted != null) {
-	        		activeTaxTF.setText(hostAccepted.getFullName());
-	        	} else {
-	        		activeTaxTF.setText(cea.getHostTaxon().getFullName());
-	        	}
-	        } else
-	        {
-	            activeTaxTF.setText("");
-	        }
+		if (dataObj != null && dataObj instanceof CollectingEventAttribute) {
+			Component activeTax = formViewObj.getControlByName("preferredHostTaxon");
+			if (activeTax != null)
+			{
+				JTextField activeTaxTF = (JTextField)activeTax;
+				activeTaxTF.setFocusable(false);
+				if (((CollectingEventAttribute)dataObj).getHostTaxon() != null) {
+					Taxon hostAccepted = ((CollectingEventAttribute)dataObj).getHostTaxon().getAcceptedTaxon();
+					if (hostAccepted != null) {
+						activeTaxTF.setText(hostAccepted.getFullName());
+					} else {
+						activeTaxTF.setText(((CollectingEventAttribute)dataObj).getHostTaxon().getFullName());
+					}
+				} else
+				{
+					activeTaxTF.setText("");
+				}
+			}
 	    }
 	}
 

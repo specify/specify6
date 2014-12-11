@@ -88,7 +88,9 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" abbrev="ceatr" id="25" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.CollectingEventAttribute" abbrev="cea" id="92" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectingEventAttribute" abbrev="cea" id="92" searchable="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventAttributeBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" abbrev="clt" id="87" workbench="true" searchable="true">
             <display view="CollectingTripForm" searchdlg="CollectingTripSearch" newobjdlg="CollectingTripDisplay"/>
         </table>
@@ -307,6 +309,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.PaleoContext" abbrev="pc" id="32" searchable="true">
             <display view="PaleoContext" dataobjformatter="PaleoContext"  searchdlg="PaleoContextSearch" newobjdlg="PaleoContextDisplay"/>            
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.PaleoContextBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Permit" abbrev="pr" id="6" searchable="true">
             <display view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
