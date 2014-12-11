@@ -451,7 +451,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 dlg.getOkBtn().setEnabled(isOK);
             }
         });
-        dlg.setOkLabel(getResourceString("NEW_USER"));
+        dlg.setOkLabel(getResourceString("NEW_ACCOUNT"));
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
         centerAndShow(dlg);

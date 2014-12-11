@@ -200,7 +200,7 @@ public class ISOCodeListDlg extends CustomDialog
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,p,2px,f:p:g,4px,p"));
         int y = 1;
         pb.add(pb2.getPanel(), cc.xy(1,1)); y += 2;
-        pb.add(new JLabel("Click on an item in the list:"), cc.xy(1,y)); y += 2;   // I18N
+        pb.add(new JLabel("Double click on an item in the list:"), cc.xy(1,y)); y += 2;   // I18N
         pb.add(createScrollPane(table), cc.xy(1,y)); y += 2;
 
         pb.setDefaultDialogBorder();
