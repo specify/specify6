@@ -3466,9 +3466,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       localPrefs.putBoolean(VERSION_CHECK, true);
                   }
                   
-                  SpecialMsgNotifier smn = new SpecialMsgNotifier();
-                  smn.checkForMessages();
-                  
+                  // For Proxies
+                  boolean isOKToGetSpecialMsgs = AppPreferences.getLocalPrefs().getBoolean("GET_SPECIAL_MSGS", true);
+                  if (isOKToGetSpecialMsgs)
+                  {
+                      SpecialMsgNotifier smn = new SpecialMsgNotifier();
+                      smn.checkForMessages();
+                  }               
                   
                   if (UIRegistry.isEmbedded() && !UIRegistry.isMobile())
                   {
@@ -3524,7 +3528,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                           
                       } catch (Exception ex)
                       {
-                          ex.printStackTrace();
+                          //ex.printStackTrace();
                           log.error(ex);
                           startApp();
                       }
