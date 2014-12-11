@@ -177,10 +177,12 @@ public class InstitutionConfigDlg extends CustomDialog
         
         loadAndPushResourceBundle(iPadDBExporterPlugin.RESOURCE_NAME);
         
+        boolean showURLPanel = AppPreferences.getGlobalPrefs().getBoolean("SHOW_IPAD_URL", false);
+
         setTitle(getResourceString("IPAD_CONFIG_TITLE"));
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px" + (showURLPanel ? ", p,2px,p,10px" : "")));
 
         int y = 1;
         pb.addSeparator(getResourceString("INST_INFO"), cc.xy(1, y)); y+= 2;
@@ -189,8 +191,11 @@ public class InstitutionConfigDlg extends CustomDialog
         pb.addSeparator(getResourceString("CURATOR_NM"), cc.xy(1, y)); y+= 2;
         pb.add(createCuratorPanel(), cc.xy(1, y)); y+= 2;
         
-        pb.addSeparator(getResourceString("CLOUD_URL"), cc.xy(1, y)); y+= 2;
-        pb.add(createCloudURLPanel(), cc.xy(1, y)); y+= 2;
+        if (showURLPanel)
+        {
+            pb.addSeparator(getResourceString("CLOUD_URL"), cc.xy(1, y)); y+= 2;
+            pb.add(createCloudURLPanel(), cc.xy(1, y)); y+= 2;
+        }
         
         pb.addSeparator(getResourceString("IMAGE_SRC_TITLE"), cc.xy(1, y)); y+= 2;
         pb.add(createURLPanel(), cc.xy(1, y)); y+= 2;
@@ -222,7 +227,7 @@ public class InstitutionConfigDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p"));
         
         cloudURLTextFld = UIHelper.createTextField(cloudURLStr);
-        
+                
         pb.add(UIHelper.createI18NFormLabel("CLOUD_URL_TITLE"), cc.xy(1, 1));
         pb.add(cloudURLTextFld, cc.xy(3, 1));
         
