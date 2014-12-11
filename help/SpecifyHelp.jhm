@@ -146,6 +146,9 @@
    <mapID target="GeoCleanUpISOChooser" url="SpecifyHelp/Cleanup/iso_assignments.html"/>
    <mapID target="GeoCleanUpLevelChooser" url="SpecifyHelp/Cleanup/ios_choose_levels.html"/>
    <mapID target="GeoCleanUpFindISOCode" url="SpecifyHelp/Cleanup/ios_find_isocode.html"/>
+   <mapID target="ISOASSIGN" url="SpecifyHelp/Cleanup/iso_assign_main.html"/>
+   <mapID target="iPadDBExporter" url="SpecifyHelp/iPadExporter/ipad_exporter.html"/>
+   <mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_config.html"/>
 
 
 <!-- Index Bookmarks -->
