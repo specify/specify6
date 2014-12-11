@@ -143,12 +143,9 @@
    <mapID target="ATTACHMENTS" url="SpecifyHelp/Data_Entry/attachments.html"/>
    <mapID target="attach_general" url="SpecifyHelp/Data_Entry/attachments_overview.html"/>
    <mapID target="Symbiota" url="SpecifyHelp/Data_Entry/symbiota.html"/>
-   <mapID target="GeoCleanUpISOChooser" url="SpecifyHelp/Cleanup/iso_assignments.html"/>
-   <mapID target="GeoCleanUpLevelChooser" url="SpecifyHelp/Cleanup/ios_choose_levels.html"/>
-   <mapID target="GeoCleanUpFindISOCode" url="SpecifyHelp/Cleanup/ios_find_isocode.html"/>
    <mapID target="ISOASSIGN" url="SpecifyHelp/Cleanup/iso_assign_main.html"/>
    <mapID target="iPadDBExporter" url="SpecifyHelp/iPadExporter/ipad_exporter.html"/>
-   <mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_config.html"/>
+   <mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/>
 
 
 <!-- Index Bookmarks -->
@@ -397,5 +394,9 @@
    <mapID target="paleo_context" url="SpecifyHelp/Data_Entry/Data_Entry.html#paleo_context"/>
    <mapID target="new_connector" url="SpecifyHelp/Data_Entry/symbiota.html#symbiota_connector"/>
    <mapID target="new_connector2" url="SpecifyHelp/Data_Entry/symbiota.html#symbiota_connector2"/>
-   <mapID target="connector_info" url="SpecifyHelp/Data_Entry/symbiota.html#connector_info"/>              
+   <mapID target="connector_info" url="SpecifyHelp/Data_Entry/symbiota.html#connector_info"/> 
+   <mapID target="GeoCleanUpISOChooser" url="SpecifyHelp/Cleanup/iso_assign_main.html#iso_assign_codes"/>
+   <mapID target="GeoCleanUpFindISOCode" url="SpecifyHelp/Cleanup/iso_assign_main.html#iso_find_code"/> 
+   <mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/> 
+   <mapID target="iPadConfig" url="SpecifyHelp/iPadExporter/ipad_exporter.html#configure_export"/>           
 </map>

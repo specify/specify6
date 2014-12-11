@@ -188,8 +188,10 @@
 		<tocitem text="Importing and Exporting Resources" target="Import_Intro">
 			<tocitem text="Import/Export Forms and Reports" target="Import" />
 		</tocitem>
-		<tocitem text="Lifemapper" target="Lifemapper" />
 		<tocitem text="Exporting Data" target="export_data">
+			<tocitem text="Insight iPad App" target="iPadDBExporter" >
+				<tocitem text="Assign ISO Tool" target="ISOASSIGN" />
+			</tocitem>
 		    <tocitem text="Web Portal" target="web_portal" /> 
 			<tocitem text="Web Publishing" target="web_publishing" />
 			<tocitem text="Symbiota" target="Symbiota" />
