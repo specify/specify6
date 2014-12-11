@@ -3,23 +3,6 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Locality and\n Habitat Notes</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Field to record information on locality and habitat where specimen was collected.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -37,6 +20,23 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
+      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Locality and\n Habitat Notes</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Field to record information on locality and habitat where specimen was collected.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
     </items>
     <names/>
     <descs/>
@@ -45,6 +45,20 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
+      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="pt">
+            <version>1</version>
+            <text>Itens Exsiccata</text>
+          </str>
+          <str language="en">
+            <version>0</version>
+            <text>Exsiccata Items</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
       <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -78,20 +92,6 @@
           </str>
         </descs>
         <spExportSchemaItems/>
-      </desc>
-      <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="pt">
-            <version>1</version>
-            <text>Itens Exsiccata</text>
-          </str>
-          <str language="en">
-            <version>0</version>
-            <text>Exsiccata Items</text>
-          </str>
-        </names>
-        <descs/>
       </desc>
     </items>
     <names/>

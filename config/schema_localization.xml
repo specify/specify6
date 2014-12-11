@@ -29900,7 +29900,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
           </str>
         </descs>
       </desc>
-      <desc name="discipline" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="discipline" type="ManyToOne" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -30169,7 +30169,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="scope" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="scope" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
