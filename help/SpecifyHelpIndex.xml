@@ -267,4 +267,6 @@
 		<indexitem text="Symbiota on Task Bar" target="PrefsMisc" />
 		<indexitem text="New Connector" target="new_connector" />
 	</indexitem>
+	<indexitem text="iPad Export" target="iPadConfig" />
+	<indexitem text="ISO Codes" target="ISOASSIGN" />
 </index>
