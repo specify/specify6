@@ -1154,12 +1154,12 @@ public class ExportToMySQLDB
 			}
 		}
 		Connection conn = connection != null ? connection : DBConnection.getInstance().createConnection();
-		String sql = "SELECT DISTINCT l.LocalityID, OriginalLatLongUnit, Latitude1, Longitude1, Latitude2, Longitude2, "
-				+ "Lat1Text, Long1Text, Lat2Text, Long2Text FROM " + tableName + " t" 
+		String sql = "SELECT DISTINCT l.LocalityID, l.OriginalLatLongUnit, l.Latitude1, l.Longitude1, l.Latitude2, l.Longitude2, "
+				+ "l.Lat1Text, l.Long1Text, l.Lat2Text, l.Long2Text FROM " + tableName + " t" 
 				+ " INNER JOIN collectionobject co ON co.CollectionObjectID=t."
 				+ tableName + "ID INNER JOIN collectingevent ce ON ce.CollectingEventID="
 				+ "co.CollectingEventID INNER JOIN locality l ON l.LocalityID = ce.LocalityID "
-				+ "WHERE Latitude1 IS NOT NULL AND Longitude1 IS NOT NULL" + keyQL;
+				+ "WHERE l.Latitude1 IS NOT NULL AND l.Longitude1 IS NOT NULL" + keyQL;
 		List<Object[]> locs = BasicSQLUtils.query(conn, sql);
 		for (Object[] loc : locs) {
 			try {
