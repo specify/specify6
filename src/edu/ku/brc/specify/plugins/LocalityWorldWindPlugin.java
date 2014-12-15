@@ -74,8 +74,10 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  */
 public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implements SelectListener
 {
+	public static boolean worldWindEnabled = false;
+	
     protected Position       lastClickPos  = null;
-    protected WorldWindPanel wwPanel;
+    protected WorldWindPanel wwPanel       = null;
     protected LatLonPoint    latLonPnt     = null;
     
     protected  CustomDialog  worldWindDlg  = null;
@@ -87,9 +89,11 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     {
         super();
         
-        wwPanel = new WorldWindPanel(false);
-        wwPanel.setPreferredSize(new Dimension(900, 700));
-        wwPanel.setZoomInMeters(600000.0);
+        if (worldWindEnabled) {
+        	wwPanel = new WorldWindPanel(false);
+        	wwPanel.setPreferredSize(new Dimension(900, 700));
+        	wwPanel.setZoomInMeters(600000.0);
+        }
     }
     
     /* (non-Javadoc)
@@ -98,7 +102,14 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     @Override
     protected void doButtonAction()
     {
-        final List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
+        if (!worldWindEnabled) {
+        	UIRegistry.showLocalizedMsg("LocalityWorldWindPlugin.WorldWindDisabled");
+        	return;
+        }
+        
+        
+        
+    	final List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
         Pair<BigDecimal, BigDecimal> llPair = latLonPlugin.getLatLon();
         
         if (latLonPlugin != null && llPair != null && llPair.first != null && llPair.second != null)
