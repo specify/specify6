@@ -195,6 +195,10 @@
                         </rows>
                     </cell>
                 </row>
+                <row>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="5" readonly="true"/>
+                </row>
                 <!--<row>
                     <cell type="label" label="RELNAMEHERE:" initialize="align=right;"/>
                     <cell type="field" id="colrel" uitype="plugin" name="this" initialize="name=CollectionRelOneToManyPlugin;relname=xxxx;" colspan="9"/>
@@ -749,7 +753,9 @@
                     <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="13" initialize="btn=true;icon=CollectingEventAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="3" initialize="btn=true;icon=CollectingEventAttachment"/>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3" readonly="true"/>
                 </row>
                 <!--<row>
                  <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" colspan="13"/>
@@ -1035,7 +1041,6 @@
                             <row>
                                 <cell type="label" label=" "/>
                                 <cell type="field" id="georef" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref;geoid=geography;locid=localityName;llid=5" colspan="1"/>
-                                <cell type="field" id="ww" name="this" uitype="plugin" initialize="name=LocalityWorldWind;title=World Wind;watch=5" colspan="1"/>
                                 <cell type="field" id="ge" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth;watch=5" colspan="1"/>
                             </row>
                         </rows>
@@ -1045,7 +1050,9 @@
                     <cell type="separator" label="Attachments" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="9" initialize="btn=true;icon=LocalityAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="3" initialize="btn=true;icon=LocalityAttachment"/>
+                    <cell type="label" labelfor="guid"/>
+                    <cell type="field" id="guid" name="guid" uitype="text" colspan="3" readonly="true"/>
                 </row>
             </rows>
         </viewdef>

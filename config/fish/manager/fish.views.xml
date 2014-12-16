@@ -1041,7 +1041,6 @@
                             <row>
                                 <cell type="label" label=" "/>
                                 <cell type="field" id="georef" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref;geoid=geography;locid=localityName;llid=5" colspan="1"/>
-                                <cell type="field" id="ww" name="this" uitype="plugin" initialize="name=LocalityWorldWind;title=World Wind;watch=5" colspan="1"/>
                                 <cell type="field" id="ge" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth;watch=5" colspan="1"/>
                             </row>
                         </rows>
