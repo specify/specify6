@@ -1219,9 +1219,9 @@ public class ExportToMySQLDB
 		for (Object[] latLngFld : latLngFlds) {
 			if (latLngFld != null) {
 				Integer pos = Integer.class.cast(latLngFld[3]);
-				if (pos != null && pos < cacheFlds.size()) {
-					if (!onlyIfNumericType || !cacheFlds.get(pos)[1].toString().startsWith("varchar")) {
-						latLngFldNames.add(cacheFlds.get(pos)[0].toString());
+				if (pos != null && pos+1 < cacheFlds.size()) {
+					if (!onlyIfNumericType || !cacheFlds.get(pos+1)[1].toString().startsWith("varchar")) {
+						latLngFldNames.add(cacheFlds.get(pos+1)[0].toString());
 					}
 				} else {
 					break;
