@@ -136,21 +136,21 @@ public class CleanupToolsTask extends BaseTask
             
             extendedNavBoxes.clear();
             
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_TOOLS"), GEO, getResourceString("CLNUP_GEO_TOOLS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_TOOLS"), ISOASSIGN_ICON, getResourceString("CLNUP_GEO_TOOLS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     doGeographyISOCodes();
                 }
             })); 
             
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEAR_ISOS"), GEO, getResourceString("CLNUP_GEO_CLEAR_ISOS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_CLEAR_ISOS"), ISOASSIGN_ICON, getResourceString("CLNUP_GEO_CLEAR_ISOS_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     doClearISOs();
                 }
             })); 
         
-            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_ISO_REF"), GEO, getResourceString("CLNUP_GEO_ISO_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
+            geoNavBox.add(NavBox.createBtnWithTT(getResourceString("CLNUP_GEO_ISO_REF"), ISOASSIGN_ICON, getResourceString("CLNUP_GEO_ISO_REF_TT"), IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     ISOCodeListDlg dlg = new ISOCodeListDlg(null, CustomDialog.OK_BTN);
