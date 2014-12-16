@@ -36,9 +36,9 @@
         		 
 		<plugin name="PluginsTask" class="edu.ku.brc.specify.tasks.PluginsTask" addui="true"/>
 		
-        <!-- removing lifemapper task due to problems with NASA whirlwind
+        <!-- removing lifemapper task due to problems with NASA whirlwind -->
         <plugin name="LMTask" class="edu.ku.brc.specify.tasks.LifeMapperTask" addui="true"/>
-        -->
+        <!-- -->
         
         <plugin name="AttachmentsTask" class="edu.ku.brc.specify.tasks.AttachmentsTask" addui="true"/>
         

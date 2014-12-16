@@ -179,7 +179,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         super();
         
         PanelBuilder mainPB;
-        useWorldWind = false; //bug #9965//!AppPreferences.getLocalPrefs().getBoolean("GEOLocate.USEGL_MAPS", true);
+        useWorldWind = /*false; //bug #9965// */!AppPreferences.getLocalPrefs().getBoolean("GEOLocate.USEGL_MAPS", true);
         if (useWorldWind)
             mainPB = new PanelBuilder(new FormLayout("p,10px,500px,10px,f:p:g", "p,2px,p,2px,p,2px,p,2px,p,10px,p,2px,f:p:g"), this); //$NON-NLS-1$ //$NON-NLS-2$
         else

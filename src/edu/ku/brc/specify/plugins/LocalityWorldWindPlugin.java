@@ -74,7 +74,7 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
  */
 public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implements SelectListener
 {
-	public static boolean worldWindEnabled = false;
+	public static boolean worldWindEnabled = true;
 	
     protected Position       lastClickPos  = null;
     protected WorldWindPanel wwPanel       = null;

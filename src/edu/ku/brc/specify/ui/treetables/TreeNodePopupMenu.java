@@ -220,9 +220,10 @@ public class TreeNodePopupMenu extends JPopupMenu
     
     public void setLifeMapperDisplayMenuItem(JMenuItem menuItem)
     {
-    	//Removing lifemapper because of worldwind java 8 issues.
-    	//this.lifeMapperDisplay = menuItem;
-        //selectionSensativeButtons.add(menuItem);
+    	/*Removing lifemapper because of worldwind java 8 issues... */
+    	this.lifeMapperDisplay = menuItem;
+        selectionSensativeButtons.add(menuItem);
+    	/* ...Removing lifemapper because of worldwind java 8 issues */
     }
     
     public void setEditEnabled(boolean enable)

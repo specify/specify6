@@ -176,27 +176,27 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                 }
             });
             popup.add(getDeters, true);
-// Removing lifemapper due to worldwind Java8 issues             
-//            JMenuItem lifeMapperDisplay = new JMenuItem("Lifemapper");
-//            lifeMapperDisplay.addActionListener(new ActionListener()
-//            {
-//                public void actionPerformed(ActionEvent e)
-//                {
-//                    Taxon     taxon     = ttv.getSelectedNode(popup.getList());
-//                    RecordSet recordSet = createColObjRSFromTaxon(taxon);
-//                    final Pair<Taxon, RecordSet> pair = new Pair<Taxon, RecordSet>(taxon, recordSet);
-//                    SwingUtilities.invokeLater(new Runnable() {
-//                        public void run()
-//                        {
-//                            UsageTracker.incrUsageCount("LM.TreeSearchReq");
-//                            CommandDispatcher.dispatch(new CommandAction("Lifemapper", "Display", pair));
-//                        }
-//                    });
-//                }
-//            });
-//            popup.add(lifeMapperDisplay, true);
-//            popup.setLifeMapperDisplayMenuItem(lifeMapperDisplay);
-            
+/* Removing lifemapper due to worldwind Java8 issues.. */             
+            JMenuItem lifeMapperDisplay = new JMenuItem("Lifemapper");
+            lifeMapperDisplay.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    Taxon     taxon     = ttv.getSelectedNode(popup.getList());
+                    RecordSet recordSet = createColObjRSFromTaxon(taxon);
+                    final Pair<Taxon, RecordSet> pair = new Pair<Taxon, RecordSet>(taxon, recordSet);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            UsageTracker.incrUsageCount("LM.TreeSearchReq");
+                            CommandDispatcher.dispatch(new CommandAction("Lifemapper", "Display", pair));
+                        }
+                    });
+                }
+            });
+            popup.add(lifeMapperDisplay, true);
+            popup.setLifeMapperDisplayMenuItem(lifeMapperDisplay);
+/*... Removing lifemapper due to worldwind java8 issues */            
             if (!isEditMode)
             {
                 JMenuItem taxonMenu = new JMenuItem(getResourceString("TTV_NEW_CHILD"));

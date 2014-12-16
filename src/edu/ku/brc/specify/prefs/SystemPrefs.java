@@ -220,12 +220,12 @@ public class SystemPrefs extends GenericPrefsPanel
          });
         
         // Not sure why the form isn't picking up the pref automatically
-//        ValCheckBox useWWChk  = form.getCompById(USE_WORLDWIND);
-//        ValCheckBox hasOGLChk = form.getCompById(SYSTEM_HasOpenGL);
-//        
-//        useWWChk.setValue(localPrefs.getBoolean(USE_WORLDWIND, false), null);
-//        hasOGLChk.setValue(localPrefs.getBoolean(SYSTEM_HasOpenGL, false), null);
-//        hasOGLChk.setEnabled(false);
+        /* remove if worldwind is broken*/ValCheckBox useWWChk  = form.getCompById(USE_WORLDWIND);
+        /* remove if worldwind is broken*/ValCheckBox hasOGLChk = form.getCompById(SYSTEM_HasOpenGL);
+                
+        /* remove if worldwind is broken*/useWWChk.setValue(localPrefs.getBoolean(USE_WORLDWIND, false), null);
+        /* remove if worldwind is broken*/hasOGLChk.setValue(localPrefs.getBoolean(SYSTEM_HasOpenGL, false), null);
+        /* remove if worldwind is broken*/hasOGLChk.setEnabled(false);
         
         //ValCheckBox askCollChk = form.getCompById(ALWAYS_ASK_COLL);
         //askCollChk.setValue(localPrefs.getBoolean(ALWAYS_ASK_COLL, false), null);
@@ -330,14 +330,14 @@ public class SystemPrefs extends GenericPrefsPanel
             chk = form.getCompById("9");
             remotePrefs.putBoolean(SEND_ISA_STATS, (Boolean)chk.getValue());
             
-//            chk = form.getCompById(USE_WORLDWIND);
-//            localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());
+            /* remove if worldwind is broken*/chk = form.getCompById(USE_WORLDWIND);
+            /* remove if worldwind is broken*/localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());
 //            
-//            chk = form.getCompById(SYSTEM_HasOpenGL);
-//            localPrefs.putBoolean(SYSTEM_HasOpenGL, (Boolean)chk.getValue());
+            /* remove if worldwind is broken*/chk = form.getCompById(SYSTEM_HasOpenGL);
+            /* remove if worldwind is broken*/localPrefs.putBoolean(SYSTEM_HasOpenGL, (Boolean)chk.getValue());
 //            
-//            chk = form.getCompById(USE_WORLDWIND);
-//            localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());  
+            /* remove if worldwind is broken*/chk = form.getCompById(USE_WORLDWIND);
+            /* remove if worldwind is broken*/localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());  
             
             //chk = form.getCompById(ALWAYS_ASK_COLL);
             //localPrefs.putBoolean(ALWAYS_ASK_COLL, (Boolean)chk.getValue());
