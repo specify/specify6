@@ -392,6 +392,7 @@
    <mapID target="web_portal" url="SpecifyHelp/QueryBuilder/third_party.html#web_portal"/>
    <mapID target="schema_map" url="SpecifyHelp/QueryBuilder/third_party.html#schema_map"/>
    <mapID target="paleo_context" url="SpecifyHelp/Data_Entry/Data_Entry.html#paleo_context"/>
+   <mapID target="GUID" url="SpecifyHelp/Data_Entry/Data_Entry.html#GUID"/>
    <mapID target="new_connector" url="SpecifyHelp/Data_Entry/symbiota.html#symbiota_connector"/>
    <mapID target="new_connector2" url="SpecifyHelp/Data_Entry/symbiota.html#symbiota_connector2"/>
    <mapID target="connector_info" url="SpecifyHelp/Data_Entry/symbiota.html#connector_info"/> 

@@ -58,7 +58,6 @@
 			<tocitem text="GEOLocate" target="PrefsGeolocate" />
 			<tocitem text="Loan" target="PrefsLoan" />
 			<tocitem text="Login" target="PrefsLogin" />
-			<tocitem text="GUID" target="PrefsGUID" />
 			<tocitem text="MySQL" target="PrefsMySQL" />
 			<tocitem text="Network" target="PrefsNetwork" />
 			<tocitem text="System" target="PrefsSystem" />
@@ -95,7 +94,7 @@
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations" />
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments" />
 				<tocitem text="Paleo Context" target="paleo_context" />
-				<tocitem text="GUID" target="guid" />
+				<tocitem text="GUID" target="GUID" />
 			</tocitem>
 			<tocitem text="Interactions Forms" target="Interactions">
 				<tocitem text="Side Bar Configuration" target="InteractionsConfig" />
