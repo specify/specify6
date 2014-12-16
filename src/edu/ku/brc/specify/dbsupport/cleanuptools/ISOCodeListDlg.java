@@ -288,7 +288,11 @@ public class ISOCodeListDlg extends CustomDialog
             String isoCode = isoList.get(table.getSelectedRow()).isoCode;
             if (conts.contains(isoCode))
             {
-                nextBtn.setEnabled(false);
+                //nextBtn.setEnabled(false);
+                if (inSelectionMode)
+                {
+                    this.okBtn.setEnabled(true);
+                }
                 return;
             }
         }
