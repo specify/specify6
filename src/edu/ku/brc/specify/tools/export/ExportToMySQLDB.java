@@ -1185,7 +1185,9 @@ public class ExportToMySQLDB
 	 * respectively. For fields that aren't mapped, name will be null
 	 */
 	protected static List<String> getLatLngFldNames(Connection conn, String tblName, Integer mappingID, boolean onlyIfNumericType) {
-		String sql = "select qf.ContextTableIdent, FieldName,  StringId, Position from spexportschemaitemmapping im "
+		String sql = "select qf.ContextTableIdent, FieldName,  StringId, "
+				+ "qf.Position - (select count(spqueryfieldid) from spqueryfield q2 where q2.spqueryid=qf.spqueryid and !q2.isdisplay and q2.position < qf.position) " 
+				+ " from spexportschemaitemmapping im "
 				+ "inner join spqueryfield qf on qf.spqueryfieldid = im.spqueryfieldid where "
 				+ "im.spexportschemamappingid="
 				+ mappingID
@@ -1218,7 +1220,7 @@ public class ExportToMySQLDB
 		List<String> latLngFldNames = new ArrayList<String>(latLngFlds.size());
 		for (Object[] latLngFld : latLngFlds) {
 			if (latLngFld != null) {
-				Integer pos = Integer.class.cast(latLngFld[3]);
+				Integer pos = Integer.valueOf(latLngFld[3].toString());
 				if (pos != null && pos+1 < cacheFlds.size()) {
 					if (!onlyIfNumericType || !cacheFlds.get(pos+1)[1].toString().startsWith("varchar")) {
 						latLngFldNames.add(cacheFlds.get(pos+1)[0].toString());
@@ -1287,7 +1289,7 @@ public class ExportToMySQLDB
 				if (!"".equals(setter)) {
 					setter += ", ";
 				}
-				setter += "t." + fldName + "='" + geocoords.get(i) + "'";
+				setter += "t.`" + fldName + "`='" + geocoords.get(i) + "'";
 			}
 		}
 		if (!"".equals(setter)) {
