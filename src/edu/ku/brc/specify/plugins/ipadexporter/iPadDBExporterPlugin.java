@@ -122,7 +122,7 @@ public class iPadDBExporterPlugin extends BaseTask
     private static final String ON_TASKBAR    = "iPadDBExporttask.OnTaskbar";
     private static final int maxRequiredRecs  = 0;
     
-    public static final String DBEXPORTER     = "iPadDBExporter";
+    public static final String IPADEXPORTER  = "iPadDBExporter";
     public static final String EXPORT_DB      = "ExportRecordSet";
     public static final String ISOASSIGN_ICON = "iPadExportTask";
 
@@ -154,12 +154,12 @@ public class iPadDBExporterPlugin extends BaseTask
      */
     public iPadDBExporterPlugin()
     {
-        super(DBEXPORTER, getResourceString("iPadDBExporter"));
+        super(IPADEXPORTER, getResourceString("iPadDBExporter"));
         this.iconName = ISOASSIGN_ICON;
         
         iPadCloud = new IPadCloudJSONImpl();
         
-        CommandDispatcher.register(DBEXPORTER, this);
+        CommandDispatcher.register(IPADEXPORTER, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
         title = "iPad Exporter";
@@ -976,7 +976,7 @@ public class iPadDBExporterPlugin extends BaseTask
     @Override
     public PermissionEditorIFace getPermEditorPanel()
     {
-        return new BasicPermisionPanel(DBEXPORTER, "ENABLE", null, null, null);
+        return new BasicPermisionPanel(IPADEXPORTER, "ENABLE", null, null, null);
     }
 
     /* (non-Javadoc)
@@ -985,7 +985,7 @@ public class iPadDBExporterPlugin extends BaseTask
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(DBEXPORTER))
+        if (cmdAction.isType(IPADEXPORTER))
         {
             if (cmdAction.isAction(EXPORT_DB))
             {
