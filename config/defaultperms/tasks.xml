@@ -168,6 +168,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>ISOASSIGN</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="InfoRequest" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="InfoRequest" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="InfoRequest" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="InfoRequest" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>LithoStratTree</string>
     <hashtable>
       <entry>

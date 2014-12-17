@@ -119,11 +119,12 @@ public class iPadDBExporterPlugin extends BaseTask
     protected static final String RESOURCE_NAME = "ipad_exporter";
     
     // Static Data Members
-    private static final String ON_TASKBAR = "iPadDBExporttask.OnTaskbar";
-    private static final int maxRequiredRecs = 0;
+    private static final String ON_TASKBAR    = "iPadDBExporttask.OnTaskbar";
+    private static final int maxRequiredRecs  = 0;
     
-    public static final String DBEXPORTER = "iPadDBExporter";
-    public static final String EXPORT_DB  = "ExportRecordSet";
+    public static final String DBEXPORTER     = "iPadDBExporter";
+    public static final String EXPORT_DB      = "ExportRecordSet";
+    public static final String ISOASSIGN_ICON = "iPadExportTask";
 
     // Data Members
     private String                  kErrorCreatingAcctMsg  = "";
@@ -154,6 +155,7 @@ public class iPadDBExporterPlugin extends BaseTask
     public iPadDBExporterPlugin()
     {
         super(DBEXPORTER, getResourceString("iPadDBExporter"));
+        this.iconName = ISOASSIGN_ICON;
         
         iPadCloud = new IPadCloudJSONImpl();
         
@@ -190,12 +192,12 @@ public class iPadDBExporterPlugin extends BaseTask
             
             kErrorCreatingAcctMsg = getResourceString("ERROR_CREAT_ACCOUNT");
             
-            createAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("CREATE_ACCT"),     "image", null, null);
-            loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     "image", null, null);
-            iPadInfoSetupBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("IPAD_SETUP"), "image", null, null);
-            removeAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_ACCT"),  "image", null, null);
-            removeDatasetBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_DATASET"),  "image", null, null);
-            logoutBtn         = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGOUT"),    "image", null, null);
+            createAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("CREATE_ACCT"),     ISOASSIGN_ICON, null, null);
+            loginBtn          = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGIN"),     ISOASSIGN_ICON, null, null);
+            iPadInfoSetupBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("IPAD_SETUP"), ISOASSIGN_ICON, null, null);
+            removeAccountBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_ACCT"),  ISOASSIGN_ICON, null, null);
+            removeDatasetBtn  = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("DEL_DATASET"),  ISOASSIGN_ICON, null, null);
+            logoutBtn         = (RolloverCommand)addNavBoxItem(actionNavBox, getResourceString("LOGOUT"),    ISOASSIGN_ICON, null, null);
             exportBtn         = createI18NButton("EXPORT_TO_IPAD");
 
             createAccountBtn.setEnabled(false);
