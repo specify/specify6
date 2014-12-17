@@ -233,7 +233,7 @@
 				<tocitem text="Top 10" target="WorkbenchTop10" />
 			</tocitem>
 			<tocitem text="Special Tools" target="WorkbenchSpecialTools">
-				<tocitem text="BioGeomancer" target="WorkbenchBGM" />
+				<tocitem text="GEOLocate" target="WorkbenchBGM" />
 				<tocitem text="Record Mapping Tool" target="WorkbenchRecordMappingTool" />
 				<tocitem text="Google Earth" target="WorkbenchGoogleEarth" />
 				<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter" />
