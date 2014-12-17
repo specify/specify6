@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JLabel;
@@ -27,7 +28,6 @@ import javax.swing.JTextField;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 
 import org.apache.log4j.Logger;
 
@@ -115,7 +115,7 @@ public class ReportParametersPanel extends JPanel
     {
         try
         {
-            Map<Object, Object> defaultVals = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, null);
+            Map<String, Object> defaultVals = new HashMap<String, Object>();//JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, null);
             PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, r:p, 2dlu, f:85dlu:g, 5dlu", getRowLayoutAndCountParams()), this);
             net.sf.jasperreports.engine.JRParameter[] params = jasperReport.getParameters();
             int currentParam = 0;
@@ -138,7 +138,7 @@ public class ReportParametersPanel extends JPanel
             }
             validate();
         }
-        catch (JRException jrex)
+        catch (Exception jrex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportParametersPanel.class, jrex);

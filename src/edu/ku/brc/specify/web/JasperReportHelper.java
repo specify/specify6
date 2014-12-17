@@ -229,7 +229,7 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
                 {
                     System.out.println("Loaded report...");
                     
-                    Map<Object, Object> parameters = new HashMap<Object, Object>();
+                    Map<String, Object> parameters = new HashMap<String, Object>();
                     
                     parameters.put("RPT_IMAGE_DIR", JasperReportsCache.getImagePath().getAbsolutePath());
                     parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
@@ -246,7 +246,7 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
                         for (Object key : params.keySet())
                         {
                             //System.out.println("key["+key+"]  Val["+params.get(key)+"]");
-                            parameters.put(key, params.get(key));
+                            parameters.put(key.toString(), params.get(key));
                         }
                     }
                     

@@ -395,7 +395,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     
                     if (go)
                     {
-                        Map<Object, Object> parameters = new HashMap<Object, Object>();
+                        Map<String, Object> parameters = new HashMap<String, Object>();
 
                         if (rpp != null)
                         {
@@ -425,7 +425,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                             {
                                 // System.out.println("key["+key+"] Val["+params.get(key)+"]");
                             	if (parameters.get(key) == null) {
-                            		parameters.put(key, params.get(key));
+                            		parameters.put(key.toString(), params.get(key));
                             	}
                             }
                         }
