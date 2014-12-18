@@ -265,7 +265,7 @@ public class ReferenceWork extends DataModelObjBase implements AttachmentOwnerIF
     /**
      *      * Title of reference
      */
-    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length=500)
+    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length=255)
     public String getTitle() {
         return this.title;
     }

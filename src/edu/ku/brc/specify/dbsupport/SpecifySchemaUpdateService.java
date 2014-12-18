@@ -2232,7 +2232,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     //------------------------------------------------------------------
                     // Stretch ReferenceWork.Title and ReferenceWork.Publisher. #9718
-                    alterFieldLength(conn, databaseName, "referencework", "Title", 255, 500);
+                    //alterFieldLength(conn, databaseName, "referencework", "Title", 255, 255);
                     alterFieldLength(conn, databaseName, "referencework", "Publisher", 50, 250);
                     
                     //-------------------------------------------------------------------
