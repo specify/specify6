@@ -6,60 +6,57 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.5.05<br>
-26 August 2014<br>
+Specify 6.6.00<br>
+18 December 2014<br>
 Specify Software Project</h3>
-<br>
-<br>
-<h4>List of changes in Specify 6.5.05<br>
-</h4>
+<p>&nbsp;</p>
+<p><strong>Important Notes</strong></p>
 <ol>
-<li>Paleo Context table can now be linked to Collection Object, Collecting Event, or Locality.</li>
-<li>Paleo Context can be embedded in Collection Object, Collecting Event, or Locality tables, or treated as a 1-to-many with those tables.</li>
-<li>Export to Symbiota capability added to toolbar, for sending DarwinCore format specimen data to a Symbiota portal.</li>
-<li>The Locality table format now displays Locality Name, Geography Full Name, Latitude 1, and Longitude 1 by default.    2014-08-21  (9699)</li>
-<li>Field Notebook Page is now a button on the Field Notebook Page Set sub-form.   2014-08-20  (9648)</li>
-<li>One can now upload attachments to Collecting Event based on unique values in the Collecting Event GUID field.   2014-08-19  (9656)</li>
-<li>Command Line Data Exporter application no longer fails when security is activated for databases.   2014-08-19  (9613)</li>
-<li>Attachment Tools section of documentation now explains how to export attachments.  2014-08-18  (9627)</li>
-<li>View associated collection objects function now works correctly for Chrono- and Lithostratigraphy Trees.  2014-08-18  (9694)</li>
-<li>Field Notebook Pages is now displayed as a button on default data forms. 2014-08-11  (9648)</li>
-<li>One can now use fields in related tables for query combo box lookups. 2014-08-11  (9657)</li>
-<li>Paleo geocoordinate fields, Paleo Latitude and Paleo Longitude, have been added to Locality Detail table. 2014-08-08  (9664)</li>
-<li>When you upload a synonymized taxon, the WorkBench now uploads it as a synonymized taxon rather than adding it as a new taxon.  2014-08-05  (9620)</li>
-<li>SGR tool added to Task Bar preference page.  2014-08-04  (9676)</li>
-<li>Symbiota tool added to Task Bar preference page.  2014-08-04  (9677)</li>
-<li>Data Exporter can now export Reference Work Type.  2014-08-01  (9593)</li>
-<li>Importing attachments via mapping file now works correctly.  2014-08-01  (9641)</li>
-<li>Data fields of type BigDecimal now validate correctly.  2014-08-01  (9614)</li>
-<li>Fields, Position State, Direction, Distance Units, Top Distance, and Bottom Distance moved from Paleo Context to Collection Object Attribute.   2014-08-01  (9652)</li>
-<li>Added string (Text) fields, float (Number) fields, and logical (Yes/No) fields to Paleo Context. 2014-08-01  (9663)</li>
-<li>Added string (Text) fields to Taxon table.   2014-08-01  (9621)</li>
-<li>Added float (Number) fields and logical (Yes/No) fields to the Taxon table.   2014-08-01  (9599)</li>
-<li>Number of Preparations, Number of Specimens by preparation, and Number Localities Georeferenced have been added to the Statistics Display.  2014-08-01  (9624, 9635)</li>
-<li>Can now add/edit attachments in icon and grid view with manager level user.   2014-08-01  (9607)</li>
-<li>Added string (Text) fields, float (Number) fields, and logical (Yes/No) fields to Locality Detail.  2014-07-30  (9651)</li>
-<li>Storage Attachments are now available in the Query Builder.   2014-07-30  (9645)</li>
-<li>Middle Initial displays by default in the drop-down list of Agent query comboboxes.   2014-07-30  (9650)</li>
-<li>Exchange In table has field “Agent Sent to” instead of “Agent Received by” on form.   2014-07-30  (9586)</li>
-<li>When you clone a Collecting Event, one can auto-generate a new station field number.   2014-07-29  (9619)</li>
-<li>The Catalog and Accession Number formats of a database created through the SpWizard will now be the last one selected, even if a format was created.   2014-07-29  (9603)</li>
-<li>Projects with a lot of associated Collection Objects no longer cause those Collection Object forms to load extremely slowly.   2014-07-29  (9381, 9590)</li>
-<li>Can now set numeric Catalog Number length in the setup Wizard.   2014-07-29  (9605)</li>
-<li>Problem with numeric Catalog Numbers with more than the default 9 digits fixed.  2014-07-29  (9604)</li>
-<li>Columns in WorkBench data sets can now be chosen as repeaters in WorkBench-based reports.   2014-06-19  (9602)</li>
-<li>The button to add search results to existing record set no longer gives “An Issue of Concern” message when clicked.   2014-06-12  (9623)</li>
-<li>The field Chrono Strat End from the Paleo Context table is now available in Query Builder.   2014-06-06  (9608)</li>
-<li>The Borrow Return Materials table is now available in the Query Builder. 2014-06-05  (9606)</li>
-<li>The “In” operator in the Query Builder no longer throws an error when used for fields from Tree tables. 2014-06-05  (9589)</li>
-<li>Quantity Exchanged no longer gets cut off on default Exchange data form. 2014-06-05  (9587)</li>
-<li>When an incorrect user password is entered on the login screen or for master key, Specify no longer closes with no warning. 2014-06-05  (9592)</li>
-<li>Query Builder saves more than 1 moved field.  2014-06-05  (9580)</li>
-<li>Scroll bar no longer jumps when unchecking prompt box in query.   2014-06-05  (8952)</li>
-<li>When saving record sets, if the record set name is too long, the user now gets a message warning them the name is too long and will not be saved.   2014-06-05  (9516)</li>
-<li>Custom parameters in reports now show for record sets.   2014-06-21  (9701)</li>
-<li>Life Mapper now displays points on the map for any selected taxa, including taxa with authority data.   2014-06-18  (9696)</li>
-<li>Sorting on Catalog Number is now done numerically instead of alphabetically on series labels and reports.   2014-06-21  (9700)</li>
+  <li>The Specify update package for this release forces a MySQL database schema update. It is critical to make a backup copy of your current data prior to installing Specify 6.6 and updating the Specify database schema. Before updating all users should be logged off of Specify. After the database is updated, each workstation which accesses a shared collection database will require updating to Specify 6.6.</li>
+  <li>Specify 6.6, Specify helper applications, and the Specify  installation package all require the Java 8 SE runtime environment (Java 8 JRE) to be installed at the system level prior to updating and use. Java 8 is available from Oracle Corp: <a href="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html">http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html</a></li>
+</ol>
+<p><strong>New Capabilities</strong></p>
+<ol>
+  <li>iPad Data Export function to create and export a database copies to the Specify iPad cloud server for download and use with Specify Insight on the Apple iPad. </li>
+  <li>Specify 6.6  includes a tool for assigning ISO continent, country and U.S. state codes to locality records to enable Apple iPad map displays.<br>
+  </li>
+</ol>
+<h4>List of Changes</h4>
+<ol>
+  <li>The Specify Data Exporter will now export geo-coordinates with correct precision.  2014-12-16  (Bugzilla 9911)</li>
+<li>External attachment file records which include a &quot;.&quot; (period) character in the attachment filename will no longer cause an error while batch uploading.  2014-12-16  (9884)</li>
+<li>Unused Collection Object Attribute fields are now hidden by default.  2014-12-16  (9702)</li>
+<li>The maximum number of characters allowed in a Specify WorkBench cell has been increased.  2014-12-16  (9617, 9812)</li>
+<li>A PaleoContext record can no longer incorrectly be deleted when another record is linked to it.  2014-12-15  (9711)</li>
+<li>Batch attachment import for Collecting Event / Collector Number now works correctly.  2014-12-12  (9975)</li>
+<li>The Darwin Core Archive export function has been updated to make more fields map automatically.  2014-12-12  (9972, 9781, 9979)</li>
+<li>Pick lists can now be edited properly on popup (sub)forms.  2014-12-12  (9966)</li>
+<li>For collections with host species taxon data, a host's Preferred Taxon Name can be put and viewed on a Collecting Event Attribute  form.  2014-12-12  (9715)</li>
+<li>Conservation Event now offers partial date fields.  2014-12-12  (9553, 9968)</li>
+<li>Entering a new value in an editable pick list no longer requires clicking the &quot;Save&quot; button twice in order to save the form.  2014-12-12  (8629)</li>
+<li>Added new Collecting Trip fields to default CT form.  2014-12-11  (9974, 9835)</li>
+<li>Added Borrow Date and Count fields to Borrow form.  2014-12-11  (9971, 9970, 9883)</li>
+<li>Short Description is now visible in Conservation Description form.  2014-12-11  (9969)</li>
+<li>Fixed a bug that occasionally caused Specify to hang on startup.  2014-12-11  (9756)</li>
+<li>Searches on Host Taxon Tree levels now work in the main collection.  2014-12-11  (9631)</li>
+<li>The Agent table now has a name Suffix field.  2014-12-10  (9905, 9970)</li>
+<li>Group Number is now available for Taxonomic levels.  2014-12-10  (9833)</li>
+<li>The Specify (Database) Setup Wizard no longer assigns the Collection Manager Agent the Title "mr".  2014-12-10  (9828)</li>
+<li>Darwin Core mapping fields are now visible by default in the schema.  2014-12-10  (9782)</li>
+<li>Exporting query results to Excel  no longer requires the file name extension &quot;.xls&quot; to be manually entered.  2014-12-10  (9720)</li>
+<li>Title and Publisher fields in Reference Work table  are now larger.  2014-12-10  (9718)</li>
+<li>Darwin Core (DwC) Export Schema for Symbiota now sets &quot;isCurrent = yes or empty&quot;, as a default.  2014-12-10  (9691)</li>
+<li>When  the Other Identifiers form is displayed in grid mode, one can now add new records.  2014-12-10  (9634)</li>
+<li>Record Sets  now maintain the sort order in which they were originally saved.  2014-12-10  (9626)</li>
+<li>The maximum number of rows per output file supported by the Specify File Splitter has been increased to 25,000.  2014-11-17  (9856)</li>
+<li>The Specify ExpCmdLine application's "ExportForWebPortal" action now exports  data with links to file attachments for the Specify Web Portal.  2014-11-07  (9855)</li>
+<li>The F1 key and Help now work in the Specify Setup Wizard.  2014-11-05  (9850, 9849)</li>
+<li>Field length limits are now checked in the WorkBench when &quot;Highlight Invalid Cells&quot; is set to on.  2014-10-24  (9813)</li>
+<li>An error no longer occurs during attachment processing when saving Collection Objects when the  attachment file name is null.  2014-10-24  (9717)</li>
+<li>Specify WorkBench no longer requires values in the Catalog Number field.  2014-10-22  (9783)</li>
+<li>The WorkBench data model no longer duplicates Collection Object Attribute 1.  2014-10-10  (9722)</li>
+<li>Data Exporter  now exports dates with two digit values for both month and day.  2014-10-08  (9721)</li>
+<li>Query Builder no longer deletes data fields in the Query when saving it using the &quot;Save As&quot; option.  2014-10-08  (9643)</li>
 </ol><br>
 <br>
 <br>
