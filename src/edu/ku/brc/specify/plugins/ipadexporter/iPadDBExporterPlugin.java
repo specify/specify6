@@ -444,7 +444,7 @@ public class iPadDBExporterPlugin extends BaseTask
                 }
             }
         };
-        userNameTF.addKeyListener(new KeyAdapter()
+        KeyAdapter ka = new KeyAdapter()
         {
             @Override
             public void keyTyped(KeyEvent e)
@@ -452,7 +452,9 @@ public class iPadDBExporterPlugin extends BaseTask
                 boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText());
                 dlg.getOkBtn().setEnabled(isOK);
             }
-        });
+        };
+        userNameTF.addKeyListener(ka);
+        passwordTF.addKeyListener(ka);
         dlg.setOkLabel(getResourceString("NEW_ACCOUNT"));
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
