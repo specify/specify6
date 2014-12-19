@@ -141,8 +141,8 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
 	@Override
 	public boolean beforeDeleteCommit(Object dataObj,
 			DataProviderSessionIFace session) throws Exception {
-		boolean result = false;
-		if (super.beforeDeleteCommit(dataObj, session)) {
+		boolean result = super.beforeDeleteCommit(dataObj, session);
+		if (result) {
 			if (dataObj != null) {
 				Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
 				if (discipline != null && discipline.getIsPaleoContextEmbedded()) {
