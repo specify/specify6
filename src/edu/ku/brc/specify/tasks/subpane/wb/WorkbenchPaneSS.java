@@ -596,29 +596,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         //XXX Using the wb ID in the prefname to do pref setting per wb, may result in a bloated prefs file?? 
         doIncrementalValidation = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName + "." + workbench.getId(), true);
         doIncrementalMatching = AppPreferences.getLocalPrefs().getBoolean(wbAutoMatchPrefName + "." + workbench.getId(), false);
-        
-        if (!isReadOnly)
-        {
-        	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
-
-            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    if (uploadToolPanel.isExpanded())
-                    {
-                    	hideUploadToolPanel();
-                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
-                    } else
-                    {
-                    	showUploadToolPanel();
-                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
-                   }
-                }
-            });
-            showHideUploadToolBtn.setEnabled(true);
-        }
-
+       
 
         if (isReadOnly)
         {
@@ -1117,7 +1095,29 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         builder.add(controllerPane,      cc.xy(1,2));
         builder.add(ctrlBtns.getPanel(), cc.xy(3,2));
-        
+
+        if (!isReadOnly)
+        {
+        	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
+        	
+            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    if (uploadToolPanel.isExpanded())
+                    {
+                    	hideUploadToolPanel();
+                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
+                    } else
+                    {
+                    	showUploadToolPanel();
+                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
+                   }
+                }
+            });
+            showHideUploadToolBtn.setEnabled(true);
+        }
+
         builder.add(uploadToolPanel,     cc.xywh(1, 3, 3, 1));
         builder.add(findPanel,           cc.xywh(1, 4, 3, 1));
 

@@ -69,10 +69,14 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 
     protected final WorkbenchPaneSS	wbSS;
     protected List<UploadField> configuredFields           = null;    
+    protected boolean uiCreated = false;
+    protected boolean updateBtnOnUiCreate = false;
+    protected boolean turnOffSelectionsOnUiCreate = false;
     
-    public UploadToolPanel(final WorkbenchPaneSS wbSS, int startingMode)
-    {
-    	this.wbSS = wbSS;
+    /**
+     * 
+     */
+    public void createUI() {
     	//autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
     	autoValidateChk = UIHelper.createI18NCheckBox("");
         autoValidateChk.setSelected(wbSS.isDoIncrementalValidation());
@@ -278,11 +282,36 @@ public class UploadToolPanel extends JPanel implements TimingTarget
             }
         }
 
-        mode = startingMode;
         //setFont(getFont().deriveFont(getFont().getSize() + 2.0F));
         prefSize = super.getPreferredSize();
         contractedSize = new Dimension(prefSize.width,0);
         
+        uiCreated = true;
+        if (turnOffSelectionsOnUiCreate) {
+        	turnOffSelections();
+        	turnOffSelectionsOnUiCreate = false;
+        }
+        if (this.updateBtnOnUiCreate) {
+        	this.updateBtnUI();
+        	this.updateBtnOnUiCreate = false;
+        }
+    }
+    
+    /**
+     * @return
+     */
+    public boolean isUiCreated() {
+    	return uiCreated;
+    }
+    
+    /**
+     * @param wbSS
+     * @param startingMode
+     */
+    public UploadToolPanel(final WorkbenchPaneSS wbSS, int startingMode)
+    {
+    	this.wbSS = wbSS;
+        mode = startingMode;
     }
     
     /**
@@ -432,18 +461,27 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         return getPreferredSize();
     }
 
+    /**
+     * 
+     */
     public void updateBtnUI()
     {
-        prevInvalidCellBtn.setEnabled(wbSS.getInvalidCellCount() > 0);
-        nextInvalidCellBtn.setEnabled(wbSS.getInvalidCellCount() > 0);
-        invalidCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), wbSS.getInvalidCellCount()));
+        if (uiCreated) {
+        	prevInvalidCellBtn.setEnabled(wbSS.getInvalidCellCount() > 0);
+        	nextInvalidCellBtn.setEnabled(wbSS.getInvalidCellCount() > 0);
+        	invalidCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), wbSS.getInvalidCellCount()));
 
-        prevUnmatchedCellBtn.setEnabled(wbSS.getUnmatchedCellCount() > 0);
-        nextUnmatchedCellBtn.setEnabled(wbSS.getUnmatchedCellCount()  > 0);
-        unmatchedCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), wbSS.getUnmatchedCellCount()));
-
+        	prevUnmatchedCellBtn.setEnabled(wbSS.getUnmatchedCellCount() > 0);
+        	nextUnmatchedCellBtn.setEnabled(wbSS.getUnmatchedCellCount()  > 0);
+        	unmatchedCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), wbSS.getUnmatchedCellCount()));
+        } else {
+        	updateBtnOnUiCreate = true;
+        }
     }
     
+    /**
+     * 
+     */
     public void uncheckAutoValidation()
     {
     	this.autoValidateChk.setSelected(false);
@@ -452,6 +490,9 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 		invalidCellCountLbl.setVisible(false);
     }
     
+    /**
+     * 
+     */
     public void uncheckAutoMatching()
     {
     	this.autoMatchChk.setSelected(false);
@@ -472,7 +513,11 @@ public class UploadToolPanel extends JPanel implements TimingTarget
      */
     public void turnOffSelections()
     {
-		autoValidateChk.setSelected(false);
-		autoMatchChk.setSelected(false);
+		if (uiCreated) {
+			autoValidateChk.setSelected(false);
+			autoMatchChk.setSelected(false);
+		} else {
+			turnOffSelectionsOnUiCreate = true;
+		}
     }
 }
