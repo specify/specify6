@@ -85,4 +85,5 @@ repeat will be tried -->
 <default_mapping name="vernacularname" specify_field="1,9-determinations,4.taxon.commonName" fieldname="commonName" table_path="1,9-determinations,4" is_relationship="false" active="false"/>
 <default_mapping name="taxonremarks" specify_field="1,9-determinations,4-preferredTaxon.taxon.remarks" fieldname="remarks" table_path="1,9-determinations,4-preferredTaxon" is_relationship="false" active="false"/>
 <default_mapping name="taxonremarks" specify_field="1,9-determinations,4.taxon.remarks" fieldname="remarks" table_path="1,9-determinations,4" is_relationship="false" active="false"/>
+<default_mapping name="Unmapped:isCurrent" operator="13" specify_field="1,9-determinations.determination.isCurrent" fieldname="isCurrent" table_path="1,9-determinations" is_relationship="false" active="true"/>
 </default_mappings>
