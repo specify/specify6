@@ -203,6 +203,20 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
+      <desc name="remarks" isHidden="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Remarks</text>
+          </str>
+          <str language="pt">
+            <version>1</version>
+            <text>Notas</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
       <desc name="text9" isHidden="false" isUIFormatter="false" pickListName="HabitatType" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
