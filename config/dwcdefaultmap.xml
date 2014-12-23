@@ -15,8 +15,8 @@ repeat will be tried -->
 <default_mapping name="occurrenceremarks" specify_field="1.collectionobject.remarks" fieldname="remarks" table_path="1" is_relationship="false" active="true"/>
 <default_mapping name="recordedby" specify_field="1,10,30-collectors.collector.collectors" fieldname="collectors" table_path="1,10,30-collectors" is_relationship="true" active="true"/>
 <default_mapping name="individualcount" specify_field="1.collectionobject.countAmt" fieldname="countAmt" table_path="1" is_relationship="false" active="false"/>
-<default_mapping name="sex" specify_field="1,93.collectionobjectattribute.text1" fieldname="text1" table_path="1,93" is_relationship="false" active="true"/>
-<default_mapping name="lifestage" specify_field="1,93.collectionobjectattribute.text4" fieldname="text4" table_path="1,93" is_relationship="false" active="true"/>
+<!--<default_mapping name="sex" specify_field="1,93.collectionobjectattribute.text1" fieldname="text1" table_path="1,93" is_relationship="false" active="true"/>-->
+<!--<default_mapping name="lifestage" specify_field="1,93.collectionobjectattribute.text4" fieldname="text4" table_path="1,93" is_relationship="false" active="true"/>-->
 <default_mapping name="reproductivecondition" specify_field="1,93.collectionobjectattribute.text3" fieldname="text3" table_path="1,93" is_relationship="false" active="false"/>
 <default_mapping name="preparations" specify_field="1,63-preparations.preparation.preparations" fieldname="preparations" table_path="1,63-preparations" is_relationship="true" active="true"/>
 <default_mapping name="othercatalognumbers" specify_field="1.collectionobject.altCatalogNumber" fieldname="altCatalogNumber" table_path="1" is_relationship="false" active="true"/>
