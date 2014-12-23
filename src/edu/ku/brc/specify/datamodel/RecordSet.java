@@ -464,7 +464,11 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
     					return o1.compareTo(o2); //use record ids.
     				}
     				if (id1 != null) {
-    					return id1.compareTo(id2);
+    					if (id2 != null) {
+    						return id1.compareTo(id2);
+    					} else {
+    						return 1;
+    					}
     				}
     				return -1;
     			}
