@@ -1302,7 +1302,7 @@ public class GeographyAssignISOs
                     }
         
                     String nbsp = "&nbsp;";
-                    tblWriter.log(parentNames[0], 
+                    tblWriter.log(parentNames[0] != null ? parentNames[0] : oldName, 
                                   parentNames[1] != null ? parentNames[1] : nbsp, 
                                   //parentNames[2] != null ? parentNames[2] : nbsp, // Counties 
                                   doUpdateName ? oldName : nbsp, 
