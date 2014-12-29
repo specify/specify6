@@ -209,6 +209,9 @@ public class BuildFromGeonames
             
             doProgress("Initializing Reference Continents..."); // I18N
             
+            String earthSQL = "UPDATE geography SET GeographyCode='..' WHERE GeographyID = " + earthId;
+            BasicSQLUtils.update(earthSQL);
+            
             int cnt = 0;
             
             //////////////////////
@@ -495,10 +498,11 @@ public class BuildFromGeonames
         String  abbrev   = null;
         String  isoCode  = null;
         
-        if (rankId == 100) // Earth
+        if (rankId == 100) // Continent
         {
             parentId = earthId;
             abbrev   = row.get(3).toString();
+            isoCode  = abbrev;
             
         } else if (rankId == 200) // Country
         {
