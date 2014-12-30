@@ -352,31 +352,37 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * Processes when focus is lost from text field
      * it might be ignore depending on why it was lost
+     *
+     * Ben: I'm disabling focus loss as a trigger for the popup because
+     * it is resulting in spurious dialog openings in Java 8. What happens
+     * is that the field regains focus when the popup is closed, but if "Add" was
+     * selected, then when the new dialog opens, it takes focus back from the field
+     * retriggering the popup.
      */
     protected void focusLostFromTexField()
     {
-        if (selectedId == null && !ignoreFocusLost)
-        {
-            int len = textField.getText().length();
-            if (len > 0)
-            {
-                tabOutSearch = true;
-                doQuery(currentText, currentText);
-            } else
-            {
-                
-                setText(""); //$NON-NLS-1$
-                
-                ///////////////////////////////////////////////////////////////////////////////////
-                // We only want to generate a change event if it once had a value and then it is
-                // cleared and the user tabs to a new control. - rods 02/28/08
-                ///////////////////////////////////////////////////////////////////////////////////
-                if (wasCleared)
-                {
-                    notifyListenersOfChange(TextFieldWithQuery.this);
-                }
-            }
-        }
+//        if (selectedId == null && !ignoreFocusLost)
+//        {
+//            int len = textField.getText().length();
+//            if (len > 0)
+//            {
+//                tabOutSearch = true;
+//                doQuery(currentText, currentText);
+//            } else
+//            {
+//
+//                setText(""); //$NON-NLS-1$
+//
+//                ///////////////////////////////////////////////////////////////////////////////////
+//                // We only want to generate a change event if it once had a value and then it is
+//                // cleared and the user tabs to a new control. - rods 02/28/08
+//                ///////////////////////////////////////////////////////////////////////////////////
+//                if (wasCleared)
+//                {
+//                    notifyListenersOfChange(TextFieldWithQuery.this);
+//                }
+//            }
+//        }
         textField.setCaretPosition(0);
     }
     
