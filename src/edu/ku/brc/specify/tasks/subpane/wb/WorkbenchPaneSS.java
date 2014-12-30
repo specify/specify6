@@ -907,7 +907,27 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         };
         topFrame.addWindowListener(minMaxWindowListener);
-                
+ 
+        if (!isReadOnly)
+        {
+            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    if (uploadToolPanel.isExpanded())
+                    {
+                    	hideUploadToolPanel();
+                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
+                    } else
+                    {
+                    	showUploadToolPanel();
+                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
+                   }
+                }
+            });
+            showHideUploadToolBtn.setEnabled(true);
+        }
+
         // setup the mapping features
         mapFrame = new JFrame();
         mapFrame.setIconImage( IconManager.getImage("AppIcon").getImage());
@@ -1099,23 +1119,23 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (!isReadOnly)
         {
         	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
-        	
-            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    if (uploadToolPanel.isExpanded())
-                    {
-                    	hideUploadToolPanel();
-                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
-                    } else
-                    {
-                    	showUploadToolPanel();
-                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
-                   }
-                }
-            });
-            showHideUploadToolBtn.setEnabled(true);
+        	uploadToolPanel.createUI();
+//            showHideUploadToolBtn = createIconBtn("ValidateWB", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
+//            {
+//                public void actionPerformed(ActionEvent ae)
+//                {
+//                    if (uploadToolPanel.isExpanded())
+//                    {
+//                    	hideUploadToolPanel();
+//                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
+//                    } else
+//                    {
+//                    	showUploadToolPanel();
+//                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
+//                   }
+//                }
+//            });
+//            showHideUploadToolBtn.setEnabled(true);
         }
 
         builder.add(uploadToolPanel,     cc.xywh(1, 3, 3, 1));
