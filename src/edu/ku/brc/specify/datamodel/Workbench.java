@@ -19,9 +19,11 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -581,6 +583,17 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         	//This fixes bug #7721 (for mysterious reasons)
         	wbRow.getWorkbenchRowImages().clear();
         }
+        
+        List<WorkbenchDataItem> blanks = new ArrayList<WorkbenchDataItem>();
+        for (WorkbenchDataItem di : wbRow.getWorkbenchDataItems()) {
+        	if (di.getWorkbenchDataItemId() == null) {
+        		blanks.add(di);
+        	}
+        }
+        for (WorkbenchDataItem di : blanks) {
+        	wbRow.getWorkbenchDataItems().remove(di);
+        }
+        
         workbenchRows.remove(wbRow);
         return wbRow;
     }
