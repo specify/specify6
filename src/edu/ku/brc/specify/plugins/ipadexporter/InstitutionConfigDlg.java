@@ -799,7 +799,10 @@ public class InstitutionConfigDlg extends CustomDialog
                 
                 remotePrefs.put(curatorPref, crTextFld.getText());
                 remotePrefs.put(colMgrPref, cmTextFld.getText());
-                remotePrefs.put(cloudURLPref, cloudURLTextFld.getText());
+                if (cloudURLTextFld != null)
+                {
+                    remotePrefs.put(cloudURLPref, cloudURLTextFld.getText());
+                }
 
                 String fileName = copyInstImage();
                 if (fileName != null)
