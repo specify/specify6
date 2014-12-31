@@ -4156,10 +4156,14 @@ return doLogin(null, null, engageUPPrefs, usrPwdProvider, doAutoClose,
      */
     public static boolean isValidEmailAddress(final String emailAddress)
     {
-        String expression = "^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-        CharSequence inputStr = emailAddress;
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(inputStr);
-        return matcher.matches();
+        if (StringUtils.isNotEmpty(emailAddress))
+        {
+            String expression = "^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+            CharSequence inputStr = emailAddress;
+            Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(inputStr);
+            return matcher.matches();
+        }
+        return false;
     }
 }

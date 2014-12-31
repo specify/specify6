@@ -449,7 +449,8 @@ public class iPadDBExporterPlugin extends BaseTask
             @Override
             public void keyTyped(KeyEvent e)
             {
-                boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText());
+                String  pwd  = new String(passwordTF.getPassword()); 
+                boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText()) && pwd.length() > 4;
                 dlg.getOkBtn().setEnabled(isOK);
             }
         };
