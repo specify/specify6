@@ -572,7 +572,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 public void actionPerformed(ActionEvent e)
                 {
                     currentMode = MODE.Editting;
-                    textWithQuery.setIgnoreFocusLost(true);
                     createEditFrame(false, false, hasViewBtn);
                 }
             };
@@ -587,7 +586,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     //currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
                     currentMode = MODE.NewAndNotEmpty;
-                    textWithQuery.setIgnoreFocusLost(true);
                     createEditFrame(true, false, false);
                 }
             };
@@ -603,7 +601,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     dataObj     = (FormDataObjIFace)ValComboBoxFromQuery.this.getValue();
                     currentMode = MODE.NewAndNotEmpty;
-                    textWithQuery.setIgnoreFocusLost(true);
                     createEditFrame(true, true, false);
                 }
             };

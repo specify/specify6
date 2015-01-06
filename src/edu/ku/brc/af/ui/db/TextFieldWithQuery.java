@@ -40,8 +40,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -100,6 +100,7 @@ import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import sun.awt.CausedFocusEvent;
 
 /**
  * @author rod
@@ -110,7 +111,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class TextFieldWithQuery extends JPanel implements CustomQueryListener
+public class TextFieldWithQuery extends JPanel
 {
     protected static final Logger log = Logger.getLogger(TextFieldWithQuery.class);
     
@@ -126,8 +127,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected JButton                          dbBtn;
     protected boolean                          isPopupShowing = false;
     protected AtomicBoolean                    isDoingQuery   = new AtomicBoolean(false);
-    
-    protected boolean                          ignoreFocusLost = false;
+
+    protected boolean                          ignoreTab      = false;
     protected boolean                          tabOutSearch   = false;
     protected boolean                          doAdjustQuery  = true;
     
@@ -164,7 +165,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected FontMetrics                      fontMetrics         = null;
     
     protected ExternalQueryProviderIFace      externalQueryProvider = null;
-    
+
     /**
      * Constructor.
      */
@@ -214,6 +215,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         setOpaque(false);
         
         textField = new JTextField(10);
+        // we are going to handle focus traversal manually
+        // so that we can do searches when 'tab' is pressed
+        textField.setFocusTraversalKeysEnabled(false);
         setControlSize(textField);
 
         ImageIcon img = IconManager.getIcon("DropDownArrow", IconManager.IconSize.NonStd); //$NON-NLS-1$
@@ -225,48 +229,46 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         pb.add(textField, cc.xy(1,1));
         pb.add(dbBtn, cc.xy(2, 1));
-        
+
+
         textField.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e)
-            {
-                cbxKeyReleased(e);
+            public void keyReleased(KeyEvent e) {
+                if (ignoreTab && e.getKeyCode() == KeyEvent.VK_TAB) {
+                    ignoreTab = false;
+                } else {
+                    cbxKeyReleased(e);
+                }
                 super.keyReleased(e);
             }
+
             @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (popupMenu != null && popupMenu.isVisible())
-                {
+            public void keyPressed(KeyEvent e) {
+                if (popupMenu != null && popupMenu.isVisible()) {
                     popupMenu.setVisible(false);
                 }
                 super.keyReleased(e);
             }
         });
         
-        textField.getDocument().addDocumentListener(new DocumentAdaptor() 
-        {
+        textField.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
-            protected void changed(DocumentEvent e)
-            {
+            protected void changed(DocumentEvent e) {
                 prevEnteredText = textField.getText();
                 boolean oldWasCleared = wasCleared;
-                if (!ignoreDocChange)
-                {
+                if (!ignoreDocChange) {
                     wasCleared = wasCleared || selectedId != null;
 
                     idList.clear();
                     list.clear();
                     selectedId = null;
-                    if (oldWasCleared != wasCleared && wasCleared)
-                    {
+                    if (oldWasCleared != wasCleared && wasCleared) {
                         notifyListenersOfChange(StringUtils.isEmpty(prevEnteredText) ? null : TextFieldWithQuery.this);
                     }
                 }
             }
         });
-        
-        
+
         StringBuilder sb = new StringBuilder();
         for (String k : keyColumns)
         {
@@ -280,42 +282,28 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             sb.append(title);
         }
         textField.setToolTipText(UIRegistry.getFormattedResStr("TFWQ_SEARCHES_FLDS", sb.toString()));
-        
-        textField.addFocusListener(new FocusAdapter() {
 
-            @Override
-            public void focusGained(FocusEvent arg0)
-            {
-                ignoreFocusLost = false;
-                
-                tabOutSearch = false;
-                
-                int len = textField.getText().length();
-                if (len > 0)
-                {
-                    textField.setCaretPosition(0);
-                    textField.selectAll();
-                }
-                
-                wasCleared = false;
-                super.focusGained(arg0);
-            }
 
+        textField.addFocusListener(new FocusListener() {
             @Override
-            public void focusLost(FocusEvent event)
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        focusLostFromTexField();
+            public void focusGained(FocusEvent e) {
+                if (e instanceof CausedFocusEvent) {
+                    switch (((CausedFocusEvent) e).getCause()) {
+                        case TRAVERSAL:
+                        case TRAVERSAL_BACKWARD:
+                        case TRAVERSAL_FORWARD:
+                        case TRAVERSAL_UP:
+                        case TRAVERSAL_DOWN:
+                            ignoreTab = true;
                     }
-                });
-                super.focusLost(event);
+                }
             }
-            
+
+            @Override
+            public void focusLost(FocusEvent e) {
+            }
         });
-        
+
         dbBtn.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e)
@@ -326,14 +314,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 }
                 
                 log.debug("currentText: "+currentText);
-                doQuery(currentText, currentText);
+                doQuery(currentText, currentText, 0);
             }
         });
     }
     
-    /**
-     * @param isReadOnlyMode the isReadOnlyMode to set
-     */
+
     public void setReadOnlyMode()
     {
         this.isReadOnlyMode = true;
@@ -341,51 +327,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         dbBtn.setVisible(false);
     }
 
-    /**
-     * @param ignoreFocusLost the ignoreFocusLost to set
-     */
-    public void setIgnoreFocusLost(boolean ignoreFocusLost)
-    {
-        this.ignoreFocusLost = ignoreFocusLost;
-    }
 
-    /**
-     * Processes when focus is lost from text field
-     * it might be ignore depending on why it was lost
-     *
-     * Ben: I'm disabling focus loss as a trigger for the popup because
-     * it is resulting in spurious dialog openings in Java 8. What happens
-     * is that the field regains focus when the popup is closed, but if "Add" was
-     * selected, then when the new dialog opens, it takes focus back from the field
-     * retriggering the popup.
-     */
-    protected void focusLostFromTexField()
-    {
-//        if (selectedId == null && !ignoreFocusLost)
-//        {
-//            int len = textField.getText().length();
-//            if (len > 0)
-//            {
-//                tabOutSearch = true;
-//                doQuery(currentText, currentText);
-//            } else
-//            {
-//
-//                setText(""); //$NON-NLS-1$
-//
-//                ///////////////////////////////////////////////////////////////////////////////////
-//                // We only want to generate a change event if it once had a value and then it is
-//                // cleared and the user tabs to a new control. - rods 02/28/08
-//                ///////////////////////////////////////////////////////////////////////////////////
-//                if (wasCleared)
-//                {
-//                    notifyListenersOfChange(TextFieldWithQuery.this);
-//                }
-//            }
-//        }
-        textField.setCaretPosition(0);
-    }
-    
     
     /**
      * @return the prevEnteredText
@@ -408,21 +350,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         this.cachedPrevText  = prevEnteredText;
     }
 
-    /**
-     * @return the cachedPrevText
-     */
-    public String getCachedPrevText()
-    {
-        return cachedPrevText;
-    }
-
-    /**
-     * @param cachedPrevText the cachedPrevText to set
-     */
-    public void setCachedPrevText(String cachedPrevText)
-    {
-        this.cachedPrevText = cachedPrevText;
-    }
 
     /**
      * @return the format
@@ -432,13 +359,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         return format;
     }
 
-    /**
-     * @return the fieldFormatterName
-     */
-    public String getFieldFormatterName()
-    {
-        return fieldFormatterName;
-    }
 
     /**
      * @return the uiFieldFormatter
@@ -485,7 +405,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
 
     /**
-     * @param listChangeListener the listChangeListener to set
+     * @param l the listChangeListener to set
      */
     public void addListSelectionListener(ListSelectionListener l)
     {
@@ -493,7 +413,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
 
     /**
-     * @param listChangeListener the listChangeListener to set
+     * @param l the listChangeListener to set
      */
     public void removeListSelectionListener(ListSelectionListener l)
     {
@@ -518,10 +438,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             return;
         }
-        //log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB+"   "+ KeyEvent.VK_CONTROL);
-        //log.debug(Integer.toHexString(ev.getKeyCode()) +"  "+ KeyEvent.VK_TAB+"  "+ KeyEvent.VK_CONTROL);
-        if (ev.getKeyCode() == KeyEvent.VK_TAB || 
-            ev.getKeyCode() == KeyEvent.VK_SHIFT || 
+        if (ev.getKeyCode() == KeyEvent.VK_SHIFT ||
             ev.getKeyCode() == KeyEvent.VK_LEFT || 
             ev.getKeyCode() == KeyEvent.VK_RIGHT || 
             ev.getKeyCode() == KeyEvent.VK_CONTROL || 
@@ -535,39 +452,44 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             currentText = uiFieldFormatter.formatFromUI(currentText).toString();
         } 
-        //System.out.println(currentText);
-        
-        //log.debug("hasNewText "+hasNewText+"    len: "+currentText.length());
         if (currentText.length() == 0 || !hasNewText)
         {
-            if (ev.getKeyCode() != JAutoCompComboBox.SEARCH_KEY &&
-                    ev.getKeyCode() != KeyEvent.VK_DOWN )
-            {
-                if (ev.getKeyCode() != KeyEvent.VK_ENTER)
-                {
-                    // Add variable to track whether it once had a value and now it does not rods - 02/28/08
-                    wasCleared = selectedId != null;
-                    
-                    idList.clear();
-                    list.clear();
-                    selectedId = null;
-                    
-                    // 02/09/08 - This should not be done here - rods
-                    // The reason is, that we may have added something only to remove
-                    // before leaving the control. So we should never send the notification
-                    // just because we delete the contents. (see wasCleared above)
-                    
-                    /*if (listSelectionListeners != null)
-                    {
-                        notifyListenersOfChange(TextFieldWithQuery.this);
-                    }*/
-                    //log.debug("setting hasNewText to true"); //$NON-NLS-1$
-                    hasNewText  = true;
+            if (ev.getKeyCode() == KeyEvent.VK_TAB) {
+                if (ev.isShiftDown()) {
+                    textField.transferFocusBackward();
+                } else {
+                    textField.transferFocus();
                 }
-            } else
-            {
-                showPopup(); // add only
                 return;
+            }
+
+            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
+                    ev.getKeyCode() == KeyEvent.VK_DOWN)
+            {
+                        showPopup(0); // add only
+                        return;
+            }
+
+            if (ev.getKeyCode() != KeyEvent.VK_ENTER)
+            {
+                // Add variable to track whether it once had a value and now it does not rods - 02/28/08
+                wasCleared = selectedId != null;
+
+                idList.clear();
+                list.clear();
+                selectedId = null;
+
+                // 02/09/08 - This should not be done here - rods
+                // The reason is, that we may have added something only to remove
+                // before leaving the control. So we should never send the notification
+                // just because we delete the contents. (see wasCleared above)
+
+                /*if (listSelectionListeners != null)
+                {
+                    notifyListenersOfChange(TextFieldWithQuery.this);
+                }*/
+                //log.debug("setting hasNewText to true"); //$NON-NLS-1$
+                hasNewText  = true;
             }
         } else
         {
@@ -575,18 +497,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             //log.debug("setting hasNewText to true");
         }
         
-        /*System.err.println("["+prevEnteredText+"]["+searchedForText+"]");
-        if (prevEnteredText != null && searchedForText != null && !prevEnteredText.equals(searchedForText))
-        {
-            wasCleared = wasCleared || selectedId != null;
-            
-            idList.clear();
-            list.clear();
-            selectedId = null;
-        }*/
 
         if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
-            ev.getKeyCode() == KeyEvent.VK_DOWN)
+                ev.getKeyCode() == KeyEvent.VK_TAB ||
+                ev.getKeyCode() == KeyEvent.VK_DOWN)
         {
             String origText = textField.getText();
             String text     = origText;
@@ -596,7 +510,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
             text = StringUtils.replace(text, "'", "\'");
             text = StringUtils.replace(text, "\"", "\\\"");
-            doQuery(text, origText);
+
+            // direction of focus change 1: forward 0: none -1: backwards
+            int focusChange = (ev.isShiftDown() ? -1 : 1) *
+                    (ev.getKeyCode() == KeyEvent.VK_TAB ? 1 : 0);
+            doQuery(text, origText, focusChange);
         }
     }
     
@@ -622,12 +540,18 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
     /**
      * @param mi
+     * @param advanceFocus
      */
-    protected void itemSelected(final JMenuItem mi)
+    protected void itemSelected(final JMenuItem mi, int advanceFocus)
     {
         hasNewText = false;
         //log.debug("setting hasNewText to true");
-        
+        if (advanceFocus != 0) SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                transferFocus(advanceFocus);
+            }
+        });
+
         String selectedStr = mi.getText();
         int inx = popupMenu.getComponentIndex(mi);
         if (inx > -1)
@@ -646,9 +570,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
     
     /**
-     * 
+     *
+     * @param advanceFocus
      */
-    protected void showPopup()
+    protected void showPopup(int advanceFocus)
     {
         if (!isEnabled())
         {
@@ -661,7 +586,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    itemSelected((JMenuItem)e.getSource());
+                    itemSelected((JMenuItem)e.getSource(), advanceFocus);
                 }
             };
             
@@ -675,8 +600,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 public void popupMenuCanceled(PopupMenuEvent e)
                 {
                     isPopupShowing  = false;
-                    ignoreFocusLost = false;
-                    
+
                     cachedPrevText = null;
                     
                     if (selectedId == null)
@@ -688,8 +612,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
                 {
                     isPopupShowing  = false;
-                    ignoreFocusLost = false;
-                    
+
                     cachedPrevText = prevEnteredText;
                     
                     if (selectedId == null)
@@ -743,7 +666,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 {
                     public void run()
                     {
-                        ignoreFocusLost = true;
                         popupMenu.setInvoker(TextFieldWithQuery.this);
                         popupMenu.show(TextFieldWithQuery.this, location.x, location.y+size.height);
                         Dimension popupSize = popupMenu.getPreferredSize();
@@ -962,8 +884,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * Process the results from the search
      * @param customQuery the query
+     * @param advanceFocus
      */
-    private void processResults(final CustomQueryIFace customQuery)
+    private void processResults(final CustomQueryIFace customQuery, int advanceFocus)
     {
         searchedForText = prevEnteredText;
         
@@ -972,7 +895,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             if (doAddAddItem)
             {
-                showPopup();
+                showPopup(advanceFocus);
             }
             
         } else
@@ -1092,11 +1015,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         
                 } else if (returnCount > popupDlgThreshold)
                 {
-                    showDialog();
+                    showDialog(advanceFocus);
                     
                 } else
                 {
-                    showPopup();
+                    showPopup(advanceFocus);
                 }
                 
             } else
@@ -1132,9 +1055,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
     
     /**
-     * 
+     *
+     * @param advanceFocus
      */
-    protected void showDialog()
+    protected void showDialog(int advanceFocus)
     {
         DefaultListModel<String> model = new DefaultListModel<String>();
         if (doAddAddItem)
@@ -1249,12 +1173,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 selectedId = idList.get(inx);
                 setText(list.get(inx));
             }
-            
+
             SwingUtilities.invokeLater(new Runnable()
             {
                 @Override
                 public void run()
                 {
+                    transferFocus(advanceFocus);
                     notifyListenersOfChange(listBox);
                 }
             });
@@ -1265,12 +1190,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             setText(""); //$NON-NLS-1$
         }
     }
+
+    protected void transferFocus(int direction) {
+        if (direction > 0) textField.transferFocus();
+        if (direction < 0) textField.transferFocusBackward();
+    }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
-     */
-    @Override
-    public void exectionDone(final CustomQueryIFace customQuery)
+    protected void queryDone(final CustomQueryIFace customQuery, int advanceFocus)
     {
         if (isDoingCount.get())
         {
@@ -1282,7 +1208,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             if (returnCount != null && returnCount == 0)
             {
-                processResults(new EmptyCustomQuery(customQuery));
+                processResults(new EmptyCustomQuery(customQuery), advanceFocus);
                 isDoingQuery.set(false);
                 return;
             }
@@ -1302,30 +1228,32 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
             
             //log.debug(sqlStr);
-            JPAQuery jpaQuery = new JPAQuery(sqlStr, this);
+            JPAQuery jpaQuery = new JPAQuery(sqlStr, new CustomQueryListener() {
+                @Override
+                public void exectionDone(CustomQueryIFace customQuery) {
+                    queryDone(customQuery, advanceFocus);
+                }
+
+                @Override
+                public void executionError(CustomQueryIFace customQuery) {
+                    isDoingQuery.set(false);
+                }
+            });
             isDoingCount.set(false);
             jpaQuery.start();
             
         } else
         {
-            processResults(customQuery);
+            processResults(customQuery, advanceFocus);
             isDoingQuery.set(false);
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
-     */
-    @Override
-    public void executionError(final CustomQueryIFace customQuery)
-    {
-        isDoingQuery.set(false);
-    }
 
     /**
      * Fill the the drop down with the list from the query
      */
-    protected void doQuery(final String newEntryStrArg, final String origTextStr)
+    protected void doQuery(final String newEntryStrArg, final String origTextStr, int focusChange)
     {
         UIRegistry.getStatusBar().setText("");
         if (StringUtils.isEmpty(newEntryStrArg))
@@ -1373,23 +1301,33 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     }
                     else
                     {
-                    	JPAQuery jpaQuery = new JPAQuery(newSql, this);
+                    	JPAQuery jpaQuery = new JPAQuery(newSql, new CustomQueryListener() {
+                            @Override
+                            public void exectionDone(CustomQueryIFace customQuery) {
+                                queryDone(customQuery, focusChange);
+                            }
+
+                            @Override
+                            public void executionError(CustomQueryIFace customQuery) {
+                                isDoingQuery.set(false);
+                            }
+                        });
                     	jpaQuery.setUnique(true);
                     	jpaQuery.setData(newEntryStr);
                     	jpaQuery.start();
                     }
                 } else if (returnCount != null && returnCount > popupDlgThreshold)
                 {
-                    showDialog();
+                    showDialog(focusChange);
                     
                 } else
                 {
-                    showPopup();
+                    showPopup(focusChange);
                 }
             }
         } else
         {
-            showPopup(); // add only
+            showPopup(focusChange); // add only
         }
     }
     
@@ -1451,7 +1389,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     {
         return textField;
     }
-    
+
     //--------------------------------------------------------------------------
     // ExternalQueryProviderIFace
     //--------------------------------------------------------------------------
