@@ -641,9 +641,15 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                     {
                         DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
                         setter.setFieldValue(parentDataObject, fldName, null);
-                        // in this case, most likely, the Collection isn't even loaded since the parent object probably isn't visible in a form
-                        // calling removeFromCollection() would trigger a LazyInstantiationException
-//                        removeFromCollection(ref, otherSide, this);
+                        // in this case, the Collection may not be loaded
+                        // calling removeFromCollection() could trigger a LazyInstantiationException
+                        String  otherSide = rel.getOtherSide();
+                        try {
+                        	removeFromCollection(ref, otherSide, this);
+                        } catch (org.hibernate.LazyInitializationException ex) {
+                        	//ignore 
+                        	log.info(ex);
+                        }
                     }
                 }
             }

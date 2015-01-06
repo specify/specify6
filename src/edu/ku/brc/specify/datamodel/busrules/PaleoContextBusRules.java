@@ -3,9 +3,11 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PaleoContext;
 
 /**
@@ -14,6 +16,7 @@ import edu.ku.brc.specify.datamodel.PaleoContext;
  */
 public class PaleoContextBusRules extends BaseBusRules {
     
+	
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
@@ -36,7 +39,10 @@ public class PaleoContextBusRules extends BaseBusRules {
                 
             } else
             {
-                isOK = okToDelete(0, new String[] {"collectionobject", "PaleoContextID", "collectingevent", "PaleoContextID",
+                int count = formViewObj.isSubform() 
+                			? (AppContextMgr.getInstance().getClassObject(Discipline.class).getIsPaleoContextEmbedded() ? 1 : 0)
+                			: 0;
+                isOK = okToDelete(count, new String[] {"collectionobject", "PaleoContextID", "collectingevent", "PaleoContextID",
                 		"locality", "PaleoContextID"}, id);
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
@@ -47,4 +53,6 @@ public class PaleoContextBusRules extends BaseBusRules {
         }
     }
 
+
+    
 }
