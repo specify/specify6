@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.*;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -49,107 +50,320 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
  */
 public class ParsePaleo
 {
+    private DBConnection dbConn        = null;
+    private Connection   dbS3Conn      = null;
+    private boolean      isInitialized = false;
+    private TreeNode     rootNode      = null;
+    
     private HashMap<String, Integer> strats = new HashMap<String, Integer>();
     private HashMap<String, Integer> ages   = new HashMap<String, Integer>();
-    private String stratKeys[];
+    private String                   stratKeys[];
+    
+    private HashMap<String, Integer> taxonNameToId = new HashMap<String, Integer>();
+    private PreparedStatement taxonInsertStmt = null;
 
-    private void createStrats(final Connection dbS3Conn)
+    /**
+     * 
+     */
+    private void startUp()
     {
         try
         {
-            String pStr = "INSERT INTO strat (_id, name) VALUES(?,?)";
-            PreparedStatement pStmt = dbS3Conn.prepareStatement(pStr);
-
-            stratKeys = new String[] {
-                    "strat_occ",
-                    "strat_occ_epleisto",
-                    "strat_occ_mpleisto",
-                    "strat_occ_lpleisto",
-                    "strat_occ_eplio",
-                    "strat_occ_lplio",
-                    "strat_occ_emio",
-                    "strat_occ_mmio",
-                    "strat_occ_lmio",
-                    };
-            String stratTitles[] = {
-                    "Unknown",
-                    "Early Pleistocene",
-                    "Middle Pleistocene",
-                    "Late Pleistocene",
-                    "Early Pliocene",
-                    "Late Pliocene",
-                    "Early Miocene",
-                    "Middle Miocene",
-                    "Late Miocene",
-                    };
+            dbConn = DBConnection.getInstance();
+            dbConn.setUsernamePassword("root", "root");
+            dbConn.setDriver("com.mysql.jdbc.Driver");
+            dbConn.setConnectionStr("jdbc:mysql://localhost/");
+            dbConn.setDatabaseName("test1");
             
-            for (int i=0;i<stratKeys.length;i++)
+            dbConn.getConnection().setCatalog("digitalatlas");
+        
+            Connection conn = dbConn.getConnection();
+            BasicSQLUtils.setDBConnection(conn);
+            
+            File srcFile = new File("/Users/rods/databases/digitalatlas.sqlite");
+            File dstFile = new File("/Users/rods/databases/daal.sqlite");
+            FileUtils.copyFile(srcFile, dstFile, true);
+            
+            Class.forName("org.sqlite.JDBC");
+            dbS3Conn = DriverManager.getConnection("jdbc:sqlite:" + dstFile.getAbsolutePath());
+            dbS3Conn.setAutoCommit(false);
+            
+            String pStr = "INSERT INTO taxon (name, commonname, parentId, rankId) VALUES(?,?,?,?)";
+            taxonInsertStmt = dbS3Conn.prepareStatement(pStr);
+
+            isInitialized = true;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void shutdown()
+    {
+        try
+        {
+            dbS3Conn.close();
+            taxonInsertStmt.close();
+            
+        } catch (SQLException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        DBConnection.shutdown();
+    }
+    
+    /**
+     * @param parentNode
+     * @param names
+     * @param ranks
+     * @param level
+     * @throws SQLException
+     */
+    private void buildTree(final TreeNode parentNode, String[] names, int[] ranks, final int level, final String common, final int len) throws SQLException
+    {
+        if (isNotEmpty(names[level]))
+        {
+            String commonname = level+1 == len ? common : null;
+            TreeNode childNode = parentNode.addKid(names[level], ranks[level], commonname);
+            if (childNode != null && level+1 < ranks.length)
             {
-                strats.put(stratKeys[i], i);
-                pStmt.setInt(1, i);
-                pStmt.setString(2, stratTitles[i]);
-                if (pStmt.executeUpdate() == 0)
+                buildTree(childNode, names, ranks, level+1, common, len);
+            }
+        }
+    }
+    
+    /**
+     * @param parentNode
+     * @param names
+     * @param level
+     * @param len
+     * @return
+     */
+    private TreeNode getTreeNode(final TreeNode parentNode, final String[] names, final int level, final int len)
+    {
+        if (isNotEmpty(names[level]))
+        {
+            TreeNode childNode = parentNode.nodeForName(names[level]);
+            if (childNode != null && level+1 < len)
+            {
+                return getTreeNode(childNode, names, level+1, len);
+            }
+            return childNode;
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     */
+    private void buildTaxonTree()
+    {
+        try
+        {
+            Connection conn = dbConn.getConnection();
+
+            int rootRecId = -1;
+            taxonInsertStmt.setString(1, "Root");
+            taxonInsertStmt.setString(2, null);
+            taxonInsertStmt.setInt(3,    0); // ParentID
+            taxonInsertStmt.setInt(4,    0); // RankID
+            int rv = taxonInsertStmt.executeUpdate();
+            if (rv == 1)
+            {
+                Integer recId = BasicSQLUtils.getInsertedId(taxonInsertStmt);
+                if (recId != null)
                 {
-                    System.err.println("Error inserting record.");
+                    rootRecId = recId;
                 }
             }
-            
-            pStmt.close();
-            dbS3Conn.commit();
-
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    private void createAges(final Connection dbS3Conn)
-    {
-        try
-        {
-            String stratVals[] = {
-                    "strat_occ",
-                    "early-pleistocene",
-                    "mid-pleistocene",
-                    "late-pleistocene",
-                    "early-pliocene",
-                    "late-pliocene",
-                    "early-miocene",
-                    "mid-miocene",
-                    "late-miocene",
-                    };
-//            String stratTitles[] = { 
-//                    "Unknown",
-//                    "Early Pleistocene",
-//                    "Middle Pleistocene",
-//                    "Late Pleistocene",
-//                    "Early Pliocene",
-//                    "Late Pliocene",
-//                    "Early Miocene",
-//                    "Middle Miocene",
-//                    "Late Miocene",
-//                    };
-            
-            for (int i=0;i<stratVals.length;i++)
+            if (rootRecId == -1)
             {
-                ages.put(stratVals[i], i);
-//                pStmt.setInt(1, i);
-//                pStmt.setString(2, stratTitles[i]);
-//                if (pStmt.executeUpdate() == 0)
-//                {
-//                    System.err.println("Error inserting record.");
-//                }
+                throw new RuntimeException("Bad Root Taxon Node.");
             }
             
-//            pStmt.close();
-//            dbS3Conn.commit();
-
+            rootNode = new TreeNode(rootRecId, "Root", 0, 0, null);
+            
+            Statement stmt = conn.createStatement();
+            
+            HashMap<String, String> values = new HashMap<String, String>();
+            String          sql = "SELECT p.ID FROM wp_xuub_posts p where p.post_type LIKE '%_page'";
+            Vector<Integer> ids = BasicSQLUtils.queryForInts(sql);
+            for (int recId : ids)
+            {
+                values.clear();
+                sql = String.format("SELECT pm.meta_key, pm.meta_value FROM wp_xuub_posts p INNER JOIN wp_xuub_postmeta pm ON p.ID = pm.post_id WHERE ID = %d AND (NOT (pm.meta_key LIKE '\\_%c'))", recId, '%');
+                Vector<Object[]> data = BasicSQLUtils.query(sql);
+                for (Object[] row : data)
+                {
+                    if (row[1] != null)
+                    {
+                        values.put(row[0].toString(), row[1].toString());
+                    }
+                }
+                
+                System.out.println(values);
+                if (values.size() == 0)
+                {
+                    System.out.println(sql);
+                    continue;
+                }
+                
+                String phylum  = values.get("phylum");
+                String clazz   = values.get("class");
+                String family  = values.get("family");
+                String genus   = values.get("genus");
+                String species = values.get("species");
+                String common  = values.get("common_name");
+                
+                String[] names = {phylum, clazz, family, genus, species};
+                int[]    ranks = {30,        60,    140,   180,     220};
+                
+                int len = 0;
+                while (len < names.length && names[len] != null)
+                {
+                    len++;
+                }
+                buildTree(rootNode, names, ranks, 0, common, len);
+            }
+            stmt.close();
+            
+            dbS3Conn.commit();
+            
+            System.out.println("Done with taxon tree.");
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
         }
     }
     
+    /**
+    *
+    */
+   private void createStrats()
+   {
+       try
+       {
+           String pStr = "INSERT INTO strat (_id, name) VALUES(?,?)";
+           PreparedStatement pStmt = dbS3Conn.prepareStatement(pStr);
+
+           stratKeys = new String[] {
+                   "strat_occ",
+                   "strat_occ_epleisto",
+                   "strat_occ_mpleisto",
+                   "strat_occ_lpleisto",
+                   "strat_occ_eplio",
+                   "strat_occ_lplio",
+                   "strat_occ_emio",
+                   "strat_occ_mmio",
+                   "strat_occ_lmio",
+                   };
+           String stratTitles[] = {
+                   "Unknown",
+                   "Early Pleistocene",
+                   "Middle Pleistocene",
+                   "Late Pleistocene",
+                   "Early Pliocene",
+                   "Late Pliocene",
+                   "Early Miocene",
+                   "Middle Miocene",
+                   "Late Miocene",
+                   };
+           
+           for (int i=0;i<stratKeys.length;i++)
+           {
+               strats.put(stratKeys[i], i);
+               pStmt.setInt(1, i);
+               pStmt.setString(2, stratTitles[i]);
+               if (pStmt.executeUpdate() == 0)
+               {
+                   System.err.println("Error inserting record.");
+               }
+           }
+           
+           pStmt.close();
+           dbS3Conn.commit();
+
+       } catch (Exception ex)
+       {
+           ex.printStackTrace();
+       }
+   }
+   
+   /**
+    * 
+    */
+   private void createAges()
+   {
+       try
+       {
+           String stratVals[] = {
+                   "strat_occ",
+                   "early-pleistocene",
+                   "mid-pleistocene",
+                   "late-pleistocene",
+                   "early-pliocene",
+                   "late-pliocene",
+                   "early-miocene",
+                   "mid-miocene",
+                   "late-miocene",
+                   };
+//           String stratTitles[] = { 
+//                   "Unknown",
+//                   "Early Pleistocene",
+//                   "Middle Pleistocene",
+//                   "Late Pleistocene",
+//                   "Early Pliocene",
+//                   "Late Pliocene",
+//                   "Early Miocene",
+//                   "Middle Miocene",
+//                   "Late Miocene",
+//                   };
+           
+           for (int i=0;i<stratVals.length;i++)
+           {
+               ages.put(stratVals[i], i);
+//               pStmt.setInt(1, i);
+//               pStmt.setString(2, stratTitles[i]);
+//               if (pStmt.executeUpdate() == 0)
+//               {
+//                   System.err.println("Error inserting record.");
+//               }
+           }
+           
+//           pStmt.close();
+//           dbS3Conn.commit();
+
+       } catch (Exception ex)
+       {
+           ex.printStackTrace();
+       }
+   }
+   
+    
+    /**
+     * 
+     */
+    private void processAll()
+    {
+        startUp();
+        if (isInitialized)
+        {
+            buildTaxonTree();
+            process();
+        }
+        shutdown();
+    }
+    
+    
+    /**
+     * 
+     */
     private void process()
     {
 
@@ -157,29 +371,12 @@ public class ParsePaleo
 
         try
         {
-            DBConnection dbConn = DBConnection.getInstance();
-            dbConn.setUsernamePassword("root", "root");
-            dbConn.setDriver("com.mysql.jdbc.Driver");
-            dbConn.setConnectionStr("jdbc:mysql://localhost/");
-            dbConn.setDatabaseName("test1");
-            
-            dbConn.getConnection().setCatalog("test1");
-        
             Connection conn = dbConn.getConnection();
-            BasicSQLUtils.setDBConnection(conn);
             
-            File srcFile = new File("/Users/rods/databases/paleo.sqlite");
-            File dstFile = new File("/Users/rods/databases/neogene.sqlite");
-            FileUtils.copyFile(srcFile, dstFile, true);
+            createStrats();
+            createAges();
             
-            Class.forName("org.sqlite.JDBC");
-            Connection dbS3Conn = DriverManager.getConnection("jdbc:sqlite:" + dstFile.getAbsolutePath());
-            dbS3Conn.setAutoCommit(false);
-            
-            createStrats(dbS3Conn);
-            createAges(dbS3Conn);
-            
-            String pStr = "INSERT INTO data (phylum, class, family, genus, species, citation, commonname, georange, paleodist, remarks) VALUES(?,?,?,?,?,?,?,?,?,?)";
+            String pStr = "INSERT INTO data (citation, georange, paleodist, remarks, taxonId) VALUES(?,?,?,?,?)";
             PreparedStatement pStmt = dbS3Conn.prepareStatement(pStr);
             
             String pStrStrat = "INSERT INTO data_strat (dataId, stratId, formation) VALUES(?,?,?)";
@@ -216,17 +413,30 @@ public class ParsePaleo
                     continue;
                 }
                 
+                String phylum  = values.get("phylum");
+                String clazz   = values.get("class");
+                String family  = values.get("family");
+                String genus   = values.get("genus");
+                String species = values.get("species");
+                String[] names = {phylum, clazz, family, genus, species};
+                int len = 0;
+                while (len < names.length && names[len] != null)
+                {
+                    len++;
+                }
+                TreeNode node = getTreeNode(rootNode, names, 0, len);
+                if (node == null)
+                {
+                    node = getTreeNode(rootNode, names, 0, len);
+                    throw new RuntimeException("Could find tree node" + names);
+                }
+                
                 int i = 1;
-                pStmt.setString(i++, values.get("phylum"));
-                pStmt.setString(i++, values.get("class"));
-                pStmt.setString(i++, values.get("family"));
-                pStmt.setString(i++, values.get("genus"));
-                pStmt.setString(i++, values.get("species"));
-                pStmt.setString(i++, values.get("cite"));
-                pStmt.setString(i++, values.get("common_name"));
-                pStmt.setString(i++, values.get("geo_range"));
-                pStmt.setString(i++, values.get("paleo_dist"));
-                pStmt.setString(i++, values.get("remarks"));
+                pStmt.setString(i++, getStrValue(values, "cite", recId));
+                pStmt.setString(i++, getStrValue(values, "geo_range", recId));
+                pStmt.setString(i++, getStrValue(values, "paleo_dist", recId));
+                pStmt.setString(i++, getStrValue(values, "remarks", recId));
+                pStmt.setInt(i++,    node.recId);
                 
                 if (pStmt.executeUpdate() == 0)
                 {
@@ -236,13 +446,13 @@ public class ParsePaleo
                 Integer dataId = BasicSQLUtils.getInsertedId(pStmt);
                 
                 String agesStr = values.get("ages");
-                if (StringUtils.isNotEmpty(agesStr))
+                if (isNotEmpty(agesStr))
                 {
                     Matcher m = p.matcher(agesStr);
                     
                     while (m.find()) 
                     {
-                        String  age     = StringUtils.replace(m.group(), "\"", "");
+                        String  age     = replace(m.group(), "\"", "");
                         Integer stratId = ages.get(age);
                         if (stratId == null)
                         {
@@ -263,12 +473,12 @@ public class ParsePaleo
                 for (String stratKey : stratKeys)
                 {
                     String stratStr = values.get(stratKey);
-                    if (StringUtils.isNotEmpty(stratStr) && index > 0)
+                    if (isNotEmpty(stratStr) && index > 0)
                     {
                         Matcher m = p.matcher(stratStr);
                         while (m.find()) 
                         {
-                            String  strat   = StringUtils.replace(m.group(), "\"", "");
+                            String  strat   = replace(m.group(), "\"", "");
                             pStmtStrat.setInt(1, dataId);
                             pStmtStrat.setInt(2, index);
                             pStmtStrat.setString(3, strat);
@@ -288,7 +498,7 @@ public class ParsePaleo
                     {
                         String key = String.format("%s_%dd", nm, j);
                         String val = values.get(key);
-                        if (StringUtils.isNotEmpty(val))
+                        if (isNotEmpty(val))
                         {
                             System.out.println(String.format("%d [%s][%s]", recId, val, key));
                             
@@ -358,6 +568,27 @@ public class ParsePaleo
     
     
     /**
+     * @param values
+     * @param key
+     * @param recId
+     * @return
+     */
+    private String getStrValue(final HashMap<String, String> values, final String key, final int recId)
+    {
+        String value = values.get(key);
+//        if (isEmpty(value))
+//        {
+//            if (!key.equals("common_name") && !key.equals("remarks"))
+//            {
+//                System.err.println(String.format("Value is null for key [%s] for id: %d", key, recId));
+//            }
+//            return null;
+//        }
+        return value;
+    }
+    
+    
+    /**
      * @param args
      */
     public static void main(String[] args)
@@ -365,7 +596,7 @@ public class ParsePaleo
         if (true)
         {
             ParsePaleo pp = new ParsePaleo();
-            pp.process();
+            pp.processAll();
             return;
         }
         try
@@ -381,7 +612,7 @@ public class ParsePaleo
                 //List<String> animals = new ArrayList()<String>();
                 while (m.find()) {
                     //System.out.println(m.group());
-                    set.add(StringUtils.replace(m.group(), "\"", ""));
+                    set.add(replace(m.group(), "\"", ""));
                     //animals.add(m.group());
                 }
             }
@@ -395,4 +626,69 @@ public class ParsePaleo
         }
     }
 
+    
+    class TreeNode
+    {
+        int    recId;
+        String name;
+        int    rankId;
+        int    parentId;
+        String common;
+        
+        Vector<TreeNode> kids = new Vector<TreeNode>();
+        HashMap<String, TreeNode> kidsMap = new HashMap<String, TreeNode>();
+
+        /**
+         * @param recId
+         * @param name
+         * @param rankId
+         * @param parentId
+         * @param common
+         */
+        public TreeNode(final int recId, final String name, final int rankId, final int parentId, final String common)
+        {
+            super();
+            this.recId    = recId;
+            this.name     = name;
+            this.common   = common;
+            this.rankId   = rankId;
+            this.parentId = parentId;
+        }
+        
+        public TreeNode addKid(final String kidName, final int kidRankId, final String kidCommon) throws SQLException
+        {
+            TreeNode node = kidsMap.get(kidName);
+            if (node == null)
+            {
+                taxonInsertStmt.setString(1, kidName);
+                taxonInsertStmt.setString(2, kidCommon);
+                taxonInsertStmt.setInt(3,    this.recId); // ParentId
+                taxonInsertStmt.setInt(4,    kidRankId);
+                
+                int rv = taxonInsertStmt.executeUpdate();
+                if (rv == 1)
+                {
+                    Integer kidRecId = BasicSQLUtils.getInsertedId(taxonInsertStmt);
+                    if (kidRecId != null)
+                    {
+                        node = new TreeNode(kidRecId, kidName, kidRankId, this.recId, kidCommon);
+                        kids.add(node); 
+                        kidsMap.put(kidName, node);
+                    } else
+                    {
+                        throw new RuntimeException("Can't insert taxon.");
+                    }
+                } else
+                {
+                    throw new RuntimeException("Can't insert taxon.");
+                }
+            }
+            return node;
+        }
+        
+        public TreeNode nodeForName(final String kidName)
+        {
+            return kidsMap.get(kidName);
+        }
+    }
 }
