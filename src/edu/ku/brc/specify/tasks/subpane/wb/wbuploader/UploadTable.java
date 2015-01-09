@@ -5384,7 +5384,7 @@ public class UploadTable implements Comparable<UploadTable>
     	
         for (UploadTable child : specialChildren)
         {
-        	if (needToMatchChild(child.tblClass))
+        	if (needToMatchChild(child.tblClass) && !child.isOneToOneChild())
         	{
         		child.loadFromDataSet(wbCurrentRow);
         		for (int c = 0; c < child.getUploadFields().size(); c++)
