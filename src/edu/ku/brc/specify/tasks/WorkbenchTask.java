@@ -39,6 +39,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -1837,14 +1838,19 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
          	try
         	{
         		WorkbenchValidator wbv = new WorkbenchValidator(wb);
+        		Set<Integer> itemIdsAdded = new TreeSet<Integer>(); 
         		for (RecordSetItemIFace item : rs.getItems())
         		{
-        			DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
-        			if (obj != null)
-        			{
-        				obj.forceLoad();
-        				wbv.getUploader().loadRecordToWb(obj, wb);
-        			}
+        			Integer id = item.getRecordId();
+        			if (!itemIdsAdded.contains(id)) { //don't add duplicates 
+        				DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
+        				if (obj != null) {
+        					obj.forceLoad();
+        					wbv.getUploader().loadRecordToWb(obj, wb);
+        				}
+        				itemIdsAdded.add(id);
+        			} 
+        			
         		}
         	} catch (Exception ex)
         	{
