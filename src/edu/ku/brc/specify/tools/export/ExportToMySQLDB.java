@@ -1258,7 +1258,7 @@ public class ExportToMySQLDB
 						boolean typesChanged = true;
 						for (String latLngFldName : latLngFldNames) {
 							if (latLngFldName != null) {
-								if (0 == BasicSQLUtils.update(conn, "ALTER TABLE " + tblName + " MODIFY " + latLngFldName + " VARCHAR(20)")) {
+								if (0 == BasicSQLUtils.update(conn, "ALTER TABLE `" + tblName + "` MODIFY `" + latLngFldName + "` VARCHAR(20)")) {
 									typesChanged = false;
 								}
 							}
