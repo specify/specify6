@@ -542,7 +542,7 @@ public class TextFieldWithQuery extends JPanel
      * @param mi
      * @param advanceFocus
      */
-    protected void itemSelected(final JMenuItem mi, int advanceFocus)
+    protected void itemSelected(final JMenuItem mi, final int advanceFocus)
     {
         hasNewText = false;
         //log.debug("setting hasNewText to true");
@@ -573,7 +573,7 @@ public class TextFieldWithQuery extends JPanel
      *
      * @param advanceFocus
      */
-    protected void showPopup(int advanceFocus)
+    protected void showPopup(final int advanceFocus)
     {
         if (!isEnabled())
         {
@@ -1058,7 +1058,7 @@ public class TextFieldWithQuery extends JPanel
      *
      * @param advanceFocus
      */
-    protected void showDialog(int advanceFocus)
+    protected void showDialog(final int advanceFocus)
     {
         DefaultListModel<String> model = new DefaultListModel<String>();
         if (doAddAddItem)
@@ -1138,7 +1138,7 @@ public class TextFieldWithQuery extends JPanel
             }
 
             @Override
-            public void setVisible(boolean visible)
+            public void setVisible(final boolean visible)
             {
                 if (visible)
                 {
@@ -1196,7 +1196,7 @@ public class TextFieldWithQuery extends JPanel
         if (direction < 0) textField.transferFocusBackward();
     }
     
-    protected void queryDone(final CustomQueryIFace customQuery, int advanceFocus)
+    protected void queryDone(final CustomQueryIFace customQuery, final int advanceFocus)
     {
         if (isDoingCount.get())
         {
@@ -1253,7 +1253,7 @@ public class TextFieldWithQuery extends JPanel
     /**
      * Fill the the drop down with the list from the query
      */
-    protected void doQuery(final String newEntryStrArg, final String origTextStr, int focusChange)
+    protected void doQuery(final String newEntryStrArg, final String origTextStr, final int focusChange)
     {
         UIRegistry.getStatusBar().setText("");
         if (StringUtils.isEmpty(newEntryStrArg))
