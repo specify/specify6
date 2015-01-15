@@ -19,23 +19,24 @@
 */
 package edu.ku.brc.web;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.replace;
+
 import java.io.File;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import static org.apache.commons.lang.StringUtils.*;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -61,6 +62,8 @@ public class ParsePaleo
     
     private HashMap<String, Integer> taxonNameToId = new HashMap<String, Integer>();
     private PreparedStatement taxonInsertStmt = null;
+    
+    private PrintWriter pw = null;
 
     /**
      * 
@@ -249,7 +252,7 @@ public class ParsePaleo
    {
        try
        {
-           String pStr = "INSERT INTO strat (_id, name) VALUES(?,?)";
+           String pStr = "INSERT INTO strat (_id, name, age) VALUES(?,?,?)";
            PreparedStatement pStmt = dbS3Conn.prepareStatement(pStr);
 
            stratKeys = new String[] {
@@ -265,14 +268,26 @@ public class ParsePaleo
                    };
            String stratTitles[] = {
                    "Unknown",
-                   "Early Pleistocene",
-                   "Middle Pleistocene",
-                   "Late Pleistocene",
-                   "Early Pliocene",
-                   "Late Pliocene",
-                   "Early Miocene",
-                   "Middle Miocene",
-                   "Late Miocene",
+                   "Early Pleistocene",   // 3
+                   "Middle Pleistocene",  // 2
+                   "Late Pleistocene",    // 1
+                   "Early Pliocene ",     // 5
+                   "Late Pliocene",       // 4
+                   "Early Miocene",       // 8
+                   "Middle Miocene",      // 7
+                   "Late Miocene",        // 6
+                   };
+           
+           int ages[] = {
+                   0,
+                   3,
+                   2,
+                   1,
+                   5,
+                   4,
+                   8,
+                   7,
+                   6,
                    };
            
            for (int i=0;i<stratKeys.length;i++)
@@ -280,6 +295,7 @@ public class ParsePaleo
                strats.put(stratKeys[i], i);
                pStmt.setInt(1, i);
                pStmt.setString(2, stratTitles[i]);
+               pStmt.setInt(3, ages[i]);
                if (pStmt.executeUpdate() == 0)
                {
                    System.err.println("Error inserting record.");
@@ -362,6 +378,44 @@ public class ParsePaleo
     
     
     /**
+     * @throws SQLException 
+     * 
+     */
+    private int recurseForAttachments(final PreparedStatement pStmtTaxonAttach, final TreeNode node) throws SQLException
+    {
+        if (node.rankId == 220)
+        {
+            Vector<Integer> ids = BasicSQLUtils.queryForInts(dbS3Conn, String.format("SELECT attachId FROM taxon_attach WHERE taxonId = %d", node.recId));
+            if (ids.size() > 0)
+            {
+                return ids.get(0);
+            }
+            throw new RuntimeException("No image for taxonId: "+node.recId);
+        }
+
+        int firstId = -1;
+        for (TreeNode kidNode : node.kids)
+        {
+            int attachId = recurseForAttachments(pStmtTaxonAttach, kidNode);
+            if (firstId == -1)
+            {
+                firstId = attachId;
+            }
+            if (kidNode.rankId > 0)
+            {
+                pStmtTaxonAttach.setInt(1, kidNode.recId);
+                pStmtTaxonAttach.setInt(2, attachId);
+                if (pStmtTaxonAttach.executeUpdate() == 0)
+                {
+                    System.err.println("Error inserting record.");
+                }
+            }
+        }
+        return firstId;
+    }
+    
+    
+    /**
      * 
      */
     private void process()
@@ -371,6 +425,8 @@ public class ParsePaleo
 
         try
         {
+            pw = new PrintWriter("filedownload.sh");
+            
             Connection conn = dbConn.getConnection();
             
             createStrats();
@@ -385,10 +441,14 @@ public class ParsePaleo
             String pStrAges = "INSERT INTO data_ages (dataId, stratId) VALUES(?,?)";
             PreparedStatement pStmtAges = dbS3Conn.prepareStatement(pStrAges);
             
-            String pStrAttach = "INSERT INTO attach (imgname, url, caption, type, dataId) VALUES(?,?,?,?,?)";
+            String pStrAttach = "INSERT INTO attach (imgname, url, caption, type) VALUES(?,?,?,?)";
             PreparedStatement pStmtAttach = dbS3Conn.prepareStatement(pStrAttach);
             
-            Statement stmt = conn.createStatement();
+            String pStrTaxonAttach = "INSERT INTO taxon_attach (taxonId, attachId) VALUES(?,?)";
+            PreparedStatement pStmtTaxonAttach = dbS3Conn.prepareStatement(pStrTaxonAttach);
+            
+            Statement stmt  = conn.createStatement();
+            Statement stmt2 = conn.createStatement();
             
             HashMap<String, String> values = new HashMap<String, String>();
             String          sql = "SELECT p.ID FROM wp_xuub_posts p where p.post_type LIKE '%_page'";
@@ -491,7 +551,68 @@ public class ParsePaleo
                     index++;
                 }
 
-                for (int k=0;k<2;k++)
+                sql = String.format("SELECT p.ID, post_title, p.post_name, p.post_type, pm.meta_value FROM wp_xuub_posts p " +
+                		            "INNER JOIN wp_xuub_postmeta pm ON p.ID = pm.post_id " +
+                		            "WHERE post_parent = %d AND post_type = 'attachment' AND NOT (pm.meta_value LIKE 'a:%c')", recId, '%', '%');
+                System.out.println(sql);
+                ResultSet rsId = stmt2.executeQuery(sql);
+                while (rsId.next())
+                {
+                    int pId      = rsId.getInt(1);
+                    String title = rsId.getString(2);
+                    if (title.contains("2000px")) continue;
+                    
+                    sql = "SELECT p.ID, p.post_title, pm.meta_value, p.guid FROM wp_xuub_posts p INNER JOIN wp_xuub_postmeta pm ON p.ID = pm.post_id WHERE pm.meta_key = '_wp_attached_file' AND p.ID = " + pId;
+                    ResultSet rs   = stmt.executeQuery(sql);
+                    while (rs.next())
+                    {
+                        String fileName = rs.getString(3);
+                        String url      = rs.getString(4);
+                        
+                        if (fileName.contains("Early") || fileName.contains("Middle") || fileName.contains("Late"))
+                        {
+                            continue;
+                        }
+                        
+                        String path = "/Users/rods/Documents/XCodeProjects/DigitalAtlasAcientLife/DigitalAtlasAcientLife/Resources/images/" + fileName;
+                        File file = new File(path);
+                        if (!file.exists())
+                        {
+                            pw.println(String.format("curl %s > %s", url, fileName));
+                        }
+                        
+                        //String captKey = String.format("%s_%dc", nm, j);
+                        //String captVal = values.get(captKey);
+                        
+                        pStmtAttach.setString(1, fileName);
+                        pStmtAttach.setString(2, url);
+                        pStmtAttach.setString(3, "");
+                        pStmtAttach.setInt(4,    0); // Type
+                        
+                        if (pStmtAttach.executeUpdate() == 0)
+                        {
+                            System.err.println("Error inserting record.");
+                        }
+                        
+                        Integer attachId = BasicSQLUtils.getInsertedId(pStmtAttach);
+                        if (attachId == null)
+                        {
+                            throw new RuntimeException("Error saving attachment record.");
+                        }
+                        
+                        pStmtTaxonAttach.setInt(1, node.recId);
+                        pStmtTaxonAttach.setInt(2, attachId);
+                        if (pStmtTaxonAttach.executeUpdate() == 0)
+                        {
+                            System.err.println("Error inserting record.");
+                        }
+                    }
+                    rs.close();
+                }
+                rsId.close();
+                
+                /*
+                for (int k=0;k<1;k++)
                 {
                     String nm = k == 0 ? "photo" : "map";
                     for (int j=1;j<9;j++)
@@ -502,8 +623,7 @@ public class ParsePaleo
                         {
                             System.out.println(String.format("%d [%s][%s]", recId, val, key));
                             
-                            sql = "SELECT p.ID, p.post_title, pm.meta_value, p.guid FROM wp_xuub_posts p " +
-                                  "INNER JOIN wp_xuub_postmeta pm ON p.ID = pm.post_id WHERE pm.meta_key = '_wp_attached_file' AND p.ID = " + val;
+                            sql = "SELECT p.ID, p.post_title, pm.meta_value, p.guid FROM wp_xuub_posts p INNER JOIN wp_xuub_postmeta pm ON p.ID = pm.post_id WHERE pm.meta_key = '_wp_attached_file' AND p.ID = " + val;
                             ResultSet rs   = stmt.executeQuery(sql);
                             while (rs.next())
                             {
@@ -512,6 +632,8 @@ public class ParsePaleo
                                 String fileName = rs.getString(3);
                                 String url      = rs.getString(4);
                                 
+                                pw.println(String.format("curl %s > %s", url, fileName));
+                                
                                 String captKey = String.format("%s_%dc", nm, j);
                                 String captVal = values.get(captKey);
                                 
@@ -519,16 +641,29 @@ public class ParsePaleo
                                 pStmtAttach.setString(2, url);
                                 pStmtAttach.setString(3, k == 0 ? captVal : "");
                                 pStmtAttach.setInt(4, k); // Type
-                                pStmtAttach.setInt(5, dataId);
                                 
                                 if (pStmtAttach.executeUpdate() == 0)
+                                {
+                                    System.err.println("Error inserting record.");
+                                }
+                                
+                                Integer attachId = BasicSQLUtils.getInsertedId(pStmtAttach);
+                                if (attachId == null)
+                                {
+                                    throw new RuntimeException("Error saving attachment record.");
+                                }
+                                
+                                pStmtTaxonAttach.setInt(1, node.recId);
+                                pStmtTaxonAttach.setInt(2, attachId);
+                                if (pStmtTaxonAttach.executeUpdate() == 0)
                                 {
                                     System.err.println("Error inserting record.");
                                 }
                             }
                         }
                     }
-                }
+                }*/
+                
                 // a:5:{s:5:"width";i:3300;s:6:"height";i:2550;s:4:"file";s:38:"Polygona_maxwelli_EarlyPleistocene.jpg";s:5:"sizes";
                 //  a:2:{s:9:"thumbnail";
                 //   a:4:{s:4:"file";s:46:"Polygona_maxwelli_EarlyPleistocene-250x250.jpg";s:5:"width";i:250;s:6:"height";i:250;s:9:"mime-type";s:10:"image/jpeg";}
@@ -546,17 +681,22 @@ public class ParsePaleo
 //                }
 
             }
+            dbS3Conn.commit();
             
+            //recurseForAttachments(pStmtTaxonAttach, rootNode);
+           
+            stmt.close();
+            stmt2.close();
             pStmt.close();
             pStmtStrat.close();
             pStmtAges.close();
             pStmtAttach.close();
+            pStmtTaxonAttach.close();
             stmt.close();
             
             dbS3Conn.commit();
-            dbS3Conn.close();
-            
-            DBConnection.shutdown();
+
+            pw.close();
             
             System.out.println("Done");
             
