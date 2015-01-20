@@ -1347,8 +1347,8 @@ public class ConvertVerifier extends AppBase
      */
     public static String convertCatNum(final int oldCatNum)
     {
-        //int size = 9;
-        int size = 14; //since ben's change to use BigInts for auto-increment??
+        int size = 9; //still the default len for cat nums in 5->6 conversions
+        //int size = 14; //since ben's change to use BigInts for auto-increment??
         
         String fmt = size == 0 ? "%d" : ("%0" + size + "d");
         return String.format(fmt, oldCatNum);
