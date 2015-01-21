@@ -301,6 +301,22 @@ public class TextFieldWithQuery extends JPanel
 
             @Override
             public void focusLost(FocusEvent e) {
+                int len = textField.getText().length();
+                if (len < 1)
+                {
+
+                    setText(""); //$NON-NLS-1$
+
+                    ///////////////////////////////////////////////////////////////////////////////////
+                    // We only want to generate a change event if it once had a value and then it is
+                    // cleared and the user tabs to a new control. - rods 02/28/08
+                    ///////////////////////////////////////////////////////////////////////////////////
+                    if (wasCleared || selectedId != null)
+                    {
+                        notifyListenersOfChange(TextFieldWithQuery.this);
+                    }
+                }
+                textField.setCaretPosition(0);
             }
         });
 
@@ -473,7 +489,6 @@ public class TextFieldWithQuery extends JPanel
             if (ev.getKeyCode() != KeyEvent.VK_ENTER)
             {
                 // Add variable to track whether it once had a value and now it does not rods - 02/28/08
-                wasCleared = selectedId != null;
 
                 idList.clear();
                 list.clear();

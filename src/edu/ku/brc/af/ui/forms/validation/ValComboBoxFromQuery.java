@@ -273,6 +273,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     {
                         l.focusLost(e);
                     }
+                    refreshUIFromData(true);
                 }
             });
         }
