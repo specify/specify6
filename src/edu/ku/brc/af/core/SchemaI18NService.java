@@ -25,6 +25,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -35,10 +36,13 @@ import java.util.Vector;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -285,22 +289,12 @@ public abstract class SchemaI18NService
     public JMenu createLocaleMenu(final ActionListener al)
     {
         JMenu menu = new JMenu("Locale"); //$NON-NLS-1$
-        
-        for (Locale locale : getStdLocaleList(true))
-        {
-            if (!locale.getLanguage().equals("-"))
-            {
-                JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(locale.getDisplayName());
-                localeMenuItems.add(cbmi);
-                menu.add(cbmi);
-                cbmi.addActionListener(al);
-            } else
-            {
-                menu.addSeparator();
-            }
-        }
+        JMenuItem m = new JMenuItem("Choose Locale"); //$NON-NLS-1$
+        m.addActionListener(al);
+        menu.add(m);
         return menu;
     }
+    
     
     /**
      * Checks (selects) the MenuItem of the current locale.
@@ -338,6 +332,26 @@ public abstract class SchemaI18NService
         return null;
     }
     
+    private class LocaleDlgItem  {
+    	private final Locale locale;
+    	public LocaleDlgItem(Locale locale) {
+    		this.locale = locale;
+    	}
+    	
+    	/**
+    	 * @return
+    	 */
+    	public Locale getLocale() {
+    		return locale;
+    	}
+
+		@Override
+		public String toString() {
+			return locale.getDisplayName();
+		}
+    	
+    	
+    }
     /**
      * Creates a menu with the locate and a property listener. A property event is sent with the property
      * name set to "locale" with the current locale passed as the old value and the new locale as the new value.
@@ -350,12 +364,23 @@ public abstract class SchemaI18NService
         JMenu localeMenu = createLocaleMenu(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                Locale newLocale = getLocaleByName(((JCheckBoxMenuItem)e.getSource()).getText());
-                checkCurrentLocaleMenu();
-
-                UIRegistry.pushWindow(frame);
-                pcl.propertyChange(new PropertyChangeEvent(this, "locale", currentLocale, newLocale)); //$NON-NLS-1$
-                UIRegistry.popWindow(frame);
+                
+            	List<LocaleDlgItem> dlgItems = new ArrayList<LocaleDlgItem>();
+            	for (Locale l: getStdLocaleList(true)) {
+            		if (!l.getLanguage().equals("-")) {           		
+            			dlgItems.add(new LocaleDlgItem(l));
+            		}
+            	}
+            	ChooseFromListDlg<LocaleDlgItem> localeDlg = new ChooseFromListDlg<LocaleDlgItem>(frame, "Choose a Locale", dlgItems);
+        		UIHelper.centerAndShow(localeDlg);
+        		LocaleDlgItem selected = localeDlg.getSelectedObject();
+        		if (!localeDlg.isCancelled() && selected != null) {
+        			Locale newLocale = selected.getLocale();
+        			checkCurrentLocaleMenu();
+        			UIRegistry.pushWindow(frame);
+        			pcl.propertyChange(new PropertyChangeEvent(this, "locale", currentLocale, newLocale)); //$NON-NLS-1$
+        			UIRegistry.popWindow(frame);
+        		}
             }  
         });
         checkCurrentLocaleMenu();
