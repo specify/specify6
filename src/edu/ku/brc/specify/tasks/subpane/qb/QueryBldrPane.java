@@ -486,7 +486,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	if (query != null && !isForSchemaExport() &&
     			Integer.valueOf(CollectionObject.getClassTableId()).equals(Integer.valueOf(query.getContextTableId()))) {
     		DBFieldInfo cat = getCatalogNumberField();
-    		result = cat != null && !cat.isHidden() && cat.getFormatter().isNumeric();
+    		result = cat != null && !cat.isHidden() 
+    				&& cat.getFormatter() != null && cat.getFormatter().isNumeric();
     	}
     	return result;
     }
