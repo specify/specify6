@@ -991,7 +991,7 @@ public class ExportToMySQLDB
 		Statement stmt = conn.createStatement();
 		try
 		{
-			ResultSet rs = stmt.executeQuery("select OriginalLatLongUnit, Lat1Text, Long1Text from "
+			ResultSet rs = stmt.executeQuery("select ifnull(OriginalLatLongUnit, 0), Lat1Text, Long1Text from "
 					+ "collectionobject co inner join collectingevent ce on ce.collectingeventid = co.collectingeventid "
 					+ "inner join locality l on l.localityid = ce.localityid where co.CollectionObjectID = " + rowId);
 			if (rs.next())
@@ -1154,7 +1154,7 @@ public class ExportToMySQLDB
 			}
 		}
 		Connection conn = connection != null ? connection : DBConnection.getInstance().createConnection();
-		String sql = "SELECT DISTINCT l.LocalityID, l.OriginalLatLongUnit, l.Latitude1, l.Longitude1, l.Latitude2, l.Longitude2, "
+		String sql = "SELECT DISTINCT l.LocalityID, ifnull(l.OriginalLatLongUnit, 0), l.Latitude1, l.Longitude1, l.Latitude2, l.Longitude2, "
 				+ "l.Lat1Text, l.Long1Text, l.Lat2Text, l.Long2Text FROM " + tableName + " t" 
 				+ " INNER JOIN collectionobject co ON co.CollectionObjectID=t."
 				+ tableName + "ID INNER JOIN collectingevent ce ON ce.CollectingEventID="
@@ -1309,16 +1309,18 @@ public class ExportToMySQLDB
 	 */
 	protected static List<String> getAdjustedLatLngAccuracy(Object[] loc) throws SQLException {
 		List<String> result = new ArrayList<String>(4);
+		Number unitFromDb = Number.class.cast(loc[1]);
+		int unit = unitFromDb == null ? 0 : unitFromDb.intValue();
 		if (loc.length == 6) {
-			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), Integer.class.cast(loc[1]), String.class.cast(loc[4])));
-			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), Integer.class.cast(loc[1]), String.class.cast(loc[5])));
+			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[4])));
+			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]),unit, String.class.cast(loc[5])));
 			result.add(null);
 			result.add(null);
 		} else {
-			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), Integer.class.cast(loc[1]), String.class.cast(loc[6])));
-			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), Integer.class.cast(loc[1]), String.class.cast(loc[7])));
-			result.add(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), Integer.class.cast(loc[1]), String.class.cast(loc[8])));
-			result.add(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), Integer.class.cast(loc[1]), String.class.cast(loc[9])));
+			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[6])));
+			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), unit, String.class.cast(loc[7])));
+			result.add(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), unit, String.class.cast(loc[8])));
+			result.add(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), unit, String.class.cast(loc[9])));
 		}
 		return result;
 	}
