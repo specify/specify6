@@ -456,7 +456,7 @@ public class SpReport extends DataModelObjBase
     /**
      * @param element
      */
-    public void fromXML(final Element element, final boolean alwaysMakeNew)
+    public void fromXML(final Element element, final boolean alwaysMakeNew, final AppContextMgr contextMgr)
     {
         String repeatCountStr = getAttr(element, "repeatCount", null);
         name             = getAttr(element, "name", null);
@@ -475,7 +475,7 @@ public class SpReport extends DataModelObjBase
         	SpQuery newQ = new SpQuery();
         	newQ.initialize();
         	newQ.fromXML(qryNode);
-        	newQ.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        	newQ.setSpecifyUser(contextMgr.getClassObject(SpecifyUser.class));
         	query = alwaysMakeNew ? newQ : determineQueryForImport(newQ);
         	if (query.getId() == null)
         	{
@@ -488,7 +488,7 @@ public class SpReport extends DataModelObjBase
         	WorkbenchTemplate newWbt = new WorkbenchTemplate();
         	newWbt.initialize();
         	newWbt.fromXML(wbtNode);
-        	newWbt.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        	newWbt.setSpecifyUser(contextMgr.getClassObject(SpecifyUser.class));
         	workbenchTemplate = newWbt;
 //        	workbenchTemplate = determineWbTemplateForImport(newWbt);
 //        	if (workbenchTemplate.getId() == null)
