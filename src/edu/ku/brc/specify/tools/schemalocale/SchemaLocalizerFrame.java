@@ -266,6 +266,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 if (evt.getPropertyName().equals("locale")) //$NON-NLS-1$
                 {
                     schemaLocPanel.localeChanged((Locale)evt.getNewValue());
+                    statusBar.setSectionText(0, SchemaI18NService.getCurrentLocale().getDisplayName());
                 }
             }
         }));
