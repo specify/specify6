@@ -491,7 +491,7 @@ public class DBTableIdMgr
                         tblName.equals("picklist") || 
                         tblName.equals("attributedef") || 
                         tblName.equals("recordset") || 
-                        tblName.equals("inforequest") || 
+                        //tblName.equals("inforequest") || 
                         tblName.startsWith("workbench") || 
                         tblName.endsWith("treedef") || 
                         tblName.endsWith("treedefitem") || 
