@@ -1038,8 +1038,8 @@ public class ResourceImportExportDlg extends CustomDialog
                 
                 SpReport report = new SpReport();
                 report.initialize();
-                report.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-                report.fromXML(repElement, newResName != null);
+                report.setSpecifyUser(contextMgr.getClassObject(SpecifyUser.class));
+                report.fromXML(repElement, newResName != null, contextMgr);
                 
                 if (newResName != null)
                 {
@@ -1362,8 +1362,8 @@ public class ResourceImportExportDlg extends CustomDialog
                             {
                                 try
                                 {
-                                    SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                                    Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
+                                    SpecifyUser user  = contextMgr.getClassObject(SpecifyUser.class);
+                                    Agent       agent = contextMgr.getClassObject(Agent.class);
     
                                     SpAppResourceDir dir = dirs.get(levelIndex);
     
