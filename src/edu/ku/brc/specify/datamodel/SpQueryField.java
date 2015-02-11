@@ -844,6 +844,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         addAttr(sb, "tableList",  tableList);
         addAttr(sb, "contextTableIdent", contextTableIdent);
         addAttr(sb, "columnAlias", columnAlias);
+        addAttr(sb, "formatName", formatName);
         
         sb.append(" />\n");
     }
@@ -911,6 +912,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         setValue(tblInfo, "tableList", getAttr(element, "tableList", null));
         setValue(tblInfo, "contextTableIdent", getAttr(element, "contextTableIdent", 0));
         setValue(tblInfo, "columnAlias", getAttr(element, "columnAlias", null));
+        setValue(tblInfo, "formatName", getAttr(element, "formatName", null));
     }
 
     /**
