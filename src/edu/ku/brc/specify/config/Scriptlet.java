@@ -296,7 +296,7 @@ public class Scriptlet extends JRDefaultScriptlet
     	if (collectionObjectID != null) {
     		String sql = "select sum(CountAmt) from preparation where CollectionObjectID = " +
     				collectionObjectID;
-    		result = BasicSQLUtils.querySingleObj(sql);
+    		result = BasicSQLUtils.querySingleObj(sql).toString();
     	}
     	return result;
     }
