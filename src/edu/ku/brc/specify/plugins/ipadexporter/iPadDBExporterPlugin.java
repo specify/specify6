@@ -671,19 +671,30 @@ public class iPadDBExporterPlugin extends BaseTask
                             }
                         }
                     };
-                    userNameTF.addKeyListener(new KeyAdapter()
+                    KeyAdapter ka = new KeyAdapter()
                     {
                         @Override
-                        public void keyTyped(KeyEvent e)
+                        public void keyReleased(KeyEvent e)
                         {
-                            boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText());
+                            super.keyReleased(e);
+                            boolean isOK = UIHelper.isValidEmailAddress(userNameTF.getText()) &&
+                                    StringUtils.isNotEmpty(new String(passwordTF.getPassword()));
                             dlg.getOkBtn().setEnabled(isOK);
+                            dlg.getApplyBtn().setEnabled(isOK);
                         }
-                    });
+                    };
+                    userNameTF.addKeyListener(ka);
+                    passwordTF.addKeyListener(ka);
                     
                     dlg.setCloseOnApplyClk(true);
                     dlg.setApplyLabel(getResourceString("NEW_USER"));
                     dlg.setOkLabel(getResourceString("LOGIN"));
+                    
+                    dlg.createUI();
+                    
+                    boolean enableBtns = StringUtils.isNotEmpty(userName);
+                    dlg.getOkBtn().setEnabled(enableBtns);
+                    dlg.getApplyBtn().setEnabled(enableBtns);
                     
                     centerAndShow(dlg);
                     
