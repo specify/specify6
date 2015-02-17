@@ -705,6 +705,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 UIHelper.centerAndShow(sla);
                 
                 final SchemaLocalizerFrame slaf = sla;
+                slaf.setDefaultCloseOperation(EXIT_ON_CLOSE);
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     @Override
