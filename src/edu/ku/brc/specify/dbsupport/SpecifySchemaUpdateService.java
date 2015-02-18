@@ -2400,6 +2400,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     				+ " WHERE co.CollectionMemberID != p.CollectionMemberID";
     			BasicSQLUtils.update(sql);
     		}
+    		cnt = getCountAsInt("select count(*) from preparation p inner join preptype pt on pt.PrepTypeID = p.PrepTypeID where pt.CollectionID != p.CollectionMemberID");
+        	if (cnt > 0) {
+        		//This might not work in rare cases where error has been present for a long time
+        		//and preptypes in the correct collection have been deleted 
+        		String sql = "update preparation p inner join preptype pt on pt.PrepTypeID = p.PrepTypeID "
+        			+ "inner join preptype ptc on ptc.Name = pt.Name and ptc.CollectionID = p.CollectionMemberID "
+        			+ "set p.PrepTypeID = ptc.PrepTypeID";
+        		BasicSQLUtils.update(sql);
+        	}
     	} catch (Exception ex) {
     		log.error(ex.getMessage());
     	}

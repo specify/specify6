@@ -25,6 +25,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 
@@ -1849,6 +1850,8 @@ public class SpecifyDBConverter extends AppBase
             //into the six database. Need to have standard location for files. Can probably also import the queries here.
             //QueryConverter.convert("/home/timo/Desktop/KUI_FishQueries.xml", "/home/timo/convertedSpQ.xml", "/home/timo/UnconvertedFields.xml");
 
+            fixPreparationCollectionMemberID(newDBConn); 
+            
             frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();
             frame.processDone();
@@ -1871,6 +1874,31 @@ public class SpecifyDBConverter extends AppBase
         }
     }
     
+    /**
+     * Matches preparations' CollectionMemberIDs with their collectionobjects' CollectionMemberIDs.  
+     */
+    protected void fixPreparationCollectionMemberID(Connection con) {
+    	try {
+    		int cnt = getCountAsInt(con, "SELECT COUNT(PreparationID) FROM preparation p INNER JOIN collectionobject co "
+    			+ " ON co.CollectionObjectID = p.CollectionObjectID WHERE co.CollectionMemberID != p.CollectionMemberID");
+    		if (cnt > 0) {
+    			String sql = "UPDATE preparation p INNER JOIN collectionobject co "
+        			+ " ON co.CollectionObjectID = p.CollectionObjectID SET p.CollectionMemberID=co.CollectionMemberID"
+    				+ " WHERE co.CollectionMemberID != p.CollectionMemberID";
+    			BasicSQLUtils.update(con, sql);
+    		}
+    		cnt = getCountAsInt(con, "select count(*) from preparation p inner join preptype pt on pt.PrepTypeID = p.PrepTypeID where pt.CollectionID != p.CollectionMemberID");
+        	if (cnt > 0) {
+        		String sql = "update preparation p inner join preptype pt on pt.PrepTypeID = p.PrepTypeID "
+        			+ "inner join preptype ptc on ptc.Name = pt.Name and ptc.CollectionID = p.CollectionMemberID "
+        			+ "set p.PrepTypeID = ptc.PrepTypeID";
+        		BasicSQLUtils.update(con, sql);
+        	}
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage());
+    	}
+    }
+
     /**
      * @param oldDBConn
      * @param newDBConn
