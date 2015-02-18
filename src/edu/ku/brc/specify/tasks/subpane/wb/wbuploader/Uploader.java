@@ -1213,7 +1213,7 @@ public class Uploader implements ActionListener, KeyListener
 
             UploadTableTree it = new UploadTableTree(this, rankTbl, baseTbl, parentImpTbl, treeMap
                     .getLevels().get(level).isRequired(), treeMap.getLevels().get(level)
-                    .getRank(), treeMap.getLevels().get(level).getWbFldName());
+                    .getRank(), treeMap.getLevels().get(level).getWbFldName(), treeMap.getLevels().get(level).isLowerSubTree());
             it.init();
 
             // add ImportFields for new table

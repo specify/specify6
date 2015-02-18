@@ -146,6 +146,15 @@ public class TreeMapElements
     }
     
     /**
+     * @return
+     */
+    public Boolean isLowerSubTree() {
+    	if (size() == 0) {
+    		return null;
+    	}
+    	return elements.get(0).isLowerSubTree();
+    }
+    /**
      * @return an boolean array of size getMaxSeq() with each element corresponding to a sequence and having
      * a value of true iff this object contains TreeMapElements of that sequence.     
      */

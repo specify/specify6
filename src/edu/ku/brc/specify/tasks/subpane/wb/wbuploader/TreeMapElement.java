@@ -51,12 +51,16 @@ public class TreeMapElement
 	 */
 	protected boolean required;
 	/**
+	 * True for taxa levels defined in determination table
+	 */
+	protected boolean isLowerSubTree;
+	/**
 	 * @param index
 	 * @param rank
 	 * @param sequence
 	 * @param required
 	 */
-	public TreeMapElement(int index, String fldName, String wbFldName, int rank, Integer sequence, boolean required)
+	public TreeMapElement(int index, String fldName, String wbFldName, int rank, Integer sequence, boolean required, boolean isLowerSubTree)
 	{
 		super();
 		this.index = index;
@@ -65,6 +69,7 @@ public class TreeMapElement
 		this.rank = rank;
 		this.sequence = sequence;
 		this.required = required;
+		this.isLowerSubTree = isLowerSubTree;
 	}
 	/**
 	 * @param rank
@@ -145,6 +150,18 @@ public class TreeMapElement
     {
         this.fldName = fldName;
     }
+	/**
+	 * @return the isLowerSubTree situation
+	 */
+	public boolean isLowerSubTree() {
+		return isLowerSubTree;
+	}
+	/**
+	 * @param isLowerSubTree the isLowerSubTreeness to establish
+	 */
+	public void setLowerSubTree(boolean isLowerSubTree) {
+		this.isLowerSubTree = isLowerSubTree;
+	}
     
     
 }

@@ -143,6 +143,7 @@ public class WorkbenchUploadMapper
         protected Integer sequence;
         protected int index;
         protected String wbFldName;
+        protected String wbTblName;
         protected String fldName;
         
         public TreeLevelInfo(int rank, boolean required, Integer sequence, String fldName)
@@ -237,7 +238,22 @@ public class WorkbenchUploadMapper
             this.wbFldName = wbFldName;
         }
 
+        
         /**
+         * @return
+         */
+        public String getWbTblName() {
+			return wbTblName;
+		}
+
+		/**
+		 * @param wbTblName
+		 */
+		public void setWbTblName(String wbTblName) {
+			this.wbTblName = wbTblName;
+		}
+
+		/**
          * @return the fldName
          */
         public String getFldName()
@@ -741,6 +757,7 @@ public class WorkbenchUploadMapper
             TreeLevelInfo levelInfo = ranks.get(wbi.getFieldName());
             levelInfo.setIndex(wbi.getViewOrder());
             levelInfo.setWbFldName(wbi.getCaption());
+            levelInfo.setWbTblName(wbi.getTableName());
             levels.add(levelInfo);
             mappedItems.add(wbi.getViewOrder());
         }
@@ -748,6 +765,8 @@ public class WorkbenchUploadMapper
         Iterator<TreeLevelInfo> levelsIter = levels.iterator();
         int currentRank = -1;
         Vector<TreeMapElement> currentElement = null;
+        String prevWbTbl = null;
+        boolean isSubTree = false;
         while (levelsIter.hasNext())
         {
             TreeLevelInfo level = levelsIter.next();
@@ -758,23 +777,12 @@ public class WorkbenchUploadMapper
                 result.add(currentElement);
                 currentRank = level.getRank();
             }
+            //isSubTree calc is pretty much hardwired for case where taxon tree levels are defined within the determination table...
+            isSubTree |= prevWbTbl != null && level.getWbTblName() != null && !level.getWbTblName().equals(prevWbTbl);
             currentElement.add(new TreeMapElement(level.getIndex(), level.getFldName(), level.getWbFldName(), level.getRank(), level
-                    .getSequence(), level.isRequired()));
+                    .getSequence(), level.isRequired(), isSubTree));
+            prevWbTbl = level.getWbTblName();
         }
-        return result;
-    }
-
-    /**
-     * @param wbi
-     * @param levels
-     * @return a TreeMapElement for wbi.
-     */
-    protected TreeMapElement getTreeMapElement(WorkbenchTemplateMappingItem wbi,
-                                               Map<String, TreeLevelInfo> levels)
-    {
-        TreeLevelInfo level = levels.get(wbi.getFieldName());
-        TreeMapElement result = new TreeMapElement(wbi.getViewOrder(), wbi.getFieldName(), wbi.getCaption(), level.getRank(), level.getSequence(),
-                level.isRequired());
         return result;
     }
 

@@ -68,6 +68,7 @@ public class UploadTableTree extends UploadTable
     protected UploadTableTree child;
     protected final Integer rank;
     protected final String wbLevelName;
+    protected Boolean isLowerSubTree; //true for levels derived from tax fields within determination table
     protected Treeable<?,?,?> treeRoot;    
     protected SortedSet<Treeable<?,?,?>> defaultParents;
     protected TreeDefIface<?, ?, ?> treeDef;
@@ -84,7 +85,7 @@ public class UploadTableTree extends UploadTable
 	 * @param rank
 	 */
 	public UploadTableTree(Uploader uploader, Table table, Table baseTable, UploadTableTree parent, boolean required, Integer rank,
-                           String wbLevelName) 
+                           String wbLevelName, Boolean isLowerSubTree) 
 	{
 		super(uploader, table, null);
         this.baseTable = baseTable;
@@ -97,6 +98,7 @@ public class UploadTableTree extends UploadTable
         this.rank = rank;
         this.wbLevelName = wbLevelName;
         defaultParents = new TreeSet<Treeable<?,?,?>>(new RankComparator());
+        this.isLowerSubTree = isLowerSubTree;
 	}
 
     /* (non-Javadoc)
@@ -280,13 +282,13 @@ public class UploadTableTree extends UploadTable
      */
     protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum)
     {
-        if (parent == null)
+        if (parent == null || parent.isLowerSubTree != this.isLowerSubTree)
         {
             return null;
         }
         DataModelObjBase result = parent.getCurrentRecord(recNum);
         UploadTableTree grandParent = parent.parent;
-        while (result == null && grandParent != null)
+        while (result == null && grandParent != null && grandParent.isLowerSubTree == this.isLowerSubTree)
         {
             result = grandParent.getCurrentRecord(recNum);
             grandParent = grandParent.parent;
@@ -775,7 +777,17 @@ public class UploadTableTree extends UploadTable
         return false;
     }
 
-    /**
+    
+    @Override
+	protected boolean ignoreFieldData(UploadField f) {
+		boolean result = super.ignoreFieldData(f);
+		if (!result) {
+			result = f.getField().getName().equalsIgnoreCase("rankid");
+		}
+		return result;
+	}
+
+	/**
      * @param recNum
      * @return true if there is some data in the current row dataset that needs to be written to this table in the database.
      */
