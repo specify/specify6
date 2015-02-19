@@ -556,8 +556,9 @@ public class TextFieldWithQuery extends JPanel
     /**
      * @param mi
      * @param advanceFocus
+     * @param idListClosure
      */
-    protected void itemSelected(final JMenuItem mi, final int advanceFocus)
+    protected void itemSelected(final JMenuItem mi, final int advanceFocus, Vector<Integer> idListClosure)
     {
         hasNewText = false;
         //log.debug("setting hasNewText to true");
@@ -571,9 +572,9 @@ public class TextFieldWithQuery extends JPanel
         int inx = popupMenu.getComponentIndex(mi);
         if (inx > -1)
         {
-            if (idList.size() > 0 && (!doAddAddItem || inx > 0))
+            if (idListClosure.size() > 0 && (!doAddAddItem || inx > 0))
             {
-                selectedId =  idList.get(doAddAddItem ? inx-1 : inx);
+                selectedId =  idListClosure.get(doAddAddItem ? inx-1 : inx);
                 setText(selectedStr);
             }
             
@@ -590,6 +591,7 @@ public class TextFieldWithQuery extends JPanel
      */
     protected void showPopup(final int advanceFocus)
     {
+        final Vector<Integer> idListClosure = (Vector<Integer>) idList.clone();
         if (!isEnabled())
         {
             return;
@@ -601,7 +603,7 @@ public class TextFieldWithQuery extends JPanel
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    itemSelected((JMenuItem)e.getSource(), advanceFocus);
+                    itemSelected((JMenuItem)e.getSource(), advanceFocus, idListClosure);
                 }
             };
             
