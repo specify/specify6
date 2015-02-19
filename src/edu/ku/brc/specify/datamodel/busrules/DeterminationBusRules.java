@@ -354,9 +354,18 @@ public class DeterminationBusRules extends BaseBusRules
      * @param deter the determination for the CO
      * @return false if there is more than one determination set to current
      */
-    protected boolean checkDeterminationStatus(final CollectionObject colObj, final Determination deter)
+    protected boolean checkDeterminationStatus(final CollectionObject colObjArg, final Determination deter)
     {
-        if (deter.isCurrentDet())
+        
+    	//Kind of a workaround to fix bug#9327.
+    	//The form system is returning the wrong colobj. 
+    	//Using the determination's colobj record, which, I think, will always have a value, solves the immediate problem.
+    	CollectionObject colObj = deter.getCollectionObject();
+        if (colObj == null) {
+        	colObj = colObjArg;
+        }
+        
+    	if (deter.isCurrentDet())
         {
             for (Determination det : colObj.getDeterminations())
             {
