@@ -208,7 +208,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     @Override
     protected boolean starting()
     {
-        if (collectionId == null)
+        if (collectionId == null || queries.size() == 0)
         {
             getIds();
             
