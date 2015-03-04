@@ -282,13 +282,26 @@ public class UploadTableTree extends UploadTable
      */
     protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum)
     {
-        if (parent == null || parent.isLowerSubTree != this.isLowerSubTree)
+        return getParentRec(currentRec, recNum, false);
+    }
+    
+    /**
+     * @param recNum
+     * 
+     * @return the nearest non-null parent, or null.
+     * 
+     * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
+     * as the parent. (Validation would have already detected if Family was required and missing).
+     */
+    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum, boolean checkSubTree)
+    {
+        if (parent == null || (checkSubTree && parent.isLowerSubTree != this.isLowerSubTree))
         {
             return null;
         }
         DataModelObjBase result = parent.getCurrentRecord(recNum);
         UploadTableTree grandParent = parent.parent;
-        while (result == null && grandParent != null && grandParent.isLowerSubTree == this.isLowerSubTree)
+        while (result == null && grandParent != null && (!checkSubTree ||grandParent.isLowerSubTree == this.isLowerSubTree))
         {
             result = grandParent.getCurrentRecord(recNum);
             grandParent = grandParent.parent;
@@ -333,7 +346,7 @@ public class UploadTableTree extends UploadTable
         { 
         	return result;
         }
-        result = getParentRec(null, recNum);
+        result = getParentRec(null, recNum, !(forChild instanceof UploadTableTree));
         if (result == null && (forChild instanceof UploadTableTree)) 
         { 
             return (DataModelObjBase) getDefaultParent2(getTreeDefItem()); 
