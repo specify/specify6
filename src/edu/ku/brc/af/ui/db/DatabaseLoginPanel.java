@@ -446,7 +446,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         {
             SpinnerModel portModel = new SpinnerNumberModel(3306, //initial value
                     0,     //min
-                    9999,  //max
+                    Integer.MAX_VALUE,  //max
                     1);    //step
             portSpinner = new JSpinner(portModel);
             JSpinner.NumberEditor editor = new JSpinner.NumberEditor(portSpinner, "#");
