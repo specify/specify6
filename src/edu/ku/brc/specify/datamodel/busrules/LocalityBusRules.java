@@ -130,6 +130,7 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
         }
     	//this code seems to be obsolete. Apparently form designers don't know anything about the special meaning of id=23
     	//And there are now 3 potential'bgmComp's. At least one of them, GeoLocate, enables/disables itself.
+        //bug 10069.
 //        if (viewable instanceof FormViewObj)
 //        {
 //            Locality locality = (Locality)dataObj;
