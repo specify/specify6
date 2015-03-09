@@ -5318,10 +5318,18 @@ public class FormViewObj implements Viewable,
         }
     }
 
+    /**
+     * @param dataObj
+     */
     protected void processControlsForSecurity(Object dataObj) {
     	boolean editable = checkEditPermission(dataObj);
     	for (String id : controlsById.keySet()) {
-    			getControlById(id).setEnabled(editable);
+    		//In case business rules have intentionally disabled controls. (bug 10068)
+    		Component cmp = getControlById(id);
+    		cmp.setEnabled(cmp.isEnabled() && editable);
+    		
+    		//The old way:
+    		//getControlById(id).setEnabled(editable);
     	}
     }
 
