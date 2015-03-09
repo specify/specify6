@@ -128,19 +128,21 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
             	}
             }
         }
-        if (viewable instanceof FormViewObj)
-        {
-            Locality locality = (Locality)dataObj;
-            if (locality  != null)
-            {
-                boolean   enable   = locality.getGeography() != null && StringUtils.isNotEmpty(locality.getLocalityName());
-                Component bgmComp  = formViewObj.getCompById("23");
-                if (bgmComp != null)
-                {
-                    bgmComp.setEnabled(enable);
-                }
-            }
-        }
+    	//this code seems to be obsolete. Apparently form designers don't know anything about the special meaning of id=23
+    	//And there are now 3 potential'bgmComp's. At least one of them, GeoLocate, enables/disables itself.
+//        if (viewable instanceof FormViewObj)
+//        {
+//            Locality locality = (Locality)dataObj;
+//            if (locality  != null)
+//            {
+//                boolean   enable   = locality.getGeography() != null && StringUtils.isNotEmpty(locality.getLocalityName());
+//                Component bgmComp  = formViewObj.getCompById("23");
+//                if (bgmComp != null)
+//                {
+//                    bgmComp.setEnabled(enable);
+//                }
+//            }
+//        }
     }
 
     /* (non-Javadoc)
