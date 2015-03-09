@@ -6,57 +6,32 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.6.00<br>
-31 December 2014<br>
+Specify 6.6.01<br>
+09 March 2015<br>
 Specify Software Project</h3>
-<p>&nbsp;</p>
-<p><strong>Important Notes</strong></p>
-<ol>
-  <li>The Specify update package for this release forces a MySQL database schema update. It is critical to make a backup copy of your current data prior to installing Specify 6.6 and updating the Specify database schema. Before updating all users should be logged off of Specify. After the database is updated, each workstation which accesses a shared collection database will require updating to Specify 6.6.</li>
-  <li>Specify 6.6, Specify helper applications, and the Specify  installation package all require the Java 8 SE runtime environment (Java 8 JRE) to be installed at the system level prior to updating and use. Java 8 is available from Oracle Corp: <a href="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html">http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html</a></li>
-</ol>
-<p><strong>New Capabilities</strong></p>
-<ol>
-  <li>iPad Data Export function to create and export a database copies to the Specify iPad cloud server for download and use with Specify Insight on the Apple iPad. </li>
-  <li>Specify 6.6  includes a tool for assigning ISO continent, country and U.S. state codes to locality records to enable Apple iPad map displays.<br>
-  </li>
-</ol>
-<h4>List of Changes</h4>
-<ol>
-  <li>The Specify Data Exporter will now export geo-coordinates with correct precision.  2014-12-16  (Bugzilla 9911)</li>
-<li>External attachment file records which include a &quot;.&quot; (period) character in the attachment filename will no longer cause an error while batch uploading.  2014-12-16  (9884)</li>
-<li>Unused Collection Object Attribute fields are now hidden by default.  2014-12-16  (9702)</li>
-<li>The maximum number of characters allowed in a Specify WorkBench cell has been increased.  2014-12-16  (9617, 9812)</li>
-<li>A PaleoContext record can no longer incorrectly be deleted when another record is linked to it.  2014-12-15  (9711)</li>
-<li>Batch attachment import for Collecting Event / Collector Number now works correctly.  2014-12-12  (9975)</li>
-<li>The Darwin Core Archive export function has been updated to make more fields map automatically.  2014-12-12  (9972, 9781, 9979)</li>
-<li>Pick lists can now be edited properly on popup (sub)forms.  2014-12-12  (9966)</li>
-<li>For collections with host species taxon data, a host's Preferred Taxon Name can be put and viewed on a Collecting Event Attribute  form.  2014-12-12  (9715)</li>
-<li>Conservation Event now offers partial date fields.  2014-12-12  (9553, 9968)</li>
-<li>Entering a new value in an editable pick list no longer requires clicking the &quot;Save&quot; button twice in order to save the form.  2014-12-12  (8629)</li>
-<li>Added new Collecting Trip fields to default CT form.  2014-12-11  (9974, 9835)</li>
-<li>Added Borrow Date and Count fields to Borrow form.  2014-12-11  (9971, 9970, 9883)</li>
-<li>Short Description is now visible in Conservation Description form.  2014-12-11  (9969)</li>
-<li>Fixed a bug that occasionally caused Specify to hang on startup.  2014-12-11  (9756)</li>
-<li>Searches on Host Taxon Tree levels now work in the main collection.  2014-12-11  (9631)</li>
-<li>The Agent table now has a name Suffix field.  2014-12-10  (9905, 9970)</li>
-<li>Group Number is now available for Taxonomic levels.  2014-12-10  (9833)</li>
-<li>The Specify (Database) Setup Wizard no longer assigns the Collection Manager Agent the Title "mr".  2014-12-10  (9828)</li>
-<li>Darwin Core mapping fields are now visible by default in the schema.  2014-12-10  (9782)</li>
-<li>Exporting query results to Excel  no longer requires the file name extension &quot;.xls&quot; to be manually entered.  2014-12-10  (9720)</li>
-<li>Title and Publisher fields in Reference Work table  are now larger.  2014-12-10  (9718)</li>
-<li>Darwin Core (DwC) Export Schema for Symbiota now sets &quot;isCurrent = yes or empty&quot;, as a default.  2014-12-10  (9691)</li>
-<li>When  the Other Identifiers form is displayed in grid mode, one can now add new records.  2014-12-10  (9634)</li>
-<li>Record Sets  now maintain the sort order in which they were originally saved.  2014-12-10  (9626)</li>
-<li>The maximum number of rows per output file supported by the Specify File Splitter has been increased to 25,000.  2014-11-17  (9856)</li>
-<li>The Specify ExpCmdLine application's "ExportForWebPortal" action now exports  data with links to file attachments for the Specify Web Portal.  2014-11-07  (9855)</li>
-<li>The F1 key and Help now work in the Specify Setup Wizard.  2014-11-05  (9850, 9849)</li>
-<li>Field length limits are now checked in the WorkBench when &quot;Highlight Invalid Cells&quot; is set to on.  2014-10-24  (9813)</li>
-<li>An error no longer occurs during attachment processing when saving Collection Objects when the  attachment file name is null.  2014-10-24  (9717)</li>
-<li>Specify WorkBench no longer requires values in the Catalog Number field.  2014-10-22  (9783)</li>
-<li>The WorkBench data model no longer duplicates Collection Object Attribute 1.  2014-10-10  (9722)</li>
-<li>Data Exporter  now exports dates with two digit values for both month and day.  2014-10-08  (9721)</li>
-<li>Query Builder no longer deletes data fields in the Query when saving it using the &quot;Save As&quot; option.  2014-10-08  (9643)</li>
+<br>
+<br>
+<h4>List of changes in Specify 6.6.01<br>
+</h4>
+<ol><li>The range of allowable values for the Specify MySQL network port has been increased to accommodate network firewall restrictions for port ID ranges. 2015-03-05 (Bugzilla 10067) </li>
+<li>Unwanted Determination records pointing to Family, Order or other mapped higher taxon rank fields in the Taxon table will no longer be erroneously created when uploading Collection Object records through the WorkBench when there is more than one set of mapped Determinations (e.g. mapped fields: Determination/Genus2 and Determination/Species2) which are empty. 2015-03-05 (10064)</li>
+<li>Resource Export/Import for Reports now retains custom format information. 2015-03-05 (10052)</li>
+<li>The Specify WorkBench can now auto-increment the numeric segments of any format of catalog number. 2015-03-05 (10038)</li>
+<li>The 'Create DataSet from RecordSet' function no longer duplicates rows. 2015-03-05 (10034)</li>
+<li>Records in PaleoContext tables formatted to be embedded in the Collection Object, Collecting Event, or Locality table can now be deleted. 2015-03-05 (9999)</li>
+<li>The SpLocalizer application replaces the SpecifyL10N program in the Specify distribution for foreign language translations. 2015-03-04 (10048)</li>
+<li>Errors are no longer created during a schema update forced by a new Specify release when export caches have custom lat/long field names. 2015-03-04 (10036)</li>
+<li>The columns in the Specify 6.6 ISO Assignment Tool report are now aligned correctly. 2015-03-03 (10008)</li>
+<li>The iReports program scriptlet "sumPrepCounts"  has been fixed for reports and labels, so the count (sum) of preparations for a Collection Object record can be shown on the printed output. 2015-03-03 (10056)</li>
+<li>Importing a label, report or invoice for another user correctly associates the resource and the linked query with that user. 2015-03-03 (10046)</li>
+<li>The Data Exporter now exports empty lat/long unit data values correctly. 2015-03-03 (10045)</li>
+<li>Collection Object Attribute Data in the first row of a DataSet are now uploaded correctly. 2015-03-02 (10032)</li>
+<li>In the iPad Exporter, a new iPad cache server user can no longer be created when clicking "New User" with no credentials entered into the form. 2015-02-25 (10026)</li>
+<li>Information Request data table fields are now in the Schema Config document which allows them to be re-captioned, hidden or unhidden on forms. They can also now be queried. 2015-02-25 (10033)</li>
+<li>While attempting to import a spreadsheet file into the WorkBench, if there is a problem with the mapping of the Excel data columns to the WorkBench data fields, an error message will now appear noting the existence of the problem. 2015-02-25 (10002)</li>
+<li>Sequentially editing and saving Collection Object records with Determinations contained within a record set, or a query, no longer elicits an unable to save error. 2015-02-24 (9327)</li>
+<!--<li>Converter assigns same CollectionMemberID to all preparations.  2015-03-05  (9755)</li>-->
+<!--<li>express search resource properties files contain junk chars  2015-02-25  (10043)</li>-->
 </ol><br>
 <br>
 <br>
