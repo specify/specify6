@@ -202,6 +202,14 @@ public class Scriptlet extends JRDefaultScriptlet
         return catalogNumber;
     }
 
+    /**
+     * @param str
+     * @return
+     */
+    public String toProperCase(String str) {
+    	return StringUtils.capitaliseAllWords(str.toLowerCase());
+    }
+    
     /*
     public String formatCatNo(Float catalogNo) throws JRScriptletException
     {
