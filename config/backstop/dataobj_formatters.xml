@@ -218,6 +218,19 @@
     </format>
 
     <format
+        name="CollectionRelType"
+        title="CollectionRelType"
+        class="edu.ku.brc.specify.datamodel.CollectionRelType"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="Collector"
         title="Collector"
         class="edu.ku.brc.specify.datamodel.Collector"

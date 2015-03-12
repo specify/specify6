@@ -46,6 +46,8 @@
     <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="CollectionRelationship"  name="CollectionRelationshipLeft"        class="edu.ku.brc.specify.datamodel.CollectionRelationship" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="CollectionRelType"  name="CollectionRelType"        class="edu.ku.brc.specify.datamodel.CollectionRelType" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ContainerBrief"     name="ContainerDisplay"         class="edu.ku.brc.specify.datamodel.Container" helpcontext="CBXQViewEdit"/>

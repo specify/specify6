@@ -117,6 +117,16 @@
                 <altview name="AutoNumberingScheme Edit" viewdef="AutoNumberingScheme" mode="edit"/> 
             </altviews>
         </view>
+
+        <view name="CollectionRelType"
+            class="edu.ku.brc.specify.datamodel.CollectionRelType"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionRelType Form.]]></desc>
+            <altviews>
+                <altview name="CollectionRelType View" viewdef="CollectionRelType" mode="view" validated="false" default="true"/>                
+                <altview name="CollectionRelType Edit" viewdef="CollectionRelType" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
         
         <!--<view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
@@ -1075,6 +1085,30 @@
                     <cell type="label" labelfor="12"/>
                     <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
                 </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="CollectionRelType"
+            class="edu.ku.brc.specify.datamodel.CollectionRelType"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Journal form - unknown use in schema]]></desc>
+
+            <columnDef>100px,2px,473px,5px,120px,2px,125px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,460px,5px,150px,2px,183px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,518px,5px,180px,2px,195px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(4),5px:g,p,2px,p:g(2)</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="remarks" uitype="text"/>
+                </row>
             </rows>
         </viewdef>
         
