@@ -250,6 +250,8 @@
         </table>
         <!--<table name="DeterminationStatus" field="status"/>-->
         <alias name="Agent" field="determiner"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
     </table>
     
     <table name="ExchangeIn" >
@@ -390,6 +392,8 @@
             <alias name="Attachment"/>
         </table>
         <alias name="Shipment" field="shipments" />
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
     </table>
     
     <table name="LoanPreparation">
@@ -425,6 +429,8 @@
       		<alias name="Agent" field="modifiedByAgent" />
         </table>
         <!-- alias name="CollectingEvent" field="collectingEvents"/-->
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
     </table>
     
     <table name="PaleoContext" flags="paleo">
@@ -432,6 +438,8 @@
     	<alias name="GeologicTimePeriod" field="chronosStrat"/>
     	<alias name="GeologicTimePeriod" field="chronosStratEnd"/>
     	<alias name="LithoStrat"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
     </table>
     	
     <table name="Permit">
