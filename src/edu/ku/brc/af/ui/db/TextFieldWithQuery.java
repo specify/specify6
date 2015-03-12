@@ -1077,6 +1077,9 @@ public class TextFieldWithQuery extends JPanel
      */
     protected void showDialog(final int advanceFocus)
     {
+        final Vector<Integer> idListLocal = (Vector<Integer>) idList.clone();
+        final Vector<String> listLocal = (Vector<String>) list.clone();
+
         DefaultListModel<String> model = new DefaultListModel<String>();
         if (doAddAddItem)
         {
@@ -1185,10 +1188,10 @@ public class TextFieldWithQuery extends JPanel
             
             inx = doAddAddItem ? inx-1 : inx;
 
-            if (!isDoingAdd && inx < idList.size())
+            if (!isDoingAdd && inx < idListLocal.size())
             {
-                selectedId = idList.get(inx);
-                setText(list.get(inx));
+                selectedId = idListLocal.get(inx);
+                setText(listLocal.get(inx));
             }
 
             SwingUtilities.invokeLater(new Runnable()

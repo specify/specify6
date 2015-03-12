@@ -1395,6 +1395,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     {
                         itemLabel = listBox.getSelectedValue().toString();
                         this.dataObj = null;
+                        getValue();
                     } else
                     {
                         return;
