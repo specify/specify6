@@ -186,7 +186,7 @@ public class Java2sAutoTextField extends JTextField
         public void replace(int i, int j, String s, AttributeSet attributeset)
                 throws BadLocationException
         {
-            keyType = j == 0 ? INSERT : REMOVE;
+            keyType = INSERT;
             super.remove(i, j);
             insertString(i, s, attributeset);
         }
