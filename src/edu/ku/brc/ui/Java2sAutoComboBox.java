@@ -34,11 +34,17 @@
  */
 package edu.ku.brc.ui;
 
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 import edu.ku.brc.af.ui.db.PickListItemIFace;
@@ -58,10 +64,13 @@ public class Java2sAutoComboBox extends JComboBox
 
     private AutoTextFieldEditor autoTextFieldEditor;
     private boolean             isFired;
+    
+    private boolean firstTime = true;
 
     /**
      * @param list
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Java2sAutoComboBox(java.util.List<?> list)
     {
         isFired             = false;
@@ -79,6 +88,64 @@ public class Java2sAutoComboBox extends JComboBox
             }
         });
         setEditor(autoTextFieldEditor);
+        
+        final Java2sAutoTextField textField = (Java2sAutoTextField)getEditor().getEditorComponent();
+        textField.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                super.keyPressed(e);
+                if (Java2sAutoComboBox.this.firstTime && !Java2sAutoComboBox.this.isPopupVisible())
+                {
+                    Java2sAutoComboBox.this.firstTime = false;
+                    Java2sAutoComboBox.this.showPopup();
+                }            
+            }
+        });
+        
+        this.addPopupMenuListener(new PopupMenuListener()
+        {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+            {
+                Java2sAutoComboBox.this.firstTime = true;
+            }
+            
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
+            {
+            }
+            
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e)
+            {
+            }
+        });
+        
+        textField.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+            super.focusGained(e);
+                textField.setSelectionStart(0);
+                textField.setSelectionEnd(textField.getText().length());
+            }
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                super.focusLost(e);
+                // Bug 10061: This is need because for some reason the PopupMenu is clearing the selected item
+                // while the user is typing because of the firing of the ItemChanged Event with code 701. 
+                // So this code here resets the selected item when it loses focus.
+                Object selObj = Java2sAutoComboBox.this.getSelectedItem();
+                if (Java2sAutoComboBox.this.getSelectedIndex() == -1 && selObj != null)
+                {
+                    Java2sAutoComboBox.this.setSelectedValue(selObj);
+                }
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -116,7 +183,6 @@ public class Java2sAutoComboBox extends JComboBox
         
         isFired = true;
         TitleValueIFace tviObj = obj instanceof TitleValueIFace ? (TitleValueIFace)obj : null;
-        
         for (int i=0;i<getModel().getSize();i++)
         {
             Object modelObj = getModel().getElementAt(i);
