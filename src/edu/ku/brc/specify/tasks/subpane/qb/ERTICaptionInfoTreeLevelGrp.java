@@ -1,4 +1,4 @@
-/* Copyright (C) 2013, University of Kansas Center for Research
+/* Copyright (C) 2015, University of Kansas Center for Research
  * 
  * Modifications Copyright (C) 2013 President and Fellows of Harvard College
  * 

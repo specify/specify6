@@ -16,7 +16,7 @@ import javax.persistence.Transient;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 
-/* Copyright (C) 2013, University of Kansas Center for Research
+/* Copyright (C) 2015, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
