@@ -1,4 +1,4 @@
-/* Copyright (C) 2013, University of Kansas Center for Research
+/* Copyright (C) 2015, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -43,10 +43,10 @@ import edu.ku.brc.specify.toycode.mexconabio.FieldDef.DataType;
 public class FMPCreateTable extends DefaultHandler
 {
     
-    public static final String[] twoByteSyms  = {"ü", "ó", "é", "ä", "á", "í", "ö", "ø", "Å", "ê", "ñ", "ç", "ú", "Á"};
-    //public static final String[] syms         = {"�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�"};
+    public static final String[] twoByteSyms  = {"Ã¼", "Ã³", "Ã©", "Ã¤", "Ã¡", "Ã­", "Ã¶", "Ã¸", "Ã…", "Ãª", "Ã±", "Ã§", "Ãº", "Ã�"};
+    //public static final String[] syms         = {"¼",  "³",  "©",  "¤",  "¡",  "­",  "¶",  "¸",  "…",  "ª",  "±",  "§",  "º",  "�"};
     
-    public static final String[] chars        = {"�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�"};
+    public static final String[] chars        = {"Ÿ",  "—",  "Ž",  "Š",  "‡",  "’",  "š",  "¿",  "�",  "�",  "–",  "�",  "œ",  "ç"};
     public static final String[] ascii        = {"u",  "o",  "e",  "a",  "a",  "i",  "o",  "o",  "A",  "e",  "n",  "c",  "u",  "A"};
 
     
@@ -154,7 +154,7 @@ public class FMPCreateTable extends DefaultHandler
     public static String convertFromTwoByteUTF8(final String str)
     { 
         String s = str;
-        //while (s.indexOf('�') > -1)
+        //while (s.indexOf('Ã') > -1)
         {
             for (int ii=0;ii<twoByteSyms.length;ii++)
             {

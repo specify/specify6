@@ -1,4 +1,4 @@
-/* Copyright (C) 2013, University of Kansas Center for Research
+/* Copyright (C) 2015, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -166,13 +166,13 @@ public class FileMakerToMySQL extends DefaultHandler
                     {
                         value = StringUtils.capitalize(value.trim());
                         value = StringUtils.deleteWhitespace(value);
-                        //value = StringUtils.replace(value, "�", "n");
+                        //value = StringUtils.replace(value, "–", "n");
                         value = StringUtils.replace(value, ":", "");
                         value = StringUtils.replace(value, ";", "");
-                        //value = StringUtils.replace(value, "�", "a");
+                        //value = StringUtils.replace(value, "‡", "a");
                         value = StringUtils.replace(value, ".", "");
-                        //value = StringUtils.replace(value, "ñ", "a");
-                        //value = StringUtils.replace(value, "á", "a");
+                        //value = StringUtils.replace(value, "Ã±", "a");
+                        //value = StringUtils.replace(value, "Ã¡", "a");
                         value = StringUtils.replace(value, "/", "");
                         
                         //System.out.println(value);
@@ -244,8 +244,8 @@ public class FileMakerToMySQL extends DefaultHandler
     public void characters(char[] ch, int start, int length)
     {
         
-        String[] syms  = {"ü", "ó", "é", "ä", "á", "í", "ö", "ø", "Å", "ê", "ñ", "ç", "�x", "ú", "Á"};
-        String[] chars = {"�",  "�",  "�", "�",   "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�"};
+        String[] syms  = {"Ã¼", "Ã³", "Ã©", "Ã¤", "Ã¡", "Ã­", "Ã¶", "Ã¸", "Ã…", "Ãª", "Ã±", "Ã§", "Ãx", "Ãº", "Ã�"};
+        String[] chars = {"Ÿ",  "—",  "Ž", "Š",   "‡",  "’",  "š",  "¿",  "�",  "�",  "–",  "�",  "’",  "œ",  "ç"};
 
         if (buffer != null) 
         {
@@ -256,7 +256,7 @@ public class FileMakerToMySQL extends DefaultHandler
               s = StringUtils.replace(s, syms[i], chars[i]);
           }
           
-          /*int inx = s.indexOf("�");
+          /*int inx = s.indexOf("Ã");
           if (inx > -1)
           {
               for (int i=0;i<s.length();i++)
@@ -270,15 +270,15 @@ public class FileMakerToMySQL extends DefaultHandler
           {
              try
             {
-                 /*System.out.println(Arrays.toString("��".getBytes("ISO-8859-1")));
+                 /*System.out.println(Arrays.toString("šŠ".getBytes("ISO-8859-1")));
 
-                 s = "M.G�mez";
+                 s = "M.G³mez";
                  for (int i=0;i<s.length();i++)
                  {
                      int val = ((int)s.charAt(i));
                      System.out.println(s.charAt(i)+" ["+val+"]["+Integer.toHexString(val)+"]["+((byte)s.charAt(i))+"]");
                  }
-                System.out.print(s+" - "+StringUtils.replace(s, "ó", "�") + " - ");
+                System.out.print(s+" - "+StringUtils.replace(s, "Ã³", "š") + " - ");
                 ByteArrayInputStream encXML = new  ByteArrayInputStream(s.getBytes());
                 byte[] bytes = new byte[1024];
                 int n = encXML.read(bytes, 0, length);
@@ -391,16 +391,16 @@ public class FileMakerToMySQL extends DefaultHandler
             fields.insertElementAt(fd, 0);
         }*/
         
-        String[] syms  = {"ü", "ó", "é", "ä", "á", "í", "ö", "ø", "Å", "ê", "ñ", "ç", "�x", "ú", "Á"};
+        String[] syms  = {"Ã¼", "Ã³", "Ã©", "Ã¤", "Ã¡", "Ã­", "Ã¶", "Ã¸", "Ã…", "Ãª", "Ã±", "Ã§", "Ãx", "Ãº", "Ã�"};
         String[] chars = {"u",  "o",  "e", "a",   "a",  "i",  "o",  "o",  "A",  "e",  "n",  "c",  "i",  "u",  "A"};
-        //String[] chars = {"�",  "�",  "�", "�",   "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�",  "�"};
+        //String[] chars = {"Ÿ",  "—",  "Ž", "Š",   "‡",  "’",  "š",  "¿",  "�",  "�",  "–",  "�",  "’",  "œ",  "ç"};
         
         StringBuilder selectDB = new StringBuilder();
         for (FieldDef fd : fields)
         {
             String s = fd.getName();
             System.out.println(s);
-            while (s.indexOf('�') > -1)
+            while (s.indexOf('Ã') > -1)
             {
                 for (int ii=0;ii<syms.length;ii++)
                 {
