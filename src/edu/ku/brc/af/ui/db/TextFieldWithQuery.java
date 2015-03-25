@@ -343,8 +343,12 @@ public class TextFieldWithQuery extends JPanel
         dbBtn.setVisible(false);
     }
 
+    public boolean isPopupShowing() {
+        return isPopupShowing;
+    }
 
-    
+
+
     /**
      * @return the prevEnteredText
      */
@@ -580,9 +584,14 @@ public class TextFieldWithQuery extends JPanel
             
             if (listSelectionListeners != null)
             {
-                notifyListenersOfChange(mi);
+                notifyListenersOfChange(mi.getText().equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")) ? new AddItemEvent(prevEnteredText) : mi);
             }
         }
+    }
+
+    public static class AddItemEvent {
+        public final String value;
+        public AddItemEvent(String value) { this.value = value; }
     }
     
     /**

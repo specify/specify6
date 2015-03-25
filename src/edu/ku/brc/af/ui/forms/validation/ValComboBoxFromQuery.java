@@ -273,7 +273,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     {
                         l.focusLost(e);
                     }
-                    refreshUIFromData(true);
+
+                    if (!textWithQuery.isPopupShowing()) {
+                        refreshUIFromData(true);
+                    }
                 }
             });
         }
@@ -585,9 +588,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    //currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
-                    currentMode = MODE.NewAndNotEmpty;
-                    createEditFrame(true, false, false);
+                    doNewAction(null);
                 }
             };
             createBtn.addActionListener(defaultNewAction);
@@ -608,7 +609,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             cloneBtn.addActionListener(defaultCloneAction);
         }
     }
-    
+
+    protected void doNewAction(String enteredText) {
+        //currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
+        currentMode = MODE.NewAndNotEmpty;
+        createEditFrame(true, false, false, enteredText);
+    }
+
     /**
      * @return the name of the search that used by the search dialog.
      */
@@ -780,9 +787,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param isCloned the data object is cloned
      * @param isViewOnly the data object is view only even when the form is in edit mode
      */
-    protected void createEditFrame(final boolean isNewObject, 
+    protected void createEditFrame(final boolean isNewObject,
                                    final boolean isCloned,
-                                   final boolean isViewOnly)
+                                   final boolean isViewOnly) {
+        createEditFrame(isNewObject, isCloned, isViewOnly, null);
+    }
+
+    protected void createEditFrame(final boolean isNewObject,
+                                   final boolean isCloned,
+                                   final boolean isViewOnly,
+                                   final String enteredText)
+
     {
         boolean canModify = !isViewOnly;
         if (AppContextMgr.isSecurityOn() && tableInfo.getPermissions() != null)
@@ -868,7 +883,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             if (ds != null)
             {
                 //log.info("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
-                String value = textWithQuery.getSelectedId() == null ? textWithQuery.getPrevEnteredText() : "";
+                String value = textWithQuery.getSelectedId() == null ? (enteredText == null ? "" : enteredText) : "";
                 if (!isCloned)
                 {
                     ds.setFieldValue(newDataObj, fieldNames[0], value);
@@ -1372,7 +1387,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         //log.debug("valueChanged: "+(e != null ? e.getClass().getSimpleName() : "null")+" "+e.getSource().getClass().getSimpleName());
         if (e != null)
         {
-            if (e.getSource() instanceof TextFieldWithQuery)
+            if (e.getSource() instanceof TextFieldWithQuery.AddItemEvent)
+            {
+                doNewAction(((TextFieldWithQuery.AddItemEvent) e.getSource()).value);
+                return;
+            }
+            else if (e.getSource() instanceof TextFieldWithQuery)
             {
                 if (((TextFieldWithQuery)e.getSource()).getTextField().getText().length() == 0)
                 {
@@ -1400,15 +1420,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     {
                         return;
                     }
-                }
-                
-                if (itemLabel != null && itemLabel.equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
-                {
-                    if (defaultNewAction != null)
-                    {
-                        defaultNewAction.actionPerformed(null);
-                    }
-                    return;
                 }
             }
         }
