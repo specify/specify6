@@ -584,7 +584,8 @@ public class TextFieldWithQuery extends JPanel
             
             if (listSelectionListeners != null)
             {
-                notifyListenersOfChange(mi.getText().equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")) ? new AddItemEvent(prevEnteredText) : mi);
+                String value = StringUtils.isEmpty(prevEnteredText) ? cachedPrevText : prevEnteredText;
+                notifyListenersOfChange(mi.getText().equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")) ? new AddItemEvent(value) : mi);
             }
         }
     }
