@@ -1090,6 +1090,9 @@ public class TextFieldWithQuery extends JPanel
         final Vector<Integer> idListLocal = (Vector<Integer>) idList.clone();
         final Vector<String> listLocal = (Vector<String>) list.clone();
 
+        final String enteredText = StringUtils.isEmpty(prevEnteredText) ? cachedPrevText : prevEnteredText;
+
+
         DefaultListModel<String> model = new DefaultListModel<String>();
         if (doAddAddItem)
         {
@@ -1210,7 +1213,7 @@ public class TextFieldWithQuery extends JPanel
                 public void run()
                 {
                     transferFocus(advanceFocus);
-                    notifyListenersOfChange(listBox);
+                    notifyListenersOfChange(isDoingAdd ? new AddItemEvent(enteredText) : listBox);
                 }
             });
            
