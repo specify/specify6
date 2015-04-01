@@ -913,6 +913,9 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         setValue(tblInfo, "contextTableIdent", getAttr(element, "contextTableIdent", 0));
         setValue(tblInfo, "columnAlias", getAttr(element, "columnAlias", null));
         setValue(tblInfo, "formatName", getAttr(element, "formatName", null));
+        if (formatName != null && "".equals(formatName.trim())) {
+        	formatName = null;
+        }
     }
 
     /**

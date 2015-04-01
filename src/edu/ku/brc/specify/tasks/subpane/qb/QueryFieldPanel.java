@@ -880,7 +880,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      */
     protected String getFormatName()
     {
-    	return getQueryField() != null ? getQueryField().getFormatName() : null;
+    	return getQueryField() != null 
+    			? (StringUtils.isEmpty(getQueryField().getFormatName()) ? null : getQueryField().getFormatName()) 
+    			: null;
     }
     
     /**
