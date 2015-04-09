@@ -323,15 +323,24 @@ public class HostTaxonPlugin extends UIPluginBase
                     if (StringUtils.isNotEmpty(common))
                     {
                         common = (StringUtils.isNotEmpty(fullName) ? " OR " : "") + String.format("LOWER(CommonName) LIKE '%c%s%c'", '%', common.toLowerCase(), '%');
-                        if (StringUtils.isEmpty(fullName))
+                        if (StringUtils.isEmpty(orderBy))
                         {
                             orderBy = "CommonName";
                         }
                     }
                 }
                 
-                String sql = String.format("SELECT TaxonID, FullName, CommonName FROM taxon tx INNER JOIN taxontreedef ttd ON tx.TaxonTreeDefID = ttd.TaxonTreeDefID WHERE ttd.TaxonTreeDefID = %d AND %s %s ORDER BY %s", 
-                                           taxonTreeDef.getId(), fullName == null ? "" : fullName, common == null ? "" : common, orderBy);
+                if ("".equals(orderBy)) {
+                	orderBy = "FullName";
+                }
+                String where = (fullName == null ? "" : fullName) + " " + (common == null ? "" : common);
+                if (!"".equals(where.trim())) {
+                	where = " AND (" + where + ")";
+                } else {
+                	where = "";
+                }
+                String sql = String.format("SELECT TaxonID, FullName, CommonName FROM taxon tx INNER JOIN taxontreedef ttd ON tx.TaxonTreeDefID = ttd.TaxonTreeDefID WHERE ttd.TaxonTreeDefID = %d %s ORDER BY %s", 
+                                           taxonTreeDef.getId(), where, orderBy);
                 //System.out.println(sql);
                 return sql;
             }
