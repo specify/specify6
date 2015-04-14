@@ -1088,6 +1088,10 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
+        //adjust uploadfields to match parentTables
+        while (uploadFields.size() < this.parentTables.size()) {
+        	uploadFields.add(new Vector<UploadField>());
+        }
         assignParentSetters();
     }
 
