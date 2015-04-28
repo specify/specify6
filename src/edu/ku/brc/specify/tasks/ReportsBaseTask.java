@@ -1143,17 +1143,17 @@ public class ReportsBaseTask extends BaseTask
         FastReportBuilder drb = new FastReportBuilder();
         
         Style columDetail = new Style();
-        columDetail.setBorder(Border.THIN);
+        //columDetail.setBorder(Border.THIN);
         
         Style columDetailWhite = new Style();
-        columDetailWhite.setBorder(Border.THIN);
+        //columDetailWhite.setBorder(Border.THIN);
         columDetailWhite.setBackgroundColor(Color.WHITE);
         columDetailWhite.setFont(new Font(10, fontName, true));
         columDetailWhite.setHorizontalAlign(HorizontalAlign.CENTER);
         columDetailWhite.setBlankWhenNull(true);
         
         Style columDetailWhiteBold = new Style();
-        columDetailWhiteBold.setBorder(Border.THIN);
+        //columDetailWhiteBold.setBorder(Border.THIN);
         columDetailWhiteBold.setBackgroundColor(Color.WHITE);
         
         Style titleStyle = new Style();
@@ -1171,7 +1171,7 @@ public class ReportsBaseTask extends BaseTask
 
         // Odd Row Style
         Style oddRowStyle = new Style();
-        oddRowStyle.setBorder(Border.NO_BORDER);
+        //oddRowStyle.setBorder(Border.NO_BORDER);
         //oddRowStyle.setFont(dataRowFont);
         oddRowStyle.setHorizontalAlign(HorizontalAlign.CENTER);
         
@@ -1237,7 +1237,7 @@ public class ReportsBaseTask extends BaseTask
             
             Style headerStyle = new Style();
             headerStyle.setFont(new Font(12, fontName, true));
-            headerStyle.setBorder(Border.THIN);
+            //headerStyle.setBorder(Border.THIN);
             headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
             headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
             headerStyle.setBackgroundColor(new Color(80, 80, 80));
