@@ -99,6 +99,7 @@ import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.Java2sAutoComboBox;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.skin.SkinItem;
@@ -489,6 +490,9 @@ public class DatabaseLoginPanel extends JTiledPanel
         password.addFocusListener(focusAdp);
 
         databases = new ValComboBox(dbPickList);
+        if (databases.getComboBox() instanceof Java2sAutoComboBox) {
+        	((Java2sAutoComboBox)databases.getComboBox()).setCaseSensitive(true);
+        }
         servers   = new ValComboBox(svPickList);
         
         dbPickList.setComboBox(databases);
