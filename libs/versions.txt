@@ -56,7 +56,7 @@ jasper reports							3.0.0
 DynamicJasper                           3.0.4
 TimingFramework							0.55
 junit									4.1
-mysql-connector-java					5.1.6
+mysql-connector-java					5.1.35
 itext									2.1.7 (updated for fix for bug #8555 [pdf export of jasper reports] can back up to 2.0.2 if necessary)
 javacsv									2.0
 jh										2.0_02
