@@ -113,17 +113,17 @@ public class PrintTableHelper
         FastReportBuilder drb = new FastReportBuilder();
         
         Style columDetail = new Style();
-        columDetail.setBorder(Border.THIN);
+        //columDetail.setBorder(Border.THIN);
         
         Style columDetailWhite = new Style();
-        columDetailWhite.setBorder(Border.THIN);
+        //columDetailWhite.setBorder(Border.THIN);
         columDetailWhite.setBackgroundColor(Color.WHITE);
         columDetailWhite.setFont(new Font(10, fontName, false));
         columDetailWhite.setHorizontalAlign(HorizontalAlign.CENTER);
         columDetailWhite.setBlankWhenNull(true);
         
         Style columDetailWhiteBold = new Style();
-        columDetailWhiteBold.setBorder(Border.THIN);
+        //columDetailWhiteBold.setBorder(Border.THIN);
         columDetailWhiteBold.setBackgroundColor(Color.WHITE);
         
         Style titleStyle = new Style();
@@ -131,7 +131,7 @@ public class PrintTableHelper
         
         // Odd Row Style
         Style oddRowStyle = new Style();
-        oddRowStyle.setBorder(Border.NO_BORDER);
+        //oddRowStyle.setBorder(Border.NO_BORDER);
         oddRowStyle.setHorizontalAlign(HorizontalAlign.CENTER);
         
         Color veryLightGrey = new Color(240, 240, 240);
@@ -189,7 +189,7 @@ public class PrintTableHelper
             
             Style headerStyle = new Style();
             headerStyle.setFont(new Font(11, fontName, true));
-            headerStyle.setBorder(Border.THIN);
+            //headerStyle.setBorder(Border.THIN);
             headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
             headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
             headerStyle.setBackgroundColor(new Color(80, 80, 80));
