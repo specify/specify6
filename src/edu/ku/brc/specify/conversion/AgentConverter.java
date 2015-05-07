@@ -490,7 +490,7 @@ public class AgentConverter
                         {
                             log.info(sqlStr.toString());
                         }
-                        updateStatement.executeUpdate(sqlStr.toString());
+                        updateStatement.executeUpdate(sqlStr.toString(), Statement.RETURN_GENERATED_KEYS);
                         
                         Integer newAgentId = BasicSQLUtils.getInsertedId(updateStatement);
                         if (newAgentId == null)
@@ -632,7 +632,7 @@ public class AgentConverter
                         {
                             log.info(sqlStr.toString());
                         }
-                        updateStatement.executeUpdate(sqlStr.toString());
+                        updateStatement.executeUpdate(sqlStr.toString(), Statement.RETURN_GENERATED_KEYS);
                         
                         Integer newAgentId = BasicSQLUtils.getInsertedId(updateStatement);
                         if (newAgentId == null)
@@ -733,7 +733,7 @@ public class AgentConverter
             sqlStr1.append("IsPrimary, IsCurrent, Phone1, Phone2, Fax, RoomOrBuilding, PositionHeld, AgentID, CreatedByAgentID, ModifiedByAgentID, Version, Ordinal)");
             sqlStr1.append(" VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             
-            PreparedStatement pStmt = newDBConn.prepareStatement(sqlStr1.toString());
+            PreparedStatement pStmt = newDBConn.prepareStatement(sqlStr1.toString(), Statement.RETURN_GENERATED_KEYS);
             
             //                               1                2         3        4        5           6            7              8                9          10      11           12                13            14            15
             String addrSQL = "SELECT a.TimestampModified, a.Address, a.City, a.State, a.Country, a.Postalcode, a.Remarks, a.TimestampCreated, aa.Phone1, aa.Phone2, aa.Fax, aa.RoomOrBuilding , aa.IsCurrent, a.LastEditedBy, aa.JobTitle " +
@@ -1000,7 +1000,7 @@ public class AgentConverter
         try
         {
             Statement updateStatement = newDBConnArg.createStatement();
-            updateStatement.executeUpdate(insertSQL);
+            updateStatement.executeUpdate(insertSQL, Statement.RETURN_GENERATED_KEYS);
             
             int insertedAddrID = BasicSQLUtils.getInsertedId(updateStatement);
             String sql = String.format("UPDATE address SET AgentID=%d WHERE AddressID = %d", newAgentId, insertedAddrID);
@@ -1177,7 +1177,7 @@ public class AgentConverter
                 {
                     log.info(sqlStr.toString());
                 }
-                updateStatement.executeUpdate(sqlStr.toString());
+                updateStatement.executeUpdate(sqlStr.toString(), Statement.RETURN_GENERATED_KEYS);
                 Integer newAgentId = BasicSQLUtils.getInsertedId(updateStatement);
                 if (newAgentId == null)
                 {

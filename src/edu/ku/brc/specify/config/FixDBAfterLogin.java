@@ -529,7 +529,7 @@ public class FixDBAfterLogin
         {
             Connection conn = DBConnection.getInstance().getConnection();
             
-            pStmt   = conn.prepareStatement(insertSQL);
+            pStmt   = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
             pStmt2  = conn.prepareStatement(insertSQL2);
             selStmt = conn.prepareStatement(searchSql);
             

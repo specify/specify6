@@ -97,7 +97,7 @@ public class GulfInvertsFixer
             stmt       = oldDBConn.createStatement();
             pStmtUpd   = newDBConn.prepareStatement("UPDATE collectingeventattribute SET Text4=?, Text5=?, Text6=?, YesNo1=? WHERE CollectingEventAttributeID = ?");
             pStmtCEUpd = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID = ?");
-            pStmtAdd   = newDBConn.prepareStatement("INSERT INTO collectingeventattribute (Text4, Text5, Text6, YesNo1, TimestampCreated, TimestampModified, Version, CollectionMemberID) VALUES(?,?,?,?,?,?,?,?)");
+            pStmtAdd   = newDBConn.prepareStatement("INSERT INTO collectingeventattribute (Text4, Text5, Text6, YesNo1, TimestampCreated, TimestampModified, Version, CollectionMemberID) VALUES(?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             
             int counterAdd = 0;
             int counterUpd = 0;

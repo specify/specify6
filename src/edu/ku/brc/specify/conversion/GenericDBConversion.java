@@ -5394,7 +5394,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 Statement         stmt       = oldDBConn.createStatement();
                 PreparedStatement updateStmt = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET RelatedTaxonID=? WHERE CollectionObjectAttributeID = ?");
-                PreparedStatement insertStmt = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (RelatedTaxonID) VALUES(?)");
+                PreparedStatement insertStmt = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (RelatedTaxonID) VALUES(?)", Statement.RETURN_GENERATED_KEYS);
                 
                 int count = 0;
                 ResultSet rs = stmt.executeQuery(sql);
@@ -9340,7 +9340,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             +"," + (newLithoId != null ? newLithoId : "NULL")
                             +"," + (gtpId != null ? gtpId : "NULL")
                             + ")";
-                    updateStatement.executeUpdate(updateStr);
+                    updateStatement.executeUpdate(updateStr, Statement.RETURN_GENERATED_KEYS);
                     
                     Integer paleoContextID = getInsertedId(updateStatement);
                     if (paleoContextID == null) {
@@ -9699,7 +9699,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             +"," + (newLithoId != null ? newLithoId : "NULL")
                             +"," + (gtpId != null ? gtpId : "NULL")
                             + ")";
-                    updateStatement.executeUpdate(updateStr);
+                    updateStatement.executeUpdate(updateStr, Statement.RETURN_GENERATED_KEYS);
                     
                     Integer paleoContextID = getInsertedId(updateStatement);
                     if (paleoContextID == null)

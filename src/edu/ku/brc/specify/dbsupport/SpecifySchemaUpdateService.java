@@ -3310,7 +3310,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         PreparedStatement pStmt2 = null;
         try
         {
-            pStmt  = conn.prepareStatement(updateSQL);
+            pStmt  = conn.prepareStatement(updateSQL, Statement.RETURN_GENERATED_KEYS);
             pStmt2 = conn.prepareStatement("UPDATE collectionobject SET PaleoContextID=? WHERE CollectionObjectID = ?");
             
             for (Integer pcId : BasicSQLUtils.queryForInts(conn, sql))

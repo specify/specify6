@@ -92,7 +92,7 @@ public class ParsePaleo
             dbS3Conn.setAutoCommit(false);
             
             String pStr = "INSERT INTO taxon (name, commonname, parentId, rankId) VALUES(?,?,?,?)";
-            taxonInsertStmt = dbS3Conn.prepareStatement(pStr);
+            taxonInsertStmt = dbS3Conn.prepareStatement(pStr, Statement.RETURN_GENERATED_KEYS);
 
             isInitialized = true;
             
@@ -433,7 +433,7 @@ public class ParsePaleo
             createAges();
             
             String pStr = "INSERT INTO data (citation, georange, paleodist, remarks, taxonId) VALUES(?,?,?,?,?)";
-            PreparedStatement pStmt = dbS3Conn.prepareStatement(pStr);
+            PreparedStatement pStmt = dbS3Conn.prepareStatement(pStr, Statement.RETURN_GENERATED_KEYS);
             
             String pStrStrat = "INSERT INTO data_strat (dataId, stratId, formation) VALUES(?,?,?)";
             PreparedStatement pStmtStrat = dbS3Conn.prepareStatement(pStrStrat);

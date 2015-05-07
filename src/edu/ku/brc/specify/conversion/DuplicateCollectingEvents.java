@@ -144,15 +144,15 @@ public class DuplicateCollectingEvents
         try
         {
             String selectCESQL  = createSelectStmt(CollectingEvent.getClassTableId(), "CollectingEventID = %d");
-            prepCEStmt          = createPreparedStmt(newDBConn, CollectingEvent.getClassTableId());
+            prepCEStmt          = createPreparedStmt(newDBConn, CollectingEvent.getClassTableId(), true);
             stmtCE              = newDBConn.createStatement();
             
             String selectCEASQL = createSelectStmt(CollectingEventAttribute.getClassTableId(), "CollectingEventAttributeID = %d");
-            prepCEAStmt         = createPreparedStmt(newDBConn, CollectingEventAttribute.getClassTableId());
+            prepCEAStmt         = createPreparedStmt(newDBConn, CollectingEventAttribute.getClassTableId(), true);
             stmtCEA             = newDBConn.createStatement();
             
             String selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
-            prepCECStmt         = createPreparedStmt(newDBConn, Collector.getClassTableId());
+            prepCECStmt         = createPreparedStmt(newDBConn, Collector.getClassTableId(), false);
             stmtCEC             = newDBConn.createStatement();
             
             log.debug(selectCESQL);
@@ -471,7 +471,7 @@ public class DuplicateCollectingEvents
         {
             
             String            selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
-            PreparedStatement prepCECStmt  = createPreparedStmt(newDBConn, Collector.getClassTableId());
+            PreparedStatement prepCECStmt  = createPreparedStmt(newDBConn, Collector.getClassTableId(), false);
             Statement         stmtCEC      = newDBConn.createStatement();
             
             PreparedStatement pStmt  = newDBConn.prepareStatement("UPDATE agent SET LastName=?,FirstName=?,Initials=? WHERE AgentID=?");
@@ -1078,7 +1078,7 @@ public class DuplicateCollectingEvents
         try
         {
             String sql = "INSERT INTO collectingevent (TimestampCreated, TimestampModified, Version, CreatedByAgentID, ModifiedByAgentID, DisciplineID) VALUES(?,?,?,?,?,?)";
-            PreparedStatement pStmt = newDBConn.prepareStatement(sql);
+            PreparedStatement pStmt = newDBConn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             Calendar now = Calendar.getInstance();
             
@@ -1127,7 +1127,7 @@ public class DuplicateCollectingEvents
      * @return
      * @throws SQLException
      */
-    public static  PreparedStatement createPreparedStmt(final Connection conn, final int tableID) throws SQLException
+    public static  PreparedStatement createPreparedStmt(final Connection conn, final int tableID, final boolean genKeys) throws SQLException
     {
         DBTableInfo   tblInfo = DBTableIdMgr.getInstance().getInfoById(tableID);
         StringBuilder sb      = new StringBuilder("INSERT INTO " + tblInfo.getName() + " (");
@@ -1164,7 +1164,8 @@ public class DuplicateCollectingEvents
         sb.append(")");
         log.debug(sb.toString());
         
-        return conn.prepareStatement(sb.toString());
+        return genKeys ? conn.prepareStatement(sb.toString(), Statement.RETURN_GENERATED_KEYS)
+        		: conn.prepareStatement(sb.toString());
     }
     
     /**

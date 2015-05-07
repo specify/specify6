@@ -183,7 +183,7 @@ public class ConvertMiscData
         try
         {
             Timestamp now = new Timestamp(System .currentTimeMillis());
-            pStmt1 = newDBConn.prepareStatement("INSERT INTO collectingtrip (CollectingTripName, DisciplineID, TimestampCreated, Version) VALUES(?,?,?,?)");
+            pStmt1 = newDBConn.prepareStatement("INSERT INTO collectingtrip (CollectingTripName, DisciplineID, TimestampCreated, Version) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             pStmt2 = newDBConn.prepareStatement("INSERT INTO collectingevent (CollectingTripID, DisciplineID, stationFieldNumber, Method, StartTime, TimestampCreated, TimestampModified, Version) VALUES(?,?,?,?,?,?,?,?)");
             
             String sql = "SELECT Text1, Text2, Number1, TimestampCreated, TimestampModified FROM stratigraphy";
@@ -250,7 +250,7 @@ public class ConvertMiscData
         PreparedStatement pStmt3 = null;
         try
         {
-            pStmt1 = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Remarks, CollectionMemberID, TimestampCreated, TimestampModified, Version) VALUES(?,?,?,?,?)");
+            pStmt1 = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Remarks, CollectionMemberID, TimestampCreated, TimestampModified, Version) VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             pStmt2 = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET Remarks=? WHERE CollectionObjectAttributeID = ?");
             
             pStmt3 = newDBConn.prepareStatement("UPDATE collectionobject SET CollectionObjectAttributeID=? WHERE CollectionObjectID = ?");
@@ -342,7 +342,7 @@ public class ConvertMiscData
         PreparedStatement pStmt3 = null;
         try
         {
-            pStmt1 = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Remarks, Text1, Number1, CollectionMemberID, TimestampCreated, TimestampModified, Version) VALUES(?,?,?,?,?,?,?)");
+            pStmt1 = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Remarks, Text1, Number1, CollectionMemberID, TimestampCreated, TimestampModified, Version) VALUES(?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             pStmt2 = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET Remarks=?, Text1=?, Number1=? WHERE CollectionObjectAttributeID = ?");
             
             pStmt3 = newDBConn.prepareStatement("UPDATE collectionobject SET CollectionObjectAttributeID=? WHERE CollectionObjectID = ?");
@@ -475,7 +475,7 @@ public class ConvertMiscData
         {
             pStmt        = newDBConn.prepareStatement("SELECT co.CollectionObjectAttributeID FROM collectionobject AS co WHERE co.CollectionObjectID = ? AND co.CollectionObjectAttributeID IS NOT NULL");
             updateStmt   = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET Text1=?, Text2=?, Number1=?, Remarks=? WHERE CollectionObjectAttributeID = ?");
-            insertStmt   = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Version, TimestampCreated, CollectionMemberID, CreatedByAgentID, Text1, Text2, Number1, Remarks) VALUES(0, ?, ?, ?, ?, ?, ?, ?)");
+            insertStmt   = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (Version, TimestampCreated, CollectionMemberID, CreatedByAgentID, Text1, Text2, Number1, Remarks) VALUES(0, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             updateCOStmt = newDBConn.prepareStatement("UPDATE collectionobject SET CollectionObjectAttributeID=? WHERE CollectionObjectID = ?");
             
             int cnt = 0;
@@ -674,7 +674,7 @@ public class ConvertMiscData
             Timestamp now = new Timestamp(System .currentTimeMillis());
             PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE collectingeventattribute SET Text1=?, Text2=?, Text3=?, Text4=?, Text5=?, Number1=? WHERE CollectingEventAttributeID=?");
             
-            PreparedStatement pStmt2 = newDBConn.prepareStatement("INSERT INTO collectingeventattribute SET Text1=?, Text2=?, Text3=?, Text4=?, Text5=?, Number1=?, Version=0, DisciplineID=?, TimestampCreated=?, TimestampModified=?");
+            PreparedStatement pStmt2 = newDBConn.prepareStatement("INSERT INTO collectingeventattribute SET Text1=?, Text2=?, Text3=?, Text4=?, Text5=?, Number1=?, Version=0, DisciplineID=?, TimestampCreated=?, TimestampModified=?", Statement.RETURN_GENERATED_KEYS);
             PreparedStatement pStmt3 = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID=?");
             
             int cnt = 0;
@@ -905,7 +905,7 @@ public class ConvertMiscData
             Timestamp now = new Timestamp(System .currentTimeMillis());
             PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE collectingeventattribute SET Text3=? WHERE CollectingEventAttributeID=?");
             
-            PreparedStatement pStmt2 = newDBConn.prepareStatement("INSERT INTO collectingeventattribute SET Text3=?, Version=0, DisciplineID=?, TimestampCreated=?, TimestampModified=?");
+            PreparedStatement pStmt2 = newDBConn.prepareStatement("INSERT INTO collectingeventattribute SET Text3=?, Version=0, DisciplineID=?, TimestampCreated=?, TimestampModified=?", Statement.RETURN_GENERATED_KEYS);
             PreparedStatement pStmt3 = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID=?");
             
             int cnt = 0;

@@ -266,7 +266,7 @@ public class DisciplineDuplicator
                         String insertSQL = String.format("INSERT INTO collectingevent (%s) (SELECT %s FROM collectingevent WHERE CollectingEventID = %d)", ceFldNames.toString(), ceFldNames.toString(), ceID);
                         if (debug) log.debug(insertSQL);
                         
-                        uStmt.executeUpdate(insertSQL);
+                        uStmt.executeUpdate(insertSQL, Statement.RETURN_GENERATED_KEYS);
                         newCEId = BasicSQLUtils.getInsertedId(uStmt);
                         insertCECnt++;
                         tblWriter.log(String.format("Duplicated collectingevent Old %d to New %d", ceID, newCEId));
@@ -367,7 +367,7 @@ public class DisciplineDuplicator
                                           tblName, fieldNames, fieldNames, tblName, primaryKeyName, oldId);
         if (debug) log.debug(insertSQL);
         
-        uStmt.executeUpdate(insertSQL);
+        uStmt.executeUpdate(insertSQL, Statement.RETURN_GENERATED_KEYS);
         int newId = BasicSQLUtils.getInsertedId(uStmt);
         tblWriter.log(String.format("Duplicated %s Old %d to New %d", tblName, oldId, newId));
         return newId;
@@ -492,7 +492,7 @@ public class DisciplineDuplicator
                                 if (ceLocCnt == 0)
                                 {
                                     sql = String.format("INSERT INTO locality (%s) (SELECT %s FROM locality WHERE LocalityID = %d)", locFldNames, locFldNames, localityId);
-                                    uStmt.executeUpdate(sql);
+                                    uStmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
                                     newLocID = BasicSQLUtils.getInsertedId(uStmt);
                                     
                                     log.debug("New Locality["+ newLocID + "] from Old Loc["+localityId+"] for CE["+ceID+"]");

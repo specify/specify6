@@ -177,7 +177,7 @@ public class BuildFromGeonames
             {
                 updateConn = currDBConn.createConnection();
             }
-            pStmt = updateConn.prepareStatement(insertSQL);
+            pStmt = updateConn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
             
             readConn = currDBConn.createConnection();
             

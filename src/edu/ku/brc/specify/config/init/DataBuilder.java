@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -2847,7 +2848,7 @@ public class DataBuilder
             try
             {
                 conn = DatabaseService.getInstance().getConnection();            
-                pstmt1 = conn.prepareStatement("INSERT INTO sppermission (Actions, Name, PermissionClass) VALUES (?, ?, ?)");         //$NON-NLS-1$
+                pstmt1 = conn.prepareStatement("INSERT INTO sppermission (Actions, Name, PermissionClass) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);         //$NON-NLS-1$
                 pstmt2 = conn.prepareStatement("INSERT INTO spprincipal_sppermission (SpPermissionID, SpPrincipalID) VALUES (?, ?)"); //$NON-NLS-1$
                 for (SpPermission spPerm : prinPermHash.keySet())
                 {

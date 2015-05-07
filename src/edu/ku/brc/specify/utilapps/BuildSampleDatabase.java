@@ -9498,7 +9498,7 @@ public class BuildSampleDatabase
 
         
         //System.out.println(sb.toString());
-        stmt.executeUpdate(gSQLStr.toString());
+        stmt.executeUpdate(gSQLStr.toString(), Statement.RETURN_GENERATED_KEYS);
         
         Integer newId = BasicSQLUtils.getInsertedId(stmt);
         if (newId == null)
