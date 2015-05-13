@@ -351,17 +351,20 @@
       	<table name="GiftAgent" field="giftAgents">
       		<alias name="Agent"/>
      	</table>
-       	<table name="GiftPreparation" field="giftPreparations">
-       	   		<alias name="Preparation"/>
-       			<alias name="Agent" field="createdByAgent" />
-      			<alias name="Agent" field="modifiedByAgent" />
-       	</table>
+       	<alias name="GiftPreparation" field="giftPreparations"/>
         <table name="GiftAttachment" field="giftAttachments">
             <alias name="Attachment"/>
         </table>
       	<alias name="Agent" field="modifiedByAgent"/>
       	<alias name="Shipment" field="shipments"/>
     </table>    
+   
+   	<table name="GiftPreparation" field="giftPreparations">
+        <alias name="Gift"/>
+   		<alias name="Preparation"/>
+   		<alias name="Agent" field="createdByAgent" />
+   		<alias name="Agent" field="modifiedByAgent" />
+   	</table>
     
     <table name="InfoRequest">
      	<alias name="Agent" field="agent"/>
@@ -463,6 +466,7 @@
         <table name="PreparationAttribute"/>
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
+        <alias name="GiftPreparation" field="giftPreparations"/>
         <alias name="Storage"/>
         <alias name="Agent" field="preparedByAgent" />
       	<alias name="Agent" field="createdByAgent" />
