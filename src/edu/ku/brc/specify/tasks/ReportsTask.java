@@ -37,6 +37,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
@@ -60,6 +61,8 @@ public class ReportsTask extends ReportsBaseTask
     public ReportsTask()
     {
         super(REPORTS, getResourceString(REPORTS));
+		
+        JasperReportsCache.clearCache();
         
         iconName      = name;
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);

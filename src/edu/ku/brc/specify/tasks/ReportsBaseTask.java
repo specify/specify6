@@ -58,7 +58,6 @@ import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
-import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.Page;
@@ -1769,6 +1768,8 @@ public class ReportsBaseTask extends BaseTask
         return reports;
     }
 
+
+   
    //XXX might be good to register and un-register services as reports are added/deleted???
    
 // public synchronized void reportDeleted(final Integer resourceId)
