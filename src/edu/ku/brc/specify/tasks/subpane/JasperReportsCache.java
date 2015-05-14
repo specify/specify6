@@ -279,15 +279,7 @@ public class JasperReportsCache implements DataCacheIFace
         return new ReportCompileInfo(reportFileFromCache, compiledPath, needsCompiling);
     }
     
-    //------------------------------------------------------
-    // DataCacheIFace Interface
-    //------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.util.DataCacheIFace#clear()
-     */
-    public void clear()
-    {
+    public static void clearCache() {
         try
         {
             FileUtils.cleanDirectory(getCachePath());
@@ -299,13 +291,23 @@ public class JasperReportsCache implements DataCacheIFace
            log.error(ex);
         }
     }
+    //------------------------------------------------------
+    // DataCacheIFace Interface
+    //------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.DataCacheIFace#clear()
+     */
+    public void clear()
+    {
+    	clearCache();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.util.DataCacheIFace#shutdown()
      */
     public void shutdown() throws Exception
     {
-        // TODO Auto-generated method stub
-
+        //TODO Auto-generated method stub
     }
 }
