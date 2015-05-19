@@ -802,6 +802,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             
             Object[] vals = {errorPoly, errorEstimate, "m", // 'm' means meters 
                              Agent.getUserAgent(), Calendar.getInstance(), (new GeoLocateRecordSetProcessor()).getGeoRefProviderName()};
+            geoCoordDetail.setGeoRefDetBy(Agent.getUserAgent()); //fix for #10129. Set to form control in loop below doesn't 'take'.
+            													//Afraid meddling with ValComboBox code will create general errors.
             for (int i=0;i<fieldInfoNames.length;i++)
             {
                 setFVOFieldValue(fieldInfoNames[i], geoCoordDetail, vals[i]);
