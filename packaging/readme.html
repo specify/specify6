@@ -6,36 +6,22 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.6.01<br>
-27 March 2015<br>
+Specify 6.6.02<br>
+21 May 2015<br>
 Specify Software Project</h3>
 <br>
 <br>
-<h4>List of changes in Specify 6.6.01<br>
+<h4>List of changes in Specify 6.6.02<br>
 </h4>
-<ol><li>The range of allowable values for the Specify MySQL network port has been increased to accommodate network firewall restrictions for port ID ranges. 2015-03-05 (Bugzilla 10067) </li>
-<li>Unwanted Determination records pointing to Family, Order or other mapped higher taxon rank fields in the Taxon table will no longer be erroneously created when uploading Collection Object records through the WorkBench when there is more than one set of mapped Determinations (e.g. mapped fields: Determination/Genus2 and Determination/Species2) which are empty. 2015-03-05 (10064)</li>
-<li>Resource Export/Import for Reports now retains custom format information. 2015-03-05 (10052)</li>
-<li>The Specify WorkBench can now auto-increment the numeric segments of any format of catalog number. 2015-03-05 (10038)</li>
-<li>The 'Create DataSet from RecordSet' function no longer duplicates rows. 2015-03-05 (10034)</li>
-<li>Records in PaleoContext tables formatted to be embedded in the Collection Object, Collecting Event, or Locality table can now be deleted. 2015-03-05 (9999)</li>
-<li>The SpLocalizer application replaces the SpecifyL10N program in the Specify distribution for foreign language translations. 2015-03-04 (10048)</li>
-<li>Errors are no longer created during a schema update forced by a new Specify release when export caches have custom lat/long field names. 2015-03-04 (10036)</li>
-<li>The columns in the Specify 6.6 ISO Assignment Tool report are now aligned correctly. 2015-03-03 (10008)</li>
-<li>The iReports program scriptlet "sumPrepCounts"  has been fixed for reports and labels, so the count (sum) of preparations for a Collection Object record can be shown on the printed output. 2015-03-03 (10056)</li>
-<li>Importing a label, report or invoice for another user correctly associates the resource and the linked query with that user. 2015-03-03 (10046)</li>
-<li>The Data Exporter now exports empty lat/long unit data values correctly. 2015-03-03 (10045)</li>
-<li>Collection Object Attribute Data in the first row of a DataSet are now uploaded correctly. 2015-03-02 (10032)</li>
-<li>In the iPad Exporter, a new iPad cache server user can no longer be created when clicking "New User" with no credentials entered into the form. 2015-02-25 (10026)</li>
-<li>Information Request data table fields are now in the Schema Config document which allows them to be re-captioned, hidden or unhidden on forms. They can also now be queried. 2015-02-25 (10033)</li>
-<li>While attempting to import a spreadsheet file into the WorkBench, if there is a problem with the mapping of the Excel data columns to the WorkBench data fields, an error message will now appear noting the existence of the problem. 2015-02-25 (10002)</li>
-<li>Sequentially editing and saving Collection Object records with Determinations contained within a record set, or a query, no longer elicits an unable to save error. 2015-02-24 (9327)</li>
-<li>Created by and modified by agent fields have been added to the Query Builder for the Locality, Determination, Loan, and PaleoContext tables. 2015-03-12 (10070)</li>
-<li>You can no longer un-enforce Phylum/Division, Class, Order, or Genus in the taxon tree when security is enabled. 2015-03-12</li>
-<li>Exception no longer thrown when formatting generic string fields.  2015-03-23 (10076)</li>
-<li>Non-read-only picklists will now search existing values while typing. 2015-03-24 (10061)</li>
-<!--<li>Converter assigns same CollectionMemberID to all preparations.  2015-03-05  (9755)</li>-->
-<!--<li>express search resource properties files contain junk chars  2015-02-25  (10043)</li>-->
+<ol><li>Geo Ref Det By now updates when localities are georeferenced multiple times.  2015-05-20  (10129)</li>
+<li>"Gift Preparations" has been added to the Preparation table in the Query Builder.  2015-05-18  (10125)</li>
+<li>The correct label or report will now run when multiple databases with identically named reports or labels are on the same machine.  2015-05-18  (10075)</li>
+<li>Collection Object records will now upload from the Workbench even if the Collection Object data in the record is not unique.  2015-05-07  (10120)</li>
+<li>The database pick list on the login screen will no longer force capitalization or spelling.  2015-05-07  (10091)</li>
+<li>Deleting a record that is listed multiple times in query results will no longer cause a handled exception.  2015-05-07  (10080)</li>
+<li>It is now possible to search for Host Taxon using only the wild card symbol (*).  2015-05-07  (10103)</li>
+<li> Importing queries or reports, which have queries associated, will no longer cause incorrect "Aggregator not found" messages in query builder results for aggregated/formatted columns. 2015-05-07  (10098)</li>
+<li>It is now possible to print query results by selecting the printer button in query results toolbar.  2015-05-07  (10042)</li>
 </ol><br>
 <br>
 <br>
