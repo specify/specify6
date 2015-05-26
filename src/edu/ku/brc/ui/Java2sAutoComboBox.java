@@ -75,6 +75,8 @@ public class Java2sAutoComboBox extends JComboBox
     {
         isFired             = false;
         autoTextFieldEditor = new AutoTextFieldEditor(list);
+        autoTextFieldEditor.getAutoTextFieldEditor().setCaseSensitive(true); //to partially resolves issues described in bugs #10131 and #10132
+        
         setEditable(true);
         
         setModel(new DefaultComboBoxModel(list.toArray())
