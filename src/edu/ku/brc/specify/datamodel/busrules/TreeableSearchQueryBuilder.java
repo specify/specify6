@@ -155,7 +155,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                     	int minRank = 0;
                     	for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
                     	{
-                    		if (defItem.getRankId() == ((Number )rank).intValue())
+                    		if (defItem.getRankId() == rank.getRankId())
                     		{
                     			break;
                     		}
