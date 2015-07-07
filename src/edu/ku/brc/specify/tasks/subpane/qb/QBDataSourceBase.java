@@ -75,7 +75,7 @@ public class QBDataSourceBase implements JRDataSource
             @Override
             public int compare(SourceColumnInfo o1, SourceColumnInfo o2)
             {
-                return o1.getName().compareTo(o2.getName());
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
             }
             
         };
