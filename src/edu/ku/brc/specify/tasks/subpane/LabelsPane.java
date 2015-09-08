@@ -415,7 +415,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         
                         if (size > virtualizerThresholdSize)
                         {
-                            JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10);
+                            JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10, JasperReportsCache.getCachePath().getAbsolutePath());
                             parameters.put(JRParameter.REPORT_VIRTUALIZER, fileVirtualizer);
                         }
                         // Add external parameters
