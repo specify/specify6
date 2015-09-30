@@ -187,7 +187,7 @@ public class ExportToMySQLDB
 	public static String fixNameForMySQL(String name)
 	{
         //XXX probably lots of other possibilities to fix
-		return name.trim().replaceAll(" ", "_").replaceAll("\\.", "_").replaceAll("/", "_").replaceAll("#", "_");
+		return name.trim().replaceAll(" ", "_").replaceAll("\\.", "_").replaceAll("/", "_").replaceAll("#", "_").replaceAll("-", "_");
 	}
 	
 	/**
