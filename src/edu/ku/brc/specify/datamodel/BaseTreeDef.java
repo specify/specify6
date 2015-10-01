@@ -379,7 +379,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean updateAllFullNames(DataModelObjBase rootObj, final boolean useProgDlg,
             final boolean lockedByCaller, int minRank) throws Exception 
     {
-        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, minRank, TreeRebuilder.RebuildMode.FullNames);
+        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, minRank, TreeRebuilder.RebuildMode.FullNames, null);
      }
 
     protected boolean checkForOtherLoginsBeforeNodeNumberUpdate()
@@ -446,7 +446,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
             final boolean lockedByCaller) throws Exception
     {
-        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, 0, TreeRebuilder.RebuildMode.Full);
+        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, 0, TreeRebuilder.RebuildMode.Full, null);
     }
     
     
@@ -457,13 +457,22 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 	public boolean updateAllNodes(DataModelObjBase rootObj, boolean useProgDlg,
 			boolean lockedByCaller, boolean traversalLockedByCaller,
 			boolean checkForOtherLogins) throws Exception {
-		return treeTraversal(rootObj, useProgDlg, lockedByCaller, traversalLockedByCaller, checkForOtherLogins, 0, TreeRebuilder.RebuildMode.Full);
+		return treeTraversal(rootObj, useProgDlg, lockedByCaller, traversalLockedByCaller, checkForOtherLogins, 0, TreeRebuilder.RebuildMode.Full, null);
+	}
+
+	
+	@Override
+	public boolean updateAllNodes(DataModelObjBase rootObj, boolean useProgDlg,
+			boolean lockedByCaller, boolean traversalLockedByCaller,
+			boolean checkForOtherLogins, DataProviderSessionIFace theSession)
+			throws Exception {
+		return treeTraversal(rootObj, useProgDlg, lockedByCaller, traversalLockedByCaller, checkForOtherLogins, 0, TreeRebuilder.RebuildMode.Full, theSession);
 	}
 
 	@Override
     public boolean updateAllNodeNumbers(DataModelObjBase rootObj,
             boolean useProgDlg, boolean lockedByCaller) throws Exception {
-        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, 0, TreeRebuilder.RebuildMode.NodeNumbers);
+        return treeTraversal(rootObj, useProgDlg, lockedByCaller, false, true, 0, TreeRebuilder.RebuildMode.NodeNumbers, null);
     }
 
     /**
@@ -482,7 +491,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                                  final boolean traversalLockedByCaller,
                                  final boolean checkForOtherLogins,
                                  final int minRank, 
-                                 final TreeRebuilder.RebuildMode rebuildMode) throws Exception
+                                 final TreeRebuilder.RebuildMode rebuildMode,
+                                 final DataProviderSessionIFace theSession) throws Exception
     {       
         boolean isOnUIThread = SwingUtilities.isEventDispatchThread();
         
@@ -499,7 +509,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         final ProgressFrame progFrame = progressFrame;
         
         //final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
-        final TreeRebuilder<N,D,I> treeRebuilder = new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode);
+        final TreeRebuilder<N,D,I> treeRebuilder = theSession == null ? new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode) : new TreeRebuilder<N,D,I>((D)this, minRank, rebuildMode, theSession);
         final JStatusBar nStatusBar = useProgDlg ? null : getStatusBar();      
         String progDlgMsg = getResourceString("BaseTreeDef.UPDATING_TREE_DLG");
         final ProgressDialog progDlg =  nStatusBar != null || !isOnUIThread ? null :
@@ -675,7 +685,11 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     progFrame.setDesc(String.format(getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
                 }
                 
-                treeRebuilder.run();
+                if (theSession == null) {
+                	treeRebuilder.run();
+                } else {
+                	treeRebuilder.runInForeground();
+                }
                 
                 if (progFrame != null) progFrame.setProcess(100);
 

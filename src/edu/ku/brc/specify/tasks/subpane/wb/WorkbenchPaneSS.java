@@ -48,6 +48,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventObject;
@@ -3341,6 +3342,49 @@ public class WorkbenchPaneSS extends BaseSubPane
         return hasChanged;
     }
 
+    /**
+     * @param wbtmi
+     * @return
+     */
+    public static int getMaxColWidth(WorkbenchTemplateMappingItem wbtmi) {
+    	DBFieldInfo fi = null;
+    	int result = WorkbenchDataItem.getMaxWBCellLength();
+    	if (wbtmi.getFieldInfo() != null) {
+    		fi = wbtmi.getFieldInfo();
+    	} else {
+            DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+            DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
+            if (ti != null) {
+            	fi = ti.getFieldByName(wbtmi.getFieldName());
+                if (fi != null)  {  
+                	wbtmi.setFieldInfo(fi);
+                } else {
+                    log.error("Can't find field with name ["+wbtmi.getFieldName()+"]");
+                }
+            } else {
+                log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
+            }
+    	}
+    	if (fi != null && RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0) {
+    		result = Math.min(fi.getLength(), WorkbenchDataItem.getMaxWBCellLength());
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param workbench
+     * @return
+     */
+    public static Integer[] getMaxColWidths(Workbench workbench) {
+        List<WorkbenchTemplateMappingItem> wbtmis = new ArrayList<WorkbenchTemplateMappingItem>();
+        wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(wbtmis);        
+        Integer[] result = new Integer[wbtmis.size()];
+        for (int i = 0; i < wbtmis.size(); i++) {
+        	result[i] = new Integer(WorkbenchPaneSS.getMaxColWidth(wbtmis.get(i)));
+        }
+        return result;
+    }
     /**
      * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
      * @param tableArg the table that should have it's columns adjusted

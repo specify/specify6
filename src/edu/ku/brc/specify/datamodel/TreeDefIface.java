@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.List;
 import java.util.Set;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.util.Nameable;
 
 public interface TreeDefIface<N extends Treeable<N,D,I>,
@@ -126,6 +127,20 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
     public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
             final boolean lockedByCaller, final boolean traversalLockedByCaller, 
             final boolean checkForOtherLogins) throws Exception;
+
+    /**
+     * @param rootObj
+     * @param useProgDlg
+     * @param lockedByCaller
+     * @param traversalLockedByCaller
+     * @param checkForOtherLogins
+     * @param theSession
+     * @return
+     * @throws Exception
+     */
+    public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
+            final boolean lockedByCaller, final boolean traversalLockedByCaller, 
+            final boolean checkForOtherLogins, final DataProviderSessionIFace theSession) throws Exception;
 
 	/**
 	 * @return true if node numbers are to be kept up to date at all times.

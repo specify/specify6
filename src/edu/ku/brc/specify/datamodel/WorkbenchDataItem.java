@@ -32,6 +32,9 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * @author rods
  *
@@ -275,6 +278,12 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
      */
     public static Integer getMaxWBCellLength()
     {
+        if (maxWBCellLength == null) {
+        	maxWBCellLength = Math.min(AppPreferences.getLocalPrefs().getInt("MAX_WBCELL_LENGTH", 32767), 32767);
+        	if (UIRegistry.isMobile()) {
+        		maxWBCellLength = Math.min(maxWBCellLength, 512);
+        	}
+        }
         return maxWBCellLength;
     }
 

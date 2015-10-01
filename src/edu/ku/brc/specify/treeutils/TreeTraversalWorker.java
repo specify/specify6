@@ -48,7 +48,7 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
 	/**
 	 * The number of db operations that can occur before the session should be flushed.
 	 */
-	protected static int               writesPerFlush = 2000;
+	protected static int               writesPerFlush = 200;
 	
     protected QueryIFace               childrenQuery     = null;
     protected QueryIFace               ancestorQuery     = null;
@@ -60,6 +60,7 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
     protected final D                  treeDef;
 
     protected DataProviderSessionIFace traversalSession = null;
+    protected boolean externalSession = false;
 
     /**
      * @param treeDef
@@ -68,6 +69,14 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
     {
         super();
         this.treeDef = treeDef;
+    }
+
+    public TreeTraversalWorker(final D treeDef, final DataProviderSessionIFace traversalSession)
+    {
+        super();
+        this.treeDef = treeDef;
+        this.traversalSession = traversalSession;
+        this.externalSession = true;
     }
 
     /**
@@ -143,8 +152,10 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
 		 * So, periodic commits are required. This means that an entire tree update cannot be rolled back, but
 		 * in theory, the tree was not in correct shape before the rebuild began, so this is not so serious an issue.
 		 */
+    	
+    	/*Apparently commits are NOT necessary after flush/clear.
 		traversalSession.commit();
-		traversalSession.beginTransaction();
+		traversalSession.beginTransaction(); */
     }
     
     /**

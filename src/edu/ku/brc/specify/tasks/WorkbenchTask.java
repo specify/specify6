@@ -124,8 +124,12 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -237,17 +241,7 @@ public class WorkbenchTask extends BaseTask
         }
         
         datasetNavBoxMgr = new DatasetNavBoxMgr(this);
-        
-        if (WorkbenchDataItem.getMaxWBCellLength() == null)
-        {
-            int max = Math.min(AppPreferences.getLocalPrefs().getInt("MAX_WBCELL_LENGTH", 32767), 32767);
-            if (UIRegistry.isMobile())
-            {
-                max = Math.min(max, 512);
-            }
-            WorkbenchDataItem.setMaxWBCellLength(max);
-        }
-        
+                
         getDatabaseSchema();
 	}
 
@@ -3981,7 +3975,26 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         if (recordSet != null)
         {
-            return loadWorkbench(recordSet.getOnlyItem().getRecordId(), null);
+            return loadWorkbench(recordSet, false);
+        }
+        return null;
+    }
+
+    /**
+     * Loads a Workbench into Memory 
+     * @param recordSet the RecordSet containing thew ID
+     * @return the workbench or null
+     */
+    /**
+     * @param recordSet
+     * @param forceLoad
+     * @return
+     */
+    public static Workbench loadWorkbench(final RecordSetIFace recordSet, final boolean forceLoad)
+    {
+        if (recordSet != null)
+        {
+            return loadWorkbench(recordSet.getOnlyItem().getRecordId(), null, forceLoad);
         }
         return null;
     }
@@ -3990,7 +4003,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param workbenchId
      * @return workbench with matching id or null
      */
-    public static Workbench loadWorkbench(final Integer workbenchId, final DataProviderSessionIFace session)
+    public static Workbench loadWorkbench(final Integer workbenchId, final DataProviderSessionIFace session, final boolean forceLoad)
     {
     	DataProviderSessionIFace mySession = session != null ? session :
     		DataProviderFactory.getInstance().createSession();
@@ -4002,6 +4015,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     				if (workbench != null)
     				{
     					workbench.getWorkbenchId();
+    					if (forceLoad) {
+    						workbench.forceLoad();
+    					}
     				}
     				return workbench;       
     		}

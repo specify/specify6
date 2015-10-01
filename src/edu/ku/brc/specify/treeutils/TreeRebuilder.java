@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -55,9 +56,7 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 
 	/**
 	 * @param treeDef
-	 * @param traversalSession
 	 * @param minRank
-	 * @param doNodeNumbers
 	 * @param doFullNames
 	 */
 	public TreeRebuilder(final D treeDef, 
@@ -68,16 +67,34 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 		this.doNodeNumbers = rebuildMode == RebuildMode.Full || rebuildMode == RebuildMode.NodeNumbers;
 		this.doFullNames = rebuildMode == RebuildMode.Full || rebuildMode == RebuildMode.FullNames;
 	}
+	
+	/**
+	 * @param treeDef
+	 * @param minRank
+	 * @param rebuildMode
+	 * @param traversalSession
+	 */
+	public TreeRebuilder(final D treeDef, final int minRank, final RebuildMode rebuildMode, final DataProviderSessionIFace traversalSession) {
+		super(treeDef, traversalSession);
+		this.minRank = minRank;
+		this.doNodeNumbers = rebuildMode == RebuildMode.Full || rebuildMode == RebuildMode.NodeNumbers;
+		this.doFullNames = rebuildMode == RebuildMode.Full || rebuildMode == RebuildMode.FullNames;
+	}
+	
 	/* (non-Javadoc)
 	 * @see javax.swing.SwingWorker#doInBackground()
 	 */
 	@Override
 	protected Boolean doInBackground() throws Exception 
 	{
-        traversalSession = DataProviderFactory.getInstance().createSession();
+        if (!externalSession) {
+        	traversalSession = DataProviderFactory.getInstance().createSession();
+        }
         try
         {
-            traversalSession.beginTransaction();
+            if (!externalSession) {
+            	traversalSession.beginTransaction();
+            }
             buildChildrenQuery();
             buildUpdateNodeQuery();
             T root = getTreeRoot();
@@ -86,7 +103,9 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
             fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
             rebuildTree(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName(), root.getIsAccepted()), 
             		new LinkedList<TreeNodeInfo>(), 1);
-            traversalSession.commit();
+            if (!externalSession) {
+            	traversalSession.commit();
+            }
             return hasCompletedOK = true;
         }
         catch (Exception e)
@@ -98,10 +117,49 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
         }
         finally
         {
-            traversalSession.close();
+            if (!externalSession) {
+            	traversalSession.close();
+            }
         }
 	}
 
+	public boolean runInForeground() {
+        if (!externalSession) {
+        	traversalSession = DataProviderFactory.getInstance().createSession();
+        }
+        try
+        {
+            if (!externalSession) {
+            	traversalSession.beginTransaction();
+            }
+            buildChildrenQuery();
+            buildUpdateNodeQuery();
+            T root = getTreeRoot();
+            initProgress();
+            initCacheInfo();
+            fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
+            rebuildTree(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName(), root.getIsAccepted()), 
+            		new LinkedList<TreeNodeInfo>(), 1);
+            if (!externalSession) {
+            	traversalSession.commit();
+            }
+            return hasCompletedOK = true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NodeNumberer.class, e);
+            return hasCompletedOK = false;
+        }
+        finally
+        {
+            if (!externalSession) {
+            	traversalSession.close();
+            }
+        }
+		
+	}
     /**
      * @return the hasCompletedOK null if it hasn't finished, true - good, false - error
      */

@@ -368,6 +368,10 @@ public class UploadTable implements Comparable<UploadTable>
         
         
     }
+    public void setTblSession(DataProviderSessionIFace theSession) {
+    	this.tblSession = theSession;
+    }
+
     /**
      * @param table
      * @param relationship
@@ -1185,21 +1189,60 @@ public class UploadTable implements Comparable<UploadTable>
     	return shouldLoadParentTbl(pte.getImportTable());
     }
     
-    protected void clearCurrentRecords()
+    /**
+     * 
+     */
+    protected void clearCurrentRecords() {
+    	this.clearCurrents(true);
+    }
+    
+    /**
+     * @param checkParents
+     */
+    protected void clearCurrents(boolean checkParents)
     {
     	for (int r = 0; r < uploadFields.size(); r++)
     	{
     		setCurrentRecord(null, r);
     	}
-    	for (Vector<ParentTableEntry> ptes : parentTables)
-    	{
-    		for (ParentTableEntry pte : ptes)
+    	if (checkParents) {
+    		for (Vector<ParentTableEntry> ptes : parentTables)
     		{
-    			if (shouldClearParent(pte))
+    			for (ParentTableEntry pte : ptes)
     			{
-    				pte.getImportTable().clearCurrentRecords();
+    				if (shouldClearParent(pte))
+    				{
+    					pte.getImportTable().clearCurrentRecords();
+    				}
     			}
     		}
+    	}
+    }
+    
+    /**
+     * 
+     */
+    public void clearRecords() {
+    	this.clearCurrents(false);
+    }
+    
+    /**
+     * @return
+     */
+    protected Pair<DataProviderSessionIFace, Boolean> getSession() {
+    	if (this.tblSession != null) {
+    		return new Pair<DataProviderSessionIFace, Boolean>(this.tblSession, false);
+    	} else {
+    		return new Pair<DataProviderSessionIFace, Boolean>(DataProviderFactory.getInstance().createSession(), true);
+    	}
+    }
+    
+    /**
+     * @param sessObj
+     */
+    protected void getRidOfSession(Pair<DataProviderSessionIFace, Boolean> sessObj) {
+    	if (sessObj.getSecond()) {
+    		sessObj.getFirst().close();
     	}
     }
     
@@ -1210,7 +1253,8 @@ public class UploadTable implements Comparable<UploadTable>
     {
     	if (exportedRecordId != null)
     	{
-    		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+    		DataProviderSessionIFace session = sessObj.getFirst();
     		try
     		{
     			DataModelObjBase obj = (DataModelObjBase )session.get(tblClass, exportedRecordId);
@@ -1222,7 +1266,7 @@ public class UploadTable implements Comparable<UploadTable>
     		
     		} finally
     		{
-    			session.close();
+    			getRidOfSession(sessObj);
     		}
     	}
     	return null;
@@ -2293,9 +2337,8 @@ public class UploadTable implements Comparable<UploadTable>
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(Collector.class))
                 {
-                    //System.out.println("matching collector children");
-                	DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2352,14 +2395,13 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
                 }
                 else if (child.getTblClass().equals(CollectingEventAttribute.class))
                 {
-                    //System.out.println("matching collectingeventattribute children");
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                    .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                     	String hql = "from CollectingEventAttribute where collectingEventAttributeId ";
@@ -2405,7 +2447,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                    	matchSession.close();
+            			getRidOfSession(sessObj);
                     }
                 }
                 if (!result)
@@ -2421,8 +2463,8 @@ public class UploadTable implements Comparable<UploadTable>
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(AccessionAgent.class))
                 {
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2463,14 +2505,14 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
 
                 }
                 else if (child.getTblClass().equals(AccessionAuthorization.class))
                 {
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2508,7 +2550,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
 
                 }
@@ -2525,8 +2567,8 @@ public class UploadTable implements Comparable<UploadTable>
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(Address.class))
                 {
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2564,7 +2606,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
 
                 } else if (!result)
@@ -2584,9 +2626,8 @@ public class UploadTable implements Comparable<UploadTable>
             {
         		if (child.getTblClass().equals(LocalityDetail.class))
                 {
-                    //System.out.println("matching localitydetail children");
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2622,14 +2663,13 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
                 }
                 if (child.getTblClass().equals(GeoCoordDetail.class))
                 {
-                    //System.out.println("matching geocoorddetail children");
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2666,7 +2706,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
                 }
             }
@@ -2677,9 +2717,8 @@ public class UploadTable implements Comparable<UploadTable>
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(Author.class))
                 {
-                    //System.out.println("matching collector children");
-                	DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
-                            .createSession();
+                    Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+            		DataProviderSessionIFace matchSession = sessObj.getFirst();
                     try
                     {
                         QueryIFace matchesQ = matchSession
@@ -2732,7 +2771,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     finally
                     {
-                        matchSession.close();
+            			getRidOfSession(sessObj);
                     }
                 } else if (!result)
                 {
@@ -2916,8 +2955,8 @@ public class UploadTable implements Comparable<UploadTable>
     protected DataModelObjBase getClassObject(Class<?> toGet)
 			throws UploaderException
 	{
-		DataProviderSessionIFace session = DataProviderFactory.getInstance()
-				.createSession();
+        Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+		DataProviderSessionIFace session = sessObj.getFirst();
 		try
 		{
 			DataModelObjBase temp = (DataModelObjBase) AppContextMgr
@@ -2930,7 +2969,7 @@ public class UploadTable implements Comparable<UploadTable>
 			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
 		} finally
 		{
-			session.close();
+			getRidOfSession(sessObj);
 		}
 	}
 
@@ -3797,7 +3836,8 @@ public class UploadTable implements Comparable<UploadTable>
             return false;
         }
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+		DataProviderSessionIFace session = sessObj.getFirst();
         DataModelObjBase match = null;
         Vector<MatchRestriction> restrictedVals = new Vector<MatchRestriction>();
         boolean ignoringBlankCell = false;
@@ -3899,7 +3939,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         finally
         {
-            session.close();
+            //session.close();
         }
     }
 
@@ -5448,12 +5488,13 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void doWrite(DataModelObjBase rec) throws UploaderException
     {
-        tblSession = DataProviderFactory.getInstance().createSession();
+    	Pair<DataProviderSessionIFace,Boolean> sessObj = getSession();
+    	DataProviderSessionIFace theSession = sessObj.getFirst();
         boolean tblTransactionOpen = false;
 		try
 		{
 			DataModelObjBase mergedRec = rec; 
-//			DataModelObjBase mergedRec = updateMatches ? tblSession.merge(rec) : rec; //hopefully we will only be in this method if there are actually changes to save.
+//			DataModelObjBase mergedRec = updateMatches ? theSession.merge(rec) : rec; //hopefully we will only be in this method if there are actually changes to save.
 //			if (updateMatches)
 //			{
 //				mergedRec.forceLoad();
@@ -5466,36 +5507,42 @@ public class UploadTable implements Comparable<UploadTable>
         	}
             if (busRule != null)
             {
-                busRule.beforeSave(mergedRec, tblSession);
+                busRule.beforeSave(mergedRec, theSession);
             }
-            tblSession.beginTransaction();
-            tblTransactionOpen = true;
-            tblSession.saveOrUpdate(mergedRec);
+            if (sessObj.getSecond()) {
+            	theSession.beginTransaction();
+            	tblTransactionOpen = true;
+            }
+            theSession.saveOrUpdate(mergedRec);
             if (busRule != null)
             {
-                if (!busRule.beforeSaveCommit(mergedRec, tblSession))
+                if (!busRule.beforeSaveCommit(mergedRec, theSession))
                 {
-                    tblSession.rollback();
-                    tblTransactionOpen = false;
+                    if (sessObj.getSecond()) {
+                    	theSession.rollback();
+                    	tblTransactionOpen = false;
+                    }
                     throw new Exception("Business rules processing failed");
                 }
             }
-            tblSession.commit();
-            tblTransactionOpen = false;
+            if (sessObj.getSecond()) {
+            	theSession.commit();
+            	tblTransactionOpen = false;
+            }
             if (busRule != null)
             {
-                busRule.afterSaveCommit(mergedRec, tblSession);
+                busRule.afterSaveCommit(mergedRec, theSession);
             }
             if (needToRefreshAfterWrite() || updateMatches)
             {
-                tblSession.refresh(rec);
+                theSession.refresh(rec);
             }
         }
         catch (Exception ex)
         {
-            if (tblTransactionOpen)
+            if (tblTransactionOpen && sessObj.getSecond())
             {
-                tblSession.rollback();
+            	theSession.rollback();
             }
             if (ex instanceof org.hibernate.exception.ConstraintViolationException)
             {
@@ -5505,7 +5552,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         finally
         {
-            tblSession.close();
+            getRidOfSession(sessObj);
         }
     }
 
@@ -5669,7 +5716,10 @@ public class UploadTable implements Comparable<UploadTable>
     protected void deleteObjects(Iterator<UploadedRecordInfo> objs, final boolean showProgress) throws UploaderException
     {
         log.debug("deleting from " + getWriteTable().getName());
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        //This method is currently never called when tblSession is non null, 
+        //so checks before transaction actions are not included
+        Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+        DataProviderSessionIFace session = sessObj.getFirst();
         Vector<DeleteQuery> q;
         if (doRawDeletes)
         {
@@ -5810,7 +5860,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         finally
         {
-            session.close();
+            getRidOfSession(sessObj);
         }
     }
 
@@ -5843,7 +5893,8 @@ public class UploadTable implements Comparable<UploadTable>
     public Vector<Vector<String>> printUpload() throws InvocationTargetException,
             IllegalAccessException
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Pair<DataProviderSessionIFace, Boolean> sessObj = getSession();
+        DataProviderSessionIFace session = sessObj.getFirst();
         Vector<Method> getters = getGetters();
         Object[] args = new Object[0];
         Vector<Vector<String>> result = new Vector<Vector<String>>();
@@ -5911,7 +5962,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         finally
         {
-            session.close();
+            getRidOfSession(sessObj);
         }
         return result;
     }
@@ -6156,12 +6207,13 @@ public class UploadTable implements Comparable<UploadTable>
     
     /**
      * @param cancelled
+     * @param theSession
      * @throws UploaderException
      * 
      * cleans up and stuff?
      * Currently only used as a way of testing Tree updates.
      */
-    public void finishUpload(boolean cancelled) throws UploaderException
+    public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException
     {
         //nothing to do here.
     	if (updateMatches)

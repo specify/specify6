@@ -505,7 +505,7 @@ public class SGRTask extends BaseTask
             {
                 BatchMatchResultSet resultSet = (BatchMatchResultSet) cmdAction.getData();
                 Workbench workbench = WorkbenchTask.loadWorkbench(
-                        (int)(long)resultSet.getRecordSetId(), null);
+                        (int)(long)resultSet.getRecordSetId(), null, false);
                 if (workbench != null)
                 {
                     createEditorForWorkbench(workbench, null, false, true, null, resultSet);

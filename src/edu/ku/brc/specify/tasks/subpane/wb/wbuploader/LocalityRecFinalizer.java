@@ -45,7 +45,7 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
         //This assumes that rec is a newly uploaded/created record. 
         //XXX Updates -- Will need to be re-worked when record updates are implemented
         Locality loc = (Locality )rec;
-        WorkbenchRow wbRow = uploader.getWbSS().getWorkbench().getRow(uploader.getRow());
+        WorkbenchRow wbRow = uploader.getWb().getRow(uploader.getRow());
         loc.setLat1text(wbRow.getLat1Text());
         loc.setLat2text(wbRow.getLat2Text());
         loc.setLong1text(wbRow.getLong1Text());

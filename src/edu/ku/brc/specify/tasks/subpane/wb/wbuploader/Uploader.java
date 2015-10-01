@@ -214,6 +214,7 @@ public class Uploader implements ActionListener, KeyListener
      * The WorkbenchPane for the uploading dataset.
      */
     protected WorkbenchPaneSS                       wbSS;
+    protected Workbench								theWb;
     
     protected java.util.Collection<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems = null;
 
@@ -827,7 +828,13 @@ public class Uploader implements ActionListener, KeyListener
 
     public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, boolean isValidator) throws UploaderException
     {
-    	this(db, importData, wbSS, wbSS.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), isValidator);
+    	this(db, importData, wbSS, wbSS.getWorkbench(), wbSS.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), isValidator);
+    }
+
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems,
+    		boolean isValidator)
+            throws UploaderException {
+    	this(db, importData, wbSS, wbSS.getWorkbench(), wbItems, isValidator);
     }
 
     /**
@@ -835,13 +842,14 @@ public class Uploader implements ActionListener, KeyListener
      * @param uploadData
      * @throws UploaderException
      */
-    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems,
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final Workbench theWb, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems,
     		boolean isValidator)
             throws UploaderException
     {
         this.db = db;
         this.uploadData = importData;
         this.wbSS = wbSS;
+        this.theWb = theWb;
         this.workbenchTemplateMappingItems = wbItems;
         this.uploadFields = new Vector<UploadField>(importData.getCols());
         this.missingRequiredClasses = new Vector<RelatedClassSetter>();
@@ -1629,6 +1637,7 @@ public class Uploader implements ActionListener, KeyListener
     			maxlen);
     }
 
+
     /**
      * @param uploadTable
      * @param rowToValidate
@@ -1640,18 +1649,15 @@ public class Uploader implements ActionListener, KeyListener
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
         int startRow = rowToValidate != -1 ? rowToValidate : 0;
-        int endRow = rowToValidate != -1 ? rowToValidate + 1 : wbSS.getSpreadSheet().getRowCount();
-        for (Vector<UploadField> ufs : uploadTable.getUploadFields())
-        {
-            for (UploadField uf : ufs)
-            {
-                if (uf.getIndex() != -1)
-                {
-                    for (int r = startRow; r < endRow; r++)
-                    {
-                        String value = wbSS.getSpreadSheet().getValueAt(r, uf.getIndex())
-                                .toString();
-                        int maxlen = wbSS.getColumnMaxWidth(uf.getIndex());
+        int endRow = rowToValidate != -1 ? rowToValidate + 1 : uploadData.getRows();
+        Integer[] colWidths = wbSS != null ? null : WorkbenchPaneSS.getMaxColWidths(theWb);
+        for (Vector<UploadField> ufs : uploadTable.getUploadFields()) {
+            for (UploadField uf : ufs) {
+                if (uf.getIndex() != -1) {
+                    for (int r = startRow; r < endRow; r++) {
+                        String value = wbSS != null ? wbSS.getSpreadSheet().getValueAt(r, uf.getIndex()).toString()
+                        		: uploadData.get(r, uf.getIndex()).toString();
+                        int maxlen = wbSS != null ? wbSS.getColumnMaxWidth(uf.getIndex()) : colWidths[uf.getIndex()];
                         if (uf.getField().getFieldInfo() != null) {
                         	maxlen = uf.getField().getFieldInfo().getLength();
                         }
@@ -1698,7 +1704,7 @@ public class Uploader implements ActionListener, KeyListener
     public Vector<UploadField> checkChangedData(int row) throws Exception
     {
     	
-    	getRootTable().loadExportedRecord(/*row, */wbSS.getWorkbench().getRow(row).getRecordId());
+    	getRootTable().loadExportedRecord(/*row, */theWb.getRow(row).getRecordId());
     	
     	Vector<UploadField> result = new Vector<UploadField>();
     	for (UploadTable ut : uploadTables)
@@ -2217,7 +2223,7 @@ public class Uploader implements ActionListener, KeyListener
     public boolean isUpdateUpload()
     {
     	UploadTable root = getRootTable();
-    	return wbSS.getWorkbench().getExportedFromTableName() != null && root != null && root.isUpdateMatches();
+    	return theWb.getExportedFromTableName() != null && root != null && root.isUpdateMatches();
     }
     
     /**
@@ -2928,7 +2934,7 @@ public class Uploader implements ActionListener, KeyListener
     {
     	try
     	{
-    		return wbSS.getWorkbench().getRow(row).getRecordId();
+    		return theWb.getRow(row).getRecordId();
     	} catch(Exception ex)
     	{
     		throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
@@ -2950,17 +2956,18 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets up for upload.
      */
-    protected void prepareToUpload() throws UploaderException
+    protected void prepareToUpload(DataProviderSessionIFace theSession) throws UploaderException
     {
         //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
     	//it looks like it was designed to for exported records...
-        Integer updateTblId = isUpdateUpload() ? DBTableIdMgr.getInstance().getIdByClassName(wbSS.getWorkbench().getExportedFromTableName()) : null;
+        Integer updateTblId = isUpdateUpload() ? DBTableIdMgr.getInstance().getIdByClassName(theWb.getExportedFromTableName()) : null;
         setUpdateTableId(updateTblId);
     	if (currentOp != SUCCESS_PARTIAL)
         {
             for (UploadTable t : uploadTables)
             {
-                t.setMatchRecordId(t.isMatchRecordId() || (updateTblId != null && updateTblId == t.getTable().getTableInfo().getTableId()));
+                t.setTblSession(theSession);
+            	t.setMatchRecordId(t.isMatchRecordId() || (updateTblId != null && updateTblId == t.getTable().getTableInfo().getTableId()));
                 if (updateTblId != null && updateTblId == CollectionObject.getClassTableId() 
                 		&& t.getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId()
                 		&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
@@ -2978,7 +2985,7 @@ public class Uploader implements ActionListener, KeyListener
         } else
         {
         	uploadStartRow = rowUploading;
-        	if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS)
+        	if (theWb.getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS)
         	{
         		uploadStartRow++; //never should be more than row behind.
         	}
@@ -3288,10 +3295,10 @@ public class Uploader implements ActionListener, KeyListener
      */
     public void refresh()
     {
-        //wbSS.getWorkbench().forceLoad();
+        //theWb.forceLoad();
     	if (currentOp.equals(USER_INPUT)) 
     	{
-    		uploadData.refresh(wbSS.getWorkbench().getWorkbenchRowsAsList());
+    		uploadData.refresh(theWb.getWorkbenchRowsAsList());
     		validateData(true);
     	}
     }
@@ -3514,7 +3521,7 @@ public class Uploader implements ActionListener, KeyListener
         		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0 && !isUpdateUpload())
         {
             result = false;
-        	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
+        	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), theWb.getName());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
             int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    msg,
@@ -3615,7 +3622,7 @@ public class Uploader implements ActionListener, KeyListener
             if (field.getName().equals("col")) { return String.valueOf(rows.get(rowIndex)
                     .getUploadFld().getWbFldName()); }
             if (field.getName().equals("description")) { return rows.get(rowIndex).getDescription(); }
-            if (field.getName().equals("datasetName")) { return wbSS.getWorkbench().getName(); }
+            if (field.getName().equals("datasetName")) { return theWb.getName(); }
             if (field.getName().equals("cellData")) { return uploadData.get(rows.get(rowIndex)
                     .getRow(), rows.get(rowIndex).getUploadFld().getIndex()); }
             log.error("Unrecognized field Name: " + field.getName());
@@ -4176,7 +4183,7 @@ public class Uploader implements ActionListener, KeyListener
         {
         	buildIdentifier();
             setOpKiller(null);
-            prepareToUpload();
+            prepareToUpload(null);
 
             final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
             {
@@ -4273,7 +4280,7 @@ public class Uploader implements ActionListener, KeyListener
                         			}
                         			try
                         			{
-                        				if (wbSS.getWorkbench()
+                        				if (theWb
 											.getRow(rowUploading)
 											.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
                         				{
@@ -4301,7 +4308,7 @@ public class Uploader implements ActionListener, KeyListener
 
                             if (!rowAborted)
                             {
-                            	wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
+                            	theWb.getRow(rowUploading).setUploadStatus(
                             			WorkbenchRow.UPLD_SUCCESS);
                             }
                             if (!cancelled)
@@ -4328,7 +4335,7 @@ public class Uploader implements ActionListener, KeyListener
                     	//for (UploadTable t : uploadTables)
                     	for (int t = uploadTables.size() - 1; t >= 0; t--)
                     	{
-                    		uploadTables.get(t).finishUpload(cancelled && !paused);
+                    		uploadTables.get(t).finishUpload(cancelled && !paused, null);
                     	}
                     } catch (Exception ex)
                     {
@@ -4396,6 +4403,184 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    //************************************************************************************************************************
+    
+    /**
+     * @throws UploaderException
+     */
+    protected UploadTable setupExportedTableSansUI(Integer updateTblId) throws UploaderException
+    {
+    	if (updateTblId != null) {
+    		for (UploadTable ut : uploadTables) {
+    			if (ut.getTable().getTableInfo().getTableId() == updateTblId) {
+    				return ut;
+    			}
+    		}
+    	}
+		//throw new UploaderException("Unable to determine base exported table", UploaderException.ABORT_IMPORT);
+    	return null;
+    }
+   
+    protected void setExportedRecordIdsSansUI(Integer updateTblId, UploadTable exportedTable) throws Exception
+    {
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	Class<?> cls = DBTableIdMgr.getInstance().getInfoById(updateTblId).getClassObj();
+    	try
+    	{
+    		DataModelObjBase obj = (DataModelObjBase )session.get(cls, getRowRecordId(rowUploading));
+    		if (obj != null)
+    		{
+    			obj.forceLoad();
+    		}
+    		exportedTable.setExportedRecordId(obj);
+    	} finally
+    	{
+    		session.close();
+    	}
+    	
+    }
+
+    public List<UploadTableInvalidValue> validateDataSansUI() {
+        List<UploadTableInvalidValue> result = new ArrayList<UploadTableInvalidValue>();
+      	try {
+            for (UploadTable tbl : uploadTables) {
+            	result.addAll(validateLengths(tbl, -1, -1));
+                result.addAll(tbl.validateValues(uploadData));
+            }
+            Collections.sort(result);
+            return result;
+      	} catch (Exception ex) {
+    	  result.clear();
+    	  result.add(new UploadTableInvalidValue("Exception while validating. FAIL.", null, -1, ex));
+      	}
+      	return result;
+    }
+
+    /**
+     * Uploads dataset.
+     */
+    public boolean uploadItSansUI()  {
+        	List<UploadMessage> structureErrors = null;
+        	boolean success = false;
+        	try {
+        		structureErrors = verifyUploadability();
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
+        	}
+            if (structureErrors == null || structureErrors.size() > 0) 
+            {                 
+            	System.out.println("Error: dataset is not uploadable due to structural abnormalities");
+            	for (UploadMessage um : structureErrors) {
+            		System.out.println(um.getRow() + "," + um.getCol() + ":" + um.getMsg());
+            	}
+            	return false;
+            }
+            
+            List<UploadTableInvalidValue> invalidities = validateDataSansUI();
+            if (invalidities.size() != 0) {
+            	System.out.println("Error: dataset is not uploadable because it contains invalid cells.");
+                for (UploadTableInvalidValue invalidity : invalidities) {
+                	System.out.println(invalidity.getMsg());
+                }
+            	return false;
+            }
+            
+            //set non-interactive match options
+            for (UploadTable t : uploadTables) {
+                UploadMatchSetting matchSet = t.getMatchSetting();
+                matchSet.setMode(UploadMatchSetting.PICK_FIRST_MODE);
+                matchSet.setRemember(true);
+                matchSet.setMatchEmptyValues(true);
+            }
+            int toiletSize = 200;
+            DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
+            try {
+            	theSession.beginTransaction();
+            	buildIdentifier();
+            	setOpKiller(null);
+            	prepareToUpload(theSession);
+            	int rowsSinceFlush = 0;
+            	try {
+            		Integer updateTblId = getUpdateTableId();
+            		UploadTable exportedTable = setupExportedTableSansUI(updateTblId);
+            		for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
+            			boolean rowAborted = false;
+            			System.out.println("uploading row " + String.valueOf(rowUploading));
+            			if (!uploadData.isEmptyRow(rowUploading)) {
+            				imagesForRow.clear();
+            				if (updateTblId != null) {
+                           		setExportedRecordIdsSansUI(updateTblId, exportedTable);
+            				}
+            				imagesForRow.addAll(uploadData.getWbRow(rowUploading).getWorkbenchRowImages());
+            				for (UploadTable t : uploadTables) {
+            					try {
+            						if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
+            							uploadRow(t, rowUploading);
+            						} else {
+            							throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
+            						}
+            					} catch (UploaderException ex) {
+            						if (ex.getStatus() == UploaderException.ABORT_ROW) {
+            							ex.printStackTrace();
+            							abortRow(ex, rowUploading);
+            							rowAborted = true;
+            							break;
+            						}
+            						throw ex;
+            					}
+            				}
+            			}
+
+            			if (!rowAborted) {
+            				theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
+            			}
+            			for (UploadTable t : uploadTables) {
+            				t.clearRecords();
+            			}
+            			rowUploading++;
+            			if (rowsSinceFlush++ >= toiletSize) {
+            				theSession.flush();
+            				theSession.clear();
+            				rowsSinceFlush = 0;
+            			}
+            		}
+            		success = true;
+            	} catch (Exception ex) {
+            		setOpKiller(ex);
+            		ex.printStackTrace();
+            	}
+            	if (success) {
+            		try {
+            			for (int t = uploadTables.size() - 1; t >= 0; t--) {
+            				uploadTables.get(t).finishUpload(false, theSession);
+            			}
+            		} catch (Exception ex) {
+            			success = false;
+            			setOpKiller(ex);
+            		}
+            	}
+            	currentTask = null;
+            	if (success) {
+            		theSession.commit();
+            		System.out.println("success");
+            	} else {
+            		Exception savedOpKiller = getOpKiller();
+            		theSession.rollback();
+            		//undoUpload(false, false, true);
+            		setOpKiller(savedOpKiller);
+            		System.out.println("failure");
+            	};
+            } catch (Exception e) {
+            	e.printStackTrace();
+            	theSession.rollback();
+            } finally {
+            	if (theSession != null) {
+            		theSession.close();
+            	}
+            } 
+            return success;
+    }
+
     /**
      * @param cause
      * @param row
@@ -4405,42 +4590,31 @@ public class Uploader implements ActionListener, KeyListener
     {
         //logDebug("NOT undoing writes which have already occurred while processing aborted row");
         logDebug("undoing writes which have already occurred while processing aborted row");
-        try 
-        {
+        try {
             List<UploadTable> fixedUp = reorderUploadTablesForUndo();
-            boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(
-                    Collection.class).getIsEmbeddedCollectingEvent();
-            try
-            {
-                AppContextMgr.getInstance().getClassObject(Collection.class)
-                        .setIsEmbeddedCollectingEvent(false);
-                for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
-                {
+            boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
+            try {
+                AppContextMgr.getInstance().getClassObject(Collection.class).setIsEmbeddedCollectingEvent(false);
+                for (int ut = fixedUp.size() - 1; ut >= 0; ut--) {
                     // setCurrentOpProgress(fixedUp.size() - ut, false);
                     logDebug("aborting " + fixedUp.get(ut).getTable().getName());
                     fixedUp.get(ut).abortRow(row);
                 }
     			updateObjectsCreated();
             }
-            finally
-            {
-                AppContextMgr.getInstance().getClassObject(Collection.class)
-                        .setIsEmbeddedCollectingEvent(isEmbeddedCE);
+            finally {
+                AppContextMgr.getInstance().getClassObject(Collection.class).setIsEmbeddedCollectingEvent(isEmbeddedCE);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
         	throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
         
-        if (cause instanceof UploaderMatchSkipException)
-        {
-            wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SKIPPED);
+        if (cause instanceof UploaderMatchSkipException) {
+            theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SKIPPED);
         }
-        else
-        {
-            WorkbenchRow wbr = wbSS.getWorkbench().getRow(rowUploading);
-            if (wbr.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
-            {
+        else {
+            WorkbenchRow wbr = theWb.getRow(rowUploading);
+            if (wbr.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
             	wbr.setUploadStatus(WorkbenchRow.UPLD_FAILED);
             }
         }
@@ -4581,7 +4755,7 @@ public class Uploader implements ActionListener, KeyListener
                 
                 if (removeObjects)
                 {
-                    for (WorkbenchRow wbRow : wbSS.getWorkbench().getWorkbenchRows())
+                    for (WorkbenchRow wbRow : theWb.getWorkbenchRows())
                     {
                         wbRow.setUploadStatus(WorkbenchRow.UPLD_NONE); 
                     }
@@ -4606,8 +4780,8 @@ public class Uploader implements ActionListener, KeyListener
                     JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(
                             getResourceString("WB_UPLOAD_CLEANUP_FAILED"), new Object[] {
                                     getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN"
-                                            : "WB_UPLOAD_CLEANUP")), wbSS.getWorkbench().getName(),
-                                    wbSS.getWorkbench().getName() }), getResourceString("WARNING"),
+                                            : "WB_UPLOAD_CLEANUP")), theWb.getName(),
+                                    theWb.getName() }), getResourceString("WARNING"),
                             JOptionPane.WARNING_MESSAGE);
 
                 }
@@ -4652,7 +4826,7 @@ public class Uploader implements ActionListener, KeyListener
                 public void run()
                 {
                     UIRegistry.writeSimpleGlassPaneMsg(String.format(
-                            getResourceString("WB_UPLOAD_CLEANING_UP") + "...", wbSS.getWorkbench()
+                            getResourceString("WB_UPLOAD_CLEANING_UP") + "...", theWb
                                     .getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
 
                 }
@@ -5509,7 +5683,14 @@ public class Uploader implements ActionListener, KeyListener
         return wbSS;
     }
 
-    
+    /**
+     * @return the wb
+     */
+    public Workbench getWb()
+    {
+        return theWb;
+    }
+  
     /**
      * @return list of tree classes involved in the upload.
      */

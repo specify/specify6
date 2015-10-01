@@ -37,7 +37,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -417,7 +416,8 @@ public class UploadTableTree extends UploadTable
             }
         }
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	Pair<DataProviderSessionIFace,Boolean> sessObj = getSession();
+    	DataProviderSessionIFace session = sessObj.getFirst();
         QueryIFace q = session.createQuery("from " + tblClass.getName() + " where rankId=" + parentDefItem.getRankId().toString()
                 + " and name='" + getDefaultParentName().replace("'", "''") + "'", false);
         try
@@ -434,7 +434,7 @@ public class UploadTableTree extends UploadTable
         }
         finally
         {
-            session.close();
+            getRidOfSession(sessObj);
         }
         
         return createDefaultParent(parentDefItem);
@@ -495,7 +495,8 @@ public class UploadTableTree extends UploadTable
     {
         String hql = "from " + tblClass.getName() + " where " + getTreeDefFld() + "=" + getTreeDef().getTreeDefId() + " and " + getTreeDefItemFld() + "=" +
             getTreeDef().getDefItemByRank(0).getTreeDefItemId();
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	Pair<DataProviderSessionIFace,Boolean> sessObj = getSession();
+    	DataProviderSessionIFace session = sessObj.getFirst();
         try
         {
             QueryIFace q = session.createQuery(hql, false);
@@ -503,7 +504,7 @@ public class UploadTableTree extends UploadTable
         }
         finally
         {
-            session.close();
+            getRidOfSession(sessObj);
         }
     }
     
@@ -835,16 +836,20 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUpload()
      */
     @Override
-    public void finishUpload(boolean cancelled) throws UploaderException
+    public void finishUpload(boolean cancelled, DataProviderSessionIFace theSession) throws UploaderException
     {
-        super.finishUpload(cancelled);
+        super.finishUpload(cancelled, theSession);
         if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled)
         {
         	if (needToUpdateTree())
         	{
         		try
         		{
-        			getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
+        			if (theSession == null) {
+        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false);
+        			} else {
+        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false, false, false, theSession);
+        			}
         		}
         		catch (Exception ex)
         		{
@@ -866,7 +871,7 @@ public class UploadTableTree extends UploadTable
 	public void finishUndoUpload() throws UploaderException
 	{
 		super.finishUndoUpload();
-		finishUpload(false);
+		finishUpload(false, null);
 	}
 
 	/* (non-Javadoc)
