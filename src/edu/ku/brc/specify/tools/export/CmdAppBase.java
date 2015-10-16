@@ -346,7 +346,9 @@ public class CmdAppBase {
 	 * @throws IOException
 	 */
 	protected void flushLog() throws IOException {
-		out.flush();
+		if (out != null) {
+			out.flush();
+		}
 	}
 	/**
 	 * @throws IOException
