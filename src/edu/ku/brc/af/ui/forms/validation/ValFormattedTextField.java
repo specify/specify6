@@ -577,7 +577,8 @@ public class ValFormattedTextField extends JPanel implements ValFormattedTextFie
      */
     public boolean isNotEmpty()
     {
-        return !getText().isEmpty();
+        String txt = getText();
+    	return !(txt == null || txt.isEmpty());
     }
     
     /**
