@@ -91,7 +91,7 @@ public class UploadCmdLine extends CmdAppBase {
 					}
 
 					ucl.setMembers();
-					ucl.initLog(args);
+					// ucl.initLog(args);   // don't log args because it contains passwords
 					ucl.setupPrefs();
 					ucl.loadDrivers();
 					

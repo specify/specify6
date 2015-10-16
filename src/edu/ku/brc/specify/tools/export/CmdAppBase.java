@@ -43,7 +43,7 @@ import edu.ku.brc.util.Pair;
 public class CmdAppBase {
     protected static final String SCHEMA_VERSION_FILENAME = "schema_version.xml";
 
-    private static String[] argkeys = {"-u", "-p", "-d", "-m", "-l", "-h", "-o", "-w"};
+    private static String[] argkeys = {"-u", "-p", "-d", "-m", "-l", "-h", "-o", "-w", "-U", "-P"};
 	
     protected List<Pair<String, String>> argList;
 	
@@ -226,6 +226,7 @@ public class CmdAppBase {
 	 * @throws Exception
 	 */
 	protected boolean hasMasterKey() throws Exception {
+		if (master.getFirst() != null && master.getSecond()!= null) return true;
         UserAndMasterPasswordMgr.getInstance().set(userName, password, dbName);
         return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
 	}
@@ -235,6 +236,7 @@ public class CmdAppBase {
 	 * @throws Exception
 	 */
 	protected boolean getMaster() throws Exception {
+		if (master != null && master.getFirst() != null && master.getSecond()!= null) return true;
         UserAndMasterPasswordMgr.getInstance().set(userName, password, dbName);
         Pair<String, String> userpw = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
 		if (userpw != null) {
@@ -458,6 +460,7 @@ public class CmdAppBase {
 		if (host != null) {
 			hostName = host;
 		}
+		master = new Pair<>(getArg("-U"), getArg("-P"));
 	}
 
 }
