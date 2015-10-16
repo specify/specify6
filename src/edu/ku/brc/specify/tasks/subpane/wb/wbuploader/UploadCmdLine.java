@@ -74,6 +74,12 @@ public class UploadCmdLine extends CmdAppBase {
 		return collectionName != null;
 	}
 
+	@Override
+	protected String getLogInitText(String[] args) {
+		// suppress args in log so passwords are compromised
+		return String.format(UIRegistry.getResourceString("ExportCmdLine.LogInitTxt"), "Suppressed");
+	}
+
 	/**
 	 * @param args
 	 */
@@ -91,7 +97,7 @@ public class UploadCmdLine extends CmdAppBase {
 					}
 
 					ucl.setMembers();
-					// ucl.initLog(args);   // don't log args because it contains passwords
+					ucl.initLog(args);
 					ucl.setupPrefs();
 					ucl.loadDrivers();
 					
