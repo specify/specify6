@@ -3,6 +3,11 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -78,6 +83,13 @@ public class UploadCmdLine extends CmdAppBase {
 	protected String getLogInitText(String[] args) {
 		// suppress args in log so passwords are compromised
 		return String.format(UIRegistry.getResourceString("ExportCmdLine.LogInitTxt"), "Suppressed");
+	}
+
+	@Override
+	protected String getTimestamp() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return dateFormat.format(new Date());
 	}
 
 	/**
