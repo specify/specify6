@@ -42,18 +42,24 @@ public class ExportCmdLine extends CmdAppBase {
 	 * @see edu.ku.brc.specify.tools.export.CmdAppBase#checkArg(edu.ku.brc.util.Pair)
 	 */
 	protected String checkArg(Pair<String, String> arg) {
+		String a = arg.getFirst();
 		if (arg.getSecond() == null) {
-			if (arg.getFirst().equals("-o")) {
+			if (a.equals("-o")) {
 				if (!"update".equalsIgnoreCase(getArg("-a"))) {
-					return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), arg.getFirst());
+					return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"),a);
 				}
-			} else if (!arg.getFirst().equals("-l") && !arg.getFirst().equals("-h") && !arg.getFirst().equals("-w")) {
-				return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), arg.getFirst());
+			} else if ("-u-U-p-P".contains(a)) {
+				// Assuming -U and -P are checked after -u and -p
+				if ("-U-P".contains(a)) {
+					String otherArg = a.toLowerCase();
+					return checkArg(new Pair<String, String>(otherArg, getArg(otherArg)));
+				}
+			} else if (!a.equals("-l") && !a.equals("-h") && !a.equals("-w")) {
+				return String.format(UIRegistry.getResourceString("ExportCmdLine.MissingArgument"), a);
 			}
 		}
 		return "";
-	}
-	
+	}	
 	
 	/**
 	 * @return
