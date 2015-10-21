@@ -313,6 +313,39 @@ public class Scriptlet extends JRDefaultScriptlet
     }
     
     /**
+     * @param collectionObjectID
+     * @param format - format for each preptype. E.g. "%s = %d". %s MUST precede %d in the format.
+     * @param separator - text used to separate preps. E.g. ", "
+     * @return a listing of the counts for collectionObjectID's preps grouped by preptype. 
+     * e.g. "ETOH = 8, C&S = 1, Tissue = 2"
+     * with format = "%s: %d", separator = "; " --- "ETOH: 8; C&S: 1; Tissue: 2"
+     */
+    public String aggregatePreps(final Integer collectionObjectID, final String format, final String separator) {
+    	String result = "";
+    	if (collectionObjectID != null) {
+    		String sql = "select pt.Name, sum(CountAmt) from preparation p inner join preptype pt on pt.preptypeid = p.preptypeid where CollectionObjectID = " +
+    				collectionObjectID + " group by 1 order by pt.PrepTypeID";
+    		List<Object[]> pts = BasicSQLUtils.query(sql);
+    		for (Object[] pt : pts) {
+    			if (!"".equals(result)) {
+    				result += separator;
+    			}
+    			Integer cnt = pt[1] == null ? 0 : new Integer(pt[1].toString());
+    			result += String.format(format, pt[0], cnt);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param collectionObjectID
+     * @return aggregatePreps(collectionObjectID, "%s: %d", ", ")
+     */
+    public String aggregatePreps(final Integer collectionObjectID) {
+    	return aggregatePreps(collectionObjectID, "%s: %d", ", ");
+    }
+    
+    /**
      * Formats a BigDecimal to a string with "N","S","E", "W".
      * @param bdValue the float value
      * @param isLat whether it is a lat or lon
