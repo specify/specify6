@@ -268,6 +268,10 @@ public class UserAndMasterPasswordMgr
         }
         return dbUsernameAndPassword;
     }
+
+    public void setUserNamePasswordForDB(String userName, String password) {
+        dbUsernameAndPassword = new Pair<>(userName, password);
+    }
     
     /**
      * @return

@@ -209,14 +209,13 @@ public class CmdAppBase {
      */
     protected void setupPrefs() throws Exception {
 		//Apparently this is correct...
-		System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");
-
+		System.setProperty(SecurityMgr.factoryName, "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");
 		UIRegistry.setAppName("Specify");  //$NON-NLS-1$
         UIRegistry.setDefaultWorkingPath(this.workingPath);
         final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         adjustLocaleFromPrefs();
-        final String iRepPrefDir = localPrefs.getDirPath(); 
+        final String iRepPrefDir = localPrefs.getDirPath();
         int mark = iRepPrefDir.lastIndexOf(UIRegistry.getAppName(), iRepPrefDir.length());
         final String SpPrefDir = iRepPrefDir.substring(0, mark) + "Specify";
         AppPreferences.getLocalPrefs().flush();
@@ -229,7 +228,6 @@ public class CmdAppBase {
 	 * @throws Exception
 	 */
 	protected boolean hasMasterKey() throws Exception {
-		if (master.getFirst() != null && master.getSecond()!= null) return true;
         UserAndMasterPasswordMgr.getInstance().set(userName, password, dbName);
         return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
 	}
@@ -239,9 +237,12 @@ public class CmdAppBase {
 	 * @throws Exception
 	 */
 	protected boolean getMaster() throws Exception {
-		if (master != null && master.getFirst() != null && master.getSecond()!= null) return true;
         UserAndMasterPasswordMgr.getInstance().set(userName, password, dbName);
-        Pair<String, String> userpw = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+		if (master != null && master.getFirst() != null && master.getSecond()!= null) {
+			UserAndMasterPasswordMgr.getInstance().setUserNamePasswordForDB(master.first, master.second);
+			return true;
+		}
+		Pair<String, String> userpw = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
 		if (userpw != null) {
 			if (StringUtils.isNotBlank(userpw.getFirst()) && StringUtils.isNotBlank(userpw.getSecond())) {
 				if (master == null) {
@@ -390,14 +391,7 @@ public class CmdAppBase {
                 master.getSecond());
 		if (result) {
 			this.jaasContext = new JaasContext();
-			jaasContext.jaasLogin(
-					userName,
-					password,
-					getConnectionStr(),
-					dbDrivers.get(dbDriverIdx).getDriverClassName(),
-					master.first,
-					master.second
-			);
+			jaasLogin();
 		}
 		return result;
 	}
@@ -442,12 +436,14 @@ public class CmdAppBase {
     {
         if (jaasContext != null)
         {
-            return jaasContext.jaasLogin(userName,
-            							 password,
-            							 getConnectionStr(), 
-            							 dbDrivers.get(dbDriverIdx).getDriverClassName(),
-            							 master.first,
-            							 master.second);
+            return jaasContext.jaasLogin(
+					userName,
+					password,
+					getConnectionStr(),
+					dbDrivers.get(dbDriverIdx).getDriverClassName(),
+					master.first,
+					master.second
+			);
         }
 
         return false;
@@ -459,6 +455,7 @@ public class CmdAppBase {
 	protected void setMembers() throws Exception {
 		userName = getArg("-u");
 		password = getArg("-p");
+		if (password == null) password = "";
 		dbName = getArg("-d");
 		outputName = getArg("-o");
 		workingPath = getArg("-w");
