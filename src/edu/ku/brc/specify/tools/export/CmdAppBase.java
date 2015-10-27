@@ -17,6 +17,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -208,7 +209,9 @@ public class CmdAppBase {
      */
     protected void setupPrefs() throws Exception {
 		//Apparently this is correct...
-        UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+		System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");
+
+		UIRegistry.setAppName("Specify");  //$NON-NLS-1$
         UIRegistry.setDefaultWorkingPath(this.workingPath);
         final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
@@ -386,8 +389,15 @@ public class CmdAppBase {
                 master.getFirst(), 
                 master.getSecond());
 		if (result) {
-	        //this.jaasContext = new JaasContext(); 
-			//jaasLogin(); 
+			this.jaasContext = new JaasContext();
+			jaasContext.jaasLogin(
+					userName,
+					password,
+					getConnectionStr(),
+					dbDrivers.get(dbDriverIdx).getDriverClassName(),
+					master.first,
+					master.second
+			);
 		}
 		return result;
 	}
