@@ -4469,7 +4469,7 @@ public class Uploader implements ActionListener, KeyListener
         	}
             if (structureErrors == null || structureErrors.size() > 0) 
             {                 
-            	System.out.println("Error: dataset is not uploadable due to structural abnormalities");
+            	System.out.println("Error: dataset is not uploadable due to mapping issues");
             	for (UploadMessage um : structureErrors) {
             		System.out.println(um.getRow() + "," + um.getCol() + ":" + um.getMsg());
             	}
@@ -4480,7 +4480,8 @@ public class Uploader implements ActionListener, KeyListener
             if (invalidities.size() != 0) {
             	System.out.println("Error: dataset is not uploadable because it contains invalid cells.");
                 for (UploadTableInvalidValue invalidity : invalidities) {
-                	System.out.println(invalidity.getMsg());
+                	System.out.println("[" + invalidity.getRow() + " [" + invalidity.getCols() + "]] " + invalidity.getDescription());
+                	//System.out.println(invalidity.getMsg());
                 }
             	return false;
             }
