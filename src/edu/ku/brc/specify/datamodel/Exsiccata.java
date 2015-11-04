@@ -133,7 +133,7 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "exsiccata")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade( {CascadeType.DELETE} )
     public Set<ExsiccataItem> getExsiccataItems()
     {
         return this.exsiccataItems;
