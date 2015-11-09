@@ -24,11 +24,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -329,7 +325,6 @@ public class ConvertVerifier extends AppBase
         newDBConn = DBConnection.getInstance().createConnection();
         newDBStmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         oldDBStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        
         IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
         
         long startTime = System.currentTimeMillis();
@@ -1278,12 +1273,12 @@ public class ConvertVerifier extends AppBase
     private boolean verifyAccessions(final String oldAccNum, final String newAccNum) throws SQLException
     {
          newSQL = "SELECT AccessionID, AccessionNumber, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession  " +
-                  "WHERE AccessionNumber = \"" + newAccNum + "\"";
+                  "WHERE AccessionNumber = ?";
 
          oldSQL = "SELECT AccessionID, Number, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession " +
-                  "WHERE Number = \"" + oldAccNum + "\"";
+                  "WHERE Number = ?";
         
-         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL, false);
+         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL, false, true);
          dumpStatus(status);
          return status == StatusType.COMPARE_OK;
     }
@@ -1299,21 +1294,21 @@ public class ConvertVerifier extends AppBase
         newSQL = "SELECT ac.AccessionID, aa.Role, a.FirstName, a.MiddleInitial, a.LastName " +
         "FROM accession ac INNER JOIN accessionagent aa ON ac.AccessionID = aa.AccessionID "+
         "INNER JOIN agent a ON aa.AgentID = a.AgentID  " +
-        "WHERE ac.AccessionNumber = '" + newAccNum + "' ORDER BY aa.Role, aa.TimestampCreated,  a.LastName";
+        "WHERE ac.AccessionNumber = ? ORDER BY aa.Role, aa.TimestampCreated,  a.LastName";
 
         oldSQL = "SELECT ac.AccessionID, aa.Role, a.FirstName, a.MiddleInitial, a.LastName, a.Name " +
         "FROM accession ac INNER JOIN accessionagents aa ON ac.AccessionID = aa.AccessionID " +
         "INNER JOIN agentaddress ON aa.AgentAddressID = agentaddress.AgentAddressID " +
         "INNER JOIN agent a ON agentaddress.AgentID = a.AgentID " +
-        "WHERE ac.Number = '" + oldAccNum + "' ORDER BY aa.Role, aa.TimestampCreated, a.Name, a.LastName";
+        "WHERE ac.Number = ? ORDER BY aa.Role, aa.TimestampCreated, a.Name, a.LastName";
 
-        StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL, false);
+        StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL, false, true);
         dumpStatus(status);
         return status == StatusType.COMPARE_OK;
     }
 
 
-                         
+
     /**
      * @param oldSQL
      * @param newSQL
@@ -1321,11 +1316,31 @@ public class ConvertVerifier extends AppBase
      */
     private void getResultSets(final String oldSQLArg, final String newSQLArg)  throws SQLException
     {
+
+
         try
         {
             newDBRS   = newDBStmt.executeQuery(newSQLArg);  
             oldDBRS   = oldDBStmt.executeQuery(compareTo6DBs ? newSQLArg : oldSQLArg);
             
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    private void getResultSetsNotRetarded(final String oldSQLArg, final String newSQLArg, String oldValue, String newValue)  throws SQLException
+    {
+
+        try
+        {
+            PreparedStatement newStmnt = newDBConn.prepareStatement(newSQLArg, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            PreparedStatement oldStmnt = oldDBConn.prepareStatement(compareTo6DBs ? newSQLArg : oldSQLArg, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            newStmnt.setString(1, newValue);
+            oldStmnt.setString(1, oldValue);
+            newDBRS   = newStmnt.executeQuery();
+            oldDBRS   = oldStmnt.executeQuery();
+
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -1366,7 +1381,7 @@ public class ConvertVerifier extends AppBase
                                         final String oldSQLArg, 
                                         final String newSQLArg) throws SQLException
     {
-        return compareRecords(desc, Integer.toString(oldCatNum), newCatNum, oldSQLArg, newSQLArg, false);
+        return compareRecords(desc, Integer.toString(oldCatNum), newCatNum, oldSQLArg, newSQLArg, false, false);
     }
     
     /**
@@ -1400,7 +1415,8 @@ public class ConvertVerifier extends AppBase
                                       final String newCatNumArg, 
                                       final String oldSQLArg, 
                                       final String newSQLArg,
-                                      final boolean nullsAreOK) throws SQLException
+                                      final boolean nullsAreOK,
+                                      final boolean notRetarded) throws SQLException
     {
         boolean dbg = false;
         if (dbg)
@@ -1422,7 +1438,11 @@ public class ConvertVerifier extends AppBase
             oldCatNum = newCatNumArg;
         }
 
-        getResultSets(oldSQLArg, newSQLArg);
+        if (notRetarded) {
+            getResultSetsNotRetarded(oldSQLArg, newSQLArg, oldCatNum, newCatNum);
+        } else {
+            getResultSets(oldSQLArg,newSQLArg);
+        }
         
         try
         {
