@@ -3939,8 +3939,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         else if (Agent.class.isAssignableFrom(tblInfo.getClassObj()))
         {
-        	return (alias.getParent() != null && ("members".equals(alias.getParent().getField()) || "groups".equals(alias.getParent().getField())));
-        	//return true;
+        	if (alias.getParent() != null && ("members".equals(alias.getParent().getField()) || "groups".equals(alias.getParent().getField()))) {
+        		return true;
+        	//This allows CreatedByAgent and ModifiedByAgent to be expanded. But there is another check somewhere that prevents "loop backs":
+        	//If you expand CreatedByAgent, in the resulting fields list CreatedByAgent is not expandable.
+        	} else if (/*alias.getParent() != null && alias.getParent().getTableInfo().getTableId() != Agent.getClassTableId() 
+        			&& */("modifiedByAgent".equals(alias.getField()) || "createdByAgent".equals(alias.getField()))) {
+        		return true;
+        	} else {
+        		return false;
+        	}
         }
         
         return false;
