@@ -246,7 +246,7 @@ public class UploadTableTree extends UploadTable
      */
     protected DataModelObjBase getAcceptedParent(DataModelObjBase parent, Treeable<?,?,?> currentRec, int recNum, boolean notify)
     {
-        if (parent == null || ((Treeable<?,?,?> )parent).getIsAccepted())
+        if (parent == null || ((Treeable<?,?,?> )parent).getIsAccepted() || currentRec == null)
         {
         	return parent;
         }
@@ -305,7 +305,7 @@ public class UploadTableTree extends UploadTable
             result = grandParent.getCurrentRecord(recNum);
             grandParent = grandParent.parent;
         }
-        return getAcceptedParent(result, currentRec, recNum, true);
+        return getAcceptedParent(result, currentRec, recNum, checkSubTree);
     }
     
     /* (non-Javadoc)
