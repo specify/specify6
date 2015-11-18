@@ -99,7 +99,6 @@ import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryParameterPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.TableQRI;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
-import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.specify.tools.webportal.BuildSearchIndex2;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -862,7 +861,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @param map
 	 * @return the number of columns in the cache table for map
 	 */
-	protected static int getNumberColumnsInCache(SpExportSchemaMapping map)
+	protected static int getNumberColumnsInCache(SpExportSchemaMapping map) 
 	{
 		try
 		{
@@ -885,7 +884,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
             //UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
+            return 0;
 		}
 	}
 	
@@ -948,7 +948,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	/**
 	 * @return
 	 */
-	protected static Pair<TableTree, Hashtable<String, TableTree>> getTreeStruct() {
+	protected static Pair<TableTree, Hashtable<String, TableTree>> getTreeStruct() throws Exception {
 		synchronized(treeStruct) {
 			if (treeStruct.getFirst() == null) {
 				QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
@@ -959,7 +959,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				} else {
 					log.error("Cound not find the Query task when exporting mapping");
 					//blow up
-					throw new RuntimeException("Cound not find the Query task when exporting mapping");
+					throw new Exception("Cound not find the Query task when exporting mapping");
 				}
 			}
 		}
@@ -973,47 +973,46 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @return
 	 */
 	protected static List<Specs> getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
-			boolean getColInfo, boolean rebuildExistingTbl, QBDataSourceListenerIFace listener)
+			boolean getColInfo, boolean rebuildExistingTbl, QBDataSourceListenerIFace listener) 
 	{
-        final TableTree tblTree = getTreeStruct().getFirst();
-        final Hashtable<String, TableTree> ttHash = getTreeStruct().getSecond();
-        TableQRI rootQRI = null;
-		final Vector<QBDataSourceListenerIFace> dataSrcListeners = new Vector<QBDataSourceListenerIFace>();
-		if (listener != null) {
-			dataSrcListeners.add(listener);
-		}
-		SpQuery exportQuery = theMapping.getMappings().iterator().next().getQueryField().getQuery();
-        int cId = exportQuery.getContextTableId();
-        for (TableTree tt : ttHash.values())
-        {
-            if (cId == tt.getTableInfo().getTableId())
-            {
-                rootQRI = tt.getTableQRI();
-                break;
-            }
-        }
-        QueryParameterPanel qpp = new QueryParameterPanel(){
+        try {
+        	final TableTree tblTree = getTreeStruct().getFirst();
+        	final Hashtable<String, TableTree> ttHash = getTreeStruct().getSecond();
+        	TableQRI rootQRI = null;
+        	final Vector<QBDataSourceListenerIFace> dataSrcListeners = new Vector<QBDataSourceListenerIFace>();
+        	if (listener != null) {
+        		dataSrcListeners.add(listener);
+        	}
+        	SpQuery exportQuery = theMapping.getMappings().iterator().next().getQueryField().getQuery();
+        	int cId = exportQuery.getContextTableId();
+        	for (TableTree tt : ttHash.values())
+        	{
+        		if (cId == tt.getTableInfo().getTableId())
+        		{
+        			rootQRI = tt.getTableQRI();
+        			break;
+        		}
+        	}
+        	QueryParameterPanel qpp = new QueryParameterPanel(){
 
-			@Override
-			public boolean isPromptMode() {
-				return false;
-			}
+        		@Override
+        		public boolean isPromptMode() {
+        			return false;
+        		}
 
-			@Override
-			public boolean isForSchemaExport() {
-				return true;
-			} 
+        		@Override
+        		public boolean isForSchemaExport() {
+        			return true;
+        		} 
         	
-        };
-        qpp.setQuery(exportQuery, tblTree, ttHash, false);
-        Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
+        	};
+        	qpp.setQuery(exportQuery, tblTree, ttHash, false);
+        	Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
         		null, theMapping, null, null);
 
-        HQLSpecs sql = null;
-        String uniquenessHQL = null;
-        HQLSpecs uniquenessSql = null;
-        try
-        {
+        	HQLSpecs sql = null;
+        	String uniquenessHQL = null;
+        	HQLSpecs uniquenessSql = null;
             //the hql generated by this call will only select records that have changed
         	sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, null, 
             		exportQuery.getSearchSynonymy() == null ? false : exportQuery.getSearchSynonymy(),
@@ -1030,21 +1029,21 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         	{
         		uniquenessHQL = sql.getHql();
         	}
+        	List<ERTICaptionInfoQB> cols = getColInfo ?
+        			QueryBldrPane.getColumnInfo(qfps, false, rootQRI.getTableInfo(), true) : null;
+        
+        			List<Specs> result = new ArrayList<Specs>();
+        			result.add(new Specs(sql, cols, uniquenessHQL, uniquenessSql));
+        			return result;
         }
         catch (Exception ex)
         {
             UsageTracker.incrHandledUsageCount();
             ex.printStackTrace();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
             return null;
         }
-        List<ERTICaptionInfoQB> cols = getColInfo ?
-        	QueryBldrPane.getColumnInfo(qfps, false, rootQRI.getTableInfo(), true) : null;
-        
-        List<Specs> result = new ArrayList<Specs>();
-        result.add(new Specs(sql, cols, uniquenessHQL, uniquenessSql));
-        return result;
 	}
 	
 	protected static String adjustPathForWindows(String path)
@@ -1749,7 +1748,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		} catch (Exception ex) {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
+            return null;
 		}
 	}
 	
@@ -1794,7 +1794,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						{
 				            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 				            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
-				            throw new RuntimeException(ex);
+				            ex.printStackTrace();
 						}
 					}
 				});
@@ -1875,7 +1875,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-                            .capture(MainFrameSpecify.class, e);
+                            .capture(ExportPanel.class, e);
                         result = false;
                     }
                     return result;
@@ -1907,7 +1907,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-                        .capture(MainFrameSpecify.class, e);
+                        .capture(ExportPanel.class, e);
                     result = null;
                 }
                 return result;
@@ -1933,7 +1933,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                 } catch (Exception e)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, e);
                     result = false;
                 }
                 return result;
@@ -2030,7 +2030,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         } catch (MissingResourceException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }
