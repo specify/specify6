@@ -26,11 +26,15 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.persistence.Transient;
+import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -197,7 +201,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             popup.add(lifeMapperDisplay, true);
             popup.setLifeMapperDisplayMenuItem(lifeMapperDisplay);
 /*... Removing lifemapper due to worldwind java8 issues */            
-            if (!isEditMode)
+            DBTableInfo        treeTI    = DBTableIdMgr.getInstance().getByClassName(getTreeClass().getName());
+            PermissionSettings treePerms = treeTI.getPermissions();
+            if (!isEditMode && treePerms.canAdd())
             {
                 JMenuItem taxonMenu = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
                 taxonMenu.addActionListener(new ActionListener()

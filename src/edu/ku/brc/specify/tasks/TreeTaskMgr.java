@@ -158,10 +158,10 @@ public class TreeTaskMgr implements CommandListener
                         rocs = new Vector<RolloverCommand>();
                         unlockBtnHash.put(treeTask, rocs);
                     }
-                } else
-                {
-                    continue;
-                }
+                } //else
+                //{
+                //    continue;
+                //}
                 
                 if (edtTreeAction != null)
                 {
