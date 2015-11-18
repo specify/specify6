@@ -278,6 +278,7 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected boolean                                   plugHoles = true;    //if false then blank one-to-many records are allowed. 
     											                             //Eg. Prep2 fields are allowed to contain data when all prep1 fields are blank.
+    protected List<Boolean>								blankSeqs = null;									
 
     protected boolean									deleteUnusedRecs			 = true;
     protected Set<Pair<Integer, String>>           		disUsedRecs		             = new TreeSet<Pair<Integer, String>>(new Comparator<Pair<Integer, String>>() {
@@ -571,6 +572,34 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    /**
+     * 
+     */
+    protected void adjustPlugHoles() {
+        if (plugHoles && this.uploadFields.size() > 1) {
+        	List<UploadTable> kids = uploader.getChildren(this);
+        	if (kids.size() == 1 && kids.get(0).getUploadFields().size() > 1) {
+        		plugHoles = false;
+        	}
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void clearBlankness() {
+    	if (blankSeqs ==  null) {
+    		blankSeqs = new ArrayList<Boolean>(this.uploadFields.size());
+    		for (int b = 0; b < this.uploadFields.size(); b++) {
+    			blankSeqs.add(true);
+    		}
+    	} else {
+    		for (int b = 0; b < this.blankSeqs.size(); b++) {
+    			blankSeqs.set(b, true);
+    		}
+    	}
+    }
+    
     /**
      * @param fldName
      * @return true if a field named fldname is in the uploading dataset.
@@ -4602,28 +4631,21 @@ public class UploadTable implements Comparable<UploadTable>
 			UploadField llFld = null; // for 'generic' latlon errors.
 
 			Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
-			Vector<Integer> blankSeqs = new Vector<Integer>();
-			for (Vector<UploadField> flds : uploadFields)
-			{
+			Vector<Integer> blankSeqsLocal = new Vector<Integer>();
+			for (Vector<UploadField> flds : uploadFields) {
 				boolean isBlank = true;
 				UploadField currFirstFld = null;
-				for (UploadField fld : flds)
-				{
-					if (fld.getIndex() != -1)
-					{
-						if (currFirstFld == null)
-						{
+				for (UploadField fld : flds) {
+					if (fld.getIndex() != -1) {
+						if (currFirstFld == null) {
 							currFirstFld = fld;
 						}
 						fld.setValue(uploadData.get(row, fld.getIndex()));
 						isBlank &= isBlankVal(fld, seq, row, uploadData);;
-						try
-						{
-							if (invalidNull(fld, uploadData, row, seq))
-							{
+						try {
+							if (invalidNull(fld, uploadData, row, seq)) {
 								if (shouldEnforceNonNullConstraint(row,
-										uploadData, seq))
-								{
+										uploadData, seq)) {
 									//throw new Exception(
 									//		getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA"));
 									invalidNulls.add(new UploadTableInvalidValue(
@@ -4634,12 +4656,9 @@ public class UploadTable implements Comparable<UploadTable>
 							if (fld.getValue() != null && !"".equals(fld.getValue()) && fld.isAutoAssignForUpload()) {
 								throw new Exception(UIRegistry.getResourceString("WB_UPLOAD_AutoAssMustBeBlankErrMsg"));
 							}
-							if (!pickListCheck(fld))
-							{
-								if (!fld.isReadOnlyValidValues())
-								{
-									if (uploader != Uploader.currentUpload)
-									{
+							if (!pickListCheck(fld)) {
+								if (!fld.isReadOnlyValidValues()) {
+									if (uploader != Uploader.currentUpload) {
 										invalidValues
 												.add(new UploadTableInvalidValue(
 														null,
@@ -4652,33 +4671,28 @@ public class UploadTable implements Comparable<UploadTable>
 														true));
 										continue;
 									}
-								} else
-								{
+								} else {
 									throw new Exception(
 											getInvalidPicklistValErrMsg(fld));
 								}
 							}
 							Object[] finalVal = getArgForSetter(fld);
-							if (!updateMatches)
-							{
+							if (!updateMatches) {
 								//XXX But what if catnum has been changed... Shouldn't CatNum be made unchangeable???
 								checkUniqueness(finalVal, fld);
 							}
-						} catch (Exception e)
-						{
+						} catch (Exception e) {
 							invalidValues.add(new UploadTableInvalidValue(
 								null, this, fld, row, e));
 						}
 					}
-					if (tblClass.equals(Locality.class))
-					{
+					if (tblClass.equals(Locality.class)) {
 						// Check row to see that lat/long formats are the same.
 						String fldName = fld.getField().getName();
 						if (fldName.equalsIgnoreCase("latitude1")
 								|| fldName.equalsIgnoreCase("latitude2")
 								|| fldName.equalsIgnoreCase("longitude1")
-								|| fldName.equalsIgnoreCase("longitude2"))
-						{
+								|| fldName.equalsIgnoreCase("longitude2")) {
 							llFld = fld;
 							LatLonConverter.FORMAT fmt = geoRefConverter
 									.getLatLonFormat(StringUtils
@@ -4686,20 +4700,15 @@ public class UploadTable implements Comparable<UploadTable>
 							LatLonConverter.FORMAT llFmt = fldName
 									.endsWith("1") ? llFmt1 : llFmt2;
 							boolean checkDecimalPlaces = true;
-							if (llFmt == null)
-							{
+							if (llFmt == null) {
 								llFmt = fmt;
-								if (fldName.endsWith("1"))
-								{
+								if (fldName.endsWith("1")) {
 									llFmt1 = fmt;
-								} else
-								{
+								} else {
 									llFmt2 = fmt;
 								}
-							} else
-							{
-								if (!llFmt.equals(fmt))
-								{
+							} else {
+								if (!llFmt.equals(fmt)) {
 									checkDecimalPlaces = false;
 									invalidValues
 											.add(new UploadTableInvalidValue(
@@ -4712,22 +4721,18 @@ public class UploadTable implements Comparable<UploadTable>
 																	.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
 								} 
 							}
-							if (checkDecimalPlaces && fmt != null && fmt != LatLonConverter.FORMAT.None)
-							{
+							if (checkDecimalPlaces && fmt != null && fmt != LatLonConverter.FORMAT.None) {
 								//check decimal places
 								//lame
 								int c = fld.getValue().indexOf(decSep);
-								if (c > -1)
-								{
+								if (c > -1) {
 									int d;
 									String points = fld.getValue().substring(c+1);
-									for (d = 0; d < points.length(); d++)
-									{
+									for (d = 0; d < points.length(); d++) {
 										//System.out.println(points.substring(d, d+1));
 										if (!"0123456789".contains(points.substring(d, d+1))) break;
 									}
-									if (d > LatLonConverter.DECIMAL_SIZES[fmt.ordinal()])
-									{
+									if (d > LatLonConverter.DECIMAL_SIZES[fmt.ordinal()]) {
 										invalidValues.add(new UploadTableInvalidValue(null, this, fld, row,
 												new Exception(String.format(
 														UIRegistry.getResourceString("WB_UPLOADER_TOO_MANY_FRACTION_DIGITS"),
@@ -4841,7 +4846,9 @@ public class UploadTable implements Comparable<UploadTable>
 										String.format(getResourceString("UploadTable.AttachmentPresentButNoData"), getTable().getTableInfo().getTitle()))));
 					}
 					
-				} 				isBlank = isBlankSequence(isBlank, uploadData, row, seq, null);
+				} 				
+				isBlank = isBlankSequence(isBlank, uploadData, row, seq, null);
+				blankSeqs.set(seq, isBlank);
 				if (isBlank)
 				/*
 				 * Disallow situations where 1-many lists have 'holes' - eg.
@@ -4850,10 +4857,11 @@ public class UploadTable implements Comparable<UploadTable>
 				 */
 				{
 					gotABlank = true;
-					blankSeqs.add(seq);
+					blankSeqsLocal.add(seq);
+					
 				} else if (!isBlank && gotABlank && plugHoles)
 				{
-					for (Integer blank : blankSeqs)
+					for (Integer blank : blankSeqsLocal)
 					{
 						for (UploadField blankSeqFld : getBlankFields(blank,
 								row, uploadData))
@@ -4862,7 +4870,7 @@ public class UploadTable implements Comparable<UploadTable>
 									blankSeqFld, toString(), row, blank);
 						}
 					}
-					blankSeqs.clear();
+					blankSeqsLocal.clear();
 				}
 
 				invalidValues.addAll(invalidNulls);
@@ -5150,7 +5158,7 @@ public class UploadTable implements Comparable<UploadTable>
 					if (pte.getImportTable().isSequenced)
 //					if (parentClasses.contains(pte.getImportTable().getTblClass()))
 					{
-						if (!pte.getImportTable().isBlankSequence(blank, uploadData, row, seq, this))
+						if (!pte.getImportTable().isBlankSequence(pte.getImportTable().blankSeqs.get(seq), uploadData, row, seq, this))
 						{
 							return false;
 						}
@@ -5160,7 +5168,8 @@ public class UploadTable implements Comparable<UploadTable>
 			return true;
 		}
 		
-		return childCaller == null || !hasChildren;
+		//return childCaller == null || !hasChildren;
+		return true;
     }
     
     

@@ -875,6 +875,11 @@ public class Uploader implements ActionListener, KeyListener
         {	
         	currentUpload = this;
         }
+        for (UploadTable ut : uploadTables)
+        {
+            ut.adjustPlugHoles();
+        }
+        
 //        for (UploadTable ut : uploadTables){
 //        	System.out.print(ut + " " + ut.isMatchChild() + " ");
 //        	if (ut.getParentTables() != null && ut.getParentTables().size() > 0)
@@ -1685,6 +1690,9 @@ public class Uploader implements ActionListener, KeyListener
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
     	//XXX figure out which table is associated with col.
+        for (UploadTable tbl : uploadTables) {
+        	tbl.clearBlankness();
+        }
         for (UploadTable tbl : uploadTables)
         {
             result.addAll(validateLengths(tbl, row, col));
