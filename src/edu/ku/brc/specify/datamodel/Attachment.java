@@ -171,7 +171,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         guid               = null;
         
-        isPublic           = null;
+        isPublic           = true;
         
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
@@ -241,7 +241,7 @@ public class Attachment extends DataModelObjBase implements Serializable
 	/**
 	 * @return the isPublic
 	 */
-    @Column(name = "IsPublic", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "IsPublic", unique = false, nullable = false, insertable = true, updatable = true)
 	public Boolean getIsPublic() {
 		return isPublic;
 	}

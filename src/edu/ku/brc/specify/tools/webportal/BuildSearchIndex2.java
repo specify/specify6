@@ -266,7 +266,7 @@ public class BuildSearchIndex2
     	String sql = "select att.AttachmentID, att.AttachmentLocation, att.Title, aia.Height, aia.Width from attachment att "
     			+ "left join attachmentimageattribute aia on aia.AttachmentImageAttributeID " 
     			+ "= att.AttachmentImageAttributeID inner join " + attacherTbl + " oatt on oatt.AttachmentID "
-    			+ "= att.AttachmentID where att.MimeType like 'image/%' and oatt." +  baseTblID + " = " + baseKey;
+    			+ "= att.AttachmentID where att.IsPublic and att.MimeType like 'image/%' and oatt." +  baseTblID + " = " + baseKey;
     	Statement stmt = null;
     	ResultSet rs = null;
     	String result = null;

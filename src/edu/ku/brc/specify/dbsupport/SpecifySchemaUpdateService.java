@@ -2371,7 +2371,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             			errMsgList.add("update error: " + sql);
             			return false;
             		}
-                    
+            		//add attachment.IsPublic, with default value = true
+            		if (!doesColumnExist(databaseName, "attachment", "ispublic", conn)) {
+            			sql = "alter table attachment add column IsPublic bit(1) NOT NULL DEFAULT TRUE";
+            			if (-1 == update(conn, sql)) {
+            				errMsgList.add("update error: " + sql);
+            				return false;
+            			}
+            		}
                     frame.setProcess(0, 100);
                     frame.incOverall(); 
                     
