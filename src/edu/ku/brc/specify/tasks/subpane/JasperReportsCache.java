@@ -86,6 +86,19 @@ public class JasperReportsCache implements DataCacheIFace
         File imageDir;
         
         String imgPath = AppPreferences.getRemote().get("REPORT_IMAGE_PATH", null);
+        if (UIHelper.isMacOS()) 
+        {
+        	String macPath = AppPreferences.getRemote().get("REPORT_IMAGE_PATH_MAC", "");
+        	if (StringUtils.isNotEmpty(macPath)) {
+        		imgPath = macPath;
+        	}
+        } else if (UIHelper.isLinux())
+        {
+        	String linuxPath = AppPreferences.getRemote().get("REPORT_IMAGE_PATH_LINUX", "");
+        	if (StringUtils.isNotEmpty(linuxPath)) {
+        		imgPath = linuxPath;
+        	}
+        }
         if (StringUtils.isNotEmpty(imgPath))
         {
             imageDir = new File(imgPath);

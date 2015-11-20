@@ -26,6 +26,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
@@ -56,6 +57,7 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -400,6 +402,7 @@ public class SystemPrefs extends GenericPrefsPanel
                         }
                     }
                 }
+                File cp = JasperReportsCache.getImagePath();
                 
                 try
                 {

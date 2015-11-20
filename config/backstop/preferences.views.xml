@@ -459,7 +459,8 @@
             <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p,4px,p,f:p:g</columnDef>
-            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
+            <!--rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef-->
+			<rowDef auto="true" cell="p" sep="2dlu"/>
                
             <rows>
                 <row>
@@ -478,7 +479,16 @@
                     <cell type="separator" label="REP_IMG_PATH" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="88" name="REPORT_IMAGE_PATH" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
+                    <cell type="label" id="wincachelbl" label="Windows" labelfor="88" />
+                    <cell type="field" id="88" name="REPORT_IMAGE_PATH" cols="30" uitype="browse" initialize="dirsonly=true" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" id="maccachelbl" label="MacOS" labelfor="999"/>
+                    <cell type="field" id="999" name="REPORT_IMAGE_PATH_MAC" cols="30" uitype="browse" initialize="dirsonly=true" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" id="lnxcachelbl" label="Linux" labelfor="111"/>
+                    <cell type="field" id="111" name="REPORT_IMAGE_PATH_LINUX" cols="30" uitype="browse" initialize="dirsonly=true" colspan="2"/>
                 </row>
                 <!-- <row>
                     <cell type="separator" label="GEO_REF" colspan="4"/>
