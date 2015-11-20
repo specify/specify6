@@ -699,7 +699,24 @@ public class ExportMappingTask extends QueryTask
 		return true;
 	}
 
-	
+	/**
+	 * @param mapping
+	 * @return
+	 */
+	protected boolean mappingInUse(SpExportSchemaMapping mapping) {
+		boolean result = false;
+		Integer mappingId = mapping.getId();
+		if (mappingId != null) {
+			String sql = "select schemamappingid, group_concat(instancename) from spsymbiotainstance where schemamappingid=" + mappingId + " group by 1";
+			List<Object[]> instances = BasicSQLUtils.query(sql);
+			if (instances.size() > 0) {
+				result = true;
+				String msg = String.format(UIRegistry.getResourceString("ExportMappingTask.DeleteSymbiotaInstancesFirst"), instances.get(0)[1]);
+				UIRegistry.displayInfoMsgDlg(msg);
+			}
+		}
+		return result;
+	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#okToDeleteQuery(edu.ku.brc.specify.datamodel.SpQuery)
@@ -713,50 +730,54 @@ public class ExportMappingTask extends QueryTask
 			SpExportSchemaMapping mapping = getMappingForQuery(q, session);
 			if (mapping != null)
 			{
-				String tableName = ExportToMySQLDB.fixTblNameForMySQL(mapping.getMappingName());
-				Connection connection = DBConnection.getInstance().getConnection();
-				if (BasicSQLUtils.doesTableExist(connection, tableName))
-				{
-					UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.IT_Permission_Required_To_Delete");
-					Pair<String, String> it = null;
-					it = DatabaseLoginPanel.getITUsernamePwd();
-					if (it == null)
+				if (mappingInUse(mapping)) {
+					result = false;
+				} else {
+					String tableName = ExportToMySQLDB.fixTblNameForMySQL(mapping.getMappingName());
+					Connection connection = DBConnection.getInstance().getConnection();
+					if (BasicSQLUtils.doesTableExist(connection, tableName))
 					{
-						UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.Lack_Permission_To_Delete");
-						result = false;
-					} else
-					{
-						int count = BasicSQLUtils.getCountAsInt("select count(*) from " + tableName);
-						int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-		                String.format(UIRegistry.getResourceString("ExportMappingTask.CONFIRM_CACHE_DELETE"), 
-		                		tableName, count),
-		                UIRegistry.getResourceString("ExportMappingTask.CONFIRM_CACHE_DELETE_TITLE"), 
-		                	JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
-		                	null, 
-		                	null, 
-		                	JOptionPane.NO_OPTION);
-						if (option == JOptionPane.CANCEL_OPTION)
+						UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.IT_Permission_Required_To_Delete");
+						Pair<String, String> it = null;
+						it = DatabaseLoginPanel.getITUsernamePwd();
+						if (it == null)
 						{
+							UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.Lack_Permission_To_Delete");
 							result = false;
-						} else if (option == JOptionPane.YES_OPTION)
+						} else
 						{
+							int count = BasicSQLUtils.getCountAsInt("select count(*) from " + tableName);
+							int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+									String.format(UIRegistry.getResourceString("ExportMappingTask.CONFIRM_CACHE_DELETE"), 
+									tableName, count),
+									UIRegistry.getResourceString("ExportMappingTask.CONFIRM_CACHE_DELETE_TITLE"), 
+									JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
+									null, 
+									null, 
+									JOptionPane.NO_OPTION);
+							if (option == JOptionPane.CANCEL_OPTION)
+							{
+								result = false;
+							} else if (option == JOptionPane.YES_OPTION)
+							{
 				    	
-							DBConnection dbc    = DBConnection.getInstance();
-							DBConnection itConnection = DBConnection.createInstance(dbc.getDriver(), 
+								DBConnection dbc    = DBConnection.getInstance();
+								DBConnection itConnection = DBConnection.createInstance(dbc.getDriver(), 
 				                                                          dbc.getDialect(), 
 				                                                          dbc.getDatabaseName(), 
 				                                                          dbc.getConnectionStr(), 
 				                                                          it.getFirst(), 
 				                                                          it.getSecond());
-							if (itConnection != null)
-							{
-								try 
+								if (itConnection != null)
 								{
-									Statement stmt = itConnection.getConnection().createStatement();
-									stmt.execute("drop table " + tableName);
-								} finally
-								{
-									itConnection.close();
+									try 
+									{
+										Statement stmt = itConnection.getConnection().createStatement();
+										stmt.execute("drop table " + tableName);
+									} finally
+									{
+										itConnection.close();
+									}
 								}
 							}
 						}
@@ -774,8 +795,13 @@ public class ExportMappingTask extends QueryTask
 	protected void deleteThisQuery(SpQuery query,
 			DataProviderSessionIFace session) throws Exception
 	{
-		session.delete(getMappingForQuery(query, session));
-		super.deleteThisQuery(query, session);
+		//SpExportSchemaMapping mapToDelete = getMappingForQuery(query, session);
+		//if (canDeleteMapping(mapToDelete)) {
+			session.delete(getMappingForQuery(query, session));
+			super.deleteThisQuery(query, session);
+		//} else {
+		//	
+		//}
 		
 	}
 
