@@ -205,6 +205,7 @@ import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageAttachment;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.datamodel.TreatmentEventAttachment;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.SecurityAdminTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
@@ -493,6 +494,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             RepositoryAgreementAttachment.class,
             StorageAttachment.class,
             TaxonAttachment.class,
+            TreatmentEventAttachment.class,
         };
 
         for (Class<?> cls : attachmentClasses)

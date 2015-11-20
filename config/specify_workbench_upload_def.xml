@@ -207,6 +207,9 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeText13" actualname="Text13"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText14" actualname="Text14"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText15" actualname="Text15"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText16" actualname="Text16"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText17" actualname="Text17"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText18" actualname="Text18"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo1" actualname="YesNo1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo2" actualname="YesNo2"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo3" actualname="YesNo3"/>

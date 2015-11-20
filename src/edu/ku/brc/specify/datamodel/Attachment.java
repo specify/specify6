@@ -101,6 +101,8 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Integer scopeID;
     protected Byte    scopeType;
     
+    protected Boolean isPublic;
+    
     // transient field
     protected boolean                 storeFile;
     
@@ -124,7 +126,9 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<PreparationAttachment>             preparationAttachments;
     protected Set<ReferenceWorkAttachment>           referenceWorkAttachments;
     protected Set<RepositoryAgreementAttachment>     repositoryAgreementAttachments;
+    protected Set<StorageAttachment>          		 storageAttachments;
     protected Set<TaxonAttachment>                   taxonAttachments;
+    protected Set<TreatmentEventAttachment>          treatmentEventAttachments;
     
     /** default constructor */
     public Attachment()
@@ -167,6 +171,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         guid               = null;
         
+        isPublic           = null;
+        
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
         borrowAttachments              = new HashSet<BorrowAttachment>();
@@ -183,7 +189,9 @@ public class Attachment extends DataModelObjBase implements Serializable
         preparationAttachments         = new HashSet<PreparationAttachment>();
         repositoryAgreementAttachments = new HashSet<RepositoryAgreementAttachment>();
         referenceWorkAttachments       = new HashSet<ReferenceWorkAttachment>();
+        storageAttachments             = new HashSet<StorageAttachment>();
         taxonAttachments               = new HashSet<TaxonAttachment>();
+        treatmentEventAttachments      = new HashSet<TreatmentEventAttachment>();
         
         hasGUIDField = true;
         setGUID();
@@ -229,6 +237,21 @@ public class Attachment extends DataModelObjBase implements Serializable
     {
         this.mimeType = mimeType;
     }
+
+	/**
+	 * @return the isPublic
+	 */
+    @Column(name = "IsPublic", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getIsPublic() {
+		return isPublic;
+	}
+
+	/**
+	 * @param isPublic the isPublic to set
+	 */
+	public void setIsPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
+	}
 
     @Column(name = "OrigFilename", nullable = false, length = 20000)
     public String getOrigFilename()
@@ -465,6 +488,7 @@ public class Attachment extends DataModelObjBase implements Serializable
             RepositoryAgreement.getClassTableId(), Attachment.DIVISION_SCOPE,
             Storage.getClassTableId(), Attachment.INSTITUTION_SCOPE,
             Taxon.getClassTableId(), Attachment.DISCIPLINE_SCOPE,
+            TreatmentEvent.getClassTableId(), Attachment.DIVISION_SCOPE,
         };
         HashMap<Integer, Byte> map = new HashMap<Integer, Byte>();
         for (int i=0;i<ids.length;i++)
@@ -716,6 +740,19 @@ public class Attachment extends DataModelObjBase implements Serializable
 
     @OneToMany(mappedBy = "attachment")
     @Cascade( {CascadeType.ALL} )
+    public Set<StorageAttachment> getStorageAttachments()
+    {
+        return storageAttachments;
+    }
+
+    public void setStorageAttachments(Set<StorageAttachment> storageAttachments)
+    {
+        this.storageAttachments = storageAttachments;
+    }
+
+    
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<TaxonAttachment> getTaxonAttachments()
     {
         return taxonAttachments;
@@ -724,6 +761,18 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setTaxonAttachments(Set<TaxonAttachment> taxonAttachments)
     {
         this.taxonAttachments = taxonAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<TreatmentEventAttachment> getTreatmentEventAttachments()
+    {
+        return treatmentEventAttachments;
+    }
+
+    public void setTreatmentEventAttachments(Set<TreatmentEventAttachment> treatmentEventAttachments)
+    {
+        this.treatmentEventAttachments = treatmentEventAttachments;
     }
 
     /**

@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +59,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 public class PreparationAttribute extends CollectionMember implements Cloneable
 {
     protected Integer preparationAttributeId;
-    protected Date attrDate;
+    protected Calendar attrDate;
     protected String text22;  // preparationType
     protected String text23;  // containerType
     protected String text24;  // medium
@@ -297,7 +298,7 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
      * @return the preparedDate
      */
     @Column(name = "AttrDate", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public Date getAttrDate()
+    public Calendar getAttrDate()
     {
         return attrDate;
     }
@@ -689,7 +690,7 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @param attrDate the attrDate to set
      */
-    public void setAttrDate(Date attrDate)
+    public void setAttrDate(Calendar attrDate)
     {
         this.attrDate = attrDate;
     }

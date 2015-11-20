@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 148 or 533
+    Last used ID is 149 or 533
     
     [0] are available
     
@@ -441,6 +441,10 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.TreatmentEvent" abbrev="te" id="122" searchable="true"/>
+         <table name="edu.ku.brc.specify.datamodel.TreatmentEventAttachment" abbrev="teat" id="149" searchable="true">
+            <display view="ObjectAttachment" newobjdlg="TreatmentEventAttachmentDisplay" searchdlg="AttachmentSearch" />
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Workbench" abbrev="wb" id="79"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" abbrev="wbdi" id="80"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchRow" abbrev="wbr" id="90"/>

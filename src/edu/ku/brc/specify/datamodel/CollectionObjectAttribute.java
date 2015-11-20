@@ -70,6 +70,9 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected String text13;
     protected String text14;
     protected String text15;
+    protected String text16;
+    protected String text17;
+    protected String text18;
     protected Float number11;
     protected Float number12;
     protected Float number13;
@@ -164,6 +167,9 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         text13   = null;
         text14   = null;
         text15   = null;
+        text16   = null;
+        text17   = null;
+        text18   = null;
         number11 = null;
         number12 = null;
         number13 = null;
@@ -271,6 +277,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         return text15;
     }
 
+    
     @Column(name = "Number42", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber42()
     {
@@ -557,6 +564,28 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         return text3;
     }
 
+    @Lob
+    @Column(name = "Text16", length = 65535)
+    public String getText16()
+    {
+        return text16;
+    }
+
+    @Lob
+    @Column(name = "Text17", length = 65535)
+    public String getText17()
+    {
+        return text17;
+    }
+
+    @Lob
+    @Column(name = "Text18", length = 65535)
+    public String getText18()
+    {
+        return text18;
+    }
+    
+    
     @Column(name = "Text4", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getText4()
     {
@@ -935,6 +964,21 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     public void setText9(String text9)
     {
         this.text9 = text9;
+    }
+
+    public void setText16(String text16)
+    {
+        this.text16 = text16;
+    }
+
+    public void setText17(String text17)
+    {
+        this.text17 = text17;
+    }
+
+    public void setText18(String text18)
+    {
+        this.text18 = text18;
     }
 
     public void setNumber37(Float number37)

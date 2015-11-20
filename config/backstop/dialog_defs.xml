@@ -101,6 +101,7 @@
     <dialog type="display" view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="StorageAttachmentDisplay"              class="edu.ku.brc.specify.datamodel.StorageAttachment" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ObjectAttachment" name="TaxonAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.TaxonAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="TreatmentEventAttachmentDisplay"       class="edu.ku.brc.specify.datamodel.TreatmentEventAttachment" helpcontext="CBXQViewEdit"/>
 	
 
 	<!--  Plugin -->    

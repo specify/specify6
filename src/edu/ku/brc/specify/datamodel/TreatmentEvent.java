@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +31,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -57,7 +61,8 @@ import edu.ku.brc.ui.DateWrapper;
         @Index (name="TEFieldNumberIDX", columnNames={"FieldNumber"}),
         @Index (name="TETreatmentNumberIDX", columnNames={"TreatmentNumber"})
     })
-public class TreatmentEvent extends DataModelObjBase
+@SuppressWarnings("serial")
+public class TreatmentEvent extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<TreatmentEventAttachment> 
 {
     protected static DateWrapper scrDateFormat = null;
 
@@ -80,10 +85,31 @@ public class TreatmentEvent extends DataModelObjBase
     protected String   fieldNumber;
     protected String   remarks;
     
+    protected String text1;
+    protected String text2;
+    protected String text3;
+    protected String text4;
+    protected String text5;
+    
+    protected Integer              number1;
+    protected Integer              number2;
+    protected Float				   number3;
+    protected Float                number4;
+    protected Float                number5;
+    
+    protected Boolean              yesNo1;
+    protected Boolean              yesNo2;
+    protected Boolean              yesNo3;
+
+    protected Agent	performedBy;
+    protected Agent authorizedBy;
+    
     protected Accession        accession;
     protected CollectionObject collectionObject;
     protected Division         division;
-    
+ 
+    protected Set<TreatmentEventAttachment>    treatmentEventAttachments;
+
     /**
      * 
      */
@@ -113,9 +139,28 @@ public class TreatmentEvent extends DataModelObjBase
         location             = null;
         fieldNumber          = null;
         remarks              = null;
+        number1						  = null;
+        number2                       = null;
+        number3                       = null;
+        number4                       = null;
+        number5                       = null;
+        text1                         = null;
+        text2                         = null;
+        text3                         = null;
+        text4                         = null;
+        text5                         = null;
+        yesNo1                        = null;
+        yesNo2                        = null;
+        yesNo3                        = null;
+
+        performedBy = null;
+        authorizedBy = null;
+        
         accession            = null;
         collectionObject     = null;
         division             = null;
+
+        treatmentEventAttachments    = new HashSet<TreatmentEventAttachment>();
     }
 
     /**
@@ -419,6 +464,248 @@ public class TreatmentEvent extends DataModelObjBase
     public Division getDivision()
     {
         return division;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PerformedByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getPerformedBy() 
+    {
+        return this.performedBy;
+    }
+    
+    public void setPerformedBy(Agent performedBy) 
+    {
+        this.performedBy = performedBy;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AuthorizedByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAuthorizedBy() 
+    {
+        return this.authorizedBy;
+    }
+    
+    public void setAuthorizedBy(Agent authorizedBy) 
+    {
+        this.authorizedBy = authorizedBy;
+    }
+
+    @Lob
+    @Column(name="Text1", length = 65535)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    @Lob
+    @Column(name="Text2", length = 65535)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+
+    
+    /**
+	 * @return the text3
+	 */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+	public String getText3() {
+		return text3;
+	}
+
+	/**
+	 * @param text3 the text3 to set
+	 */
+	public void setText3(String text3) {
+		this.text3 = text3;
+	}
+
+	/**
+	 * @return the text4
+	 */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+	public String getText4() {
+		return text4;
+	}
+
+	/**
+	 * @param text4 the text4 to set
+	 */
+	public void setText4(String text4) {
+		this.text4 = text4;
+	}
+
+	/**
+	 * @return the text5
+	 */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+	public String getText5() {
+		return text5;
+	}
+
+	/**
+	 * @param text5 the text5 to set
+	 */
+	public void setText5(String text5) {
+		this.text5 = text5;
+	}
+
+	@Column(name="Number1")
+    public Integer getNumber1()
+    {
+        return number1;
+    }
+
+    public void setNumber1(Integer number1)
+    {
+        this.number1 = number1;
+    }
+
+    @Column(name="Number2")
+    public Integer getNumber2()
+    {
+        return number2;
+    }
+
+    public void setNumber2(Integer number2)
+    {
+        this.number2 = number2;
+    }
+
+	/**
+	 * @return the number3
+	 */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber3() {
+		return number3;
+	}
+
+	/**
+	 * @param number3 the number3 to set
+	 */
+	public void setNumber3(Float number3) {
+		this.number3 = number3;
+	}
+
+	/**
+	 * @return the number4
+	 */
+    @Column(name = "Number4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber4() {
+		return number4;
+	}
+
+	/**
+	 * @param number4 the number4 to set
+	 */
+	public void setNumber4(Float number4) {
+		this.number4 = number4;
+	}
+
+	/**
+	 * @return the number5
+	 */
+    @Column(name = "Number5", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber5() {
+		return number5;
+	}
+
+	/**
+	 * @param number5 the number5 to set
+	 */
+	public void setNumber5(Float number5) {
+		this.number5 = number5;
+	}
+
+	/**
+	 * @return the yesNo1
+	 */
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo1() {
+		return yesNo1;
+	}
+
+	/**
+	 * @param yesNo1 the yesNo1 to set
+	 */
+	public void setYesNo1(Boolean yesNo1) {
+		this.yesNo1 = yesNo1;
+	}
+
+	/**
+	 * @return the yesNo2
+	 */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo2() {
+		return yesNo2;
+	}
+
+	/**
+	 * @param yesNo2 the yesNo2 to set
+	 */
+	public void setYesNo2(Boolean yesNo2) {
+		this.yesNo2 = yesNo2;
+	}
+
+	/**
+	 * @return the yesNo3
+	 */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo3() {
+		return yesNo3;
+	}
+
+	/**
+	 * @param yesNo3 the yesNo3 to set
+	 */
+	public void setYesNo3(Boolean yesNo3) {
+		this.yesNo3 = yesNo3;
+	}
+
+    @OneToMany(mappedBy = "treatmentEvent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<TreatmentEventAttachment> getTreatmentEventAttachments()
+    {
+        return treatmentEventAttachments;
+    }
+
+    public void setTreatmentEventAttachments(Set<TreatmentEventAttachment> treatmentEventAttachments)
+    {
+        this.treatmentEventAttachments = treatmentEventAttachments;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<TreatmentEventAttachment> getAttachmentReferences()
+    {
+        return treatmentEventAttachments;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentTableId()
+     */
+    @Override
+    @Transient
+    public int getAttachmentTableId()
+    {
+        return getClassTableId();
     }
 
     //---------------------------------------------------------------------------

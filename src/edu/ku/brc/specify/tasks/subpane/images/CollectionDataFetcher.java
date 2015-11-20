@@ -104,6 +104,7 @@ import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageAttachment;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.datamodel.TreatmentEvent;
 import edu.ku.brc.specify.datamodel.busrules.AgentBusRules;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.DateWrapper;
@@ -161,6 +162,7 @@ public class CollectionDataFetcher
                 RepositoryAgreement.class, RepositoryAgreementAttachment.class,
                 Storage.class,            StorageAttachment.class,
                 Taxon.class,              TaxonAttachment.class,
+                TreatmentEvent.class,	  TreatmentEvent.class,
             };
         CollectionDataFetcher.attachmentClasses = new Class<?>[CollectionDataFetcher.attachmentClassesForMap.length/2];
         for (int i=0;i<CollectionDataFetcher.attachmentClassesForMap.length;i+=2)
