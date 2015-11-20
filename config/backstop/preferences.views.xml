@@ -724,7 +724,7 @@
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
 
             <columnDef>f:p:g,10px,f:p:g</columnDef>
-            <rowDef>p,4px,p,4px,p,15px,p,15px,p,15px,p</rowDef>
+            <rowDef>p,4px,p,4px,p,4px,p,15px,p,15px,p,15px,p</rowDef>
 
             <rows>
                 <row>
@@ -735,6 +735,9 @@
                 </row>
                 <row>
                     <cell type="field" id="-20" name="Determination.PromptToReplaceSynonym" uitype="checkbox" label="PROMPT_TO_REPLACE_SYNONYM" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="field" id="-22" name="TaxonTreeEditor.DisplayAuthor" uitype="checkbox" label="DISPLAY_TAXON_AUTHOR" colspan="3"/>
                 </row>
                 <row>
 	                <cell type="panel" id="16tx" name="treepaneltx" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">

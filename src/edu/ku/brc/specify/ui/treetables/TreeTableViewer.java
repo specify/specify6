@@ -239,7 +239,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
     protected boolean doUnlock = true;
 
-    
+    protected boolean showTaxonAuthor = AppPreferences.getRemote().getBoolean("TaxonTreeEditor.DisplayAuthor", false);
+
     // tools to help figure the number of "related" records for a node in the background
     protected ExecutorService countGrabberExecutor;
     
@@ -3702,6 +3703,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     private TreeNode createNode(final T dataRecord)
     {
         String nodeName  = dataRecord.getName();
+        if (showTaxonAuthor) {
+        	try {
+        		Method getA = dataRecord.getClass().getMethod("getAuthor", (Class<?>[])null);
+        		Object auth = getA.invoke(dataRecord);
+        		if (auth != null) {
+        			nodeName += " " + auth;
+        		}
+        	} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+        		//skip
+        	}
+        }
         String fullName  = dataRecord.getFullName();
         int    id        = dataRecord.getTreeId();
         int    rank      = dataRecord.getRankId();

@@ -36,6 +36,7 @@ import org.hibernate.Transaction;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace.STATUS;
 import edu.ku.brc.dbsupport.CustomQueryListener;
@@ -73,12 +74,15 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     /** An {@link Interceptor} that logs all objects loaded by Hibernate. */
     //public static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
     
+    private boolean showTaxonAuthor = false;
+    
 	/**
 	 * Constructor.
 	 */
 	public HibernateTreeDataServiceImpl()
 	{
-	    //empty
+	    super();
+	    showTaxonAuthor = AppPreferences.getRemote().getBoolean("TaxonTreeEditor.DisplayAuthor", false);
 	}
 	
 	/* (non-Javadoc)
@@ -242,7 +246,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         int     rank                   = (Integer) nodeInfo[5];
         Integer acceptedParentId       = (Integer) nodeInfo[6];
         String  acceptedParentFullName = (String)  nodeInfo[7];
-        
+        if (showTaxonAuthor && nodeInfo.length > 8) {
+        	String auth = (String)nodeInfo[8];
+        	if (auth != null) {
+        		nodeName += " " + auth;
+        	}
+        }
         int descCount = 0;
         if (highChild != null && nodeNum != null)
         {
