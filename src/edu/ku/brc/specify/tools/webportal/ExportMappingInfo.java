@@ -59,7 +59,9 @@ public class ExportMappingInfo
 		public boolean isFullTextSearch()
 		{
 			//XXX need to add a way to configure this, and other stuff
-			return true;
+			//cheap fix for cases people have complained about
+			return spFldName.toLowerCase().indexOf("number") == -1 //StationFieldNumber, CatalogNumber, FieldNumber, ...
+					&& spFldName.toLowerCase().indexOf("date") == -1; //StartDate, EndDate, ... 
 		}
 		/**
 		 * @return the mappingID
