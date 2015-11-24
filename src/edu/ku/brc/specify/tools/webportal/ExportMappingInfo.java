@@ -56,12 +56,17 @@ public class ExportMappingInfo
 			}
 		}
 
+		/**
+		 * @return
+		 */
 		public boolean isFullTextSearch()
 		{
 			//XXX need to add a way to configure this, and other stuff
 			//cheap fix for cases people have complained about
-			return spFldName.toLowerCase().indexOf("number") == -1 //StationFieldNumber, CatalogNumber, FieldNumber, ...
-					&& spFldName.toLowerCase().indexOf("date") == -1; //StartDate, EndDate, ... 
+			String fldName = spFldName.toLowerCase();
+			return fldName.indexOf("number") == -1 //StationFieldNumber, CatalogNumber, FieldNumber, ...
+					&& fldName.indexOf("date") == -1 //StartDate, EndDate, ... 
+					&& !fldName.startsWith("timestamp");  
 		}
 		/**
 		 * @return the mappingID
