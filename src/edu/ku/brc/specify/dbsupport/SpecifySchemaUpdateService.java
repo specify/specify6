@@ -2366,6 +2366,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //--------------------------------------------------------------------------
                     
                     //change preparationattribute.attrdate from timestamp to date
+                	frame.setDesc("Fixing data type for preparationattribute.AttrDate");
                     sql = "alter table preparationattribute modify column attrdate date null";
             		if (-1 == update(conn, sql)) {
             			errMsgList.add("update error: " + sql);
