@@ -774,7 +774,8 @@ public class BuildFromGeonames
             if (dbMgr != null) dbMgr.close();
         }
         
-        shouldLoadGeoNames = /*true*/false; //the geonames file has not been updated for 6.6.03
+        //shouldLoadGeoNames = /*true*/false; //the geonames file has not been updated for 6.6.03
+        shouldLoadGeoNames = true; //change above breaks db create wizard. #10178
         if (shouldLoadGeoNames)
         {
             BackupServiceFactory bsf = BackupServiceFactory.getInstance();
