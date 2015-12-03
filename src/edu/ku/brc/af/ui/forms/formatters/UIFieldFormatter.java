@@ -737,7 +737,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         {
             UIFieldFormatterField.FieldType typ = f.getType();
             if (typ == UIFieldFormatterField.FieldType.alphanumeric ||
-                typ == UIFieldFormatterField.FieldType.alpha)
+                typ == UIFieldFormatterField.FieldType.alpha ||
+                typ == UIFieldFormatterField.FieldType.anychar)
             {
                 return true;
                 
