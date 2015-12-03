@@ -971,6 +971,7 @@
                 </row>
             </rows>
         </viewdef>
+
         <viewdef
             type="form"
             name="AutoNumberingScheme"
@@ -1452,7 +1453,6 @@
 			</rows>
 		</viewdef>
 		
-		       
         <viewdef
             type="form" 
             name="Query"
@@ -1930,7 +1930,7 @@
                 </row>                
                 <row>
                     <cell type="label" labelfor="parent"/>
-                	<cell type="field" id="parent" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent"  colspan="3"/>
+                	<cell type="field" id="parent" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" isrequired="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -2017,7 +2017,7 @@
                 </row>                
                 <row>
                     <cell type="label" labelfor="parent"/>
-                	<cell type="field" id="parent" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent"  colspan="3"/>
+                	<cell type="field" id="parent" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" isrequired="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -2093,7 +2093,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="parent"/>
-                	<cell type="field" id="parent" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
+                	<cell type="field" id="parent" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent" isrequired="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
