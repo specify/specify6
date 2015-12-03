@@ -1298,10 +1298,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
         if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
         {
-            String nullCond = fieldQRI.getNullCondition(ta, schemaItem != null, isNotCheckbox.isSelected(), getFormatName());
+            boolean isNot = isNotCheckbox.isSelected();
+            String nullCond = fieldQRI.getNullCondition(ta, schemaItem != null, isNot, getFormatName());
             if (fieldQRI.getDataClass().equals(String.class)) {
                 String fieldSpec = fieldQRI.getSQLFldSpec(ta, true, schemaItem != null, getFormatName()); 
-                return "(" + nullCond + " or " + fieldSpec + " = '')";
+                return "(" + nullCond + (isNot ? " and " : " or ") + fieldSpec + (isNot ? " <> " : " = ") + "'')";
             }
         	return nullCond;
         }
