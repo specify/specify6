@@ -212,7 +212,9 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     
             pb.add(searchBtn, cc.xy(3,1));
             
-            pb.add(UIHelper.createI18NLabel("DBObjSearchPanel.ASTERISK_HINT"), cc.xyw(1,3,3));
+            if (!"collectionobjectsearch".equalsIgnoreCase(searchName)) {
+            	pb.add(UIHelper.createI18NLabel("DBObjSearchPanel.ASTERISK_HINT"), cc.xyw(1,3,3));
+            }
             pb.addSeparator(UIRegistry.getResourceString("DBObjSearchPanel.RESULTS"), cc.xyw(1,5,3));
             add(pb.getPanel(), BorderLayout.NORTH);
             
