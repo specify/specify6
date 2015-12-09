@@ -3648,6 +3648,9 @@ public class FormViewObj implements Viewable,
         if (focusable != null)
         {
             focusable.requestFocus();
+            if (!focusable.isFocusOwner()) {
+            	focusable.getParent().requestFocus();
+            }
         }
     }
     
