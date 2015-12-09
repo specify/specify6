@@ -2802,7 +2802,11 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="title"  label="TITLE"/>
-                	<cell type="field" id="title" name="attachment.title" isrequired="true"/>
+                	<cell type="field" id="title" name="attachment.title" uitype="text" isrequired="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="ispub" label=""/>
+                	<cell type="field" id="ispub" name="attachment.isPublic" uitype="checkbox" label="Make Public"/>
                 </row>
     		 <!--   <row>
     		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
