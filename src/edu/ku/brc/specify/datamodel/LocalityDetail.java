@@ -64,11 +64,11 @@ public class LocalityDetail extends DataModelObjBase
     
     // Depths primarily for Paleo
     protected Double                startDepth;
-    protected Byte                  startDepthUnit;
+    protected String                startDepthUnit;
     protected String                startDepthVerbatim;
     
     protected Double                endDepth;
-    protected Byte                  endDepthUnit;
+    protected String                endDepthUnit;
     protected String                endDepthVerbatim;
 
     protected String            	paleoLat;
@@ -409,8 +409,8 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the startDepthUnit
      */
-    @Column(name = "StartDepthUnit", unique = false, nullable = true, insertable = true, updatable = true)
-    public Byte getStartDepthUnit()
+    @Column(name = "StartDepthUnit", unique = false, nullable = true, insertable = true, updatable = true, length = 23)
+    public String getStartDepthUnit()
     {
         return startDepthUnit;
     }
@@ -418,7 +418,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param startDepthUnit the startDepthUnit to set
      */
-    public void setStartDepthUnit(Byte startDepthUnit)
+    public void setStartDepthUnit(String startDepthUnit)
     {
         this.startDepthUnit = startDepthUnit;
     }
@@ -460,8 +460,8 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the endDepthUnit
      */
-    @Column(name = "EndDepthUnit", unique = false, nullable = true, insertable = true, updatable = true)
-    public Byte getEndDepthUnit()
+    @Column(name = "EndDepthUnit", unique = false, nullable = true, insertable = true, updatable = true, length = 23)
+    public String getEndDepthUnit()
     {
         return endDepthUnit;
     }
@@ -469,7 +469,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param endDepthUnit the endDepthUnit to set
      */
-    public void setEndDepthUnit(Byte endDepthUnit)
+    public void setEndDepthUnit(String endDepthUnit)
     {
         this.endDepthUnit = endDepthUnit;
     }

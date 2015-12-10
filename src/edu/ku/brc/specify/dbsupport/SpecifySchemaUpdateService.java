@@ -185,7 +185,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 56; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 57; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2372,14 +2372,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             			errMsgList.add("update error: " + sql);
             			return false;
             		}
+            		frame.incOverall();
+            		
             		//add attachment.IsPublic, with default value = true
-            		if (!doesColumnExist(databaseName, "attachment", "ispublic", conn)) {
+                	frame.setDesc("Adding attachment.IsPublic field");
+            		if (!doesColumnExist(databaseName, "attachment", "isPublic", conn)) {
             			sql = "alter table attachment add column IsPublic bit(1) NOT NULL DEFAULT TRUE";
             			if (-1 == update(conn, sql)) {
             				errMsgList.add("update error: " + sql);
             				return false;
             			}
             		}
+            		frame.incOverall();
+            		
+            		frame.setDesc("Fixing data type for localitydetail.Start/EndDepthUnit");
+            		sql = "alter table localitydetail modify column enddepthunit varchar(23), modify column startdepthunit varchar(23)";
+            		if (-1 == update(conn, sql)) {
+        				errMsgList.add("update error: " + sql);
+        				return false;
+        			}
                     frame.setProcess(0, 100);
                     frame.incOverall(); 
                     
