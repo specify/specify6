@@ -582,31 +582,21 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
      * @return
      */
     private File getThumnailFromFile(final File    srcFile,
-                                     final String  destFileName,
                                      final String  mimeType,
                                      final Integer scale)
     {
         try
         {
-            //String fileExt   = FilenameUtils.getExtension(srcFile.getName());
-            //File   tmpFile = createTempFile(fileExt, false); // gets deleted automatically
-
-            String absPath     = srcFile.getAbsolutePath();
-            String newDestPath = FilenameUtils.getPrefix(absPath) + FilenameUtils.getPath(absPath) + FilenameUtils.getName(destFileName);
+            File   tmpFile = createTempFile(srcFile.getName(), true); // gets deleted automatically
 
             // Now generate the thumbnail 
             Thumbnailer thumbnailGen  = AttachmentUtils.getThumbnailer();
             thumbnailGen.generateThumbnail(srcFile.getAbsolutePath(), 
-                                           newDestPath,
+                                           tmpFile.getAbsolutePath(),
                                            false);
             
-            File destFile = new File(newDestPath);
-            if (!destFile.exists())
-            {
-                return getFileForIconName(UNKNOWN);
-            }
-            
-            return destFile;
+
+            return tmpFile;
             
         } catch (IOException ex)
         {
@@ -692,7 +682,7 @@ public class WebStoreAttachmentMgr implements AttachmentManagerIface
             // Ok, it isn't on the server yet.
             if (fullFile.exists())
             {
-                return hasScaleSize ? getThumnailFromFile(fullFile, fileNameToGet, mimeType, scale) : fullFile;
+                return hasScaleSize ? getThumnailFromFile(fullFile, mimeType, scale) : fullFile;
             }
             return getFileForIconName(UNKNOWN);
         }
