@@ -3648,9 +3648,6 @@ public class FormViewObj implements Viewable,
         if (focusable != null)
         {
             focusable.requestFocus();
-            if (!focusable.isFocusOwner()) {
-            	focusable.getParent().requestFocus();
-            }
         }
     }
     
@@ -5941,7 +5938,10 @@ public class FormViewObj implements Viewable,
     @Override
     public void focus()
     {
-        focusFirstFormControl();
+        if (mainComp != null) {
+        	mainComp.requestFocus();
+        }
+    	focusFirstFormControl();
     }
     
     /* (non-Javadoc)
