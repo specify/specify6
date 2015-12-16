@@ -63,6 +63,7 @@ public class ExportMappingInfo
 		{
 			//XXX need to add a way to configure this, and other stuff
 			//cheap fix for cases people have complained about
+			//This method needs to be duplicated by controller/widget/SearchCriterion.isFullTextFld() in the web portal
 			String fldName = spFldName.toLowerCase();
 			return fldName.indexOf("number") == -1 //StationFieldNumber, CatalogNumber, FieldNumber, ...
 					&& fldName.indexOf("date") == -1 //StartDate, EndDate, ... 
