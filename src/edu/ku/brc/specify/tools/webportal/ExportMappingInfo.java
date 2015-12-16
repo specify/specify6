@@ -66,7 +66,8 @@ public class ExportMappingInfo
 			String fldName = spFldName.toLowerCase();
 			return fldName.indexOf("number") == -1 //StationFieldNumber, CatalogNumber, FieldNumber, ...
 					&& fldName.indexOf("date") == -1 //StartDate, EndDate, ... 
-					&& !fldName.startsWith("timestamp");  
+					&& !fldName.startsWith("timestamp")
+					&& !fldName.equalsIgnoreCase("guid");  
 		}
 		/**
 		 * @return the mappingID
