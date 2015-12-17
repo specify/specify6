@@ -2801,6 +2801,10 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
+                    //<cell type="label" labelfor="publicity" label="Is Public"/>
+                    <cell type="field" id="publicity" name="attachment.isPublic" uitype="checkbox" label="Is Public"/>
+                </row>
+                <row>
                 	<cell type="label" labelfor="title"  label="TITLE"/>
                 	<cell type="field" id="title" name="attachment.title" uitype="text" isrequired="true"/>
                 </row>
