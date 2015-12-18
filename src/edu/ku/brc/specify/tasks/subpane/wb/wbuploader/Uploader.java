@@ -4455,6 +4455,9 @@ public class Uploader implements ActionListener, KeyListener
         List<UploadTableInvalidValue> result = new ArrayList<UploadTableInvalidValue>();
       	try {
             for (UploadTable tbl : uploadTables) {
+            	tbl.clearBlankness();
+            }
+            for (UploadTable tbl : uploadTables) {
             	result.addAll(validateLengths(tbl, -1, -1));
                 result.addAll(tbl.validateValues(uploadData));
             }
