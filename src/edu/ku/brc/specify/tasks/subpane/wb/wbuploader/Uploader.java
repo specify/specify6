@@ -1954,6 +1954,9 @@ public class Uploader implements ActionListener, KeyListener
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
                             getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), false);
+                    for (UploadTable tbl : uploadTables) {
+                    	tbl.clearBlankness();
+                    }
                     for (UploadTable tbl : uploadTables)
                     {
                         setCurrentOpProgress(++progress);
