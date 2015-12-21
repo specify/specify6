@@ -2153,7 +2153,7 @@ LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (pc.Disciplin
  FROM agent 
  INNER JOIN division ON agent.DivisionID = division.DivisionID
  LEFT JOIN address ON agent.AgentID = address.AgentID
- WHERE (%s) GROUP BY agent.AgentID]]>
+ WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
