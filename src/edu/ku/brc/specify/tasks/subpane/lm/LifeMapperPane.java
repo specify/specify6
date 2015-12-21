@@ -75,7 +75,6 @@ import net.sf.json.util.JSONTokener;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -788,11 +787,11 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 String url = "http://www.lifemapper.org/hint/species/"+genusSpecies + "?maxReturned=1000&format=json";
                 //System.out.println(url);
                 
-                PostMethod postMethod = new PostMethod(url);
+                GetMethod getMethod = new GetMethod(url);
                 try
                 {
-                    httpClient.executeMethod(postMethod);
-                    return postMethod.getResponseBodyAsString();
+                    httpClient.executeMethod(getMethod);
+                    return getMethod.getResponseBodyAsString();
                 }
                 catch (java.net.UnknownHostException uex)
                 {
