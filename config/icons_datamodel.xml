@@ -108,6 +108,7 @@
 	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="NonStd"/>
 	<icon name="StorageAttachment"               file="storage_attachment.png" sizes="NonStd"/> 
 	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="NonStd"/> 
+    <icon name="TreatmentEventAttachment"        file="TreatmentEventAttachment.png" sizes="NonStd"/>
 	
     <!--  Extra Icons -->
     <icon name="group"                           file="group.png" sizes="all"/>
