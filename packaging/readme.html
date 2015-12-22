@@ -5,27 +5,47 @@
   <title>Release Notes</title>
 </head>
 <body>
-<strong>Release Notes<br>
-  Specify 6.6.02<br>
-  28 May 2015<br>
-  Specify Software Project</strong>
-<p>&nbsp;</p>
-
-
-
-<p><strong>List of Changes</strong></p>
-
-<ol>
-<li>Georeference Determination By (Geo Ref Det By) field now updates correctly when localities are georeferenced multiple times. 2015-05-20 (Bugzilla 10129)</li>
-<li>"Gift Preparations" has been added to the Preparation table in the Query Builder. 2015-05-18 (10125)</li>
-<li>The correct label or report will now run when multiple databases with identically named reports or labels are on the same machine. 2015-05-18 (10075)</li>
-<li>Collection Object records will now upload from the Specify WorkBench even if the Collection Object data in the record are not unique. 2015-05-07 (10120)</li>
-<li>The database selection picklist on the Specify login screen will no longer force capitalization or autofill functions. 2015-05-07 (10091)</li>
-<li>Deleting a record that is listed multiple times in query results will no longer cause a software exception. 2015-05-07 (10080)</li>
-<li>It is now possible to search for Host Taxon field values using only the wild card symbol (*). 2015-05-07 (10103)</li>
-<li>Importing queries or reports, which have queries associated, will no longer cause incorrect "Aggregator not found" messages in Query Builder results for aggregated/formatted columns. 2015-05-07 (10098)</li>
-<li>It is now possible to print query results by using the printer icon button in Query Results window toolbar. 2015-05-07 (10042)</li>
-</ol>
-
+<h3>Release Notes<br>
+Specify 6.6.03<br>
+22 December 2015<br>
+Specify Software Project</h3>
+<br>
+<br>
+<h4>List of changes in Specify 6.6.03<br>
+</h4>
+<ol><li>When "Is Not Null" is applied to fields in Queries, the condition now excludes both null and empty fields.  2015-12-21  (Bugzilla #9255)</li>
+<li>Web Portal advanced searches now finds values when searching with the '-' character.  2015-12-21  (10173)</li>
+<li>Lifemapper requests are again returning results.  2015-12-21  (10187)</li>
+<li>Agents are now fully searchable on Mac OS X installations.  2015-12-21  (10188)</li>
+<li>Accession Number now appears after opening a recently saved Accession record.  2015-12-17  (10184)</li>
+<li>One can restrict export of Attachments based on a field in the Attachment table.  2015-12-14  (10171)</li>
+<li>The correct thumbnail is now used when attaching images via the Collection Object form.  2015-12-11  (10177)</li>
+<li>There are now separate report file caches for PC, Linux and Macs to avoid conflicts among platforms.  2015-12-11  (10168)</li>
+<li>Lithostrat window no longer disappears behind the Specify window.  2015-12-11  (10179)</li>
+<li>Start and End Depth Unit fields changed to text fields.  2015-12-11  (10182)</li>
+<li>Field name matching in iReports is now case-insensitive.  2015-12-10  (10139)</li>
+<li>Catalog Numbers that include "anychar" sections now acts as expected and allows values to be entered.  2015-12-08  (10162)</li>
+<li>Save button does not become active in Lithostratigraphy and Chronostratigraphy records until all data field requirements are met.  2015-12-08  (10176)</li>
+<li>Content of Authors field in the Taxon table can now be displayed in taxon tree display by setting a preference.  2015-12-07  (10161)</li>
+<li>Fields for Page Number, Figure Number, and Plate Number were added to the Collection Object Citation table for Paleo collections.  2015-12-18  (10185)</li>
+<li>Number and Text fields were added to the Treatment Event table.  2015-12-04  (10101)</li>
+<li>AttrDate field in the Preparation Attribute table saves data correctly.  2015-12-04  (10151)</li>
+<li>Large text fields were added to the Collection Object Attribute table.  2015-12-03  (10016)</li>
+<li>PreparedBy and AuthorizedBy fields were added to the Treatment Events table.  2015-12-03  (10102)</li>
+<li>The Treatment Event table now supports Attachments.  2015-12-03  (10122)</li>
+<li>Specify WorkBench no longer erroneously marks empty "Determiner 1" fields as invalid when there is "Determiner 2" data.  2015-12-02  (10154)</li>
+<li>Guest or Limited Access users can now view trees with modify privileges turned off.  2015-12-01  (9600)</li>
+<li>Can correctly add Collecting Event data in a database that shares Collecting Events when the Collecting Event record does not contain the fields in the Collecting Event table format.  2015-11-25  (10150)</li>
+<li>Using the '-' character in a schema mapping name no longer causes the Data Exporter cache build to crash.  2015-11-25  (10152)</li>
+<li>Locality Name can be formatted.  2015-11-25  (10156)</li>
+<li>Preparations can be aggregated by Prep Type with count sums.  2015-11-25  (10159)</li>
+<li>Unaccepted taxa are no longer erroneously changed to preferred taxa when uploading through the WorkBench.  2015-11-25  (10163)</li>
+<li>The table Agent Specialties shows in Agent queries when it is unhidden.  2015-11-25  (10164)</li>
+<li>The Modified By field shows up in Agent queries when unhidden.  2015-11-25  (10165)</li>
+<li>Collection Object records with Exsiccata relationships now save quickly when modified.  2015-11-19  (10160)</li>
+</ol><br>
+<br>
+<br>
+<br>
 </body>
 </html>
