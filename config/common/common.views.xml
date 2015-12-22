@@ -849,6 +849,7 @@
         
         <view name="TreatmentEvent"
             class="edu.ku.brc.specify.datamodel.TreatmentEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.TreatmentEventBusRules"
             isinternal="false"
             >
             <desc><![CDATA[Treatment Event form.]]></desc>
@@ -860,6 +861,7 @@
         
         <view name="TreatmentEventSub"
             class="edu.ku.brc.specify.datamodel.TreatmentEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.TreatmentEventBusRules"
             >
             <desc><![CDATA[Treatment Event form.]]></desc>
             <altviews>
