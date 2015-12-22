@@ -5325,7 +5325,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
+                    <cell type="field" id="11" name="treatmentNumber" uitype="text" isrequired="true"/>
                     <cell type="label" labelfor="12"/>
                     <cell type="field" id="12" name="type" uitype="combobox"/>
                     <cell type="label" labelfor="1"/>
