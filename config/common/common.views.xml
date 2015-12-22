@@ -5346,9 +5346,18 @@
                     <cell type="field" id="4" name="location" uitype="text"/>
                 </row>           
                 <row>
+                    <cell type="label" labelfor="pb"/>
+                    <cell type="field" id="pb" name="performedBy" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                    <cell type="label" labelfor="ab"/>
+                    <cell type="field" id="ab" name="authorizedBy" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                </row>           
+                <row>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>          
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="treatmentEventAttachments" colspan="13" initialize="btn=true;icon=TreatmentEventAttachment"/>
+                </row>
                 <!--<row>
                     <cell type="label" labelfor="db"/>
                     <cell type="field" id="db" name="dateBoxed" uitype="formattedtext" uifieldformatter="Date"/> 
