@@ -153,9 +153,12 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
 		 * in theory, the tree was not in correct shape before the rebuild began, so this is not so serious an issue.
 		 */
     	
-    	/*Apparently commits are NOT necessary after flush/clear.
-		traversalSession.commit();
-		traversalSession.beginTransaction(); */
+    	/*Apparently commits are NOT necessary after flush/clear.*/
+    	/* but they require more than 1G of memory for trees with 95k+ nodes. */
+    	if (!externalSession) {
+    		traversalSession.commit();
+    		traversalSession.beginTransaction(); 
+    	}
     }
     
     /**
