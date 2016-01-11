@@ -265,8 +265,8 @@ public class UploadTableTree extends UploadTable
 			String msg = String
 					.format(
 							getResourceString("UploadTableTree.UnacceptedParentSwitch"),
-							wbCurrentRow, name, parentName, newParentName);
-			uploader.addMsg(new AcceptedParentSwitchMessage(msg, wbCurrentRow));
+							wbCurrentRow+1, name, parentName, newParentName);
+			uploader.addMsg(new AcceptedParentSwitchMessage(msg, wbCurrentRow+1));
 		}
         return (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
     }
@@ -279,7 +279,7 @@ public class UploadTableTree extends UploadTable
      * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
      * as the parent. (Validation would have already detected if Family was required and missing).
      */
-    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum)
+    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum) throws UploaderException
     {
         return getParentRec(currentRec, recNum, false);
     }
@@ -292,7 +292,7 @@ public class UploadTableTree extends UploadTable
      * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
      * as the parent. (Validation would have already detected if Family was required and missing).
      */
-    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum, boolean checkSubTree)
+    protected DataModelObjBase getParentRec(Treeable<?,?,?> currentRec, int recNum, boolean checkSubTree) throws UploaderException
     {
         if (parent == null || (checkSubTree && parent.isLowerSubTree != this.isLowerSubTree))
         {
@@ -305,7 +305,34 @@ public class UploadTableTree extends UploadTable
             result = grandParent.getCurrentRecord(recNum);
             grandParent = grandParent.parent;
         }
-        return getAcceptedParent(result, currentRec, recNum, checkSubTree);
+        DataModelObjBase finalResult = getAcceptedParent(result, currentRec, recNum, true);
+        if (!Treeable.class.cast(result).getIsAccepted()) {
+        	int finalRankId = Treeable.class.cast(finalResult).getRankId();
+        	int currRankId = currentRec.getRankId();
+    		TreeDefItemIface<?,?,?> resDef = getTreeDef().getDefItemByRank(currRankId);
+    		TreeDefItemIface<?,?,?> currDef = resDef;
+    		TreeDefItemIface<?,?,?> parentDef = getTreeDef().getDefItemByRank(finalRankId);
+        	boolean badParentRank = false;
+        	if (finalRankId >= currRankId) {
+        		badParentRank = true;
+        	} else {
+        		currDef = currDef.getParent();
+        		while (currDef.getRankId() > parentDef.getRankId()) {
+        			if (currDef.getIsEnforced()) {
+        				badParentRank = true;
+        				break;
+        			} else {
+        				currDef = currDef.getParent();
+        			}
+        		}
+        	}        		
+        	if (badParentRank) {
+    			String msg = parentDef.getName() + " " + Treeable.class.cast(finalResult).getFullName() +
+    					" is not a valid parent for " + resDef.getName() + " " + currentRec.getName();
+            	throw new UploaderException(msg, UploaderException.ABORT_ROW);
+    		}
+        }
+        return finalResult;
     }
     
     /* (non-Javadoc)
