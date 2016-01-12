@@ -873,7 +873,7 @@ public class UploadTableTree extends UploadTable
         		try
         		{
         			if (theSession == null) {
-        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false);
+        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
         			} else {
         				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false, false, false, theSession);
         			}
