@@ -245,30 +245,44 @@ public class UploadTableTree extends UploadTable
      * @return parent or its 'AcceptedParent'.
      */
     protected DataModelObjBase getAcceptedParent(DataModelObjBase parent, Treeable<?,?,?> currentRec, int recNum, boolean notify)
+    	throws UploaderException
     {
         if (parent == null || ((Treeable<?,?,?> )parent).getIsAccepted() || currentRec == null)
         {
         	return parent;
+        } else if (!((Treeable<?,?,?> )parent).getIsAccepted()) {
+        	Treeable<?,?,?> childRec = currentRec == null ?
+        			(Treeable<?,?,?>) getCurrentRecord(recNum) :
+        			currentRec;	
+        	String childName = childRec == null ? null : childRec.getName();	
+        	TreeDefItemIface<?,?,?> childDefItem = childRec == null ? null : getTreeDef().getDefItemByRank(childRec.getRankId());
+        	String childRank = childDefItem == null ? null : childDefItem.getDisplayText();
+			String parentName = ((Treeable<?,?,?>) parent).getFullName();
+			String parentRank = getTreeDef().getDefItemByRank(((Treeable<?,?,?>) parent).getRankId()).getDisplayText();
+			String msg = childRank + " '" + childName + "' cannot be a child of unaccepted " + parentRank + " '" + parentName + "'";
+			throw new UploaderException(msg, UploaderException.ABORT_ROW);
+        } else {
+        	return null;
         }
-        DataModelObjBase newResult = (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
-        if (notify)
-		{
-			String name = currentRec == null ? null : currentRec.getName();
-			if (name == null)
-			{
-				Treeable<?,?,?> tRec = (Treeable<?,?,?>) getCurrentRecord(recNum);
-				name = tRec == null ? getResourceString("UploadTableTree.CurrentNode")
-						: tRec.getName();
-			}
-			String parentName = ((Treeable<?,?,?>) parent).getName();
-			String newParentName = ((Treeable<?,?,?>) newResult).getName();
-			String msg = String
-					.format(
-							getResourceString("UploadTableTree.UnacceptedParentSwitch"),
-							wbCurrentRow+1, name, parentName, newParentName);
-			uploader.addMsg(new AcceptedParentSwitchMessage(msg, wbCurrentRow+1));
-		}
-        return (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
+//        DataModelObjBase newResult = (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
+//        if (notify)
+//		{
+//			String name = currentRec == null ? null : currentRec.getName();
+//			if (name == null)
+//			{
+//				Treeable<?,?,?> tRec = (Treeable<?,?,?>) getCurrentRecord(recNum);
+//				name = tRec == null ? getResourceString("UploadTableTree.CurrentNode")
+//						: tRec.getName();
+//			}
+//			String parentName = ((Treeable<?,?,?>) parent).getName();
+//			String newParentName = ((Treeable<?,?,?>) newResult).getName();
+//			String msg = String
+//					.format(
+//							getResourceString("UploadTableTree.UnacceptedParentSwitch"),
+//							wbCurrentRow+1, name, parentName, newParentName);
+//			uploader.addMsg(new AcceptedParentSwitchMessage(msg, wbCurrentRow+1));
+//		}
+//        return (DataModelObjBase )((Treeable<?,?,?> )parent).getAcceptedParent();
     }
     
     /**
@@ -306,6 +320,8 @@ public class UploadTableTree extends UploadTable
             grandParent = grandParent.parent;
         }
         DataModelObjBase finalResult = getAcceptedParent(result, currentRec, recNum, true);
+        //Since the uploader throws exceptions when a parent is unaccepted, the following 
+        //condition should never be true; getAccepted will have thrown an exception if result was unaccepted
         if (!Treeable.class.cast(result).getIsAccepted()) {
         	int finalRankId = Treeable.class.cast(finalResult).getRankId();
         	int currRankId = currentRec.getRankId();
