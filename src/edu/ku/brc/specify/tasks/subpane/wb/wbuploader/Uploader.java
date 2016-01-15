@@ -1954,7 +1954,8 @@ public class Uploader implements ActionListener, KeyListener
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
                             getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), false);
-                    for (UploadTable tbl : uploadTables) {
+                    for (UploadTable tbl : uploadTables)
+                    {
                     	tbl.clearBlankness();
                     }
                     for (UploadTable tbl : uploadTables)
@@ -4473,7 +4474,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Uploads dataset.
      */
-    public boolean uploadItSansUI()  {
+    public boolean uploadItSansUI(boolean doCommit)  {
         	List<UploadMessage> structureErrors = null;
         	boolean success = false;
         	try {
@@ -4503,7 +4504,7 @@ public class Uploader implements ActionListener, KeyListener
             //set non-interactive match options
             for (UploadTable t : uploadTables) {
                 UploadMatchSetting matchSet = t.getMatchSetting();
-                matchSet.setMode(UploadMatchSetting.PICK_FIRST_MODE);
+                matchSet.setMode(UploadMatchSetting.SKIP_ROW_MODE);
                 matchSet.setRemember(true);
                 matchSet.setMatchEmptyValues(true);
             }
@@ -4576,7 +4577,11 @@ public class Uploader implements ActionListener, KeyListener
             	}
             	currentTask = null;
             	if (success) {
-            		theSession.commit();
+            		if (doCommit) {
+            			theSession.commit();
+            		} else {
+            			theSession.rollback();
+            		}
             		System.out.println("success");
             	} else {
             		Exception savedOpKiller = getOpKiller();

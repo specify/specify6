@@ -322,7 +322,7 @@ public class UploadTableTree extends UploadTable
         DataModelObjBase finalResult = getAcceptedParent(result, currentRec, recNum, true);
         //Since the uploader throws exceptions when a parent is unaccepted, the following 
         //condition should never be true; getAccepted will have thrown an exception if result was unaccepted
-        if (!Treeable.class.cast(result).getIsAccepted()) {
+        if (finalResult != null && !Treeable.class.cast(result).getIsAccepted()) {
         	int finalRankId = Treeable.class.cast(finalResult).getRankId();
         	int currRankId = currentRec.getRankId();
     		TreeDefItemIface<?,?,?> resDef = getTreeDef().getDefItemByRank(currRankId);
@@ -599,7 +599,7 @@ public class UploadTableTree extends UploadTable
         super.prepareToUpload();
         defaultParents.clear();
         
-        if (parent == null && !this.incrementalNodeNumberUpdates)
+        if (parent == null && !this.incrementalNodeNumberUpdates && tblSession == null)
         {
         	getTreeDef().setDoNodeNumberUpdates(false);
             getTreeDef().setUploadInProgress(true);
