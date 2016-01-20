@@ -62,7 +62,7 @@ import edu.ku.brc.ui.RolloverCommand;
  */
 public class TreeTaskMgr implements CommandListener
 {
-    private static final int SYNC_INTERVAL = 300; // 5 minutes
+    private static final int SYNC_INTERVAL = 7; // 7 seconds
     
     private static TreeTaskMgr instance       = new TreeTaskMgr();
     private static Timer       lockCheckTimer = null;
