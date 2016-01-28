@@ -231,14 +231,17 @@ public class CmdAppBase {
         UserAndMasterPasswordMgr.getInstance().set(userName, password, dbName);
         return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
 	}
-	
+
+	protected boolean needsMasterKey() {
+		return !(master != null && master.getFirst() != null && master.getSecond()!= null);
+	}
 	/**
 	 * @return
 	 * @throws Exception
 	 */
 	protected boolean getMaster() throws Exception {
         UserAndMasterPasswordMgr.getInstance().set(userName, password, dbName);
-		if (master != null && master.getFirst() != null && master.getSecond()!= null) {
+		if (!needsMasterKey()) {
 			UserAndMasterPasswordMgr.getInstance().setUserNamePasswordForDB(master.first, master.second);
 			return true;
 		}

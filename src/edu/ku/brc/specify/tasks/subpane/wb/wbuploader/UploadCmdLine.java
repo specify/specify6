@@ -3,6 +3,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,6 +101,11 @@ public class UploadCmdLine extends CmdAppBase {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		try {
+			System.out.println("pid = " + new File("/proc/self").getCanonicalFile().getName());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		UploadCmdLine ucl = new UploadCmdLine();
 		try {
 			try {
@@ -112,16 +119,19 @@ public class UploadCmdLine extends CmdAppBase {
 					}
 
 					ucl.setMembers();
+					if (!ucl.doCommit) ucl.out("Validating only. Will not commit.");
 					ucl.initLog(args);
 					ucl.setupPrefs();
 					ucl.loadDrivers();
-					
-					if (ucl.hasMasterKey()) {
-						//ecl.out("Master key set");
-						ucl.out(UIRegistry.getResourceString("ExportCmdLine.MasterKeySet"));
-					} else {
-						//throw new Exception("Master Key not set");
-						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.MasterKeyNotSet"));
+
+					if (ucl.needsMasterKey()) {
+						if (ucl.hasMasterKey()) {
+							//ecl.out("Master key set");
+							ucl.out(UIRegistry.getResourceString("ExportCmdLine.MasterKeySet"));
+						} else {
+							//throw new Exception("Master Key not set");
+							throw new Exception(UIRegistry.getResourceString("ExportCmdLine.MasterKeyNotSet"));
+						}
 					}
 					if (ucl.getMaster()) {
 						//ecl.out("Got master");
