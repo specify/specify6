@@ -20,7 +20,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
-import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,9 +45,14 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.xml.rpc.ServiceException;
-import javax.xml.soap.SOAPElement;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.util.JSONTokener;
 
 import org.apache.axis.message.MessageElement;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
@@ -84,6 +88,8 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.services.usgs.elevation.Elevation_ServiceLocator;
 import edu.ku.brc.services.usgs.elevation.Elevation_ServiceSoap;
 import edu.ku.brc.services.usgs.elevation.GetElevationResponseGetElevationResult;
+import edu.ku.brc.specify.tasks.subpane.lm.GenusSpeciesDataItem;
+import edu.ku.brc.specify.tasks.subpane.lm.OccurrenceSetIFace;
 import edu.ku.brc.specify.ui.ClickAndGoSelectListener;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
@@ -94,8 +100,6 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
-import gov.nasa.worldwind.render.GlobeAnnotation;
-import gov.nasa.worldwind.render.markers.BasicMarker;
 //ZZZ import gov.nasa.worldwind.view.OrbitView;
 
 /**
@@ -498,83 +502,125 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
 					
 					try
 					{
-						service = new Elevation_ServiceLocator();
-						if (service != null)
-						{
-							port = service.getElevation_ServiceSoap();
-							if (port != null)
-							{
-								try
-								{
-									GetElevationResponseGetElevationResult result = 
-											port.getElevation(lon.toString(), lat.toString(), "meters", "", "");
-
-									Iterator<?> it = result.get_any()[0].getChildElements();
-									while (it.hasNext()) {
-										MessageElement msgEle = (MessageElement) it.next();
-										if (msgEle.getName().toLowerCase().equals("Elevation_Query".toLowerCase()))
-										{
-											Iterator<?> it2 = msgEle.getChildElements();
-											
-											
-											while (it2.hasNext()) {
-												Object it2Obj = it2.next();
-												if(it2Obj.getClass() == MessageElement.class)
-												{
-													MessageElement msgEle2 = (MessageElement) it2Obj;
-													if (msgEle2.getName().toLowerCase().equals(
-															"Data_Source".toLowerCase()))
-													{
-														elevInfo = msgEle2.getValue();
-													}
-													
-													if (msgEle2.getName().toLowerCase().equals(
-															"Elevation".toLowerCase()))
-													{
-														String elevStr = msgEle2.getValue();
-														elev = geoMapper.decimalRound(Double.parseDouble(elevStr), 2);
-													}
-												}
-												
-												else
-												{
-													//The elevation query node contains a string describing
-													//the error. mostly:
-													//"ERROR: No Elevation values were returned from any source".
-													elevInfo = "";
-													statusElevInfoLbl.setForeground(Color.BLACK);
-													statusElevInfoLbl.setText("");
-													statusElevLbl.setText("N/A");
-													break;
-												}
-											}
-											
-											if (elevInfo.length() > 0)
-											{
-												statusElevInfoLbl.setForeground(Color.BLACK);
-												statusElevInfoLbl.setText(elevInfo);
-												statusElevLbl.setText(elev.toString() + "m");
-											}
-											
-											break;
-										}
-									}
-								}
-								
-								catch (RemoteException remEx)
-								{
-									statusElevInfoLbl.setForeground(Color.RED);
-									statusElevInfoLbl.setText("Error: unable to parse elevation data.");
-								}
-							}
-						}
+		                HttpClient httpClient = new HttpClient();
+		                httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
+		                httpClient.getParams().setParameter("http.socket.timeout", 15000); 
+		                
+		                String url = "http://nationalmap.gov/epqs/pqs.php?x="+lon.toString() + "&y=" + lat.toString()
+		                		+ "&units=Meters&output=json";
+		                //System.out.println(url);
+		                
+		                GetMethod getMethod = new GetMethod(url);
+		                try
+		                {
+		                    httpClient.executeMethod(getMethod);
+		                    String jsonResponse = getMethod.getResponseBodyAsString();
+                            JSONTokener tok = new JSONTokener(jsonResponse);
+                            if (tok.more()) {
+                                JSONObject obj = (JSONObject)tok.nextValue();
+                                JSONObject qs = (JSONObject)obj.get("USGS_Elevation_Point_Query_Service");
+                                if (qs != null) {
+                                	JSONObject r = (JSONObject)qs.get("Elevation_Query");
+                                	String elevSrc = r.getString("Data_Source");
+                                	String elevation = r.getString("Elevation");
+                                	if (elevation != null && !"-1000000".equals(elevation)) {
+                                		elev = geoMapper.decimalRound(Double.parseDouble(elevation), 2);
+                                		statusElevInfoLbl.setForeground(Color.BLACK);
+                                		statusElevInfoLbl.setText(elevSrc.toString());
+                                		statusElevLbl.setText(elev.toString() + "m");
+                                	} else {
+                                		statusElevInfoLbl.setText(UIRegistry.getResourceString("GeoLocateResultsDisplay.USGSElevationNotAvailable"));
+                                	}
+                                }
+                            }
+		                }
+		                catch (java.net.UnknownHostException uex)
+		                {
+		                    //log.error(uex.getMessage());
+		                }
+		                catch (Exception elevEx)
+		                {
+		                    elevEx.printStackTrace();
+		                }
+						
+//						service = new Elevation_ServiceLocator();
+//						if (service != null)
+//						{
+//							port = service.getElevation_ServiceSoap();
+//							if (port != null)
+//							{
+//								try
+//								{
+//									GetElevationResponseGetElevationResult result = 
+//											port.getElevation(lon.toString(), lat.toString(), "meters", "", "");
+//
+//									Iterator<?> it = result.get_any()[0].getChildElements();
+//									while (it.hasNext()) {
+//										MessageElement msgEle = (MessageElement) it.next();
+//										if (msgEle.getName().toLowerCase().equals("Elevation_Query".toLowerCase()))
+//										{
+//											Iterator<?> it2 = msgEle.getChildElements();
+//											
+//											
+//											while (it2.hasNext()) {
+//												Object it2Obj = it2.next();
+//												if(it2Obj.getClass() == MessageElement.class)
+//												{
+//													MessageElement msgEle2 = (MessageElement) it2Obj;
+//													if (msgEle2.getName().toLowerCase().equals(
+//															"Data_Source".toLowerCase()))
+//													{
+//														elevInfo = msgEle2.getValue();
+//													}
+//													
+//													if (msgEle2.getName().toLowerCase().equals(
+//															"Elevation".toLowerCase()))
+//													{
+//														String elevStr = msgEle2.getValue();
+//														elev = geoMapper.decimalRound(Double.parseDouble(elevStr), 2);
+//													}
+//												}
+//												
+//												else
+//												{
+//													//The elevation query node contains a string describing
+//													//the error. mostly:
+//													//"ERROR: No Elevation values were returned from any source".
+//													elevInfo = "";
+//													statusElevInfoLbl.setForeground(Color.BLACK);
+//													statusElevInfoLbl.setText("");
+//													statusElevLbl.setText("N/A");
+//													break;
+//												}
+//											}
+//											
+//											if (elevInfo.length() > 0)
+//											{
+//												statusElevInfoLbl.setForeground(Color.BLACK);
+//												statusElevInfoLbl.setText(elevInfo);
+//												statusElevLbl.setText(elev.toString() + "m");
+//											}
+//											
+//											break;
+//										}
+//									}
+//								}
+//								
+//								catch (RemoteException remEx)
+//								{
+//									statusElevInfoLbl.setForeground(Color.RED);
+//									statusElevInfoLbl.setText("Error: unable to parse elevation data.");
+//								}
+//							}
+//						}
 					}
 					
-					catch (ServiceException servEx) {
-						statusElevInfoLbl.setForeground(Color.RED);
-						statusElevInfoLbl.setText("Error: elevation service unavailable.");
-						servEx.printStackTrace();
-					} catch (OutOfMemoryError em1) {
+//					catch (ServiceException servEx) {
+//						statusElevInfoLbl.setForeground(Color.RED);
+//						statusElevInfoLbl.setText("Error: elevation service unavailable.");
+//						servEx.printStackTrace();
+//					} 
+				catch (OutOfMemoryError em1) {
 					    SwingUtilities.invokeLater(new Runnable()
 	                    {
 	                        @Override
