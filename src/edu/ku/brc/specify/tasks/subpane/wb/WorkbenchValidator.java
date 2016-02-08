@@ -63,7 +63,7 @@ public class WorkbenchValidator
         try
         {
         	DB db = new DB();
-        	Uploader result = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), wbPane, workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), true);
+        	Uploader result = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), wbPane, workbench, workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), true);
         	Vector<UploadMessage> structureErrors = result.verifyUploadability();
         	if (structureErrors.size() > 0) 
         	{ 
