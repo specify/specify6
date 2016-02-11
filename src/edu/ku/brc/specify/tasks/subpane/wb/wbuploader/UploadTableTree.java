@@ -324,7 +324,7 @@ public class UploadTableTree extends UploadTable
         //condition should never be true; getAccepted will have thrown an exception if result was unaccepted
         if (finalResult != null && !Treeable.class.cast(result).getIsAccepted()) {
         	int finalRankId = Treeable.class.cast(finalResult).getRankId();
-        	int currRankId = currentRec.getRankId();
+        	int currRankId = this.rank;
     		TreeDefItemIface<?,?,?> resDef = getTreeDef().getDefItemByRank(currRankId);
     		TreeDefItemIface<?,?,?> currDef = resDef;
     		TreeDefItemIface<?,?,?> parentDef = getTreeDef().getDefItemByRank(finalRankId);
