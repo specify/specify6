@@ -91,7 +91,8 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
         }
         
-        sb.append(" AND c.collectionMemberId = COLMEMID ORDER BY");
+        //sb.append(" AND c.collectionMemberId = COLMEMID ORDER BY");
+        sb.append(" ORDER BY");
         
         try
         {
