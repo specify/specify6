@@ -315,16 +315,33 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         if (ids != null || terms.size() == 0)
         {
-            sqlStr.append(tableInfo.getAbbrev()); 
-            sqlStr.append('.'); 
-            sqlStr.append(primaryKey);
-            sqlStr.append(" IN (");
-            for (int i=0;i<ids.size();i++)
-            {
-                if (i > 0) sqlStr.append(',');
+        	int inListMax = 2500;
+        	int inI = 0;
+        	sqlStr.append("(");
+        	int i = 0;
+            for(;i<ids.size();i++) {
+            	if (inI == inListMax) {
+            		sqlStr.append(")");
+                	inI = 0;
+                } 
+                if (inI == 0) {
+                	if (i > 0) {
+                		sqlStr.append(" OR ");
+                	}
+                    sqlStr.append(tableInfo.getAbbrev()); 
+                    sqlStr.append('.'); 
+                    sqlStr.append(primaryKey);
+                    sqlStr.append(" IN (");
+                }
+            	if (inI > 0) sqlStr.append(',');
                 sqlStr.append(ids.elementAt(i).toString());
+                
+                inI++;
             }
-            sqlStr.append(") ");
+            if (inI > 0) {
+        		sqlStr.append(")");
+        	}
+            sqlStr.append(")");
             
         } /*else
         {
