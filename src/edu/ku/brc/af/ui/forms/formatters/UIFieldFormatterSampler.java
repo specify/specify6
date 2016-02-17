@@ -30,12 +30,14 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.specify.datamodel.CollectionMember;
+import edu.ku.brc.specify.datamodel.DisciplineMember;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.util.Pair;
 
@@ -144,18 +146,38 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
     	ready = false;
     }
 	
+    protected String[] getScopers(DBTableInfo tblInfo) {
+    	Class<?> tblClass = tblInfo.getClassObj();
+    	String[] result = new String[2];
+    	if (tblClass.isAssignableFrom(CollectionMember.class)) {
+    		result[0] = "CollectionMemberID";
+    		result[1] = "COLMEMID";
+    	} else if (tblClass.isAssignableFrom(DisciplineMember.class)) {
+    		result[0] = "DisciplineID";
+    		result[1] = "DSPLNID";
+    	} else if (tblInfo.getRelationshipByName("Division") != null) {
+    		result[0] = "DivisionID";
+    		result[1] = "DIVID";
+    	}
+    	if (result[0] != null) {
+    		return result;
+    	} else {
+    		return null;
+    	}
+    }
+    
 	protected String getSql()
 	{
 	    DBTableInfo tblInfo   = fieldInfo.getTableInfo();
 		String      tableName = tblInfo.getName();
 		if (tblInfo != null)
 		{
-		    DBFieldInfo colMemIdField = tblInfo.getFieldByColumnName("CollectionMemberID");
+		    String[] scoper = getScopers(tblInfo);
     		String      fieldName     = fieldInfo.getName();
     		String      joins	      = tableName.equals("collectionobject")? "" : getJoins();
     		String      sql           = "SELECT " + tableName + "." + fieldName + " " + 
     					                "FROM " + tableName + joins + " WHERE " + tableName + "." + fieldName + " IS NOT NULL " +
-    					                (colMemIdField != null ? ("AND " + tableName + ".CollectionMemberID = COLMEMID") : "");
+    					                (scoper != null ? ("AND " + tableName + "." + scoper[0] + " = " + scoper[1]) : "");
     		sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
     		//System.out.println(sql + "\n");
     		return sql;
