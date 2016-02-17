@@ -439,10 +439,13 @@ public class StatsTrackerTask extends BaseTask
             postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
     
             //get ISA number
-            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            Collection collection = AppContextMgr.getInstance().hasContext() ?
+            			AppContextMgr.getInstance().getClassObject(Collection.class) :
+            			null;
+            String isaNumber = collection == null ? "N/A" : collection.getIsaNumber();
             try 
             {
-            	postParams.add(new NameValuePair("ISA_number",   collection.getIsaNumber())); //$NON-NLS-1$
+            	postParams.add(new NameValuePair("ISA_number",   isaNumber)); //$NON-NLS-1$
             } catch (NullPointerException e) {}
             
             // get the OS name and version
