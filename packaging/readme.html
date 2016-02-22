@@ -6,43 +6,22 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.6.03<br>
-22 December 2015<br>
+Specify 6.6.04<br>
+22 February 2016<br>
 Specify Software Project</h3>
 <br>
 <br>
-<h4>List of changes in Specify 6.6.03<br>
+<h4>List of changes in Specify 6.6.04<br>
 </h4>
-<ol><li>When "Is Not Null" is applied to fields in Queries, the condition now excludes both null and empty fields.  2015-12-21  (Bugzilla #9255)</li>
-<li>Web Portal advanced searches now finds values when searching with the '-' character.  2015-12-21  (10173)</li>
-<li>Lifemapper requests are again returning results.  2015-12-21  (10187)</li>
-<li>Agents are now fully searchable on Mac OS X installations.  2015-12-21  (10188)</li>
-<li>Accession Number now appears after opening a recently saved Accession record.  2015-12-17  (10184)</li>
-<li>One can restrict export of Attachments based on a field in the Attachment table.  2015-12-14  (10171)</li>
-<li>The correct thumbnail is now used when attaching images via the Collection Object form.  2015-12-11  (10177)</li>
-<li>There are now separate report file caches for PC, Linux and Macs to avoid conflicts among platforms.  2015-12-11  (10168)</li>
-<li>Lithostrat window no longer disappears behind the Specify window.  2015-12-11  (10179)</li>
-<li>Start and End Depth Unit fields changed to text fields.  2015-12-11  (10182)</li>
-<li>Field name matching in iReports is now case-insensitive.  2015-12-10  (10139)</li>
-<li>Catalog Numbers that include "anychar" sections now acts as expected and allows values to be entered.  2015-12-08  (10162)</li>
-<li>Save button does not become active in Lithostratigraphy and Chronostratigraphy records until all data field requirements are met.  2015-12-08  (10176)</li>
-<li>Content of Authors field in the Taxon table can now be displayed in taxon tree display by setting a preference.  2015-12-07  (10161)</li>
-<li>Fields for Page Number, Figure Number, and Plate Number were added to the Collection Object Citation table for Paleo collections.  2015-12-18  (10185)</li>
-<li>Number and Text fields were added to the Treatment Event table.  2015-12-04  (10101)</li>
-<li>AttrDate field in the Preparation Attribute table saves data correctly.  2015-12-04  (10151)</li>
-<li>Large text fields were added to the Collection Object Attribute table.  2015-12-03  (10016)</li>
-<li>PreparedBy and AuthorizedBy fields were added to the Treatment Events table.  2015-12-03  (10102)</li>
-<li>The Treatment Event table now supports Attachments.  2015-12-03  (10122)</li>
-<li>Specify WorkBench no longer erroneously marks empty "Determiner 1" fields as invalid when there is "Determiner 2" data.  2015-12-02  (10154)</li>
-<li>Guest or Limited Access users can now view trees with modify privileges turned off.  2015-12-01  (9600)</li>
-<li>Can correctly add Collecting Event data in a database that shares Collecting Events when the Collecting Event record does not contain the fields in the Collecting Event table format.  2015-11-25  (10150)</li>
-<li>Using the '-' character in a schema mapping name no longer causes the Data Exporter cache build to crash.  2015-11-25  (10152)</li>
-<li>Locality Name can be formatted.  2015-11-25  (10156)</li>
-<li>Preparations can be aggregated by Prep Type with count sums.  2015-11-25  (10159)</li>
-<li>Unaccepted taxa are no longer erroneously changed to preferred taxa when uploading through the WorkBench.  2015-11-25  (10163)</li>
-<li>The table Agent Specialties shows in Agent queries when it is unhidden.  2015-11-25  (10164)</li>
-<li>The Modified By field shows up in Agent queries when unhidden.  2015-11-25  (10165)</li>
-<li>Collection Object records with Exsiccata relationships now save quickly when modified.  2015-11-19  (10160)</li>
+<ol><li>Simple search results are now returned correctly for searches that have an exceptionally large number of matching records. 2016-02-19 (Bugzilla 10205)</li>
+<li>The Accession Number content format validator is now scoped correctly to  Institution or Division depending on setup configuration. 2016-02-19 (10207)</li>
+<li>Creating a DataSet from a RecordSet no longer fails. 2016-02-11  (10201)</li>
+<li>After the WorkBench uploads records that contain new tree data (for any kind of tree), the tree update progress bar displays to reflect the tree update process. 2016-02-11 (10193)</li>
+<li>The Specify WorkBench no longer uploads records  which would create child nodes (e.g. taxon determinations) to an existing unaccepted parent node in a tree. 2016-02-11 (10192)</li>
+<li>The &quot;Clone&quot; button now consistently remains active after cursor focus is moved to another  field. 2016-02-11 (10199)</li>
+<li>Tree updates for very large trees no longer fail. 2016-02-11 (10191)</li>
+<li>Searching in a Specify 6 query combobox text field with an asterisk (wild card) when data records (search targets) contain two hyphens (e.g. &quot;45-DEL-2016&quot;) will now find the matching records. 2016-02-11  (10202)</li>
+<li>The "Get Elevation" button within the GeoLocate Plug-in component now works correctly after being reconfigured for a revised USGS API. Specify no longer hangs or reports an error. 2016-02-10  (10196)</li>
 </ol><br>
 <br>
 <br>
