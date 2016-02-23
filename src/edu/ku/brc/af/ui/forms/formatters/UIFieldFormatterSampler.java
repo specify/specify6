@@ -149,10 +149,10 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
     protected String[] getScopers(DBTableInfo tblInfo) {
     	Class<?> tblClass = tblInfo.getClassObj();
     	String[] result = new String[2];
-    	if (tblClass.isAssignableFrom(CollectionMember.class)) {
+    	if (CollectionMember.class.isAssignableFrom(tblClass)) {
     		result[0] = "CollectionMemberID";
     		result[1] = "COLMEMID";
-    	} else if (tblClass.isAssignableFrom(DisciplineMember.class)) {
+    	} else if (DisciplineMember.class.isAssignableFrom(tblClass)) {
     		result[0] = "DisciplineID";
     		result[1] = "DSPLNID";
     	} else if (tblInfo.getRelationshipByName("Division") != null) {
