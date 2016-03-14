@@ -96,6 +96,7 @@ import edu.ku.brc.specify.datamodel.FieldNotebook;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.PaleoContext;
@@ -688,7 +689,8 @@ public class UploadTable implements Comparable<UploadTable>
             if (a != null && b == null)
             {
                 javax.persistence.Column col = (javax.persistence.Column) a;
-                if (!colIsNullable(col) && !col.name().startsWith("Timestamp") 
+                if ((!colIsNullable(col)/* {Partial fix for issues with db level requirements versus sp requirement customizations} || DBTableIdMgr.getInstance().getByClassName(tblClass.getName()).getFieldByName(col.name()).isRequired()*/) 
+                		&& !col.name().startsWith("Timestamp") 
                 		&& !col.name().equalsIgnoreCase("srcLatLongUnit"))
                 {
                     if (!fldInDataset(col.name()))
@@ -2872,7 +2874,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         if (tblClass.equals(Locality.class))
         {
-        	return childClass.equals(GeoCoordDetail.class) || childClass.equals(LocalityDetail.class);
+        	return childClass.equals(GeoCoordDetail.class) || childClass.equals(LocalityDetail.class) || childClass.equals(LocalityCitation.class);
         }
         if (tblClass.equals(ReferenceWork.class))
         {
