@@ -14,11 +14,8 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -77,47 +74,28 @@ public class WorkbenchRecordSetCleanupTask extends BaseTask
 			public void run() {
 		    	try 
 		    	{
-		    		//Using hibernate to avoid using dbms-specific sql date functions
-		    		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-		    		List<Pair<Integer, String>> toRemove = new ArrayList<Pair<Integer, String>>();
-		    		long maxAgeInMillis = (long)HIDDEN_UPLOAD_RECORDSET_LIFESPAN_DAYS * 24L * 60L * 60L * 1000L;
-		    		long todayInMillis = Calendar.getInstance().getTimeInMillis();
-		    		try
-		    		{
-		    			//List<RecordSet> recSets = session.getDataList(RecordSet.class, "type", RecordSet.WB_UPLOAD);
-		    			List<?> recSets = session.getDataList("select distinct rs from RecordSet rs where type = " + RecordSet.WB_UPLOAD);
-		    			for (Object rsObj : recSets)
-		    			{
-		    				RecordSet rs = (RecordSet) rsObj;
-		    				if (todayInMillis - rs.getTimestampCreated().getTime() > maxAgeInMillis)
-		    				{
-		    					toRemove.add(new Pair<Integer,String>(rs.getId(), rs.getName()));
-		    				}
-		    			}
-		    		} finally
-		    		{
-		    			session.close();
-		    		}
-				
+		    		//NOT using hibernate: Eager loading for recordset items can cause Specify to grind to a halt
+		    		List<Object[]> toRemove = BasicSQLUtils.query("select RecordSetID, Name from recordset where type = " + RecordSet.WB_UPLOAD 
+		    					+ " and date_sub(curdate(), Interval " + HIDDEN_UPLOAD_RECORDSET_LIFESPAN_DAYS + " day) > timestampcreated");
 		    		//System.out.println("Removing " + toRemove.size() + " expired recordsets.");
 		    		
-		    		for (Pair<Integer, String> rs : toRemove)
+		    		for (Object[] rs : toRemove)
 		    		{
 		    			if (appIsShuttingDown.get())
 		    			{
 		    				break;
 		    			}
-		    			int count = BasicSQLUtils.update("delete from recordsetitem where recordsetid = " + rs.getFirst());
-		    			log.info("deleted " + count + " recordsetitems from expired recordset " + rs.getSecond());
-		    			//System.out.println("deleted " + count + " recordsetitems from expired recordset " + rs.getSecond());
-		    			count = BasicSQLUtils.update("delete from recordset where recordsetid = " + rs.getFirst());
+		    			int count = BasicSQLUtils.update("delete from recordsetitem where recordsetid = " + rs[0]);
+		    			log.info("deleted " + count + " recordsetitems from expired recordset " + rs[1]);
+		    			System.out.println("deleted " + count + " recordsetitems from expired recordset " + rs[1]);
+		    			count = BasicSQLUtils.update("delete from recordset where recordsetid = " + rs[0]);
 		    			if (count == 1) 
 		    			{
-		    				log.info("deleted expired recordset " + rs.getSecond());
-		    				//System.out.println("deleted expired recordset " + rs.getSecond());
+		    				log.info("deleted expired recordset " + rs[1]);
+		    				System.out.println("deleted expired recordset " + rs[1]);
 		    			} else
 		    			{
-		    				log.warn("unable to delete expired recordset " + rs.getSecond());
+		    				log.warn("unable to delete expired recordset " + rs[1]);
 		    				//System.out.println("unable to delete expired recordset " + rs.getSecond());
 		    			}
 		    		}
