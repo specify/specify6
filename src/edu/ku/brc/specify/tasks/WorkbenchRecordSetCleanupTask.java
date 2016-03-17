@@ -87,12 +87,12 @@ public class WorkbenchRecordSetCleanupTask extends BaseTask
 		    			}
 		    			int count = BasicSQLUtils.update("delete from recordsetitem where recordsetid = " + rs[0]);
 		    			log.info("deleted " + count + " recordsetitems from expired recordset " + rs[1]);
-		    			System.out.println("deleted " + count + " recordsetitems from expired recordset " + rs[1]);
+		    			//System.out.println("deleted " + count + " recordsetitems from expired recordset " + rs[1]);
 		    			count = BasicSQLUtils.update("delete from recordset where recordsetid = " + rs[0]);
 		    			if (count == 1) 
 		    			{
 		    				log.info("deleted expired recordset " + rs[1]);
-		    				System.out.println("deleted expired recordset " + rs[1]);
+		    				//System.out.println("deleted expired recordset " + rs[1]);
 		    			} else
 		    			{
 		    				log.warn("unable to delete expired recordset " + rs[1]);
