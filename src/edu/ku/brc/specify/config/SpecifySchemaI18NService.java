@@ -180,10 +180,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     fieldInfo.setPickListName(pickListName);
                     fieldInfo.setWebLinkName(webLinkName);
                     
-                    if (!fieldInfo.isRequired() && isRequired)
-                    {
-                        fieldInfo.setRequired(isRequired);
-                    }
+                    fieldInfo.setRequired(isRequired);
                     
                     if (isUIFmt)
                     {
