@@ -67,6 +67,7 @@ import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -85,6 +86,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -289,41 +291,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
-                if (dbMgr.doesFieldExistInTable("institution", "IsReleaseManagedGlobally"))
-                {
-                    Vector<Object[]> data = BasicSQLUtils.query(dbMgr.getConnection(), "SELECT IsReleaseManagedGlobally, CurrentManagedRelVersion FROM institution");
-                    if (data != null && data.size() > 0)
-                    {
-                        Object[] row              = data.get(0);
-                        Boolean  isManagedByDB    = (Boolean)row[0];
-                        String   managedRelNumber = (String)row[1];
-                        
-                        // Managed Releases
-                        // it's never managed for the Release Manager
-                        boolean isReleaseManager = AppPreferences.getLocalPrefs().getBoolean("RELEASE_MANAGER", false);
-                        boolean isManagedRelease = !isReleaseManager && isManagedByDB != null && isManagedByDB;
-                        AppPreferences.getLocalPrefs().putBoolean("MANAGED_RELEASES", isManagedRelease);
-                        
-                        if (isManagedRelease)
-                        {
-                            String curRelease = UIHelper.getInstall4JInstallString();
-                            
-                            if (StringUtils.isNotEmpty(curRelease) && 
-                                StringUtils.isNotEmpty(managedRelNumber) &&
-                                !curRelease.equals(managedRelNumber))
-                            {
-                                SwingUtilities.invokeLater(new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        CommandDispatcher.dispatch(new CommandAction("App", "CheckForUpdates"));
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
 
                 // Here checks to see if this is the first ever
                 boolean doUpdateAppVer  = false;

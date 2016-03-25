@@ -1601,7 +1601,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * @return
      */
-    private static String[] getProxySettings()
+    public static String[] getProxySettings()
     {
         String[] proxySettings = new String[] {"-DproxySet=false"};
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -3507,51 +3507,52 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   
                   // Managed Releases
                   // it's never managed for the Release Manager
-                  boolean isReleaseManager = localPrefs.getBoolean("RELEASE_MANAGER", false);
-                  boolean isManagedRelease = localPrefs.getBoolean(MANAGED_RELEASES, false);
-                  boolean isMgrRel         = !isReleaseManager && isManagedRelease;
-
-                  // Never check if it is a managed release
-                  if (localPrefs.getBoolean(VERSION_CHECK, true) && !isMgrRel)
-                  {
-                      if (!isMgrRel)
-                      {
-                          localPrefs.getBoolean(MANAGED_RELEASES, false); // remove it in case it was turned on
-                      }
+//                  boolean isReleaseManager = localPrefs.getBoolean("RELEASE_MANAGER", false);
+//                  boolean isManagedRelease = localPrefs.getBoolean(MANAGED_RELEASES, false);
+//                  boolean isMgrRel         = !isReleaseManager && isManagedRelease;
+//
+//                  // Never check if it is a managed release
+//                  boolean verChk = localPrefs.getBoolean(VERSION_CHECK, true);
+//                  if (localPrefs.getBoolean(VERSION_CHECK, true) && !isMgrRel)
+//                  {
+//                      if (!isMgrRel)
+//                      {
+//                          localPrefs.getBoolean(MANAGED_RELEASES, false); // remove it in case it was turned on
+//                      }
                       
-                      try
-                      {
-                    	 com.install4j.api.launcher.SplashScreen.hide();
-                         ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
-                         {
-                             @Override
-                             public void exited(int exitValue)
-                             {
-                                 startApp();
-                             }
-                             
-                             @Override
-                             public void prepareShutdown()
-                             {
-                                 
-                             }
-                          };
-                          ApplicationLauncher.launchApplication("100", getProxySettings(), true, callback);
-                          
-                      } catch (Exception ex)
-                      {
-                          //ex.printStackTrace();
-                          log.error(ex);
-                          startApp();
-                      }
-                  } else
-                  {
-                      if (!isManagedRelease && !isExtraCheck && StringUtils.isNotEmpty(UIRegistry.getAppVersion()))
+//                      try
+//                      {
+//                    	 com.install4j.api.launcher.SplashScreen.hide();
+//                         ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+//                         {
+//                             @Override
+//                             public void exited(int exitValue)
+//                             {
+//                                 startApp();
+//                             }
+//                             
+//                             @Override
+//                             public void prepareShutdown()
+//                             {
+//                                 
+//                             }
+//                          };
+//                          //ApplicationLauncher.launchApplication("100", getProxySettings(), true, callback);
+//                          
+//                      } catch (Exception ex)
+//                      {
+//                          //ex.printStackTrace();
+//                          log.error(ex);
+//                          startApp();
+//                      }
+//                  } else
+//                  {
+                      if (!isExtraCheck && StringUtils.isNotEmpty(UIRegistry.getAppVersion()))
                       {
                           UIRegistry.showLocalizedMsg(null, "SpReg.NOT_REGISTERED");
                       }
                       startApp();
-                  }
+//                  }
               } catch (Exception ex)
               {
                   ex.printStackTrace();

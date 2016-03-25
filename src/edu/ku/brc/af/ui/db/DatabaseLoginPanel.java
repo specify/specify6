@@ -41,6 +41,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -70,6 +71,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -89,8 +91,11 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.dbsupport.SchemaUpdateService.SchemaUpdateType;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1315,39 +1320,86 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setServerName(getServerName());
                         DBConnection.getInstance().setDriverName(((DatabaseDriverInfo)dbDriverCBX.getSelectedItem()).getName());
                         DBConnection.getInstance().setConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName()));
-                        
-                        if (shouldCheckForSchemaUpdate)
-                        {
-                            // This needs to be done before Hibernate starts up
-                        	SchemaUpdateService.getInstance().setAppCanUpdateSchema(appCanUpdateSchema);
-                            SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIRegistry.getAppVersion(), getUserName());
-                            if (status == SchemaUpdateType.Error)
-                            {
-                                StringBuilder sb = new StringBuilder();
-                                for (String s : SchemaUpdateService.getInstance().getErrMsgList())
-                                {
-                                    sb.append(s);
-                                    sb.append("\n");
-                                }
-                                sb.append(getResourceString("APP_EXIT")); // 18N
-                                UIRegistry.showError(sb.toString());
-                                if (!appCanUpdateSchema) {
-                                    isLoginCancelled = true; //works when the app is not the main specify app
-                                	isLoggedIn = false; //so as not to have to meddle with SwingWorker finished() method
-                                }
-                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                
-                            } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
-                            {
-                                String arg = status == SchemaUpdateType.SuccessAppVer ? UIRegistry.getAppVersion() : "";
-                                UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
-                            }
+
+                        //Assuming a single institution
+                        List<Object[]> relmanage = BasicSQLUtils.query("select IsReleaseManagedGlobally from institution");
+                        if (relmanage.size() > 1 /*which means someone has been hacking*/) {
+                        	log.warn("There is more than one institution defined. IsReleaseManagedGlobally was read from first available institution record.");
+                        } 
+                        Boolean globalChk4VersionUpdate = true;
+                        if (relmanage.size() > 0 /*one would hope*/) {
+                        	Object val = relmanage.get(0)[0];
+                        	if (val != null) {
+                        		globalChk4VersionUpdate = !(Boolean)val;
+                        	}
+                        }
+                        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                        String VERSION_CHECK = "version_check.auto";
+                        boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
+                        if (globalChk4VersionUpdate || (!globalChk4VersionUpdate && localChk4VersionUpdate)) {
+                        	try {
+                        		com.install4j.api.launcher.SplashScreen.hide();
+                        		ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback() {
+                        			@Override
+                        			public void exited(int exitValue) {
+                        				System.out.println("ExitValue: " + exitValue);
+                        				if (exitValue == 0) {
+                        					System.exit(0);
+                        				} else {
+                        					doLoginContinuing2();
+                        				}
+                        			}
+                                 
+                        			@Override
+                        			public void prepareShutdown() {
+                        				System.out.println("prepareShutdown(): exiting");
+                        				System.exit(0);
+                        			}
+                        		};
+                        		ApplicationLauncher.launchApplication("100", Specify.getProxySettings(), true, callback);
+                        	} catch (Exception ex) {
+                              log.error(ex);
+                              doLoginContinuing2();
+                        	}
+                        }
+                        else {
+                        	doLoginContinuing2();
                         }
                     }
                 }
                 return null;
             }
 
+            public void doLoginContinuing2() {
+                if (shouldCheckForSchemaUpdate)
+                {
+                    // This needs to be done before Hibernate starts up
+                	SchemaUpdateService.getInstance().setAppCanUpdateSchema(appCanUpdateSchema);
+                    SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIRegistry.getAppVersion(), getUserName());
+                    if (status == SchemaUpdateType.Error)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        for (String s : SchemaUpdateService.getInstance().getErrMsgList())
+                        {
+                            sb.append(s);
+                            sb.append("\n");
+                        }
+                        sb.append(getResourceString("APP_EXIT")); // 18N
+                        UIRegistry.showError(sb.toString());
+                        if (!appCanUpdateSchema) {
+                            isLoginCancelled = true; //works when the app is not the main specify app
+                        	isLoggedIn = false; //so as not to have to meddle with SwingWorker finished() method
+                        }
+                        CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                        
+                    } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
+                    {
+                        String arg = status == SchemaUpdateType.SuccessAppVer ? UIRegistry.getAppVersion() : "";
+                        UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
+                    }
+                }
+            	
+            }
             // Runs on the event-dispatching thread.
             @Override
             public void finished()
