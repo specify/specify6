@@ -1598,7 +1598,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
-        if (distinct /*|| hqlHasSynJoins*/)
+        //if (distinct /*|| hqlHasSynJoins*/)
         {
             sqlStr.append("distinct ");
         }
@@ -1948,9 +1948,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 result += " or ";
             }
             f++;
+            
             result += fromTbl.getSecond() + ".timestampModified > :" + timestampParam;
             result += " or ";
             result += fromTbl.getSecond() + ".timestampCreated > :" + timestampParam;
+            if (fromTbl.getFirst() != null && fromTbl.getFirst().getClassObj() != null && Treeable.class.isAssignableFrom(fromTbl.getFirst().getClassObj())) {
+            	//String keyFld = fromTbl.getFirst().getIdFieldName();
+            	String tbl = fromTbl.getFirst().getShortClassName();
+            	String alias = fromTbl.getFirst().getAbbrev();
+            	result += " or exists(select id from " + tbl + " " + alias + " where " + fromTbl.getSecond() + ".nodeNumber between " + alias + ".nodeNumber and " + alias + ".highestChildNodeNumber and " 
+            			+ "(" + alias + ".timestampModified > :" + timestampParam + " or " + alias + ".timestampCreated > :" + timestampParam + "))";
+            }
 //            result += " or ";
 //            result += fromTbl.getSecond() + ".timestampModified is null";
 //            result += " or ";
