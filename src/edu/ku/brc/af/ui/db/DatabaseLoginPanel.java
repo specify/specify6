@@ -1326,17 +1326,14 @@ public class DatabaseLoginPanel extends JTiledPanel
                         if (relmanage.size() > 1 /*which means someone has been hacking*/) {
                         	log.warn("There is more than one institution defined. IsReleaseManagedGlobally was read from first available institution record.");
                         } 
-                        Boolean globalChk4VersionUpdate = true;
+                        Boolean isReleaseManagedGlobally = null;
                         if (relmanage.size() > 0 /*one would hope*/) {
-                        	Object val = relmanage.get(0)[0];
-                        	if (val != null) {
-                        		globalChk4VersionUpdate = !(Boolean)val;
-                        	}
+                        	isReleaseManagedGlobally = (Boolean)relmanage.get(0)[0];
                         }
                         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                         String VERSION_CHECK = "version_check.auto";
                         boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
-                        if (globalChk4VersionUpdate || (!globalChk4VersionUpdate && localChk4VersionUpdate)) {
+                        if ((isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate) {
                         	try {
                         		com.install4j.api.launcher.SplashScreen.hide();
                         		ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback() {
