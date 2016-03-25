@@ -89,7 +89,8 @@ public class MySQLBackupService extends BackupServiceFactory
     private final String WEEKLY_PREF      = "LAST.BACKUP.WEEKLY";
     private final String MONTHLY_PREF     = "LAST.BACKUP.MONS";
     private final String RESTORE_COMPLETE = "MySQLBackupService.RESTORE_COMPLETE";
-
+    private final String PROMPT_PREF      = "BACKUP.PROMPT";
+    
     private final String STATUSBAR_NAME = "BackUp";
     private final String MYSQLDUMP_LOC  = "mysqldump.location";
     private final String MYSQL_LOC      = "mysql.location";
@@ -1250,7 +1251,11 @@ public class MySQLBackupService extends BackupServiceFactory
     @Override
     public boolean checkForBackUp(final boolean doSendExit)
     {
-        return checkForBackUp(doSendExit, false);
+        if (AppPreferences.getGlobalPrefs().getBoolean(PROMPT_PREF, true)) {
+        	return checkForBackUp(doSendExit, false);
+        } else {
+        	return false;
+        }
     }
     
     /**
