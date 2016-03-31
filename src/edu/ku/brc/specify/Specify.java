@@ -1630,11 +1630,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 			// ...seems like a good idea.
 			Boolean isReleaseManagedGlobally = AppContextMgr.getInstance().getClassObject(Institution.class)
 					.getIsReleaseManagedGlobally();
-			AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-			String VERSION_CHECK = "version_check.auto";
-			boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
+//			AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+//			String VERSION_CHECK = "version_check.auto";
+//			boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
 
-			doTheUpdate = (isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate;
+			doTheUpdate = (isReleaseManagedGlobally == null || !isReleaseManagedGlobally) /*&& localChk4VersionUpdate*/;
 
 			UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath,
 					ApplicationDisplayMode.UNATTENDED);
