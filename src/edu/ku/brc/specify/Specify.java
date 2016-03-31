@@ -1623,69 +1623,51 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String  errKey     = null;
         //NOTE: it looks like the "UPDATE_PATH" resource and the update url setting in i4jparams.conf need to be kept in sync
         String  updatePath = UIRegistry.getResourceString("UPDATE_PATH");
-        try
-        {
-            //if automatic update checking is disabled, disable intentional update checking also...
-        	//...seems like a good idea.
-        	List<Object[]> relmanage = BasicSQLUtils.query("select IsReleaseManagedGlobally from institution");
-            if (relmanage.size() > 1 /*which means someone has been hacking*/) {
-            	log.warn("There is more than one institution defined. IsReleaseManagedGlobally was read from first available institution record.");
-            } 
-            Boolean isReleaseManagedGlobally = AppContextMgr.getInstance().getClassObject(Institution.class).getIsReleaseManagedGlobally();
-            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            String VERSION_CHECK = "version_check.auto";
-            boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
-            
-            boolean doTheCheck = (isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate;
-            	
-            
-            if (doTheCheck) {
-            	UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath, ApplicationDisplayMode.UNATTENDED);
-            	if (updateDesc != null)
-            	{
-            		UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
-    
-            		if (entry != null)
-            		{
-            			Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$
-                                         getResourceString("Specify.SKIP")  //$NON-NLS-1$
-                                       };
-            			int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                 getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()),  //$NON-NLS-1$
-                                                                 getResourceString("Specify.UPDATE_AVAIL_TITLE"),  //$NON-NLS-1$
-                                                                 JOptionPane.YES_NO_CANCEL_OPTION,
-                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            			if (userChoice == JOptionPane.YES_OPTION)
-            			{
-            				if (!doExit(false))
-            				{
-            					return;
-            				}
-                        
-            			} else
-            			{
-            				return;
-            			}
-            		} else
-            		{
-            			errKey = "Specify.NO_UPDATE_AVAIL";
-            		}
-            	} else
-            	{
-            		errKey = UPDATE_CHK_ERROR;
-            	}
-            } else {
-            	UIRegistry.showLocalizedMsg(UIRegistry.getResourceString("UPDATES_DISABLED_FOR_INSTALLATION"));
-            	return;
-            }
-            
-        } catch (Exception ex)
-        {
-          	errKey = UPDATE_CHK_ERROR;
-           	ex.printStackTrace();
-           	log.error(ex);
-        }
-        
+        boolean doTheUpdate = false;
+		try {
+			// if automatic update checking is disabled, disable intentional
+			// update checking also...
+			// ...seems like a good idea.
+			Boolean isReleaseManagedGlobally = AppContextMgr.getInstance().getClassObject(Institution.class)
+					.getIsReleaseManagedGlobally();
+			AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+			String VERSION_CHECK = "version_check.auto";
+			boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
+
+			doTheUpdate = (isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate;
+
+			UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath,
+					ApplicationDisplayMode.UNATTENDED);
+			if (updateDesc != null) {
+				UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
+
+				if (entry != null) {
+					Object[] options = { getResourceString("Specify.INSTALLUPDATE"), //$NON-NLS-1$
+							getResourceString("Specify.SKIP") //$NON-NLS-1$
+					};
+					int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
+							getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()), //$NON-NLS-1$
+							getResourceString("Specify.UPDATE_AVAIL_TITLE"), //$NON-NLS-1$
+							JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					if (userChoice == JOptionPane.YES_OPTION) {
+						if (!doExit(false)) {
+							return;
+						}
+
+					} else {
+						return;
+					}
+				} else {
+					errKey = "Specify.NO_UPDATE_AVAIL";
+				}
+			} else {
+				errKey = UPDATE_CHK_ERROR;
+			}
+		} catch (Exception ex) {
+			errKey = UPDATE_CHK_ERROR;
+			ex.printStackTrace();
+			log.error(ex);
+		}        
         
         if (errKey != null)
         {
@@ -1694,28 +1676,30 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             return;
         }
         
-        try
-        {
-            ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
-           {
-               public void exited(int exitValue)
-               {
-                   log.error("exitValue: "+exitValue);
-                   //startApp(doConfig);
-               }
-               public void prepareShutdown()
-               {
-                   log.error("prepareShutdown");
-                   
-               }
-            };
-            ApplicationLauncher.launchApplication("100", getProxySettings(), true, callback);
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            log.error("EXPCEPTION");
-        }
+		if (doTheUpdate) {
+			try {
+				ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback() {
+					public void exited(int exitValue) {
+						log.error("exitValue: " + exitValue);
+						// startApp(doConfig);
+					}
+
+					public void prepareShutdown() {
+						log.error("prepareShutdown");
+
+					}
+				};
+				ApplicationLauncher.launchApplication("100", getProxySettings(), true, callback);
+
+			} catch (Exception ex) {
+				log.error(ex);
+				log.error("EXPCEPTION");
+			}
+		} else {
+			UIRegistry.showLocalizedMsg(UIRegistry.getResourceString("UPDATES_DISABLED_FOR_INSTALLATION"));
+			return;
+		}
+
     }
     
     /**
