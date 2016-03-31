@@ -1621,6 +1621,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     protected void checkForUpdates()
     {
         String  errKey     = null;
+        //NOTE: it looks like the "UPDATE_PATH" resource and the update url setting in i4jparams.conf need to be kept in sync
         String  updatePath = UIRegistry.getResourceString("UPDATE_PATH");
         try
         {
