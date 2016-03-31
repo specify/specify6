@@ -1625,47 +1625,67 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String  updatePath = UIRegistry.getResourceString("UPDATE_PATH");
         try
         {
-            UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath, ApplicationDisplayMode.UNATTENDED);
-            if (updateDesc != null)
-            {
-                UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
+            //if automatic update checking is disabled, disable intentional update checking also...
+        	//...seems like a good idea.
+        	List<Object[]> relmanage = BasicSQLUtils.query("select IsReleaseManagedGlobally from institution");
+            if (relmanage.size() > 1 /*which means someone has been hacking*/) {
+            	log.warn("There is more than one institution defined. IsReleaseManagedGlobally was read from first available institution record.");
+            } 
+            Boolean isReleaseManagedGlobally = AppContextMgr.getInstance().getClassObject(Institution.class).getIsReleaseManagedGlobally();
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            String VERSION_CHECK = "version_check.auto";
+            boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
+            
+            boolean doTheCheck = (isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate;
+            	
+            
+            if (doTheCheck) {
+            	UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath, ApplicationDisplayMode.UNATTENDED);
+            	if (updateDesc != null)
+            	{
+            		UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
     
-                if (entry != null)
-                {
-                    Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$
+            		if (entry != null)
+            		{
+            			Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$
                                          getResourceString("Specify.SKIP")  //$NON-NLS-1$
                                        };
-                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+            			int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                                  getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()),  //$NON-NLS-1$
                                                                  getResourceString("Specify.UPDATE_AVAIL_TITLE"),  //$NON-NLS-1$
                                                                  JOptionPane.YES_NO_CANCEL_OPTION,
                                                                  JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    if (userChoice == JOptionPane.YES_OPTION)
-                    {
-                        if (!doExit(false))
-                        {
-                            return;
-                        }
+            			if (userChoice == JOptionPane.YES_OPTION)
+            			{
+            				if (!doExit(false))
+            				{
+            					return;
+            				}
                         
-                    } else
-                    {
-                        return;
-                    }
-                } else
-                {
-                    errKey = "Specify.NO_UPDATE_AVAIL";
-                }
-            } else
-            {
-                errKey = UPDATE_CHK_ERROR;
+            			} else
+            			{
+            				return;
+            			}
+            		} else
+            		{
+            			errKey = "Specify.NO_UPDATE_AVAIL";
+            		}
+            	} else
+            	{
+            		errKey = UPDATE_CHK_ERROR;
+            	}
+            } else {
+            	UIRegistry.showLocalizedMsg(UIRegistry.getResourceString("UPDATES_DISABLED_FOR_INSTALLATION"));
+            	return;
             }
             
         } catch (Exception ex)
         {
-            errKey = UPDATE_CHK_ERROR;
-            ex.printStackTrace();
-            log.error(ex);
+          	errKey = UPDATE_CHK_ERROR;
+           	ex.printStackTrace();
+           	log.error(ex);
         }
+        
         
         if (errKey != null)
         {
