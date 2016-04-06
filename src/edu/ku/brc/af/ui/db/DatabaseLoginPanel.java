@@ -1339,7 +1339,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         		ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback() {
                         			@Override
                         			public void exited(int exitValue) {
-                        				System.out.println("ExitValue: " + exitValue);
+                        				//System.out.println("ExitValue: " + exitValue);
                         				if (exitValue == 0) {
                         					System.exit(0);
                         				} else {
@@ -1349,7 +1349,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                                  
                         			@Override
                         			public void prepareShutdown() {
-                        				System.out.println("prepareShutdown(): exiting");
+                        				//System.out.println("prepareShutdown(): exiting");
                         				System.exit(0);
                         			}
                         		};
