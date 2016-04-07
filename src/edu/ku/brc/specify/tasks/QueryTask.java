@@ -2058,9 +2058,12 @@ public class QueryTask extends BaseTask
         }
         
         Vector<String> names = new Vector<String>();
-        for (NavBoxItemIFace nbi : navBox.getItems())
+        
+        //For exportschemamappings, mapping name is assumed to be the same as associated query name
+        List<Object> nameObjs = BasicSQLUtils.querySingleCol("select name from spquery order by 1");
+        for (Object q : nameObjs)
         {
-            names.add(nbi.getTitle());
+            names.add((String)q);
         }
         adjustImportedQueryNames(queries, names);
         
