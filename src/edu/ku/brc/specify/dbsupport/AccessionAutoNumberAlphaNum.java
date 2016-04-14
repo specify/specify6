@@ -155,7 +155,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
         {
             sb.append(" AND ");
             sb.append(yearVal);
-            sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
+            sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+(yearPos.second-yearPos.first)+")");
         }
         
         sb.append(" ORDER BY");
@@ -164,7 +164,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
         {
             if (yearPos != null)
             {
-                sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+") desc");
+                sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+(yearPos.second-yearPos.first)+") desc");
             }
             
             if (pos != null)
@@ -173,7 +173,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
                 {
                     sb.append(", ");
                 }
-                sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
+                sb.append(" substring("+fieldName+","+(pos.first+1)+","+(pos.second-pos.first)+") desc");
             }
             
             System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
