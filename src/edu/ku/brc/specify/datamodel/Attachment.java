@@ -171,7 +171,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         guid               = null;
         
-        isPublic           = true;
+        isPublic           = null;
         
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
