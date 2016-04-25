@@ -632,7 +632,7 @@ public class RegisterSpecify
                 
             } else if (!hasBeenAsked)
             {
-                boolean okToReg  = askToReg(DBTableIdMgr.getInstance().getTitleForId(Collection.getClassTableId()), collection.getCollectionName());
+                boolean okToReg  = false/*askToReg(DBTableIdMgr.getInstance().getTitleForId(Collection.getClassTableId()), collection.getCollectionName())*/;
                 setHasBeenAsked();
                 
                 if (okToReg)
