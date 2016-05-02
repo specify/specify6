@@ -660,20 +660,37 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
            
         } else if (data instanceof Number)
         {
-            int    size = fields.get(0).getSize();
-            String fmt;
+            /*
+             * This block modified to fix #10238
+        	 * the entire block actually seems kind of unnecessary because
+        	 * the same code for displaying values in view mode could be used instead.
+        	*/
+        	
+        	//int    size = fields.get(0).getSize();
+            //String fmt;
             if (data instanceof Float || data instanceof Double)
             {
-                fmt = "%" + (size-2) + ".2f";
+                //fmt = "%" + (size-2) + ".2f";
+            	//this results in a display that matches the
+            	return String.valueOf(data);
                     
             } else if (data instanceof BigDecimal)
             {
-                fmt = "%" + (size-2) + ".2f";
+                //fmt = "%" + (size-2) + ".2f";
+            	
+            	/*
+            	 * using doubleValue() eliminates trailing zeroes but 
+            	 * that leads to conflict with the way big decimals are
+            	 * displayed in view mode on forms and in query results
+            	 */
+                //return String.valueOf(((Number )data).doubleValue());
+            	
+            	return String.valueOf(data);
             } else
             {
-                fmt = "%d";
+                //fmt = "%d";
+                return String.format("%d", data).trim();
             }
-            return String.format(fmt, data).trim();
             
         } else if (data instanceof Calendar)
         {
