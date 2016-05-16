@@ -3971,6 +3971,7 @@ public class UploadTable implements Comparable<UploadTable>
         finally
         {
             //session.close();
+        	getRidOfSession(sessObj);
         }
     }
 
@@ -5551,7 +5552,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (Exception ex)
         {
-            if (tblTransactionOpen && sessObj.getSecond())
+        	if (tblTransactionOpen && sessObj.getSecond())
             {
             	theSession.rollback();
             }
