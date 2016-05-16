@@ -277,8 +277,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
     *
     */
-   @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
-   @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
    @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
    public PaleoContext getPaleoContext()
    {
