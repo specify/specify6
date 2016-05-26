@@ -778,7 +778,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         	if (dbConn != null && dbConn.getConnection() != null) {
         		Connection conn = dbConn.getConnection();
         		result = true;
-        		if (!AppPreferences.getGlobalPrefs().getBoolean("PaleoAftermathCleanup", false)) {
+        		if (!AppPreferences.getGlobalPrefs().getBoolean("PaleoAftermathCleanup", false) 
+        			&& doesColumnExist(databaseName, "paleocontext", "positionState", conn)) {
         			if (fixPaleoModelAftermath(conn, databaseName)) {
         				AppPreferences.getGlobalPrefs().putBoolean("PaleoAftermathCleanup", true);
         			} else {
