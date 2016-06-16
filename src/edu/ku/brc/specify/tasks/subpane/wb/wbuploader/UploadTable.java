@@ -5778,8 +5778,10 @@ public class UploadTable implements Comparable<UploadTable>
                         	int qIdx = 0;
                             for (DeleteQuery qFace : q)
                             {
-                                session.beginTransaction();
-                                opened = true;
+                                if (sessObj.getSecond()) {
+                                	session.beginTransaction();
+                                	opened = true;
+                                }
                                 if (qFace.isDeletes())
                                 {
                                 	if (qFace.getKeyGeneratorIdx() == -1)
@@ -5802,8 +5804,10 @@ public class UploadTable implements Comparable<UploadTable>
                                 {
                                 	subKeysMap.put(qIdx, qFace.getQuery().list());
                                 }
-                                session.commit();
-                                committed = true;
+                                if (sessObj.getSecond()) {
+                                	session.commit();
+                                    committed = true;
+                                }
                                 qIdx++;
                             }
                         }
@@ -5812,9 +5816,11 @@ public class UploadTable implements Comparable<UploadTable>
                             DataModelObjBase obj = (DataModelObjBase) q.get(0).getQuery().uniqueResult();
                             if (obj != null)
                             {
-                                session.beginTransaction();
+                                if (sessObj.getSecond()) {
+                                	session.beginTransaction();
+                                	opened = true;
+                                }
                                 BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
-                                opened = true;
                                 if (busRule != null)
                                 {
                                     obj = (DataModelObjBase)busRule.beforeDelete(obj, session);
@@ -5824,8 +5830,10 @@ public class UploadTable implements Comparable<UploadTable>
                                 {
                                     busRule.beforeDeleteCommit(obj, session);
                                 }
-                                session.commit();
-                                committed = true;
+                                if (sessObj.getSecond()) {
+                                	session.commit();
+                                	committed = true;
+                                }
                             }
                             else
                             {
