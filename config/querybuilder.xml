@@ -41,12 +41,21 @@
 	</table>
 	
     <table name="Agent">
-        <table name="Address" field="addresses"/>
+        <table name="Address" field="addresses">
+            <alias name="Agent" field="createdByAgent" />
+        	<alias name="Agent" field="modifiedByAgent" />
+        </table>
         <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
         </table>
-        <table name="AgentSpecialty" field="agentSpecialties" />
-        <table name="AgentGeography" field="agentGeographies" />
+        <table name="AgentSpecialty" field="agentSpecialties" >
+            <alias name="Agent" field="createdByAgent" />
+        	<alias name="Agent" field="modifiedByAgent" />
+        </table>
+        <table name="AgentGeography" field="agentGeographies" >
+            <alias name="Agent" field="createdByAgent" />
+        	<alias name="Agent" field="modifiedByAgent" />
+        </table>	
         <alias name="GroupPerson" field="members" />
         <alias name="GroupPerson" field="groups" />        
         <table name="AgentVariant" field="variants"/>
@@ -68,6 +77,8 @@
     <table name="Attachment">
         <table name="AttachmentMetadata" field="metadata"/>
         <table name="AttachmentImageAttribute" />
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
     </table>
    
     <table name="Author">
@@ -94,6 +105,8 @@
     	<alias name="Locality"/>
 	    <table name="Collector" field="collectors">
              <alias name="Agent"/>
+             <alias name="Agent" field="createdByAgent" />
+        	 <alias name="Agent" field="modifiedByAgent" />
         </table>
         <table name="CollectingEventAttachment" field="collectingEventAttachments">
             <alias name="Attachment"/>
@@ -422,7 +435,10 @@
     <table name="Locality">
     	<alias name="Geography"/>
         <table name="LocalityDetail" field="localityDetails"/>
-        <table name="LocalityNameAlias" field="localityNameAliass"/>
+        <table name="LocalityNameAlias" field="localityNameAliass">
+            <alias name="Agent" field="createdByAgent" />
+        	<alias name="Agent" field="modifiedByAgent" />
+        </table>
         <table name="LocalityAttachment" field="localityAttachments">
         	<alias name="Attachment"/>
         </table>
@@ -558,6 +574,8 @@
         	<table name="CommonNameTxCitation" field="citations">
         		<alias name="ReferenceWork"/>
         	</table>
+            <alias name="Agent" field="createdByAgent" />
+        	<alias name="Agent" field="modifiedByAgent" />
         </table>
         <table name="Determination" field="determinations" title="Determinations">
             <alias name="CollectionObject"/>
