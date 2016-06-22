@@ -96,7 +96,7 @@
  collectionobject.CollectionObjectID, 
  CatalogNumber, 
  CatalogedDate, 
- CatalogedDatePrecision, 
+ CatalogedDatePrecision,
  taxon.FullName, 
  %s 
  From collectionobject 
@@ -2046,6 +2046,18 @@ LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (pc.Disciplin
                 <captions>
                     <caption tableid="69" col="ReferenceWorkID" visible="false"/>
                     <caption tableid="69" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="131" tableid="89" name="ExsiccataSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Exsiccata">
+                <sql>
+                    <![CDATA[SELECT ExsiccataID, Title FROM exsiccata WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="89" col="ExsiccataID" visible="false"/>
+                    <caption tableid="89" col="Title"/>
                 </captions>
             </detailView>
         </table>
