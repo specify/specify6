@@ -561,6 +561,8 @@
     <table name="Taxon">
     	<!-- alias name="Taxon" field="parent" /-->
     	<alias name="Taxon" field="acceptedTaxon" />
+    	<alias name="Taxon" field="hybridParent1" />
+    	<alias name="Taxon" field="hybridParent2" />
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
         </table>

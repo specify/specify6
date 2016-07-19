@@ -3786,7 +3786,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         if  (Treeable.class.isAssignableFrom(tblInfo.getClassObj()))
         {
-        	if (alias.getField() != null && alias.getField().startsWith("accepted"))
+        	if (alias.getField() != null && (alias.getField().startsWith("accepted") || alias.getField().startsWith("hybrid")))
         	{
         		TableTree parent = alias.getParent();
         		int loop = 0;
@@ -3794,7 +3794,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		{
         			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
         			{
-        				if (parent.getField() != null && parent.getField().startsWith("accepted"))
+        				if (parent.getField() != null && (alias.getField().startsWith("accepted") || alias.getField().startsWith("hybrid")))
         				{
         					if(++loop > 1)
         					{
