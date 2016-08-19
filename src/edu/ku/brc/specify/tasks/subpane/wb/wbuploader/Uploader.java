@@ -63,10 +63,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -91,6 +87,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -137,6 +134,9 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
 
 /**
  * @author timo
@@ -1475,6 +1475,16 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     
+    public UploadTable getOneToOneParent(UploadTable ut) {
+    	if (ut.isOneToOneChild()) {
+    		for (UploadTable poop : uploadTables) {
+    			if (poop.getSpecialChildren() != null && poop.getSpecialChildren().indexOf(ut) >= 0) {
+    				return poop;
+    			}
+    		}
+    	} 
+        return null;
+    }
     /**
      * @param r
      * @return true is r is working
@@ -1852,9 +1862,31 @@ public class Uploader implements ActionListener, KeyListener
     		invalidColNums.add(iv.getCol());
     	}
     	
+//    	boolean matchAborted = false;
     	if (matchCol == -1)
     	{
-        	List<UploadTableMatchInfo> result = getRootTable().getMatchInfo(row, 0, invalidColNums);
+//    		if (invalidColNums.size() == 0) {
+//				for (UploadTable t : uploadTables) {
+//					try {
+//						if (theWb.getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS) {
+//							uploadRowSavelessly(t, rowUploading);
+//						} else {
+//							throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), UploaderException.ABORT_ROW);
+//						}
+//					} catch (UploaderException ex) {
+//						if (ex.getStatus() == UploaderException.ABORT_ROW) {
+//							ex.printStackTrace();
+//							abortRow(ex, rowUploading);
+//							matchAborted = true;
+//							break;
+//						}
+//						throw ex;
+//					}
+//				}
+//
+//    		}
+    		
+    		List<UploadTableMatchInfo> result = getRootTable().getMatchInfo(row, 0, invalidColNums);
         	return result;
     	}
     	
@@ -1914,7 +1946,7 @@ public class Uploader implements ActionListener, KeyListener
     	        {
     	        	t.setCheckMatchInfo(true);
     	        }
-    		} else if (CollectingEvent.class.isAssignableFrom(t.getTblClass())) 
+    		} else if (CollectingEvent.class.isAssignableFrom(t.getTblClass()) || CollectingTrip.class.isAssignableFrom(t.getTblClass())) 
     		{
     			if (AppPreferences.getRemote().getBoolean("WB_HighlightNewCERecs", false))
     	        {
@@ -5075,6 +5107,22 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    protected void uploadRowSavelessly(final UploadTable t, int row) throws UploaderException
+    {
+        loadRow(t, row);
+    	try
+        {
+            writeRowSavelessly(t, row);
+        }
+        catch (UploaderException ex)
+        {
+            //ex.getCause().printStackTrace();
+        	logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
+                    + Integer.toString(row) + ")");
+            throw ex;
+        }
+    }
+
     /**
      * @param f
      * @param val
@@ -5109,6 +5157,28 @@ public class Uploader implements ActionListener, KeyListener
         	}
         }
         attachImages(t, imagesToAttach);
+    }
+
+    /**
+     * @param t
+     * @throws UploaderException
+     * 
+     * writes data (if necessary) for t.
+     */
+    protected void writeRowSavelessly(final UploadTable t, int row) throws UploaderException
+    {
+        t.writeRowSavelessly(row);
+        /*Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
+        for (int i = imagesForRow.size() -1; i >= 0; i--)
+        {
+        	WorkbenchRowImage wri = imagesForRow.get(i);
+        	if (getAttachToTable(wri) == t)
+        	{
+        		imagesToAttach.add(wri);
+        		imagesForRow.remove(i);
+        	}
+        }
+        attachImages(t, imagesToAttach);*/
     }
 
     /**
@@ -5922,7 +5992,7 @@ public class Uploader implements ActionListener, KeyListener
         lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
         pane.add(lbl, BorderLayout.NORTH);
         JPanel lstPane = new JPanel(new BorderLayout());
-        JList lst = UIHelper.createList(structureErrors);
+        JList<?> lst = UIHelper.createList(structureErrors);
         lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
         lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
         lstPane.add(lst, BorderLayout.CENTER);

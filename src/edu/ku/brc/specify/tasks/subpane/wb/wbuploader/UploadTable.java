@@ -3310,6 +3310,13 @@ public class UploadTable implements Comparable<UploadTable>
 		return uf.getSetter() != null;
 	}
 	
+	protected UploadTable getOneToOneParent() {
+		UploadTable result = null;
+		if (uploader != null) {
+			result = uploader.getOneToOneParent(this);
+		}
+		return result;
+	}
 	/**
 	 * @param pte
 	 * @param recNum
@@ -3371,17 +3378,38 @@ public class UploadTable implements Comparable<UploadTable>
                 restrictedVals.add(new MatchRestriction(fldName, restriction, uf.getIndex()));
             }
         }
-        for (Vector<ParentTableEntry> ptes : parentTables)
-        {
-            for (ParentTableEntry pte : ptes)
-            {
-              if (!needToMatchChildren() || !pte.getImportTable().isOneToOneChild())
-              {
-              	DataModelObjBase parentParam = getParentParam(pte, recNum, overrideParentParams);//overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
+        if (isOneToOneChild() && !isZeroToOneMany()) {
+        	UploadTable oneToOneParent = getOneToOneParent();
+        	Method g = null;
+        	if (oneToOneParent != null) {
+        		for (List<ParentTableEntry> ptes : oneToOneParent.getParentTables()) {
+        			for (ParentTableEntry pte : ptes) {
+        				if (pte.getImportTable().equals(this)) {
+        					g = pte.getGetter();
+        					break;
+        				}
+        			}
+        			if (g != null) break;
+        		}
+        		DataModelObjBase prec = overrideParentParams.get(oneToOneParent);
+        		if (g != null && prec != null) {
+        			DataModelObjBase obj = (DataModelObjBase)g.invoke(prec);
+        			if (obj != null) {
+        				addRestriction(critter, "id", obj.getId(), true);
+        			}
+        		}
+        	}
+        }
+        for (Vector<ParentTableEntry> ptes : parentTables) {
+            for (ParentTableEntry pte : ptes) {
+              if (!needToMatchChildren() || !pte.getImportTable().isOneToOneChild()) {
+              	  if (!pte.getImportTable().isOneToOneChild()) {
+              		  DataModelObjBase parentParam = getParentParam(pte, recNum, overrideParentParams);//overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
               			//: pte.getImportTable().getParentRecord(
                         //          recNum, this);
-              	restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
-                      critter, pte.getPropertyName(), parentParam, false), -1));
+              		  restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
+              				  critter, pte.getPropertyName(), parentParam, false), -1));
+              	  }
               }
             }
         }
@@ -3630,7 +3658,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws NoSuchMethodException
      */
     protected List<ParentMatchInfo> getMatchInfoInternal(int row, int recNum, 
-    		Set<Integer> invalidColNums, HashMap<UploadTable, DataModelObjBase> matchChildrenParents) throws UploaderException,
+    		Set<Integer> invalidColNums, List<Pair<UploadTable, List<DataModelObjBase>>> matchChildrenParents) throws UploaderException,
     		InvocationTargetException, IllegalAccessException, ParseException,
     		NoSuchMethodException, InstantiationException, SQLException
     {
@@ -3643,11 +3671,13 @@ public class UploadTable implements Comparable<UploadTable>
     	int adjustedRecNum = uploadFields.size() == 1 ? 0 : recNum;
     	//XXX assuming that an upload is NOT in progress!!
     	wbCurrentRow = row;
-    	
+
     	List<ParentMatchInfo> result = new Vector<ParentMatchInfo>();
     	Vector<List<ParentMatchInfo>> parentMatches = new Vector<List<ParentMatchInfo>>();
     	Vector<List<ParentMatchInfo>> childMatches = new Vector<List<ParentMatchInfo>>();
-    	List<UploadTable> childTables = new Vector<UploadTable>(specialChildren);
+    	List<UploadTable> childTables = new ArrayList<UploadTable>(specialChildren);
+
+
 		if (this instanceof UploadTableTree && parentTables.size() == 0) {
 			DataModelObjBase p = getParentRecord(recNum, this /*only the type of the 2nd param is relevant*/);
 			List<DataModelObjBase> m = new ArrayList<DataModelObjBase>();
@@ -3662,12 +3692,14 @@ public class UploadTable implements Comparable<UploadTable>
 					if (!pte.getImportTable().specialChildren.contains(this)
 							|| !pte.getImportTable().needToMatchChild(tblClass)) {
 						if (pte.getImportTable().isOneToOneChild()) {
-							childTables.add(pte.getImportTable());
+							if (childTables.indexOf(pte.getImportTable()) == -1) {
+								childTables.add(pte.getImportTable());
+							}
 						} else {
 							parentMatches.add(pte.getImportTable()
 									.getMatchInfoInternal(row, adjustedRecNum,
 											invalidColNums,
-											matchChildrenParents));
+											null));
 						}
 					}
 				}
@@ -3679,55 +3711,60 @@ public class UploadTable implements Comparable<UploadTable>
     	boolean blankParentage = true;
     	boolean blank = isBlankRow(row, uploader.getUploadData(), adjustedRecNum);
     	boolean stopAlready = false;
-		Vector<DataModelObjBase> matches = new Vector<DataModelObjBase>();
+		ArrayList<DataModelObjBase> matches = new ArrayList<DataModelObjBase>();
+		ArrayList<DataModelObjBase> myMatches = new ArrayList<DataModelObjBase>();
 		//XXX need to include matchChildrenParents in parentParams 
-		for (List<ParentMatchInfo> pm : parentMatches)
-		{
-			if (doMatch && pm.size() > 0)
-			{
+		for (List<ParentMatchInfo> pm : parentMatches) {
+			if (doMatch && pm.size() > 0) {
 				ParentMatchInfo nearest = pm.get(pm.size() - 1);
 				int b = 2;
-				while (pm.size() - b >= 0 && nearest.isSkipped() && !nearest.getStoppedAlready())
-				{
+				while (pm.size() - b >= 0 && nearest.isSkipped() && !nearest.getStoppedAlready()) {
 					nearest = pm.get(pm.size() - b++);
 				}
 				blankParentage &= nearest != null & nearest.isBlank();
 				if (nearest.getMatches().size() == 1
-						|| (!nearest.getStoppedAlready() && nearest.getMatches().size() == 0 && (nearest.isBlank() || nearest.isSkipped())))
-				{
+						|| (!nearest.getStoppedAlready() && nearest.getMatches().size() == 0 && (nearest.isBlank() || nearest.isSkipped()))) {
 					DataModelObjBase match = nearest.getMatches().size() == 1 ? nearest
 							.getMatches().get(0)
 							: null;
 							stopAlready = this instanceof UploadTableTree && nearest.getMatches().size() == 0 && (nearest.isBlank() || nearest.isSkipped());
 					parentParams.put(nearest.getTable(), match);
-				} else
-				{
+				} else {
 					doMatch = false;
 					stopAlready = nearest.getStoppedAlready();
 				}
 			}
 			result.addAll(pm);
 		}
-		if (doMatch && !blank)
-		{
-			for (Vector<UploadField> ufs : uploadFields)
-			{
-				for (UploadField uf : ufs)
-				{
-	                if (uf.getIndex() != -1)
-	                {
+		if (doMatch && (!blank || !blankParentage)) {
+			for (Vector<UploadField> ufs : uploadFields) {
+				for (UploadField uf : ufs) {
+	                if (uf.getIndex() != -1) {
 	                	uf.setValue(uploader.getUploadData().get(row, uf.getIndex()));
 	                }
 				}
 			}
-			skipChildrenMatching.set(true);
-			try
-			{
-				findMatch(adjustedRecNum, false, matches, parentParams);
+			//if (!this.getTblClass().equals(CollectingEvent.class)) {
+				skipChildrenMatching.set(true);
+			//}
+			try {
+				if (matchChildrenParents == null || matchChildrenParents.size() == 0) {
+					findMatch(adjustedRecNum, false, myMatches, parentParams);
+				} else {
+					//XXX assuming matchChildrenParents is only being used for ...Attribute tables and will only have one item
+					Pair<UploadTable, List<DataModelObjBase>> mp = matchChildrenParents.get(0);
+					for (DataModelObjBase p : mp.getSecond()) {
+						parentParams.put(mp.getFirst(), p);
+						findMatch(adjustedRecNum, false, myMatches, parentParams);
+						parentParams.remove(mp.getFirst());
+					}
+				}
 				matched = true;
 			} finally
 			{
-				skipChildrenMatching.set(false);
+				//if (!this.getTblClass().equals(CollectingEvent.class)) {
+					skipChildrenMatching.set(false);
+				//}
 			}
 	    	
 	    	
@@ -3735,15 +3772,19 @@ public class UploadTable implements Comparable<UploadTable>
 		}
 		
 		//XXX add this table to matchChildrenParents
-		if (matchChildrenParents == null)
-		{
-			
+		//taking advantage of this mysterious structure to deal with ...Attribute tbls.
+		if (matchChildrenParents == null) {
+			matchChildrenParents = new ArrayList<Pair<UploadTable, List<DataModelObjBase>>>();
 		}
-    	for (UploadTable ut : childTables)
-    	{
-    		for (int rc = 0; rc < ut.getUploadFields().size(); rc++)
-    		{
+    	for (UploadTable ut : childTables) {
+    		for (int rc = 0; rc < ut.getUploadFields().size(); rc++) {
+    			if (!this.tblClass.equals(CollectionObject.class)) {
+    				matchChildrenParents.add(new Pair<UploadTable, List<DataModelObjBase>>(this, myMatches));
+    			}
     			childMatches.add(ut.getMatchInfoInternal(row, rc, invalidColNums, matchChildrenParents));
+    			if (!this.tblClass.equals(CollectionObject.class)) {
+    				matchChildrenParents.remove(matchChildrenParents.size()-1);
+    			}
     		}
     	}
     	//XXX what the hell to do with childMatches??? Need to add them to result to get Agent, taxon matches, but how to 
@@ -3753,24 +3794,98 @@ public class UploadTable implements Comparable<UploadTable>
 		//it to findMatch for the children...
 		// XXX this is not the final word on matchchildren matches
     	
+    	
+    	//XXX the new way of handling child matches...
+    	if (!this.tblClass.equals(CollectionObject.class) && childMatches.size() > 0) {
+    		List<DataModelObjBase> keeperMatches = new ArrayList<DataModelObjBase>(myMatches);
+    		for (DataModelObjBase mine : myMatches) {
+    			boolean go = true;
+    			for (List<ParentMatchInfo> cm : childMatches) {
+    				for (ParentMatchInfo pmi : cm) {
+    					try {
+    						ParentTableEntry pte = findParentTableEntry(pmi.getTable());
+    						if (pte != null) {
+    							//System.out.println(pte.getImportTable());
+    							Method getter = pte.getGetter();
+    							boolean invokeMe = getter.getDeclaringClass().equals(this.getTblClass());
+    							if (pmi.getMatches().size() == 0) {
+    								if (invokeMe) {
+    									go = pmi.isBlank() ? getter.invoke(mine) == null : false;
+    								} else {
+    									//System.out.println("one-to-many count check");
+    									String sql = "select count(*) from " + pmi.getTable().getTable().getTableInfo().getName() + " where " + this.getTable().getTableInfo().getPrimaryKeyName() + " = " + mine.getId();
+    									go = pmi.isBlank() ? BasicSQLUtils.getCount(sql) == 0 : false;
+    								}
+    							} else {
+    								for (DataModelObjBase theirs : pmi.getMatches()) {
+    									DataModelObjBase objA = (DataModelObjBase)(invokeMe ? getter.invoke(mine) : getter.invoke(theirs));
+    									DataModelObjBase objB = invokeMe ? theirs : mine;
+    									if (objA != null && objB != null && objA.getId().equals(objB.getId())) {
+    										//System.out.println("  match (" + invokeMe +")");
+    										//all is well
+    									} else {
+    										//System.out.println("  no match (" + invokeMe + ")");
+    										go = false;
+    										break;
+    									}
+    								}
+    							}
+    						} else {
+    							//System.out.println("no pte; wtf");
+    							//whatever
+    						}
+    						if (!go) {
+    							//childMatchesForLosers.add(cm);
+    							break;
+    						}
+    					} catch (Exception e) {
+    						e.printStackTrace();
+    					}
+    				}
+    				if (!go) {
+    					keeperMatches.remove(mine);
+    					break;
+    				}
+    			}
+    		}
+    	
+    		//remove incomplete matches
+    		for (int m = myMatches.size() - 1; m >= 0; m--) {
+    			if (keeperMatches.indexOf(myMatches.get(m)) == -1) {
+    				myMatches.remove(m);
+    			}
+    		}
+		
+    		//if no matches, we know all children are also unmatched
+    		//technically should only clear/remove matches stemming from matches removed above, but... too much work for too little benefit
+    		if (myMatches.size() == 0) {
+    			for (List<ParentMatchInfo> cmis : childMatches) {
+    				for (ParentMatchInfo cmi : cmis) {
+    					UploadTable cmit = cmi.getTable();
+    					if (cmit.isMatchChild() || cmit.isOneToOneChild() || cmit.isZeroToOneMany() || specialChildren.indexOf(cmit) >= 0) {
+    						cmi.getMatches().clear();
+    					}
+    				}
+    			}
+    		}
+    		
+    		
+    	}
+    	
+		matches.addAll(myMatches);
+
+    	//I think this loop eliminates chains of no-match indications??
     	boolean invalid = containsInvalidCol(adjustedRecNum, invalidColNums);
-    	for (List<ParentMatchInfo> cm : childMatches)
-		{
-			if (!invalid && matched)
-			{
+    	for (List<ParentMatchInfo> cm : childMatches) {
+			if (!invalid && matched) {
 				result.addAll(cm);
-			} else
-			{
-				for (int i = cm.size()-1; i > -1; i--)
-				{
+			} else {
+				for (int i = cm.size()-1; i > -1; i--) {
 					ParentMatchInfo mi = cm.get(i);
-					if (mi.getTable().isOneToOneChild())
-					{
-						if (invalid)
-						{
+					if (mi.getTable().isOneToOneChild()) {
+						if (invalid) {
 							cm.remove(i);
-						} else if (!matched)
-						{
+						} else if (!matched) {
 							mi.setIsSkipped(true);
 						}
 					}
@@ -3778,7 +3893,7 @@ public class UploadTable implements Comparable<UploadTable>
 				result.addAll(cm);
 			}
 		}
-    	
+     	
     	if (!containsInvalidCol(adjustedRecNum, invalidColNums))
     	{
 //    		if (!matched)
@@ -3800,6 +3915,22 @@ public class UploadTable implements Comparable<UploadTable>
     	return result;
     }
     
+    /**
+     * @param ut
+     * @return
+     */
+    protected ParentTableEntry findParentTableEntry(UploadTable ut) {
+    	Vector<Vector<ParentTableEntry>> ptes = ut.isOneToOneChild() && !ut.isZeroToOneMany() ? this.parentTables : ut.parentTables;
+    	UploadTable matchUt = ut.isOneToOneChild() && !ut.isZeroToOneMany() ? ut : this;
+    	for (Vector<ParentTableEntry> pte : ptes) {
+    		for (ParentTableEntry p : pte) {
+    			if (p.getImportTable() == matchUt) {
+    				return p;
+    			}
+    		}
+    	}
+    	return null;
+    }
     /**
      * @param row
      * @param recNum
@@ -3862,7 +3993,7 @@ public class UploadTable implements Comparable<UploadTable>
         // if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false;
         // }
         
-        if (skipMatching && !matchRecordId)
+        if (skipMatching && !matchRecordId && (overrideParentParams == null || overrideParentParams.size() == 0))
         {
             return false;
         }
@@ -4163,13 +4294,13 @@ public class UploadTable implements Comparable<UploadTable>
     {
         if ("latlongtype".equalsIgnoreCase(fld.getField().getName())) return false;
 
-     	boolean isRequired = fld.isRequired();
-     	//Special case for PrepType
-     	DBFieldInfo fldInfo = fld.getField().getFieldInfo();
-     	if (fldInfo != null && fldInfo.getTableInfo().getTableId() == PrepType.getClassTableId() && fldInfo.getName().equals("name"))
-     	{
-     		isRequired = true;
-     	}
+//     	boolean isRequired = fld.isRequired();
+//     	//Special case for PrepType
+//     	DBFieldInfo fldInfo = fld.getField().getFieldInfo();
+//     	if (fldInfo != null && fldInfo.getTableInfo().getTableId() == PrepType.getClassTableId() && fldInfo.getName().equals("name"))
+//     	{
+//     		isRequired = true;
+//     	}
         boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
         if (blankButRequired && tblClass.equals(Locality.class) && fld.getField().getName().equalsIgnoreCase("LatLongType"))
         {
@@ -5229,6 +5360,10 @@ public class UploadTable implements Comparable<UploadTable>
 		}
     }
     
+    /**
+     * @param row
+     * @throws UploaderException
+     */
     protected void writeRow(int row) throws UploaderException
     {
         wbCurrentRow = row;
@@ -5242,6 +5377,23 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
     
+    /**
+     * @param row
+     * @throws UploaderException
+     */
+    protected void writeRowSavelessly(int row) throws UploaderException
+    {
+        wbCurrentRow = row;
+        if (!skipRow)
+        {
+            writeRowOrNot(true, false);
+        }
+        else
+        {
+            skipRow = false;
+        }
+    }
+
     /**
      * Searches for matching record in database. If match is found it is set to be the current
      * record. If no match then a record is initialized and populated and written to the database.
@@ -5329,6 +5481,9 @@ public class UploadTable implements Comparable<UploadTable>
                             	uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow, recNum, autoAssignedVal, true, 
                             			null, null)); //could clone rec before setFields call and save it here?? Leaving tableName arg null as it seems irrelevant.	
                             }
+                        }
+                        if (doNotWrite && isNewRecord && !doSkipMatch) {
+                        	System.out.println("new " + this.table.getName() + " record");
                         }
                         setCurrentRecord(rec, recNum);
                         finishMatching(rec);
