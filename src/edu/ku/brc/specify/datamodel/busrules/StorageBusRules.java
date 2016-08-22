@@ -110,6 +110,7 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
         {
                 "preparation", "StorageID",
                 "container",   "StorageID",
+                "storageattachment", "StorageID",
                 "storage",    "AcceptedID"
         };
 

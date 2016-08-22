@@ -226,6 +226,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 "determination", "PreferredTaxonID",
                 "collectingeventattribute", "HostTaxonID",
                 "taxoncitation", "TaxonID", 
+                "taxonattachment", "TaxonID",
                 "taxon",         "HybridParent1ID",
                 "taxon",         "HybridParent2ID",
                 "taxon",         "AcceptedID"
