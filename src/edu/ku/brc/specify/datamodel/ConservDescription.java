@@ -511,4 +511,13 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         
         return obj;
     }
+
+	@Override
+	public void forceLoad() {
+		// TODO Auto-generated method stub
+		super.forceLoad();
+		events.size();
+	}
+    
+    
 }
