@@ -734,6 +734,22 @@ public class Scriptlet extends JRDefaultScriptlet
         }
     }
 
+    public String deaggregateFirst(final String aggregated, final String separator)
+    {
+        String[] split = StringUtils.split(aggregated, separator, 2);
+        if (split == null) return "";
+        return split[0];
+    }
+
+    public String deaggregateSecondary(final String aggregated, final String separator)
+    {
+        String [] split = StringUtils.split(aggregated, separator, 2);
+        if (split == null) return "";
+        if (split.length < 2) return "";
+        return split[1];
+    }
+
+
     /**
      * Builds the shipped to agent's name string.
      * @param firstName
