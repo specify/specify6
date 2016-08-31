@@ -434,7 +434,10 @@
     
     <table name="Locality">
     	<alias name="Geography"/>
-        <table name="LocalityDetail" field="localityDetails"/>
+        <table name="LocalityDetail" field="localityDetails">
+      		<alias name="Agent" field="createdByAgent" />
+      		<alias name="Agent" field="modifiedByAgent" />
+        </table>
         <table name="LocalityNameAlias" field="localityNameAliass">
             <alias name="Agent" field="createdByAgent" />
         	<alias name="Agent" field="modifiedByAgent" />
