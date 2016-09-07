@@ -135,6 +135,8 @@ public class DatabaseLoginPanel extends JTiledPanel
     private static final Logger          log            = Logger.getLogger(DatabaseLoginPanel.class);
     private static final String LOGIN_PORT = "login.port";
     
+    protected String                    expandExtraPanelName = "EXPAND_LOGIN";
+
     // Form Stuff
 
     protected JTextField                 username;
@@ -785,6 +787,11 @@ public class DatabaseLoginPanel extends JTiledPanel
         {
             skinItem.popFG("Label.foreground");
         }
+        
+        if (AppPreferences.getLocalPrefs().getBoolean(expandExtraPanelName, false)) {
+            extraPanel.setVisible(true);
+            moreBtn.setIcon(downImgIcon);
+        }
     }
     
     /**
@@ -1007,6 +1014,9 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected void save()
     {
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+
+        //boolean expandForWarrenBrown = prevSelection != null && !prevSelection.equals(selectedItem.toString());
+    	localPrefs.putBoolean(expandExtraPanelName, extraPanel.isVisible());
 
         if (databases != null) databases.saveControlData();
         if (servers != null) servers.saveControlData();

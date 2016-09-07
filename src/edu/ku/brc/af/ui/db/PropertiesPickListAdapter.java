@@ -304,7 +304,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
 
         if (selectedItem != null)
         {
-            AppPreferences.getLocalPrefs().put(prefSelectedName, selectedItem.toString());
+        	AppPreferences.getLocalPrefs().put(prefSelectedName, selectedItem.toString());
             log.debug("["+prefSelectedName+"]["+selectedItem.toString()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
