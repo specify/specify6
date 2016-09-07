@@ -62,7 +62,8 @@ import edu.ku.brc.dbsupport.DBConnection;
 @Table(name = "preparation")
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
-        @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"}),
+    	@Index (name="PrepGuidIDX", columnNames={"GUID"})
     })
 @SuppressWarnings("serial")
 public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, 
@@ -85,6 +86,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      status;
     protected String                      sampleNumber;
     protected String                      description;             // from Specify 5
+    protected String                      guid;
     
     protected Float                       number1;
     protected Float                       number2;
@@ -147,6 +149,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         status       = null;
         sampleNumber = null;
         description  = null;
+        guid         = null;
         
         number1      = null;
         number2      = null;
@@ -173,6 +176,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         exchangeInPreps  = new HashSet<ExchangeInPrep>();
         exchangeOutPreps = new HashSet<ExchangeOutPrep>();
 
+        hasGUIDField = true;
+        setGUID();
     }
     // End Initializer
 
@@ -397,6 +402,21 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
+
+    /**
+    *
+    */
+   @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = false, length = 128)
+   public String getGuid() {
+       return this.guid;
+   }
+
+   /**
+    * @param guid
+    */
+   public void setGuid(String guid) {
+       this.guid = guid;
+   }
 
     /**
      * 

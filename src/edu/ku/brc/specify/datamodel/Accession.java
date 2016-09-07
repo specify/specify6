@@ -72,14 +72,17 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected String                      accessionCondition;
     protected BigDecimal                  totalValue;
     
-    protected String                      text1;
-    protected String                      text2;
-    protected String                      text3;
-    protected Float                       number1;
-    protected Float                       number2;
-    protected String                      remarks;
-    protected Boolean                     yesNo1;
-    protected Boolean                     yesNo2;
+	protected String text1;
+	protected String text2;
+	protected String text3;
+	protected Float number1;
+	protected Float number2;
+	protected String remarks;
+	protected Boolean yesNo1;
+	protected Boolean yesNo2;
+	protected Integer integer1;
+	protected Integer integer2;
+	protected Integer integer3;
     
     protected Division                    division;
     protected AddressOfRecord             addressOfRecord;
@@ -128,6 +131,9 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         remarks = null;
         yesNo1 = null;
         yesNo2 = null;
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
         division                = null;
         addressOfRecord         = null;
         collectionObjects       = new HashSet<CollectionObject>();
@@ -352,7 +358,53 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         this.text3 = text3;
     }
 
+    
     /**
+	 * @return the integer1
+	 */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger1() {
+		return integer1;
+	}
+
+	/**
+	 * @param integer1 the integer1 to set
+	 */
+	public void setInteger1(Integer integer1) {
+		this.integer1 = integer1;
+	}
+
+	/**
+	 * @return the integer2
+	 */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger2() {
+		return integer2;
+	}
+
+	/**
+	 * @param integer2 the integer2 to set
+	 */
+	public void setInteger2(Integer integer2) {
+		this.integer2 = integer2;
+	}
+
+	/**
+	 * @return the integer3
+	 */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger3() {
+		return integer3;
+	}
+
+	/**
+	 * @param integer3 the integer3 to set
+	 */
+	public void setInteger3(Integer integer3) {
+		this.integer3 = integer3;
+	}
+
+	/**
      *      * User definable
      */
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)

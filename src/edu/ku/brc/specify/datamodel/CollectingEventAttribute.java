@@ -74,6 +74,16 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
     protected Float number11;
     protected Float number12;
     protected Float number13;
+    protected Integer integer1;
+    protected Integer integer2;
+    protected Integer integer3;
+    protected Integer integer4;
+    protected Integer integer5;
+    protected Integer integer6;
+    protected Integer integer7;
+    protected Integer integer8;
+    protected Integer integer9;
+    protected Integer integer10;
     
     protected String remarks;
     
@@ -141,6 +151,156 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
     public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }
+
+    /**
+	 * @return the integer1
+	 */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger1() {
+		return integer1;
+	}
+
+	/**
+	 * @param integer1 the integer1 to set
+	 */
+	public void setInteger1(Integer integer1) {
+		this.integer1 = integer1;
+	}
+
+	/**
+	 * @return the integer2
+	 */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger2() {
+		return integer2;
+	}
+
+	/**
+	 * @param integer2 the integer2 to set
+	 */
+	public void setInteger2(Integer integer2) {
+		this.integer2 = integer2;
+	}
+
+	/**
+	 * @return the integer3
+	 */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger3() {
+		return integer3;
+	}
+
+	/**
+	 * @param integer3 the integer3 to set
+	 */
+	public void setInteger3(Integer integer3) {
+		this.integer3 = integer3;
+	}
+
+	/**
+	 * @return the integer4
+	 */
+    @Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger4() {
+		return integer4;
+	}
+
+	/**
+	 * @param integer4 the integer4 to set
+	 */
+	public void setInteger4(Integer integer4) {
+		this.integer4 = integer4;
+	}
+
+	/**
+	 * @return the integer5
+	 */
+    @Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger5() {
+		return integer5;
+	}
+
+	/**
+	 * @param integer5 the integer5 to set
+	 */
+	public void setInteger5(Integer integer5) {
+		this.integer5 = integer5;
+	}
+
+	/**
+	 * @return the integer6
+	 */
+    @Column(name = "Integer6", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger6() {
+		return integer6;
+	}
+
+	/**
+	 * @param integer6 the integer6 to set
+	 */
+	public void setInteger6(Integer integer6) {
+		this.integer6 = integer6;
+	}
+
+	/**
+	 * @return the integer7
+	 */
+    @Column(name = "Integer7", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger7() {
+		return integer7;
+	}
+
+	/**
+	 * @param integer7 the integer7 to set
+	 */
+	public void setInteger7(Integer integer7) {
+		this.integer7 = integer7;
+	}
+
+	/**
+	 * @return the integer8
+	 */
+    @Column(name = "Integer8", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger8() {
+		return integer8;
+	}
+
+	/**
+	 * @param integer8 the integer8 to set
+	 */
+	public void setInteger8(Integer integer8) {
+		this.integer8 = integer8;
+	}
+
+	/**
+	 * @return the integer9
+	 */
+    @Column(name = "Integer9", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger9() {
+		return integer9;
+	}
+
+	/**
+	 * @param integer9 the integer9 to set
+	 */
+	public void setInteger9(Integer integer9) {
+		this.integer9 = integer9;
+	}
+
+	/**
+	 * @return the integer10
+	 */
+    @Column(name = "Integer10", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger10() {
+		return integer10;
+	}
+
+	/**
+	 * @param integer10 the integer10 to set
+	 */
+	public void setInteger10(Integer integer10) {
+		this.integer10 = integer10;
+	}
 
     @Column(name = "Text17", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getText17()
@@ -403,6 +563,16 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         yesNo3 = null;
         yesNo4 = null;
         yesNo5 = null;
+        integer1 = null;
+        integer2 = null;
+        integer3 = null;
+        integer4 = null;
+        integer5 = null;
+        integer6 = null;
+        integer7 = null;
+        integer8 = null;
+        integer9 = null;
+        integer10 = null;
         hostTaxon = null;
 
         collectingEvents = new HashSet<CollectingEvent>();

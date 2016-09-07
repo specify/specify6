@@ -108,6 +108,11 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                text3;
     protected String                text4;
     protected String                text5;
+    protected Boolean               yesNo1;
+    protected Boolean               yesNo2;
+    protected Boolean               yesNo3;
+    protected Boolean               yesNo4;
+    protected Boolean               yesNo5;
     protected Byte                  sgrStatus;
     protected PaleoContext			paleoContext;
     
@@ -185,6 +190,11 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         text3	   = null;
         text4      = null;
         text5      = null;
+        yesNo1     = null;
+        yesNo2     = null;
+        yesNo3     = null;
+        yesNo4     = null;
+        yesNo5     = null;
         
         // Source Data for Formatting
         srcLatLongUnit = 0;          // matches LATLON.DDDDDD
@@ -791,7 +801,83 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         this.text5 = text5;
     }
 
+    
     /**
+	 * @return the yesNo1
+	 */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo1() {
+		return yesNo1;
+	}
+
+	/**
+	 * @param yesNo1 the yesNo1 to set
+	 */
+	public void setYesNo1(Boolean yesNo1) {
+		this.yesNo1 = yesNo1;
+	}
+
+	/**
+	 * @return the yesNo2
+	 */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo2() {
+		return yesNo2;
+	}
+
+	/**
+	 * @param yesNo2 the yesNo2 to set
+	 */
+	public void setYesNo2(Boolean yesNo2) {
+		this.yesNo2 = yesNo2;
+	}
+
+	/**
+	 * @return the yesNo3
+	 */
+    @Column(name="YesNo3",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo3() {
+		return yesNo3;
+	}
+
+	/**
+	 * @param yesNo3 the yesNo3 to set
+	 */
+	public void setYesNo3(Boolean yesNo3) {
+		this.yesNo3 = yesNo3;
+	}
+
+	/**
+	 * @return the yesNo4
+	 */
+    @Column(name="YesNo4",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo4() {
+		return yesNo4;
+	}
+
+	/**
+	 * @param yesNo4 the yesNo4 to set
+	 */
+	public void setYesNo4(Boolean yesNo4) {
+		this.yesNo4 = yesNo4;
+	}
+
+	/**
+	 * @return the yesNo5
+	 */
+    @Column(name="YesNo5",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo5() {
+		return yesNo5;
+	}
+
+	/**
+	 * @param yesNo5 the yesNo5 to set
+	 */
+	public void setYesNo5(Boolean yesNo5) {
+		this.yesNo5 = yesNo5;
+	}
+
+	/**
      * * Indicates whether this record can be viewed - by owner, by institution, or by all
      */
     @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true)

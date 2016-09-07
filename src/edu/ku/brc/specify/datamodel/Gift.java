@@ -78,6 +78,9 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     protected Float                   number2;
     protected Boolean                 yesNo1;
     protected Boolean                 yesNo2;
+	protected Integer integer1;
+	protected Integer integer2;
+	protected Integer integer3;
     
     protected AddressOfRecord         addressOfRecord;
     protected Set<GiftAgent>          giftAgents;
@@ -126,6 +129,9 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
         text2           = null;
         number1         = null;
         number2         = null;
+		integer1 = null;
+		integer2 = null;
+		integer3 = null;
 
         yesNo1          = null;
         yesNo2          = null;
@@ -287,6 +293,51 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     public void setText2(String text2) {
         this.text2 = text2;
     }
+
+    /**
+	 * @return the integer1
+	 */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger1() {
+		return integer1;
+	}
+
+	/**
+	 * @param integer1 the integer1 to set
+	 */
+	public void setInteger1(Integer integer1) {
+		this.integer1 = integer1;
+	}
+
+	/**
+	 * @return the integer2
+	 */
+    @Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger2() {
+		return integer2;
+	}
+
+	/**
+	 * @param integer2 the integer2 to set
+	 */
+	public void setInteger2(Integer integer2) {
+		this.integer2 = integer2;
+	}
+
+	/**
+	 * @return the integer3
+	 */
+    @Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger3() {
+		return integer3;
+	}
+
+	/**
+	 * @param integer3 the integer3 to set
+	 */
+	public void setInteger3(Integer integer3) {
+		this.integer3 = integer3;
+	}
 
     /**
      *      * User definable
