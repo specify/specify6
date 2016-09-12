@@ -73,6 +73,12 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected String text16;
     protected String text17;
     protected String text18;
+    protected String text19;
+    protected String text20;
+    protected String text21;
+    protected String text22;
+    protected String text23;
+    protected String text24;
     protected Float number11;
     protected Float number12;
     protected Float number13;
@@ -181,6 +187,12 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         text16   = null;
         text17   = null;
         text18   = null;
+        text19   = null;
+        text20   = null;
+        text21   = null;
+        text22   = null;
+        text23   = null;
+        text24   = null;
         number11 = null;
         number12 = null;
         number13 = null;
@@ -451,7 +463,103 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     }
 
     
-    @Column(name = "Number42", unique = false, nullable = true, insertable = true, updatable = true)
+    /**
+	 * @return the text19
+	 */
+    @Lob
+    @Column(name = "Text19", length = 65535)
+	public String getText19() {
+		return text19;
+	}
+
+	/**
+	 * @param text19 the text19 to set
+	 */
+	public void setText19(String text19) {
+		this.text19 = text19;
+	}
+
+	/**
+	 * @return the text20
+	 */
+    @Lob
+    @Column(name = "Text20", length = 65535)
+	public String getText20() {
+		return text20;
+	}
+
+	/**
+	 * @param text20 the text20 to set
+	 */
+	public void setText20(String text20) {
+		this.text20 = text20;
+	}
+
+	/**
+	 * @return the text21
+	 */
+    @Lob
+    @Column(name = "Text21", length = 65535)
+	public String getText21() {
+		return text21;
+	}
+
+	/**
+	 * @param text21 the text21 to set
+	 */
+	public void setText21(String text21) {
+		this.text21 = text21;
+	}
+
+	/**
+	 * @return the text22
+	 */
+    @Lob
+    @Column(name = "Text22", length = 65535)
+	public String getText22() {
+		return text22;
+	}
+
+	/**
+	 * @param text22 the text22 to set
+	 */
+	public void setText22(String text22) {
+		this.text22 = text22;
+	}
+
+	/**
+	 * @return the text23
+	 */
+    @Lob
+    @Column(name = "Text23", length = 65535)
+	public String getText23() {
+		return text23;
+	}
+
+	/**
+	 * @param text23 the text23 to set
+	 */
+	public void setText23(String text23) {
+		this.text23 = text23;
+	}
+
+	/**
+	 * @return the text24
+	 */
+    @Lob
+    @Column(name = "Text24", length = 65535)
+	public String getText24() {
+		return text24;
+	}
+
+	/**
+	 * @param text24 the text24 to set
+	 */
+	public void setText24(String text24) {
+		this.text24 = text24;
+	}
+
+	@Column(name = "Number42", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber42()
     {
         return number42;

@@ -74,6 +74,9 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 
     protected Integer               collectingEventId;
     protected String                stationFieldNumber;
+    protected String                stationFieldNumberModifier1;
+    protected String                stationFieldNumberModifier2;
+    protected String                stationFieldNumberModifier3;
     protected String                method;
     protected String                verbatimDate;
     protected Calendar              startDate;
@@ -100,6 +103,9 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected Integer				reservedInteger4;
     protected String				text1;
     protected String				text2;
+    protected String				text3;	
+    protected String				text4;	
+    protected String				text5;	
     protected String				reservedText1;
     protected String                reservedText2;
     protected PaleoContext			paleoContext;
@@ -134,6 +140,9 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         
         collectingEventId = null;
         stationFieldNumber = null;
+        stationFieldNumberModifier1 = null;
+        stationFieldNumberModifier2 = null;
+        stationFieldNumberModifier3 = null;
         method = null;
         verbatimDate = null;
         startDate = null;
@@ -155,6 +164,9 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         reservedInteger4	  = null;
         text1				  = null;
         text2                 = null;
+        text3 = null;
+        text4 = null;
+        text5 = null;
         reservedText1         = null;
         reservedText2         = null;
         collectionObjects            = new HashSet<CollectionObject>();
@@ -221,7 +233,53 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         this.stationFieldNumber = stationFieldNumber;
     }
 
+    
     /**
+	 * @return the stationFieldNumberModifier1
+	 */
+    @Column(name = "StationFieldNumberModifier1", length = 50)
+	public String getStationFieldNumberModifier1() {
+		return stationFieldNumberModifier1;
+	}
+
+	/**
+	 * @param stationFieldNumberModifier1 the stationFieldNumberModifier1 to set
+	 */
+	public void setStationFieldNumberModifier1(String stationFieldNumberModifier1) {
+		this.stationFieldNumberModifier1 = stationFieldNumberModifier1;
+	}
+
+	/**
+	 * @return the stationFieldNumberModifier2
+	 */
+	@Column(name = "StationFieldNumberModifier2", length = 50)
+	public String getStationFieldNumberModifier2() {
+		return stationFieldNumberModifier2;
+	}
+
+	/**
+	 * @param stationFieldNumberModifier2 the stationFieldNumberModifier2 to set
+	 */
+	public void setStationFieldNumberModifier2(String stationFieldNumberModifier2) {
+		this.stationFieldNumberModifier2 = stationFieldNumberModifier2;
+	}
+
+	/**
+	 * @return the stationFieldNumberModifier3
+	 */
+	@Column(name = "StationFieldNumberModifier3", length = 50)
+	public String getStationFieldNumberModifier3() {
+		return stationFieldNumberModifier3;
+	}
+
+	/**
+	 * @param stationFieldNumberModifier3 the stationFieldNumberModifier3 to set
+	 */
+	public void setStationFieldNumberModifier3(String stationFieldNumberModifier3) {
+		this.stationFieldNumberModifier3 = stationFieldNumberModifier3;
+	}
+
+	/**
 	 * @return the     /**
      *
      */
@@ -326,6 +384,54 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
 	 */
 	public void setText2(String text2) {
 		this.text2 = text2;
+	}
+
+    /**
+	 * @return the text3
+	 */
+    @Lob
+    @Column(name = "Text3", length = 65535)
+	public String getText3() {
+		return text3;
+	}
+
+	/**
+	 * @param text3 the text3 to set
+	 */
+	public void setText3(String text3) {
+		this.text3 = text3;
+	}
+
+	/**
+	 * @return the text4
+	 */
+    @Lob
+    @Column(name = "Text4", length = 65535)
+	public String getText4() {
+		return text4;
+	}
+
+	/**
+	 * @param text4 the text4 to set
+	 */
+	public void setText4(String text4) {
+		this.text4 = text4;
+	}
+
+	/**
+	 * @return the text5
+	 */
+    @Lob
+    @Column(name = "Text5", length = 65535)
+	public String getText5() {
+		return text5;
+	}
+
+	/**
+	 * @param text5 the text5 to set
+	 */
+	public void setText5(String text5) {
+		this.text5 = text5;
 	}
 
     /**
