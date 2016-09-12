@@ -826,7 +826,10 @@ public class ValComboBox extends JPanel implements UIValidatable,
                         }
                     } else
                     {
-                        UIRegistry.showLocalizedError("ValComboBox.PL_ITEM_NOTFND", value.toString());//$NON-NLS-1$
+                        if (adapter.isReadOnly())
+                        {
+                            UIRegistry.showLocalizedError("ValComboBox.PL_ITEM_NOTFND", value.toString());//$NON-NLS-1$
+                        }
                     }
                 }
 
