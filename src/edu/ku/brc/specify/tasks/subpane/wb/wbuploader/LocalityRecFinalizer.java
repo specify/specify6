@@ -50,7 +50,15 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
         loc.setLat2text(wbRow.getLat2Text());
         loc.setLong1text(wbRow.getLong1Text());
         loc.setLong2text(wbRow.getLong2Text());
-        
+        if (loc.getLatitude1() != null && loc.getLatLongType() == null) {
+        	if (loc.getLatitude2() == null) {
+        		//seems there's no formal definition of the allowed values for latlongtype??
+        		loc.setLatLongType("Point");
+        	} else {
+        		//hmmm...assume Line
+        		loc.setLatLongType("Line");
+        	}
+        }
         LatLonConverter.FORMAT fmt = new GeoRefConverter().getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
         loc.setOriginalLatLongUnit(fmt.ordinal());
         loc.setSrcLatLongUnit((byte )fmt.ordinal());
