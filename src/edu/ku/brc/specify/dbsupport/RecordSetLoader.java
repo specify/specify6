@@ -102,7 +102,9 @@ public class RecordSetLoader
                     CollectionObject colObj = (CollectionObject)session.get(recordClass, rsItem.getRecordId());
                     for (Determination det : colObj.getDeterminations())
                     {
-                        det.getTaxon().getId();
+                        if (det.getTaxon() != null) {
+                        	det.getTaxon().getId();
+                        }
                     }
                     CollectingEvent ce = colObj.getCollectingEvent();
                     if (ce != null)
