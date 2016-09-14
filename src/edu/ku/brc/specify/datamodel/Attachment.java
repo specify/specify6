@@ -106,7 +106,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     // transient field
     protected boolean                 storeFile;
     
-    protected Agent                   photographer;
+    protected Agent                   creator;
     
     // data model classes that can have Attachments
     protected Set<AccessionAttachment>               accessionAttachments;
@@ -175,7 +175,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         isPublic           = null;
     
-        photographer       = null;
+        creator       = null;
         
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
@@ -267,16 +267,16 @@ public class Attachment extends DataModelObjBase implements Serializable
     *
     */
    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "PhotographerID", unique = false, nullable = true, insertable = true, updatable = true)
-   public Agent getPhotographer() {
-       return this.photographer;
+   @JoinColumn(name = "CreatorID", unique = false, nullable = true, insertable = true, updatable = true)
+   public Agent getCreator() {
+       return this.creator;
    }
 
    /**
  * @param photographer
  */
-   public void setPhotographer(Agent photographer) {
-       this.photographer = photographer;
+   public void setCreator(Agent photographer) {
+       this.creator = photographer;
    }
 
     public void setOrigFilename(String origFilename)
