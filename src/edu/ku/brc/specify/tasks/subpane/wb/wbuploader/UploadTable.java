@@ -625,7 +625,15 @@ public class UploadTable implements Comparable<UploadTable>
         				col.name().equalsIgnoreCase("Latitude1") || col.name().equalsIgnoreCase("Longitude1") ||
         				col.name().equalsIgnoreCase("Latitude2") || col.name().equalsIgnoreCase("Longitude2")))
         {
-        	return col.nullable();
+        	boolean unRequiredInSchema = true;
+        	DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(this.tblClass.getSimpleName());
+        	if (tbl != null) {
+        		DBFieldInfo f = tbl.getFieldByColumnName(col.name());
+        		if (f != null) {
+        			unRequiredInSchema = !(f.isRequired());
+        		}
+        	}
+        	return col.nullable() && unRequiredInSchema;
         }
         
     	//if 2nd geocoord is present then LatLongType is required
