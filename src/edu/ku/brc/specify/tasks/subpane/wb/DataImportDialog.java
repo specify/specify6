@@ -482,7 +482,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         String[] qualifiers = { "\"", "\'", "{"+getResourceString("WB_NONE")+"}" };
         textQualCombo = createComboBox(qualifiers);
         //textQualCombo.setSelectedIndex(0);
-        textQualCombo.setSelectedItem(String.valueOf(((ConfigureCSV )config).getTextQualifier()));
+        textQualCombo.setSelectedItem(String.valueOf(this.stringQualifierChar));
         textQualCombo.addActionListener(this);
 
         charSetLabel = createLabel(getResourceString("CHAR_SET"));
@@ -494,7 +494,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         escapeModeLabel = createLabel(getResourceString("ESCAPE_MODE"));
         String[] escapeModes = {getResourceString("BACKSLASH"), getResourceString("DOUBLED")};
         escapeModeCombo = createComboBox(escapeModes);
-        escapeModeCombo.setSelectedIndex(0);
+        escapeModeCombo.setSelectedIndex(this.escapeMode);
         escapeModeCombo.addActionListener(this);
         
         setContentPane(textQualCombo);

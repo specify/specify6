@@ -330,7 +330,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      */
     private char getDefaultTextQualifier()
     {
-        return '\'';
+        return '"';
     }
     /**
      * Lame prompt for Character set.
@@ -548,7 +548,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
             result.setProperty("delimiter", "tab");
         }
         
-        if(textQualifier == '\"')
+        if(textQualifier == '"')
         {
             result.setProperty("textQualifer", "doublequote");
         }
