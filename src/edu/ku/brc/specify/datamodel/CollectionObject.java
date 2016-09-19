@@ -878,6 +878,19 @@ public void setReservedText3(String reservedText3) {
     {
         return true;
     }   
+    
+    /**
+     * @return the current determination
+     */
+    @Transient
+    public Determination getCurrentDetermination() {
+    	for (Determination d : determinations) {
+    		if (d.getIsCurrent()) {
+    			return d;
+    		}
+    	}
+    	return null;
+    }
     /**
      * 
      */
