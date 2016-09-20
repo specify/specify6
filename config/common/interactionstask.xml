@@ -1,10 +1,23 @@
 <vector>
-  <entry name="accession" table="accession" view="Accession" type="Interactions" action="OpenNewView" icon="Accession" isonleft="true" 
-         issrchsrv="true" order="0" enabled="true" visible="true" tooltip="">
+  <entry name="accession" table="accession" view="Accession" type="Interactions" action="NEW_ACC" icon="Accession" isonleft="true" 
+         issrchsrv="false" order="0" enabled="true" visible="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
+          <int>1</int>
+          <int>7</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  <entry name="accession" table="accession" view="Accession" type="Interactions" action="Edit" icon="Accession" isonleft="false" 
+         issrchsrv="true" order="0" enabled="true" visible="false" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>1</int>
           <int>7</int>
         </tableIds>
       </flavor>
