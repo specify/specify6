@@ -102,6 +102,7 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.specify.datamodel.Gift;
@@ -110,14 +111,15 @@ import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
+import edu.ku.brc.specify.datamodel.OneToManyProviderIFace;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
@@ -162,7 +164,8 @@ public class InteractionsTask extends BaseTask
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
-    protected static final String NEW_ACCESSION        = "NEW_ACCESSION";
+    protected static final String NEW_ACCESSION        = "NEW_ACC";
+    protected static final String ADD_TO_ACCESSION     = "AddToAccession";
     protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
@@ -196,8 +199,9 @@ public class InteractionsTask extends BaseTask
     
     protected Vector<Integer> printableInvoiceTblIds = new Vector<Integer>();
     
-    InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, false, Gift.getClassTableId());
-    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true,  Loan.getClassTableId());
+    InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, InteractionsProcessor.forGift, Gift.getClassTableId());
+    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, InteractionsProcessor.forLoan,  Loan.getClassTableId());
+    InteractionsProcessor<Accession> accProcessor = new InteractionsProcessor<Accession>(this, InteractionsProcessor.forAcc,  Accession.getClassTableId());
     
     static 
     {
@@ -901,7 +905,7 @@ public class InteractionsTask extends BaseTask
      * @param infoRequest
      * @param prepsHash
      */
-    protected void addPrepsToLoan(final PreparationsProviderIFace   existingLoanArg, 
+    protected void addPrepsToLoan(final OneToManyProviderIFace   existingLoanArg, 
                                   final InfoRequest                 infoRequest,
                                   final Hashtable<Integer, Integer> prepsHash,
                                   final Viewable                    srcViewable)
@@ -1018,16 +1022,75 @@ public class InteractionsTask extends BaseTask
             }
         } else 
         {
-            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_LOAN_PREPS", loan));
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, AccessionBusRules.REFRESH_COS, loan));
         }
     }
     
+    /**
+     * @param existingAccArg
+     * @param cos
+     */
+    protected void addCosToAcc(final OneToManyProviderIFace existingAccArg, final RecordSetIFace cos, final Viewable srcViewable) {
+    	Accession existingAcc = (Accession)existingAccArg;
+    	Accession acc;
+    	
+    	if (existingAcc == null) {
+    		acc = new Accession();
+    		acc.initialize();
+    		acc.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+    	} else {
+    		acc = existingAcc;
+    	}
+    	
+        DataProviderSessionIFace session = null;
+        try {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            for (RecordSetItemIFace coId : cos.getItems()) {
+                CollectionObject co = session.get(CollectionObject.class, coId.getRecordId());
+                if (co != null) {
+                	co.forceLoad();
+                    acc.getCollectionObjects().add(co);
+                    //Accession coAcc = co.getAccession();
+                    //if (coAcc != null) {
+                    //	coAcc.getCollectionObjects().remove(co);
+                    //}
+                    co.setAccession(acc);
+                }
+            }
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    	
+        if (existingAcc == null) {
+            if (srcViewable != null) {
+                srcViewable.setNewObject(acc);
+            } else {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null) {
+                    DBTableInfo accTableInfo = DBTableIdMgr.getInstance().getInfoById(acc.getTableId());
+                    dataEntryTask.openView(this, null, accTableInfo.getDefaultFormName(), "edit", acc, true);
+                }
+            }
+        } else {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, AccessionBusRules.REFRESH_COS, acc));
+        }
+
+    }
     /**
      * @param existingLoan
      * @param infoRequest
      * @param prepsHash
      */
-    protected void addPrepsToGift(final PreparationsProviderIFace existingGiftArg, 
+    protected void addPrepsToGift(final OneToManyProviderIFace existingGiftArg, 
                                   final InfoRequest               infoRequest,
                                   final Hashtable<Integer, Integer> prepsHash,
                                   final Viewable                    srcViewable)
@@ -2205,7 +2268,8 @@ public class InteractionsTask extends BaseTask
      */
     protected void processInteractionsCommands(final CommandAction cmdAction)
     {
-        boolean isNewLoan        = cmdAction.isAction(NEW_LOAN);
+        boolean isNewAccession   = cmdAction.isAction(NEW_ACCESSION);
+    	boolean isNewLoan        = cmdAction.isAction(NEW_LOAN);
         boolean isNewLoanNoPreps = cmdAction.isAction(LN_NO_PRP);
         boolean isNewGift        = cmdAction.isAction(NEW_GIFT);
         boolean isInfoReq        = cmdAction.isAction(INFO_REQ_MESSAGE);
@@ -2216,13 +2280,15 @@ public class InteractionsTask extends BaseTask
             PermissionSettings loanPerms = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId()).getPermissions();
             PermissionSettings giftPerms = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()).getPermissions();
             PermissionSettings irPerms   = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()).getPermissions();
+            PermissionSettings accPerms  = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getPermissions();
             
             isOKToAdd = ((isNewLoan || isNewLoanNoPreps) && (loanPerms == null || loanPerms.canAdd())) ||
                         (isNewGift && (giftPerms == null || giftPerms.canAdd())) ||
-                        (isInfoReq && (irPerms == null || irPerms.canAdd()));
+                        (isInfoReq && (irPerms == null || irPerms.canAdd())) ||
+                        (isNewAccession && (accPerms == null || accPerms.canAdd()));
         } else
         {
-            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps;
+            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps || isNewAccession;
         }
         
         UsageTracker.incrUsageCount("IN."+cmdAction.getType());
@@ -2246,7 +2312,7 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (isNewLoan || isNewGift || isNewLoanNoPreps)
+        } else if (isNewLoan || isNewGift || isNewLoanNoPreps || isNewAccession)
         {
             if (cmdAction.getData() == cmdAction)
             {
@@ -2261,7 +2327,11 @@ public class InteractionsTask extends BaseTask
                     {
                         createLoanNoPreps(null);
                         
-                    } else
+                    } else if (isNewAccession)
+                    {
+                    	accProcessor.createOrAdd();
+                    	
+                    } else	
                     {
                         giftProcessor.createOrAdd();
                     }
@@ -2277,6 +2347,10 @@ public class InteractionsTask extends BaseTask
                         if (isNewLoan)
                         {    
                             loanProcessor.createOrAdd(rs);
+                        } else if(isNewAccession && rs.getDbTableId() == colObjTableId) 
+                        {	
+                        	accProcessor.createOrAdd(rs);
+                        	
                         } else
                         {
                             giftProcessor.createOrAdd(rs);
@@ -2297,6 +2371,9 @@ public class InteractionsTask extends BaseTask
                 {
                     createLoanNoPreps((Viewable)cmdAction.getData());
                     
+                } else if (isNewAccession) {
+                	accProcessor.createOrAdd((Viewable)cmdAction.getData());
+                	
                 } else
                 {
                     giftProcessor.createOrAdd((Viewable)cmdAction.getData());
@@ -2341,6 +2418,10 @@ public class InteractionsTask extends BaseTask
         {
             giftProcessor.createOrAdd((Gift)cmdAction.getData());
             
+        } else if (cmdAction.isAction(ADD_TO_ACCESSION))
+        {
+        	accProcessor.createOrAdd((Accession)cmdAction.getData());
+        	
         } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
         {
             if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable)

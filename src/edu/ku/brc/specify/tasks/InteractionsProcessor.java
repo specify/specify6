@@ -47,7 +47,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
+import edu.ku.brc.specify.datamodel.OneToManyProviderIFace;
 import edu.ku.brc.specify.ui.ColObjInfo;
 import edu.ku.brc.specify.ui.PrepInfo;
 import edu.ku.brc.specify.ui.SelectPrepsDlg;
@@ -63,13 +63,17 @@ import edu.ku.brc.ui.UIRegistry;
  * Oct 9, 2008
  *
  */
-public class InteractionsProcessor<T extends PreparationsProviderIFace>
+public class InteractionsProcessor<T extends OneToManyProviderIFace>
 {
     private static final Logger log = Logger.getLogger(InteractionsProcessor.class);
     private static final String LOAN_LOADR = "LoanLoader";
-    
+ 
+    protected static final int forLoan = 0;
+    protected static final int forGift = 1;
+    protected static final int forAcc = 2;
+
     protected InteractionsTask task;
-    protected boolean          isLoan;
+    protected int              isFor;
     protected int              tableId;
     protected Viewable         viewable = null;
     
@@ -77,11 +81,11 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
      * 
      */
     public InteractionsProcessor(final InteractionsTask task, 
-                                 final boolean          isLoan,
+                                 final int          isFor,
                                  final int              tableId)
     {
         this.task    = task;
-        this.isLoan  = isLoan;
+        this.isFor  = isFor;
         this.tableId = tableId;
     }
     
@@ -264,7 +268,9 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
-                final JStatusBar statusBar = UIRegistry.getStatusBar();
+                
+            	//CACA 
+            	final JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate(LOAN_LOADR, true);
                 
                 if (recordSet.getNumItems() > 2)
@@ -272,7 +278,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
                 }
                 
-                PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isLoan);
+                PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isFor);
                 prepLoaderSQL.addPropertyChangeListener(
                         new PropertyChangeListener() {
                             public  void propertyChange(PropertyChangeEvent evt) {
@@ -298,6 +304,10 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         }
     }
 
+    protected void cosLoaded(final RecordSetIFace rs, final T prepProvider) {
+    	System.out.println("Adding cos to accession...");
+    	task.addCosToAcc(prepProvider, rs, viewable);
+    }
     /**
      * @param coToPrepHash
      * @param prepTypeHash
@@ -333,7 +343,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             return;
         }
 
-        final Hashtable<Integer, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
+        final Hashtable<Integer, Integer> prepsHash = loanSelectPrepsDlg.getSelection();
         if (prepsHash.size() > 0)
         {
             final SwingWorker worker = new SwingWorker()
@@ -345,14 +355,13 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     statusBar.setIndeterminate("INTERACTIONS", true);
                     statusBar.setText(getLocalizedMessage("CREATING_INTERACTION", ti.getTitle()));
                     
-                    if (isLoan)
+                    if (isFor == forLoan)
                     {
                         task.addPrepsToLoan(prepProvider, infoRequest, prepsHash, viewable);
-                    } else
+                    } else 
                     {
                         task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
-                    }
-                    
+                    }                     
                     return null;
                 }
 
@@ -410,10 +419,11 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     {
         private final String PROGRESS = "progress";
         
+        
         private RecordSetIFace recordSet;
         private T              prepsProvider;
         private InfoRequest    infoRequest;
-        private boolean        isForLoan;
+        private int         isFor;
 
         private Hashtable<Integer, String>     prepTypeHash = new Hashtable<Integer, String>();
         private Hashtable<Integer, ColObjInfo> coToPrepHash = new Hashtable<Integer, ColObjInfo>();
@@ -426,12 +436,12 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         public PrepLoaderSQL(final T              prepsProvider,
                              final RecordSetIFace recordSet,
                              final InfoRequest    infoRequest,
-                             final boolean        isForLoan)
+                             final int        isFor)
         {
             this.recordSet     = recordSet;
             this.prepsProvider = prepsProvider;
             this.infoRequest   = infoRequest;
-            this.isForLoan     = isForLoan;
+            this.isFor     = isFor;
         }
 
         /**
@@ -592,6 +602,13 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         /**
          * @return
          */
+        protected int collectForAcc() {
+        	return recordSet.getItems().size();
+        }
+        
+        /**
+         * @return
+         */
         protected int collectForGift()
         {
             int total = 0;
@@ -722,7 +739,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         {
             coToPrepHash = new Hashtable<Integer, ColObjInfo>();
             
-            return isForLoan ? collectForLoan() : collectForGift();
+            return isFor == forLoan ? collectForLoan() : (isFor == forGift ? collectForGift() : collectForAcc());
         }
 
         /* (non-Javadoc)
@@ -740,7 +757,11 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                 UIRegistry.clearSimpleGlassPaneMsg();
             }
             
-            prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
+            if (isFor == forAcc) {
+            	cosLoaded(recordSet, prepsProvider);
+            } else {
+            	prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
+            }
         }
         
     }

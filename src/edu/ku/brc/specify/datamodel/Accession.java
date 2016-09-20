@@ -58,7 +58,7 @@ import org.hibernate.annotations.Index;
         @Index (name="AccessionDateIDX", columnNames={"DateAccessioned"})
     })
 @SuppressWarnings("serial")
-public class Accession extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AccessionAttachment> {
+public class Accession extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AccessionAttachment>, OneToManyProviderIFace {
 
     // Fields
     protected Integer                     accessionId;

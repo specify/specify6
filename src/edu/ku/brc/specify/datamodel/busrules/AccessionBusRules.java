@@ -22,11 +22,15 @@ package edu.ku.brc.specify.datamodel.busrules;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Hashtable;
+import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -37,6 +41,9 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.TableViewObj;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -47,8 +54,15 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Triple;
 
 /**
  * Business Rules for validating a Accession.
@@ -58,9 +72,12 @@ import edu.ku.brc.ui.UIRegistry;
  * @author rods
  *
  */
-public class AccessionBusRules extends AttachmentOwnerBaseBusRules
+public class AccessionBusRules extends AttachmentOwnerBaseBusRules implements CommandListener
 {
     //private static final Logger  log      = Logger.getLogger(AccessionBusRules.class);
+    public static final String CMDTYPE     = "Interactions";
+    public static final String ADD_TO_ACCESSION = "AddToAccession";
+    public static final String REFRESH_COS = "RefreshCOS";
    
     /**
      * Constructor.
@@ -68,9 +85,66 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     public AccessionBusRules()
     {
         super(Accession.class);
+        CommandDispatcher.register(AccessionBusRules.CMDTYPE, this);
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction) {
+        if (cmdAction.isType(AccessionBusRules.CMDTYPE) && cmdAction.isAction(AccessionBusRules.REFRESH_COS)) {
+			if (formViewObj != null) {
+				// Reset in the data sp it shows up
+				if (formViewObj.getValidator() != null) {
+					Accession acc = (Accession) cmdAction.getData();
+					Component comp = formViewObj.getControlByName("collectionObjects");
+					if (comp != null) {
+						((MultiView) comp).setData(acc.getCollectionObjects());
+						formViewObj.getValidator().setHasChanged(true);
+						formViewObj.getValidator().validateRoot();
+					}
+				}
+			}
+        }
+    }
+
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+	 */
+	@Override
+	public void initialize(Viewable viewableArg) {
+		// TODO Auto-generated method stub
+		super.initialize(viewableArg);
+		if (formViewObj != null && formViewObj.isEditing()) {
+			Component comp = formViewObj.getControlByName("collectionObjects");
+			if (comp != null) {
+				//System.out.println("collectionObjecs comp:" + comp);
+				for (Viewable v : ((MultiView) comp).getViewables()) {
+					JButton srchBtn = v instanceof TableViewObj ? ((TableViewObj)v).getSearchButton()
+							: (v instanceof FormViewObj ? ((FormViewObj)v).getRsController().getSearchRecBtn() 
+							: null);
+					if (srchBtn != null) {
+					// Remove all ActionListeners, there should only be one
+					for (ActionListener al : srchBtn.getActionListeners()) {
+						srchBtn.removeActionListener(al);
+					}
+					srchBtn.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							CommandDispatcher.dispatch(new CommandAction(AccessionBusRules.CMDTYPE,
+									AccessionBusRules.ADD_TO_ACCESSION,
+									formViewObj.getCurrentDataObj()));
+								}
+							});
+					}
+				}
+			}
+		}
+	}
+
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
      */
     @Override

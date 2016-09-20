@@ -54,7 +54,7 @@ import org.hibernate.annotations.Index;
         @Index (name="GiftDateIDX", columnNames={"GiftDate"})
     })
 @SuppressWarnings("serial")
-public class Gift extends DisciplineMember implements java.io.Serializable, PreparationsProviderIFace, AttachmentOwnerIFace<GiftAttachment>
+public class Gift extends DisciplineMember implements java.io.Serializable, OneToManyProviderIFace, AttachmentOwnerIFace<GiftAttachment>
 {
     // Fields    
     protected Integer                 giftId;
@@ -593,17 +593,17 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.PreparationsProviderIFace#getPreparations()
      */
-    @Override
-    @Transient
-    public Set<PreparationHolderIFace> getPreparations()
-    {
-        HashSet<PreparationHolderIFace> set = new HashSet<PreparationHolderIFace>();
-        for (GiftPreparation gp : giftPreparations)
-        {
-            set.add(gp);
-        }
-        return set;
-    }
+//    @Override
+//    @Transient
+//    public Set<PreparationHolderIFace> getPreparations()
+//    {
+//        HashSet<PreparationHolderIFace> set = new HashSet<PreparationHolderIFace>();
+//        for (GiftPreparation gp : giftPreparations)
+//        {
+//            set.add(gp);
+//        }
+//        return set;
+//    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()

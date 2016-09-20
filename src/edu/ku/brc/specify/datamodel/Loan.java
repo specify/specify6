@@ -60,7 +60,7 @@ import org.hibernate.annotations.Index;
         @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"})
     })
 @SuppressWarnings("serial")
-public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanAttachment>, PreparationsProviderIFace, java.io.Serializable 
+public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanAttachment>, OneToManyProviderIFace, java.io.Serializable 
 {
 
     // options for the 'closed' field
@@ -690,17 +690,17 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.PreparationsProviderIFace#getPreparations()
      */
-    @Override
-    @Transient
-    public Set<PreparationHolderIFace> getPreparations()
-    {
-        HashSet<PreparationHolderIFace> set = new HashSet<PreparationHolderIFace>();
-        for (LoanPreparation gp : loanPreparations)
-        {
-            set.add(gp);
-        }
-        return set;
-    }
+//    @Override
+//    @Transient
+//    public Set<PreparationHolderIFace> getPreparations()
+//    {
+//        HashSet<PreparationHolderIFace> set = new HashSet<PreparationHolderIFace>();
+//        for (LoanPreparation gp : loanPreparations)
+//        {
+//            set.add(gp);
+//        }
+//        return set;
+//    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()

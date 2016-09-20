@@ -608,7 +608,12 @@ public class TableViewObj implements Viewable,
         return newButton;
     }
 
-
+    /**
+     * @return the searchButton
+     */
+    public JButton getSearchButton() {
+    	return searchButton;
+    }
     /**
      * @return the deleteButton
      */

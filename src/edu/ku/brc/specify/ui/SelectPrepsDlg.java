@@ -267,7 +267,7 @@ public class SelectPrepsDlg extends CustomDialog
      * Returns a Hashtable of Preparation to Count.
      * @return a Hashtable of Preparation to Count.
      */
-    public Hashtable<Integer, Integer> getPreparationCounts()
+    public Hashtable<Integer, Integer> getSelection()
     {
         Hashtable<Integer, Integer> hash = new Hashtable<Integer, Integer>();
         
