@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -51,9 +53,14 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.tasks.InteractionsTask;
 
 /**
 
@@ -884,10 +891,25 @@ public void setReservedText3(String reservedText3) {
      */
     @Transient
     public Determination getCurrentDetermination() {
-    	for (Determination d : determinations) {
-    		if (d.getIsCurrent()) {
-    			return d;
+    	try { 
+    		for (Determination d : determinations) {
+    			if (d.getIsCurrent()) {
+    				return d;
+    			}
     		}
+    	} catch (org.hibernate.LazyInitializationException lix) {
+            if (this.getId() != null) {
+            	DataProviderSessionIFace session = null;
+            	try {
+            		session = DataProviderFactory.getInstance().createSession();
+            		String hql = "FROM determination WHERE collectionObjectId = " + this.getId() + " and isCurrent";
+            		return (Determination)session.getData(hql);
+            	} finally {
+            		if (session != null) {
+            			session.close();
+            		}
+            	}
+            }
     	}
     	return null;
     }
