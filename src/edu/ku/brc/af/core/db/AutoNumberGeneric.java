@@ -23,6 +23,7 @@ import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.List;
@@ -31,10 +32,16 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionMember;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.DisciplineMember;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -151,11 +158,39 @@ public class AutoNumberGeneric implements AutoNumberIFace
         sb.append(" FROM "); //$NON-NLS-1$
         sb.append(classObj.getSimpleName());
         
-        if (yearVal != null && yearPos != null)
+        boolean yeared = yearVal != null && yearPos != null;
+        if (yeared)
         {
             sb.append(" WHERE '"); //$NON-NLS-1$
             sb.append(yearVal);
             sb.append("' = substring("+fieldName+","+(yearPos.first+1)+","+yearLen+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        }
+        if (CollectionMember.class.isAssignableFrom(classObj)) {
+        	if (!yeared) {
+        		sb.append(" WHERE ");
+        	} else {
+        		sb.append(" AND ");
+        	}
+        	sb.append("CollectionMemberID=" + AppContextMgr.getInstance().getClassObject(Collection.class).getId());
+        } else if (DisciplineMember.class.isAssignableFrom(classObj)) {
+        	if (!yeared) {
+        		sb.append(" WHERE ");
+        	} else {
+        		sb.append(" AND ");
+        	}
+        	sb.append("DisciplineID=" + AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
+        } else  {
+        	try {
+        		Method m = classObj.getMethod("getDivision", (Class<?>[])null);
+            	if (!yeared) {
+            		sb.append(" WHERE ");
+            	} else {
+            		sb.append(" AND ");
+            	}
+        		sb.append("DivisionID=" + AppContextMgr.getInstance().getClassObject(Division.class).getId());
+        	} catch (NoSuchMethodException|SecurityException ex) {
+        		//ignore
+        	}
         }
         sb.append(" ORDER BY"); //$NON-NLS-1$
         
