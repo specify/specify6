@@ -435,6 +435,9 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         addAttr(sb, "ordinal", ordinal);
         addAttr(sb, "appversion", UIRegistry.getAppVersion());
         addAttr(sb, "smushed", smushed);
+        addAttr(sb, "searchSynonymy", searchSynonymy);
+        addAttr(sb, "selectDistinct", selectDistinct);
+        addAttr(sb, "countOnly", countOnly);
         
         sb.append(">\r\n");
         
@@ -472,6 +475,9 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         named           = getAttr(element, "named", false);
         ordinal         = getAttr(element, "ordinal", (short)0);
         smushed         = getAttr(element, "smushed", false);
+        searchSynonymy   = getAttr(element, "searchSynonymy", false);
+        selectDistinct   = getAttr(element, "selectDistinct", false);
+        countOnly   = getAttr(element, "countOnly", false);
         
         Element sqlNode = (Element)element.selectSingleNode("sqlStr");
         sqlStr = sqlNode != null ? sqlNode.getTextTrim() : null;
