@@ -6,7 +6,6 @@
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>1</int>
-          <int>7</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
