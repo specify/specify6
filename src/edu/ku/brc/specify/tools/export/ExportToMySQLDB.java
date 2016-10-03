@@ -1282,23 +1282,28 @@ public class ExportToMySQLDB
 	 */
 	protected static void adjustLatLngAccuracy(String tableName, Connection conn, Object[] loc, List<String> fldNames) throws SQLException {
 		List<String> geocoords = getAdjustedLatLngAccuracy(loc);
-		String setter = "";
-		for (int i=0; i < fldNames.size(); i++) {
-			String fldName = fldNames.get(i);
-			if (fldName != null) {
-				if (!"".equals(setter)) {
-					setter += ", ";
+		if (geocoords != null) {
+			String setter = "";
+			for (int i=0; i < fldNames.size(); i++) {
+				String fldName = fldNames.get(i);
+				if (fldName != null) {
+					if (!"".equals(setter)) {
+						setter += ", ";
+					}
+					setter += "t.`" + fldName + "`='" + geocoords.get(i) + "'";
 				}
-				setter += "t.`" + fldName + "`='" + geocoords.get(i) + "'";
 			}
-		}
-		if (!"".equals(setter)) {
-			String sql = "UPDATE collectingevent ce "
-				+ "INNER JOIN collectionobject co ON co.CollectingEventID = ce.CollectingEventID "
-				+ "INNER JOIN " + tableName + " t ON t." + tableName + "ID=co.CollectionObjectID "
-				+ "SET " + setter
-				+ " WHERE ce.LocalityID=" + loc[0];
-			BasicSQLUtils.update(conn, sql);
+			if (!"".equals(setter)) {
+				String sql = "UPDATE collectingevent ce "
+						+ "INNER JOIN collectionobject co ON co.CollectingEventID = ce.CollectingEventID "
+						+ "INNER JOIN " + tableName + " t ON t." + tableName + "ID=co.CollectionObjectID "
+						+ "SET " + setter
+						+ " WHERE ce.LocalityID=" + loc[0];
+				BasicSQLUtils.update(conn, sql);
+			}
+		} else {
+			log.error("adjustLatLngAccuracy failed for LocalityID=" + loc[0]);
+			System.out.println("adjustLatLngAccuracy failed: " + loc[0]);
 		}
 	}
 	
@@ -1308,21 +1313,26 @@ public class ExportToMySQLDB
 	 * @throws SQLException
 	 */
 	protected static List<String> getAdjustedLatLngAccuracy(Object[] loc) throws SQLException {
-		List<String> result = new ArrayList<String>(4);
-		Number unitFromDb = Number.class.cast(loc[1]);
-		int unit = unitFromDb == null ? 0 : unitFromDb.intValue();
-		if (loc.length == 6) {
-			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[4])));
-			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]),unit, String.class.cast(loc[5])));
-			result.add(null);
-			result.add(null);
-		} else {
-			result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[6])));
-			result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), unit, String.class.cast(loc[7])));
-			result.add(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), unit, String.class.cast(loc[8])));
-			result.add(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), unit, String.class.cast(loc[9])));
+		try {
+			List<String> result = new ArrayList<String>(4);
+			Number unitFromDb = Number.class.cast(loc[1]);
+			int unit = unitFromDb == null ? 0 : unitFromDb.intValue();
+			if (loc.length == 6) {
+				result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[4])));
+				result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]),unit, String.class.cast(loc[5])));
+				result.add(null);
+				result.add(null);
+			} else {
+				result.add(formatLatLng("Latitude1", BigDecimal.class.cast(loc[2]), unit, String.class.cast(loc[6])));
+				result.add(formatLatLng("Longitude1", BigDecimal.class.cast(loc[3]), unit, String.class.cast(loc[7])));
+				result.add(formatLatLng("Latitude2", BigDecimal.class.cast(loc[4]), unit, String.class.cast(loc[8])));
+				result.add(formatLatLng("Longitude2", BigDecimal.class.cast(loc[5]), unit, String.class.cast(loc[9])));
+			}
+			return result;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
 		}
-		return result;
 	}
 	
 	/**
