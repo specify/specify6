@@ -308,6 +308,13 @@ public class NavigationTreeMgr
             return false;
         }
         
+        //check to see if user owns a query used by a schema mapping
+        List<Object[]> mappings = BasicSQLUtils.query("select distinct sm.SpExportSchemaMappingID, MappingName from spexportschemamapping sm inner join spexportschemaitemmapping sim on sim.spexportschemamappingid = sm.spexportschemamappingid"	
+        		+ " inner join spqueryfield qf on qf.spqueryfieldid = sim.spqueryfieldid inner join spquery q on q.spqueryid = qf.spqueryid where q.specifyuserid=" + user.getSpecifyUserId() + " order by 2");
+        if (mappings.size() > 0) {
+        	UIRegistry.showLocalizedMsg(JOptionPane.WARNING_MESSAGE, "WARNING","NAVTREEMGR_NO_DEL_USR_W_MAPPINGS", mappings.get(0)[1].toString());
+        	return false;
+        }
         DataProviderSessionIFace session = null;
         boolean result = false;
         try
