@@ -121,6 +121,7 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
+import edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanReturnInfo;
@@ -1022,7 +1023,7 @@ public class InteractionsTask extends BaseTask
             }
         } else 
         {
-            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, AccessionBusRules.REFRESH_COS, loan));
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, LoanPreparationBusRules.REFRESH_PREPS, loan));
         }
     }
     

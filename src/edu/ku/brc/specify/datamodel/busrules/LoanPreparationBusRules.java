@@ -70,7 +70,9 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     
     private boolean    isFillingForm    = false;
     private SubViewBtn loanRetBtn       = null;
-    
+ 
+    public static final String REFRESH_PREPS = "REFRESH_LOAN_PREPS";
+
     /**
      * Constructor.
      */
@@ -431,7 +433,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isType(LoanBusRules.CMDTYPE) && cmdAction.isAction("REFRESH_LOAN_PREPS"))
+        if (cmdAction.isType(LoanBusRules.CMDTYPE) && cmdAction.isAction(REFRESH_PREPS))
         {
             if (formViewObj != null)
             {

@@ -304,8 +304,12 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
     }
 
+    /**
+     * @param rs
+     * @param prepProvider
+     */
     protected void cosLoaded(final RecordSetIFace rs, final T prepProvider) {
-    	System.out.println("Adding cos to accession...");
+    	//System.out.println("Adding cos to accession...");
     	task.addCosToAcc(prepProvider, rs, viewable);
     }
     /**
