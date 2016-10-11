@@ -904,7 +904,7 @@ public void setReservedText3(String reservedText3) {
             	DataProviderSessionIFace session = null;
             	try {
             		session = DataProviderFactory.getInstance().createSession();
-            		String hql = "FROM determination WHERE collectionObjectId = " + this.getId() + " and isCurrent";
+            		String hql = "FROM Determination WHERE collectionObjectId = " + this.getId() + " and isCurrent";
             		return (Determination)session.getData(hql);
             	} finally {
             		if (session != null) {
