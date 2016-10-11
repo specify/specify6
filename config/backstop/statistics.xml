@@ -110,7 +110,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 200 ORDER BY SpecimenCount DESC]]>
+          <![CDATA[select case when g1.rankid = 200 then g1.name when g2.rankid = 200 then g2.name when g3.rankid = 200 then g3.name when g4.rankid = 200 then g4.name when g5.rankid = 200 then g5.name else null end Country, count(distinct collectionobjectid) SpecimenCount from collectionobject co left join collectingevent ce on ce.collectingeventid = co.collectingeventid left join locality l on l.localityid = ce.localityid left join geography g1 on g1.geographyid = l.geographyid left join geography g2 on g2.geographyid = g1.parentid left join geography g3 on g3.geographyid = g2.parentid left join geography g4 on g4.geographyid = g3.parentid left join geography g5 on g5.geographyid = g4.parentid where co.CollectionMemberID = COLMEMID group by 1 order by 2 desc]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>

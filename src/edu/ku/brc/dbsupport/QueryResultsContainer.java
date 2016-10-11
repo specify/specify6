@@ -106,14 +106,14 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
                         {
                             int col = qrdo.getCol();
                             int row = qrdo.getRow();
-                            if (row-1 == prvRow)
+                            /*if (row-1 == prvRow)
                             {
                                 if (!resultSet.next())
                                 {
                                     break;
                                 }
                                 
-                            } else if (row != prvRow) 
+                            } else if (row != prvRow)*/ 
                             {
                                 if (!resultSet.absolute(row))
                                 {
