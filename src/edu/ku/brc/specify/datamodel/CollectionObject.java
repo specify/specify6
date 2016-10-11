@@ -159,6 +159,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Collection                    collection;
     protected Accession                     accession;
     protected Agent                         cataloger;
+    protected Agent                         inventorizedBy;
     protected Container                     container;        // The container it belongs to   (Associated with)
     protected Container                     containerOwner;   // The container it is a part of (Parent Container)
     protected Appraisal                     appraisal;
@@ -247,6 +248,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collection            = null;
         accession             = null;
         cataloger             = null;
+        inventorizedBy        = null;
         container             = null;
         containerOwner        = null;
         paleoContext          = null;
@@ -1209,6 +1211,19 @@ public void setReservedText3(String reservedText3) {
     public void setCataloger(Agent cataloger) {
         this.cataloger = cataloger;
     }
+
+    /**
+    *
+    */
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+   @JoinColumn(name = "InventorizedByID", unique = false, nullable = true, insertable = true, updatable = true)
+   public Agent getInventorizedBy() {
+       return this.inventorizedBy;
+   }
+
+   public void setInventorizedBy(Agent inventorizedBy) {
+       this.inventorizedBy = inventorizedBy;
+   }
 
     /**
      *      Container
