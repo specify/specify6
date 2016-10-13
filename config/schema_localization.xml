@@ -9208,7 +9208,7 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text4" isHidden="false" isRequired="false">
+      <desc name="text4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -9817,7 +9817,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="guid" isHidden="false" isRequired="false">
+      <desc name="guid" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -9887,7 +9887,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="text5" isHidden="false" isRequired="false">
+      <desc name="text5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -9933,7 +9933,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12464,7 +12464,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer3" isHidden="false" isRequired="false">
+      <desc name="integer3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12929,7 +12929,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -12942,7 +12942,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -15981,7 +15981,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="stationFieldNumberModifier2" isHidden="false" isRequired="false">
+      <desc name="stationFieldNumberModifier2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -16060,7 +16060,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="stationFieldNumberModifier3" isHidden="false" isRequired="false">
+      <desc name="stationFieldNumberModifier3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -16073,7 +16073,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text4" isHidden="false" isRequired="false">
+      <desc name="text4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -16307,7 +16307,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text3" isHidden="false" isRequired="false">
+      <desc name="text3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -16455,7 +16455,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text5" isHidden="false" isRequired="false">
+      <desc name="text5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -16818,7 +16818,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="stationFieldNumberModifier1" isHidden="false" isRequired="false">
+      <desc name="stationFieldNumberModifier1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -18433,7 +18433,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="creator" isHidden="false" isRequired="false">
+      <desc name="creator" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -24925,7 +24925,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -25245,7 +25245,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="integer3" isHidden="false" isRequired="false">
+      <desc name="integer3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -25395,7 +25395,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -27611,7 +27611,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo5" isHidden="false" isRequired="false">
+      <desc name="yesNo5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -28046,7 +28046,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo3" isHidden="false" isRequired="false">
+      <desc name="yesNo3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -28072,7 +28072,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo4" isHidden="false" isRequired="false">
+      <desc name="yesNo4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30506,7 +30506,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer5" isHidden="false" isRequired="false">
+      <desc name="integer5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30576,7 +30576,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text17" isHidden="false" isRequired="false">
+      <desc name="text17" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30608,7 +30608,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text21" isHidden="false" isRequired="false">
+      <desc name="text21" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30640,7 +30640,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30786,7 +30786,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer10" isHidden="false" isRequired="false">
+      <desc name="integer10" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30837,7 +30837,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text18" isHidden="false" isRequired="false">
+      <desc name="text18" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30926,7 +30926,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text23" isHidden="false" isRequired="false">
+      <desc name="text23" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30958,7 +30958,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer3" isHidden="false" isRequired="false">
+      <desc name="integer3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -30971,7 +30971,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text22" isHidden="false" isRequired="false">
+      <desc name="text22" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31136,7 +31136,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer7" isHidden="false" isRequired="false">
+      <desc name="integer7" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31168,7 +31168,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text16" isHidden="false" isRequired="false">
+      <desc name="text16" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31276,7 +31276,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text24" isHidden="false" isRequired="false">
+      <desc name="text24" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31416,7 +31416,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="integer9" isHidden="false" isRequired="false">
+      <desc name="integer9" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31505,7 +31505,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="text19" isHidden="false" isRequired="false">
+      <desc name="text19" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31518,7 +31518,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="integer6" isHidden="false" isRequired="false">
+      <desc name="integer6" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31646,7 +31646,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer8" isHidden="false" isRequired="false">
+      <desc name="integer8" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31697,7 +31697,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer4" isHidden="false" isRequired="false">
+      <desc name="integer4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31761,7 +31761,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -35529,7 +35529,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo3" isHidden="false" isRequired="false">
+      <desc name="yesNo3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38308,7 +38308,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer7" isHidden="false" isRequired="false">
+      <desc name="integer7" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38340,7 +38340,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38505,7 +38505,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer4" isHidden="false" isRequired="false">
+      <desc name="integer4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38537,7 +38537,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer10" isHidden="false" isRequired="false">
+      <desc name="integer10" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38664,7 +38664,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer6" isHidden="false" isRequired="false">
+      <desc name="integer6" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38829,7 +38829,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer9" isHidden="false" isRequired="false">
+      <desc name="integer9" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -38899,7 +38899,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer3" isHidden="false" isRequired="false">
+      <desc name="integer3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -39102,7 +39102,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer8" isHidden="false" isRequired="false">
+      <desc name="integer8" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -39134,7 +39134,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer5" isHidden="false" isRequired="false">
+      <desc name="integer5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -39223,7 +39223,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47923,7 +47923,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="inventorizedBy" isHidden="true" isRequired="false">
+      <desc name="inventorizedBy" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -55398,7 +55398,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -55582,7 +55582,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer3" isHidden="false" isRequired="false">
+      <desc name="integer3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -55652,7 +55652,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
