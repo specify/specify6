@@ -47923,7 +47923,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         </names>
         <descs/>
       </desc>
-      <desc name="inventorizedBy" isHidden="false" isRequired="false">
+      <desc name="inventorizedBy" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
