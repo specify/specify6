@@ -27228,7 +27228,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo1" isHidden="false" isRequired="false">
+      <desc name="yesNo1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -27930,7 +27930,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
         </descs>
       </desc>
-      <desc name="yesNo2" isHidden="false" isRequired="false">
+      <desc name="yesNo2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -31601,7 +31601,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text20" isHidden="false" isRequired="false">
+      <desc name="text20" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
