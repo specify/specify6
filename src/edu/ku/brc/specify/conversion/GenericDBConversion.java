@@ -5880,7 +5880,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                            data = rs.getObject(index);
                         }
-                        if (idMapperMgr != null && mappedName.endsWith("ID"))
+                        if (idMapperMgr != null && mappedName.endsWith("ID") && !mappedName.endsWith("GUID"))
                         {
                             //log.debug(mappedName);
                             
@@ -6062,8 +6062,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public boolean convertDeterminationRecords()
     {
-    	
-        TableWriter tblWriter = convLogger.getWriter("convertDeterminations.html", "Determinations");
+    	        TableWriter tblWriter = convLogger.getWriter("convertDeterminations.html", "Determinations");
 
         setIdentityInsertONCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType);
 
