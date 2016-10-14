@@ -1645,17 +1645,26 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 					Object[] options = { getResourceString("Specify.INSTALLUPDATE"), //$NON-NLS-1$
 							getResourceString("Specify.SKIP") //$NON-NLS-1$
 					};
-					int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
+					if (doTheUpdate) {
+						int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
 							getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()), //$NON-NLS-1$
 							getResourceString("Specify.UPDATE_AVAIL_TITLE"), //$NON-NLS-1$
 							JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-					if (userChoice == JOptionPane.YES_OPTION) {
-						if (!doExit(false)) {
+					
+						if (userChoice == JOptionPane.YES_OPTION) {
+							if (!doExit(false)) {
+								return;
+							}
+
+						} else {
 							return;
 						}
-
 					} else {
-						return;
+						JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+								getLocalizedMessage("Specify.UPDATE_AVAIL_BUT_UPDATES_DISABLED", entry.getNewVersion()), //$NON-NLS-1$
+								getResourceString("Specify.UPDATE_AVAIL_TITLE"), //$NON-NLS-1$
+								JOptionPane.INFORMATION_MESSAGE);
+						
 					}
 				} else {
 					errKey = "Specify.NO_UPDATE_AVAIL";
@@ -1696,7 +1705,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 				log.error("EXPCEPTION");
 			}
 		} else {
-			UIRegistry.showLocalizedMsg(UIRegistry.getResourceString("UPDATES_DISABLED_FOR_INSTALLATION"));
+			//UIRegistry.showLocalizedMsg(UIRegistry.getResourceString("UPDATES_DISABLED_FOR_INSTALLATION"));
 			return;
 		}
 
