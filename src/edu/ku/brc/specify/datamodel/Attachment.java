@@ -173,7 +173,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         guid               = null;
         
-        isPublic           = null;
+        
+        isPublic           = AppPreferences.getRemote().getBoolean("attachment.is_public_default", true);
     
         creator       = null;
         

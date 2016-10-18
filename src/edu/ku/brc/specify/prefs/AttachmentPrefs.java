@@ -30,6 +30,7 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
@@ -73,6 +74,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     protected static final String ATTCH_PATH_ID       = "attch_path";
     protected static final String ATTCH_URL_ID        = "attch_url";
     protected static final String ATTCH_KEY_ID        = "attch_key";
+    protected static final String ATTCH_PUB_DEF       = "attachment.is_public_default"; 
     
     protected boolean           isUsingGlobalAttchPrefs = false;
     protected boolean           canEditGlobalAttchPrefs = false;
@@ -81,6 +83,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
     protected AppPreferences    localPrefs  = AppPreferences.getLocalPrefs();
     protected AppPreferences    globalPrefs = AppPreferences.getGlobalPrefs();
     
+    protected JCheckBox         isPublicDefChk;
     protected ValBrowseBtnPanel pathBrwse;
     protected JLabel            pathLbl;
     protected ValTextField      urlTxt;
@@ -113,6 +116,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         PanelViewable pathPanel = form.getCompById("path_panel");
         PanelViewable urlPanel  = form.getCompById("url_panel");
         
+        isPublicDefChk = form.getCompById(ATTCH_PUB_DEF);        
         pathBrwse = form.getCompById(ATTCH_PATH_ID);
         pathLbl   = form.getLabelFor(ATTCH_PATH_ID);
         urlTxt    = form.getCompById(ATTCH_URL_ID);
@@ -166,6 +170,8 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                     
                     // Make sure local prefs is set for the type we are using.
                     localPrefs.putBoolean(ATTACHMENT_USE_PATH, pathRB.isSelected()); 
+                    
+                    //remotePrefs.putBoolean(ATTCH_PUB_DEF, isPublicDefChk.isSelected());
                 }
             });
         }
@@ -329,6 +335,9 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
         pathBrwse.setValue(oldAttachmentPath, null);
         urlTxt.setValue(oldAttachmentURL, null);
         keyTxt.setValue(oldAttachmentKey, null);
+        
+        
+        isPublicDefChk.setSelected(remotePrefs.getBoolean(ATTCH_PUB_DEF, true));
 
         setRadio(isUsingPath);
         
@@ -435,6 +444,7 @@ public class AttachmentPrefs extends GenericPrefsPanel implements PrefsSavable, 
                 } catch (BackingStoreException ex) {}
             }
         }
+        remotePrefs.putBoolean(ATTCH_PUB_DEF, isPublicDefChk.isSelected());
     }
     
     /* (non-Javadoc)
