@@ -405,8 +405,7 @@
                
             <rows>
                 <row>
-                    <cell type="label" id="attachment.is_public_default_lbl" labelfor="attachment.is_public_default" label="ATTACHMENT_MAKE_PUBLIC"/>
-                    <cell type="field" uitype="checkbox" id="attachment.is_public_default" name="is_public_default" label="" coldef="p" rowdef="p" colspan="4"/>
+                    <cell type="field" uitype="checkbox" id="attachment.is_public_default" name="is_public_default" label="ATTACHMENT_MAKE_PUBLIC" colspan="6"/>
                 </row>            
                 <row>
                     <cell type="panel" id="path_panel" name="path_panel" coldef="p" rowdef="p" colspan="6"/>
