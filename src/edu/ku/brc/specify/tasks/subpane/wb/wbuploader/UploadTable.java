@@ -1011,7 +1011,9 @@ public class UploadTable implements Comparable<UploadTable>
         int index = uploadFields.size() > 1 ? recNum : 0;
         for (UploadField f : uploadFields.get(index))
         {
-            if (!f.getField().isForeignKey()) //Foreign Keys get assigned later in process...
+            if (!f.getField().isForeignKey() //Foreign Keys get assigned later in process...
+            		&& !"LatLongType".equalsIgnoreCase(f.getField().getName())) //cheap fix for bug#10280. Really seems like this method is no longer necessary but
+            	                                                                //removing it would require broad and thorough testing.
             {
                 if (StringUtils.isEmpty(f.getValue()) && f.isRequired() && f != autoAssignedField) 
                 { 
