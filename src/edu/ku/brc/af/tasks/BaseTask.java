@@ -106,7 +106,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     protected static final String  securityPrefix    = "Task"; //$NON-NLS-1$
     
-    public enum ASK_TYPE { Cancel, EnterDataObjs, ChooseRS}
+    public enum ASK_TYPE { Cancel, EnterDataObjs, ChooseRS, None}
 
     
     public static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$

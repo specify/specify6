@@ -109,23 +109,45 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             label = getResourceString("NEW_INTER_USE_RS");
         }
         
-        Object[] options = { 
-                label, 
-                getResourceString("NEW_INTER_ENTER_CATNUM") 
-              };
+        boolean isForAcc = isFor == forAcc;
+        Object[] options = new Object[!isForAcc || (isForAcc && (!hasInfoReqs && !hasColObjRS)) ? 2 : 3];
+        Integer dosOpt = null; 
+        Integer rsOpt = null; 
+        Integer noneOpt = null; 
+        if (!isForAcc) {
+        	options[0] = label;
+        	options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
+        	rsOpt = JOptionPane.YES_OPTION;
+        	dosOpt = JOptionPane.NO_OPTION;
+        } else {
+        	if (options.length == 2) {
+        		options[0] = getResourceString("NEW_INTER_ENTER_CATNUM");
+        		options[1] = getResourceString("NEW_INTER_EMPTY");
+        		dosOpt = JOptionPane.YES_OPTION;
+        		noneOpt = JOptionPane.NO_OPTION;
+        	} else {
+            	options[0] = label;
+            	options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
+            	options[2] = getResourceString("NEW_INTER_EMPTY");
+            	rsOpt = JOptionPane.YES_OPTION;
+            	dosOpt = JOptionPane.NO_OPTION;
+            	noneOpt = JOptionPane.CANCEL_OPTION;
+        	}
+        }
+
         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                      getResourceString("NEW_INTER_CHOOSE_RSOPT"), 
                                                      getResourceString("NEW_INTER_CHOOSE_RSOPT_TITLE"), 
                                                      JOptionPane.YES_NO_CANCEL_OPTION,
                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        if (userChoice == JOptionPane.NO_OPTION)
-        {
+        if (userChoice == dosOpt) {
             return ASK_TYPE.EnterDataObjs;
-            
-        } else if (userChoice == JOptionPane.YES_OPTION)
-        {
+        } else if (rsOpt != null && userChoice == rsOpt) {
             return ASK_TYPE.ChooseRS;
+        } else if (noneOpt != null && userChoice == noneOpt) {
+        	return ASK_TYPE.None;
         }
+        
         return ASK_TYPE.Cancel;
     }
     
@@ -178,6 +200,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                             final RecordSetIFace recordSetArg)
     {
         RecordSetIFace recordSet = recordSetArg;
+        boolean isEmptyAcc = false;
         if (infoRequest == null && recordSet == null)
         {
             String catNumField = "catalogNumber";
@@ -188,7 +211,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
             
             // If the List is empty then
-            if (rsList.size() == 0 && colObjRSList.size() == 0)
+            if (rsList.size() == 0 && colObjRSList.size() == 0 && isFor != forAcc)
             {
                 recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField);
                 
@@ -203,6 +226,9 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                 {
                     recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField);
                     
+                } else if (rv == ASK_TYPE.None) {
+                	recordSet = null;
+                	isEmptyAcc = true;
                 } else if (rv == ASK_TYPE.Cancel)
                 {
                     if (viewable != null)
@@ -214,72 +240,76 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             }
         }
         
-        if (recordSet == null)
+        if (recordSet == null && !isEmptyAcc)
         {
             return;
         }
         
-        DBTableIdMgr.getInstance().getInClause(recordSet);
+        if (isEmptyAcc) {
+        	PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(null, recordSet, infoRequest, isFor);
+        	prepLoaderSQL.execute();
+        } else {
+        	DBTableIdMgr.getInstance().getInClause(recordSet);
 
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+        	DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         
-        DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
+        	DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
+        	DataProviderSessionIFace session = null;
+        	try
+        	{
+        		session = DataProviderFactory.getInstance().createSession();
             
-            // OK, it COULD be a RecordSet contain one or more InfoRequest, 
-            // we will only accept an RS with one InfoRequest
-            if (infoRequest == null && recordSet.getDbTableId() == InfoRequest.getClassTableId())
-            {
-                if (recordSet.getNumItems() == 1)
-                {
-                    RecordSetItemIFace item = recordSet.getOnlyItem();
-                    if (item != null)
-                    {
-                        InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
-                        if (infoReq != null)
-                        {
-                            createOrAdd(null, infoReq, infoReq.getRecordSets().iterator().next());
+        		// OK, it COULD be a RecordSet contain one or more InfoRequest, 
+        		// we will only accept an RS with one InfoRequest
+        		if (infoRequest == null && recordSet.getDbTableId() == InfoRequest.getClassTableId())
+        		{
+        			if (recordSet.getNumItems() == 1)
+        			{
+        				RecordSetItemIFace item = recordSet.getOnlyItem();
+        				if (item != null)
+        				{
+        					InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
+        					if (infoReq != null)
+        					{
+        						createOrAdd(null, infoReq, infoReq.getRecordSets().iterator().next());
                             
-                        } else
-                        {
-                            // error about missing info request
-                            // Error Dialog
-                        }
-                    } else
-                    {
-                        // error about item being null for some unbelievable reason 
-                     // Error Dialog
-                    }
-                } else 
-                {
-                    // error about item having more than one or none
-                    // Error Dialog
-                }
-                return;
-            }
+        					} else
+        					{
+        						// error about missing info request
+        						// Error Dialog
+        					}
+        				} else
+        				{
+        					// error about item being null for some unbelievable reason 
+        					// Error Dialog
+        				}
+        			} else 
+        			{
+        				// error about item having more than one or none
+        				// Error Dialog
+        			}
+        			return;
+        		}
             
-            // OK, here we have a recordset of CollectionObjects
-            // First we process all the CollectionObjects in the RecordSet
-            // and create a list of Preparations that can be loaned
-            String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
-            if (StringUtils.isNotBlank(sqlStr))
-            {
+        		// OK, here we have a recordset of CollectionObjects
+        		// First we process all the CollectionObjects in the RecordSet
+        		// and create a list of Preparations that can be loaned
+        		String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
+        		if (StringUtils.isNotBlank(sqlStr))
+        		{
                 
-            	//CACA 
-            	final JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setIndeterminate(LOAN_LOADR, true);
+        			//CACA 
+        			final JStatusBar statusBar = UIRegistry.getStatusBar();
+        			statusBar.setIndeterminate(LOAN_LOADR, true);
                 
-                if (recordSet.getNumItems() > 2)
-                {
-                    UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
-                }
+        			if (recordSet.getNumItems() > 2)
+        			{
+        				UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+        			}
                 
-                PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isFor);
-                prepLoaderSQL.addPropertyChangeListener(
+        			PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isFor);
+        			prepLoaderSQL.addPropertyChangeListener(
                         new PropertyChangeListener() {
                             public  void propertyChange(PropertyChangeEvent evt) {
                                 log.debug(evt.getNewValue());
@@ -289,18 +319,18 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
                                 }
                             }
                         });
-                prepLoaderSQL.execute();
+        			prepLoaderSQL.execute();
                 
-            } else
-            {
-                log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
-            }
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
+        		} else
+        		{
+        			log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+        		}    
+        	} catch (Exception ex)
+        	{
+        		ex.printStackTrace();
+        		edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+        		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
+        	}
         }
     }
 
@@ -607,7 +637,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
          * @return
          */
         protected int collectForAcc() {
-        	return recordSet.getItems().size();
+        	return recordSet == null ? 0 : recordSet.getItems().size();
         }
         
         /**

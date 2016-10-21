@@ -1043,34 +1043,35 @@ public class InteractionsTask extends BaseTask
     		acc = existingAcc;
     	}
     	
-        DataProviderSessionIFace session = null;
-        try {
-            session = DataProviderFactory.getInstance().createSession();
+    	if (cos != null) {
+    		DataProviderSessionIFace session = null;
+    		try {
+    			session = DataProviderFactory.getInstance().createSession();
             
-            for (RecordSetItemIFace coId : cos.getItems()) {
-                CollectionObject co = session.get(CollectionObject.class, coId.getRecordId());
-                if (co != null) {
-                	co.forceLoad();
-                    acc.getCollectionObjects().add(co);
-                    //Accession coAcc = co.getAccession();
-                    //if (coAcc != null) {
-                    //	coAcc.getCollectionObjects().remove(co);
-                    //}
-                    co.setAccession(acc);
-                }
-            }
+    			for (RecordSetItemIFace coId : cos.getItems()) {
+    				CollectionObject co = session.get(CollectionObject.class, coId.getRecordId());
+    				if (co != null) {
+    					co.forceLoad();
+    					acc.getCollectionObjects().add(co);
+    					//Accession coAcc = co.getAccession();
+    					//if (coAcc != null) {
+    					//	coAcc.getCollectionObjects().remove(co);
+    					//}
+    					co.setAccession(acc);
+    				}
+    			}
             
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+    		} catch (Exception ex) {
+    			ex.printStackTrace();
+    			UsageTracker.incrHandledUsageCount();
+    			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
 
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-    	
+    		} finally {
+    			if (session != null) {
+    				session.close();
+    			}
+    		}
+    	}
         if (existingAcc == null) {
             if (srcViewable != null) {
                 srcViewable.setNewObject(acc);
