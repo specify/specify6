@@ -94,7 +94,7 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
      * Asks where the source of the Loan Preps should come from.
      * @return the source enum
      */
-    protected ASK_TYPE askSourceOfPreps(final boolean hasInfoReqs, final boolean hasColObjRS)
+    protected ASK_TYPE askSourceOfPreps(final boolean hasInfoReqs, final boolean hasColObjRS, final T currPrepProvider)
     {
         String label;
         if (hasInfoReqs && hasColObjRS)
@@ -110,11 +110,11 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
         }
         
         boolean isForAcc = isFor == forAcc;
-        Object[] options = new Object[!isForAcc || (isForAcc && (!hasInfoReqs && !hasColObjRS)) ? 2 : 3];
+        Object[] options = new Object[!isForAcc || (isForAcc && ((!hasInfoReqs && !hasColObjRS) || currPrepProvider != null)) ? 2 : 3];
         Integer dosOpt = null; 
         Integer rsOpt = null; 
         Integer noneOpt = null; 
-        if (!isForAcc) {
+        if (!isForAcc || currPrepProvider != null) {
         	options[0] = label;
         	options[1] = getResourceString("NEW_INTER_ENTER_CATNUM");
         	rsOpt = JOptionPane.YES_OPTION;
@@ -211,13 +211,13 @@ public class InteractionsProcessor<T extends OneToManyProviderIFace>
             List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
             
             // If the List is empty then
-            if (rsList.size() == 0 && colObjRSList.size() == 0 && isFor != forAcc)
+            if (rsList.size() == 0 && colObjRSList.size() == 0 && (isFor != forAcc || currPrepProvider != null))
             {
                 recordSet = task.askForDataObjRecordSet(CollectionObject.class, catNumField);
                 
             } else 
             {
-                ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0);
+                ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0, currPrepProvider);
                 if (rv == ASK_TYPE.ChooseRS)
                 {
                     recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
