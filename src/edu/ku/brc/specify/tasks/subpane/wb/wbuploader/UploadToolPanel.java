@@ -68,7 +68,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     protected JButton				helpBtn                = null;
 
     protected final WorkbenchPaneSS	wbSS;
-    protected List<UploadField> configuredFields           = null;    
+    protected List<UploadField> configuredFields           = null;
+    protected List<UploadField> autoAssables               = null;
     protected boolean uiCreated = false;
     protected boolean updateBtnOnUiCreate = false;
     protected boolean turnOffSelectionsOnUiCreate = false;
@@ -217,17 +218,17 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         autoAssignCatNumPanel.add(autoAssignCatNumLbl, BorderLayout.CENTER);
         autoAssignCatNumPanel.setVisible(false);
         
-    	final List<UploadField> configables = wbSS.getConfigables();
+    	this.autoAssables = wbSS.getAutoAssignableFlds();
     	
-    	if (configables != null && configables.size() > 0) {
+    	if (autoAssables != null && autoAssables.size() > 0) {
     		UploadField catno = null;
-    		for (UploadField uf : configables) {
+    		for (UploadField uf : autoAssables) {
     			if (uf.getField().getFieldInfo() != null) {
     				DBFieldInfo ufi = uf.getField().getFieldInfo();
     				if (ufi.getName().equalsIgnoreCase("catalognumber") &&
     						ufi.getTableInfo().getName().equalsIgnoreCase("collectionobject")) {
     					catno = uf;
-    					break;
+    					//break;
     				}
     			}
     		}
@@ -244,6 +245,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     			autoAssignCatNumChk.addActionListener(new ActionListener() {
     				@Override
     				public void actionPerformed(ActionEvent e) {
+    					//System.out.println(UploadToolPanel.this.autoAssables);
     					catno_uf.setAutoAssignForUpload(autoAssignCatNumChk.isSelected());
     					AppPreferences.getLocalPrefs().putBoolean(wbAutoFillPrefName + "." 
     							+ wbSS.getWorkbench().getId(), autoAssignCatNumChk.isSelected());

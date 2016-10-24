@@ -89,6 +89,13 @@ public class CatalogNumberUIFieldFormatter extends BaseUIFieldFormatter implemen
         }
     }
     
+    /**
+     * @return isNumericCatalogNumber
+     */
+    public boolean isNumericCatalogNumber() {
+    	return this.isNumericCatalogNumber;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.BaseUIFieldFormatter#getDataClass()
      */

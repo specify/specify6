@@ -116,6 +116,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
+import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DateConverter;
@@ -1015,7 +1016,9 @@ public class UploadTable implements Comparable<UploadTable>
             		&& !"LatLongType".equalsIgnoreCase(f.getField().getName())) //cheap fix for bug#10280. Really seems like this method is no longer necessary but
             	                                                                //removing it would require broad and thorough testing.
             {
-                if (StringUtils.isEmpty(f.getValue()) && f.isRequired() && f != autoAssignedField) 
+                if (StringUtils.isEmpty(f.getValue()) && f.isRequired() && f != autoAssignedField 
+                		//&& !(autoAssignedField == null && f.isAutoAssignable())
+                		&& !f.isAutoAssignable()) 
                 { 
                     return false; 
                 }
@@ -1048,7 +1051,9 @@ public class UploadTable implements Comparable<UploadTable>
         {
             if (!ignoreFieldData(f))
             {
-            	if (StringUtils.isNotEmpty(f.getValue()) || f == autoAssignedField)
+            	if (StringUtils.isNotEmpty(f.getValue()) || f == autoAssignedField 
+            			//|| (autoAssignedField == null && f.isAutoAssignable())
+            			)
             	{
             		result = true;
             		break;
@@ -1939,7 +1944,7 @@ public class UploadTable implements Comparable<UploadTable>
     		for (UploadField uf : ufs) {
     			if (uf.getField().getFieldInfo() != null) {
     				UIFieldFormatterIFace formatter = uf.getField().getFieldInfo().getFormatter();
-    				if (formatter != null && /*formatter.isNumeric() && */formatter.isIncrementer()) {
+    				if (formatter != null && (formatter.isNumeric() || (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter)formatter).isNumericCatalogNumber())) && formatter.isIncrementer()) {
     					result.add(uf);
     				}
     			}
@@ -2170,7 +2175,11 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 if (StringUtils.isBlank(fldStr))
                                 {
-                                	val = null;
+                                	if (ufld.isAutoAssignable()) {
+                                		val = formatter.getNextNumber(formatter.formatToUI("").toString());
+                                	} else {
+                                		val = null;
+                                	}
                                 }
                                 else
                                 {
@@ -4328,7 +4337,9 @@ public class UploadTable implements Comparable<UploadTable>
 //        boolean isAutoAssignable = fld.getField().getFieldInfo() != null && fld.getField().getFieldInfo().getFormatter() != null
 //            && fld.getField().getFieldInfo().getFormatter().isIncrementer(); 
 //            //&& fld.getField().getFieldInfo().getFormatter().isNumeric();
-        boolean isAutoAssignable = fld.isAutoAssignForUpload();
+        boolean isAutoAssignable = fld.isAutoAssignForUpload() 
+        		//|| (autoAssignedField == null && fld.isAutoAssignable())
+        		|| fld.isAutoAssignable();
         return blankButRequired && !isAutoAssignable;
     }
 
@@ -4797,7 +4808,7 @@ public class UploadTable implements Comparable<UploadTable>
 									continue;
 								}
 							}
-							if (fld.getValue() != null && !"".equals(fld.getValue()) && fld.isAutoAssignForUpload()) {
+							if (fld.getValue() != null && !"".equals(fld.getValue()) && fld.isAutoAssignForUpload()/* && fld == autoAssignedField*/) {
 								throw new Exception(UIRegistry.getResourceString("WB_UPLOAD_AutoAssMustBeBlankErrMsg"));
 							}
 							if (!pickListCheck(fld)) {

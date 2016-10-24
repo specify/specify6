@@ -34,6 +34,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -43,6 +44,7 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
+import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 
@@ -253,9 +255,11 @@ public class UploadField
         this.wbFldName = wbFldName;
         this.relationship = relationship;
         if (field != null && field.getFieldInfo() != null) {
-        	if (field.getFieldInfo().getFormatter() != null) {
+        	UIFieldFormatterIFace fmt = field.getFieldInfo().getFormatter();
+        	if (fmt != null) {
         		this.autoAssignForUpload = field.getFieldInfo().isRequired()
-        				&& field.getFieldInfo().getFormatter().isIncrementer();
+        				&& fmt.isIncrementer()
+        				&& (fmt.isNumeric() || (fmt instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter)fmt).isNumericCatalogNumber()));
         	}
         }
     }
@@ -274,6 +278,12 @@ public class UploadField
 		return autoAssignForUpload;
 	}
 
+	public boolean isAutoAssignable() {
+		return getField().getFieldInfo() != null && getField().getFieldInfo().getFormatter() != null
+	            && getField().getFieldInfo().getFormatter().isIncrementer(); 
+//	            //&& fld.getField().getFieldInfo().getFormatter().isNumeric();
+
+	}
 	/**
 	 * @param autoAssignForUpload the autoAssignForUpload to set
 	 */

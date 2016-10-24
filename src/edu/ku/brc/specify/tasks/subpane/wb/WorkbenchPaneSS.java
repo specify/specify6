@@ -1222,7 +1222,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @return
      */
-    public List<UploadField> getConfigables() {
+    public List<UploadField> getAutoAssignableFlds() {
     	List <UploadField> result = null;
     	if (workbenchValidator == null) {
     		buildValidator(true);
