@@ -98,17 +98,15 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             String defMemberName = defTableInfo.getShortClassName();
             defMemberName = defMemberName.substring(0, 1).toLowerCase().concat(defMemberName.substring(1));
             
-            String queryFormatStr;
             if (isForCount)
             {
-                queryFormatStr = "Select count(n.id) "; 
+            	queryStr = "Select count(n.id) "; 
             }
             else
             {
-                queryFormatStr = "SELECT n.fullName, n.id ";
+            	queryStr = "SELECT n.fullName, n.id ";
             }
-            queryFormatStr += "from %s n INNER JOIN n.definition d WHERE lower(n.fullName) LIKE \'%s\' AND d.id = %d";
-            queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), searchText.toLowerCase() + "%", treeDefId);
+            queryStr += "from " + tableInfo.getShortClassName() + " n INNER JOIN n.definition d WHERE lower(n.fullName) LIKE '%" + searchText.toLowerCase() + "%' AND d.id = " + treeDefId;
             
             Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
             Integer nodeNumber = null;
