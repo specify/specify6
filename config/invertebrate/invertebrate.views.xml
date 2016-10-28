@@ -182,12 +182,6 @@
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" rows="3" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectionRelationship" id="Crl" name="leftSideRels" defaulttype="table" rows="3" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="CollectionRelRight" readonly="true" id="Crr" name="rightSideRels" defaulttype="table" rows="3" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" id="15" viewname="InvertZooAttributes" name="collectionObjectAttribute" colspan="12"/>
                 </row>
                 <row>
