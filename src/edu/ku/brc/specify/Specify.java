@@ -1620,7 +1620,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void checkForUpdates()
     {
-        UIRegistry.displayInfoMsgDlg("checkForUpdates(): checking for updates");
+        //UIRegistry.displayInfoMsgDlg("checkForUpdates(): checking for updates");
     	
     	String  errKey     = null;
         //NOTE: it looks like the "UPDATE_PATH" resource and the update url setting in i4jparams.conf need to be kept in sync
@@ -1636,17 +1636,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 //			String VERSION_CHECK = "version_check.auto";
 //			boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
 
-	        UIRegistry.displayInfoMsgDlg("checkForUpdates(): isReleaseManagedGlobally=" + isReleaseManagedGlobally);
+	        //UIRegistry.displayInfoMsgDlg("checkForUpdates(): isReleaseManagedGlobally=" + isReleaseManagedGlobally);
 
 			doTheUpdate = (isReleaseManagedGlobally == null || !isReleaseManagedGlobally) /*&& localChk4VersionUpdate*/;
+	        
+			//UIRegistry.displayInfoMsgDlg("checkForUpdates(): checking for updates at " + updatePath);
 
 			UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath,
 					ApplicationDisplayMode.UNATTENDED);
-	        UIRegistry.displayInfoMsgDlg("checkForUpdates(): UpdateDescriptor=" + updateDesc);
+	        //UIRegistry.displayInfoMsgDlg("checkForUpdates(): UpdateDescriptor=" + updateDesc);
 			
 			if (updateDesc != null) {
 				UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
-		        UIRegistry.displayInfoMsgDlg("checkForUpdates(): PossibleUpdate=" + (entry != null ? entry.getNewVersion() : entry));
+		        //UIRegistry.displayInfoMsgDlg("checkForUpdates(): PossibleUpdate=" + (entry != null ? entry.getNewVersion() : entry));
 		        
 				if (entry != null) {
 					Object[] options = { getResourceString("Specify.INSTALLUPDATE"), //$NON-NLS-1$
@@ -1705,7 +1707,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
 					}
 				};
-		        UIRegistry.displayInfoMsgDlg("checkForUpdates(): launching update application");
+		        //UIRegistry.displayInfoMsgDlg("checkForUpdates(): launching update application");
 				ApplicationLauncher.launchApplication("100", getProxySettings(), true, callback);
 
 			} catch (Exception ex) {

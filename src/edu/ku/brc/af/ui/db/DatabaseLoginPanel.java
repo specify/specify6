@@ -1343,7 +1343,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                         String VERSION_CHECK = "version_check.auto";
                         boolean localChk4VersionUpdate = localPrefs.getBoolean(VERSION_CHECK, true);
-                        UIRegistry.displayInfoMsgDlg("doLoginContinuing(): isReleasedManagedGlobally=" + isReleaseManagedGlobally + ", local update pref=" + localChk4VersionUpdate);
+                        //UIRegistry.displayInfoMsgDlg("doLoginContinuing(): isReleasedManagedGlobally=" + isReleaseManagedGlobally + ", local update pref=" + localChk4VersionUpdate);
                         if ((isReleaseManagedGlobally == null || !isReleaseManagedGlobally) && localChk4VersionUpdate) {
                         	try {
                         		com.install4j.api.launcher.SplashScreen.hide();
@@ -1364,7 +1364,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         				System.exit(0);
                         			}
                         		};
-                                UIRegistry.displayInfoMsgDlg("doLoginContinuing(): launching update application, proxy settings: " + Specify.getProxySettings());
+                                //UIRegistry.displayInfoMsgDlg("doLoginContinuing(): launching update application, proxy settings: " + Specify.getProxySettings());
                                 ApplicationLauncher.launchApplication("100", Specify.getProxySettings(), true, callback);
                         	} catch (Exception ex) {
                               log.error(ex);
