@@ -3733,9 +3733,10 @@ public class UploadTable implements Comparable<UploadTable>
 		ArrayList<DataModelObjBase> matches = new ArrayList<DataModelObjBase>();
 		ArrayList<DataModelObjBase> myMatches = new ArrayList<DataModelObjBase>();
 		//XXX need to include matchChildrenParents in parentParams 
+		ParentMatchInfo nearest  = null;
 		for (List<ParentMatchInfo> pm : parentMatches) {
 			if (doMatch && pm.size() > 0) {
-				ParentMatchInfo nearest = pm.get(pm.size() - 1);
+				nearest = pm.get(pm.size() - 1);
 				int b = 2;
 				while (pm.size() - b >= 0 && nearest.isSkipped() && !nearest.getStoppedAlready()) {
 					nearest = pm.get(pm.size() - b++);
@@ -3768,7 +3769,11 @@ public class UploadTable implements Comparable<UploadTable>
 			//}
 			try {
 				if (matchChildrenParents == null || matchChildrenParents.size() == 0) {
-					findMatch(adjustedRecNum, false, myMatches, parentParams);
+					if (!blank) {
+						findMatch(adjustedRecNum, false, myMatches, parentParams);
+					} else if (nearest != null){
+						myMatches.add(parentParams.get(nearest.getTable()));
+					}
 				} else {
 					//XXX assuming matchChildrenParents is only being used for ...Attribute tables and will only have one item
 					Pair<UploadTable, List<DataModelObjBase>> mp = matchChildrenParents.get(0);
