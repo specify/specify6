@@ -6,23 +6,61 @@
 </head>
 <body>
 <h3>Release Notes<br>
-Specify 6.6.04<br>
-22 February 2016<br>
+Specify 6.6.05<br>
+03 November 2016<br>
 Specify Software Project</h3>
 <br>
-<br>
-<h4>List of changes in Specify 6.6.04<br>
+<h4>List of Changes to Specify 6.6.05<br>
 </h4>
-<ol><li>Simple search results are now returned correctly for searches that have an exceptionally large number of matching records. 2016-02-19 (Bugzilla 10205)</li>
-<li>The Accession Number content format validator is now scoped correctly to  Institution or Division depending on setup configuration. 2016-02-19 (10207)</li>
-<li>Creating a DataSet from a RecordSet no longer fails. 2016-02-11  (10201)</li>
-<li>After the WorkBench uploads records that contain new tree data (for any kind of tree), the tree update progress bar displays to reflect the tree update process. 2016-02-11 (10193)</li>
-<li>The Specify WorkBench no longer uploads records  which would create child nodes (e.g. taxon determinations) to an existing unaccepted parent node in a tree. 2016-02-11 (10192)</li>
-<li>The &quot;Clone&quot; button now consistently remains active after cursor focus is moved to another  field. 2016-02-11 (10199)</li>
-<li>Tree updates for very large trees no longer fail. 2016-02-11 (10191)</li>
-<li>Searching in a Specify 6 query combobox text field with an asterisk (wild card) when data records (search targets) contain two hyphens (e.g. &quot;45-DEL-2016&quot;) will now find the matching records. 2016-02-11  (10202)</li>
-<li>The "Get Elevation" button within the GeoLocate Plug-in component now works correctly after being reconfigured for a revised USGS API. Specify no longer hangs or reports an error. 2016-02-10  (10196)</li>
-</ol><br>
+<ol>
+<li>The Specify  login screen now remembers its openness  state (expanded or contracted), as a special favor to Warren Brown, U. Florida, who  pleaded that he was weary of clicking.  2016-09-28  (Bugzilla #10264)</li>
+<li>The automatic check for Specify Software updates will not permit updates in user sessions if the new database-level preference &quot;IsReleaseManagedGlobally&quot; is set.  2016-11-01  (10225)</li>
+<li>The &quot;Check for Updates&quot; item on Help menu is no longer visible  if the &quot;IsReleaseManagedGlobally&quot;global preference is set. 2016-10-26  (10229)</li>
+<li>Displaying the database backup prompt in a user session is now a  global preference which can be set once for all collections in a database.  2016-09-27  (10226)</li>
+<li>RecordSets of Collection Objects can now be dragged and dropped onto the Accession icon, and also can be added to Accessions through a menu prompt.  2016-10-28  (10242)</li>
+<li>Taxon Full Names can now be added to Loan items forms, enabling listing of taxa for Preparations contained within a Loan. 2016-10-24  (10279)</li>
+<li>Fields which  are required by the localization (forms) schema are now also required by the WorkBench for uploading into Specify.  2016-10-28  (10284)</li>
+<li>The "Highlight New Records" option in the Specify WorkBench now works correctly  for Collecting Event and Locality data.  2016-11-02  (10257)</li>
+<li> Default Invertebrate data forms no longer generate an error message due to a missing &quot;collectionreltype&quot; field. 2016-10-28  (10283)</li>
+<li>Geography records can be added from Locality form.  2016-10-27  (10282)</li>
+<li>Default settings for CSV dataset imports now correspond to CSV file standard  &quot;RFC-4180&quot;.  2016-10-25  (10218)</li>
+<li>If  turned &quot;ON&quot; for Catalog Number, auto-fill no longer erroneously increments other number fields which also have auto-fill activated. 2016-10-24  (10135)</li>
+<li>Changes to information in tree data displays  now changes the tree update timestamp and subsequently exports the changes correctly.  2016-10-24  (10212)</li>
+<li>In the Specify WorkBench, if a Collection Object record has Locality data but no Geography data, the Locality table record is now created when uploaded into Specify.  2016-10-24  (10280)</li>
+<li>Whether preference &quot;Attachment.IsPublic&quot; is initially set to on or off  is now based on  preference value. 2016-10-20  (10204)</li>
+<li>Tree data node merging now works when dragged nodes or their descendants have attachments.  2016-10-20  (10258)</li>
+<li>On the collection statistics page, the &quot;Top 5 Species&quot; and &quot;Specimens by Country&quot; charts now display correct values.  2016-10-13  (10274)</li>
+<li>&quot;Distinct&quot; check is now  saved and exported with Query definition. 2016-10-11  (10265)</li>
+<li>Deleting a Specify user  who created an existing export schema mapping is no longer allowed unless the mapping is deleted first.  2016-10-10  (10208)</li>
+<li>Conservation Events now display correctly on forms.  2016-10-10  (10261)</li>
+<li>The &quot;IsRequired&quot; parameter for  fields is now set correctly for user session when a user changes the collection being accessed within Specify.  2016-10-07  (10222)</li>
+<li>Auto-increment now works for Catalog Number and Accession formats.  2016-10-07  (10235)</li>
+<li>Exsiccata search dialog now works correctly.  2016-10-07  (10247)</li>
+<li>Localities of Collection Objects in RecordSets will now map in Google Earth if Determinations are not present.  2016-10-07  (10254)</li>
+<li>Catalog Numbers can now be optionally set to  increment across multiple collections within a database.  2016-10-05  (10236)</li>
+<li>An Export Schema Mapping name is now required to be unique across all collections within a database to avoid name conflicts.  2016-10-04  (10232)</li>
+<li>Decimal digits in floating point (real number) fields are no longer gratuitously truncated when records are edited.  2016-10-04  (10238)</li>
+<li>Adding search conditions on un-displayed fields no longer duplicates records in query results.  2016-10-03  (10227)</li>
+<li> Data for &quot;Locality Citation&quot; (table) which are linked to Locality table field &quot;Locality Citations&quot; can now be uploaded through WorkBench.  2016-09-28  (10217)</li>
+<li>The WorkBench Uploader now works correctly for databases with shared PaleoContext records and which have them linked to the Locality table.  2016-09-28  (10240)</li>
+<li>The WorkBench uploads records with no value in the &quot;LatLongType&quot; field but which do have &quot;Lat1&quot; &quot;Long1&quot; field data now have  the  LatLongType value filled by default as &quot;Point&quot;. 2016-09-28  (10246)</li>
+<li>WorkBench DataSets with RefWork information but without data in the RefWork Title field no longer take an inordinately long time to upload and validate.  2016-09-27  (10216)</li>
+<li>&quot;Created by&quot; Agent and &quot;Modified by&quot; Agent can now be made visible for multiple tables in the Query Builder. 2016-09-27  (10224) (10231) (10256)</li>
+<li>Autoincrementers for fields other than Catalog Number and Accession Number (including numbers for Loans, Gifts, Collecting Events) now scope correctly.  2016-09-26  (10211)</li>
+<li>Paleocontext relationship to the Collection Object, Collecting Event or Locality table is now correctly maintained after a Specify schema update. 2016-10-24  (10241)</li>
+<li>The Specify database schema update performed by this release includes these changes:</li>
+<ul>
+  <li>Added fields for Station Field Number modifiers to Collecting Event table. 2016-09-26  (10233)</li>
+  <li>Added yes/no (boolean) fields to Locality table. 2016-09-26  (10234)</li>
+  <li>Added six memo fields to Collection Object Attribute. 2016-09-26  (10252)</li>
+  <li> Added integer fields to Accession, Loan, Gift, Collection Object Attribute, and Collecting Event Attribute tables.  2016-09-26  (10255)</li>
+  <li> Added text fields to Preparation and Collecting Event.  2016-09-26  (10263)</li>
+  <li> Added a GUID field to Preparation. 2016-10-20  (10245)</li>
+  <li>Added &quot;Inventorized by&quot; field to Collection Object table. 2016-10-13  (10271)</li>
+  <li>Added &quot;Creator&quot; field to Attachments table. 2016-10-20  (10276)</li>
+</ul>
+</ol>
+<br>
 <br>
 <br>
 <br>
