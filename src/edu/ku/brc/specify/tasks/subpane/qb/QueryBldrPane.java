@@ -88,11 +88,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRLoader;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -145,6 +140,7 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
@@ -167,6 +163,10 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  * @author rod
@@ -1954,10 +1954,50 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             result += fromTbl.getSecond() + ".timestampCreated > :" + timestampParam;
             if (fromTbl.getFirst() != null && fromTbl.getFirst().getClassObj() != null && Treeable.class.isAssignableFrom(fromTbl.getFirst().getClassObj())) {
             	//String keyFld = fromTbl.getFirst().getIdFieldName();
+            	
             	String tbl = fromTbl.getFirst().getShortClassName();
             	String alias = fromTbl.getFirst().getAbbrev();
+            	/*Original Fix for #10212...
             	result += " or exists(select id from " + tbl + " " + alias + " where " + fromTbl.getSecond() + ".nodeNumber between " + alias + ".nodeNumber and " + alias + ".highestChildNodeNumber and " 
             			+ "(" + alias + ".timestampModified > :" + timestampParam + " or " + alias + ".timestampCreated > :" + timestampParam + "))";
+            	... end original fix for #10212 */
+            	
+            	Discipline d = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            	TreeDefIface<?,?,?> td = null;
+            	if ("taxon".equalsIgnoreCase(tbl)) {
+            		td = d.getTaxonTreeDef();
+            	} else if ("geography".equalsIgnoreCase(tbl)) {
+            		td = d.getGeographyTreeDef();
+            	} else if ("lithostrat".equalsIgnoreCase(tbl)) {
+            		td = d.getLithoStratTreeDef();
+            	} else if ("geologictimeperiod".equalsIgnoreCase(tbl)) {
+            		td = d.getGeologicTimePeriodTreeDef();
+            	}
+            	if (td == null && "storage".equalsIgnoreCase(tbl)) {
+            		td = ((Institution)AppContextMgr.getInstance().getClassObject(Institution.class)).getStorageTreeDef();
+            	}
+            	if (td != null) {
+            		List<Object> ranks = BasicSQLUtils.querySingleCol("select rankid from " + tbl.toLowerCase() + "treedefitem where " + tbl.toLowerCase() + "treedefid = " + td.getTreeDefId() + " order by 1 desc"); 
+            		ranks.remove(0);
+            		ranks.remove(ranks.size() - 1);
+            		String joins = "";
+            		String wheres = "";
+            		String prevRank = "";
+            		for (Object rank : ranks) {
+            			String prevAlias = "".equals(prevRank) ? alias : alias + "rnk" + prevRank;
+            			String newAlias = alias + "rnk" + rank;
+            			joins += " left join "  + prevAlias + ".parent " + newAlias;
+            			if (!"".equals(wheres)) wheres += " or ";
+            			wheres += newAlias + ".timestampModified > :" + timestampParam + " or " + newAlias + ".timestampCreated > :" + timestampParam;
+            			prevRank = rank.toString();
+            		}
+            		String subsql = " or exists (select " + alias + ".id from " + tbl + " " + alias + joins + " where " + wheres + ")";
+            		result += subsql;
+           	}
+            	
+
+
+            	
             }
 //            result += " or ";
 //            result += fromTbl.getSecond() + ".timestampModified is null";
