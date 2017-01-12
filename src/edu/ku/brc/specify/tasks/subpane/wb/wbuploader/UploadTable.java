@@ -64,6 +64,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -116,7 +117,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
-import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DateConverter;
@@ -1936,6 +1936,19 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @param formatter
+     * @return true if formatter has variable components and should be use for autofilling
+     */
+    protected boolean hasInconstants(UIFieldFormatterIFace formatter) {
+    	for (UIFieldFormatterField f : formatter.getFields()) {
+    		if (f.getType().equals(UIFieldFormatterField.FieldType.alpha) || f.getType().equals(UIFieldFormatterField.FieldType.alphanumeric)
+    				||  f.getType().equals(UIFieldFormatterField.FieldType.anychar)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    /**
      * @return
      */
     public List<UploadField> getAutoAssignableFields() {
@@ -1945,7 +1958,8 @@ public class UploadTable implements Comparable<UploadTable>
     			if (uf.getField().getFieldInfo() != null) {
     				UIFieldFormatterIFace formatter = uf.getField().getFieldInfo().getFormatter();
     				if (formatter != null 
-    						&& /*(formatter.isNumeric() || (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter)formatter).isNumericCatalogNumber())) && */formatter.isIncrementer()) {
+    						/*&& (formatter.isNumeric() || (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter)formatter).isNumericCatalogNumber())) && */
+    						&& formatter.isIncrementer() && !hasInconstants(formatter)) {
     					result.add(uf);
     				}
     			}
