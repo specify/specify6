@@ -1944,7 +1944,8 @@ public class UploadTable implements Comparable<UploadTable>
     		for (UploadField uf : ufs) {
     			if (uf.getField().getFieldInfo() != null) {
     				UIFieldFormatterIFace formatter = uf.getField().getFieldInfo().getFormatter();
-    				if (formatter != null && (formatter.isNumeric() || (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter)formatter).isNumericCatalogNumber())) && formatter.isIncrementer()) {
+    				if (formatter != null 
+    						&& /*(formatter.isNumeric() || (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter)formatter).isNumericCatalogNumber())) && */formatter.isIncrementer()) {
     					result.add(uf);
     				}
     			}
