@@ -44,6 +44,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
@@ -960,7 +961,17 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
             obj.collectingEventAttrs.add(newCEA);
             newCEA.setCollectingEvent(obj);
         }
-         
+        
+        if (paleoContext != null) {
+        	Discipline d = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        	if (d.getIsPaleoContextEmbedded()) {
+        		PaleoContext newPc = (PaleoContext)paleoContext.clone();
+        		newPc.setCollectingEvents(new HashSet<CollectingEvent>());
+        		newPc.getCollectingEvents().add(obj);
+        		obj.paleoContext = newPc;
+        	}
+        }
+
         return obj;
     }
 

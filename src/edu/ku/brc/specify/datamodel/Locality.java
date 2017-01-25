@@ -42,6 +42,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -1195,6 +1196,16 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
             llp.setLocality(newLocality);
         }
         
+        if (paleoContext != null) {
+        	Discipline d = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        	if (d.getIsPaleoContextEmbedded()) {
+        		PaleoContext newPc = (PaleoContext)paleoContext.clone();
+        		newPc.setLocalities(new HashSet<Locality>());
+        		newPc.getLocalities().add(newLocality);
+        		newLocality.paleoContext = newPc;
+        	}
+        }
+        		
         newLocality.setGUID();
         
         return newLocality;
