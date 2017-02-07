@@ -1957,6 +1957,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	
             	String tbl = fromTbl.getFirst().getShortClassName();
             	String alias = fromTbl.getFirst().getAbbrev();
+            	String joinAlias = fromTbl.getSecond();
             	/*Original Fix for #10212...
             	result += " or exists(select id from " + tbl + " " + alias + " where " + fromTbl.getSecond() + ".nodeNumber between " + alias + ".nodeNumber and " + alias + ".highestChildNodeNumber and " 
             			+ "(" + alias + ".timestampModified > :" + timestampParam + " or " + alias + ".timestampCreated > :" + timestampParam + "))";
@@ -1981,17 +1982,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		ranks.remove(0);
             		ranks.remove(ranks.size() - 1);
             		String joins = "";
-            		String wheres = "";
+            		String whenWheres = "";
+            		String recWheres = "";
             		String prevRank = "";
             		for (Object rank : ranks) {
             			String prevAlias = "".equals(prevRank) ? alias : alias + "rnk" + prevRank;
             			String newAlias = alias + "rnk" + rank;
             			joins += " left join "  + prevAlias + ".parent " + newAlias;
-            			if (!"".equals(wheres)) wheres += " or ";
-            			wheres += newAlias + ".timestampModified > :" + timestampParam + " or " + newAlias + ".timestampCreated > :" + timestampParam;
+            			if (!"".equals(whenWheres)) whenWheres += " or ";
+            			if (!"".equals(recWheres)) recWheres += " or ";
+            			whenWheres += newAlias + ".timestampModified > :" + timestampParam + " or " + newAlias + ".timestampCreated > :" + timestampParam;
+            			recWheres +=  joinAlias + ".id=" + newAlias + ".id";
             			prevRank = rank.toString();
             		}
-            		String subsql = " or exists (select " + alias + ".id from " + tbl + " " + alias + joins + " where " + wheres + ")";
+            		//String subsql = " or exists (select " + alias + ".id from " + tbl + " " + alias + joins + " where (" + whenWheres + ") and (" + recWheres + "))";
+            		String subsql = " or exists (select " + alias + ".id from " + tbl + " " + alias + joins + " where (" + whenWheres + ") and (" + joinAlias + ".id=" + alias + ".id" + "))";
             		result += subsql;
            	}
             	
