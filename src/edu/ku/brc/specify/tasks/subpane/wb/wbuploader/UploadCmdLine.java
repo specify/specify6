@@ -25,12 +25,13 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class UploadCmdLine extends CmdAppBase {
 
-	private static String[] myargkeys = {"-b","-c","-x"};
+	private static String[] myargkeys = {"-b","-c","-x","-k"};
 	
 	private String wbId = null;
 	private Workbench wb = null;
 	private String collection = null; 
 	private boolean doCommit = true;
+	private boolean doMatch = true;
 	
 	/**
 	 * 
@@ -57,7 +58,7 @@ public class UploadCmdLine extends CmdAppBase {
         	DB db = new DB();
         	Uploader u =  new Uploader(db, new UploadData(maps, wb.getWorkbenchRowsAsList()), null, wb, 
 				wb.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), false);
-        	return u.uploadItSansUI(doCommit);
+        	return u.uploadItSansUI(doCommit, doMatch);
         } catch (Exception ex) {
         	ex.printStackTrace();
         	return false;
@@ -71,7 +72,11 @@ public class UploadCmdLine extends CmdAppBase {
 		wbId = getArg("-b");
 		collection = getArg("-c");
 		String x = getArg("-x");
-		doCommit = x == null || "false".equalsIgnoreCase(x);
+		doCommit = x == null || "true".equalsIgnoreCase(x);
+		//doCommit = false;
+		x = getArg("-k");
+		doMatch = x == null || "true".equalsIgnoreCase(x);
+		//doMatch = !doCommit;
 	}
 
 	

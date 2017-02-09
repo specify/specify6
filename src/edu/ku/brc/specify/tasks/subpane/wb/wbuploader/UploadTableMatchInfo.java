@@ -3,7 +3,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import java.util.Vector;
+import java.util.List;
 
 import edu.ku.brc.ui.UIRegistry;
 
@@ -20,7 +20,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class UploadTableMatchInfo
 {
 	protected final String tblTitle;
-	protected final Vector<Integer> colIdxs;
+	protected final List<Integer> colIdxs;
 	protected final int numberOfMatches;
 	protected final boolean isBlank;
 	protected final boolean isSkipped;
@@ -30,7 +30,7 @@ public class UploadTableMatchInfo
 	 * @param match
 	 * @param uploadTable
 	 */
-	public UploadTableMatchInfo(String tblTitle, int numberOfMatches, Vector<Integer> colIdxs, boolean isBlank, boolean isSkipped)
+	public UploadTableMatchInfo(String tblTitle, int numberOfMatches, List<Integer> colIdxs, boolean isBlank, boolean isSkipped)
 	{
 		super();
 		this.tblTitle = tblTitle;
@@ -50,7 +50,7 @@ public class UploadTableMatchInfo
 	/**
 	 * @return the colIdxs
 	 */
-	public Vector<Integer> getColIdxs() 
+	public List<Integer> getColIdxs() 
 	{
 		return colIdxs;
 	}

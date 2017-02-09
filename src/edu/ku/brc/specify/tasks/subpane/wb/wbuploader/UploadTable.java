@@ -84,6 +84,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
+import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
@@ -255,7 +256,15 @@ public class UploadTable implements Comparable<UploadTable>
      * If true then Match Status will be displayed
      */
     protected boolean									checkMatchInfo                = false;
+    protected int                                       matchCountForCurrentRow      = 0;
     /**
+	 * @return the multipleMatchCountForRow
+	 */
+	public int getMatchCountForCurrentRow() {
+		return matchCountForCurrentRow;
+	}
+
+	/**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
      */
     protected Vector<MatchRestriction>              restrictedValsForAddNewMatch = null;
@@ -1580,6 +1589,13 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                 	//System.out.println(setterName);
                 	log.info(setterName);
+                } 
+                else if (tblClass.equals(CollectionRelationship.class))
+                {
+                	if ("LeftSideCollection".equals(setterName) || "RightSideCollection".equals(setterName)) {
+                		setterName = setterName.replace("Collection", "");
+                	}
+                		
                 }
                 pt.setSetter(tblClass.getMethod("set" + setterName, parType));
                 pt.setGetter(tblClass.getMethod("get" + setterName, (Class<?>[] )null));
@@ -4087,6 +4103,7 @@ public class UploadTable implements Comparable<UploadTable>
             	return true;
             }
             
+            matchCountForCurrentRow = matches.size();
             if (matches.size() == 1)
             {
                 match = matches.get(0);
@@ -4248,7 +4265,7 @@ public class UploadTable implements Comparable<UploadTable>
                                                        final Vector<MatchRestriction> restrictedVals,
                                                        int recNum) throws UploaderException
     {
-        return new MatchHandler(this).dealWithMultipleMatches(matches, restrictedVals, recNum);
+    	return new MatchHandler(this).dealWithMultipleMatches(matches, restrictedVals, recNum);
     }
 
     /**
@@ -5408,6 +5425,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRow(int row) throws UploaderException
     {
         wbCurrentRow = row;
+        matchCountForCurrentRow = 0;
         if (!skipRow)
         {
             writeRowOrNot(false, false);

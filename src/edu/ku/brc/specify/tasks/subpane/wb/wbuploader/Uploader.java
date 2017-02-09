@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -4484,29 +4485,64 @@ public class Uploader implements ActionListener, KeyListener
     	
     }
 
-    public List<UploadTableInvalidValue> validateDataSansUI() {
-        List<UploadTableInvalidValue> result = new ArrayList<UploadTableInvalidValue>();
-      	try {
+    public Pair<List<UploadTableInvalidValue>, List<Pair<Integer,List<UploadTableMatchInfo>>>> validateDataSansUI(boolean match) {
+    	List<UploadTableInvalidValue> invalids = new ArrayList<UploadTableInvalidValue>();
+    	List<Pair<Integer, List<UploadTableMatchInfo>>> matches = new ArrayList<Pair<Integer, List<UploadTableMatchInfo>>>();
+    	Pair<List<UploadTableInvalidValue>, List<Pair<Integer,List<UploadTableMatchInfo>>>> result = new Pair<List<UploadTableInvalidValue>, List<Pair<Integer,List<UploadTableMatchInfo>>>>(invalids, matches); 
+      	boolean fail = false;
+    	try {
             for (UploadTable tbl : uploadTables) {
             	tbl.clearBlankness();
             }
             for (UploadTable tbl : uploadTables) {
-            	result.addAll(validateLengths(tbl, -1, -1));
-                result.addAll(tbl.validateValues(uploadData));
+            	invalids.addAll(validateLengths(tbl, -1, -1));
+                invalids.addAll(tbl.validateValues(uploadData));
             }
-            Collections.sort(result);
-            return result;
+            Collections.sort(invalids);
       	} catch (Exception ex) {
-    	  result.clear();
-    	  result.add(new UploadTableInvalidValue("Exception while validating. FAIL.", null, -1, ex));
+    	  fail = true;
+      	  invalids.clear();
+    	  invalids.add(new UploadTableInvalidValue("Exception while validating. FAIL.", null, -1, ex));
       	}
+    	if (match && invalids.size() > 0 /*if no-invalids then matching is done during upload*/ && !fail) {
+    		try {
+    			int invalidIdx = 0;
+				List<UploadTableInvalidValue> invalidsForRow = new ArrayList<UploadTableInvalidValue>(); 
+    			for (int r = uploadStartRow; r < uploadData.getRows(); r++) {
+    				boolean doMatch = true;
+    				if (invalidIdx < invalids.size()) {
+    					while (invalidIdx < invalids.size() && invalids.get(invalidIdx).getRow() < r) {
+    						invalidIdx++;
+    					}
+    					doMatch = invalidIdx >= invalids.size() || invalids.get(invalidIdx).getRow() > r;
+    				}
+    				if (doMatch) {
+    					List<UploadTableMatchInfo> m = matchData(r, -1, invalidsForRow);
+    					if (m != null && m.size() > 0) {
+    						matches.add(new Pair<Integer, List<UploadTableMatchInfo>>(r, m));
+    					}
+    				}
+    			}
+    		} catch (Exception ex) {
+    	    	  fail = true;
+    	      	  invalids.clear();
+    	    	  invalids.add(new UploadTableInvalidValue("Exception while validating. FAIL.", null, -1, ex));
+    	    }
+    	}
       	return result;
     }
 
+    
     /**
      * Uploads dataset.
      */
-    public boolean uploadItSansUI(boolean doCommit)  {
+    public boolean uploadItSansUI(boolean doCommit, boolean doMatches)  {
+    	    
+    		if (doMatches && doCommit) {
+    	    	System.out.println("Error: invalid arguments. doCommit must be false when doMatches is true.");
+    	    	return false;
+    	    }
+    	    
         	List<UploadMessage> structureErrors = null;
         	boolean success = false;
         	try {
@@ -4523,20 +4559,43 @@ public class Uploader implements ActionListener, KeyListener
             	return false;
             }
             
-            List<UploadTableInvalidValue> invalidities = validateDataSansUI();
+            setDefaultMatchStatus();
+            Pair<List<UploadTableInvalidValue>, List<Pair<Integer, List<UploadTableMatchInfo>>>> vms = validateDataSansUI(doMatches);
+            List<UploadTableInvalidValue> invalidities = vms.getFirst();
             if (invalidities.size() != 0) {
             	System.out.println("Error: dataset is not uploadable because it contains invalid cells.");
                 for (UploadTableInvalidValue invalidity : invalidities) {
-                	System.out.println("[" + invalidity.getRow() + " [" + invalidity.getCols() + "]] " + invalidity.getDescription());
+                	for (Integer col : invalidity.getCols()) {
+                		System.out.println("[" + invalidity.getRow() + " [" + col + "]] " + invalidity.getDescription());
+                	}
                 	//System.out.println(invalidity.getMsg());
                 }
+            }
+            List<Pair<Integer, List<UploadTableMatchInfo>>> matchInfos = vms.getSecond();
+            if (matchInfos.size() > 0) {
+            	for (Pair<Integer, List<UploadTableMatchInfo>> matchInfo : matchInfos) {
+            		for (UploadTableMatchInfo rowInfo : matchInfo.getSecond()) {
+            			if (!rowInfo.isSkipped() && rowInfo.getNumberOfMatches() != 1) {
+            				for (Integer col : rowInfo.getColIdxs()) {
+            					System.out.println("mi[" + matchInfo.getFirst() + " [" + col + "]] " + rowInfo.getDescription());
+            				}
+            			}
+            		}
+            	}
+            }
+            
+            if (invalidities.size() > 0/* || doMatches*/) {
             	return false;
             }
             
             //set non-interactive match options
             for (UploadTable t : uploadTables) {
                 UploadMatchSetting matchSet = t.getMatchSetting();
-                matchSet.setMode(UploadMatchSetting.SKIP_ROW_MODE);
+                if (doMatches) {
+                	matchSet.setMode(UploadMatchSetting.PICK_FIRST_MODE);
+                } else {
+                	matchSet.setMode(UploadMatchSetting.SKIP_ROW_MODE);
+                }
                 matchSet.setRemember(true);
                 matchSet.setMatchEmptyValues(true);
             }
@@ -4547,6 +4606,12 @@ public class Uploader implements ActionListener, KeyListener
             	buildIdentifier();
             	setOpKiller(null);
             	prepareToUpload(theSession);
+            	HashMap<UploadTable, HashMap<Integer,Integer>> uploadedRecs = new HashMap<UploadTable, HashMap<Integer,Integer>>();
+            	for (UploadTable ut : uploadTables) {
+            		if (ut.isCheckMatchInfo()) {
+            			uploadedRecs.put(ut, new HashMap<Integer, Integer>());
+            		}
+            	}
             	int rowsSinceFlush = 0;
             	try {
             		Integer updateTblId = getUpdateTableId();
@@ -4569,7 +4634,9 @@ public class Uploader implements ActionListener, KeyListener
             						}
             					} catch (UploaderException ex) {
             						if (ex.getStatus() == UploaderException.ABORT_ROW) {
-            							ex.printStackTrace();
+            							if (!doMatches || !(ex instanceof UploaderMatchSkipException)) {
+            								ex.printStackTrace();
+            							}
             							abortRow(ex, rowUploading);
             							rowAborted = true;
             							break;
@@ -4581,6 +4648,71 @@ public class Uploader implements ActionListener, KeyListener
 
             			if (!rowAborted) {
             				theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
+            			}
+            			if (!rowAborted && doMatches) {
+            				doUploadSansUIMatchProcessingStuff(uploadedRecs, matchInfos);
+//            				List<UploadTableMatchInfo> mis = new ArrayList<UploadTableMatchInfo>();
+//            				List<UploadTable> prevMatches = new ArrayList<UploadTable>();
+//            				for (UploadTable t : uploadTables) {
+//            					if (doMatches && t.isCheckMatchInfo() && !t.isSkipMatching()) {
+//            						int mCount = t.getMatchCountForCurrentRow();
+//            						HashMap<Integer, Integer> recs = mCount > 1 ? null : uploadedRecs.get(t);
+//            						UploadedRecordInfo ur = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? null : t.getUploadedRecs().last();
+//            						Integer seq = ur == null ? 0 : ur.getSeq();
+//            						List<Integer> colIdxs = new ArrayList<Integer>();
+//            						for (UploadField uf : t.getUploadFields().get(seq)) {
+//            							if (uf.getIndex() != -1) {
+//            								colIdxs.add(uf.getIndex());
+//            							}
+//            						}
+//            						if ((mCount == 0 && t.getCurrentRecord(seq) != null)|| mCount > 1) {
+//            							//a record was  added or multiple matches
+//            							boolean isSkipped = false;
+//            							for (UploadTable p : prevMatches) {
+//            								if (t.getParentTableEntry(p) != null) {
+//            									isSkipped = true;
+//            									break;
+//            								}
+//            							}
+//            							mis.add(new UploadTableMatchInfo(t.getTblTitle(), mCount, colIdxs, false, isSkipped));  
+//            							if (Treeable.class.isAssignableFrom(t.getTblClass()) || Locality.class.equals(t.getTblClass())) {
+//            								prevMatches.add(t);
+//            							}
+//            							if (mCount == 0) {
+//            								if (recs != null && ur != null) {
+//            									recs.put(ur.getKey(), ur.getSeq());
+//            								} else {
+//            									System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
+//            								}
+//            							}
+//            						} else if (mCount == 1) {
+//            							//figure out if record was added earlier in the upload
+//            							if (recs != null && t.getCurrentRecord(seq) != null) {
+//            								Integer oseq = recs.get(t.getCurrentRecord(seq).getId());
+//            								if (oseq != null) {
+//                    							boolean isSkipped = false;
+//                    							for (UploadTable p : prevMatches) {
+//                    								if (t.getParentTableEntry(p) != null) {
+//                    									isSkipped = true;
+//                    									break;
+//                    								}
+//                    							}
+//            									mis.add(new UploadTableMatchInfo(t.getTblTitle(), 0, colIdxs, false, isSkipped));              								
+//                    							if (Treeable.class.isAssignableFrom(t.getTblClass()) || Locality.class.equals(t.getTblClass())) {
+//                    								prevMatches.add(t);
+//                    							}
+//            								}
+//            							} else {
+//            								System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
+//            							}
+//            						} else {
+//            							//what the hell?
+//            						}
+//            					}
+//            				}
+//            				if (mis.size() > 0) {
+//            					matchInfos.add(new Pair<Integer, List<UploadTableMatchInfo>>(rowUploading, mis));
+//            				}
             			}
             			for (UploadTable t : uploadTables) {
             				t.clearRecords();
@@ -4607,6 +4739,17 @@ public class Uploader implements ActionListener, KeyListener
             			setOpKiller(ex);
             		}
             	}
+                if (matchInfos.size() > 0) {
+                	for (Pair<Integer, List<UploadTableMatchInfo>> matchInfo : matchInfos) {
+                		for (UploadTableMatchInfo rowInfo : matchInfo.getSecond()) {
+                			if (!rowInfo.isSkipped() && rowInfo.getNumberOfMatches() != 1) {
+                				for (Integer col : rowInfo.getColIdxs()) {
+                					System.out.println("mi[" + matchInfo.getFirst() + " [" + col + "]] " + rowInfo.getDescription());
+                				}
+                			}
+                		}
+                	}
+                }
             	currentTask = null;
             	if (success) {
             		if (doCommit) {
@@ -4633,6 +4776,68 @@ public class Uploader implements ActionListener, KeyListener
             return success;
     }
 
+    protected boolean isSkippedMatchInfo(List<UploadTable> prevMatches, UploadTable t) {
+		boolean isSkipped = false;
+		for (UploadTable p : prevMatches) {
+			if (t.getParentTableEntry(p) != null) {
+				isSkipped = true;
+				break;
+			}
+		} 
+		return isSkipped;
+    }
+    
+    protected void addMatchInfo(List<UploadTableMatchInfo> mis, List<UploadTable> prevMatches, UploadTable t, int mCount, List<Integer> colIdxs) {
+		mis.add(new UploadTableMatchInfo(t.getTblTitle(), mCount, colIdxs, false, isSkippedMatchInfo(prevMatches, t)));  
+		if (Treeable.class.isAssignableFrom(t.getTblClass()) || Locality.class.equals(t.getTblClass())) {
+			prevMatches.add(t);
+		}    	
+    }
+    protected void doUploadSansUIMatchProcessingStuff(HashMap<UploadTable, HashMap<Integer,Integer>> uploadedRecs, List<Pair<Integer, List<UploadTableMatchInfo>>> matchInfos) {
+		List<UploadTableMatchInfo> mis = new ArrayList<UploadTableMatchInfo>();
+		List<UploadTable> prevMatches = new ArrayList<UploadTable>();
+		for (UploadTable t : uploadTables) {
+			if (t.isCheckMatchInfo() && !t.isSkipMatching()) {
+				int mCount = t.getMatchCountForCurrentRow();
+				HashMap<Integer, Integer> recs = mCount > 1 ? null : uploadedRecs.get(t);
+				UploadedRecordInfo ur = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? null : t.getUploadedRecs().last();
+				Integer seq = ur == null ? 0 : ur.getSeq();
+				List<Integer> colIdxs = new ArrayList<Integer>();
+				for (UploadField uf : t.getUploadFields().get(seq)) {
+					if (uf.getIndex() != -1) {
+						colIdxs.add(uf.getIndex());
+					}
+				}
+				if ((mCount == 0 && t.getCurrentRecord(seq) != null)|| mCount > 1) {
+					//a record was  added or multiple matches
+					addMatchInfo(mis, prevMatches, t, mCount, colIdxs);
+					if (mCount == 0) {
+						if (recs != null && ur != null) {
+							recs.put(ur.getKey(), ur.getSeq());
+						} else {
+							System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
+						}
+					}
+				} else if (mCount == 1) {
+					//figure out if record was added earlier in the upload
+					if (recs != null && t.getCurrentRecord(seq) != null) {
+						Integer oseq = recs.get(t.getCurrentRecord(seq).getId());
+						if (oseq != null) {
+							addMatchInfo(mis, prevMatches, t, 0, colIdxs);
+						}
+					} else {
+						System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
+					}
+				} else {
+					//what the hell?
+				}
+			}
+		}
+		if (mis.size() > 0) {
+			matchInfos.add(new Pair<Integer, List<UploadTableMatchInfo>>(rowUploading, mis));
+		}
+
+    }
     /**
      * @param cause
      * @param row
