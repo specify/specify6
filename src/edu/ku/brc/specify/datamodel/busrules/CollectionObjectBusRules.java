@@ -728,7 +728,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 cachedColEve = null;
             } else
             {
-                log.error("The CE "+cachedColEve+" was null or the CO "+colObj+" was null");
+                log.warn("The CE "+cachedColEve+" was null or the CO "+colObj+" was null");
             }     
         }
   
@@ -762,7 +762,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 cachedPalCon = null;
             } else
             {
-                log.error("The PC "+cachedPalCon+" was null or the CO "+colObj+" was null");
+                log.warn("The PC "+cachedPalCon+" was null or the CO "+colObj+" was null");
             }     
         }
 

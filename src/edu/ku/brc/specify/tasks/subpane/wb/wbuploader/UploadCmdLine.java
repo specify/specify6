@@ -18,6 +18,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tools.export.CmdAppBase;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timo
@@ -25,13 +26,14 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class UploadCmdLine extends CmdAppBase {
 
-	private static String[] myargkeys = {"-b","-c","-x","-k"};
+	private static String[] myargkeys = {"-b","-c","-x","-k", "-n"};
 	
 	private String wbId = null;
 	private Workbench wb = null;
 	private String collection = null; 
 	private boolean doCommit = true;
 	private boolean doMatch = true;
+	private String multipleMatchAction = "skip";
 	
 	/**
 	 * 
@@ -58,25 +60,45 @@ public class UploadCmdLine extends CmdAppBase {
         	DB db = new DB();
         	Uploader u =  new Uploader(db, new UploadData(maps, wb.getWorkbenchRowsAsList()), null, wb, 
 				wb.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), false);
-        	return u.uploadItSansUI(doCommit, doMatch);
+        	return u.uploadItSansUI(doCommit, doMatch, multipleMatchAction);
         } catch (Exception ex) {
         	ex.printStackTrace();
         	return false;
         }
 	}
+	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tools.export.CmdAppBase#checkArg(edu.ku.brc.util.Pair)
+	 */
+	@Override
+	protected String checkArg(Pair<String, String> arg) {
+		if (arg.getFirst().equals("-n")) {
+			if (arg.getSecond() != null && !("skip".equalsIgnoreCase(arg.getSecond())  || "new".equalsIgnoreCase(arg.getSecond())
+					|| "pick".equalsIgnoreCase(arg.getSecond()))) {
+				return "-n must be 'skip', 'pick', or 'new'";
+			} else {
+				return "";
+			}
+		} else {
+			return super.checkArg(arg);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tools.export.CmdAppBase#setMembers()
 	 */
+	@Override
 	protected void setMembers() throws Exception {
 		super.setMembers();
 		wbId = getArg("-b");
 		collection = getArg("-c");
 		String x = getArg("-x");
 		doCommit = x == null || "true".equalsIgnoreCase(x);
-		//doCommit = false;
 		x = getArg("-k");
 		doMatch = x == null || "true".equalsIgnoreCase(x);
-		//doMatch = !doCommit;
+		x = getArg("-n");
+		multipleMatchAction =  x == null ? "skip" : x;
 	}
 
 	

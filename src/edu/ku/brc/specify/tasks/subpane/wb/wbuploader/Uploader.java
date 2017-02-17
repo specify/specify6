@@ -4536,7 +4536,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Uploads dataset.
      */
-    public boolean uploadItSansUI(boolean doCommit, boolean doMatches)  {
+    public boolean uploadItSansUI(boolean doCommit, boolean doMatches, String multipleMatchAction)  {
     	    
     		if (doMatches && doCommit) {
     	    	System.out.println("Error: invalid arguments. doCommit must be false when doMatches is true.");
@@ -4594,7 +4594,13 @@ public class Uploader implements ActionListener, KeyListener
                 if (doMatches) {
                 	matchSet.setMode(UploadMatchSetting.PICK_FIRST_MODE);
                 } else {
-                	matchSet.setMode(UploadMatchSetting.SKIP_ROW_MODE);
+                	if ("new".equalsIgnoreCase(multipleMatchAction)) {
+                		matchSet.setMode(UploadMatchSetting.ADD_NEW_MODE);
+                	} else if ("pick".equalsIgnoreCase(multipleMatchAction)) {
+                		matchSet.setMode(UploadMatchSetting.PICK_FIRST_MODE);
+                	} else {
+                		matchSet.setMode(UploadMatchSetting.SKIP_ROW_MODE);
+                	}
                 }
                 matchSet.setRemember(true);
                 matchSet.setMatchEmptyValues(true);
@@ -4648,71 +4654,26 @@ public class Uploader implements ActionListener, KeyListener
 
             			if (!rowAborted) {
             				theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
-            			}
-            			if (!rowAborted && doMatches) {
-            				doUploadSansUIMatchProcessingStuff(uploadedRecs, matchInfos);
-//            				List<UploadTableMatchInfo> mis = new ArrayList<UploadTableMatchInfo>();
-//            				List<UploadTable> prevMatches = new ArrayList<UploadTable>();
-//            				for (UploadTable t : uploadTables) {
-//            					if (doMatches && t.isCheckMatchInfo() && !t.isSkipMatching()) {
-//            						int mCount = t.getMatchCountForCurrentRow();
-//            						HashMap<Integer, Integer> recs = mCount > 1 ? null : uploadedRecs.get(t);
-//            						UploadedRecordInfo ur = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? null : t.getUploadedRecs().last();
-//            						Integer seq = ur == null ? 0 : ur.getSeq();
-//            						List<Integer> colIdxs = new ArrayList<Integer>();
-//            						for (UploadField uf : t.getUploadFields().get(seq)) {
-//            							if (uf.getIndex() != -1) {
-//            								colIdxs.add(uf.getIndex());
-//            							}
-//            						}
-//            						if ((mCount == 0 && t.getCurrentRecord(seq) != null)|| mCount > 1) {
-//            							//a record was  added or multiple matches
-//            							boolean isSkipped = false;
-//            							for (UploadTable p : prevMatches) {
-//            								if (t.getParentTableEntry(p) != null) {
-//            									isSkipped = true;
-//            									break;
-//            								}
-//            							}
-//            							mis.add(new UploadTableMatchInfo(t.getTblTitle(), mCount, colIdxs, false, isSkipped));  
-//            							if (Treeable.class.isAssignableFrom(t.getTblClass()) || Locality.class.equals(t.getTblClass())) {
-//            								prevMatches.add(t);
-//            							}
-//            							if (mCount == 0) {
-//            								if (recs != null && ur != null) {
-//            									recs.put(ur.getKey(), ur.getSeq());
-//            								} else {
-//            									System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
-//            								}
-//            							}
-//            						} else if (mCount == 1) {
-//            							//figure out if record was added earlier in the upload
-//            							if (recs != null && t.getCurrentRecord(seq) != null) {
-//            								Integer oseq = recs.get(t.getCurrentRecord(seq).getId());
-//            								if (oseq != null) {
-//                    							boolean isSkipped = false;
-//                    							for (UploadTable p : prevMatches) {
-//                    								if (t.getParentTableEntry(p) != null) {
-//                    									isSkipped = true;
-//                    									break;
-//                    								}
-//                    							}
-//            									mis.add(new UploadTableMatchInfo(t.getTblTitle(), 0, colIdxs, false, isSkipped));              								
-//                    							if (Treeable.class.isAssignableFrom(t.getTblClass()) || Locality.class.equals(t.getTblClass())) {
-//                    								prevMatches.add(t);
-//                    							}
-//            								}
-//            							} else {
-//            								System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
-//            							}
-//            						} else {
-//            							//what the hell?
-//            						}
-//            					}
-//            				}
-//            				if (mis.size() > 0) {
-//            					matchInfos.add(new Pair<Integer, List<UploadTableMatchInfo>>(rowUploading, mis));
-//            				}
+                			if (doMatches) {
+                				doUploadSansUIMatchProcessingStuff(uploadedRecs, matchInfos);
+                			} else {
+                				if ("new".equalsIgnoreCase(multipleMatchAction) || "pick".equalsIgnoreCase(multipleMatchAction)) {
+                					for (UploadTable t : uploadTables) {
+                						Integer[] m = t.getMatchCountForCurrentRow();
+                						for (int i = 0; i < m.length; i++) {
+                							if (m[i] > 1) {
+                								String msg = "row " + rowUploading + ": multiple matches for " + t + ". ";
+                								if ("new".equalsIgnoreCase(multipleMatchAction)) {
+                									msg += " A new record was created.";
+                								} else {
+                									msg += " Record " + t.getCurrentRecord(i).getId() + " was picked.";
+                								}
+                								System.out.println(msg);
+                							}
+                						}
+                					}
+                				}
+                			}
             			}
             			for (UploadTable t : uploadTables) {
             				t.clearRecords();
@@ -4798,38 +4759,44 @@ public class Uploader implements ActionListener, KeyListener
 		List<UploadTable> prevMatches = new ArrayList<UploadTable>();
 		for (UploadTable t : uploadTables) {
 			if (t.isCheckMatchInfo() && !t.isSkipMatching()) {
-				int mCount = t.getMatchCountForCurrentRow();
-				HashMap<Integer, Integer> recs = mCount > 1 ? null : uploadedRecs.get(t);
-				UploadedRecordInfo ur = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? null : t.getUploadedRecs().last();
-				Integer seq = ur == null ? 0 : ur.getSeq();
-				List<Integer> colIdxs = new ArrayList<Integer>();
-				for (UploadField uf : t.getUploadFields().get(seq)) {
-					if (uf.getIndex() != -1) {
-						colIdxs.add(uf.getIndex());
-					}
+				Integer[] mCount = t.getMatchCountForCurrentRow();
+				SortedSet<UploadedRecordInfo> urs = t.getUploadedRecs() == null || t.getUploadedRecs().size() == 0 ? 
+						new TreeSet<UploadedRecordInfo>() : t.getUploadedRecs().tailSet(new UploadedRecordInfo(null, rowUploading, 0, null));
+				if (urs.size() == 0) {
+					urs.add(new UploadedRecordInfo(null, rowUploading, 0, null));
 				}
-				if ((mCount == 0 && t.getCurrentRecord(seq) != null)|| mCount > 1) {
-					//a record was  added or multiple matches
-					addMatchInfo(mis, prevMatches, t, mCount, colIdxs);
-					if (mCount == 0) {
-						if (recs != null && ur != null) {
-							recs.put(ur.getKey(), ur.getSeq());
+				for (UploadedRecordInfo ur : urs) {
+					Integer seq = ur == null ? 0 : ur.getSeq();
+					List<Integer> colIdxs = new ArrayList<Integer>();
+					for (UploadField uf : t.getUploadFields().get(seq)) {
+						if (uf.getIndex() != -1) {
+							colIdxs.add(uf.getIndex());
+						}
+					}
+					HashMap<Integer, Integer> recs = mCount[seq] > 1 ? null : uploadedRecs.get(t);
+					if ((mCount[seq] == 0 && t.getCurrentRecord(seq) != null)|| mCount[seq] > 1) {
+						//a record was  added or multiple matches
+						addMatchInfo(mis, prevMatches, t, mCount[seq], colIdxs);
+						if (mCount[seq] == 0) {
+							if (recs != null && ur != null) {
+								recs.put(ur.getKey(), ur.getSeq());
+							} else {
+								System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
+							}
+						}
+					} else if (mCount[seq] == 1) {
+						//figure out if record was added earlier in the upload
+						if (recs != null && t.getCurrentRecord(seq) != null) {
+							Integer oseq = recs.get(t.getCurrentRecord(seq).getId());
+							if (oseq != null) {
+								addMatchInfo(mis, prevMatches, t, 0, colIdxs);
+							}
 						} else {
 							System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
 						}
-					}
-				} else if (mCount == 1) {
-					//figure out if record was added earlier in the upload
-					if (recs != null && t.getCurrentRecord(seq) != null) {
-						Integer oseq = recs.get(t.getCurrentRecord(seq).getId());
-						if (oseq != null) {
-							addMatchInfo(mis, prevMatches, t, 0, colIdxs);
-						}
 					} else {
-						System.out.println("Error: " + t + " is not enhashed or beset for row " + rowUploading);
+						//what the hell?
 					}
-				} else {
-					//what the hell?
 				}
 			}
 		}

@@ -256,11 +256,11 @@ public class UploadTable implements Comparable<UploadTable>
      * If true then Match Status will be displayed
      */
     protected boolean									checkMatchInfo                = false;
-    protected int                                       matchCountForCurrentRow      = 0;
+    protected Integer[]                                 matchCountForCurrentRow;
     /**
 	 * @return the multipleMatchCountForRow
 	 */
-	public int getMatchCountForCurrentRow() {
+	public Integer[] getMatchCountForCurrentRow() {
 		return matchCountForCurrentRow;
 	}
 
@@ -581,6 +581,7 @@ public class UploadTable implements Comparable<UploadTable>
         		ut.setMatchRecordId(true);
         	}
         }
+        matchCountForCurrentRow = new Integer[uploadFields.size()];
     }
 
     /**
@@ -4103,7 +4104,7 @@ public class UploadTable implements Comparable<UploadTable>
             	return true;
             }
             
-            matchCountForCurrentRow = matches.size();
+            matchCountForCurrentRow[recNum] = matches.size();
             if (matches.size() == 1)
             {
                 match = matches.get(0);
@@ -5425,7 +5426,9 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRow(int row) throws UploaderException
     {
         wbCurrentRow = row;
-        matchCountForCurrentRow = 0;
+        for (int i = 0; i < matchCountForCurrentRow.length; i++) {
+        	matchCountForCurrentRow[i] = 0;
+        }
         if (!skipRow)
         {
             writeRowOrNot(false, false);
