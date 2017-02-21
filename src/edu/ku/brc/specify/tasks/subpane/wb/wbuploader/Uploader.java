@@ -4521,6 +4521,8 @@ public class Uploader implements ActionListener, KeyListener
     					if (m != null && m.size() > 0) {
     						matches.add(new Pair<Integer, List<UploadTableMatchInfo>>(r, m));
     					}
+    				} else {
+    					matches.add(new Pair<Integer, List<UploadTableMatchInfo>>(r, null));
     				}
     			}
     		} catch (Exception ex) {
@@ -4573,14 +4575,22 @@ public class Uploader implements ActionListener, KeyListener
             }
             List<Pair<Integer, List<UploadTableMatchInfo>>> matchInfos = vms.getSecond();
             if (matchInfos.size() > 0) {
+                List<String> moreMsgs = new ArrayList<String>();
             	for (Pair<Integer, List<UploadTableMatchInfo>> matchInfo : matchInfos) {
-            		for (UploadTableMatchInfo rowInfo : matchInfo.getSecond()) {
-            			if (!rowInfo.isSkipped() && rowInfo.getNumberOfMatches() != 1) {
-            				for (Integer col : rowInfo.getColIdxs()) {
-            					System.out.println("mi[" + matchInfo.getFirst() + " [" + col + "]] " + rowInfo.getDescription());
+            		if (matchInfo.getSecond() != null) {
+            			for (UploadTableMatchInfo rowInfo : matchInfo.getSecond()) {
+            				if (!rowInfo.isSkipped() && rowInfo.getNumberOfMatches() != 1) {
+            					for (Integer col : rowInfo.getColIdxs()) {
+            						System.out.println("mi[" + matchInfo.getFirst() + " [" + col + "]] " + rowInfo.getDescription());
+            					}
             				}
             			}
+            		} else {
+            			moreMsgs.add("Row " + (matchInfo.getFirst()+1) + " was not matched because it contains errors.");
             		}
+            	}
+            	for (String msg : moreMsgs) {
+            		System.out.println(msg);
             	}
             }
             
@@ -4624,7 +4634,7 @@ public class Uploader implements ActionListener, KeyListener
             		UploadTable exportedTable = setupExportedTableSansUI(updateTblId);
             		for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();) {
             			boolean rowAborted = false;
-            			System.out.println("uploading row " + String.valueOf(rowUploading));
+            			System.out.println("uploading row " + String.valueOf(rowUploading+1));
             			if (!uploadData.isEmptyRow(rowUploading)) {
             				imagesForRow.clear();
             				if (updateTblId != null) {
@@ -4662,7 +4672,7 @@ public class Uploader implements ActionListener, KeyListener
                 						Integer[] m = t.getMatchCountForCurrentRow();
                 						for (int i = 0; i < m.length; i++) {
                 							if (m[i] > 1) {
-                								String msg = "row " + rowUploading + ": multiple matches for " + t + ". ";
+                								String msg = "row " + (rowUploading+1) + ": multiple matches for " + t + ". ";
                 								if ("new".equalsIgnoreCase(multipleMatchAction)) {
                 									msg += " A new record was created.";
                 								} else {
