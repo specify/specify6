@@ -331,8 +331,14 @@ public class CmdAppBase {
 	 */
 	protected String getLogInitText(String[] args) {
 		String argStr = "";
+		boolean isPw = false;
 		for (String arg : args) {
-			argStr += " " + arg;
+			argStr += " " + (isPw ? "********" : arg);
+			if (isPw) {
+				isPw = false;
+			} else if ("-p".equals(arg)) {
+				isPw = true;
+			}
 		}
 		return String.format(UIRegistry.getResourceString("ExportCmdLine.LogInitTxt"), argStr);
 	}
