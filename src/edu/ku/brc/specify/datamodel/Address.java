@@ -107,6 +107,7 @@ public class Address extends DataModelObjBase implements Orderable,
     @Override
     public void initialize()
     {
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
         super.init();
         addressId = null;
         address = null;
@@ -138,7 +139,8 @@ public class Address extends DataModelObjBase implements Orderable,
         typeOfAddr = null;
         insitutions = new HashSet<Institution>();
         divisions   = new HashSet<Division>();
-        
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
+       
     }
     // End Initializer
 

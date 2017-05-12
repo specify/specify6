@@ -130,6 +130,7 @@ public class LocalityDetail extends DataModelObjBase
     {
         super.init();
         
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
         localityDetailId = null;
         baseMeridian = null;
         rangeDesc       = null;
@@ -185,6 +186,7 @@ public class LocalityDetail extends DataModelObjBase
         yesNo4 = null;
         yesNo5 = null;
         
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
     }
     // End Initializer
 
@@ -1007,7 +1009,26 @@ public class LocalityDetail extends DataModelObjBase
         }
         
     	return
-        	((baseMeridian == null && o.baseMeridian == null) || ((baseMeridian != null && o.baseMeridian != null) && baseMeridian.equals(o.baseMeridian))) &&
+            ((endDepth == null && o.endDepth == null) || ((endDepth != null && o.endDepth != null) && endDepth.equals(o.endDepth))) &&
+            ((endDepthUnit == null && o.endDepthUnit == null) || ((endDepthUnit != null && o.endDepthUnit != null) && endDepthUnit.equals(o.endDepthUnit))) &&
+            ((endDepthVerbatim == null && o.endDepthVerbatim == null) || ((endDepthVerbatim != null && o.endDepthVerbatim != null) && endDepthVerbatim.equals(o.endDepthVerbatim))) &&
+            ((mgrsZone == null && o.mgrsZone == null) || ((mgrsZone != null && o.mgrsZone != null) && mgrsZone.equals(o.mgrsZone))) &&
+            ((number3 == null && o.number3 == null) || ((number3 != null && o.number3 != null) && number3.equals(o.number3))) &&
+            ((number4 == null && o.number4 == null) || ((number4 != null && o.number4 != null) && number4.equals(o.number4))) &&
+            ((number5 == null && o.number5 == null) || ((number5 != null && o.number5 != null) && number5.equals(o.number5))) &&
+            ((paleoLat == null && o.paleoLat == null) || ((paleoLat != null && o.paleoLat != null) && paleoLat.equals(o.paleoLat))) &&
+            ((paleoLng == null && o.paleoLng == null) || ((paleoLng != null && o.paleoLng != null) && paleoLng.equals(o.paleoLng))) &&
+            ((startDepth == null && o.startDepth == null) || ((startDepth != null && o.startDepth != null) && startDepth.equals(o.startDepth))) &&
+            ((startDepthUnit == null && o.startDepthUnit == null) || ((startDepthUnit != null && o.startDepthUnit != null) && startDepthUnit.equals(o.startDepthUnit))) &&
+            ((startDepthVerbatim == null && o.startDepthVerbatim == null) || ((startDepthVerbatim != null && o.startDepthVerbatim != null) && startDepthVerbatim.equals(o.startDepthVerbatim))) &&
+            ((text3 == null && o.text3 == null) || ((text3 != null && o.text3 != null) && text3.equals(o.text3))) &&
+            ((text4 == null && o.text4 == null) || ((text4 != null && o.text4 != null) && text4.equals(o.text4))) &&
+            ((text5 == null && o.text5 == null) || ((text5 != null && o.text5 != null) && text5.equals(o.text5))) &&
+            ((yesNo3 == null && o.yesNo3 == null) || ((yesNo3 != null && o.yesNo3 != null) && yesNo3.equals(o.yesNo3))) &&
+            ((yesNo4 == null && o.yesNo4 == null) || ((yesNo4 != null && o.yesNo4 != null) && yesNo4.equals(o.yesNo4))) &&
+            ((yesNo5 == null && o.yesNo5 == null) || ((yesNo5 != null && o.yesNo5 != null) && yesNo5.equals(o.yesNo5))) &&
+        	
+            ((baseMeridian == null && o.baseMeridian == null) || ((baseMeridian != null && o.baseMeridian != null) && baseMeridian.equals(o.baseMeridian))) &&
         	((rangeDesc == null && o.rangeDesc == null) || ((rangeDesc != null && o.rangeDesc != null) && rangeDesc.equals(o.rangeDesc))) &&
             ((rangeDirection == null && o.rangeDirection == null) || ((rangeDirection != null && o.rangeDirection != null) && rangeDirection.equals(o.rangeDirection))) &&
             ((township == null && o.township == null) || ((township != null && o.township != null) && township.equals(o.township))) &&

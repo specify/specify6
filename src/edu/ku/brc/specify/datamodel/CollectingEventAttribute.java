@@ -525,7 +525,8 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
     @Override
     public void initialize()
     {
-        super.init();
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
+    	super.init();
         collectingEventAttributeId = null;
         number9 = null;
         number10 = null;
@@ -574,6 +575,8 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         integer9 = null;
         integer10 = null;
         hostTaxon = null;
+
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
 
         collectingEvents = new HashSet<CollectingEvent>();
     }
@@ -898,7 +901,18 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         }
         
     	return
-        	((number1 == null && o.number1 == null) || ((number1 != null && o.number1 != null) && number1.equals(o.number1))) &&
+            	((integer1 == null && o.integer1 == null) || ((integer1 != null && o.integer1 != null) && integer1.equals(o.integer1))) &&
+            	((integer2 == null && o.integer2 == null) || ((integer2 != null && o.integer2 != null) && integer2.equals(o.integer2))) &&
+                ((integer3 == null && o.integer3 == null) || ((integer3 != null && o.integer3 != null) && integer3.equals(o.integer3))) &&
+                ((integer4 == null && o.integer4 == null) || ((integer4 != null && o.integer4 != null) && integer4.equals(o.integer4))) &&
+                ((integer5 == null && o.integer5 == null) || ((integer5 != null && o.integer5 != null) && integer5.equals(o.integer5))) &&
+                ((integer6 == null && o.integer6 == null) || ((integer6 != null && o.integer6 != null) && integer6.equals(o.integer6))) &&
+                ((integer7 == null && o.integer7 == null) || ((integer7 != null && o.integer7 != null) && integer7.equals(o.integer7))) &&
+                ((integer8 == null && o.integer8 == null) || ((integer8 != null && o.integer8 != null) && integer8.equals(o.integer8))) &&
+                ((integer9 == null && o.integer9 == null) || ((integer9 != null && o.integer9 != null) && integer9.equals(o.integer9))) &&
+                ((integer10 == null && o.integer10 == null) || ((integer10 != null && o.integer10 != null) && integer10.equals(o.integer10))) &&
+
+            ((number1 == null && o.number1 == null) || ((number1 != null && o.number1 != null) && number1.equals(o.number1))) &&
         	((number2 == null && o.number2 == null) || ((number2 != null && o.number2 != null) && number2.equals(o.number2))) &&
             ((number3 == null && o.number3 == null) || ((number3 != null && o.number3 != null) && number3.equals(o.number3))) &&
             ((number4 == null && o.number4 == null) || ((number4 != null && o.number4 != null) && number4.equals(o.number4))) &&

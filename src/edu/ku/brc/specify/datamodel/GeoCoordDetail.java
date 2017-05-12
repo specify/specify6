@@ -90,6 +90,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     @Override
     public void initialize()
     {
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
         super.init();
         
         // Manis Fields
@@ -119,6 +120,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         text3                 = null;
         
         locality              = null;
+    	//NOTE: if fields are added to this table, the matches method must be updated accordingly!!!! 
     }
 
     /**
@@ -596,7 +598,13 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         }
         
     	return
+            ((errorPolygon == null && o.errorPolygon == null) || ((errorPolygon != null && o.errorPolygon != null) && errorPolygon.compareTo(o.errorPolygon) == 0)) &&
+            ((uncertaintyPolygon == null && o.uncertaintyPolygon == null) || ((uncertaintyPolygon != null && o.uncertaintyPolygon != null) && uncertaintyPolygon.compareTo(o.uncertaintyPolygon) == 0)) &&
+            ((text1 == null && o.text1 == null) || ((text1 != null && o.text1 != null) && text1.compareTo(o.text1) == 0)) &&
+            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) && text2.compareTo(o.text2) == 0)) &&
+            ((text3 == null && o.text3 == null) || ((text3 != null && o.text3 != null) && text3.compareTo(o.text3) == 0)) &&
         	((namedPlaceExtent == null && o.namedPlaceExtent == null) || ((namedPlaceExtent != null && o.namedPlaceExtent != null) && namedPlaceExtent.compareTo(o.namedPlaceExtent) == 0)) &&
+            ((geoRefAccuracy == null && o.geoRefAccuracy == null) || ((geoRefAccuracy != null && o.geoRefAccuracy != null) && geoRefAccuracy.equals(o.geoRefAccuracy))) &&
             ((geoRefAccuracyUnits == null && o.geoRefAccuracyUnits == null) || ((geoRefAccuracyUnits != null && o.geoRefAccuracyUnits != null) && geoRefAccuracyUnits.equals(o.geoRefAccuracyUnits))) &&
             ((geoRefDetRef == null && o.geoRefDetRef == null) || ((geoRefDetRef != null && o.geoRefDetRef != null) && geoRefDetRef.equals(o.geoRefDetRef))) &&
             ((geoRefDetDate == null && o.geoRefDetDate == null) || ((geoRefDetDate != null && o.geoRefDetDate != null)
