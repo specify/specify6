@@ -913,9 +913,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             int c = 0;
             for (OperatorType ot : stringCmps)
             {
-            	if (!isTreeLevel || !ot.equals(SpQueryField.OperatorType.EMPTY)) {
-            		result[c++] = ot;
-            	}
+            	result[c++] = ot;
             }
             result[c++] = SpQueryField.OperatorType.GREATERTHAN;
             result[c++] = SpQueryField.OperatorType.LESSTHAN;
@@ -923,15 +921,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             return result;
         }
         //else
-        return getComparatorListForClass(dataClass);
+        return getComparatorListForClass(dataClass, isTreeLevel);
     }
     
     /**
      * @param classObj
      * @return
      */
-    public static SpQueryField.OperatorType[] getComparatorListForClass(final Class<?> classObj)
-    {
+    public static SpQueryField.OperatorType[] getComparatorListForClass(final Class<?> classObj) {
         if (classObj != null)
 		{
 			if (classObj.equals(String.class))
@@ -943,6 +940,64 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 						SpQueryField.OperatorType.IN,
 						SpQueryField.OperatorType.BETWEEN,
 						SpQueryField.OperatorType.EMPTY };
+			}
+			if (classObj.equals(Boolean.class))
+			{
+				return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.DONTCARE,
+						SpQueryField.OperatorType.TRUE,
+						SpQueryField.OperatorType.FALSE,
+						SpQueryField.OperatorType.TRUEORNULL,
+						SpQueryField.OperatorType.FALSEORNULL,
+						SpQueryField.OperatorType.EMPTY };
+			}
+			if (classObj.equals(java.sql.Timestamp.class))
+			{
+				return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.EQUALS,
+						SpQueryField.OperatorType.GREATERTHAN,
+						SpQueryField.OperatorType.LESSTHAN,
+						SpQueryField.OperatorType.BETWEEN,
+						SpQueryField.OperatorType.EMPTY };
+			}
+		}
+        return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.EQUALS,
+                SpQueryField.OperatorType.GREATERTHAN,
+                SpQueryField.OperatorType.LESSTHAN,
+                SpQueryField.OperatorType.GREATERTHANEQUALS,
+                SpQueryField.OperatorType.LESSTHANEQUALS,
+                SpQueryField.OperatorType.BETWEEN,
+                SpQueryField.OperatorType.IN,
+                SpQueryField.OperatorType.EMPTY};
+    }
+
+    /**
+     * @param classObj
+     * @param isTreeLevel
+     * @return
+     */
+    public static SpQueryField.OperatorType[] getComparatorListForClass(final Class<?> classObj, boolean isTreeLevel)
+    {
+        if (classObj != null)
+		{
+			if (classObj.equals(String.class))
+			{
+				if (!isTreeLevel) {
+					return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.CONTAINS,
+						SpQueryField.OperatorType.LIKE,
+						SpQueryField.OperatorType.EQUALS,
+						SpQueryField.OperatorType.IN,
+						SpQueryField.OperatorType.BETWEEN,
+						SpQueryField.OperatorType.EMPTY };
+				} else {
+					return new SpQueryField.OperatorType[] {
+							SpQueryField.OperatorType.CONTAINS,
+							SpQueryField.OperatorType.LIKE,
+							SpQueryField.OperatorType.EQUALS,
+							SpQueryField.OperatorType.IN,
+							SpQueryField.OperatorType.BETWEEN};
+				}
 			}
 			if (classObj.equals(Boolean.class))
 			{
