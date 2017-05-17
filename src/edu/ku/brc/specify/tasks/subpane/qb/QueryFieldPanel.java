@@ -913,7 +913,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             int c = 0;
             for (OperatorType ot : stringCmps)
             {
-            	result[c++] = ot;
+            	if (!isTreeLevel || !ot.equals(SpQueryField.OperatorType.EMPTY)) {
+            		result[c++] = ot;
+            	}
             }
             result[c++] = SpQueryField.OperatorType.GREATERTHAN;
             result[c++] = SpQueryField.OperatorType.LESSTHAN;
