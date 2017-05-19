@@ -4600,6 +4600,12 @@ public class Uploader implements ActionListener, KeyListener
             
             //set non-interactive match options
             for (UploadTable t : uploadTables) {
+//            	try {
+//            		JSON json = t.toJSON();
+//            		System.out.println(json);
+//            	} catch (IllegalAccessException e) {
+//            		e.printStackTrace();
+//            	}
                 UploadMatchSetting matchSet = t.getMatchSetting();
                 if (doMatches) {
                 	matchSet.setMode(UploadMatchSetting.PICK_FIRST_MODE);
@@ -4662,7 +4668,7 @@ public class Uploader implements ActionListener, KeyListener
             				}
             			}
 
-            			if (!rowAborted) {
+            			if (!rowAborted && !uploadData.isEmptyRow(rowUploading)) {
             				theWb.getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
                 			if (doMatches) {
                 				doUploadSansUIMatchProcessingStuff(uploadedRecs, matchInfos);
