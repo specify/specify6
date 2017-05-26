@@ -81,7 +81,16 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     protected Agent                       issuedBy;
     protected Set<PermitAttachment>       permitAttachments;
     protected Institution                 institution;
-
+    protected String                      status;
+    protected String                      statusQualifier;
+    protected Boolean                     isRequired;
+    protected Boolean                     isAvailable;
+    protected String                      copyright;
+    protected String                      reservedText3;
+    protected String                      reservedText4;
+    protected Integer                     reservedInteger1;
+    protected Integer                     reservedInteger2;
+    protected String                      permitText;	
 
     // Constructors
 
@@ -120,6 +129,16 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         issuedBy = null;
         permitAttachments = new HashSet<PermitAttachment>();
         institution       = AppContextMgr.getInstance().getClassObject(Institution.class);
+        status = null;
+        statusQualifier = null;
+        isRequired = null;
+        isAvailable = null;
+        copyright = null;
+        reservedText3 = null;
+        reservedText4 = null;
+        reservedInteger1 = null;
+        reservedInteger2 = null;
+        permitText = null;
     }
     // End Initializer
 
@@ -332,7 +351,156 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         this.yesNo2 = yesNo2;
     }
 
+    
     /**
+	 * @return the status
+	 */
+    @Column(name = "Status", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	/**
+	 * @return the statusQualifier
+	 */
+    @Column(name = "StatusQualifier", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+	public String getStatusQualifier() {
+		return statusQualifier;
+	}
+
+	/**
+	 * @param statusQualifier the statusQualifier to set
+	 */
+	public void setStatusQualifier(String statusQualifier) {
+		this.statusQualifier = statusQualifier;
+	}
+
+	/**
+	 * @return the isRequired
+	 */
+    @Column(name="IsRequired",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getIsRequired() {
+		return isRequired;
+	}
+
+	/**
+	 * @param isRequired the isRequired to set
+	 */
+	public void setIsRequired(Boolean isRequired) {
+		this.isRequired = isRequired;
+	}
+
+	/**
+	 * @return the isAvailable
+	 */
+    @Column(name="IsAvailable",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
+
+	/**
+	 * @param isAvailable the isAvailable to set
+	 */
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
+	/**
+	 * @return the copyright
+	 */
+    @Column(name = "Copyright", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
+	public String getCopyright() {
+		return copyright;
+	}
+
+	/**
+	 * @param copyright the copyright to set
+	 */
+	public void setCopyright(String copyright) {
+		this.copyright = copyright;
+	}
+
+	/**
+	 * @return the reservedText3
+	 */
+    @Column(name = "ReservedText3", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+	public String getReservedText3() {
+		return reservedText3;
+	}
+
+	/**
+	 * @param reservedText3 the reservedText3 to set
+	 */
+	public void setReservedText3(String reservedText3) {
+		this.reservedText3 = reservedText3;
+	}
+
+	/**
+	 * @return the reservedText4
+	 */
+    @Column(name = "ReservedText4", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+	public String getReservedText4() {
+		return reservedText4;
+	}
+
+	/**
+	 * @param reservedText4 the reservedText4 to set
+	 */
+	public void setReservedText4(String reservedText4) {
+		this.reservedText4 = reservedText4;
+	}
+
+	/**
+	 * @return the reservedInteger1
+	 */
+    @Column(name = "ReservedInteger1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getReservedInteger1() {
+		return reservedInteger1;
+	}
+
+	/**
+	 * @param reservedInteger1 the reservedInteger1 to set
+	 */
+	public void setReservedInteger1(Integer reservedInteger1) {
+		this.reservedInteger1 = reservedInteger1;
+	}
+
+	/**
+	 * @return the reservedInteger2
+	 */
+    @Column(name = "ReservedInteger2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getReservedInteger2() {
+		return reservedInteger2;
+	}
+
+	/**
+	 * @param reservedInteger2 the reservedInteger2 to set
+	 */
+	public void setReservedInteger2(Integer reservedInteger2) {
+		this.reservedInteger2 = reservedInteger2;
+	}
+
+	/**
+    *
+    */
+   @Lob
+   @Column(name = "PermitText", length = 4096)
+   public String getPermitText() {
+       return this.permitText;
+   }
+
+   public void setPermitText(String permitText) {
+       this.permitText = permitText;
+   }
+
+	/**
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")

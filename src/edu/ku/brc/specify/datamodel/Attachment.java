@@ -108,6 +108,13 @@ public class Attachment extends DataModelObjBase implements Serializable
     
     protected Agent                   creator;
     
+    protected String                  type;
+    protected String                  subtype;
+    protected String                  metadataText;
+    protected String                  licenseLogoUrl;
+    protected String                  subjectOrientation;
+    protected String                  captureDevice;
+    
     // data model classes that can have Attachments
     protected Set<AccessionAttachment>               accessionAttachments;
     protected Set<AgentAttachment>                   agentAttachments;
@@ -177,7 +184,14 @@ public class Attachment extends DataModelObjBase implements Serializable
         isPublic           = AppPreferences.getRemote().getBoolean("attachment.is_public_default", true);
     
         creator       = null;
-        
+
+        type = null;
+        subtype = null;
+        metadataText = null;
+        licenseLogoUrl = null;
+        subjectOrientation = null;
+        captureDevice = null;
+
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
         borrowAttachments              = new HashSet<BorrowAttachment>();
@@ -280,7 +294,105 @@ public class Attachment extends DataModelObjBase implements Serializable
        this.creator = photographer;
    }
 
-    public void setOrigFilename(String origFilename)
+   
+   
+	/**
+	 * @return the type
+	 */
+	@Column(name = "Type", length = 64)
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type
+	 *            the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the subtype
+	 */
+	@Column(name = "Subtype", length = 64)
+	public String getSubtype() {
+		return subtype;
+	}
+
+	/**
+	 * @param subtype
+	 *            the subtype to set
+	 */
+	public void setSubtype(String subtype) {
+		this.subtype = subtype;
+	}
+
+	/**
+	 * @return the metadataText
+	 */
+	@Column(name = "MetadataText", length = 256)
+	public String getMetadataText() {
+		return metadataText;
+	}
+
+	/**
+	 * @param metadataText
+	 *            the metadataText to set
+	 */
+	public void setMetadataText(String metadataText) {
+		this.metadataText = metadataText;
+	}
+
+	/**
+	 * @return the licenseLogoUrl
+	 */
+	@Column(name = "LicenseLogoUrl", length = 256)
+	public String getLicenseLogoUrl() {
+		return licenseLogoUrl;
+	}
+
+	/**
+	 * @param licenseLogoUrl
+	 *            the licenseLogoUrl to set
+	 */
+	public void setLicenseLogoUrl(String licenseLogoUrl) {
+		this.licenseLogoUrl = licenseLogoUrl;
+	}
+
+	/**
+	 * @return the subjectOrientation
+	 */
+	@Column(name = "SubjectOrientation", length = 64)
+	public String getSubjectOrientation() {
+		return subjectOrientation;
+	}
+
+	/**
+	 * @param subjectOrientation
+	 *            the subjectOrientation to set
+	 */
+	public void setSubjectOrientation(String subjectOrientation) {
+		this.subjectOrientation = subjectOrientation;
+	}
+
+	/**
+	 * @return the captureDevice
+	 */
+	@Column(name = "CaptureDevice", length = 128)
+	public String getCaptureDevice() {
+		return captureDevice;
+	}
+
+	/**
+	 * @param captureDevice
+	 *            the captureDevice to set
+	 */
+	public void setCaptureDevice(String captureDevice) {
+		this.captureDevice = captureDevice;
+	}
+
+	public void setOrigFilename(String origFilename)
     {
 //        if ((origFilename != null && origFilename.equals(this.origFilename)) || (origFilename == null && this.origFilename == null))
 //        {

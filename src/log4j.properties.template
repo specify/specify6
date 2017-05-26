@@ -1,8 +1,8 @@
 ### An appended for System.out ###
-log4j.appender.StdOutAppender=org.apache.log4j.ConsoleAppender
-log4j.appender.StdOutAppender.Target=System.err
-log4j.appender.StdOutAppender.layout=org.apache.log4j.PatternLayout
-log4j.appender.StdOutAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
+#log4j.appender.StdOutAppender=org.apache.log4j.ConsoleAppender
+#log4j.appender.StdOutAppender.Target=System.err
+#log4j.appender.StdOutAppender.layout=org.apache.log4j.PatternLayout
+#log4j.appender.StdOutAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
 
 ### A file appender for 'hibernate.log' ###
 log4j.appender.HibernateLogFileAppender=org.apache.log4j.FileAppender
