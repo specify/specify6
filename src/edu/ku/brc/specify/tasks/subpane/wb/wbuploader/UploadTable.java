@@ -31,6 +31,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -125,6 +126,8 @@ import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
+import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
 
 /**
  * @author timbo
@@ -2207,7 +2210,7 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 if (StringUtils.isBlank(fldStr))
                                 {
-                                	if (ufld.isAutoAssignable()) {
+                                	if (ufld.isAutoAssignable() && ufld.isAutoAssignForUpload()) {
                                 		val = formatter.getNextNumber(formatter.formatToUI("").toString());
                                 	} else {
                                 		val = null;
@@ -4029,7 +4032,48 @@ public class UploadTable implements Comparable<UploadTable>
     	
     }
     
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// json stuff for sp7 uploader experimentation...
+
+    protected List<java.lang.reflect.Field> getFldsForJSON() {
+    	java.lang.reflect.Field[] flds = UploadTable.class.getDeclaredFields();
+//    	Arrays.sort(flds, new Comparator<java.lang.reflect.Field>(){
+//    		public int compare(java.lang.reflect.Field f1, java.lang.reflect.Field f2) {
+//    			return f1.getName().compareTo(f2.getName());
+//    		}
+//    	});
+    	String[] skippers = {"autoAssignedVal", "blankSeqs", "collection", "currentRecords", "dateConverter", "debugging", "deleteUnusedRecs", "deletedRecs", "disUsedRecs", "discipline", "division", "doRawDeletes", 
+    			"exportedOneToManyDelete", "exportedOneToManyId", "exportedRecordId", "geoRefConverter", "isSecurityOn", "log", "matchCountForCurrentRow", "prevAutoAssignedVal", "restrictedValsForAddNewMatch",
+    			"reusingExportedRec","skipRow", "tblSession", "updateMatches", "uploadedRecs", "uploader", "validatingValues", "wbCurrentRow"};
+    	List<java.lang.reflect.Field> result = new ArrayList<java.lang.reflect.Field>();
+    	for (java.lang.reflect.Field fld : flds) {
+    		if (0 > Arrays.binarySearch(skippers, fld.getName())) {
+    			result.add(fld);
+    		}
+    	}
+    	return result;
+    }
     
+    protected Object getValForJSON(java.lang.reflect.Field fld) throws IllegalAccessException {
+    	Object val = fld.get(this);
+    	return val != null ? val.toString() : val;
+    }
+    
+    protected Map<String, Object> getJSONMap() throws IllegalAccessException {
+    	Map<String,Object> jj = new HashMap<String,Object>();
+    	List<java.lang.reflect.Field> flds = getFldsForJSON();
+    	for (java.lang.reflect.Field fld : flds) {
+    		jj.put(fld.getName(), getValForJSON(fld));
+    	}
+    	return jj;
+    }
+    
+    public JSON toJSON() throws IllegalAccessException {
+    	return JSONSerializer.toJSON(getJSONMap());
+    }
+    
+//...json stuff for sp7 uploader experimentation    
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////    
     /**
      * @param recNum
      * @return
