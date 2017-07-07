@@ -1064,7 +1064,11 @@ public class UploadTable implements Comparable<UploadTable>
         {
             if (!ignoreFieldData(f))
             {
-            	if (StringUtils.isNotEmpty(f.getValue()) || f == autoAssignedField 
+            	String val = f.getValue();
+            	if (val != null) {
+            		val = val.trim();
+            	}
+            	if (StringUtils.isNotEmpty(val) || f == autoAssignedField 
             			//|| (autoAssignedField == null && f.isAutoAssignable())
             			)
             	{
@@ -2022,6 +2026,9 @@ public class UploadTable implements Comparable<UploadTable>
             else
             {
                fldStr = fldClass.equals(String.class) ? ufld.getValueObject() : ufld.getValueObject().trim();
+               if ("".equals(fldStr.trim())) {
+            	   fldStr = null;
+               }
             }
             if (fldClass == java.util.Calendar.class || fldClass == java.util.Date.class)
             {
