@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tools.export.CmdAppBase;
@@ -67,6 +69,36 @@ public class UploadCmdLine extends CmdAppBase {
         }
 	}
 	
+	/**
+	 * @return
+	 */
+	protected String checkLocks() {
+		//checks for workbenchupload lock and other global locks
+		String result = "";
+		String sql = "select taskname from sptasksemaphore where islocked and (taskname = 'WORKBENCHUPLOAD' or scope = 0)";
+		List<Object[]> locks = BasicSQLUtils.query(sql);
+		if (locks != null && locks.size() > 0) {
+			for (Object[] lock : locks) {
+				if (result.length() > 0) {
+					result += ", ";
+				}
+				result += lock[0];
+			}
+		}
+		//tree locks .
+		sql = "select taskname from sptasksemaphore s inner join discipline d on d.disciplineid = s.disciplineid inner join collection c on c.disciplineid = d.disciplineid"
+				+ " where c.collectionname = '" + this.collection.replaceAll("'","''") + "' and islocked and (taskname like 'BadNodes%' or taskname like 'UpdateNodes%' or taskname like '%TreeDef')";
+		locks = BasicSQLUtils.query(sql);
+		if (locks != null && locks.size() > 0) {
+			for (Object[] lock : locks) {
+				if (result.length() > 0) {
+					result += ", ";
+				}
+				result += lock[0];
+			}
+		}		
+		return result;
+	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tools.export.CmdAppBase#checkArg(edu.ku.brc.util.Pair)
@@ -195,6 +227,12 @@ public class UploadCmdLine extends CmdAppBase {
 					} else {
 						//throw new Exception("couldn't find collection name.");
 						throw new Exception(UIRegistry.getResourceString("ExportCmdLine.CouldNotFindCollectionName"));
+					}
+					String locks = ucl.checkLocks();
+					if ("".equals(locks)) {
+						ucl.out(UIRegistry.getResourceString("UploadCmdLine.LocksUnlocked"));
+					} else {
+						throw new Exception(UIRegistry.getResourceString("UploadCmdLine.LockedOut") + ": " + locks);
 					}
 					if (ucl.setContext()) {
 						//ecl.out("context established");

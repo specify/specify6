@@ -569,7 +569,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         	setNodeNumbersAreUpToDate(false);
         }
         //If locks above were unsuccessful, or if traversalLockedByCaller, but locks are not set, fail
-        if (!TreeDefStatusMgr.isRenumberingNodes(this) || TreeDefStatusMgr.isNodeNumbersAreUpToDate(this))	{
+        if (theSession == null && (!TreeDefStatusMgr.isRenumberingNodes(this) || TreeDefStatusMgr.isNodeNumbersAreUpToDate(this)))	{
         	//locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
         	showLocalizedError("BaseTreeDef.UnableToUpdate");
         	setRenumberingNodes(false);
