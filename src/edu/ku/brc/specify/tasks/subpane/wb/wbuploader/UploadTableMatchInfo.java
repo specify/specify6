@@ -3,8 +3,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -24,11 +26,15 @@ public class UploadTableMatchInfo
 	protected final int numberOfMatches;
 	protected final boolean isBlank;
 	protected final boolean isSkipped;
+	protected final List<Integer> matchIds = new ArrayList<Integer>();
 	
 	
 	/**
-	 * @param match
-	 * @param uploadTable
+	 * @param tblTitle
+	 * @param numberOfMatches
+	 * @param colIdxs
+	 * @param isBlank
+	 * @param isSkipped
 	 */
 	public UploadTableMatchInfo(String tblTitle, int numberOfMatches, List<Integer> colIdxs, boolean isBlank, boolean isSkipped)
 	{
@@ -39,7 +45,33 @@ public class UploadTableMatchInfo
 		this.isBlank = isBlank;
 		this.isSkipped = isSkipped;
 	}
-	
+
+	/**
+	 * @param tblTitle
+	 * @param matches
+	 * @param colIdxs
+	 * @param isBlank
+	 * @param isSkipped
+	 */
+	public UploadTableMatchInfo(String tblTitle, List<DataModelObjBase> matches, List<Integer> colIdxs, boolean isBlank, boolean isSkipped)
+	{
+		super();
+		this.tblTitle = tblTitle;
+		this.numberOfMatches = matches.size();
+		for (DataModelObjBase obj : matches) {
+			this.matchIds.add(obj.getId());
+		}
+		this.colIdxs = colIdxs;
+		this.isBlank = isBlank;
+		this.isSkipped = isSkipped;
+	}
+
+	/**
+	 * @return the matchIds
+	 */
+	public List<Integer> getMatchIds() {
+		return new ArrayList<Integer>(matchIds);
+	}
 	/**
 	 * @return the tblTitle
 	 */

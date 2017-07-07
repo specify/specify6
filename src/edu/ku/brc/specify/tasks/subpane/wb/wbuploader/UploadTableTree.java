@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -75,6 +76,30 @@ public class UploadTableTree extends UploadTable
     protected boolean allowUnacceptedMatches = true;
     protected List<UploadField> nameFields = null;
     
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//json stuff for sp7 uploader experimentation...
+    
+@Override
+protected List<java.lang.reflect.Field> getFldsForJSON() {
+	List<java.lang.reflect.Field> result = super.getFldsForJSON();
+	java.lang.reflect.Field[] flds = UploadTableTree.class.getDeclaredFields();
+//	Arrays.sort(flds, new Comparator<java.lang.reflect.Field>(){
+//		public int compare(java.lang.reflect.Field f1, java.lang.reflect.Field f2) {
+//			return f1.getName().compareTo(f2.getName());
+//		}
+//	});
+	String[] skippers = {"incrementalNodeNumberUpdates","treeRoot"};
+	for (java.lang.reflect.Field fld : flds) {
+		if (0 > Arrays.binarySearch(skippers, fld.getName())) {
+			result.add(fld);
+		}
+	}
+	return result;
+}
+
+
+//...json stuff for sp7 uploader experimentation    
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * @param table
@@ -891,7 +916,7 @@ public class UploadTableTree extends UploadTable
         			if (theSession == null) {
         				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
         			} else {
-        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false, false, false, theSession);
+        				getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, true, true, false, theSession);
         			}
         		}
         		catch (Exception ex)
@@ -924,7 +949,7 @@ public class UploadTableTree extends UploadTable
     public void shutdown() throws UploaderException
     {
         super.shutdown();
-        if (parent == null  && !this.incrementalNodeNumberUpdates)
+        if (parent == null  && !this.incrementalNodeNumberUpdates && tblSession == null)
         {
             getTreeDef().setDoNodeNumberUpdates(true);
             getTreeDef().setUploadInProgress(false);
