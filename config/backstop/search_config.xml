@@ -2,7 +2,7 @@
 <!-- 
 
   Last Id for ExpressSearch 59
-  Last Id for Other Search  129
+  Last Id for Other Search  132
 
  -->
 <searches>
@@ -1954,6 +1954,18 @@ LEFT JOIN lithostrat ls on ls.LithoStratID = pc.LithoStratID WHERE (pc.Disciplin
                     <caption tableid="2" col="LocalityName"/>
                     <caption tableid="2" col="Latitude1"/>
                     <caption tableid="2" col="Longitude1"/>
+                </captions>
+            </detailView>
+        </table>
+      
+        <table id="132" tableid="98" name="CollectionRelTypeSearch" priority="1" color="30, 144, 255">
+            <detailView icon="CollectionRelType">
+                <sql>
+                    <![CDATA[SELECT CollectionRelTypeID, Name FROM collectionreltype WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="98" col="CollectionRelTypeID" visible="false"/>
+                    <caption tableid="98" col="Name"/>
                 </captions>
             </detailView>
         </table>

@@ -114,6 +114,17 @@
         </view>
         
         <view 
+            name="CollectionRelTypeSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionRelType"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionRelType Search Form]]></desc>
+            <altviews>
+                <altview name="CollectionRelTypeSearch" viewdef="CollectionRelTypeSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
             name="ContainerSearch"
             class="edu.ku.brc.specify.datamodel.Container"
             usedefbusrule="false"
@@ -539,6 +550,26 @@ Good: <cell type="field" name="FieldNum" ...>
                 
             </rows>
         </viewdef> 
+        
+        <viewdef type="form"
+            name="CollectionRelTypeSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionRelType"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectionRelType Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
         
         <viewdef type="form"
             name="ContainerSearch"
