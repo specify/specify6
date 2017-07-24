@@ -116,6 +116,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Set<ExchangeInPrep>         exchangeInPreps;
     protected Set<ExchangeOutPrep>        exchangeOutPreps;
     
+    protected Set<MaterialSample>         materialSamples;
+    
     // Transient
     protected Boolean                     isOnLoan = null;
     
@@ -182,6 +184,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         exchangeInPreps  = new HashSet<ExchangeInPrep>();
         exchangeOutPreps = new HashSet<ExchangeOutPrep>();
 
+        materialSamples = new HashSet<MaterialSample>();
+        
         hasGUIDField = true;
         setGUID();
     }
@@ -337,6 +341,16 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         return stillOut;
     }
     
+    @OneToMany(mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<MaterialSample> getMaterialSamples() {
+        return this.materialSamples;
+    }
+
+    public void setMaterialSamples(Set<MaterialSample> materialSamples) {
+        this.materialSamples = materialSamples;
+    }
+
     /**
      * @return
      */

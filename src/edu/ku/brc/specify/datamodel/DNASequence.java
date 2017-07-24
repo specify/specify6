@@ -89,7 +89,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	protected Calendar						boldLastUpdateDate;
 
 	protected Agent							sequencer;
-	protected CollectionObject				collectionObject;
+	protected MaterialSample				materialSample;
     protected Set<DNASequenceAttachment>    attachments;
 	protected Set<DNASequencingRun>			dnaSequencingRuns;
     
@@ -137,7 +137,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
         boldLastUpdateDate = null;
 
         sequencer = null;
-        collectionObject = null;
+        materialSample = null;
         attachments = new TreeSet<DNASequenceAttachment>();
         dnaSequencingRuns = new HashSet<DNASequencingRun>();
     }
@@ -635,11 +635,11 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 
 
     /**
-     * @param dnaSequence the dnaSequence to set
+     * @param materialSample
      */
-    public void setCollectionObject(CollectionObject collectionObject)
+    public void setMaterialSample(MaterialSample materialSample)
     {
-        this.collectionObject = collectionObject;
+        this.materialSample = materialSample;
     }
 
     /**
@@ -668,13 +668,13 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 
 
     /**
-     * @return the collectionObject
+     * @return the materialSample
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionObject getCollectionObject()
+    @JoinColumn(name = "MaterialSampleID", unique = false, nullable = true, insertable = true, updatable = true)
+    public MaterialSample getMaterialSample()
     {
-        return collectionObject;
+        return materialSample;
     }
 
     /**
@@ -732,7 +732,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Transient
     public Integer getParentTableId()
     {
-        return CollectionObject.getClassTableId();
+        return MaterialSample.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -742,7 +742,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
     @Transient
     public Integer getParentId()
     {
-        return collectionObject != null ? collectionObject.getId() : null;
+        return materialSample != null ? materialSample.getId() : null;
     }
     
 	/* (non-Javadoc)

@@ -98,6 +98,25 @@ public class DNAPrimer extends CollectionMember {
 		dnaSequencingRun = null;
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+	 */
+	@Override
+	@Transient
+	public Integer getParentId() {
+		return dnaSequencingRun == null ? null : dnaSequencingRun.getId();
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+	 */
+	@Override
+	@Transient
+	public Integer getParentTableId() {
+		return DNASequencingRun.getClassTableId();
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
 	 */

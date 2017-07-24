@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 150 or 533
+    Last used ID is 151 or 533
     
     [0] are available
     
@@ -306,6 +306,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" abbrev="locc" id="57" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocalityNameAlias" abbrev="locna" id="120" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.MaterialSample" abbrev="mes" id="151" searchable="true" />
         <table name="edu.ku.brc.specify.datamodel.MorphBankView" abbrev="mbvw" id="138" searchable="true">
             <display view="MorphBankView" searchdlg="MorphBankViewSearch" newobjdlg="MorphBankViewDisplay"/>
         </table>

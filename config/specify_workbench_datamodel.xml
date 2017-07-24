@@ -285,6 +285,7 @@
     <field column="YesNo 7 (Col. Obj. Attribute)" name="colObjAttributeYesNo7" type="boolean"/>
   </table>  
 
+  <!--
   <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" >
       <field column="AmbiguousResidues 1" name="ambiguousResidues1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="BOLDBarcodeID 1" name="boldBarcodeId1" type="java.lang.String" length="32" indexName="BOLDBarcodeIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
@@ -337,7 +338,7 @@
       <field column="YesNo3 2" name="yesNo32" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
 
   </table>
-  
+  -->
  
   <!--
   <table classname="edu.ku.brc.specify.datamodel.DNASequencingRun" table="dnasequencingrun" tableid="88" searchable="true" abbrv="dnar">
