@@ -145,11 +145,18 @@ public class CheckDBAfterLogin
     public void sendDNACounts()
     {
      	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct CollectionMemberID, CollectionName from dnasequence dna inner join collection c on c.collectionid = dna.collectionmemberid");
-    	for (Object[] coll : collsWithDNA) {
+     	final AppPreferences globalPrefs = AppPreferences.getGlobalPrefs();    	
+     	for (Object[] coll : collsWithDNA) {
+     		String prefName = "DNACheck:" + coll[0];
+     		String prefValue = globalPrefs.get(prefName,"");
     		int codna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = " + coll[0]);
     		int msdna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = " + coll[0]);
-    		String str = String.format("Collection: %s -- co_dna_count: %d, ms_dna_count: %d", coll[1], codna, msdna);
-		    edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(CheckDBAfterLogin.class, str, new Exception("DNA Check"));    			
+    		String newPrefValue = "co-" + (codna > 0 ? "yes" : "no") + " ms-" + (msdna > 0 ? "yes" : "no");
+    		if (!newPrefValue.equals(prefValue)) {
+    			String str = String.format("Collection: %s -- co_dna_count: %d, ms_dna_count: %d", coll[1], codna, msdna);
+    			edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(CheckDBAfterLogin.class, str, new Exception("DNA Check"));
+    			globalPrefs.put(prefName,newPrefValue);
+    		}
     	}
     }
     

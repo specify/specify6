@@ -2792,38 +2792,44 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                                      "fixSymbiotaExportSchema"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
-//        boolean anyNeededToBeFixed = false;
+        boolean anyNeededToBeFixed = false;
         for (int i=0;i<isFixed.length;i++)
         {
             isFixed[i] = globalPrefs.getBoolean(prefNames[i], false);
-            //if (!isFixed[i]) anyNeededToBeFixed = true;
+            if (!isFixed[i]) anyNeededToBeFixed = true;
         }
         
 //        if (!anyNeededToBeFixed) return;
 
-        String msg = getResourceString("UPDATING_FOR_RELEASE");
-        UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
-
-        final ProgressFrame frame = new ProgressFrame(msg);
-        if (frame != null)
-        {
-            SwingUtilities.invokeLater(new Runnable() {
-
-				/* (non-Javadoc)
-				 * @see java.lang.Runnable#run()
-				 */
-				@Override
-				public void run() {
-		            frame.adjustProgressFrame();
-		            frame.getCloseBtn().setVisible(false);
-		            UIHelper.centerAndShow(frame);
-		            frame.toFront();
-		            frame.setAlwaysOnTop(true);
-				}
-            	
-            });
-        }
+        ProgressFrame prog = null;
         
+        if (anyNeededToBeFixed) {
+        	String msg = getResourceString("UPDATING_FOR_RELEASE");
+        	UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
+        
+        
+        	prog = new ProgressFrame(msg);
+        	final ProgressFrame fprog = prog;
+        	if (fprog != null)
+        	{
+        		SwingUtilities.invokeLater(new Runnable() {
+
+        			/* (non-Javadoc)
+        			 * @see java.lang.Runnable#run()
+        			 */
+        			@Override
+        			public void run() {
+        				fprog.adjustProgressFrame();
+        				fprog.getCloseBtn().setVisible(false);
+        				UIHelper.centerAndShow(fprog);
+        				fprog.toFront();
+        				fprog.setAlwaysOnTop(true);
+        			}
+            	
+        		});
+        	}
+        }
+         final ProgressFrame frame = prog;
         javax.swing.SwingWorker<Boolean, Boolean> worker = new javax.swing.SwingWorker<Boolean, Boolean>()
         {
             @Override
