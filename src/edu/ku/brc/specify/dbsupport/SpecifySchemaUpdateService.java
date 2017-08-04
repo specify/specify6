@@ -793,13 +793,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         				result = false;
         			}
         		}
-        		if (true/*!AppPreferences.getGlobalPrefs().getBoolean("GGBNAftermathCleanup", false)*/) {
-        			if (cleanupGGBNAftermath()) {
-        				AppPreferences.getGlobalPrefs().putBoolean("GGBNAftermathCleanup", true);
-        			} else {
-        				result = false;
-        			}
-        		}
+        		//a dna count check is done in CheckDBAfterLogin
+//        		if (!AppPreferences.getGlobalPrefs().getBoolean("GGBNAftermathCleanup", false)) {
+//        			if (cleanupGGBNAftermath()) {
+//        				AppPreferences.getGlobalPrefs().putBoolean("GGBNAftermathCleanup", true);
+//        			} else {
+//        				result = false;
+//        			}
+//        		}
         		addGeoCleanupTables();
         	}
         	return result;
