@@ -102,7 +102,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
-import edu.ku.brc.specify.config.FixDBAfterLogin;
+import edu.ku.brc.specify.config.CheckDBAfterLogin;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -1697,7 +1697,7 @@ public class SpecifyDBConverter extends AppBase
                 convScopeFixer.doFixTables();
                 convScopeFixer.checkTables();
                 
-                FixDBAfterLogin.fixUserPermissions(true);
+                CheckDBAfterLogin.fixUserPermissions(true);
                 
                 waitTime = 0;
                 

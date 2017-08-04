@@ -1355,12 +1355,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (isFirstTime)
             {
-                FixDBAfterLogin.fixUserPermissions(false);
+                CheckDBAfterLogin.fixUserPermissions(false);
             }
             
             if (!AppPreferences.getGlobalPrefs().getBoolean("ExsiccataUpdateFor1_7", false))
             {
-                FixDBAfterLogin.fixExsiccata();
+                CheckDBAfterLogin.fixExsiccata();
             }
 
             
@@ -1663,7 +1663,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (isFirstTime)
             {
-                FixDBAfterLogin.fixDefaultDates();
+                CheckDBAfterLogin.fixDefaultDates();
                 
                 // Reset the form system because 
                 // 'fixDefaultDates' loads all the forms.

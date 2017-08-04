@@ -312,16 +312,14 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     }
     
     /**
-     * adds the basic stats about the Institution ... Collection
-     * @param stats the list of stats
+     * @param collectionId
+     * @param specifyUserId
+     * @param disciplineId
+     * @param divisionId
+     * @param institutionId
+     * @param stats
      */
-    protected void appendBasicCollStats(final Vector<NameValuePair> stats)
-    {
-        if (collectionId == null)
-        {
-            getIds();
-        }
-        
+    public static void appendBasicCollStatsStat(final Integer collectionId, final Integer specifyUserId, final Integer disciplineId, final Integer divisionId, final Integer institutionId, final Vector<NameValuePair> stats) {
         if (specifyUserId != null)
         {
             String userName = BasicSQLUtils.querySingleObj("SELECT Name FROM specifyuser WHERE SpecifyUSerID = "+specifyUserId);
@@ -363,6 +361,20 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             stats.add(new NameValuePair("Institution_number",  fixParam(row[0]))); //$NON-NLS-1$
             stats.add(new NameValuePair("Institution_name",    fixParam(row[1]))); //$NON-NLS-1$
         }
+    	
+    }
+    /**
+     * adds the basic stats about the Institution ... Collection
+     * @param stats the list of stats
+     */
+    protected void appendBasicCollStats(final Vector<NameValuePair> stats)
+    {
+        if (collectionId == null)
+        {
+            getIds();
+        }
+        
+        appendBasicCollStatsStat(collectionId, specifyUserId, disciplineId, divisionId, institutionId, stats);
     }
     
     /**
@@ -460,6 +472,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         }
         
         addEncodedPair(stats, "catbymn", last30DaysSB.toString());
+        //DNA stat testing
+        addEncodedPair(stats,"DNACount", "888");
         
         // Audit Information 
         Vector<Object[]> instRresults = BasicSQLUtils.query("SELECT Name, RegNumber FROM institution");

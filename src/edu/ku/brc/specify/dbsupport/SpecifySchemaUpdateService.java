@@ -60,6 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,7 +68,6 @@ import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -78,6 +78,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
@@ -86,7 +87,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyGUIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -793,6 +793,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         				result = false;
         			}
         		}
+        		if (true/*!AppPreferences.getGlobalPrefs().getBoolean("GGBNAftermathCleanup", false)*/) {
+        			if (cleanupGGBNAftermath()) {
+        				AppPreferences.getGlobalPrefs().putBoolean("GGBNAftermathCleanup", true);
+        			} else {
+        				result = false;
+        			}
+        		}
         		addGeoCleanupTables();
         	}
         	return result;
@@ -801,6 +808,38 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
     }
     
+    /**
+     * @return
+     */
+    private boolean cleanupGGBNAftermath() {
+    	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct dna.collectionmemberid, c.isanumber, dsc.disciplineid, dv.divisionid, dv.institutionid from dnasequence dna "
+    			+ "inner join collection c on c.collectionid = dna.collectionmemberid inner join discipline dsc on dsc.disciplineid = c.disciplineid inner join `division` dv on dv.divisionid = dsc.divisionid");
+    	for (Object[] coll : collsWithDNA) {
+    		int codna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = " + coll[0]);
+    		int msdna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = " + coll[0]);
+    		try {
+    			Vector<NameValuePair> postparams = StatsTrackerTask.createBasicPostParameters();
+    			for (NameValuePair postparam : postparams) {
+    				if (postparam.getName().equals("ISA_number")) {
+    					postparam.setValue(coll[1].toString());
+    					break;
+    				}
+    			}
+    			edu.ku.brc.specify.tasks.StatsTrackerTask.appendBasicCollStatsStat((Integer)coll[0], null, (Integer)coll[2], (Integer)coll[3], (Integer)coll[4], postparams);
+    			postparams.add(new NameValuePair("num_co_dna", Integer.toString(codna)));
+    			postparams.add(new NameValuePair("num_ms_dna", Integer.toString(msdna)));
+    			StatsTrackerTask.sendStats(StatsTrackerTask.getVersionCheckURL(), postparams, "StatsTrackerTask");
+    		} catch (Exception ex) {
+    			ex.printStackTrace();
+    	        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    	        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, ex);
+    	        return false;
+    		}
+    			
+    	}
+    	return true;
+    }
+
     /**
      * @return
      */

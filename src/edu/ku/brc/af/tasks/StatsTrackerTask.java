@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -287,6 +288,47 @@ public class StatsTrackerTask extends BaseTask
         sendStats(getVersionCheckURL(), createPostParameters(isSendSecondaryStatsAllowed), getClass().getName());
     }
     
+    /*public static void sendDNAStats(final String url, final String userAgentName) throws Exception {
+        // check the website for the info about the latest version
+        HttpClient httpClient = new HttpClient();
+        httpClient.getParams().setParameter("http.useragent", userAgentName); //$NON-NLS-1$
+        
+        PostMethod postMethod = new PostMethod(url);
+        
+        Vector<NameValuePair> postParams = new Vector<NameValuePair>();
+        postParam
+        // get the POST parameters (which includes usage stats, if we're allowed to send them)
+        postMethod.setRequestBody(buildNamePairArray(postParams));
+        
+        // connect to the server
+        try
+        {
+            httpClient.executeMethod(postMethod);
+            
+            // get the server response
+            @SuppressWarnings("unused")
+            String responseString = postMethod.getResponseBodyAsString();
+            
+            //if (StringUtils.isNotEmpty(responseString))
+            //{
+            //    System.err.println(responseString);
+            //}
+
+        } catch (java.net.UnknownHostException ex)
+        {
+            log.debug("Couldn't reach host.");
+            
+        } catch (Exception e)
+        {
+            //e.printStackTrace();
+            //UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
+            throw new ConnectionException(e);
+        }
+    	
+    }*/
+    
+    //public static void sendStats()
     /**
      * Connects to the update/usage tracking server to get the latest version info and/or send the usage stats.
      * @param url
@@ -348,7 +390,7 @@ public class StatsTrackerTask extends BaseTask
      * 
      * @return the URL string
      */
-    protected String getVersionCheckURL()
+    public static String getVersionCheckURL()
     {
         String baseURL = getResourceString("StatsTrackerTask.URL"); //$NON-NLS-1$
         return baseURL;
@@ -424,13 +466,9 @@ public class StatsTrackerTask extends BaseTask
     }
     
     /**
-     * Creates an array of POST method parameters to send with the version checking / usage tracking connection.
-     * 
-     * @param doSendSecondaryStats if true, the POST parameters include usage stats
-     * @return an array of POST parameters
+     * @return
      */
-    protected Vector<NameValuePair> createPostParameters(final boolean doSendSecondaryStats)
-    {
+    public static Vector<NameValuePair> createBasicPostParameters() {
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         try
         {
@@ -471,7 +509,29 @@ public class StatsTrackerTask extends BaseTask
                 resAppVersion = "Unknown"; 
             }
             postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
+            return postParams;
             
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, ex);
+        }
+        return null;
+    	
+    }
+    /**
+     * Creates an array of POST method parameters to send with the version checking / usage tracking connection.
+     * 
+     * @param doSendSecondaryStats if true, the POST parameters include usage stats
+     * @return an array of POST parameters
+     */
+    protected Vector<NameValuePair> createPostParameters(final boolean doSendSecondaryStats)
+    {
+        try
+        {           
+            Vector<NameValuePair> postParams = createBasicPostParameters();
+
             Vector<NameValuePair> extraStats = collectSecondaryStats(doSendSecondaryStats);
             if (extraStats != null)
             {
@@ -484,7 +544,7 @@ public class StatsTrackerTask extends BaseTask
             {
                 postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
             }
-            
+                        
             return postParams;
         
         } catch (Exception ex)

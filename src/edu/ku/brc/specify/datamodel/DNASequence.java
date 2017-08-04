@@ -89,6 +89,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
 	protected Calendar						boldLastUpdateDate;
 
 	protected Agent							sequencer;
+	protected CollectionObject				collectionObject;
 	protected MaterialSample				materialSample;
     protected Set<DNASequenceAttachment>    attachments;
 	protected Set<DNASequencingRun>			dnaSequencingRuns;
@@ -137,6 +138,7 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
         boldLastUpdateDate = null;
 
         sequencer = null;
+        collectionObject = null;
         materialSample = null;
         attachments = new TreeSet<DNASequenceAttachment>();
         dnaSequencingRuns = new HashSet<DNASequencingRun>();
@@ -633,6 +635,13 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
         this.attachments = attachments;
     }
 
+    /**
+     * @param collectionObject the collectionObject to set
+     */
+    public void setCollectionObject(CollectionObject collectionObject)
+    {
+        this.collectionObject = collectionObject;
+    }
 
     /**
      * @param materialSample
@@ -666,6 +675,15 @@ public class DNASequence extends CollectionMember implements AttachmentOwnerIFac
         return sequencer;
     }
 
+    /**
+     * @return the collectionObject
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
+    public CollectionObject getCollectionObject()
+    {
+        return collectionObject;
+    }
 
     /**
      * @return the materialSample

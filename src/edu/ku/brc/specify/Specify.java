@@ -166,7 +166,7 @@ import edu.ku.brc.specify.config.CollectingEventsAndAttrsMaint;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.FeedBackDlg;
-import edu.ku.brc.specify.config.FixDBAfterLogin;
+import edu.ku.brc.specify.config.CheckDBAfterLogin;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -2731,7 +2731,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 @Override
                 public void run()
                 {
-                    performManualDBUdpatesAfterLogin();
+                    performManualDBChecksAfterLogin();
                 }
             });
             
@@ -2782,7 +2782,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * 
      */
-    private void performManualDBUdpatesAfterLogin()
+    private void performManualDBChecksAfterLogin()
     {
         final AppPreferences             globalPrefs   = AppPreferences.getGlobalPrefs();
         
@@ -2792,14 +2792,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                                      "fixSymbiotaExportSchema"};
         final boolean[] isFixed   = new boolean[prefNames.length];
         
-        boolean anyNeededToBeFixed = false;
+//        boolean anyNeededToBeFixed = false;
         for (int i=0;i<isFixed.length;i++)
         {
             isFixed[i] = globalPrefs.getBoolean(prefNames[i], false);
-            if (!isFixed[i]) anyNeededToBeFixed = true;
+            //if (!isFixed[i]) anyNeededToBeFixed = true;
         }
         
-        if (!anyNeededToBeFixed) return;
+//        if (!anyNeededToBeFixed) return;
 
         String msg = getResourceString("UPDATING_FOR_RELEASE");
         UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
@@ -2834,7 +2834,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     int inx = 0;
                     if (!isFixed[inx])
                     {
-                        FixDBAfterLogin fixer = new FixDBAfterLogin();
+                        CheckDBAfterLogin fixer = new CheckDBAfterLogin();
                         fixer.fixUploaderRecordsets();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
@@ -2842,21 +2842,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                     if (!isFixed[inx])
                     {
-                        FixDBAfterLogin.fixNullEmbeddedCollectingEvents();
+                        CheckDBAfterLogin.fixNullEmbeddedCollectingEvents();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;
                     
                     if (!isFixed[inx])
                     {
-                        FixDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
+                        CheckDBAfterLogin.fixUnMatchedWBSpecifyUserIDs();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;
                     
                     if (!isFixed[inx])
                     {
-                        if (FixDBAfterLogin.fixQueryOperators())
+                        if (CheckDBAfterLogin.fixQueryOperators())
                         {
                             globalPrefs.putBoolean(prefNames[inx], true);
                         }
@@ -2865,14 +2865,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                     if (!isFixed[inx])
                     {
-                        FixDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
+                        CheckDBAfterLogin.fixIsDisplayForUnmappedSchemaConditions();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;
                     
                     if (!isFixed[inx])
                     {
-                        FixDBAfterLogin.fixGTPTreeDefParents();
+                        CheckDBAfterLogin.fixGTPTreeDefParents();
                         globalPrefs.putBoolean(prefNames[inx], true);
                     }
                     inx++;
@@ -2886,7 +2886,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
  
                     if (!isFixed[inx])
                     {
-                        if (FixDBAfterLogin.fixNullTreeableFields()) {
+                        if (CheckDBAfterLogin.fixNullTreeableFields()) {
                         	globalPrefs.putBoolean(prefNames[inx], true);
                         }
                     }
@@ -2894,7 +2894,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
                     if (!isFixed[inx])
                     {
-                    	if (FixDBAfterLogin.fixNullDatePrecisions()) {
+                    	if (CheckDBAfterLogin.fixNullDatePrecisions()) {
                     		globalPrefs.putBoolean(prefNames[inx], true);
                     	}
                     }
@@ -2910,18 +2910,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
                     if (!isFixed[inx]) 
                     {
-                    	if (FixDBAfterLogin.fixSymbiotaExportSchema()) {
+                    	if (CheckDBAfterLogin.fixSymbiotaExportSchema()) {
                     		globalPrefs.putBoolean(prefNames[inx], true);
                     	}
                     }
                     inx++;
                     
-                    FixDBAfterLogin fixer = new FixDBAfterLogin();
+                    CheckDBAfterLogin fixer = new CheckDBAfterLogin();
                     fixer.checkMultipleLocalities();
+                    fixer.sendDNACounts();
                     
                     globalPrefs.flush();
                     
-                    FixDBAfterLogin.addPickListByName("ContainerType");
+                    CheckDBAfterLogin.addPickListByName("ContainerType");
 
                 } catch (Exception ex)
                 {

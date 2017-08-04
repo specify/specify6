@@ -168,6 +168,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
     protected PaleoContext                  paleoContext;
+    protected Set<DNASequence>              dnaSequences;
     protected FieldNotebookPage             fieldNotebookPage;
     
     protected Set<ConservDescription>         conservDescriptions;
@@ -251,6 +252,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         container             = null;
         containerOwner        = null;
         paleoContext          = null;
+        dnaSequences          = new HashSet<DNASequence>();
         fieldNotebookPage     = null;
         
         leftSideRels          = new HashSet<CollectionRelationship>();
@@ -1104,6 +1106,23 @@ public void setReservedText3(String reservedText3) {
 //        this.deaccessionPreparations = deaccessionPreparations;
 //    }
 
+    /**
+     * @return the collectionObjects
+     */
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<DNASequence> getDnaSequences()
+    {
+        return dnaSequences;
+    }
+    
+    /**
+     * @param dnaSequences the dnaSequences to set
+     */
+    public void setDnaSequences(Set<DNASequence> dnaSequences)
+    {
+        this.dnaSequences = dnaSequences;
+    }
 
     /**
      * @return the fieldNotebookPage

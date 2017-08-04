@@ -122,9 +122,9 @@ import edu.ku.brc.ui.UIRegistry;
  * Jan 14, 2010
  *
  */
-public class FixDBAfterLogin
+public class CheckDBAfterLogin
 {
-    private static final Logger log  = Logger.getLogger(FixDBAfterLogin.class);
+    private static final Logger log  = Logger.getLogger(CheckDBAfterLogin.class);
     
     private final static String FIX_DEFDATES_PREF = "FIX_DEFDATES_PREF";
     
@@ -134,7 +134,7 @@ public class FixDBAfterLogin
     /**
      * 
      */
-    public FixDBAfterLogin()
+    public CheckDBAfterLogin()
     {
         super();
     }
@@ -142,6 +142,17 @@ public class FixDBAfterLogin
     /**
      * 
      */
+    public void sendDNACounts()
+    {
+     	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct CollectionMemberID, CollectionName from dnasequence");
+    	for (Object[] coll : collsWithDNA) {
+    		int codna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = " + coll[0]);
+    		int msdna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = " + coll[0]);
+    		String str = String.format("Collection: %s -- co_dna_count: %d, ms_dna_count: %d", coll[1], codna, msdna);
+		    edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(CheckDBAfterLogin.class, str, new Exception("DNA Check"));    			
+    	}
+    }
+    
     public void checkMultipleLocalities()
     {
         int cnt = getCountAsInt("select count(localitydetailid) - count(distinct localityid) from localitydetail");
@@ -151,7 +162,7 @@ public class FixDBAfterLogin
 					"inner join collectingevent ce on ce.collectingeventid = co.collectingeventid " +
 					"inner join  (select localityid from localitydetail group by localityid having count(localitydetailid) > 1) badlocs on badlocs.localityid = ce.localityid");
 			String str = String.format("Multiple Locality Detail Records - Count: %d", cnt);
-			edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(FixDBAfterLogin.class, str, new Exception(str));
+			edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(CheckDBAfterLogin.class, str, new Exception(str));
 		}
          
          cnt = getCountAsInt("select count(geocoorddetailid) - count(distinct localityid) from geocoorddetail");
@@ -161,9 +172,10 @@ public class FixDBAfterLogin
         	 		"inner join collectingevent ce on ce.collectingeventid = co.collectingeventid " +
         	 		"inner join (select localityid from geocoorddetail group by localityid having count(geocoorddetailid) > 1) badlocs on badlocs.localityid = ce.localityid");
  		     String str = String.format("Multiple GeoCoord Detail Records - Count: %d", cnt);
- 		     edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(FixDBAfterLogin.class, str, new Exception(str));
+ 		     edu.ku.brc.exceptions.ExceptionTracker.getInstance().sendMsg(CheckDBAfterLogin.class, str, new Exception(str));
          }
     }
+
     
     /**
      * fixes bad version and timestamps for recordsets created by Uploader. 

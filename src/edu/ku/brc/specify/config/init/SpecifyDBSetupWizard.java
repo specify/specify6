@@ -67,7 +67,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.FixDBAfterLogin;
+import edu.ku.brc.specify.config.CheckDBAfterLogin;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -1021,7 +1021,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         if (isOK)
                         {
                             SpecifySchemaUpdateService.addIPadExporterTables(DBConnection.getInstance().getConnection());
-                            FixDBAfterLogin.fixUserPermissions(true);
+                            CheckDBAfterLogin.fixUserPermissions(true);
                             saveFormatters();
                         }
         

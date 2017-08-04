@@ -4,6 +4,7 @@
       <table class="edu.ku.brc.specify.datamodel.CollectionObject"/>
       <table class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
       <table class="edu.ku.brc.specify.datamodel.Determination"/>
+      <table class="edu.ku.brc.specify.datamodel.DNASequence"/>
       <table class="edu.ku.brc.specify.datamodel.Geography"/>
       <table class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
       <table class="edu.ku.brc.specify.datamodel.Locality"/>
@@ -15,6 +16,12 @@
    <stats>
        <stat name="num_co" desc="Number of Collection Objects">
           <![CDATA[SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID]]>
+       </stat>
+       <stat name="num_co_dna" desc="Number of DNA Sequences associated with CollectionObjects">
+          <![CDATA[SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = COLMEMID]]>
+       </stat>
+       <stat name="num_ms_dna" desc="Number of DNA Sequences associated with MaterialSamples">
+          <![CDATA[SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = COLMEMID]]>
        </stat>
        <stat name="num_txu" desc="Number of Taxon Used">
           <![CDATA[SELECT COUNT(DISTINCT d.TaxonID) FROM determination d INNER JOIN taxon t ON t.TaxonID = d.TaxonID WHERE d.CollectionMemberID = COLMEMID AND d.IsCurrent <> 0 AND t.IsAccepted <> 0]]>
