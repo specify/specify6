@@ -144,7 +144,7 @@ public class CheckDBAfterLogin
      */
     public void sendDNACounts()
     {
-     	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct CollectionMemberID, CollectionName from dnasequence");
+     	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct CollectionMemberID, CollectionName from dnasequence dna inner join collection c on c.collectionid = dna.collectionmemberid");
     	for (Object[] coll : collsWithDNA) {
     		int codna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = " + coll[0]);
     		int msdna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = " + coll[0]);
