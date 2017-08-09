@@ -52,16 +52,16 @@ public class ReferenceWorkBusRules extends AttachmentOwnerBaseBusRules
     {
         ReferenceWork rw = (ReferenceWork)dataObj;
         
-        if (rw.getId() != null)
-        {
-            String sql = "SELECT count(*) FROM referencework WHERE JournalID is NULL AND ReferenceWorkID = " + rw.getId();
-            Integer cnt = BasicSQLUtils.getCount(sql);
-            if (cnt == 0)
-            {
-                UIRegistry.showLocalizedError("RW_NO_DEL");
-                return;
-            }
-        }
+//        if (rw.getId() != null)
+//        {
+//            String sql = "SELECT count(*) FROM referencework WHERE JournalID is NULL AND ReferenceWorkID = " + rw.getId();
+//            Integer cnt = BasicSQLUtils.getCount(sql);
+//            if (cnt == 0)
+//            {
+//                UIRegistry.showLocalizedError("RW_NO_DEL");
+//                return;
+//            }
+//        }
         super.okToDelete(dataObj, session, deletable);
     }
 	
