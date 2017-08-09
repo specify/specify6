@@ -22,6 +22,8 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectionMember;
+import edu.ku.brc.specify.datamodel.DisciplineMember;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.util.GeoRefConverter;
@@ -128,7 +130,7 @@ public class LocalityDuplicateRemover
 	
 	protected static int getRepsForTbl(DBTableInfo tbl) {
 		if ("collector".equalsIgnoreCase(tbl.getName())) {
-			return 4;
+			return 10;
 		} else {
 			return 1;
 		}
@@ -201,14 +203,20 @@ public class LocalityDuplicateRemover
 
 	protected static String getDbObjName(Pair<DBTableInfo, Object> dbObj, boolean includeTblAbbrev, Integer seq) throws Exception
 	{
+		String result = null;
 		if (dbObj.getSecond() instanceof DBFieldInfo)
 		{
-			return (includeTblAbbrev ? dbObj.getFirst().getAbbrev() + (seq == null ? "" : seq) + "." : "") + ((DBFieldInfo)dbObj.getSecond()).getColumn();
+			result = (includeTblAbbrev ? dbObj.getFirst().getAbbrev() + (seq == null ? "" : seq) + "." : "") + ((DBFieldInfo)dbObj.getSecond()).getColumn();
 		} else if (dbObj.getSecond() instanceof DBRelationshipInfo)
 		{
-			return (includeTblAbbrev ? dbObj.getFirst().getAbbrev() + (seq == null ? "" : seq) + "." : "") + ((DBRelationshipInfo)dbObj.getSecond()).getColName();
+			result =  (includeTblAbbrev ? (dbObj.getFirst().getAbbrev() + (seq == null ? "" : seq) + ".") : "") + 
+					(((DBRelationshipInfo)dbObj.getSecond()).getColName() != null 
+						? ((DBRelationshipInfo)dbObj.getSecond()).getColName() 
+						: dbObj.getFirst().getIdColumnName());
+		} else {
+			throw new Exception("Unknown db object type " + dbObj.getClass().getName());
 		}
-		throw new Exception("Unknown db object type " + dbObj.getClass().getName());
+		return result;
 	}
 	
 	protected static String getSqlFldsClause(List<Pair<Pair<DBTableInfo, Object>, Integer>> dbObjs) throws Exception {
@@ -225,7 +233,8 @@ public class LocalityDuplicateRemover
 		return result;
 	}
 	
-	protected static String getDistinctRecSql(DBTableInfo tbl, boolean countOnly, boolean dupsOnly) throws Exception
+	protected static String getDistinctRecSql(DBTableInfo tbl, boolean countOnly, boolean dupsOnly,
+			Integer scopeID) throws Exception
 	{
 		String result = "select " + (countOnly ? "count(distinct " : "");
 		
@@ -233,7 +242,9 @@ public class LocalityDuplicateRemover
 		tbls.insertElementAt(new Pair<DBTableInfo, DBRelationshipInfo>(tbl, null), 0);
 		List<Pair<Pair<DBTableInfo, Object>, Integer>> flds = getTblsFlds(tbls);
 		result += getSqlFldsClause(flds);
-		
+		if (tbl.getTableId() == 10) {
+			result += ", ce0.LocalityID ";
+		}
 		if (countOnly)
 		{
 			result += ")";
@@ -243,10 +254,24 @@ public class LocalityDuplicateRemover
 		}
 		
 		result += getJoinToOwnedChildren(tbl);
+		if (CollectionMember.class.isAssignableFrom(tbl.getClassObj())) {
+			if (scopeID != null) {
+				result += " where " + tbl.getAbbrev() + "0.CollectionMemberID=" + scopeID;
+			}
+		}
+		if (DisciplineMember.class.isAssignableFrom(tbl.getClassObj())) {
+			if (scopeID != null) {
+				result += " where " + tbl.getAbbrev() + "0.DisciplineID=" + scopeID;
+			}
+		}
 		if (!countOnly)
 		{
 			result += " group by ";
-			for (int f = 1; f <= flds.size(); f++)
+			int maxF = flds.size();
+			if (tbl.getTableId() == 10) {
+				maxF++;
+			}
+			for (int f = 1; f <= maxF; f++)
 			{
 				if (f > 1)
 				{
@@ -311,10 +336,11 @@ public class LocalityDuplicateRemover
 	}
 	
 	
-	public static Vector<Object[]> getDistinctRecs(final Connection conn, int tableId, boolean dupsOnly) throws Exception
+	public static Vector<Object[]> getDistinctRecs(final Connection conn, int tableId, boolean dupsOnly, 
+			Integer collectionID) throws Exception
 	{
 		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(tableId);
-		String sql = getDistinctRecSql(tbl, false, dupsOnly);
+		String sql = getDistinctRecSql(tbl, false, dupsOnly, collectionID);
 		return BasicSQLUtils.query(conn, sql);
 	}
 	
@@ -337,10 +363,10 @@ public class LocalityDuplicateRemover
 		int parentFldIdx = -1;
 		if (parentFld != null && parentId != null)
 		{
-			parentFldIdx = colNames.indexOf(getDbObjName(parentFld, false, 0));
+			parentFldIdx = colNames.indexOf(getDbObjName(parentFld, false, null));
 			if (parentFldIdx == -1)
 			{
-				colNames.add(getDbObjName(parentFld, false, 0));
+				colNames.add(getDbObjName(parentFld, false, null));
 				parentFldIdx = colNames.size() - 1;
 			}
 		}
@@ -366,12 +392,60 @@ public class LocalityDuplicateRemover
 		
 		if (BasicSQLUtils.update(conn, recSql) > 0)
 		{
-			return BasicSQLUtils.querySingleObj(conn, "select max(" + tbl.getPrimaryKeyName() + ") from " + tbl.getName());
+			Integer result =  BasicSQLUtils.querySingleObj(conn, "select max(" + tbl.getPrimaryKeyName() + ") from " + tbl.getName());
+			List<Pair<DBTableInfo, DBRelationshipInfo>> children = getOwnedOneOrManyRelatedTables(tbl);
+			for (Pair<DBTableInfo, DBRelationshipInfo> child : children) {
+				if (shouldDuplicateChild(tbl, child.getFirst(), child.getSecond())) {
+					System.out.println(child.getFirst().getName() + ", " + child.getSecond().getName());
+					if (child.getFirst().getName().endsWith("attribute")) {
+						System.out.println("Duplication of " + child.getFirst().getName() + " skipped.");
+					} else {
+						DBTableInfo childTbl = child.getFirst();
+						String parentIdName = child.getSecond().getColName() != null ? child.getSecond().getColName() : tbl.getIdColumnName();
+						String childSql = "SELECT " + childTbl.getIdColumnName() + " FROM " + childTbl.getName() +
+								" WHERE " +  parentIdName + "=" + key;
+						List<Object> toCopy = BasicSQLUtils.querySingleCol(conn, childSql);
+						for (Object idObj : toCopy) {
+							createDuplicates(conn, Integer.class.cast(idObj), childTbl, new Pair<DBTableInfo, Object>(tbl, 
+									child.getSecond()), result);
+						}
+						
+					}
+				}
+			}
+			return result;
 		} 
 		return null;
 	}
 	
-	public static Integer duplicateLocality(Connection conn, Integer locId) throws Exception
+	/**
+	 * @param tbl
+	 * @param childTbl
+	 * @param rel
+	 * @return
+	 */
+	protected static boolean shouldDuplicateChild(DBTableInfo tbl, DBTableInfo childTbl, DBRelationshipInfo rel) {
+		if (rel.getName().endsWith("Attachments")) {
+			return false;
+		}
+		if (rel.getName().endsWith("Attrs")) {
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * @param conn
+	 * @param origId
+	 * @param shortClassName
+	 * @return
+	 * @throws Exception
+	 */
+	public static Integer duplicate(Connection conn, Integer origId, String shortClassName) throws Exception {
+		DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
+		return createDuplicates(conn, origId, tbl, null, null);
+	}
+	
+	protected static Integer duplicateLocality(Connection conn, Integer locId) throws Exception
 	{
 		DBTableInfo locTbl = DBTableIdMgr.getInstance().getByShortClassName("Locality");
 		Integer newLocId =  createDuplicates(conn, locId, locTbl, null, null);
@@ -568,7 +642,9 @@ public class LocalityDuplicateRemover
 		{
 			sql += (f > 0 ? " and " : "") + getCondition(flds.get(f), rowValues[f]);
 		}
-		
+		if (tbl.getTableId() == 10) {
+			sql += " and ce0.LocalityID = " + rowValues[flds.size()];
+		}
 		Vector<Object> ids = BasicSQLUtils.querySingleCol(conn, sql);
 		if (ids == null || ids.size() < 2)
 		{
@@ -654,7 +730,8 @@ public class LocalityDuplicateRemover
 			System.out.println(delSql);
 			if (BasicSQLUtils.update(conn, delSql) != 1)
 			{
-				throw new Exception("delete failed for this statement: " + delSql);
+				//throw new Exception("delete failed for this statement: " + delSql);
+				System.out.println("delete failed for this statement: " + delSql);
 			}
 			
 		}
@@ -663,11 +740,11 @@ public class LocalityDuplicateRemover
 	
 	protected static void removeDuplicateAgents() throws Exception {
 		//String connStr = "jdbc:mysql://localhost/wis6?characterEncoding=UTF-8&autoReconnect=true"; 
-		String connStr = "jdbc:mysql://localhost/tishfish?characterEncoding=UTF-8&autoReconnect=true"; 
+		String connStr = "jdbc:mysql://localhost/paf?characterEncoding=UTF-8&autoReconnect=true"; 
 		try
 		{
 			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
-			Vector<Object[]> distincts = getDistinctRecs(conn, Agent.getClassTableId(), true);
+			Vector<Object[]> distincts = getDistinctRecs(conn, Agent.getClassTableId(), true, null);
 			System.out.println(distincts.size() + " dups.");
 			Vector<Pair<String, Long>> dups = new Vector<Pair<String, Long>>();
 			for (Object[] row : distincts)
@@ -749,11 +826,11 @@ public class LocalityDuplicateRemover
 		//String connStr = "jdbc:mysql://localhost/plant_shared?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/demopal?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/flamam6?characterEncoding=UTF-8&autoReconnect=true"; 
-		String connStr = "jdbc:mysql://localhost/utapostshare?characterEncoding=UTF-8&autoReconnect=true"; 
+		String connStr = "jdbc:mysql://localhost/cumvi?characterEncoding=UTF-8&autoReconnect=true"; 
 		try
 		{
 			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
-			Vector<Object[]> distincts = getDistinctRecs(conn, CollectingEvent.getClassTableId(), true);
+			Vector<Object[]> distincts = getDistinctRecs(conn, CollectingEvent.getClassTableId(), true, null);
 			System.out.println(distincts.size() + " dups.");
 			Vector<Pair<String, Long>> dups = new Vector<Pair<String, Long>>();
 			for (Object[] row : distincts)
@@ -783,11 +860,11 @@ public class LocalityDuplicateRemover
 		//String connStr = "jdbc:mysql://localhost/plant_shared?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/demopal?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/flamam6?characterEncoding=UTF-8&autoReconnect=true"; 
-		String connStr = "jdbc:mysql://localhost/wam?characterEncoding=UTF-8&autoReconnect=true"; 
+		String connStr = "jdbc:mysql://localhost/iowafinaltmp?characterEncoding=UTF-8&autoReconnect=true"; 
 		try
 		{
 			Connection conn = DriverManager.getConnection(connStr, "Master", "Master");
-			Vector<Object[]> distincts = getDistinctRecs(conn, Locality.getClassTableId(), true);
+			Vector<Object[]> distincts = getDistinctRecs(conn, Locality.getClassTableId(), true, null);
 			System.out.println(distincts.size() + " dups.");
 			Vector<Pair<String, Long>> dups = new Vector<Pair<String, Long>>();
 			for (Object[] row : distincts)
@@ -798,6 +875,11 @@ public class LocalityDuplicateRemover
 					String text = row[0] + ", " + row[1] + ", " + row[2]; 
 					dups.add(new Pair<String, Long>(text, count));
 					removeDuplicates(conn, "locality", row);
+					String cntSql = "select count(cef.collectingeventid) from collectingevent cef inner join iowafinal.collectingevent ce on ce.collectingeventid = cef.collectingeventid inner join iowafinal.locality l on l.localityid = ce.localityid inner join iowafinal.paleocontext pc on pc.paleocontextid = l.paleocontextid inner join locality lf on lf.localityid = cef.localityid inner join paleocontext pcf on pcf.paleocontextid = lf.paleocontextid where ifnull(pcf.lithostratid, -1) != ifnull(pc.lithostratid,-1) or ifnull(pcf.chronosstratid,-1) != ifnull(pc.chronosstratid,-1)";
+					int cnt = BasicSQLUtils.getCountAsInt(conn, cntSql);
+					if (cnt > 0) {
+						System.out.println("FUCKED UP!");
+					}
 				}
 			}
 			System.out.println(dups.size() + " duplicates:");
@@ -812,7 +894,7 @@ public class LocalityDuplicateRemover
 		
 	}
 
-	protected static void removeDuplicatePaleoContexts(String dbName, String masterUser, String masterPw) throws Exception {
+	protected static void removeDuplicatePaleoContexts(String dbName, String masterUser, String masterPw, Integer collectionID) throws Exception {
 		//String connStr = "jdbc:mysql://localhost/wis6?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/plant_shared?characterEncoding=UTF-8&autoReconnect=true"; 
 		//String connStr = "jdbc:mysql://localhost/demopal?characterEncoding=UTF-8&autoReconnect=true"; 
@@ -821,7 +903,7 @@ public class LocalityDuplicateRemover
 		try
 		{
 			Connection conn = DriverManager.getConnection(connStr, masterUser, masterPw);
-			List<Object[]> distincts = getDistinctRecs(conn, PaleoContext.getClassTableId(), true);
+			List<Object[]> distincts = getDistinctRecs(conn, PaleoContext.getClassTableId(), true, collectionID);
 			System.out.println(distincts.size() + " dups.");
 			Vector<Pair<String, Long>> dups = new Vector<Pair<String, Long>>();
 			for (Object[] row : distincts)
@@ -854,10 +936,10 @@ public class LocalityDuplicateRemover
 		try
 		{
 			//removeDuplicateAgents();
-			//removeDuplicateCollectingEvents();
+			removeDuplicateCollectingEvents();
 			//assignGeoCoordsFromGeoCoordTexts();
 			//removeDuplicateLocalities();
-			removeDuplicatePaleoContexts("flaip04", "Master", "Master");
+			//removeDuplicatePaleoContexts("iowafinaltmp", "Master", "Master", 3);
 		} catch (Exception e)
 		{
 			e.printStackTrace();

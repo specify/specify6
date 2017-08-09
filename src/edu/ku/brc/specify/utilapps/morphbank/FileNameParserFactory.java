@@ -24,9 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Gift;
+import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.subpane.images.CollectionDataFetcher;
 
@@ -48,14 +52,22 @@ public class FileNameParserFactory
                                                CollectionObject.class, 
                                                CollectingEvent.class,
                                                CollectingEvent.class,
-                                               Taxon.class};
+                                               Taxon.class,
+                                               Loan.class,
+                                               Accession.class,
+                                               Gift.class,
+                                               Borrow.class};
     
     private static final String[]   fields  = {"catalogNumber", 
                                                "fieldNumber",
                                                "altCatalogNumber",
                                                "stationFieldNumber",
                                                "guid",
-                                               "fullName"};
+                                               "fullName",
+                                               "loanNumber",
+                                               "accessionNumber",
+                                               "giftNumber",
+                                               "invoiceNumber"};
     
     private static final FileNameParserFactory instance = new FileNameParserFactory();
     
