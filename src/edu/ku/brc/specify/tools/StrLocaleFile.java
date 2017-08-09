@@ -1,4 +1,4 @@
-/* Copyright (C) 2015, University of Kansas Center for Research
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -123,7 +123,7 @@ public class StrLocaleFile
                         if (debug)
                         {
                             //System.out.println((byte)value.charAt(12)+"="+value.charAt(12));
-                            char spec = 'Ã';
+                            char spec = 'ï¿½';
                             int fInx = value.indexOf(spec);
                             if (fInx > -1)
                             {

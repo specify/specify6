@@ -1,4 +1,4 @@
-/* Copyright (C) 2015, University of Kansas Center for Research
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -195,17 +195,17 @@ public class IdHashMapper implements IdMapperIFace
         
         try
         {
-//            if (enableRemoveRecords)
-//            {
-//                wasEmpty = true;
-//                if (BasicSQLUtils.doesTableExist(oldConn, mapTableName)) {
-//                	try {
-//                		String sql = String.format("DELETE FROM %s", mapTableName);
-//                		BasicSQLUtils.update(oldConn, sql);
-//                	} catch (Exception ex ) {}
-//                }
-//                return;
-//            }
+            if (enableRemoveRecords)
+            {
+                wasEmpty = true;
+                if (BasicSQLUtils.doesTableExist(oldConn, mapTableName)) {
+                	try {
+                		String sql = String.format("DELETE FROM %s", mapTableName);
+                		BasicSQLUtils.update(oldConn, sql);
+                	} catch (Exception ex ) {}
+                }
+                return;
+            }
 
             if ((doDelete || mappingCount == 0) && enableDelete)
             {

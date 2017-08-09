@@ -1,4 +1,4 @@
-/* Copyright (C) 2015, University of Kansas Center for Research
+/* Copyright (C) 2017, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -892,10 +892,10 @@ public class MexConvToSQL
                             if (StringUtils.isNotEmpty(value))
                             {
                                 String origValue = value;
-                                String val = value.charAt(0) == 'Ñ' ? value.substring(1) : value;
+                                String val = value.charAt(0) == 'ï¿½' ? value.substring(1) : value;
                                 val = val.charAt(0) == '-' ? val.substring(1) : val;
                                 val = val.indexOf('.') > -1 ? StringUtils.replace(val, ".", "") : val;
-                                val = val.indexOf('¡') > -1 ? StringUtils.replace(val, "¡", "") : val;
+                                val = val.indexOf('ï¿½') > -1 ? StringUtils.replace(val, "ï¿½", "") : val;
                                 
                                 if (StringUtils.isNumericSpace(val))
                                 {
