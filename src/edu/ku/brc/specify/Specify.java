@@ -52,6 +52,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -62,6 +63,12 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
@@ -162,11 +169,11 @@ import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.services.gpx.GPXPanel;
+import edu.ku.brc.specify.config.CheckDBAfterLogin;
 import edu.ku.brc.specify.config.CollectingEventsAndAttrsMaint;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.FeedBackDlg;
-import edu.ku.brc.specify.config.CheckDBAfterLogin;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -1642,9 +1649,29 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 	        
 			//UIRegistry.displayInfoMsgDlg("checkForUpdates(): checking for updates at " + updatePath);
 
-			UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath,
-					ApplicationDisplayMode.UNATTENDED);
-	        //UIRegistry.displayInfoMsgDlg("checkForUpdates(): UpdateDescriptor=" + updateDesc);
+			
+			//kluge to allow local timeout adjustment
+			AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+			int timeoutpref = localPrefs.getInt("update_check_timeout_seconds", 33);
+			final Duration timeout = Duration.ofSeconds(timeoutpref);
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			final Future<UpdateDescriptor> checker = executor.submit(new Callable<UpdateDescriptor>() {
+				@Override
+				public UpdateDescriptor call() throws Exception {
+					return UpdateChecker.getUpdateDescriptor(updatePath, ApplicationDisplayMode.UNATTENDED);
+				}
+			});
+			UpdateDescriptor updateDesc = null;
+			try {
+				updateDesc = checker.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+			} catch (TimeoutException e) {
+				checker.cancel(true);
+				log.warn("check for updates timed out");
+			}
+			//UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(updatePath,
+			//		ApplicationDisplayMode.UNATTENDED);
+	        
+			//UIRegistry.displayInfoMsgDlg("checkForUpdates(): UpdateDescriptor=" + updateDesc);
 			
 			if (updateDesc != null) {
 				UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
@@ -2248,7 +2275,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "<p>The Specify Software Project is "+ //$NON-NLS-1$
         "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
         "U.S. National Science Foundation  (Award DBI-0960913 and earlier awards).<br><br>" + //$NON-NLS-1$
-        "Specify 6 Copyright \u00A9 2015 University of Kansas Center for Research. " + 
+        "Specify 6 Copyright \u00A9 2017 University of Kansas Center for Research. " + 
         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
