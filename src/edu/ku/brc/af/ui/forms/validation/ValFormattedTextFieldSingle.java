@@ -1142,6 +1142,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
 
             } else if (field.getType() == UIFieldFormatterField.FieldType.numeric)
             {
+                if (docFormatter.isIncrementer()) {
+                	return StringUtils.isNumeric(str);
+                }
                 char   decSep = formatSymbols.getDecimalSeparator();
                 String str1   = StringUtils.remove(str, decSep);
                 String str2   = StringUtils.remove(str1, '-');
