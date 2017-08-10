@@ -285,6 +285,15 @@
     <field column="YesNo 7 (Col. Obj. Attribute)" name="colObjAttributeYesNo7" type="boolean"/>
   </table>  
 
+  <!--uncomment this section and to upload container info.
+  The container relationship with collectionobject is not supported
+  Adding agent or other related data will require editing specify_workbench_upload_def.xml
+  Contact specifysoftware@ku.edu for more info.
+  <table classname="edu.ku.brc.specify.datamodel.Container" table="container" tableid="31" lazy="true">
+    <field column="Name" name="name" type="java.lang.String" length="64"/>
+  </table>  
+  -->
+  
   <!--
   <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" >
       <field column="AmbiguousResidues 1" name="ambiguousResidues1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

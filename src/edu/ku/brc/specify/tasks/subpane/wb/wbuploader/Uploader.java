@@ -1517,6 +1517,10 @@ public class Uploader implements ActionListener, KeyListener
     		{
     			result = false;
     		}
+    	} else if (t.getName().equalsIgnoreCase("collectionobject")) {
+    		if (r.getRelatedField().getName().equalsIgnoreCase("ContainerID")) {
+    			result = false;
+    		}
     	}
     	if (!result)
     	{
