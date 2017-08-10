@@ -76,6 +76,7 @@ import edu.ku.brc.specify.tasks.InteractionsTask;
     {   @Index (name="FieldNumberIDX", columnNames={"FieldNumber"}),
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
         @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"}),
+        @Index (name="AltCatalogNumberIDX", columnNames= {"AltCatalogNumber"}),
         @Index (name="ColObjGuidIDX", columnNames={"GUID"}),
         @Index (name="COColMemIDX", columnNames={"CollectionmemberID"})
     })
