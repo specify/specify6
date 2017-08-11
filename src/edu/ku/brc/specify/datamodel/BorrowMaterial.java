@@ -64,6 +64,8 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
      protected Short   quantityReturned;
      protected Set<BorrowReturnMaterial> borrowReturnMaterials;
      protected Borrow borrow;
+     protected String text1;
+     protected String text2;
 
 
     // Constructors
@@ -96,6 +98,8 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
         quantityReturned = null;
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
         borrow = null;
+        text1 = null;
+        text2 = null;
     }
     // End Initializer
 
@@ -185,7 +189,40 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
         this.outComments = outComments;
     }
 
+    
     /**
+	 * @return the text1
+	 */
+    @Lob
+    @Column(name = "Text1", length=6667, unique = false, nullable = true, insertable = true, updatable = true)
+	public String getText1() {
+		return text1;
+	}
+
+	/**
+	 * @param text1 the text1 to set
+	 */
+	public void setText1(String text1) {
+		this.text1 = text1;
+	}
+
+	/**
+	 * @return the text2
+	 */
+    @Lob
+    @Column(name = "Text2", length=6667, unique = false, nullable = true, insertable = true, updatable = true)
+	public String getText2() {
+		return text2;
+	}
+
+	/**
+	 * @param text2 the text2 to set
+	 */
+	public void setText2(String text2) {
+		this.text2 = text2;
+	}
+
+	/**
      *      * Notes concerning the receipt of the material
      */
     @Lob

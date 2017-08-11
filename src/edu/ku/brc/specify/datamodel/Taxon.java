@@ -142,6 +142,10 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected Float                number4;
     protected Float                number5;
     
+    protected Long			       integer1;
+    protected Long                 integer2;
+    protected Long                 integer3;
+    
     protected Boolean              yesNo1;
     protected Boolean              yesNo2;
     protected Boolean              yesNo3;
@@ -257,6 +261,9 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         yesNo1                        = null;
         yesNo2                        = null;
         yesNo3                        = null;
+        integer1					  = null;
+        integer2                      = null;
+        integer3                      = null;
         
         acceptedChildren              = new HashSet<Taxon>();
         
@@ -740,6 +747,52 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	 */
 	public void setNumber5(Float number5) {
 		this.number5 = number5;
+	}
+
+	
+	/**
+	 * @return the integer1
+	 */
+    @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Long getInteger1() {
+		return integer1;
+	}
+
+	/**
+	 * @param integer1 the integer1 to set
+	 */
+	public void setInteger1(Long integer1) {
+		this.integer1 = integer1;
+	}
+
+	/**
+	 * @return the integer2
+	 */
+	@Column(name = "Integer2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Long getInteger2() {
+		return integer2;
+	}
+
+	/**
+	 * @param integer2 the integer2 to set
+	 */
+	public void setInteger2(Long integer2) {
+		this.integer2 = integer2;
+	}
+
+	/**
+	 * @return the integer3
+	 */
+	@Column(name = "Integer3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Long getInteger3() {
+		return integer3;
+	}
+
+	/**
+	 * @param integer3 the integer3 to set
+	 */
+	public void setInteger3(Long integer3) {
+		this.integer3 = integer3;
 	}
 
 	/**
