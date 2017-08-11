@@ -9651,7 +9651,7 @@ public class BuildSampleDatabase
             
             persist(rootNode);
             
-            String[]        cells    = new String[4];
+            String[]        cells    = new String[6];
             InputStream     input    = new FileInputStream(file);
             POIFSFileSystem fs       = new POIFSFileSystem(input);
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
@@ -9676,6 +9676,7 @@ public class BuildSampleDatabase
                 if (counter == 0)
                 {
                     counter = 1;
+                    rows.next();
                     continue;
                 }
                 if (counter % 100 == 0)
@@ -9687,22 +9688,27 @@ public class BuildSampleDatabase
                 HSSFRow row = (HSSFRow) rows.next();
                 Iterator<?> cellsIter = row.cellIterator();
                 int i = 0;
-                while (cellsIter.hasNext() && i < 4)
+                for (int j=0;j<6;j++)
+                {
+                    cells[j] = null;
+                }
+                while (cellsIter.hasNext() && i < 6)
                 {
                     HSSFCell cell = (HSSFCell)cellsIter.next();
                     if (cell != null)
                     {
-                        cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
-                        i++;
+                        try {
+                        	cells[cell.getColumnIndex()] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                        } catch (IllegalStateException sex) {
+                        	Double d = cell.getNumericCellValue();
+                        	cells[cell.getColumnIndex()] = d == null ? null : d.toString();
+                        }
+                        i = cell.getColumnIndex();
                     }
-                }
-                for (int j=i;j<4;j++)
-                {
-                    cells[j] = null;
                 }
                 //System.out.println();
                 @SuppressWarnings("unused")
-                GeologicTimePeriod newGeo = convertChronoStratRecord(cells[0], cells[1], cells[2], cells[3], rootNode, userAgent);
+                GeologicTimePeriod newGeo = convertChronoStratRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], rootNode, userAgent);
     
                 counter++;
             }
@@ -9745,6 +9751,8 @@ public class BuildSampleDatabase
                                                           final String    country,
                                                           final String    state,
                                                           final String    county,
+                                                          final String    startTime,
+                                                          final String    endTime,
                                                           final GeologicTimePeriod geoRoot, 
                                                           final Agent userAgent)
     {
@@ -9770,19 +9778,42 @@ public class BuildSampleDatabase
         GeologicTimePeriod prevLevelGeo = geoRoot;
         for (int i = 0; i < levelsToBuild; ++i)
         {
-            GeologicTimePeriod newLevelGeo = buildChronoStratLevel(levelNames[i], prevLevelGeo, userAgent);
+            String myaStart = null;
+            String myaEnd = null;
+        	if (i == levelsToBuild - 1) {
+            	myaStart = startTime;
+            	myaEnd = endTime;
+            }
+        	GeologicTimePeriod newLevelGeo = buildChronoStratLevel(levelNames[i], myaStart, myaEnd, prevLevelGeo, userAgent);
             prevLevelGeo = newLevelGeo;
         }
 
         return prevLevelGeo;
     }
 
+    protected Pair<String,String> parseMyaArg(final String mya) {
+    	if (mya == null || "".equals(mya)) {
+    		return null;
+    	}
+    	Pair<String,String> result = new Pair<String,String>(null, null);
+    	String[] parts = mya.split("±");
+    	for (int i=0; i < parts.length; i++) {
+     		parts[i] = parts[i].replaceAll("~","");
+    	}
+    	result.setFirst(parts[0].trim());
+    	if (parts.length > 1) {
+    		result.setSecond(parts[1].trim());
+    	}
+    	return result;
+    }
     /**
      * @param nameArg
      * @param parentArg
      * @return
      */
     protected GeologicTimePeriod buildChronoStratLevel(final String    nameArg,
+    				                                   final String    startArg,
+    				                                   final String    endArg,
                                                        final GeologicTimePeriod parentArg, 
                                                        final Agent userAgent)
     {
@@ -9809,6 +9840,20 @@ public class BuildSampleDatabase
         GeologicTimePeriod newGeo = new GeologicTimePeriod();
         newGeo.initialize();
         newGeo.setName(name);
+        Pair<String,String> startArgs = parseMyaArg(startArg);
+        if (startArgs != null) {
+        	newGeo.setStartPeriod(Float.valueOf(startArgs.getFirst()));
+        	if (startArgs.getSecond() != null) {
+        		newGeo.setStartUncertainty(Float.valueOf(startArgs.getSecond()));
+        	}
+        }
+        Pair<String,String> endArgs = parseMyaArg(endArg);
+        if (startArgs != null) {
+        	newGeo.setEndPeriod(Float.valueOf(endArgs.getFirst()));
+        	if (endArgs.getSecond() != null) {
+        		newGeo.setEndUncertainty(Float.valueOf(endArgs.getSecond()));
+        	}
+        }
         newGeo.setParent(parentArg);
         parentArg.addChild(newGeo);
         newGeo.setDefinition(parentArg.getDefinition());
