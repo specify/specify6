@@ -399,25 +399,25 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="separator" label="Agent Info" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Last Name/Org"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="LastName" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="2" label="First Name"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="FirstName" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Address"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="Address" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="City"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="City" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="6" label="State"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="State" uitype="text" cols="15"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Postal Code"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="Postalcode" uitype="text" cols="11"/>
-                    <cell type="label" labelfor="8" label="Country"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="Country" uitype="text" cols="20"/>
                 </row>
             </rows>
@@ -440,9 +440,9 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="separator" label="Agent Info" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Last Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="LastName" uitype="text"/>
-                    <cell type="label" labelfor="2" label="First Name"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="FirstName" uitype="text"/>
                 </row>
             </rows>
@@ -588,7 +588,7 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="separator" label="Container" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" />
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="Name" uitype="text" initialize="ispartial=true"/>
                 </row>
             </rows>
@@ -689,33 +689,33 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="PermitNumber" uitype="text" isrequired="true"/>
                     
-                    <cell type="label" labelfor="2" label="Type"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="Type" uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Issued By (Last Name)"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="LastName" uitype="text"/>
                     
-                    <cell type="label" labelfor="4" label="Issued To  (Last Name)"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="agentAddressByIssuee" uitype="text"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="5" label="Date Issued"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="6" label="Date Renewed"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="7" label="Start Date"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="8" label="End Date"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                
@@ -736,11 +736,11 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="ProjectName"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="ProjectName" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="ProjectNumber"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="ProjectNumber" uitype="text"/>
                 </row>
             </rows>
@@ -760,22 +760,19 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="AccessionNumber" initialize="ispartial=true;alledit=true;"/>
-                    
-                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="Status"  uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Type"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="Type" uitype="combobox"/>
-                    
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Accessioned"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="DateAccessioned" uitype="formattedtext" uifieldformatter="SearchDate" initialize="ispartial=true;"/>
-                    
-                    <cell type="label" labelfor="6" label="Received"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="DateReceived" uitype="formattedtext" uifieldformatter="SearchDate" initialize="ispartial=true;"/>
                 </row>
             </rows>
@@ -795,7 +792,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="LocalityName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -815,7 +812,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="ViewName"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="ViewName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -835,7 +832,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -855,11 +852,11 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Discipline"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="Discipline" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -879,11 +876,11 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="SchemeName" isrequired="true" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Is Numeric"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="IsNumericOnly" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -947,11 +944,11 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="label" labelfor="FullName"/>
                     <cell type="field" id="FullName" name="taxon.FullName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="CommonName" label="Common Name"/>
+                    <cell type="label" labelfor="CommonName"/>
                     <cell type="field" id="CommonName" name="taxon.CommonName" isrequired="false" uitype="text"/>
                 </row>
             </rows>
@@ -971,7 +968,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="label" labelfor="FullName"/>
                     <cell type="field" id="FullName" name="geography.FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -1011,7 +1008,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="label" labelfor="FullName"/>
                     <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -1031,7 +1028,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="label" labelfor="FullName"/>
                     <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -1051,7 +1048,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="label" labelfor="FullName"/>
                     <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -1071,15 +1068,15 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="pcn" label="PaleoContext Name"/>
+                    <cell type="label" labelfor="pcn"/>
                     <cell type="field" id="pcn" name="pc.PaleoContextName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="cs" label="Chronostrat Full Name"/>
+                    <cell type="label" labelfor="cs"/>
                     <cell type="field" id="cs" name="gtps.FullName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="ls" label="Lithostrat Full Name"/>
+                    <cell type="label" labelfor="ls"/>
                     <cell type="field" id="ls" name="ls.FullName" isrequired="false" uitype="text"/>
                 </row>
             </rows>
@@ -1099,7 +1096,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="OrigFilename" label="Filename"/>
+                    <cell type="label" labelfor="OrigFilename"/>
                     <cell type="field" id="OrigFilename" name="OrigFilename" isrequired="true" uitype="text"/>
                 </row>
             </rows>
@@ -1122,9 +1119,9 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="separator" label="Collection Object" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" />
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="CatalogNumber" uitype="formattedtext" formatter="CatalogNumber" initialize="ispartial=true"/>
-                    <cell type="label" labelfor="2" />
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" uitype="button" ignore="true" id="2" name="doSearch" initialize="title=Search"/>
                 </row>
             </rows>
@@ -1143,7 +1140,7 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="Title" label="Title"/>
+                    <cell type="label" labelfor="Title"/>
                     <cell type="field" id="Title" name="Title" isrequired="true" uitype="text"/>
                 </row>
             </rows>
