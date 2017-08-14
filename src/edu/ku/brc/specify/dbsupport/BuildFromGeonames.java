@@ -701,8 +701,8 @@ public class BuildFromGeonames
         {
             Long lastModLong = getLastGeonamesBuiltTime();
             long prefMilli   = lastModLong != null ? lastModLong : 0;
-            isDatesMatch     = file.lastModified() <= prefMilli;
-            
+            //the following comparison doesn't work because the lastModified() value is not constant.
+            //isDatesMatch     = file.lastModified() == prefMilli;
         } else
         {
             return false;
