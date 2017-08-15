@@ -84,6 +84,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -1340,6 +1341,14 @@ public class TemplateEditor extends CustomDialog
     	if (fi.getTableinfo().getTableId() == Agent.getClassTableId() && !onlyTableInUse(currentMap, Agent.getClassTableId()))
     	{
     		return UIRegistry.getResourceString("TemplateEditor.AgentOnlyOnly");
+    	}
+    	if (tableInUse(currentMap, ReferenceWork.getClassTableId()) && fi.getTableinfo().getTableId() != ReferenceWork.getClassTableId())
+    	{
+    		return UIRegistry.getResourceString("TemplateEditor.ReferenceWorkOnly");
+    	}
+    	if (fi.getTableinfo().getTableId() == ReferenceWork.getClassTableId() && !onlyTableInUse(currentMap, ReferenceWork.getClassTableId()))
+    	{
+    		return UIRegistry.getResourceString("TemplateEditor.ReferenceWorkOnlyOnly");
     	}
     	return null;
     }
