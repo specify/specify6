@@ -275,6 +275,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 String select = "SELECT COUNT(*)";
                 String from   = " FROM collectingevent WHERE LocalityID = " + locality.getId();
                 int ceCount = BasicSQLUtils.getCountAsInt(select + from);
+                ce = null;
                 if (ceCount == 1)
                 {
                     int ceID = BasicSQLUtils.getCountAsInt("SELECT CollectingEventID" + from);
