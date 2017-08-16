@@ -329,7 +329,10 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         // Gather Collection Counts;
         if (collectionId != null)
         {
-            Object[] row = BasicSQLUtils.getRow("SELECT EstimatedSize, RegNumber, WebSiteURI, WebPortalURI, CollectionName FROM collection WHERE CollectionID = "+collectionId);
+        	String sql = "SELECT EstimatedSize, RegNumber, WebSiteURI, WebPortalURI, CollectionName,  "
+        			+ "case when a.agentid is null then null else concat(ifnull(a.LastName, ''),', ',ifnull(a.FirstName,''),' ',ifnull(a.MiddleInitial,'')) end, a.email "
+        			+ "FROM collection c left join agent a on a.agentid = c.admincontactid WHERE CollectionID = " + collectionId;
+            Object[] row = BasicSQLUtils.getRow(sql);
             Integer estSize = (Integer)row[0];
             String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
             
@@ -338,6 +341,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             stats.add(new NameValuePair("Collection_website", fixParam(row[2]))); //$NON-NLS-1$
             stats.add(new NameValuePair("Collection_portal",  fixParam(row[3]))); //$NON-NLS-1$
             stats.add(new NameValuePair("Collection_name",    fixParam(row[4]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_admin_name",    fixParam(row[5]))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_admin_email",    fixParam(row[6]))); //$NON-NLS-1$
         }
 
         String fmt = "SELECT RegNumber, Name FROM %s WHERE %s = %d";
@@ -354,7 +359,6 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             stats.add(new NameValuePair("Division_number",  fixParam(row[0]))); //$NON-NLS-1$
             stats.add(new NameValuePair("Division_name",    fixParam(row[1]))); //$NON-NLS-1$
         }
-
         if (institutionId != null)
         {
             Object[] row = BasicSQLUtils.getRow(String.format(fmt, "institution", "InstitutionID", institutionId));
