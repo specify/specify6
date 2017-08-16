@@ -21,12 +21,14 @@ package edu.ku.brc.specify.treeutils;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.LithoStrat;
@@ -213,8 +215,11 @@ public class TreeHelper
     public static void fixFullnameForNodeAndDescendants(Geography geo)
     {
         String generated = generateFullname(geo);
-        geo.setFullName(generated);
-        
+        if (generated == null /*wtf?*/ || !generated.equals(geo.getFullName())) {
+        	geo.setFullName(generated);
+        	geo.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        	geo.setModifiedByAgent(Agent.getUserAgent());
+        }
         for (Geography child: geo.getChildren())
         {
             fixFullnameForNodeAndDescendants(child);
@@ -228,7 +233,11 @@ public class TreeHelper
     public static void fixFullnameForNodeAndDescendants(GeologicTimePeriod gtp)
     {
         String generated = generateFullname(gtp);
-        gtp.setFullName(generated);
+        if (generated == null /*fmd!*/ || !generated.equals(gtp.getFullName())) {
+        	gtp.setFullName(generated);
+        	gtp.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        	gtp.setModifiedByAgent(Agent.getUserAgent());
+        }
         
         for (GeologicTimePeriod child: gtp.getChildren())
         {
@@ -243,7 +252,11 @@ public class TreeHelper
     public static void fixFullnameForNodeAndDescendants(LithoStrat litho)
     {
         String generated = generateFullname(litho);
-        litho.setFullName(generated);
+        if (generated == null /*fmd!*/ || !generated.equals(litho.getFullName())) {
+        	litho.setFullName(generated);
+        	litho.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        	litho.setModifiedByAgent(Agent.getUserAgent());
+        }
         
         for (LithoStrat child: litho.getChildren())
         {
@@ -258,7 +271,11 @@ public class TreeHelper
     public static void fixFullnameForNodeAndDescendants(Storage loc)
     {
         String generated = generateFullname(loc);
-        loc.setFullName(generated);
+        if (generated == null /*wha?*/ || !generated.equals(loc.getFullName())) {
+        	loc.setFullName(generated);
+        	loc.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        	loc.setModifiedByAgent(Agent.getUserAgent());
+        }
         
         for (Storage child: loc.getChildren())
         {
@@ -276,8 +293,11 @@ public class TreeHelper
     	//which might mean that the part of the name derived from ancestors
     	//will be considered by some users.
     	String generated = generateFullname(taxon);
-        taxon.setFullName(generated);
-        
+    	if (generated == null /*huh?*/ || !generated.equals(taxon.getFullName())) {
+    		taxon.setFullName(generated);
+    		taxon.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+    		taxon.setModifiedByAgent(Agent.getUserAgent());
+    	}
         for (Taxon child: taxon.getChildren())
         {
             if (child.getIsAccepted()) /*don't change full names of synonyms*/ {
@@ -375,12 +395,16 @@ public class TreeHelper
     {
         source.setIsAccepted(false);
         source.setAcceptedParent(destination);
+        source.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        source.setModifiedByAgent(Agent.getUserAgent());
         
         // update all of the even older names to point at the latest name
         for (T evenOlderName: source.getAcceptedChildren())
         {
             evenOlderName.setIsAccepted(false);
             evenOlderName.setAcceptedParent(destination);
+            evenOlderName.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+            evenOlderName.setModifiedByAgent(Agent.getUserAgent());
         }
         
         return String.format(getResourceString("TTV_TreeRelationshipCreatedMsg"),source.getFullName(),destination.getFullName());

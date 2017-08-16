@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.treeutils;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
+import org.hibernate.Interceptor;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -41,8 +43,9 @@ import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace.STATUS;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -882,6 +885,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             mergedOldParent.removeChild(mergedNode);
             mergedNewParent.addChild(mergedNode);
             mergedNode.setParent(mergedNewParent);
+            mergedNode.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+            mergedNode.setModifiedByAgent(Agent.getUserAgent());
             
             //BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
             HibernateDataProviderSession sessionWrapper = new HibernateDataProviderSession(session);

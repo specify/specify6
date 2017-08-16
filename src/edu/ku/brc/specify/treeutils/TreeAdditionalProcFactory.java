@@ -19,11 +19,13 @@
 */
 package edu.ku.brc.specify.treeutils;
 
+import java.sql.Timestamp;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Taxon;
 
@@ -121,6 +123,8 @@ public class TreeAdditionalProcFactory
             	{
             		log.debug(det.getCollectionObject().getIdentityTitle()+" has  "+det.getIdentityTitle()+ "  "+det.getTaxon().getIdentityTitle()+" "+det.getCollectionObject().getCollectionMemberId());
             		det.setPreferredTaxon(dstTaxon);
+            		det.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+            		det.setModifiedByAgent(Agent.getUserAgent());
             		session.saveOrUpdate(det);
             	}
             }
