@@ -91,6 +91,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     //protected Set<CollectionObject>      collectionObjects;
     protected Set<Agent>                 technicalContacts;
     protected Set<Agent>                 contentContacts;
+    protected Agent                      adminContact;
     protected Set<PrepType>              prepTypes;
     protected Set<PickList>              pickLists;
     
@@ -145,6 +146,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
+        adminContact = null;
 
         //spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         //collectionObjects      = new HashSet<CollectionObject>();
@@ -164,6 +166,22 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     // End Initializer
 
     /**
+	 * @return the adminContact
+	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AdminContactID", unique = false, nullable = true, insertable = true, updatable = true)
+	public Agent getAdminContact() {
+		return adminContact;
+	}
+
+	/**
+	 * @param adminContact the adminContact to set
+	 */
+	public void setAdminContact(Agent adminContact) {
+		this.adminContact = adminContact;
+	}
+
+	/**
      *      * Primary key
      */
     public Integer getCollectionId() 
