@@ -1159,6 +1159,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             {
                 mergedNode.setIsAccepted(true);
                 mergedNode.setAcceptedParent(null);
+                mergedNode.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                mergedNode.setModifiedByAgent(Agent.getUserAgent());
                 
                 if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
                 {

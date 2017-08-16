@@ -146,6 +146,8 @@ public class TreeAdditionalProcFactory
             for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
             {
                 det.setPreferredTaxon(srcTaxon);
+        		det.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        		det.setModifiedByAgent(Agent.getUserAgent());
                 session.saveOrUpdate(det);
             }
             return true;
