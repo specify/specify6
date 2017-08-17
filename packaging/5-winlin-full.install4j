@@ -1281,6 +1281,9 @@ if (condit.equals("SpWizard")) {
                       <void property="updateDescriptorUrl">
                         <string>http://specify6-prod.nhm.ku.edu/spinternal/trunk/updates.xml</string>
                       </void>
+                      <void property="connectTimeout">
+                        <string>30000</string>
+                      </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
                       </void>
