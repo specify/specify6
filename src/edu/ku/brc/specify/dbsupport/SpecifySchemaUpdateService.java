@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 57; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 58; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -793,14 +793,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         				result = false;
         			}
         		}
-        		//a dna count check is done in CheckDBAfterLogin
-//        		if (!AppPreferences.getGlobalPrefs().getBoolean("GGBNAftermathCleanup", false)) {
-//        			if (cleanupGGBNAftermath()) {
-//        				AppPreferences.getGlobalPrefs().putBoolean("GGBNAftermathCleanup", true);
-//        			} else {
-//        				result = false;
-//        			}
-//        		}
+        		//add indexes for new tables
+        		if (!AppPreferences.getGlobalPrefs().getBoolean("GGBNAftermathCleanup", false)) {
+        			if (cleanupGGBNAftermath(conn)) {
+        				AppPreferences.getGlobalPrefs().putBoolean("GGBNAftermathCleanup", true);
+        			} else {
+        				result = false;
+        			}
+        		}
         		addGeoCleanupTables();
         	}
         	return result;
@@ -812,32 +812,49 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     /**
      * @return
      */
-    private boolean cleanupGGBNAftermath() {
-    	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct dna.collectionmemberid, c.isanumber, dsc.disciplineid, dv.divisionid, dv.institutionid from dnasequence dna "
-    			+ "inner join collection c on c.collectionid = dna.collectionmemberid inner join discipline dsc on dsc.disciplineid = c.disciplineid inner join `division` dv on dv.divisionid = dsc.divisionid");
-    	for (Object[] coll : collsWithDNA) {
-    		int codna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = " + coll[0]);
-    		int msdna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = " + coll[0]);
-    		try {
-    			Vector<NameValuePair> postparams = StatsTrackerTask.createBasicPostParameters();
-    			for (NameValuePair postparam : postparams) {
-    				if (postparam.getName().equals("ISA_number")) {
-    					postparam.setValue(coll[1].toString());
-    					break;
-    				}
-    			}
-    			edu.ku.brc.specify.tasks.StatsTrackerTask.appendBasicCollStatsStat((Integer)coll[0], null, (Integer)coll[2], (Integer)coll[3], (Integer)coll[4], postparams);
-    			postparams.add(new NameValuePair("num_co_dna", Integer.toString(codna)));
-    			postparams.add(new NameValuePair("num_ms_dna", Integer.toString(msdna)));
-    			StatsTrackerTask.sendStats(StatsTrackerTask.getVersionCheckURL(), postparams, "StatsTrackerTask");
-    		} catch (Exception ex) {
-    			ex.printStackTrace();
-    	        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    	        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, ex);
-    	        return false;
-    		}
-    			
-    	}
+    private boolean cleanupGGBNAftermath(Connection conn) {
+//  This gets done in fix db after login 
+//    	List<Object[]> collsWithDNA = BasicSQLUtils.query("select distinct dna.collectionmemberid, c.isanumber, dsc.disciplineid, dv.divisionid, dv.institutionid from dnasequence dna "
+//    			+ "inner join collection c on c.collectionid = dna.collectionmemberid inner join discipline dsc on dsc.disciplineid = c.disciplineid inner join `division` dv on dv.divisionid = dsc.divisionid");
+//    	for (Object[] coll : collsWithDNA) {
+//    		int codna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join collectionobject co on co.CollectionObjectID = d.CollectionObjectID WHERE d.CollectionMemberID = " + coll[0]);
+//    		int msdna = BasicSQLUtils.getCountAsInt("SELECT count(*) FROM dnasequence d inner join materialsample ms on ms.MaterialSampleID = d.MaterialSampleID WHERE d.CollectionMemberID = " + coll[0]);
+//    		try {
+//    			Vector<NameValuePair> postparams = StatsTrackerTask.createBasicPostParameters();
+//    			for (NameValuePair postparam : postparams) {
+//    				if (postparam.getName().equals("ISA_number")) {
+//    					postparam.setValue(coll[1].toString());
+//    					break;
+//    				}
+//    			}
+//    			edu.ku.brc.specify.tasks.StatsTrackerTask.appendBasicCollStatsStat((Integer)coll[0], null, (Integer)coll[2], (Integer)coll[3], (Integer)coll[4], postparams);
+//    			postparams.add(new NameValuePair("num_co_dna", Integer.toString(codna)));
+//    			postparams.add(new NameValuePair("num_ms_dna", Integer.toString(msdna)));
+//    			StatsTrackerTask.sendStats(StatsTrackerTask.getVersionCheckURL(), postparams, "StatsTrackerTask");
+//    		} catch (Exception ex) {
+//    			ex.printStackTrace();
+//    	        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//    	        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, ex);
+//    	        return false;
+//    		}
+//    			
+//    	}
+		if (!doesIndexExist("materialsample", "DesignationIDX")) {
+			String sql = "create index DesignationIDX on materialsample(GGBNSampleDesignation)";
+			if (-1 == BasicSQLUtils.update(conn, sql)) {
+				errMsgList.add("update error: " + sql);
+				return false;
+			}
+		}
+
+		if (!doesIndexExist("dnaprimer", "DesignatorIDX")) {
+			String sql = "create index DesignatorIDX on dnaprimer(PrimerDesignator)";
+			if (-1 == BasicSQLUtils.update(conn, sql)) {
+				errMsgList.add("update error: " + sql);
+				return false;
+			}
+		}
+
     	return true;
     }
 
@@ -2399,9 +2416,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         				errMsgList.add("update error: " + sql);
         				return false;
         			}
-                    frame.setProcess(0, 100);
                     frame.incOverall(); 
-                    
+
+            		frame.setDesc("Adding index for CollectionObject.AltCatalogNumber");
+            		if (!doesIndexExist("collectionobject", "AltCatalogNumberIDX")) {
+            			sql = "create index AltCatalogNumberIDX on collectionobject(AltCatalogNumber)";
+            			if (-1 == update(conn, sql)) {
+            				errMsgList.add("update error: " + sql);
+            				return false;
+            			}
+            		}
+                    frame.incOverall(); 
+
+                    frame.setProcess(0, 100);
+
                     return true;
                     
                 } catch (Exception ex)
