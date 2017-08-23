@@ -73,6 +73,7 @@
 		<plugin name="PartialDateUI"          class="edu.ku.brc.specify.plugins.PartialDateUI"/>
         <plugin name="LocalityGoogleEarth"    class="edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin"/>
         <plugin name="LocalityWorldWind"      class="edu.ku.brc.specify.plugins.LocalityWorldWindPlugin"/>
+        <plugin name="PaleoMap"               class="edu.ku.brc.specify.plugins.PaleoMapPlugin"/>
 		<plugin name="LocalityGeoRef"         class="edu.ku.brc.specify.plugins.LocalityGeoRefPlugin"/>
 		<plugin name="FishBase"               class="edu.ku.brc.specify.plugins.FishBase"/>
         <plugin name="LatLonUI"               class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
