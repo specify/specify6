@@ -21,6 +21,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
  * @author timo
  *
@@ -29,6 +31,9 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "materialsample")
+@org.hibernate.annotations.Table(appliesTo="materialsample", indexes =
+{   @Index (name="DesignationIDX", columnNames={"GGBNSampleDesignation"})
+})
 public class MaterialSample extends CollectionMember {
 	protected Integer materialSampleId;
     protected String  guid;
@@ -49,6 +54,7 @@ public class MaterialSample extends CollectionMember {
     protected String GGBN_weightMethod;
     protected String GGBN_weightUnit;
     protected Float GGBN_sampleSize;
+    protected String GGBN_sampleDesignation;
 
 	protected String remarks;
 	protected String text1;
@@ -102,7 +108,8 @@ public class MaterialSample extends CollectionMember {
         GGBN_weightUnit = null;
         GGBN_weightMethod = null;
         GGBN_sampleSize = null;
-
+        GGBN_sampleDesignation = null;
+        
 		remarks = null;
 		text1 = null;
 		text2 = null;
@@ -172,6 +179,22 @@ public class MaterialSample extends CollectionMember {
     */
    public void setGuid(String guid) {
        this.guid = guid;
+   }
+
+   
+	/**
+ * @return the gGBN_sampleDesignation
+ */
+   @Column(name = "GGBNSampleDesignation", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+   public String getGGBN_sampleDesignation() {
+	   return GGBN_sampleDesignation;
+   }
+
+   /**
+    * @param gGBN_sampleDesignation the gGBN_sampleDesignation to set
+    */
+   public void setGGBN_sampleDesignation(String gGBN_sampleDesignation) {
+	   GGBN_sampleDesignation = gGBN_sampleDesignation;
    }
 
 	/**

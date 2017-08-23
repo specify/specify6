@@ -3,16 +3,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
  * @author timo
@@ -22,8 +27,12 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "dnaprimer")
-public class DNAPrimer extends CollectionMember {
+@org.hibernate.annotations.Table(appliesTo="dnaprimer", indexes =
+{   @Index (name="DesignatorIDX", columnNames={"PrimerDesignator"})
+})
+public class DNAPrimer extends DataModelObjBase {
 	protected Integer dnaPrimerId;
+	protected String primerDesignator;
 	protected String primerNameReverse;
 	protected String primerNameForward;
 	protected String primerReferenceCitationReverse;
@@ -52,7 +61,7 @@ public class DNAPrimer extends CollectionMember {
 	protected Float reservedNumber3;
 	protected Float reservedNumber4;
 	
-	protected DNASequencingRun dnaSequencingRun;
+	protected Set<DNASequencingRun> dnaSequencingRuns;
 
 	/**
 	 * 
@@ -68,6 +77,7 @@ public class DNAPrimer extends CollectionMember {
 	public void initialize() {
 		super.init();
 		dnaPrimerId = null;
+		primerDesignator = null;
 		primerNameForward = null;
 		primerNameReverse = null;
 		primerReferenceCitationForward = null;
@@ -95,28 +105,10 @@ public class DNAPrimer extends CollectionMember {
 		reservedInteger3 = null;
 		reservedInteger4 = null;
 	
-		dnaSequencingRun = null;
+		dnaSequencingRuns = new HashSet<DNASequencingRun>();
 	}
 
 	
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
-	 */
-	@Override
-	@Transient
-	public Integer getParentId() {
-		return dnaSequencingRun == null ? null : dnaSequencingRun.getId();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
-	 */
-	@Override
-	@Transient
-	public Integer getParentTableId() {
-		return DNASequencingRun.getClassTableId();
-	}
-
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
 	 */
@@ -159,6 +151,21 @@ public class DNAPrimer extends CollectionMember {
 	}
 
 	/**
+	 * @return the primerDesignator
+	 */
+    @Column(name = "PrimerDesignator", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getPrimerDesignator() {
+		return primerDesignator;
+	}
+
+	/**
+	 * @param primerDesignator the primerDesignator to set
+	 */
+	public void setPrimerDesignator(String primerDesignator) {
+		this.primerDesignator = primerDesignator;
+	}
+
+	/**
 	 * @return the primerNameReverse
 	 */
     @Column(name = "PrimerNameReverse", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
@@ -173,6 +180,7 @@ public class DNAPrimer extends CollectionMember {
 		this.primerNameReverse = primerNameReverse;
 	}
 
+	
 	/**
 	 * @return the primerNameForward
 	 */
@@ -512,17 +520,17 @@ public class DNAPrimer extends CollectionMember {
 	/**
 	 * @return the dnaSequencingRun
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DNASequencingRunID", unique = false, nullable = false, insertable = true, updatable = true)
-	public DNASequencingRun getDnaSequencingRun() {
-		return dnaSequencingRun;
+    @OneToMany(mappedBy = "dnaPrimer")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+	public Set<DNASequencingRun> getDnaSequencingRuns() {
+		return dnaSequencingRuns;
 	}
 
 	/**
 	 * @param dnaSequencingRun the dnaSequencingRun to set
 	 */
-	public void setDnaSequencingRun(DNASequencingRun dnaSequencingRun) {
-		this.dnaSequencingRun = dnaSequencingRun;
+	public void setDnaSequencingRuns(Set<DNASequencingRun> dnaSequencingRuns) {
+		this.dnaSequencingRuns = dnaSequencingRuns;
 	}
 
 	/**

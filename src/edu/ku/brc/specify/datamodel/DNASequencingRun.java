@@ -88,7 +88,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	protected DNASequence dnaSequence;
 	protected Set<DNASequencingRunAttachment> attachments;
 	protected Set<DNASequencingRunCitation> citations;
-	protected Set<DNAPrimer> primers;
+	protected DNAPrimer dnaPrimer;
 		
     /**
      * 
@@ -139,7 +139,7 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
         dnaSequence = null;
         attachments = new TreeSet<DNASequencingRunAttachment>();
         citations = new HashSet<DNASequencingRunCitation>();
-        primers = new HashSet<DNAPrimer>();
+        dnaPrimer = null;
     }
     
     /* (non-Javadoc)
@@ -485,17 +485,17 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
 	/**
 	 * @return the primers
 	 */
-    @OneToMany(mappedBy = "dnaSequencingRun")
-    @Cascade( {CascadeType.ALL} )
- 	public Set<DNAPrimer> getPrimers() {
-		return primers;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DNAPrimerID", unique = false, nullable = true, insertable = true, updatable = true)
+ 	public DNAPrimer getDnaPrimer() {
+		return dnaPrimer;
 	}
 
 	/**
 	 * @param primers the primers to set
 	 */
-	public void setPrimers(Set<DNAPrimer> primers) {
-		this.primers = primers;
+	public void setDnaPrimer(DNAPrimer dnaPrimer) {
+		this.dnaPrimer = dnaPrimer;
 	}
 
 	/**
