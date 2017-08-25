@@ -72,6 +72,11 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
     protected String geneSequence;
 	protected String remarks;
 	
+	protected String sraRunID;
+	protected String sraExperimentID;
+	protected String sraSubmissionID;
+	protected String dryadDOI;
+	
 	protected Float number1;
 	protected Float number2;
 	protected Float number3;
@@ -123,6 +128,11 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
         geneSequence = null;
         remarks = null;
 
+    	 sraRunID = null;
+    	 sraExperimentID = null;
+    	 sraSubmissionID = null;
+    	 dryadDOI = null;
+
         number1 = null;
         number2 = null;
         number3 = null;
@@ -151,7 +161,68 @@ public class DNASequencingRun extends CollectionMember implements AttachmentOwne
         attachments.size();
     }
 
+    
     /**
+	 * @return the sraRunID
+	 */
+    @Column(name = "SRARunID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraRunID() {
+		return sraRunID;
+	}
+
+	/**
+	 * @param sraRunID the sraRunID to set
+	 */
+	public void setSraRunID(String sraRunID) {
+		this.sraRunID = sraRunID;
+	}
+
+	/**
+	 * @return the sraExperimentID
+	 */
+    @Column(name = "SRAExperimentID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraExperimentID() {
+		return sraExperimentID;
+	}
+
+	/**
+	 * @param sraExperimentID the sraExperimentID to set
+	 */
+	public void setSraExperimentID(String sraExperimentID) {
+		this.sraExperimentID = sraExperimentID;
+	}
+
+	/**
+	 * @return the sraSubmissionID
+	 */
+    @Column(name = "SRASubmissionID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraSubmissionID() {
+		return sraSubmissionID;
+	}
+
+	/**
+	 * @param sraSubmissionID the sraSubmissionID to set
+	 */
+	public void setSraSubmissionID(String sraSubmissionID) {
+		this.sraSubmissionID = sraSubmissionID;
+	}
+
+	/**
+	 * @return the dryadDOI
+	 */
+    @Column(name = "DryadDOI", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
+	public String getDryadDOI() {
+		return dryadDOI;
+	}
+
+	/**
+	 * @param dryadDOI the dryadDOI to set
+	 */
+	public void setDryadDOI(String dryadDOI) {
+		this.dryadDOI = dryadDOI;
+	}
+
+	/**
 	 * @return the dnaSequencingRunId
 	 */
     @Id

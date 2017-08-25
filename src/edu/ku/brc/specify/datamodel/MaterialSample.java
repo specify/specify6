@@ -55,6 +55,11 @@ public class MaterialSample extends CollectionMember {
     protected String GGBN_weightUnit;
     protected Float GGBN_sampleSize;
     protected String GGBN_sampleDesignation;
+    
+    protected String sraSampleID;
+    protected String sraBioSampleID;
+    protected String sraProjectID;
+    protected String sraBioProjectID;
 
 	protected String remarks;
 	protected String text1;
@@ -109,7 +114,12 @@ public class MaterialSample extends CollectionMember {
         GGBN_weightMethod = null;
         GGBN_sampleSize = null;
         GGBN_sampleDesignation = null;
-        
+ 
+        sraSampleID = null;
+        sraBioSampleID = null;
+        sraProjectID = null;
+        sraBioProjectID = null;
+
 		remarks = null;
 		text1 = null;
 		text2 = null;
@@ -129,6 +139,67 @@ public class MaterialSample extends CollectionMember {
 
         preparation = null;
         dnaSequences = new HashSet<DNASequence>();
+	}
+
+	
+	/**
+	 * @return the sraSampleID
+	 */
+    @Column(name = "SRASampleID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraSampleID() {
+		return sraSampleID;
+	}
+
+	/**
+	 * @param sraSampleID the sraSampleID to set
+	 */
+	public void setSraSampleID(String sraSampleID) {
+		this.sraSampleID = sraSampleID;
+	}
+
+	/**
+	 * @return the sraBioSampleID
+	 */
+    @Column(name = "SRABioSampleID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraBioSampleID() {
+		return sraBioSampleID;
+	}
+
+	/**
+	 * @param sraBioSampleID the sraBioSampleID to set
+	 */
+	public void setSraBioSampleID(String sraBioSampleID) {
+		this.sraBioSampleID = sraBioSampleID;
+	}
+
+	/**
+	 * @return the sraProjectID
+	 */
+    @Column(name = "SRAProjectID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraProjectID() {
+		return sraProjectID;
+	}
+
+	/**
+	 * @param sraProjectID the sraProjectID to set
+	 */
+	public void setSraProjectID(String sraProjectID) {
+		this.sraProjectID = sraProjectID;
+	}
+
+	/**
+	 * @return the sraBioProjectID
+	 */
+    @Column(name = "SRABioProjectID", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getSraBioProjectID() {
+		return sraBioProjectID;
+	}
+
+	/**
+	 * @param sraBioProjectID the sraBioProjectID to set
+	 */
+	public void setSraBioProjectID(String sraBioProjectID) {
+		this.sraBioProjectID = sraBioProjectID;
 	}
 
 	/* (non-Javadoc)
