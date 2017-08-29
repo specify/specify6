@@ -669,6 +669,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	if (!rescopePaleoContext(databaseName, itConn)) {
     		return false;
     	}
+    	
     	return true;
     }
 
@@ -750,6 +751,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     		    	+ "    </typesearch>\n";
     		for (Object resource : resources) {
     			sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '</typesearches>','" + pcSearch + "</typesearches>') WHERE SpAppResourceID=" + resource;
+    			if (1 != BasicSQLUtils.update(sql)) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+
+    /**
+     * @return
+     */
+    private boolean fixTypeSearchDefResourcesAfterDNAModelUpdate() {
+    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='TypeSearches'";
+    	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+    	if (resources != null && resources.size() > 0) {
+    		String dnapSearch = "<typesearch tableid=\"150\" name=\"DNAPrimer\" searchfield=\"primerDesignator\" displaycols=\"primerDesignator\" format=\"%s\" dataobjformatter=\"\"/>";
+    		for (Object resource : resources) {
+    			sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '</typesearches>','" + dnapSearch + "</typesearches>') WHERE SpAppResourceID=" + resource;
     			if (1 != BasicSQLUtils.update(sql)) {
     				return false;
     			}
@@ -855,6 +874,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 			}
 		}
 
+		if (!fixTypeSearchDefResourcesAfterDNAModelUpdate()) {
+			return false;
+		}
+		
     	return true;
     }
 
