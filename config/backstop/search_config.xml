@@ -2,7 +2,7 @@
 <!-- 
 
   Last Id for ExpressSearch 59
-  Last Id for Other Search  132
+  Last Id for Other Search  133
 
  -->
 <searches>
@@ -1785,6 +1785,18 @@ SELECT cn.ContainerID,
                     <caption tableid="7" col="Type"/>
                     <caption tableid="7" col="DateAccessioned"/>
                     <caption tableid="7" col="DateReceived"/>
+                </captions>
+            </detailView>
+        </table>  
+        
+        <table id="133" tableid="150" name="DNAPrimerSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT dnaPrimerID, primerDesignator FROM dnaprimer WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="150" col="dnaPrimerID" visible="false"/>
+                    <caption tableid="150" col="primerDesignator"/>
                 </captions>
             </detailView>
         </table>  

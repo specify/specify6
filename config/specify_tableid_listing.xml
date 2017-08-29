@@ -151,7 +151,9 @@
         <table name="edu.ku.brc.specify.datamodel.Division" abbrev="dv" id="96" searchable="true">
             <display view="Division" searchdlg="DivisionSearch" newobjdlg="DivisionDisplay"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.DNAPrimer" abbrev="dnap" id="150" searchable="true" />
+        <table name="edu.ku.brc.specify.datamodel.DNAPrimer" abbrev="dnap" id="150" searchable="true">
+            <display view="DNAPrimer" dataobjformatter="DNAPrimer" searchdlg="DNAPrimerSearch" newobjdlg="DNAPrimerDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules</businessrule>
         </table>

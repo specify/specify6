@@ -135,7 +135,6 @@
             </altviews>
         </view>
         
-        
         <view 
             name="DivisionSearch"
             class="edu.ku.brc.specify.datamodel.Division"
@@ -144,6 +143,17 @@
             <desc><![CDATA[The Division Search Form]]></desc>
             <altviews>
                 <altview name="DivisionSearch" viewdef="DivisionSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="DNAPrimerSearch"
+            class="edu.ku.brc.specify.datamodel.DNAPrimer"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Division Search Form]]></desc>
+            <altviews>
+                <altview name="DNAPrimerSearch" viewdef="DNAPrimerSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -593,6 +603,29 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
             </rows>
         </viewdef>        
+        
+        <viewdef type="form"
+            name="DNAPrimerSearch"
+            class="edu.ku.brc.specify.datamodel.DNAPrimer"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Division Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,2px,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="DNA Primer" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="primerDesignator" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef> 
         
         <viewdef type="form"
             name="DivisionSearch"
