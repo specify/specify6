@@ -140,7 +140,11 @@
         >
         <switch single="true">
             <fields>
-                <field>startDate</field>
+                <field>stationFieldNumber</field>
+                <field sep="; " >locality.localityName</field>
+                <field sep="; " >locality.geography.fullName</field>
+                <field sep="; ">locality.latitude1</field>
+                <field sep=", ">locality.longitude1</field>
             </fields>
         </switch>
     </format>
@@ -324,7 +328,20 @@
             </fields>
         </switch>
     </format>
-    
+
+    <format
+        name="DNAPrimer"
+        title="DNAPrimer"
+        class="edu.ku.brc.specify.datamodel.DNAPrimer"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>primerDesignator</field>
+            </fields>
+        </switch>
+    </format>
+
     <format
         name="FieldNotebookPage"
         title="FieldNotebookPage"
