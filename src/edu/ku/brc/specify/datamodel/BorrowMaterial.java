@@ -115,7 +115,17 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
         return this.borrowMaterialId;
     }
 
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+	 */
+	@Override
+	public void forceLoad() {
+		super.forceLoad();
+		borrowReturnMaterials.size();	
+	}
+
+	/**
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
