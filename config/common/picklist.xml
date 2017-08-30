@@ -208,4 +208,12 @@
       <picklist name="NumberingScheme" issystem="true" type="1" tablename="autonumberingscheme" formatter="AutoNumberingScheme" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
+  <picklist name="MaterialSample" type="0" tablename="none" readonly="true" sizelimit="50" issystem="false" sort="1" timestampCreated="2017-08-30 12:22:23.0" timestampModified="2017-08-30 12:22:23.0" version="1">
+    <items>
+      <picklistitem title="Extract" value="Extract" ordinal="0" timestampCreated="2017-08-30 12:22:23.0" timestampModified="2017-08-30 12:22:23.0" version="0"/>
+    </items>
+  </picklist>
+  <picklist name="MoleculeType" type="0" tablename="none" readonly="false" sizelimit="20" issystem="false" sort="1" timestampCreated="2017-08-30 12:22:46.0" timestampModified="2017-08-30 12:22:46.0" version="1">
+    <items/>
+  </picklist>
 </list>
