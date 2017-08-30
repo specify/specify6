@@ -4391,7 +4391,7 @@
           </str>
         </descs>
       </desc>
-      <desc name="pcrPrimerSequence5_3" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="pcrPrimerSequence5_3" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt" country="BR" variant="">
@@ -4538,7 +4538,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="dnaSequence" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="dnaSequence" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -4582,7 +4582,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Run By Agent</text>
+            <text>Run By</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -4627,7 +4627,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="readDirection" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="readDirection" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -4684,14 +4684,14 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Submission I D</text>
+            <text>Sra Submission ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="sequencePrimerSequence5_3" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="sequencePrimerSequence5_3" isHidden="true" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt">
@@ -4743,7 +4743,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="geneSequence" isHidden="false" isRequired="false">
+      <desc name="geneSequence" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -4867,7 +4867,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Run I D</text>
+            <text>Sra Run ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -4975,7 +4975,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Dryad D O I</text>
+            <text>Dryad DOI</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -4988,7 +4988,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Experiment I D</text>
+            <text>Sra Experiment ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -20897,7 +20897,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="moleculeType" isHidden="false" isUIFormatter="false" isRequired="true">
+      <desc name="moleculeType" type="java.lang.String" isHidden="false" isUIFormatter="false"  isRequired="false" pickListName="MoleculeType">
         <version>0</version>
         <names>
           <str language="en">
@@ -21104,7 +21104,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="genbankAccessionNumber" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="genbankAccessionNumber" isHidden="false" isUIFormatter="false" isRequired="true">
         <version>0</version>
         <names>
           <str language="pt">
@@ -21113,7 +21113,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
           </str>
           <str language="en">
             <version>0</version>
-            <text>Genbank Accession Number</text>
+            <text>Genbank Acc #</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
@@ -21256,7 +21256,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="sequencer" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="sequencer" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt" country="BR" variant="">
@@ -21313,7 +21313,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         </names>
         <descs/>
       </desc>
-      <desc name="targetMarker" isHidden="true" isUIFormatter="false" isRequired="true">
+      <desc name="targetMarker" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="pt" country="BR" variant="">
@@ -61902,7 +61902,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Sequence Forward</text>
+            <text>Primer Seq Forward</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -61928,7 +61928,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Reference Citation Forward</text>
+            <text>Primer Ref Cit Forward</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -61954,7 +61954,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Name Reverse</text>
+            <text>Primer Name Rev</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -61967,7 +61967,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Reference Link Forward</text>
+            <text>Primer Ref Link Forward</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62045,7 +62045,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Sequence Reverse</text>
+            <text>Primer Seq Rev</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62123,7 +62123,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Reference Link Reverse</text>
+            <text>Primer Ref Link Rev</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62149,7 +62149,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Primer Reference Citation Reverse</text>
+            <text>Primer Ref Cit Rev</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62225,7 +62225,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
     <names>
       <str language="en">
         <version>0</version>
-        <text>D N A Primer</text>
+        <text>DNA Primer</text>
         <containerName class="container" reference="../../.."/>
       </str>
     </names>
@@ -62235,7 +62235,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="reservedText4" isHidden="false" isRequired="false">
+      <desc name="reservedText4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62248,7 +62248,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="reservedNumber3" isHidden="false" isRequired="false">
+      <desc name="reservedNumber3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62261,7 +62261,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="preparation" isHidden="false" isRequired="false">
+      <desc name="preparation" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62274,20 +62274,20 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="sraBioProjectID" isHidden="false" isRequired="false">
+      <desc name="sraBioProjectID" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Bio Project I D</text>
+            <text>Sra Bio Project ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="reservedNumber4" isHidden="false" isRequired="false">
+      <desc name="reservedNumber4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62306,7 +62306,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_concentration Unit</text>
+            <text>Concentration Unit</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62319,7 +62319,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_sample Designation</text>
+            <text>Sample Designation</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62332,7 +62332,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_volume Unit</text>
+            <text>Volume Unit</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62345,14 +62345,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_concentration</text>
+            <text>Concentration</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text2" isHidden="false" isRequired="false">
+      <desc name="text2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62365,7 +62365,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="reservedInteger3" isHidden="false" isRequired="false">
+      <desc name="reservedInteger3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62378,7 +62378,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="timestampModified" isHidden="false" isRequired="false">
+      <desc name="timestampModified" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62391,13 +62391,13 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="sraBioSampleID" isHidden="false" isRequired="false">
+      <desc name="sraBioSampleID" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Bio Sample I D</text>
+            <text>Sra Bio Sample ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62410,7 +62410,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_volume</text>
+            <text>Volume</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62423,14 +62423,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_absorbance Ratio260_280</text>
+            <text>Absorb Ratio 260_280</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62449,7 +62449,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_weight Method</text>
+            <text>Weight Method</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62462,14 +62462,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_quality</text>
+            <text>Quality</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="number2" isHidden="false" isRequired="false">
+      <desc name="number2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62495,7 +62495,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="timestampCreated" isHidden="false" isRequired="true">
+      <desc name="timestampCreated" isHidden="true" isRequired="true">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62527,14 +62527,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_weight</text>
+            <text>Weight</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="createdByAgent" isHidden="false" isRequired="false">
+      <desc name="createdByAgent" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62547,7 +62547,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="reservedText3" isHidden="false" isRequired="false">
+      <desc name="reservedText3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62566,7 +62566,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Project I D</text>
+            <text>Sra Project ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62579,14 +62579,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_quality Check Date</text>
+            <text>Quality Check Date</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo2" isHidden="false" isRequired="false">
+      <desc name="yesNo2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62605,7 +62605,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_weight Unit</text>
+            <text>Weight Unit</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62631,14 +62631,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_purification Method</text>
+            <text>Purification Method</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62651,7 +62651,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="reservedInteger4" isHidden="false" isRequired="false">
+      <desc name="reservedInteger4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62664,7 +62664,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="modifiedByAgent" isHidden="false" isRequired="false">
+      <desc name="modifiedByAgent" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62677,7 +62677,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="version" isHidden="false" isRequired="false">
+      <desc name="version" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62690,7 +62690,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="collectionMemberId" isHidden="false" isRequired="true">
+      <desc name="collectionMemberId" isHidden="true" isRequired="true">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62703,7 +62703,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text1" isHidden="false" isRequired="false">
+      <desc name="text1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62722,7 +62722,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_absorbance Ratio Method</text>
+            <text>Absorb Ratio Method</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62735,20 +62735,20 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_sample Size</text>
+            <text>Sample Size</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_materialSampleType" isHidden="false" isRequired="false">
+      <desc name="gGBN_materialSampleType" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false" pickListName="MaterialSample">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_material Sample Type</text>
+            <text>Sample Type</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62761,14 +62761,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_quality Remarks</text>
+            <text>Quality Remarks</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo1" isHidden="false" isRequired="false">
+      <desc name="yesNo1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62787,7 +62787,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Sample I D</text>
+            <text>Sra Sample ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62800,14 +62800,14 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_absorbance Ratio260_230</text>
+            <text>Absorb Ratio 260_230</text>
             <itemName reference="../../.."/>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="number1" isHidden="false" isRequired="false">
+      <desc name="number1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62826,7 +62826,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>G G B N_medium</text>
+            <text>Medium</text>
             <itemName reference="../../.."/>
           </str>
         </names>
