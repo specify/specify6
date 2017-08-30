@@ -75,7 +75,9 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true">
+            <display view="BorrowReturnMaterial" newobjdlg="BorrowReturnMaterialDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Collection" abbrev="col" id="23" workbench="true" searchable="true">
             <display view="Collection" newobjdlg="Collection"/>
         </table>
