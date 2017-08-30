@@ -9848,7 +9848,7 @@ public class BuildSampleDatabase
         	}
         }
         Pair<String,String> endArgs = parseMyaArg(endArg);
-        if (startArgs != null) {
+        if (endArgs != null) {
         	newGeo.setEndPeriod(Float.valueOf(endArgs.getFirst()));
         	if (endArgs.getSecond() != null) {
         		newGeo.setEndUncertainty(Float.valueOf(endArgs.getSecond()));
