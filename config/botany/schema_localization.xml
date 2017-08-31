@@ -45,20 +45,6 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Col Obj Attribute</text>
-          </str>
-          <str language="pt">
-            <version>1</version>
-            <text>Atributo Objeto Coleção</text>
-          </str>
-        </names>
-        <descs/>
-      </desc>
       <desc name="exsiccataItems" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
@@ -69,6 +55,20 @@
           <str language="en">
             <version>0</version>
             <text>Exsiccata Items</text>
+          </str>
+        </names>
+        <descs/>
+      </desc>
+      <desc name="collectionObjectAttribute" type="ManyToOne" isHidden="true" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <names>
+          <str language="pt">
+            <version>1</version>
+            <text>Atributo Objeto Coleção</text>
+          </str>
+          <str language="en">
+            <version>0</version>
+            <text>Col Obj Attribute</text>
           </str>
         </names>
         <descs/>
