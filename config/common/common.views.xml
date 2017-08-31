@@ -137,6 +137,8 @@
             >
             <desc><![CDATA[Borrow material display form]]></desc>
             <altviews>
+                <altview name="BorrowMaterial Table View" viewdef="BorrowMaterial Table" mode="view"/>
+                <altview name="BorrowMaterial Table Edit" viewdef="BorrowMaterial Table" mode="edit"/>
                 <altview name="BorrowMaterial View" viewdef="BorrowMaterial" mode="view" default="true"/>
                 <altview name="BorrowMaterial Edit" viewdef="BorrowMaterial" mode="edit"/>
             </altviews>
@@ -147,6 +149,8 @@
             >
             <desc><![CDATA[Borrow return material display form]]></desc>
             <altviews>
+                <altview name="BorrowReturnMaterial Table View" viewdef="BorrowReturnMaterial Table" mode="view"/>
+                <altview name="BorrowReturnMaterial Table Edit" viewdef="BorrowReturnMaterial Table" mode="edit"/>
                 <altview name="BorrowReturnMaterial View" viewdef="BorrowReturnMaterial" mode="view" default="true"/>
                 <altview name="BorrowReturnMaterial Edit" viewdef="BorrowReturnMaterial" mode="edit"/>
             </altviews>
@@ -1524,7 +1528,7 @@
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="BorrowMaterial" id="10" name="borrowMaterials" defaulttype="table" colspan="15"/>
+                    <cell type="subview" viewname="BorrowMaterial" id="10" name="borrowMaterials" colspan="15"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="borrowAttachments" colspan="13" initialize="btn=true;icon=BorrowAttachment"/>
@@ -1623,6 +1627,17 @@
         </viewdef>
         
         <viewdef
+            type="formtable"
+            name="BorrowMaterial Table"
+            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>BorrowMaterial</definition>
+        </viewdef>
+
+        <viewdef
             type="form"
             name="BorrowMaterial"
             class="edu.ku.brc.specify.datamodel.BorrowMaterial"
@@ -1675,6 +1690,17 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="formtable"
+            name="BorrowReturnMaterial Table"
+            class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>BorrowReturnMaterial</definition>
+        </viewdef>
+
         <viewdef
             type="form"
             name="BorrowReturnMaterial"
