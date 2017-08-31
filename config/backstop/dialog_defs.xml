@@ -45,6 +45,7 @@
     <dialog type="display" view="Author"             name="AuthorDisplay"            class="edu.ku.brc.specify.datamodel.Author" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="BioStrat"           name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="BorrowAgent"        name="BorrowAgentDisplay"       class="edu.ku.brc.specify.datamodel.BorrowAgent" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="BorrowMaterial"        name="BorrowMaterialDisplay"       class="edu.ku.brc.specify.datamodel.BorrowMaterial" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="BorrowReturnMaterial"        name="BorrowReturnMaterialDisplay"       class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector" helpcontext="CBXQViewEdit"/>

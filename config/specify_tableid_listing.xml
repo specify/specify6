@@ -74,7 +74,9 @@
             <display view="ObjectAttachment" newobjdlg="BorrowAttachmentDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true">
+            <display view="BorrowMaterial" newobjdlg="BorrowMaterialDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true">
             <display view="BorrowReturnMaterial" newobjdlg="BorrowReturnMaterialDisplay"/>
         </table>
