@@ -139,6 +139,7 @@ public class DNAPrimer extends DataModelObjBase {
 	/**
 	 * @return the purificationMethod
 	 */
+    @Column(name = "purificationMethod", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
 	public String getPurificationMethod() {
 		return purificationMethod;
 	}
