@@ -395,10 +395,6 @@
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="typeStatusName" uitype="combobox"/>
                 </row>
-                <row>
-                    <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
-                </row>
                 <!--<row>
                     <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="addendum" uitype="text"/>            
@@ -406,6 +402,10 @@
                     <cell type="field" id="an" name="alternateName" uitype="text"/>
                     <cell type="label" labelfor="con"/>
                     <cell type="field" id="con" name="confidence" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
                     <cell type="subview" id="7" name="determinationCitations" viewname="DeterminationCitation" colspan="15"/>                    
