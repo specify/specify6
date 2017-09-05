@@ -4306,16 +4306,16 @@
         <names>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Pcr Nome Primer</text>
+            <text>PCR Nome Primer</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
             <version>0</version>
-            <text>Pcr Primer Name</text>
+            <text>PCR Primer Name</text>
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Pcr Nome Primer</text>
+            <text>PCR Nome Primer</text>
           </str>
         </names>
         <descs/>
@@ -4396,30 +4396,30 @@
         <names>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Pcr Primer Seq5_3</text>
+            <text>PCR Primer Seq5_3</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
             <version>0</version>
-            <text>Pcr Primer Seq5_3</text>
+            <text>PCR Primer Seq5_3</text>
           </str>
           <str language="en">
             <version>0</version>
-            <text>Pcr Primer Seq5_3</text>
+            <text>PCR Primer Seq5_3</text>
           </str>
         </names>
         <descs>
           <str language="en">
             <version>0</version>
-            <text>Pcr Primer Sequence5_3</text>
+            <text>PCR Primer Sequence5_3</text>
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Pcr Primer Sequencia5_3</text>
+            <text>PCR Primer Sequencia5_3</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Pcr Primer Sequencia5_3</text>
+            <text>PCR Primer Sequencia5_3</text>
             <itemDesc reference="../../.."/>
           </str>
         </descs>
@@ -4594,16 +4594,16 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Pcr Forward Primer Code</text>
+            <text>PCR Forward Primer Code</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Pcr Código Forward Primer</text>
+            <text>PCR Código Forward Primer</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
             <version>1</version>
-            <text>Pcr Código Forward Primer</text>
+            <text>PCR Código Forward Primer</text>
           </str>
         </names>
         <descs/>
@@ -4651,16 +4651,16 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Pcr Rev Primer Code</text>
+            <text>PCR Rev Primer Code</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Pcr Reverse Primer Code</text>
+            <text>PCR Reverse Primer Code</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
             <version>0</version>
-            <text>Pcr Reverse Primer Code</text>
+            <text>PCR Reverse Primer Code</text>
           </str>
         </names>
         <descs/>
@@ -4684,7 +4684,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Submission ID</text>
+            <text>SRA Submission ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -4867,7 +4867,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Run ID</text>
+            <text>SRA Run ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -4898,16 +4898,16 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Pcr Cocktail Primer</text>
+            <text>PCR Cocktail Primer</text>
           </str>
           <str language="pt" country="BR" variant="">
             <version>0</version>
-            <text>Pcr Cocktail Primer</text>
+            <text>PCR Cocktail Primer</text>
             <itemName reference="../../.."/>
           </str>
           <str language="pt">
             <version>0</version>
-            <text>Pcr Cocktail Primer</text>
+            <text>PCR Cocktail Primer</text>
           </str>
         </names>
         <descs/>
@@ -4988,7 +4988,7 @@
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Experiment ID</text>
+            <text>SRA Experiment ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -5051,16 +5051,16 @@
     <names>
       <str language="pt">
         <version>2</version>
-        <text>D N A Corrida Sequenciação</text>
+        <text>DNA Corrida Sequenciação</text>
       </str>
       <str language="pt" country="BR" variant="">
         <version>0</version>
-        <text>D N A Corrida Sequenciação</text>
+        <text>DNA Corrida Sequenciação</text>
         <containerName class="container" reference="../../.."/>
       </str>
       <str language="en">
         <version>0</version>
-        <text>D N A Sequencing Run</text>
+        <text>DNA Sequencing Run</text>
       </str>
     </names>
     <descs/>
@@ -48377,7 +48377,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Dna Sequences</text>
+            <text>DNA Sequences</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62052,7 +62052,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="primerDesignator" isHidden="false" isRequired="false">
+      <desc name="primerDesignator" isHidden="false" isRequired="true">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62231,7 +62231,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
     </names>
     <descs/>
   </container>
-  <container name="materialsample" isHidden="false">
+  <container name="materialsample" isHidden="false" isRequired="false">
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
@@ -62280,7 +62280,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Bio Project ID</text>
+            <text>SRA Bio Project ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62313,7 +62313,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_sampleDesignation" isHidden="false" isRequired="false">
+      <desc name="gGBN_sampleDesignation" isHidden="false" isRequired="true">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62397,7 +62397,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Bio Sample ID</text>
+            <text>SRA Bio Sample ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62566,7 +62566,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Project ID</text>
+            <text>SRA Project ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>
@@ -62787,7 +62787,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sra Sample ID</text>
+            <text>SRA Sample ID</text>
             <itemName reference="../../.."/>
           </str>
         </names>

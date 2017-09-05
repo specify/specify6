@@ -2866,18 +2866,18 @@
 
             <rows>
                 <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="runDate" uitype="formattedtext" uifieldformatter="Date"/>    
-                    <cell type="label" labelfor="15"/>
-                    <cell type="field" id="15" name="runByAgent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="sraRunID" uitype="text"/>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="sraExperimentID" uitype="text"/>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="sraSubmissionID" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="runDate" uitype="formattedtext" uifieldformatter="Date"/>    
+                    <cell type="label" labelfor="15"/>
+                    <cell type="field" id="15" name="runByAgent" uitype="querycbx" initialize="name=Agent;title=Agent" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -4655,11 +4655,11 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="gGBN_materialSampleType" uitype="combobox"/>
+                    <cell type="field" id="1" name="gGBN_sampleDesignation" uitype="text"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="gGBN_medium" uitype="text"/>
+                    <cell type="field" id="2" name="gGBN_materialSampleType" uitype="combobox"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="gGBN_purificationMethod" uitype="text"/>
+                    <cell type="field" id="3" name="gGBN_medium" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -4676,26 +4676,28 @@
                     <cell type="field" id="8" name="gGBN_qualityRemarks" uitype="text" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="gGBN_absorbanceRatioMethod" uitype="text"/>
                     <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="gGBN_absorbanceRatio260_230" uitype="text"/>
+                    <cell type="field" id="10" name="gGBN_absorbanceRatioMethod" uitype="text"/>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="gGBN_absorbanceRatio260_280" uitype="text"/>
-                </row>
-                <row>
+                    <cell type="field" id="11" name="gGBN_absorbanceRatio260_230" uitype="text"/>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="gGBN_volume" uitype="text"/>
-                    <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="gGBN_volumeUnit" uitype="text"/>
+                    <cell type="field" id="12" name="gGBN_absorbanceRatio260_280" uitype="text"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="13"/>
+                    <cell type="field" id="13" name="gGBN_volume" uitype="text"/>
                     <cell type="label" labelfor="14"/>
-                    <cell type="field" id="14" name="gGBN_weight" uitype="text"/>
+                    <cell type="field" id="14" name="gGBN_volumeUnit" uitype="text"/>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="gGBN_purificationMethod" uitype="text"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="15"/>
-                    <cell type="field" id="15" name="gGBN_weightUnit" uitype="text"/>
+                    <cell type="field" id="15" name="gGBN_weight" uitype="text"/>
                     <cell type="label" labelfor="16"/>
-                    <cell type="field" id="16" name="gGBN_weightMethod" uitype="text"/>
+                    <cell type="field" id="16" name="gGBN_weightUnit" uitype="text"/>
+                    <cell type="label" labelfor="17"/>
+                    <cell type="field" id="17" name="gGBN_weightMethod" uitype="text"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="18"/>

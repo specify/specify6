@@ -416,19 +416,19 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="Address" uitype="text" cols="20"/>
+                    <cell type="field" id="4" name="Addresses" uitype="text" colspan="6"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="City" uitype="text" cols="20"/>
+                    <cell type="field" id="5" name="addresses.City" uitype="text" cols="20"/>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="State" uitype="text" cols="15"/>
+                    <cell type="field" id="6" name="addresses.State" uitype="text" cols="15"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="Postalcode" uitype="text" cols="11"/>
+                    <cell type="field" id="7" name="addresses.Postalcode" uitype="text" cols="11"/>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="Country" uitype="text" cols="20"/>
+                    <cell type="field" id="8" name="addresses.Country" uitype="text" cols="20"/>
                 </row>
             </rows>
         </viewdef>
@@ -729,11 +729,11 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="2" name="Type" uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="LastName" uitype="text"/>
+                    <cell type="label" label="Issued By Last Name"/>
+                    <cell type="field" id="3" name="issuedBy.LastName" uitype="text"/>
                     
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="agentAddressByIssuee" uitype="text"/>
+                    <cell type="label" label="Issued To Last Name"/>
+                    <cell type="field" id="4" name="issuedTo.LastName" uitype="text"/>
                 </row>
                 
                 <row>
@@ -887,10 +887,6 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="Discipline" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -1102,15 +1098,15 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="pcn"/>
-                    <cell type="field" id="pcn" name="pc.PaleoContextName" isrequired="false" uitype="text"/>
+                    <cell type="field" id="pcn" name="PaleoContextName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="cs"/>
-                    <cell type="field" id="cs" name="gtps.FullName" isrequired="false" uitype="text"/>
+                    <cell type="field" id="cs" name="chronosStrat.FullName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="ls"/>
-                    <cell type="field" id="ls" name="ls.FullName" isrequired="false" uitype="text"/>
+                    <cell type="field" id="ls" name="lithostrat.FullName" isrequired="false" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
