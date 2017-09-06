@@ -777,6 +777,34 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     	return true;
     }
 
+    private boolean fixDnaPrimerFormatterAfterDNAModelUpdate() {
+    	String sql = "SELECT SpAppResourceID FROM spappresource where `Name`='DataObjFormatters'";
+    	List<Object> resources = BasicSQLUtils.querySingleCol(sql);
+    	if (resources != null && resources.size() > 0) {
+    		String dnaFmt =     "<format \n"
+    		        + "name=\"DNAPrimer\"\n"
+    		        + "title=\"DNAPrimer\"\n"
+    		        + "class=\"edu.ku.brc.specify.datamodel.DNAPrimer\"\n"
+    		        + "default=\"true\"\n"
+    		        + ">\n"
+    		        + "<switch single=\"true\">\n"
+    		        + "<fields>\n"
+    		        + "     <field>primerDesignator</field>\n"
+    		        + "   </fields>\n"
+    		        + "</switch>\n"
+    		        + "</format>\n";
+
+    		
+    		for (Object resource : resources) {
+    			sql = "UPDATE spappresourcedata SET `data`=replace(`data`, '<aggregators>','" + dnaFmt + "<aggregators>') WHERE SpAppResourceID=" + resource;
+    			if (1 != BasicSQLUtils.update(sql)) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+
     /* end paleo model finalization */
     
     private boolean finishSchemaUpdate(final DatabaseDriverInfo dbdriverInfo, 
@@ -877,7 +905,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 		if (!fixTypeSearchDefResourcesAfterDNAModelUpdate()) {
 			return false;
 		}
-		
+		if (!fixDnaPrimerFormatterAfterDNAModelUpdate()) {
+			return false;
+		}
     	return true;
     }
 
