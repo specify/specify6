@@ -32,6 +32,9 @@
 			<table name="DNASequencingRunAttachment" field="attachments">
 				<alias name="Attachment"/>
 			</table>
+        	<alias name="Agent" field="createdByAgent" />
+        	<alias name="Agent" field="modifiedByAgent" />
+			<table name="DNAPrimer" field="dnaPrimer" />
 		</table>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
@@ -461,6 +464,13 @@
         <alias name="Agent" field="modifiedByAgent" />
     </table>
     
+    <table name="MaterialSample">
+    	<alias name="Preparation" field="preparation" />
+      	<alias name="DNASequence" field="dnaSequences"/>    
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+    </table>
+    
     <table name="PaleoContext" flags="paleo">
     	<alias name="GeologicTimePeriod" field="bioStrat"/>
     	<alias name="GeologicTimePeriod" field="chronosStrat"/>
@@ -489,6 +499,7 @@
             <table name="Attachment"/>
         </table>
         <table name="PreparationAttribute"/>
+        <alias name="MaterialSample" field="materialSamples"/>
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
         <alias name="GiftPreparation" field="giftPreparations"/>
