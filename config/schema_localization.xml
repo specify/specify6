@@ -9859,7 +9859,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="materialSamples" isHidden="false" isRequired="false">
+      <desc name="materialSamples" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
