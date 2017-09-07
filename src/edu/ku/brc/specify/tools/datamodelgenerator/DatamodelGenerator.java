@@ -340,7 +340,9 @@ public class DatamodelGenerator
     {
         String name = method.getName();
         name = name.substring(3, 4).toLowerCase() + name.substring(4, name.length());
-
+        if (name.startsWith("gGBN_")) {
+        	name = name.replace("gGBN_","GGBN_");
+        }
         return name;
     }
     
@@ -694,7 +696,8 @@ public class DatamodelGenerator
     protected String getFieldNameFromMethod(final Method method)
     {
         String methodName = method.getName().substring(3);
-        return methodName.substring(0,1).toLowerCase() + methodName.substring(1, methodName.length());
+        String result = methodName.substring(0,1).toLowerCase() + methodName.substring(1, methodName.length());
+        return result;
     }
     
     /**

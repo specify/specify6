@@ -62300,7 +62300,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_concentrationUnit" isHidden="false" isRequired="false">
+      <desc name="GGBN_concentrationUnit" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62313,7 +62313,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_sampleDesignation" isHidden="false" isRequired="true">
+      <desc name="GGBN_sampleDesignation" isHidden="false" isRequired="true">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62326,7 +62326,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_volumeUnit" isHidden="false" isRequired="false">
+      <desc name="GGBN_volumeUnit" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62339,7 +62339,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_concentration" isHidden="false" isRequired="false">
+      <desc name="GGBN_concentration" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62404,7 +62404,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_volume" isHidden="false" isRequired="false">
+      <desc name="GGBN_volume" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62417,7 +62417,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_absorbanceRatio260_280" isHidden="false" isRequired="false">
+      <desc name="GGBN_absorbanceRatio260_280" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62443,7 +62443,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_weightMethod" isHidden="false" isRequired="false">
+      <desc name="GGBN_weightMethod" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62456,7 +62456,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_quality" isHidden="false" isRequired="false">
+      <desc name="GGBN_quality" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62521,7 +62521,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_weight" isHidden="false" isRequired="false">
+      <desc name="GGBN_weight" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62573,7 +62573,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_qualityCheckDate" isHidden="false" isRequired="false">
+      <desc name="GGBN_qualityCheckDate" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62599,7 +62599,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_weightUnit" isHidden="false" isRequired="false">
+      <desc name="GGBN_weightUnit" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62625,7 +62625,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_purificationMethod" isHidden="false" isRequired="false">
+      <desc name="GGBN_purificationMethod" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62716,7 +62716,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_absorbanceRatioMethod" isHidden="false" isRequired="false">
+      <desc name="GGBN_absorbanceRatioMethod" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62729,7 +62729,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_sampleSize" isHidden="false" isRequired="false">
+      <desc name="GGBN_sampleSize" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62742,7 +62742,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_materialSampleType" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false" pickListName="MaterialSample">
+      <desc name="GGBN_materialSampleType" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false" pickListName="MaterialSample">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62755,7 +62755,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_qualityRemarks" isHidden="false" isRequired="false">
+      <desc name="GGBN_qualityRemarks" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62794,7 +62794,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_absorbanceRatio260_230" isHidden="false" isRequired="false">
+      <desc name="GGBN_absorbanceRatio260_230" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -62820,7 +62820,7 @@ Preparation: A subdivision of a collection object that refers to the preparation
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="gGBN_medium" isHidden="false" isRequired="false">
+      <desc name="GGBN_medium" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
