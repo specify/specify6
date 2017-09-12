@@ -411,8 +411,8 @@ public class DBTableInfo extends DBInfoBase
      */
     public DBFieldInfo getFieldByColumnName(final String columnName, final boolean suppressError)
     {
-        String      fName     = columnName.indexOf('.') > -1 ? StringUtils.substringAfterLast(columnName, ".") : columnName; //$NON-NLS-1$
-        String      fieldName = fName.substring(0,1).toLowerCase() + fName.substring(1, fName.length());
+    	String      fName     = columnName.indexOf('.') > -1 ? StringUtils.substringAfterLast(columnName, ".") : columnName; //$NON-NLS-1$
+    	String fieldName = !columnName.startsWith("GGBN") ? fName.substring(0,1).toLowerCase() + fName.substring(1, fName.length()) : fName.replace("GGBN", "GGBN_");
         DBFieldInfo fi        = getFieldByName(fieldName);
         if (fi == null)
         {
