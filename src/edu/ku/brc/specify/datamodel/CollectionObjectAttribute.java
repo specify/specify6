@@ -58,15 +58,72 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 public class CollectionObjectAttribute extends CollectionMember implements Cloneable
 {
     protected Integer collectionObjectAttributeId;
+    protected Float number1;
+    protected Float number2;
+    protected Float number3;
+    protected Float number4;
+    protected Float number5;
+    protected Float number6;
+    protected Float number7;
+    protected Byte   number8;
+    protected Float  number9;
+    protected Float  number10;
+    protected Float number11;
+    protected Float number12;
+    protected Float number13;
+    protected Float number14;
+    protected Float number15;
+    protected Float number16;
+    protected Float number17;
+    protected Float number18;
+    protected Float number19;
+    protected Float number20;
+    protected Float number21;
+    protected Float number22;
+    protected Float number23;
+    protected Float number24;
+    protected Float number25;
+    protected Float number26;
+    protected Float number27;
+    protected Float number28;
+    protected Float number29;
+    protected Short number30;
+    protected Float number31;
+    protected Float number32;
+    protected Float number42;
+    protected Float number33;
+    protected Float number34; // New
+    protected Float number35; // New
+    protected Float number36; // New
+    protected Float number37;
+    protected Float number38;
+    protected Float number39;
+    protected Float number40;
+    protected Float number41;
+    
+    protected Integer integer1;
+    protected Integer integer2;
+    protected Integer integer3;
+    protected Integer integer4;
+    protected Integer integer5;
+    protected Integer integer6;
+    protected Integer integer7;
+    protected Integer integer8;
+    protected Integer integer9;
+    protected Integer integer10;
+    
+    protected String text1;
+    protected String text2;
+    protected String text3;
+    protected String text4;
+    protected String text5;
+    protected String text6;
+    protected String text7;
+    protected String text8;
+    protected String text9;
     protected String text10;
     protected String text11;
     protected String text12;
-    protected Float  number37;
-    protected Float  number38;
-    protected Byte   number8;
-    protected Float  number9;
-    protected String text8;
-    protected Float  number10;
     protected String text13;
     protected String text14;
     protected String text15;
@@ -79,70 +136,35 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected String text22;
     protected String text23;
     protected String text24;
-    protected Float number11;
-    protected Float number12;
-    protected Float number13;
-    protected Float number14;
-    protected Float number15;
-    protected Float number16;
-    protected Float number17;
-    protected Float number39;
-    protected Float number40;
-    protected Float number18;
-    protected Float number19;
-    protected Float number20;
-    protected Float number21;
-    protected Float number22;
-    protected Float number23;
-    protected Float number24;
-    protected Float number25;
-    protected Float number26;
-    protected Float number41;
-    protected Float number27;
-    protected Float number28;
-    protected Float number29;
-    protected Short number30;
-    protected Float number31;
-    protected Float number32;
-    protected Float number42;
-    protected Float number33;
-    protected Float number34; // New
-    protected Float number35; // New
-    protected Float number36; // New
-    protected Integer integer1;
-    protected Integer integer2;
-    protected Integer integer3;
-    protected Integer integer4;
-    protected Integer integer5;
-    protected Integer integer6;
-    protected Integer integer7;
-    protected Integer integer8;
-    protected Integer integer9;
-    protected Integer integer10;
+    protected String text25;
+    protected String text26;
+    protected String text27;
+    protected String text28;
+    protected String text29;
+    protected String text30;
     
-    protected String text9;
-    protected String text1;
-    protected String text2;
-    protected String text3;
-    protected String text4;
-    protected String text5;
     protected String remarks;
+    
     protected Boolean yesNo1;
     protected Boolean yesNo2;
     protected Boolean yesNo3;
-    protected Float number1;
-    protected Float number2;
-    protected Float number3;
-    protected Float number4;
-    protected Float number5;
-    protected Float number6;
-    protected Float number7;
-    protected String text6;
-    protected String text7;
     protected Boolean yesNo4;
     protected Boolean yesNo5;
     protected Boolean yesNo6;
     protected Boolean yesNo7;
+    protected Boolean yesNo8;
+    protected Boolean yesNo9;
+    protected Boolean yesNo10;
+    protected Boolean yesNo11;
+    protected Boolean yesNo12;
+    protected Boolean yesNo13;
+    protected Boolean yesNo14;
+    protected Boolean yesNo15;
+    protected Boolean yesNo16;
+    protected Boolean yesNo17;
+    protected Boolean yesNo18;
+    protected Boolean yesNo19;
+    protected Boolean yesNo20;
     
     protected Float   topDistance;
     protected Float   bottomDistance;
@@ -256,7 +278,28 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         integer8 = null;
         integer9 = null;
         integer10 = null;
-        
+ 
+        text25 = null;
+        text26 = null;
+        text27 = null;
+        text28 = null;
+        text29 = null;
+        text30 = null;
+
+        yesNo8 = null;
+        yesNo9 = null;
+        yesNo10 = null;
+        yesNo11 = null;
+        yesNo12 = null;
+        yesNo13 = null;
+        yesNo14 = null;
+        yesNo15 = null;
+        yesNo16 = null;
+        yesNo17 = null;
+        yesNo18 = null;
+        yesNo19 = null;
+        yesNo20 = null;
+
         topDistance    = null;
         bottomDistance = null;
         distanceUnits  = null;
@@ -295,6 +338,297 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     
 
     /**
+	 * @return the text25
+	 */
+    @Lob
+    @Column(name = "Text25", length = 65535)
+	public String getText25() {
+		return text25;
+	}
+
+	/**
+	 * @param text25 the text25 to set
+	 */
+	public void setText25(String text25) {
+		this.text25 = text25;
+	}
+
+	/**
+	 * @return the text26
+	 */
+    @Lob
+    @Column(name = "Text26", length = 65535)
+	public String getText26() {
+		return text26;
+	}
+
+	/**
+	 * @param text26 the text26 to set
+	 */
+	public void setText26(String text26) {
+		this.text26 = text26;
+	}
+
+	/**
+	 * @return the text27
+	 */
+    @Lob
+    @Column(name = "Text27", length = 65535)
+	public String getText27() {
+		return text27;
+	}
+
+	/**
+	 * @param text27 the text27 to set
+	 */
+	public void setText27(String text27) {
+		this.text27 = text27;
+	}
+
+	/**
+	 * @return the text28
+	 */
+    @Lob
+    @Column(name = "Text28", length = 65535)
+	public String getText28() {
+		return text28;
+	}
+
+	/**
+	 * @param text28 the text28 to set
+	 */
+	public void setText28(String text28) {
+		this.text28 = text28;
+	}
+
+	/**
+	 * @return the text29
+	 */
+    @Lob
+    @Column(name = "Text29", length = 65535)
+	public String getText29() {
+		return text29;
+	}
+
+	/**
+	 * @param text29 the text29 to set
+	 */
+	public void setText29(String text29) {
+		this.text29 = text29;
+	}
+
+	/**
+	 * @return the text30
+	 */
+    @Lob
+    @Column(name = "Text30", length = 65535)
+	public String getText30() {
+		return text30;
+	}
+
+	/**
+	 * @param text30 the text30 to set
+	 */
+	public void setText30(String text30) {
+		this.text30 = text30;
+	}
+
+	/**
+	 * @return the yesNo8
+	 */
+    @Column(name = "YesNo8", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo8() {
+		return yesNo8;
+	}
+
+	/**
+	 * @param yesNo8 the yesNo8 to set
+	 */
+	public void setYesNo8(Boolean yesNo8) {
+		this.yesNo8 = yesNo8;
+	}
+
+	/**
+	 * @return the yesNo9
+	 */
+    @Column(name = "YesNo9", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo9() {
+		return yesNo9;
+	}
+
+	/**
+	 * @param yesNo9 the yesNo9 to set
+	 */
+	public void setYesNo9(Boolean yesNo9) {
+		this.yesNo9 = yesNo9;
+	}
+
+	/**
+	 * @return the yesNo10
+	 */
+    @Column(name = "YesNo10", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo10() {
+		return yesNo10;
+	}
+
+	/**
+	 * @param yesNo10 the yesNo10 to set
+	 */
+	public void setYesNo10(Boolean yesNo10) {
+		this.yesNo10 = yesNo10;
+	}
+
+	/**
+	 * @return the yesNo11
+	 */
+    @Column(name = "YesNo11", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo11() {
+		return yesNo11;
+	}
+
+	/**
+	 * @param yesNo11 the yesNo11 to set
+	 */
+	public void setYesNo11(Boolean yesNo11) {
+		this.yesNo11 = yesNo11;
+	}
+
+	/**
+	 * @return the yesNo12
+	 */
+    @Column(name = "YesNo12", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo12() {
+		return yesNo12;
+	}
+
+	/**
+	 * @param yesNo12 the yesNo12 to set
+	 */
+	public void setYesNo12(Boolean yesNo12) {
+		this.yesNo12 = yesNo12;
+	}
+
+	/**
+	 * @return the yesNo13
+	 */
+    @Column(name = "YesNo13", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo13() {
+		return yesNo13;
+	}
+
+	/**
+	 * @param yesNo13 the yesNo13 to set
+	 */
+	public void setYesNo13(Boolean yesNo13) {
+		this.yesNo13 = yesNo13;
+	}
+
+	/**
+	 * @return the yesNo14
+	 */
+    @Column(name = "YesNo14", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo14() {
+		return yesNo14;
+	}
+
+	/**
+	 * @param yesNo14 the yesNo14 to set
+	 */
+	public void setYesNo14(Boolean yesNo14) {
+		this.yesNo14 = yesNo14;
+	}
+
+	/**
+	 * @return the yesNo15
+	 */
+    @Column(name = "YesNo15", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo15() {
+		return yesNo15;
+	}
+
+	/**
+	 * @param yesNo15 the yesNo15 to set
+	 */
+	public void setYesNo15(Boolean yesNo15) {
+		this.yesNo15 = yesNo15;
+	}
+
+	/**
+	 * @return the yesNo16
+	 */
+    @Column(name = "YesNo16", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo16() {
+		return yesNo16;
+	}
+
+	/**
+	 * @param yesNo16 the yesNo16 to set
+	 */
+	public void setYesNo16(Boolean yesNo16) {
+		this.yesNo16 = yesNo16;
+	}
+
+	/**
+	 * @return the yesNo17
+	 */
+    @Column(name = "YesNo17", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo17() {
+		return yesNo17;
+	}
+
+	/**
+	 * @param yesNo17 the yesNo17 to set
+	 */
+	public void setYesNo17(Boolean yesNo17) {
+		this.yesNo17 = yesNo17;
+	}
+
+	/**
+	 * @return the yesNo18
+	 */
+    @Column(name = "YesNo18", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo18() {
+		return yesNo18;
+	}
+
+	/**
+	 * @param yesNo18 the yesNo18 to set
+	 */
+	public void setYesNo18(Boolean yesNo18) {
+		this.yesNo18 = yesNo18;
+	}
+
+	/**
+	 * @return the yesNo19
+	 */
+    @Column(name = "YesNo19", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo19() {
+		return yesNo19;
+	}
+
+	/**
+	 * @param yesNo19 the yesNo19 to set
+	 */
+	public void setYesNo19(Boolean yesNo19) {
+		this.yesNo19 = yesNo19;
+	}
+
+	/**
+	 * @return the yesNo20
+	 */
+    @Column(name = "YesNo20", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo20() {
+		return yesNo20;
+	}
+
+	/**
+	 * @param yesNo20 the yesNo20 to set
+	 */
+	public void setYesNo20(Boolean yesNo20) {
+		this.yesNo20 = yesNo20;
+	}
+
+	/**
 	 * @return the integer1
 	 */
     @Column(name = "Integer1", unique = false, nullable = true, insertable = true, updatable = true)
