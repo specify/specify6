@@ -227,7 +227,7 @@ public class ExportToMySQLDB
 		Statement stmt = toConnection.createStatement();
 		try
 		{
-			stmt.execute("drop table " + tblName);
+			stmt.execute("drop table `" + tblName + "`");
 		}
 		finally
 		{
@@ -250,10 +250,10 @@ public class ExportToMySQLDB
 		StringBuilder sql = new StringBuilder();
 		try
 		{
-			sql.append("create table " + tblName + "(");
+			sql.append("create table `" + tblName + "`(");
 			if (idColumn)
 			{
-				sql.append(getIdFieldName(tblName) + " int");
+				sql.append("`" + getIdFieldName(tblName) + "` int");
 			}
 			boolean commafy = idColumn;
 			for (ERTICaptionInfo col : columns)
@@ -273,8 +273,8 @@ public class ExportToMySQLDB
 			stmt.execute(sql.toString());
 			
 			//should do this in the create statement
-			String keySql = "ALTER TABLE " + tblName + " CHANGE COLUMN " + getIdFieldName(tblName) + " " + getIdFieldName(tblName) + " INT(11) NOT NULL, "
-				+ "ADD PRIMARY KEY (" + getIdFieldName(tblName) + ")";
+			String keySql = "ALTER TABLE `" + tblName + "` CHANGE COLUMN `" + getIdFieldName(tblName) + "` `" + getIdFieldName(tblName) + "` INT(11) NOT NULL, "
+				+ "ADD PRIMARY KEY (`" + getIdFieldName(tblName) + "`)";
 			stmt.execute(keySql);
 			
 		} finally
@@ -295,7 +295,7 @@ public class ExportToMySQLDB
 		Statement stmt = connection.createStatement();
 		try
 		{
-			stmt.execute("select * from " + tblName);
+			stmt.execute("select * from `" + tblName + "`");
 			return true;
 		}
 		catch (Exception ex)
@@ -1155,7 +1155,7 @@ public class ExportToMySQLDB
 		}
 		Connection conn = connection != null ? connection : DBConnection.getInstance().createConnection();
 		String sql = "SELECT DISTINCT l.LocalityID, ifnull(l.OriginalLatLongUnit, 0), l.Latitude1, l.Longitude1, l.Latitude2, l.Longitude2, "
-				+ "l.Lat1Text, l.Long1Text, l.Lat2Text, l.Long2Text FROM " + tableName + " t" 
+				+ "l.Lat1Text, l.Long1Text, l.Lat2Text, l.Long2Text FROM `" + tableName + "` t" 
 				+ " INNER JOIN collectionobject co ON co.CollectionObjectID=t."
 				+ tableName + "ID INNER JOIN collectingevent ce ON ce.CollectingEventID="
 				+ "co.CollectingEventID INNER JOIN locality l ON l.LocalityID = ce.LocalityID "
@@ -1241,8 +1241,8 @@ public class ExportToMySQLDB
 	 */
 	public static boolean updateLatLngInCache(Connection conn, Integer mappingID) {
 		boolean result = false;
-		Object[] mapping = BasicSQLUtils.queryForRow(conn, "select MappingName, TimestampExported from spexportschemamapping" +
-				" where SpExportSchemaMappingID=" + mappingID);
+		Object[] mapping = BasicSQLUtils.queryForRow(conn, "select `MappingName`, `TimestampExported` from `spexportschemamapping`" +
+				" where `SpExportSchemaMappingID`=" + mappingID);
 		if (mapping == null || mapping[1] == null) {
 			result = true;
 		} else {
@@ -1370,7 +1370,7 @@ public class ExportToMySQLDB
 						String sql = getSQLForTabDelimExport(conn, tableName);
 						ResultSet rows = stmt.executeQuery(sql);
 						//no simple way to get record count from ResultSet??
-						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from " + tableName);
+						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from `" + tableName + "`");
 						for (QBDataSourceListenerIFace listener : listeners)
 						{
 							listener.loaded();
