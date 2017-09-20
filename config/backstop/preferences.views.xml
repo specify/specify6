@@ -383,9 +383,6 @@
                 <row>
                     <cell type="field" id="6" name="SymbiotaTask.OnTaskbar" uitype="checkbox" label="ADD_SYMBIOTA" colspan="4"/>
                 </row>
-                <row>
-                    <cell type="field" id="7" name="SGRTask.OnTaskbar" uitype="checkbox" label="ADD_SGR" colspan="4"/>
-                </row>
             </rows>
             
         </viewdef>
