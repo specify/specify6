@@ -249,85 +249,71 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
 
         PanelBuilder myPB = new PanelBuilder(new FormLayout("f:p:g,p", "p,2px,p,2px,p"));
         mySepComp = myPB.addSeparator(getResourceString("LM_MYDATA_TITLE"), cc.xyw(1,1,2));
-        myPB.add(myDataTF,         cc.xyw(1,3,2));        
+        myPB.add(myDataTF,         cc.xyw(1, 3, 2));
         myPB.add(searchMyDataBtn,  cc.xy(2,5));
         
         PanelBuilder pb2 = new PanelBuilder(new FormLayout("MAX(p;300px),2px,f:p:g", "f:p:g,20px,p"));
-        pb2.add(createScrollPane(list), cc.xy(1,1));
-        pb2.add(myPB.getPanel(),        cc.xy(1,3));
+        pb2.add(createScrollPane(list), cc.xy(1, 1));
+        pb2.add(myPB.getPanel(),        cc.xy(1, 3));
         
         PanelBuilder pb3 = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,4px,p,f:p:g"));
         pb3.add(createI18NLabel("LM_WRLD_OVRVW", SwingConstants.CENTER), cc.xy(2,2));
-        pb3.add(imgDisplay,                           cc.xy(2,4));
+        pb3.add(imgDisplay,                           cc.xy(2, 4));
         
         PanelBuilder pb4 = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,4px,p,f:p:g"));
         pb4.add(createI18NLabel("LM_INTRACT_VW", SwingConstants.CENTER), cc.xy(2,2));
-        pb4.add(wwPanel,            cc.xy(2,4));
+        pb4.add(wwPanel,            cc.xy(2, 4));
         
         PanelBuilder pb5 = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,p,f:p:g"));
         pb5.add(pb3.getPanel(), cc.xy(1,1));
-        pb5.add(pb4.getPanel(), cc.xy(1,3));
+        pb5.add(pb4.getPanel(), cc.xy(1, 3));
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,8px,f:p:g", "p,8px,f:p:g"), this);
-        pb.add(pb1.getPanel(),  cc.xyw(1,1,3));
-        pb.add(pb2.getPanel(),  cc.xy(1,3));
-        pb.add(pb5.getPanel(),  cc.xy(3,3));
+        pb.add(pb1.getPanel(),  cc.xyw(1, 1, 3));
+        pb.add(pb2.getPanel(),  cc.xy(1, 3));
+        pb.add(pb5.getPanel(),  cc.xy(3, 3));
         
         updateMyDataUIState(false);
         
-        searchText.addKeyListener(new KeyAdapter()
-        {
+        searchText.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e)
-            {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     searchSciNameBtn.doClick();
                 }
             }
         });
         
-        myDataTF.addKeyListener(new KeyAdapter()
-        {
+        myDataTF.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e)
-            {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     searchMyDataBtn.doClick();
                 }
             }
         });
         
-        list.addListSelectionListener(new ListSelectionListener()
-        {
+        list.addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (list.getSelectedIndex() == -1)
-                    {
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    if (list.getSelectedIndex() == -1) {
                         wwPanel.reset();
                         imgDisplay.setImage(blueMarble);
-                        
-                    } else
-                    {
-                        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
-                        {
+
+                    } else {
+                        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>() {
                             @Override
-                            protected Boolean doInBackground() throws Exception
-                            {
-                                if (doResetWWPanel)
-                                {
+                            protected Boolean doInBackground() throws Exception {
+                                if (doResetWWPanel) {
                                     wwPanel.reset();
                                 }
                                 doSearchOccur();
                                 return null;
                             }
+
                             @Override
-                            protected void done()
-                            {
+                            protected void done() {
                                 imgDisplay.repaint();
                             }
                         };
@@ -337,28 +323,22 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
             }
         });
         
-        searchMyDataBtn.addActionListener(new ActionListener()
-        {
+        searchMyDataBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                SwingUtilities.invokeLater(new Runnable()
-                {
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         doSearchSpecifyData(myDataTF.getText().trim());
                     }
                 });
-                
+
             }
         });
         
-        searchSciNameBtn.addActionListener(new ActionListener()
-        {
+        searchSciNameBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 doSearchGenusSpecies();
             }
         });
@@ -371,7 +351,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 blueMarble = image;
                 imgDisplay.setImage(blueMarble);
             }
-            
+
             @Override
             public void error()
             {
@@ -382,9 +362,10 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 }
             }
         };
-        
-        blueMarbleURL = BG_URL + String.format("WIDTH=%d&HEIGHT=%d", IMG_WIDTH, IMG_HEIGHT);
-        
+
+
+        blueMarbleURL = "";//BG_URL + String.format("WIDTH=%d&HEIGHT=%d", IMG_WIDTH, IMG_HEIGHT);
+
         pointsMapImageListener = new BufferedImageFetcherIFace()
         {
             @Override
@@ -425,7 +406,43 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
      */
     private void blueMarbleRetry()
     {
-        getImageFromWeb(blueMarbleURL, blueMarbleListener);
+        SwingWorker<BufferedImage, BufferedImage> worker = new SwingWorker<BufferedImage, BufferedImage>()
+        {
+            @Override
+            protected BufferedImage doInBackground() throws Exception
+            {
+                try {
+                    return ImageIO.read(getClass().getResource("/edu/ku/brc/specify/images/bmng_450x225.png"));
+
+                } catch (IOException e) {
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                try
+                {
+                    BufferedImage img = get();
+                    pointsMapImageListener.imageFetched(img);
+                    return;
+
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+                pointsMapImageListener.error();
+
+                super.done();
+            }
+        };
+        worker.execute();
+
     }
     
     /**
@@ -447,7 +464,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                     return ImageIO.read(url);
                     
                  } catch (IOException e) {
-                     
+
                  }
                 return null;
             }
@@ -772,7 +789,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         updateMyDataUIState(false);
 
         final SimpleGlassPane glassPane = writeSimpleGlassPaneMsg(getLocalizedMessage("LifeMapperTask.PROCESSING"), GLASS_FONT_SIZE);
-        glassPane.setTextYPos((int)((double)getSize().height * 0.25));
+        glassPane.setTextYPos((int) ((double) getSize().height * 0.25));
 
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
         {
@@ -784,7 +801,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 httpClient.getParams().setParameter("http.socket.timeout", 15000); 
                 
                 String genusSpecies = StringUtils.replace(searchStr, " ", "%20");
-                String url = "http://www.lifemapper.org/hint/species/"+genusSpecies + "?maxReturned=1000&format=json";
+                String url = "http://svc.lifemapper.org/api/v2/hint/"+genusSpecies + "?limit=1000";
                 //System.out.println(url);
                 
                 GetMethod getMethod = new GetMethod(url);
@@ -822,25 +839,25 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                     
                     if (responseString != null)
                     {
-                        if (responseString.startsWith("None of the species"))
+                        if (responseString.startsWith("[]"))
                         {
                             errMsgKey = "LM_NO_LM_DATA";
                             
-                        } else if (responseString.startsWith("Search too broad"))
-                        {
-                            errMsgKey = "LM_TOO_BROAD";
-                            
+//                        } else if (responseString.startsWith("Search too broad"))
+//                        {
+//                            errMsgKey = "LM_TOO_BROAD";
+//
                         } else if (StringUtils.isNotEmpty(responseString) && StringUtils.contains(responseString.toLowerCase(), "{"))
                         {
                             JSONTokener tok = new JSONTokener(responseString);
                             while (tok.more())
                             {
-                                JSONObject obj = (JSONObject)tok.nextValue();
-                                JSONArray pointArray = (JSONArray)obj.get("columns");
-                                Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
-                                while (iter.hasNext())
-                                {
-                                    JSONArray arrayObj = (JSONArray)iter.next();
+//                                JSONObject obj = (JSONObject)tok.nextValue();
+//                                JSONArray pointArray = (JSONArray)tok.nextValue(); //obj.get("columns");
+//                                Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
+//                                while (iter.hasNext())
+//                                {
+                                    JSONArray arrayObj = (JSONArray)tok.nextValue();
                                     //System.out.println(arrayObj);
                                     Iterator<Object> iterInner =  (Iterator<Object>)arrayObj.iterator();
                                     while (iterInner.hasNext())
@@ -848,24 +865,25 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                         JSONObject pObj = (JSONObject)iterInner.next();
                                         String binomial   = (String)pObj.get("binomial");
                                         String gnSpName      = (String)pObj.get("name");
-                                        String numPoints     = (String)pObj.get("numPoints");
-                                        String occurrenceSet = (String)pObj.get("occurrenceSet");
+                                        Integer numPoints     = (Integer)pObj.get("numPoints");
+                                        Integer occurrenceSet = (Integer)pObj.get("occurrenceSet");
                                         
-                                        if (StringUtils.isNotEmpty(gnSpName) && 
-                                            StringUtils.isNotEmpty(numPoints) &&
-                                            StringUtils.isNotEmpty(occurrenceSet))
+                                        if (StringUtils.isNotEmpty(gnSpName) // &&
+//                                            StringUtils.isNotEmpty(numPoints) &&
+//                                            StringUtils.isNotEmpty(occurrenceSet)
+                                                )
                                         {
                                             try
                                             {
-                                                int numPnts = Integer.parseInt(numPoints);
-                                                int occurId = Integer.parseInt(occurrenceSet);
-                                                if (numPnts > 0 && occurId > 0)
+//                                                int numPnts = Integer.parseInt(numPoints);
+//                                                int occurId = Integer.parseInt(occurrenceSet);
+                                                if (numPoints > 0 && occurrenceSet > 0)
                                                 {
                                                     if (items == null)
                                                     {
                                                         items = new ArrayList<OccurrenceSetIFace>();
                                                     }
-                                                    items.add(new GenusSpeciesDataItem(String.format("%s (%s)", gnSpName, numPoints), occurrenceSet, binomial));
+                                                    items.add(new GenusSpeciesDataItem(String.format("%s (%s)", gnSpName, numPoints.toString()), occurrenceSet.toString(), binomial));
                                                 }
                                             } catch (Exception ex)
                                             {
@@ -874,7 +892,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                             errMsgKey = items == null || items.size() == 0 ? "LM_NO_LOCAL_DATA" : null;
                                         }
                                     }
-                                }
+//                                 }
                             }
                         }
                     }
@@ -965,7 +983,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         
         UsageTracker.incrUsageCount("LM.OccurSearch");
         
-        final String lmURL = String.format("http://www.lifemapper.org/services/sdm/occurrences/%s/json?format=specify&fillPoints=true", occurrenceId);
+        final String lmURL = String.format("http://svc.lifemapper.org/api/v2/occurrence/%s/json?fillPoints=1", occurrenceId);
         //System.out.println(lmURL);
         
         SwingWorker<String, String> worker = new SwingWorker<String, String>()
@@ -1045,7 +1063,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                                     JSONObject obj = (JSONObject)tok.nextValue();
                                     if (obj != null)
                                     {
-                                        JSONArray pointArray = (JSONArray)obj.get("feature");
+                                        JSONArray pointArray = (JSONArray)obj.get("features");
                                         if (pointArray != null)
                                         {
                                             Iterator<Object> iter =  (Iterator<Object>)pointArray.iterator();
@@ -1140,7 +1158,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
         String paramStr;
         if (StringUtils.isNotEmpty(occurrenceSetId))
         {
-            paramStr = String.format("map=data_%s&layers=occ_%s", occurrenceSetId, occurrenceSetId);   
+            paramStr = String.format("map=data_%s&layers=bmng,occ_%s", occurrenceSetId, occurrenceSetId);
         } else
         {
             paramStr = "layers=bmng";
