@@ -30,7 +30,6 @@ import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.tasks.SGRTask;
 import edu.ku.brc.specify.tasks.SymbiotaTask;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -58,7 +57,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         setCheckbox("4", "AttachmentsTask.OnTaskbar", true, "ATTACHMENTS");
         //setCheckbox("5", "CleanupToolsTask.OnTaskbar", false, "CLEANUP");
         setCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME, false);
-        setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
+        //setCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME, true);
     }
     
     /**
@@ -178,7 +177,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             changed |= getCheckbox("4", "ImagesTask.OnTaskbar");
             changed |= getCheckbox("5", "CleanupToolsTask.OnTaskbar");
             changed |= getCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME);
-            changed |= getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
+            //changed |= getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
             
             if (changed) {
             	UIRegistry.displayInfoMsgDlg(UIRegistry.getResourceString("MiscPrefsPanel.RestartRequired"));

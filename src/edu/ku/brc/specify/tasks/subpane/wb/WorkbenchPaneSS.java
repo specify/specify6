@@ -1216,7 +1216,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         ((WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class)).opening(this);
-        ((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
+        if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
+        	((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).opening(this);
+        }
     }
     
     /**
@@ -3822,7 +3824,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (retStatus)
         {
             ((WorkbenchTask) ContextMgr.getTaskByClass(WorkbenchTask.class)).closing(this);
-            ((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).closing(this);
+            if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
+            	((SGRTask) ContextMgr.getTaskByClass(SGRTask.class)).closing(this);
+            }
             
             if (spreadSheet != null)
             {

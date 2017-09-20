@@ -2551,7 +2551,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     UIRegistry.getStatusBar().incrementValue(workbench.getName());
                     datasetNavBoxMgr.removeWorkbench(workbench);
                     updateNavBoxUI(null);
-                    ((SGRTask)ContextMgr.getTaskByClass(SGRTask.class)).deleteResultsForWorkbench(workbench);
+                    if (ContextMgr.getTaskByClass(SGRTask.class) != null) {
+                    	((SGRTask)ContextMgr.getTaskByClass(SGRTask.class)).deleteResultsForWorkbench(workbench);
+                    }
                 } catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
