@@ -121,8 +121,6 @@ import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.table.TableColumnExt;
 
-import sun.swing.table.DefaultTableCellHeaderRenderer;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -220,6 +218,7 @@ import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
+import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -3481,6 +3480,25 @@ public class WorkbenchPaneSS extends BaseSubPane
         //tableArg.setCellEditor(cellEditor);
     }
     
+    protected String getActualTableName(String tblName, String fldName, Element upDefs) {
+    	String result = tblName;
+    	if (upDefs != null) {
+            for (Iterator<?> i = upDefs.elementIterator("field"); i.hasNext();) {
+                Element fld = (Element) i.next();
+                String tbl = fld.attributeValue("table");
+                String fName = fld.attributeValue("name");
+                String actualTable = fld.attributeValue("actualtable");        
+                if (tblName.equalsIgnoreCase(tbl) && fldName.equalsIgnoreCase(fName) && !"".equals(actualTable)) {
+                	result = actualTable.toLowerCase();
+                	break;
+                }
+            	
+            }
+
+    	}
+    	return result;
+    }
+    
     /**
      * @param wbtmi
      * @return
@@ -3488,7 +3506,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected GridCellEditor getCellEditor(WorkbenchTemplateMappingItem wbtmi, int fieldWidth, JButton theSaveBtn, Element uploadDefs)
     {
     	PickListDBAdapterIFace pickList = null;
-    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(wbtmi.getTableName());
+
+    	
+    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(getActualTableName(wbtmi.getTableName(), wbtmi.getFieldName(), uploadDefs));
     	if (tblInfo != null)
     	{
     		String fldName = wbtmi.getFieldName();
