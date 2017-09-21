@@ -174,7 +174,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
             changed |= getCheckbox("1", "Interactions.Using.Interactions");
             changed |= getCheckbox("2", "ExportTask.OnTaskbar");
             changed |= getCheckbox("3", "StartupTask.OnTaskbar");
-            changed |= getCheckbox("4", "ImagesTask.OnTaskbar");
+            changed |= getCheckbox("4", "AttachmentsTask.OnTaskbar");
             changed |= getCheckbox("5", "CleanupToolsTask.OnTaskbar");
             changed |= getCheckbox("6", SymbiotaTask.IS_USING_SYMBIOTA_PREFNAME);
             //changed |= getCheckbox("7", SGRTask.IS_USING_SGR_PREFNAME);
