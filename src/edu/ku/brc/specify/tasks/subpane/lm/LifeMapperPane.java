@@ -426,7 +426,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 try
                 {
                     BufferedImage img = get();
-                    pointsMapImageListener.imageFetched(img);
+                    blueMarbleListener.imageFetched(img);
                     return;
 
                 } catch (InterruptedException e)
@@ -436,7 +436,7 @@ public class LifeMapperPane extends BaseSubPane implements ChangeListener
                 {
                     e.printStackTrace();
                 }
-                pointsMapImageListener.error();
+                blueMarbleListener.error();
 
                 super.done();
             }
