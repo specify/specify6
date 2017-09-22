@@ -1291,6 +1291,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             			cacheRowCount = updateStats.get(m).getSecond();
             		}
 					
+            		if (cacheRowCount == 0) {
+            			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.Mapping_Contains_Zero_Recs"));
+            			return null;
+            		}
+            		
             		BasicSQLUtils.update("update spexportschemamapping set TimestampExported = null where SpExportSchemaMappingID = " + theMapping.getId());
             		
             		boolean rebuild = rebuildExistingTbl;
