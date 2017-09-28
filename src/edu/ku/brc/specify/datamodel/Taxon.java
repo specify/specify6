@@ -173,6 +173,15 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected Boolean              yesNo8;
     protected Boolean              yesNo9;
     protected Boolean              yesNo10;
+    protected Boolean              yesNo11;
+    protected Boolean              yesNo12;
+    protected Boolean              yesNo13;
+    protected Boolean              yesNo14;
+    protected Boolean              yesNo15;
+    protected Boolean              yesNo16;
+    protected Boolean              yesNo17;
+    protected Boolean              yesNo18;
+    protected Boolean              yesNo19;
     
     // relationships with other tables
 	protected Set<Determination>   determinations;
@@ -307,6 +316,15 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         yesNo8                        = null;
         yesNo9                        = null;
         yesNo10                       = null;
+        yesNo11                       = null;
+        yesNo12                       = null;
+        yesNo13                       = null;
+        yesNo14                       = null;
+        yesNo15                       = null;
+        yesNo16                       = null;
+        yesNo17                       = null;
+        yesNo18                       = null;
+        yesNo19                       = null;
         integer1					  = null;
         integer2                      = null;
         integer3                      = null;
@@ -1252,6 +1270,142 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	 */
 	public void setYesNo10(Boolean yesNo10) {
 		this.yesNo10 = yesNo10;
+	}
+
+	
+	/**
+	 * @return the yesNo11
+	 */
+    @Column(name = "YesNo11", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo11() {
+		return yesNo11;
+	}
+
+	/**
+	 * @param yesNo11 the yesNo11 to set
+	 */
+	public void setYesNo11(Boolean yesNo11) {
+		this.yesNo11 = yesNo11;
+	}
+
+	/**
+	 * @return the yesNo12
+	 */
+    @Column(name = "YesNo12", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo12() {
+		return yesNo12;
+	}
+
+	/**
+	 * @param yesNo12 the yesNo12 to set
+	 */
+	public void setYesNo12(Boolean yesNo12) {
+		this.yesNo12 = yesNo12;
+	}
+
+	/**
+	 * @return the yesNo13
+	 */
+    @Column(name = "YesNo13", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo13() {
+		return yesNo13;
+	}
+
+	/**
+	 * @param yesNo13 the yesNo13 to set
+	 */
+	public void setYesNo13(Boolean yesNo13) {
+		this.yesNo13 = yesNo13;
+	}
+
+	/**
+	 * @return the yesNo14
+	 */
+    @Column(name = "YesNo14", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo14() {
+		return yesNo14;
+	}
+
+	/**
+	 * @param yesNo14 the yesNo14 to set
+	 */
+	public void setYesNo14(Boolean yesNo14) {
+		this.yesNo14 = yesNo14;
+	}
+
+	/**
+	 * @return the yesNo15
+	 */
+    @Column(name = "YesNo15", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo15() {
+		return yesNo15;
+	}
+
+	/**
+	 * @param yesNo15 the yesNo15 to set
+	 */
+	public void setYesNo15(Boolean yesNo15) {
+		this.yesNo15 = yesNo15;
+	}
+
+	/**
+	 * @return the yesNo16
+	 */
+    @Column(name = "YesNo16", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo16() {
+		return yesNo16;
+	}
+
+	/**
+	 * @param yesNo16 the yesNo16 to set
+	 */
+	public void setYesNo16(Boolean yesNo16) {
+		this.yesNo16 = yesNo16;
+	}
+
+	/**
+	 * @return the yesNo17
+	 */
+    @Column(name = "YesNo17", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo17() {
+		return yesNo17;
+	}
+
+	/**
+	 * @param yesNo17 the yesNo17 to set
+	 */
+	public void setYesNo17(Boolean yesNo17) {
+		this.yesNo17 = yesNo17;
+	}
+
+	/**
+	 * @return the yesNo18
+	 */
+    @Column(name = "YesNo18", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo18() {
+		return yesNo18;
+	}
+
+	/**
+	 * @param yesNo18 the yesNo18 to set
+	 */
+	public void setYesNo18(Boolean yesNo18) {
+		this.yesNo18 = yesNo18;
+	}
+
+	/**
+	 * @return the yesNo19
+	 */
+    @Column(name = "YesNo19", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo19() {
+		return yesNo19;
+	}
+
+	/**
+	 * @param yesNo19 the yesNo19 to set
+	 */
+	public void setYesNo19(Boolean yesNo19) {
+		this.yesNo19 = yesNo19;
 	}
 
 	@Column(name="UsfwsCode", length = 16)
