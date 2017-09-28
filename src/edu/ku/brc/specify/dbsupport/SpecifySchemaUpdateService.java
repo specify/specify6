@@ -187,7 +187,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 58; //the number of incOverall() calls (+1 or +2)
+    private final int OVERALL_TOTAL = 59; //the number of incOverall() calls (+1 or +2)
     
     private static final String TINYINT4 = "TINYINT(4)";
     private static final String INT11    = "INT(11)";
@@ -2481,6 +2481,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             		}
                     frame.incOverall(); 
 
+                    //-------------------------------------------------------------------------------
+                    //
+                    // Schema changes for 2.4
+                    //
+                    //-------------------------------------------------------------------------------
+                    
+                    frame.setDesc("Picklist value enlengthenization.");
+                    sql = "alter table picklistitem modify column `Title` varchar(128), modify column `Value` varchar(128)";
+            		if (-1 == update(conn, sql)) {
+        				errMsgList.add("update error: " + sql);
+        				return false;
+        			}
+                    frame.incOverall(); 
+                    
                     frame.setProcess(0, 100);
 
                     return true;
