@@ -3480,6 +3480,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         //tableArg.setCellEditor(cellEditor);
     }
     
+    /**
+     * @param tblName
+     * @param fldName
+     * @param upDefs
+     * @return
+     */
     protected String getActualTableName(String tblName, String fldName, Element upDefs) {
     	String result = tblName;
     	if (upDefs != null) {
@@ -3488,7 +3494,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 String tbl = fld.attributeValue("table");
                 String fName = fld.attributeValue("name");
                 String actualTable = fld.attributeValue("actualtable");        
-                if (tblName.equalsIgnoreCase(tbl) && fldName.equalsIgnoreCase(fName) && !"".equals(actualTable)) {
+                if (tblName.equalsIgnoreCase(tbl) && fldName.equalsIgnoreCase(fName) && actualTable != null && !"".equals(actualTable)) {
                 	result = actualTable.toLowerCase();
                 	break;
                 }
