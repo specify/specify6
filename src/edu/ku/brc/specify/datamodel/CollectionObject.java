@@ -695,7 +695,7 @@ public void setReservedText3(String reservedText3) {
     /**
      *
      */
-    @Column(name = "AltCatalogNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "AltCatalogNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getAltCatalogNumber() 
     {
         return this.altCatalogNumber;

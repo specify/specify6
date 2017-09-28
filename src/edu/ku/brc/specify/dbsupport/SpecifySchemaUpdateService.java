@@ -2487,14 +2487,22 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //
                     //-------------------------------------------------------------------------------
                     
-                    frame.setDesc("Picklist value enlengthenization.");
+                    frame.setDesc("Picklist value enlengthenization");
                     sql = "alter table picklistitem modify column `Title` varchar(128), modify column `Value` varchar(128)";
             		if (-1 == update(conn, sql)) {
         				errMsgList.add("update error: " + sql);
         				return false;
         			}
                     frame.incOverall(); 
-                    
+
+                    frame.setDesc("Stretching AltCatalogNumber");
+                    sql = "alter table collectionobject modify column AltCatalogNumber varchar(64)";
+            		if (-1 == update(conn, sql)) {
+        				errMsgList.add("update error: " + sql);
+        				return false;
+        			}
+                    frame.incOverall(); 
+ 
                     frame.setProcess(0, 100);
 
                     return true;
