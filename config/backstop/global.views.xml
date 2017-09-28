@@ -1590,6 +1590,84 @@
                     <cell type="label" labelfor="cols"/>
                     <cell type="field" id="cols" name="colStatus" uitype="text"/>
                 </row>
+				<row>						
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text" colspan="9"/>				
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text" colspan="7"/>		
+                    <cell type="label" labelfor="t3"/>
+                    <cell type="field" id="t3" name="text3" uitype="text" colspan="7"/>		
+                    <cell type="label" labelfor="t4"/>
+                    <cell type="field" id="t4" name="text4" uitype="text"/>						
+                </row>
+                <row>	
+                    <cell type="label" labelfor="t5"/>
+                    <cell type="field" id="t5" name="text5" uitype="text" colspan="3"/>					
+                    <cell type="label" labelfor="t6"/>
+                    <cell type="field" id="t6" name="text6" uitype="text"/>					
+                    <cell type="label" labelfor="t7"/>
+                    <cell type="field" id="t7" name="text7" uitype="text" colspan="3"/>					
+                    <cell type="label" labelfor="t8"/>
+                    <cell type="field" id="t8" name="text8" uitype="text"/>
+                    <cell type="label" labelfor="t9"/>
+                    <cell type="field" id="t9" name="text9" uitype="text"/>				
+                </row>
+                <row>	
+                    <cell type="label" labelfor="t10"/>
+                    <cell type="field" id="t10" name="text10" uitype="text"/>
+                    <cell type="label" labelfor="t11"/>
+                    <cell type="field" id="t11" name="text11" uitype="text"/>
+                    <cell type="label" labelfor="t12"/>
+                    <cell type="field" id="t12" name="text12" uitype="text"/>
+					<cell type="label" labelfor="t9"/>
+                    <cell type="field" id="t9" name="text13" uitype="text"/>					
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="text14" uitype="text"/>	
+                </row>
+                <row>						
+                    <cell type="label" labelfor="t15"/>
+                    <cell type="field" id="t15" name="text15" uitype="text" colspan="5"/>					
+                    <cell type="label" labelfor="t16"/>
+                    <cell type="field" id="n16" name="number16" uitype="text"/>		
+					<cell type="label" labelfor="n17"/>
+                    <cell type="field" id="n17" name="number17" uitype="text"/>			  
+					<cell type="label" labelfor="n18"/>
+                    <cell type="field" id="n18" name="number18" uitype="text"/>			  
+				</row>
+                <row>
+                    <cell type="label" labelfor="t19"/>
+                    <cell type="field" id="t19" name="text19" uitype="text"/>
+                    <cell type="label" labelfor="t20"/>
+                    <cell type="field" id="t20" name="text20" uitype="text"/>
+                    <cell type="label" labelfor="i1"/>
+                    <cell type="field" id="i1" name="integer1" uitype="text"/>
+                    <cell type="label" labelfor="i2"/>
+                    <cell type="field" id="i2" name="integer2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="n2"/>
+                    <cell type="field" id="n2" name="number2" uitype="text"/>
+                    <cell type="label" labelfor="n3"/>
+                    <cell type="field" id="n3" name="number3" uitype="text"/>
+                    <cell type="label" labelfor="n4"/>
+                    <cell type="field" id="n4" name="number4" uitype="text"/>
+                    <cell type="label" labelfor="n5"/>
+                    <cell type="field" id="n5" name="number5" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="field" id="yn1" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn2" name="yesNo2" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn3" name="yesNo3" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn4" name="yesNo4" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn5" name="yesNo5" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn6" name="yesNo6" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn7" name="yesNo7" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn5" name="yesNo8" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn6" name="yesNo9" uitype="checkbox" initialize="editable=true"/>
+                    <cell type="field" id="yn7" name="yesNo10" uitype="checkbox" initialize="editable=true"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="cn"/>
                     <cell type="field" id="cn" name="cultivarName" uitype="text" colspan="3"/>
@@ -1609,12 +1687,6 @@
                     <cell type="field" id="ntn" name="ncbiTaxonNumber" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="n1"/>
-                    <cell type="field" id="n1" name="number1" uitype="text"/>
-                    <cell type="label" labelfor="n2"/>
-                    <cell type="field" id="n2" name="number2" uitype="text"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="remarks"/>
                     <cell type="field" id="remarks" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
@@ -1623,16 +1695,6 @@
                     <cell type="field" id="taxonomicSerialNumber" uitype="text" name="taxonomicSerialNumber"/>
                     <cell type="label" labelfor="uc"/>
                     <cell type="field" id="uc" name="usfwsCode" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="t1"/>
-                    <cell type="field" id="t1" name="text1" uitype="text"/>
-                    <cell type="label" labelfor="t2"/>
-                    <cell type="field" id="t2" name="text2" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
-                    <cell type="field" id="20" name="yesNo2" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="9"/>
