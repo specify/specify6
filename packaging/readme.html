@@ -1,68 +1,59 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!doctype html>
 <html>
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Release Notes</title>
+<meta charset="utf-8">
+<title>
+Specify 6.6.06 Release Note
+</title>
 </head>
 <body>
-<h3>Release Notes<br>
-Specify 6.6.05<br>
-03 November 2016<br>
-Specify Software Project</h3>
+<p>
+  <h3>Specify Software Project</h3>
+</p>
 <br>
-<h4>List of Changes to Specify 6.6.05<br>
-</h4>
+<strong>Release Notes</strong><br>Specify 6.6.06
+<br>
+26 September 2017
+<h4>Database Schema Changes:</h4>
+
 <ol>
-<li>The Specify  login screen now remembers its openness  state (expanded or contracted), as a special favor to Warren Brown, U. Florida, who  pleaded that he was weary of clicking.  2016-09-28  (Bugzilla #10264)</li>
-<li>The automatic check for Specify Software updates will not permit updates in user sessions if the new database-level preference &quot;IsReleaseManagedGlobally&quot; is set.  2016-11-01  (10225)</li>
-<li>The &quot;Check for Updates&quot; item on Help menu is no longer visible  if the &quot;IsReleaseManagedGlobally&quot;global preference is set. 2016-10-26  (10229)</li>
-<li>Displaying the database backup prompt in a user session is now a  global preference which can be set once for all collections in a database.  2016-09-27  (10226)</li>
-<li>RecordSets of Collection Objects can now be dragged and dropped onto the Accession icon, and also can be added to Accessions through a menu prompt.  2016-10-28  (10242)</li>
-<li>Taxon Full Names can now be added to Loan items forms, enabling listing of taxa for Preparations contained within a Loan. 2016-10-24  (10279)</li>
-<li>Fields which  are required by the localization (forms) schema are now also required by the WorkBench for uploading into Specify.  2016-10-28  (10284)</li>
-<li>The "Highlight New Records" option in the Specify WorkBench now works correctly  for Collecting Event and Locality data.  2016-11-02  (10257)</li>
-<li> Default Invertebrate data forms no longer generate an error message due to a missing &quot;collectionreltype&quot; field. 2016-10-28  (10283)</li>
-<li>Geography records can be added from Locality form.  2016-10-27  (10282)</li>
-<li>Default settings for CSV dataset imports now correspond to CSV file standard  &quot;RFC-4180&quot;.  2016-10-25  (10218)</li>
-<li>If  turned &quot;ON&quot; for Catalog Number, auto-fill no longer erroneously increments other number fields which also have auto-fill activated. 2016-10-24  (10135)</li>
-<li>Changes to information in tree data displays  now changes the tree update timestamp and subsequently exports the changes correctly.  2016-10-24  (10212)</li>
-<li>In the Specify WorkBench, if a Collection Object record has Locality data but no Geography data, the Locality table record is now created when uploaded into Specify.  2016-10-24  (10280)</li>
-<li>Whether preference &quot;Attachment.IsPublic&quot; is initially set to on or off  is now based on  preference value. 2016-10-20  (10204)</li>
-<li>Tree data node merging now works when dragged nodes or their descendants have attachments.  2016-10-20  (10258)</li>
-<li>On the collection statistics page, the &quot;Top 5 Species&quot; and &quot;Specimens by Country&quot; charts now display correct values.  2016-10-13  (10274)</li>
-<li>&quot;Distinct&quot; check is now  saved and exported with Query definition. 2016-10-11  (10265)</li>
-<li>Deleting a Specify user  who created an existing export schema mapping is no longer allowed unless the mapping is deleted first.  2016-10-10  (10208)</li>
-<li>Conservation Events now display correctly on forms.  2016-10-10  (10261)</li>
-<li>The &quot;IsRequired&quot; parameter for  fields is now set correctly for user session when a user changes the collection being accessed within Specify.  2016-10-07  (10222)</li>
-<li>Auto-increment now works for Catalog Number and Accession formats.  2016-10-07  (10235)</li>
-<li>Exsiccata search dialog now works correctly.  2016-10-07  (10247)</li>
-<li>Localities of Collection Objects in RecordSets will now map in Google Earth if Determinations are not present.  2016-10-07  (10254)</li>
-<li>Catalog Numbers can now be optionally set to  increment across multiple collections within a database.  2016-10-05  (10236)</li>
-<li>An Export Schema Mapping name is now required to be unique across all collections within a database to avoid name conflicts.  2016-10-04  (10232)</li>
-<li>Decimal digits in floating point (real number) fields are no longer gratuitously truncated when records are edited.  2016-10-04  (10238)</li>
-<li>Adding search conditions on un-displayed fields no longer duplicates records in query results.  2016-10-03  (10227)</li>
-<li> Data for &quot;Locality Citation&quot; (table) which are linked to Locality table field &quot;Locality Citations&quot; can now be uploaded through WorkBench.  2016-09-28  (10217)</li>
-<li>The WorkBench Uploader now works correctly for databases with shared PaleoContext records and which have them linked to the Locality table.  2016-09-28  (10240)</li>
-<li>The WorkBench uploads records with no value in the &quot;LatLongType&quot; field but which do have &quot;Lat1&quot; &quot;Long1&quot; field data now have  the  LatLongType value filled by default as &quot;Point&quot;. 2016-09-28  (10246)</li>
-<li>WorkBench DataSets with RefWork information but without data in the RefWork Title field no longer take an inordinately long time to upload and validate.  2016-09-27  (10216)</li>
-<li>&quot;Created by&quot; Agent and &quot;Modified by&quot; Agent can now be made visible for multiple tables in the Query Builder. 2016-09-27  (10224) (10231) (10256)</li>
-<li>Autoincrementers for fields other than Catalog Number and Accession Number (including numbers for Loans, Gifts, Collecting Events) now scope correctly.  2016-09-26  (10211)</li>
-<li>Paleocontext relationship to the Collection Object, Collecting Event or Locality table is now correctly maintained after a Specify schema update. 2016-10-24  (10241)</li>
-<li>The Specify database schema update performed by this release includes these changes:</li>
-<ul>
-  <li>Added fields for Station Field Number modifiers to Collecting Event table. 2016-09-26  (10233)</li>
-  <li>Added yes/no (boolean) fields to Locality table. 2016-09-26  (10234)</li>
-  <li>Added six memo fields to Collection Object Attribute. 2016-09-26  (10252)</li>
-  <li> Added integer fields to Accession, Loan, Gift, Collection Object Attribute, and Collecting Event Attribute tables.  2016-09-26  (10255)</li>
-  <li> Added text fields to Preparation and Collecting Event.  2016-09-26  (10263)</li>
-  <li> Added a GUID field to Preparation. 2016-10-20  (10245)</li>
-  <li>Added &quot;Inventorized by&quot; field to Collection Object table. 2016-10-13  (10271)</li>
-  <li>Added &quot;Creator&quot; field to Attachments table. 2016-10-20  (10276)</li>
-</ul>
+  <li>Added several data fields to accommodate DNA Extract and DNA Sequence metadata as defined by the Global Genome Biodiversity Network (GGBN, (<a href="http://www.ggbn.org/">http://www.ggbn.org/</a>) ) and used in TDWG Darwin Core GGBN Registered Extensions. Fields added are from GGBN Vocabularies for: Amplification, Material Sample, Permit, and Preparation.</li>
+  <li>Added several fields for NIH SRA accession numbers to enable linking sample and sequence data from next generation methods deposited in NIH SRA databases to the corresponding DNA Sequence record in Specify. This allows http link-outs to molecular data at NIH, sequenced from specimens/tissues/extracts in the collection.</li>
+  <li>To make Specify compliant with the TDWG GGBN Material Sample DwC extension (<a href="https://terms.tdwg.org/wiki/GGBN_Data_Standard">https://terms.tdwg.org/wiki/GGBN_Data_Standard</a>)  for DNA/RNA extract (sample) metadata, a data table “Material Sample”  was added to the database. The Preparation table describes physical objects, like skin, skeleton, seeds, and tissue. Material Samples are derived chemical extracts from Preparations.  The DNA Sequence table describes molecular information derived (e.g. sequenced) from a Material Sample (a new relationship with this release) or from a Collection Object (existing Specify relationship). Specify sites using the DNA Sequence table prior to this release (as a child of Collection Object) should contact the Specify Project to discuss the possibility of using the Material Sample--DNA Sequence relationship in its place. More information is available on the Specify Software Project web site about the new Material Sample table, its relationship to the DNA Sequence table, and the relevance  of those two changes for managing data for extracts and molecular sequences.</li>
+  <li>Existing TDWG Audubon Core standard fields were supplemented with additional commonly used Audubon Core vocabulary terms (fields) for describing and exporting multimedia objects (Attachments in Specify). </li>
+  <li>Added AdminContact (agent) field to the Collection table for identifying collections in feedback stats.
+  <li>Added long integer fields to Taxon&nbsp;table to allow for assignment of numeric codes to taxa for sorting and ordering taxon names in query results. </li>
+  <li>Added text fields to Borrow Materials&nbsp;table, to allow extended description of borrowed materials.</li>
+  <li>Added  text and logical (yes/no) fields to the Collection Object Attributes table.</li>
 </ol>
-<br>
-<br>
-<br>
-<br>
+
+<h4>Software Maintenance Changes:</h4>
+
+<ol>
+<li>Fixed bug preventing Borrow Materials and Borrow Return Materials to from being viewed as a grid&nbsp;&nbsp;2017-09-01&nbsp;&nbsp;(Bugzilla 10336, 10308)</li>
+<li>Added Start and End Period default values to Chronostrat records to allow for sorting on tree displays and for use by PaleoMap plug-in.  2017-09-01&nbsp;&nbsp;(10296)</li>
+<li>Changed the default formatter for Collecting Event Query Combo Boxes on Collection Object forms from showing start date, to show Station Field Number, Locality Name, Geography Full Name, and Latitude1/Longitude1. 2017-08-31&nbsp;(10332)</li>
+<li>Passwords are no longer stored in log files. 2017-08-28  (10294)</li>
+<li>The PaleoMap plug-in is now on the Collecting Event form for Paleontology collections new to Specify, and with configuration can be added by existing sites. Thanks to Tomislav Urban, Texas Advanced Computing Center. 2017-08-25  (10297)</li>
+<li>If the Specify Software Project Update server is offline or inaccessible, Specify no longer waits an annoyingly long time for an answer to an update status check. 2017-08-23  (10228)</li>
+<li>Added AltCatNumber to the list of fields that can be searched with simple search. 2017-08-22  (10307)</li>
+<li>One can now upload Reference Work table data through the Specify Workbench without associated Collection Objects. 2017-08-18  (10293)</li>
+<li>Added field AdminContactName to the Collection data table and included it in feedback stats. 2017-08-18  (10322)</li>
+<li>Drag-and-drop operations in Taxon trees now update TimestampModified field in Taxon table. This fixes the problem of Specify overlooking changes in the Taxon tree while identifying updated records to export to iDigBio or GBIF (through IPT), or to the Specify web portal. 2017-08-18 (10251)</li>
+<li>Fixed bug preventing Containers from being uploaded via Specify Workbench; the capability is configured in the Workbench Import Configuration file.  2017-08-18  (10317)
+<li>Fixed bug of incorrect Collecting Event data associated with Localities in the Google Earth plug-in.  2017-08-17  (10318)
+<li>The "-" character is no longer allowed in strictly numeric catalog numbers, as it broke auto-incrementing.  2017-08-16 (10300)
+<li>Can now delete a Reference Work record when it is associated with a Journal record.  2017-08-16  (10209)</li>
+<li>QueryCombo box search windows now use customized field captions found in the form schema.  2017-08-16  (10248)</li>
+<li>Bug preventing uploads of bulk attachments to Interaction records (gifts, loans, accessions, exchanges, etc.) is fixed.  2017-08-15  (10305)</li>
+<li>Catalog numbers are no longer erroneously auto-assigned if 'Auto Fill Catalog Numbers' is not checked in the Workbench. 2017-07-25  (10302)</li>
+<li>Spreadsheet cells that contain only space characters no longer cause Specify Workbench upload errors.  2017-07-17  (10306)</li>
+<li>For queries, fields for tree data ranks parameterized with "Empty" or "Not Empty" criteria now filter correctly. 2017-05-19  (10295)</li>
+<li>The Specify Workbench Uploader no longer erroneously creates multiple GeoCoordDetail records for an existing locality. (10298)</li>
+<li>Checking the status of data export caches in the Data Exporter and Symbiota Exporter to see if records need to be added to export table, no longer crashes or takes an inordinate length of time. 2017-05-16  (10288)</li>
+<li>Clone Locality function will now clone everything in Locality, when PaleoContext is configured as an embedded data object in the Locality form. 2017-03-28  (10292)</li>
+<li>Auto incrementing of Catalog Numbers now works correctly for any portion of a multi-part catalog number that is numeric and set to  auto-increment. 2017-03-15  (10291)</li>
+</ol>
 </body>
 </html>
+<html><head></head><body></body></html>
