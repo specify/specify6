@@ -135,6 +135,21 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected String               text3;
     protected String               text4;
     protected String               text5;
+    protected String               text6;
+    protected String               text7;
+    protected String               text8;
+    protected String               text9;
+    protected String               text10;
+    protected String               text11;
+    protected String               text12;
+    protected String               text13;
+    protected String               text14;
+    protected String               text15;
+    protected String               text16;
+    protected String               text17;
+    protected String               text18;
+    protected String               text19;
+    protected String               text20;
     
     protected Integer              number1;
     protected Integer              number2;
@@ -145,10 +160,19 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected Long			       integer1;
     protected Long                 integer2;
     protected Long                 integer3;
+    protected Integer			   integer4;
+    protected Integer			   integer5;
     
     protected Boolean              yesNo1;
     protected Boolean              yesNo2;
     protected Boolean              yesNo3;
+    protected Boolean              yesNo4;
+    protected Boolean              yesNo5;
+    protected Boolean              yesNo6;
+    protected Boolean              yesNo7;
+    protected Boolean              yesNo8;
+    protected Boolean              yesNo9;
+    protected Boolean              yesNo10;
     
     // relationships with other tables
 	protected Set<Determination>   determinations;
@@ -258,12 +282,36 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         text3                         = null;
         text4                         = null;
         text5                         = null;
+        text6                         = null;
+        text7                         = null;
+        text8                         = null;
+        text9                         = null;
+        text10                        = null;
+        text11                        = null;
+        text12                        = null;
+        text13                        = null;
+        text14                        = null;
+        text15                        = null;
+        text16                        = null;
+        text17                        = null;
+        text18                        = null;
+        text19                        = null;
+        text20                        = null;
         yesNo1                        = null;
         yesNo2                        = null;
         yesNo3                        = null;
+        yesNo4                        = null;
+        yesNo5                        = null;
+        yesNo6                        = null;
+        yesNo7                        = null;
+        yesNo8                        = null;
+        yesNo9                        = null;
+        yesNo10                       = null;
         integer1					  = null;
         integer2                      = null;
         integer3                      = null;
+        integer4                      = null;
+        integer5                      = null;
         
         acceptedChildren              = new HashSet<Taxon>();
         
@@ -705,6 +753,235 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	}
 
 	/**
+	 * @return the text6
+	 */
+    @Lob
+    @Column(name = "Text6", length = 65535)
+	public String getText6() {
+		return text6;
+	}
+
+	/**
+	 * @param text6 the text6 to set
+	 */
+	public void setText6(String text6) {
+		this.text6 = text6;
+	}
+
+	/**
+	 * @return the text7
+	 */
+    @Lob
+    @Column(name = "Text7", length = 65535)
+	public String getText7() {
+		return text7;
+	}
+
+	/**
+	 * @param text7 the text7 to set
+	 */
+	public void setText7(String text7) {
+		this.text7 = text7;
+	}
+
+	/**
+	 * @return the text8
+	 */
+    @Lob
+    @Column(name = "Text8", length = 65535)
+	public String getText8() {
+		return text8;
+	}
+
+	/**
+	 * @param text8 the text8 to set
+	 */
+	public void setText8(String text8) {
+		this.text8 = text8;
+	}
+
+	/**
+	 * @return the text9
+	 */
+    @Lob
+    @Column(name = "Text9", length = 65535)
+	public String getText9() {
+		return text9;
+	}
+
+	/**
+	 * @param text9 the text9 to set
+	 */
+	public void setText9(String text9) {
+		this.text9 = text9;
+	}
+
+	/**
+	 * @return the text10
+	 */
+    @Column(name = "Text10", length = 128)
+	public String getText10() {
+		return text10;
+	}
+
+	/**
+	 * @param text10 the text10 to set
+	 */
+	public void setText10(String text10) {
+		this.text10 = text10;
+	}
+
+	/**
+	 * @return the text11
+	 */
+    @Column(name = "Text11", length = 128)
+	public String getText11() {
+		return text11;
+	}
+
+	/**
+	 * @param text11 the text11 to set
+	 */
+	public void setText11(String text11) {
+		this.text11 = text11;
+	}
+
+	/**
+	 * @return the text12
+	 */
+    @Column(name = "Text12", length = 128)
+	public String getText12() {
+		return text12;
+	}
+
+	/**
+	 * @param text12 the text12 to set
+	 */
+	public void setText12(String text12) {
+		this.text12 = text12;
+	}
+
+	/**
+	 * @return the text13
+	 */
+    @Column(name = "Text13", length = 128)
+	public String getText13() {
+		return text13;
+	}
+
+	/**
+	 * @param text13 the text13 to set
+	 */
+	public void setText13(String text13) {
+		this.text13 = text13;
+	}
+
+	/**
+	 * @return the text14
+	 */
+    @Column(name = "Text14", length = 256)
+	public String getText14() {
+		return text14;
+	}
+
+	/**
+	 * @param text14 the text14 to set
+	 */
+	public void setText14(String text14) {
+		this.text14 = text14;
+	}
+
+	/**
+	 * @return the text15
+	 */
+    @Column(name = "Text15", length = 256)
+	public String getText15() {
+		return text15;
+	}
+
+	/**
+	 * @param text15 the text15 to set
+	 */
+	public void setText15(String text15) {
+		this.text15 = text15;
+	}
+
+	/**
+	 * @return the text16
+	 */
+    @Column(name = "Text16", length = 256)
+	public String getText16() {
+		return text16;
+	}
+
+	/**
+	 * @param text16 the text16 to set
+	 */
+	public void setText16(String text16) {
+		this.text16 = text16;
+	}
+
+	/**
+	 * @return the text17
+	 */
+    @Column(name = "Text17", length = 256)
+	public String getText17() {
+		return text17;
+	}
+
+	/**
+	 * @param text17 the text17 to set
+	 */
+	public void setText17(String text17) {
+		this.text17 = text17;
+	}
+
+	/**
+	 * @return the text18
+	 */
+    @Column(name = "Text18", length = 256)
+	public String getText18() {
+		return text18;
+	}
+
+	/**
+	 * @param text18 the text18 to set
+	 */
+	public void setText18(String text18) {
+		this.text18 = text18;
+	}
+
+	/**
+	 * @return the text19
+	 */
+    @Column(name = "Text19", length = 256)
+	public String getText19() {
+		return text19;
+	}
+
+	/**
+	 * @param text19 the text19 to set
+	 */
+	public void setText19(String text19) {
+		this.text19 = text19;
+	}
+
+	/**
+	 * @return the text20
+	 */
+    @Column(name = "Text20", length = 256)
+	public String getText20() {
+		return text20;
+	}
+
+	/**
+	 * @param text20 the text20 to set
+	 */
+	public void setText20(String text20) {
+		this.text20 = text20;
+	}
+
+	/**
 	 * @return the number3
 	 */
     @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
@@ -795,6 +1072,37 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.integer3 = integer3;
 	}
 
+	
+	/**
+	 * @return the integer4
+	 */
+	@Column(name = "Integer4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger4() {
+		return integer4;
+	}
+
+	/**
+	 * @param integer4 the integer4 to set
+	 */
+	public void setInteger4(Integer integer4) {
+		this.integer4 = integer4;
+	}
+
+	/**
+	 * @return the integer5
+	 */
+	@Column(name = "Integer5", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getInteger5() {
+		return integer5;
+	}
+
+	/**
+	 * @param integer5 the integer5 to set
+	 */
+	public void setInteger5(Integer integer5) {
+		this.integer5 = integer5;
+	}
+
 	/**
 	 * @return the yesNo1
 	 */
@@ -838,6 +1146,112 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	 */
 	public void setYesNo3(Boolean yesNo3) {
 		this.yesNo3 = yesNo3;
+	}
+
+	
+	/**
+	 * @return the yesNo4
+	 */
+    @Column(name = "YesNo4", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo4() {
+		return yesNo4;
+	}
+
+	/**
+	 * @param yesNo4 the yesNo4 to set
+	 */
+	public void setYesNo4(Boolean yesNo4) {
+		this.yesNo4 = yesNo4;
+	}
+
+	/**
+	 * @return the yesNo5
+	 */
+    @Column(name = "YesNo5", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo5() {
+		return yesNo5;
+	}
+
+	/**
+	 * @param yesNo5 the yesNo5 to set
+	 */
+	public void setYesNo5(Boolean yesNo5) {
+		this.yesNo5 = yesNo5;
+	}
+
+	/**
+	 * @return the yesNo6
+	 */
+    @Column(name = "YesNo6", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo6() {
+		return yesNo6;
+	}
+
+	/**
+	 * @param yesNo6 the yesNo6 to set
+	 */
+	public void setYesNo6(Boolean yesNo6) {
+		this.yesNo6 = yesNo6;
+	}
+
+	/**
+	 * @return the yesNo7
+	 */
+    @Column(name = "YesNo7", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo7() {
+		return yesNo7;
+	}
+
+	/**
+	 * @param yesNo7 the yesNo7 to set
+	 */
+	public void setYesNo7(Boolean yesNo7) {
+		this.yesNo7 = yesNo7;
+	}
+
+	/**
+	 * @return the yesNo8
+	 */
+    @Column(name = "YesNo8", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo8() {
+		return yesNo8;
+	}
+
+	/**
+	 * @param yesNo8 the yesNo8 to set
+	 */
+	public void setYesNo8(Boolean yesNo8) {
+		this.yesNo8 = yesNo8;
+	}
+
+	/**
+	 * @return the yesNo9
+	 */
+    @Column(name = "YesNo9", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo9() {
+		return yesNo9;
+	}
+
+	/**
+	 * @param yesNo9 the yesNo9 to set
+	 */
+	public void setYesNo9(Boolean yesNo9) {
+		this.yesNo9 = yesNo9;
+	}
+
+	/**
+	 * @return the yesNo10
+	 */
+    @Column(name = "YesNo10", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getYesNo10() {
+		return yesNo10;
+	}
+
+	/**
+	 * @param yesNo10 the yesNo10 to set
+	 */
+	public void setYesNo10(Boolean yesNo10) {
+		this.yesNo10 = yesNo10;
 	}
 
 	@Column(name="UsfwsCode", length = 16)

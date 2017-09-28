@@ -55,8 +55,8 @@ import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
-import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
+import edu.ku.brc.util.LatLonConverter;
 
 /**
  * WorkbenchRow generated rods
@@ -97,6 +97,9 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected String                 lat2Text;
     protected String                 long1Text;
     protected String                 long2Text;
+    protected String                 errorPolygon;
+    protected BigDecimal			 errorEstimate;
+    
     
     //For updates
     protected Integer				 				recordId; //recordID exported from 'main' db to this row
@@ -197,8 +200,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         return this.rowNumber.intValue();
     }
     
-    public void setWorkbenchRowId(Integer workbenchRowId)
-    {
+    public void setWorkbenchRowId(Integer workbenchRowId) {
         this.workbenchRowId = workbenchRowId;
     }
     
@@ -206,39 +208,49 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getErrorPolygon()
      */
-    @Transient
     @Override
-    public String getErrorPolygon()
-    {
-        return null;
+    @Lob
+    @Column(name = "ErrorPolygon", length = 65535)
+    public String getErrorPolygon() {
+        return errorPolygon;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getErrorRadius()
      */
-    @Transient
     @Override
-    public BigDecimal getErrorEstimate()
-    {
-        return null;
+    @Column(name = "ErrorEstimate", unique = false, nullable = true, insertable = true, updatable = true, precision = 20, scale = 10)
+    public BigDecimal getErrorEstimate() {
+        return errorEstimate;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorEstimate(java.math.BigDecimal)
      */
     @Override
-    public void setErrorEstimate(BigDecimal errorEstimate)
-    {
-        // TODO Auto-generated method stub
+    public void setErrorEstimate(BigDecimal errorEstimate) {
+    	
+        this.errorEstimate = errorEstimate;
+        if (workbench != null) {
+        	Integer col = getErrorEstimateIndex();
+        	if (col != -1) {
+        		setData(this.errorEstimate == null ? "" : this.errorEstimate.toString(), col.shortValue(), false);
+        	}
+        }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setErrorPolygon(java.lang.String)
      */
     @Override
-    public void setErrorPolygon(String errorPolygon)
-    {
-        // TODO Auto-generated method stub
+    public void setErrorPolygon(String errorPolygon) {
+        this.errorPolygon = errorPolygon;
+    	if (workbench != null) {
+    		Integer col = getErrorPolygonIndex();
+    		if (col != -1) {
+    			setData(this.errorPolygon, col.shortValue(), false);
+    		}
+    	}
     }
 
     /**
@@ -1101,6 +1113,16 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public int getLongitudeIndex()
     {
         return workbench.getColumnIndex(Locality.class, "longitude1");
+    }
+
+    @Transient
+    public int getErrorPolygonIndex() {
+    	return workbench.getColumnIndex(GeoCoordDetail.class, "errorPolygon");
+    }
+    
+    @Transient
+    public int getErrorEstimateIndex() {
+    	return workbench.getColumnIndex(GeoCoordDetail.class, "maxUncertaintyEst");
     }
 
     ////////////////////////////////////////////////////
