@@ -11,9 +11,9 @@ Specify 6.6.06 Release Note
   <h3>Specify Software Project</h3>
 </p>
 <br>
-<strong>Release Notes</strong><br>Specify 6.6.06
-<br>
-26 September 2017
+<strong>Release Notes</strong><br>
+Specify 6.6.06 <br>
+2 October 2017
 <h4>Database Schema Changes:</h4>
 
 <ol>
@@ -21,10 +21,15 @@ Specify 6.6.06 Release Note
   <li>Added several fields for NIH SRA accession numbers to enable linking sample and sequence data from next generation methods deposited in NIH SRA databases to the corresponding DNA Sequence record in Specify. This allows http link-outs to molecular data at NIH, sequenced from specimens/tissues/extracts in the collection.</li>
   <li>To make Specify compliant with the TDWG GGBN Material Sample DwC extension (<a href="https://terms.tdwg.org/wiki/GGBN_Data_Standard">https://terms.tdwg.org/wiki/GGBN_Data_Standard</a>)  for DNA/RNA extract (sample) metadata, a data table “Material Sample”  was added to the database. The Preparation table describes physical objects, like skin, skeleton, seeds, and tissue. Material Samples are derived chemical extracts from Preparations.  The DNA Sequence table describes molecular information derived (e.g. sequenced) from a Material Sample (a new relationship with this release) or from a Collection Object (existing Specify relationship). Specify sites using the DNA Sequence table prior to this release (as a child of Collection Object) should contact the Specify Project to discuss the possibility of using the Material Sample--DNA Sequence relationship in its place. More information is available on the Specify Software Project web site about the new Material Sample table, its relationship to the DNA Sequence table, and the relevance  of those two changes for managing data for extracts and molecular sequences.</li>
   <li>Existing TDWG Audubon Core standard fields were supplemented with additional commonly used Audubon Core vocabulary terms (fields) for describing and exporting multimedia objects (Attachments in Specify). </li>
-  <li>Added AdminContact (agent) field to the Collection table for identifying collections in feedback stats.
+  <li>Added AdminContact (Agent) field to the Collection table for identifying collections in feedback stats.
   <li>Added long integer fields to Taxon&nbsp;table to allow for assignment of numeric codes to taxa for sorting and ordering taxon names in query results. </li>
   <li>Added text fields to Borrow Materials&nbsp;table, to allow extended description of borrowed materials.</li>
-  <li>Added  text and logical (yes/no) fields to the Collection Object Attributes table.</li>
+  <li>Added text and logical (yes/no) fields to the Collection Object Attributes table.</li>
+  <li>Added 16 logical fields to the Taxon table.</li>
+  <li>Added 4 memo fields, 11 string, and 2 integer fields to the Taxon table.</li>
+  <li>Expanded AltCatalogNumber to 64 chars.</li>
+  <li>Added Geocoord error estimate fields to the Workbench Row table.</li>
+  <li>Increased the length of picklist value and title fields from 64 to 128 chars.</li>
 </ol>
 
 <h4>Software Maintenance Changes:</h4>
@@ -53,7 +58,11 @@ Specify 6.6.06 Release Note
 <li>Checking the status of data export caches in the Data Exporter and Symbiota Exporter to see if records need to be added to export table, no longer crashes or takes an inordinate length of time. 2017-05-16  (10288)</li>
 <li>Clone Locality function will now clone everything in Locality, when PaleoContext is configured as an embedded data object in the Locality form. 2017-03-28  (10292)</li>
 <li>Auto incrementing of Catalog Numbers now works correctly for any portion of a multi-part catalog number that is numeric and set to  auto-increment. 2017-03-15  (10291)</li>
+<li>LocalityDetail Text1 field on forms now uses the appropriate database field 2017-09-29 (10348)</li>
+<li>When a query for an export data mapping returns zero records the Data Exporter no longer breaks. 2017-09-25 (10354)</li>
+<li>Fixed issues with hiding and showing the Attachments task bar entry. 2017-09-21 (10353)</li>
+<li>Updated the URL to Lifemapper for distribution maps. 2017-09-21 (10349)</li>
+<li>Fixed bug which broke Data Exporter on Macs. 2017-09-26 (10345)</li>
 </ol>
 </body>
 </html>
-<html><head></head><body></body></html>
