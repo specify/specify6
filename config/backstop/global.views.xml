@@ -769,6 +769,8 @@
                     <cell type="field" id="16" name="remarks" uitype="textareabrief" rows="2"/>
                     <cell type="label" labelfor="17" />
                     <cell type="field" id="17" name="url" uitype="text"/>
+                    <cell type="label" labelfor="suf"/>
+                    <cell type="field" id="suf" name="suffix" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="21"/>
@@ -2872,7 +2874,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="ispub" label=""/>
-                	<cell type="field" id="ispub" name="attachment.isPublic" uitype="checkbox" label="Make Public" default="false"/>
+                	<cell type="field" id="ispub" name="attachment.isPublic" uitype="checkbox" label="Make Public"/>
                 </row>
     		 <!--   <row>
     		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
