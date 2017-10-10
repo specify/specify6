@@ -46747,7 +46747,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="integer1" isHidden="false" isRequired="false">
+      <desc name="integer1" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -46779,7 +46779,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo4" isHidden="false" isRequired="false">
+      <desc name="yesNo4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -46792,7 +46792,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text18" isHidden="false" isRequired="false">
+      <desc name="text18" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -46824,7 +46824,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="integer2" isHidden="false" isRequired="false">
+      <desc name="integer2" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -46939,7 +46939,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo5" isHidden="false" isRequired="false">
+      <desc name="yesNo5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47080,7 +47080,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo7" isHidden="false" isRequired="false">
+      <desc name="yesNo7" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47093,7 +47093,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text15" isHidden="false" isRequired="false">
+      <desc name="text15" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47182,7 +47182,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text6" isHidden="false" isRequired="false">
+      <desc name="text6" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47252,7 +47252,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text9" isHidden="false" isRequired="false">
+      <desc name="text9" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47265,7 +47265,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo18" isHidden="false" isRequired="false">
+      <desc name="yesNo18" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47354,7 +47354,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="integer5" isHidden="false" isRequired="false">
+      <desc name="integer5" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47367,7 +47367,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text19" isHidden="false" isRequired="false">
+      <desc name="text19" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47431,7 +47431,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="integer4" isHidden="false" isRequired="false">
+      <desc name="integer4" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47470,7 +47470,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text20" isHidden="false" isRequired="false">
+      <desc name="text20" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47502,7 +47502,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text16" isHidden="false" isRequired="false">
+      <desc name="text16" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47515,7 +47515,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text11" isHidden="false" isRequired="false">
+      <desc name="text11" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47528,7 +47528,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo17" isHidden="false" isRequired="false">
+      <desc name="yesNo17" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47780,7 +47780,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo19" isHidden="false" isRequired="false">
+      <desc name="yesNo19" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47793,7 +47793,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text13" isHidden="false" isRequired="false">
+      <desc name="text13" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47844,7 +47844,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text10" isHidden="false" isRequired="false">
+      <desc name="text10" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47895,7 +47895,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo15" isHidden="false" isRequired="false">
+      <desc name="yesNo15" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47908,7 +47908,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text17" isHidden="false" isRequired="false">
+      <desc name="text17" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47921,7 +47921,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo10" isHidden="false" isRequired="false">
+      <desc name="yesNo10" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47934,7 +47934,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo9" isHidden="false" isRequired="false">
+      <desc name="yesNo9" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -47966,7 +47966,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text7" isHidden="false" isRequired="false">
+      <desc name="text7" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48126,7 +48126,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="yesNo8" isHidden="false" isRequired="false">
+      <desc name="yesNo8" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48139,7 +48139,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo12" isHidden="false" isRequired="false">
+      <desc name="yesNo12" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48152,7 +48152,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo14" isHidden="false" isRequired="false">
+      <desc name="yesNo14" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48254,7 +48254,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="integer3" isHidden="false" isRequired="false">
+      <desc name="integer3" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48300,7 +48300,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
           </str>
         </descs>
       </desc>
-      <desc name="yesNo13" isHidden="false" isRequired="false">
+      <desc name="yesNo13" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48313,7 +48313,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo6" isHidden="false" isRequired="false">
+      <desc name="yesNo6" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48326,7 +48326,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo11" isHidden="false" isRequired="false">
+      <desc name="yesNo11" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48339,7 +48339,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text8" isHidden="false" isRequired="false">
+      <desc name="text8" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48352,7 +48352,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text14" isHidden="false" isRequired="false">
+      <desc name="text14" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48378,7 +48378,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="yesNo16" isHidden="false" isRequired="false">
+      <desc name="yesNo16" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
@@ -48410,7 +48410,7 @@ Preparação: Uma subdivisão de um objeto de coleção q</text>
         </names>
         <descs/>
       </desc>
-      <desc name="text12" isHidden="false" isRequired="false">
+      <desc name="text12" isHidden="true" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
