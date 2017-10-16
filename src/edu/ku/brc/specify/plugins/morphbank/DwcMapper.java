@@ -202,6 +202,7 @@ public class DwcMapper
 		//return "select * from " + ExportPanel.getCacheTableName(mappingName) + " where " + ExportPanel.getCacheTableName(mappingName) + "id = " + collectionObjectId; 
 		
 		List<String> selects = new ArrayList<String>();
+		selects.add(ExportPanel.getCacheTableName(mappingName) + "id"); 
 		for (MappingInfo mi : concepts) {
 			if (mi.getDataType().equals(java.util.Date.class)) {
 				selects.add("date_format(`" + mi.getName() + "`,'%Y-%m-%d') `" + mi.getName() + "`");
