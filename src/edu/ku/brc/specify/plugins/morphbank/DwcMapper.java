@@ -199,7 +199,19 @@ public class DwcMapper
 	{
 		//return "select * from " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + " where " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + "id = " + collectionObjectId; 
 		//XXX ExportPanel.getCacheTableName assumes current collection. Is it possible for collectionObjectId to identify a record in another collection???
-		return "select * from " + ExportPanel.getCacheTableName(mappingName) + " where " + ExportPanel.getCacheTableName(mappingName) + "id = " + collectionObjectId; 
+		//return "select * from " + ExportPanel.getCacheTableName(mappingName) + " where " + ExportPanel.getCacheTableName(mappingName) + "id = " + collectionObjectId; 
+		
+		List<String> selects = new ArrayList<String>();
+		for (MappingInfo mi : concepts) {
+			if (mi.getDataType().equals(java.util.Date.class)) {
+				selects.add("date_format(`" + mi.getName() + "`,'%Y-%m-%d') `" + mi.getName() + "`");
+			} else {
+				selects.add("`" + mi.getName() + "`");
+			}
+		}
+		String flds = selects.toString();
+		flds = flds.substring(1, flds.length() - 1);
+		return "select " + flds + " from " + ExportPanel.getCacheTableName(mappingName) + " where " + ExportPanel.getCacheTableName(mappingName) + "id = " + collectionObjectId; 
 	}
 	
 	
